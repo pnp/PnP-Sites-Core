@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var checkedOut = false;
 
-                targetFile = folder.GetFile(file.Src);
+                targetFile = folder.GetFile(template.Connector.GetFilenamePart(file.Src));
 
                 if (targetFile != null)
                 {
