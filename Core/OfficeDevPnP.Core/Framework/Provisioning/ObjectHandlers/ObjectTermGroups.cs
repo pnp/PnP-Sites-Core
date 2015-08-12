@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Utilities;
 
+
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectTermGroups : ObjectHandlerBase
@@ -21,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Term Groups"; }
         }
-        public override void ProvisionObjects(Microsoft.SharePoint.Client.Web web, Model.ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, Model.ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_TermGroups);
 
@@ -56,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             modelTermGroup.Id = Guid.NewGuid();
                         }
-                        group = termStore.CreateGroup(modelTermGroup.Name.ToParsedString(), modelTermGroup.Id);
+                        group = termStore.CreateGroup(parser.ParseString(modelTermGroup.Name), modelTermGroup.Id);
 
                         group.Description = modelTermGroup.Description;
 
@@ -92,8 +93,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             modelTermSet.Id = Guid.NewGuid();
                         }
-                        set = group.CreateTermSet(modelTermSet.Name.ToParsedString(), modelTermSet.Id, modelTermSet.Language ?? termStore.DefaultLanguage);
-                        TokenParser.AddToken(new TermSetIdToken(web, modelTermGroup.Name, modelTermSet.Name, modelTermSet.Id));
+                        set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id, modelTermSet.Language ?? termStore.DefaultLanguage);
+                        parser.AddToken(new TermSetIdToken(web, modelTermGroup.Name, modelTermSet.Name, modelTermSet.Id));
                         newTermSet = true;
                         set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
                         set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
@@ -126,7 +127,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     term = terms.FirstOrDefault(t => t.Name == modelTerm.Name);
                                     if (term == null)
                                     {
-                                        modelTerm.Id = CreateTerm<TermSet>(web, modelTerm, set, termStore);
+                                        var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser);
+                                        modelTerm.Id = returnTuple.Item1;
+                                        parser = returnTuple.Item2;
                                     }
                                     else
                                     {
@@ -140,12 +143,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                modelTerm.Id = CreateTerm<TermSet>(web, modelTerm, set, termStore);
+                                var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser);
+                                modelTerm.Id = returnTuple.Item1;
+                                parser = returnTuple.Item2;
                             }
                         }
                         else
                         {
-                            modelTerm.Id = CreateTerm<TermSet>(web, modelTerm, set, termStore);
+                            var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser);
+                            modelTerm.Id = returnTuple.Item1;
+                            parser = returnTuple.Item2;
                         }
                     }
 
@@ -166,9 +173,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 #endregion
 
             }
+
+            return parser;
         }
 
-        private Guid CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore) where T : TaxonomyItem
+        private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser) where T : TaxonomyItem
         {
             Term term;
             if (modelTerm.Id == Guid.Empty)
@@ -179,12 +188,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (parent is Term)
             {
                 var languages = termStore.DefaultLanguage;
-                term = ((Term)parent).CreateTerm(modelTerm.Name.ToParsedString(), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
 
             }
             else
             {
-                term = ((TermSet)parent).CreateTerm(modelTerm.Name.ToParsedString(), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
             }
             if (!String.IsNullOrEmpty(modelTerm.Description))
             {
@@ -205,7 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
                         {
-                            var l = term.CreateLabel(label.Value.ToParsedString(), label.Language, label.IsDefaultForLanguage);
+                            var l = term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
                         }
                         else
                         {
@@ -218,14 +227,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var property in modelTerm.Properties)
                     {
-                        term.SetCustomProperty(property.Key.ToParsedString(), property.Value.ToParsedString());
+                        term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
                     }
                 }
                 if (modelTerm.LocalProperties.Any())
                 {
                     foreach (var property in modelTerm.LocalProperties)
                     {
-                        term.SetLocalCustomProperty(property.Key.ToParsedString(), property.Value.ToParsedString());
+                        term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
                     }
                 }
             }
@@ -249,7 +258,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             termTerm = termTerms.FirstOrDefault(t => t.Name == modelTermTerm.Name);
                             if (termTerm == null)
                             {
-                                modelTermTerm.Id = CreateTerm<Term>(web, modelTermTerm, term, termStore);
+                                var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser);
+                                modelTermTerm.Id = returnTuple.Item1;
+                                parser = returnTuple.Item2;
                             }
                             else
                             {
@@ -263,7 +274,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        modelTermTerm.Id = CreateTerm<Term>(web, modelTermTerm, term, termStore);
+                        var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser);
+                        modelTermTerm.Id = returnTuple.Item1;
+                        parser = returnTuple.Item2;
                     }
                 }
                 if (modelTerm.Terms.Any(t => t.CustomSortOrder > -1))
@@ -278,7 +291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
-            return modelTerm.Id;
+            return Tuple.Create(modelTerm.Id, parser);
         }
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

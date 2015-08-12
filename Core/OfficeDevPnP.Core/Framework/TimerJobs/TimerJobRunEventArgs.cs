@@ -51,6 +51,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <param name="url">Url of the site the timer job is operating against</param>
         /// <param name="ccSite">ClientContext object for the root site of the site collection</param>
         /// <param name="ccWeb">ClientContext object for passed site Url</param>
+        /// <param name="ccTenant">Tenant ClientContext</param>
         /// <param name="configurationData">Configuration data</param>
         internal TimerJobRunEventArgs(string url, ClientContext ccSite, ClientContext ccWeb, ClientContext ccTenant, string configurationData) : this (url, ccSite, ccWeb, ccTenant, null, null, null, null, configurationData)
         {

@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Features"; }
         }
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Features);
 
@@ -31,6 +31,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var webFeatures = template.Features.WebFeatures;
             ProvisionFeaturesImplementation<Web>(web, webFeatures);
+
+            return parser;
         }
 
         private static void ProvisionFeaturesImplementation<T>(T parent, List<Feature> features)

@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "List instances Data Rows"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows);
 
@@ -61,11 +61,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var dataValue in dataRow.Values)
                             {
                                 Field dataField = fields.FirstOrDefault(
-                                    f => f.InternalName == dataValue.Key.ToParsedString());
+                                    f => f.InternalName == parser.ParseString(dataValue.Key));
 
                                 if (dataField != null)
                                 {
-                                    String fieldValue = dataValue.Value.ToParsedString();
+                                    String fieldValue = parser.ParseString(dataValue.Value);
 
                                     switch (dataField.FieldTypeKind)
                                     {
@@ -81,11 +81,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     Longitude = Double.Parse(geolocationArray[2]),
                                                     Measure = Double.Parse(geolocationArray[3]),
                                                 };
-                                                listitem[dataValue.Key.ToParsedString()] = geolocationValue;
+                                                listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
                                             }
                                             else
                                             {
-                                                listitem[dataValue.Key.ToParsedString()] = fieldValue;
+                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                             }
                                             break;
                                         case FieldType.Lookup:
@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             {
                                                 LookupId = Int32.Parse(fieldValue),
                                             };
-                                            listitem[dataValue.Key.ToParsedString()] = lookupValue;
+                                            listitem[parser.ParseString(dataValue.Key)] = lookupValue;
                                             break;
                                         case FieldType.URL:
                                             // FieldUrlValue - Expected format: URL,Description
@@ -110,7 +110,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 linkValue.Url = urlArray[0];
                                                 linkValue.Description = urlArray[0];
                                             }
-                                            listitem[dataValue.Key.ToParsedString()] = linkValue;
+                                            listitem[parser.ParseString(dataValue.Key)] = linkValue;
                                             break;
                                         case FieldType.User:
                                             // FieldUserValue - Expected format: loginName
@@ -124,15 +124,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 {
                                                     LookupId = user.Id,
                                                 };
-                                                listitem[dataValue.Key.ToParsedString()] = userValue;
+                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
                                             }
                                             else
                                             {
-                                                listitem[dataValue.Key.ToParsedString()] = fieldValue;
+                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                             }
                                             break;
                                         default:
-                                            listitem[dataValue.Key.ToParsedString()] = fieldValue;
+                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                             break;
                                     }
                                 }
@@ -144,6 +144,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 #endregion
             }
+
+            return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "List instances"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ListInstances);
 
@@ -48,17 +48,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var index = existingLists.FindIndex(x => x.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
                     if (index == -1)
                     {
-                        var createdList = CreateList(web, templateList);
+                        var returnTuple = CreateList(web, templateList, parser);
+                        var createdList = returnTuple.Item1;
+                        parser = returnTuple.Item2;
                         processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
 
-                        TokenParser.AddToken(new ListIdToken(web, templateList.Title, createdList.Id));
+                        parser.AddToken(new ListIdToken(web, templateList.Title, createdList.Id));
 
-                        TokenParser.AddToken(new ListUrlToken(web, templateList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                        parser.AddToken(new ListUrlToken(web, templateList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                     }
                     else
                     {
                         var existingList = web.Lists[index];
-                        var updatedList = UpdateList(web, existingList, templateList);
+                        var returnTuple = UpdateList(web, existingList, templateList, parser);
+                        var updatedList = returnTuple.Item1;
+                        parser = returnTuple.Item2;
                         if (updatedList != null)
                         {
                             processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
@@ -107,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var field in listInfo.TemplateList.Fields)
                         {
-                            var fieldElement = XElement.Parse(field.SchemaXml.ToParsedString("~sitecollection", "~site"));
+                            var fieldElement = XElement.Parse(parser.ParseString(field.SchemaXml,"~sitecollection", "~site"));
                             if (fieldElement.Attribute("ID") == null)
                             {
                                 throw new Exception(string.Format("Field schema has no ID attribute: {0}", field.SchemaXml));
@@ -185,6 +189,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
             }
+
+            return parser;
         }
 
         private void CreateView(Web web, View view, ViewCollection existingViews, List createdList)
@@ -410,7 +416,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private List UpdateList(Web web, List existingList, ListInstance templateList)
+        private Tuple<List,TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -438,9 +444,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!string.IsNullOrEmpty(templateList.DocumentTemplate))
                 {
-                    if (existingList.DocumentTemplateUrl != templateList.DocumentTemplate.ToParsedString())
+                    if (existingList.DocumentTemplateUrl != parser.ParseString(templateList.DocumentTemplate))
                     {
-                        existingList.DocumentTemplateUrl = templateList.DocumentTemplate.ToParsedString();
+                        existingList.DocumentTemplateUrl = parser.ParseString(templateList.DocumentTemplate);
                         isDirty = true;
                     }
                 }
@@ -570,7 +576,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
                     }
                 }
-                return existingList;
+                return Tuple.Create(existingList, parser);
             }
             else
             {
@@ -579,7 +585,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private List CreateList(Web web, ListInstance list)
+        private Tuple<List,TokenParser> CreateList(Web web, ListInstance list, TokenParser parser)
         {
             var listCreate = new ListCreationInformation();
             listCreate.Description = list.Description;
@@ -590,7 +596,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // the OnQuickLaunch property is re-set on the Created List object
             listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
 
-            listCreate.Url = list.Url.ToParsedString();
+            listCreate.Url = parser.ParseString(list.Url);
             listCreate.TemplateFeatureId = list.TemplateFeatureID;
 
             var createdList = web.Lists.Add(listCreate);
@@ -600,7 +606,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(list.DocumentTemplate))
             {
-                createdList.DocumentTemplateUrl = list.DocumentTemplate.ToParsedString();
+                createdList.DocumentTemplateUrl = parser.ParseString(list.DocumentTemplate);
             }
 
             // EnableAttachments are not supported for DocumentLibraries and Surveys
@@ -698,7 +704,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
 
-            return createdList;
+            return Tuple.Create(createdList, parser);
         }
 
 

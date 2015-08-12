@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
        
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
 
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ComposedLooks);
@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Apply alternate CSS
                 if (!string.IsNullOrEmpty(template.ComposedLook.AlternateCSS))
                 {
-                    var alternateCssUrl = template.ComposedLook.AlternateCSS.ToParsedString();
+                    var alternateCssUrl = parser.ParseString(template.ComposedLook.AlternateCSS);
                     web.AlternateCssUrl = alternateCssUrl;
                     web.Update();
                     executeQueryNeeded = true;
@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Apply Site logo
                 if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
                 {
-                    var siteLogoUrl = template.ComposedLook.SiteLogo.ToParsedString();
+                    var siteLogoUrl = parser.ParseString(template.ComposedLook.SiteLogo);
                     web.SiteLogoUrl = siteLogoUrl;
                     web.Update();
                     executeQueryNeeded = true;
@@ -64,28 +64,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     string colorFile = null;
                     if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
                     {
-                        colorFile = template.ComposedLook.ColorFile.ToParsedString();
+                        colorFile = parser.ParseString(template.ComposedLook.ColorFile);
                     }
                     string backgroundFile = null;
                     if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                     {
-                        backgroundFile = template.ComposedLook.BackgroundFile.ToParsedString();
+                        backgroundFile = parser.ParseString(template.ComposedLook.BackgroundFile);
                     }
                     string fontFile = null;
                     if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
                     {
-                        fontFile = template.ComposedLook.FontFile.ToParsedString();
+                        fontFile = parser.ParseString(template.ComposedLook.FontFile);
                     }
 
                     string masterUrl = null;
                     if (!string.IsNullOrEmpty(template.ComposedLook.MasterPage))
                     {
-                        masterUrl = template.ComposedLook.MasterPage.ToParsedString();
+                        masterUrl = parser.ParseString(template.ComposedLook.MasterPage);
                     }
                     web.CreateComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
                     web.SetComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
                 }
             }
+            return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

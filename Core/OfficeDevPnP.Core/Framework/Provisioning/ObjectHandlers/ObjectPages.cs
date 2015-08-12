@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Pages);
 
@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var page in template.Pages)
             {
-                var url = page.Url.ToParsedString();
+                var url = parser.ParseString(page.Url);
 
 
                 if (!url.ToLower().StartsWith(web.ServerRelativeUrl.ToLower()))
@@ -92,12 +92,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             WebPartEntity wpEntity = new WebPartEntity();
                             wpEntity.WebPartTitle = webpart.Title;
-                            wpEntity.WebPartXml = webpart.Contents.ToParsedString().Trim(new[] {'\n', ' '});
+                            wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] {'\n', ' '});
                             web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
                         }
                     }
                 }
             }
+
+            return parser;
         }
 
 

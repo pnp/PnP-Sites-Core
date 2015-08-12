@@ -11,12 +11,13 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    public static class TokenParser
+    public class TokenParser
     {
-        public static Web _web;
-        private static List<TokenDefinition> _tokens = new List<TokenDefinition>();
+        public Web _web;
 
-        public static List<TokenDefinition> Tokens
+        private List<TokenDefinition> _tokens = new List<TokenDefinition>();
+
+        public List<TokenDefinition> Tokens
         {
             get { return _tokens; }
             private set
@@ -25,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        public static void AddToken(TokenDefinition tokenDefinition)
+        public void AddToken(TokenDefinition tokenDefinition)
         {
 
             _tokens.Add(tokenDefinition);
@@ -37,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
-        public static void Initialize(Web web, ProvisioningTemplate template)
+        public TokenParser(Web web, ProvisioningTemplate template)
         {
             if (!web.IsPropertyAvailable("ServerRelativeUrl"))
             {
@@ -101,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
-        public static void Rebase(Web web)
+        public void Rebase(Web web)
         {
             _web = web;
 
@@ -112,12 +113,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        public static string ToParsedString(this string input)
+        public string ParseString(string input)
         {
-            return ToParsedString(input, null);
+            return ParseString(input, null);
         }
 
-        public static string ToParsedString(this string input, params string[] tokensToSkip)
+        public string ParseString(string input, params string[] tokensToSkip)
         {
             if (!string.IsNullOrEmpty(input))
             {
