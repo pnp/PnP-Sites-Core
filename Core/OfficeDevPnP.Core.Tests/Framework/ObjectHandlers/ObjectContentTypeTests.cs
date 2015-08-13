@@ -58,7 +58,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-                new ObjectContentType().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                TokenParser parser = new TokenParser(ctx.Web, template);
+                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var ct = ctx.Web.GetContentTypeByName("Test Content Type");
 

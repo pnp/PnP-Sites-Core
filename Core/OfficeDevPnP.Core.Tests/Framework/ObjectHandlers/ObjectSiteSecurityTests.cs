@@ -68,8 +68,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-                TokenParser.Initialize(ctx.Web, template);
-                new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var memberGroup = ctx.Web.AssociatedMemberGroup;
                 ctx.Load(memberGroup, g => g.Users);

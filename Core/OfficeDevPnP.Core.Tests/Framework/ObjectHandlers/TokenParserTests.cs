@@ -36,18 +36,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ProvisioningTemplate template = new ProvisioningTemplate();
                 template.Parameters.Add("test", "test");
 
-                TokenParser.Initialize(ctx.Web, template);
+                var parser = new TokenParser(ctx.Web, template);
 
-                var site1 = ("~siTE/test").ToParsedString();
-                var site2 = ("{site}/test").ToParsedString();
-                var sitecol1 = ("~siteCOLLECTION/test").ToParsedString();
-                var sitecol2 = ("{sitecollection}/test").ToParsedString();
-                var masterUrl1 = ("~masterpagecatalog/test").ToParsedString();
-                var masterUrl2 = ("{masterpagecatalog}/test").ToParsedString();
-                var themeUrl1 = ("~themecatalog/test").ToParsedString();
-                var themeUrl2 = ("{themecatalog}/test").ToParsedString();
-                var parameterTest1 = ("abc{parameter:TEST}/test").ToParsedString();
-                var parameterTest2 = ("abc{$test}/test").ToParsedString();
+                var site1 = parser.ParseString("~siTE/test");
+                var site2 = parser.ParseString("{site}/test");
+                var sitecol1 = parser.ParseString("~siteCOLLECTION/test");
+                var sitecol2 = parser.ParseString("{sitecollection}/test");
+                var masterUrl1 = parser.ParseString("~masterpagecatalog/test");
+                var masterUrl2 = parser.ParseString("{masterpagecatalog}/test");
+                var themeUrl1 = parser.ParseString("~themecatalog/test");
+                var themeUrl2 = parser.ParseString("{themecatalog}/test");
+                var parameterTest1 = parser.ParseString("abc{parameter:TEST}/test");
+                var parameterTest2 = parser.ParseString("abc{$test}/test");
 
                 Assert.IsTrue(site1 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
                 Assert.IsTrue(site2 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
