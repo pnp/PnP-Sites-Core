@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Property bag entries"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries);
 
@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var systemProp = systemPropertyBagEntriesExclusions.Any(k => propbagEntry.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
                     if (!systemProp || (systemProp && applyingInformation.OverwriteSystemPropertyBagValues))
                     {
-                        web.SetPropertyBagValue(propbagEntry.Key, propbagEntry.Value.ToParsedString());
+                        web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
                         if (propbagEntry.Indexed)
                         {
                             web.AddIndexedPropertyBagKey(propbagEntry.Key);
@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (!propExists)
                     {
-                        web.SetPropertyBagValue(propbagEntry.Key, propbagEntry.Value.ToParsedString());
+                        web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
                         if (propbagEntry.Indexed)
                         {
                             web.AddIndexedPropertyBagKey(propbagEntry.Key);
@@ -63,6 +63,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+
+            return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

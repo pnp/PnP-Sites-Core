@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             this.ReportProgress = false;
         }
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             web.SetPropertyBagValue("_PnP_ProvisioningTemplateId", template.Id != null ? template.Id : "");
             web.AddIndexedPropertyBagKey("_PnP_ProvisioningTemplateId");
@@ -38,6 +38,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             string jsonInfo = JsonConvert.SerializeObject(info);
             
             web.SetPropertyBagValue("_PnP_ProvisioningTemplateInfo", jsonInfo);
+
+            return parser;
         }
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

@@ -14,14 +14,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Site Security"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_SiteSecurity);
 
             // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
             if (web.IsSubSite())
             {
-                return;
+                return parser;
             }
 
             var siteSecurity = template.Security;
@@ -57,6 +57,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 user.Update();
                 web.Context.ExecuteQueryRetry();
             }
+
+            return parser;
         }
 
         private static void AddUserToGroup(Web web, Group group, List<User> members)

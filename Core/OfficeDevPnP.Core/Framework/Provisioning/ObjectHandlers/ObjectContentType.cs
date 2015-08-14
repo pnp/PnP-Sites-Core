@@ -17,14 +17,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Content Types"; }
         }
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ContentTypes);
 
             // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
             if (web.IsSubSite())
             {
-                return;
+                return parser;
             }
 
 
@@ -37,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                 if (existingCT == null)
                 {
-                    var newCT = CreateContentType(web, ct);
+                    var newCT = CreateContentType(web, ct, parser);
                     if (newCT != null)
                     {
                         existingCTs.Add(newCT);
@@ -50,7 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         existingCT.DeleteObject();
                         web.Context.ExecuteQueryRetry();
-                        var newCT = CreateContentType(web, ct);
+                        var newCT = CreateContentType(web, ct, parser);
                         if (newCT != null)
                         {
                             existingCTs.Add(newCT);
@@ -58,14 +58,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        UpdateContentType(web, existingCT, ct);
+                        UpdateContentType(web, existingCT, ct, parser);
                     }
                 }
             }
 
+            return parser;
         }
 
-        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType)
+        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser)
         {
             var isDirty = false;
             if (existingContentType.Hidden != templateContentType.Hidden)
@@ -83,24 +84,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Sealed = templateContentType.Sealed;
                 isDirty = true;
             }
-            if (templateContentType.Description != null && existingContentType.Description != templateContentType.Description.ToParsedString())
+            if (templateContentType.Description != null && existingContentType.Description != parser.ParseString(templateContentType.Description))
             {
-                existingContentType.Description = templateContentType.Description.ToParsedString();
+                existingContentType.Description = parser.ParseString(templateContentType.Description);
                 isDirty = true;
             }
-            if (templateContentType.DocumentTemplate != null && existingContentType.DocumentTemplate != templateContentType.DocumentTemplate.ToParsedString())
+            if (templateContentType.DocumentTemplate != null && existingContentType.DocumentTemplate != parser.ParseString(templateContentType.DocumentTemplate))
             {
-                existingContentType.DocumentTemplate = templateContentType.DocumentTemplate.ToParsedString();
+                existingContentType.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
                 isDirty = true;
             }
-            if (existingContentType.Name != templateContentType.Name.ToParsedString())
+            if (existingContentType.Name != parser.ParseString(templateContentType.Name))
             {
-                existingContentType.Name = templateContentType.Name.ToParsedString();
+                existingContentType.Name = parser.ParseString(templateContentType.Name);
                 isDirty = true;
             }
-            if (templateContentType.Group != null && existingContentType.Group != templateContentType.Group.ToParsedString())
+            if (templateContentType.Group != null && existingContentType.Group != parser.ParseString(templateContentType.Group))
             {
-                existingContentType.Group = templateContentType.Group.ToParsedString();
+                existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
             if (isDirty)
@@ -151,12 +152,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType)
+        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser)
         {
-            var name = templateContentType.Name.ToParsedString();
-            var description = templateContentType.Description.ToParsedString();
-            var id = templateContentType.Id.ToParsedString();
-            var group = templateContentType.Group.ToParsedString();
+            var name = parser.ParseString(templateContentType.Name);
+            var description = parser.ParseString(templateContentType.Description);
+            var id = parser.ParseString(templateContentType.Id);
+            var group = parser.ParseString(templateContentType.Group);
 
             var createdCT = web.CreateContentType(name, description, id, group);
             foreach (var fieldRef in templateContentType.FieldRefs)
@@ -168,9 +169,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;
-            if (!string.IsNullOrEmpty(templateContentType.DocumentTemplate.ToParsedString()))
+            if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
             {
-                createdCT.DocumentTemplate = templateContentType.DocumentTemplate.ToParsedString();
+                createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
             }
 
             web.Context.Load(createdCT);

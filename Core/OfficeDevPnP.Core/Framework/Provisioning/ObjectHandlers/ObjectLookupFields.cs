@@ -19,9 +19,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             this.ReportProgress = false;
         }
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            ProcessLookupFields(web, template);
+            parser = ProcessLookupFields(web, template, parser);
+
+            return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -29,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private static void ProcessLookupFields(Web web, ProvisioningTemplate template)
+        private TokenParser ProcessLookupFields(Web web, ProvisioningTemplate template, TokenParser parser)
         {
             var rootWeb = (web.Context as ClientContext).Site.RootWeb;
             rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
@@ -52,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Guid listGuid;
                     if (!Guid.TryParse(listIdentifier, out listGuid))
                     {
-                        var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier.ToParsedString());
+                        var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
                         var sourceList = rootWeb.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
                         if (sourceList != null)
                         {
@@ -85,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listIdentifier = fieldElement.Attribute("List").Value;
                     var webId = string.Empty;
 
-                    var listUrl = UrlUtility.Combine(web.ServerRelativeUrl, listInstance.Url.ToParsedString());
+                    var listUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listInstance.Url));
 
                     var createdList = web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(listUrl, StringComparison.OrdinalIgnoreCase));
                     if (createdList != null)
@@ -97,7 +99,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         Guid listGuid;
                         if (!Guid.TryParse(listIdentifier, out listGuid))
                         {
-                            var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier.ToParsedString());
+                            var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
                             var sourceList = web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
                             if (sourceList != null)
                             {
@@ -116,6 +118,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            return parser;
         }
 
         private static void ProcessField(Field field, Guid listGuid, string webId)

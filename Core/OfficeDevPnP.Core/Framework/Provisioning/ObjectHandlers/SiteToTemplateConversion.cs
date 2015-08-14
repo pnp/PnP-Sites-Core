@@ -116,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             objectHandlers.Add(new ObjectExtensibilityProviders());
             objectHandlers.Add(new ObjectPersistTemplateInfo());
 
-            TokenParser.Initialize(web, template);
+            var tokenParser = new TokenParser(web, template);
 
             int step = 1;
 
@@ -135,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         progressDelegate(handler.Name, step, count);
                         step++;
                     }
-                    handler.ProvisionObjects(web, template, provisioningInfo);
+                    tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
                 }
             }
 

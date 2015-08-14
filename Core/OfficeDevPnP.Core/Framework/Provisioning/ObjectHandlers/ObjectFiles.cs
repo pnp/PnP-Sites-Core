@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Files"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Files);
 
@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var file in template.Files)
             {
 
-                var folderName = file.Folder.ToParsedString();
+                var folderName = parser.ParseString(file.Folder);
 
                 if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                 {
@@ -78,7 +78,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (file.Properties != null && file.Properties.Any())
                     {
-                        Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => property.Value.ToParsedString());
+                        Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
                         targetFile.SetFileProperties(transformedProperties, false); // if needed, the file is already checked out
                     }
 
@@ -97,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 var wpEntity = new WebPartEntity();
                                 wpEntity.WebPartTitle = webpart.Title;
-                                wpEntity.WebPartXml = webpart.Contents.ToParsedString().Trim(new[] { '\n', ' ' });
+                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
                                 wpEntity.WebPartZone = webpart.Zone;
                                 wpEntity.WebPartIndex = (int) webpart.Order;
 
@@ -114,6 +114,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
             }
+
+            return parser;
         }
 
         private static bool CheckOutIfNeeded(Web web, File targetFile)

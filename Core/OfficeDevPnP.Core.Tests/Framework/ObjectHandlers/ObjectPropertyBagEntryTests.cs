@@ -48,8 +48,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-                TokenParser.Initialize(ctx.Web, template);
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                var parser = new TokenParser(ctx.Web, template);
+                parser = new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var value = ctx.Web.GetPropertyBagValueString(key, "default");
                 Assert.IsTrue(value == "Unit Test");
@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 template.PropertyBagEntries.Add(propbagEntry2);
 
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 value = ctx.Web.GetPropertyBagValueString(key, "default");
                 Assert.IsTrue(value == "Unit Test");
@@ -80,7 +80,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 template.PropertyBagEntries.Add(propbagEntry3);
 
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 value = ctx.Web.GetPropertyBagValueString(key, "default");
                 Assert.IsTrue(value == "Unit Test 3");
@@ -95,7 +95,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 template.PropertyBagEntries.Add(propbagEntry4);
 
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 value = ctx.Web.GetPropertyBagValueString(systemKey, "default");
                 Assert.IsTrue(value == "default");
@@ -110,7 +110,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 template.PropertyBagEntries.Add(propbagEntry5);
 
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation() { OverwriteSystemPropertyBagValues = true});
+                parser = new  ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation() { OverwriteSystemPropertyBagValues = true});
 
                 value = ctx.Web.GetPropertyBagValueString(systemKey, "default");
                 Assert.IsTrue(value == "Unit Test System Key 5");
@@ -125,7 +125,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 template.PropertyBagEntries.Add(propbagEntry6);
 
-                new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, new ProvisioningTemplateApplyingInformation() { OverwriteSystemPropertyBagValues = false });
+                parser = new ObjectPropertyBagEntry().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation() { OverwriteSystemPropertyBagValues = false });
 
                 value = ctx.Web.GetPropertyBagValueString(systemKey, "default");
                 Assert.IsFalse(value == "Unit Test System Key 6");

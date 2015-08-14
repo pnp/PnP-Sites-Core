@@ -18,14 +18,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Fields"; }
         }
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Fields);
 
             // if this is a sub site then we're not provisioning fields. Technically this can be done but it's not a recommended practice
             if (web.IsSubSite())
             {
-                return;
+                return parser;
             }
 
 
@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var field in fields)
             {
-                XElement templateFieldElement = XElement.Parse(field.SchemaXml.ToParsedString("~sitecollection", "~site"));
+                XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml,"~sitecollection", "~site"));
                 var fieldId = templateFieldElement.Attribute("ID").Value;
 
                 if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
@@ -50,6 +50,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     UpdateField(web, fieldId, templateFieldElement);
                 }
             }
+
+            return parser;
         }
 
         private void UpdateField(Web web, string fieldId, XElement templateFieldElement)

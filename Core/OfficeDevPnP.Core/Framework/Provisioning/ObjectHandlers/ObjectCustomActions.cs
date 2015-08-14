@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Custom Actions"; }
         }
 
-        public override void ProvisionObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_CustomActions);
 
@@ -27,17 +27,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!web.IsSubSite())
             {
                 var siteCustomActions = template.CustomActions.SiteCustomActions;
-                ProvisionCustomActionImplementation(site, siteCustomActions);
+                ProvisionCustomActionImplementation(site, siteCustomActions, parser);
             }
 
             var webCustomActions = template.CustomActions.WebCustomActions;
-            ProvisionCustomActionImplementation(web, webCustomActions);
+            ProvisionCustomActionImplementation(web, webCustomActions, parser);
 
             // Switch parser context back to it's original context
-            TokenParser.Rebase(web);
+            parser.Rebase(web);
+
+            return parser;
         }
 
-        private void ProvisionCustomActionImplementation(object parent, List<CustomAction> customActions)
+        private void ProvisionCustomActionImplementation(object parent, List<CustomAction> customActions, TokenParser parser)
         {
             Web web = null;
             Site site = null;
@@ -46,14 +48,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 site = parent as Site;
 
                 // Switch parser context;
-                TokenParser.Rebase(site.RootWeb);
+                parser.Rebase(site.RootWeb);
             }
             else
             {
                 web = parent as Web;
 
                 // Switch parser context
-                TokenParser.Rebase(web);
+                parser.Rebase(web);
             }
             foreach (var customAction in customActions)
             {
@@ -70,21 +72,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var customActionEntity = new CustomActionEntity()
                     {
-                        CommandUIExtension = customAction.CommandUIExtension != null ? customAction.CommandUIExtension.ToString().ToParsedString() : string.Empty,
+                        CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
                         Description = customAction.Description,
                         Group = customAction.Group,
-                        ImageUrl = customAction.ImageUrl.ToParsedString(),
+                        ImageUrl = parser.ParseString(customAction.ImageUrl),
                         Location = customAction.Location,
                         Name = customAction.Name,
                         RegistrationId = customAction.RegistrationId,
                         RegistrationType = customAction.RegistrationType,
                         Remove = customAction.Remove,
                         Rights = customAction.Rights,
-                        ScriptBlock = customAction.ScriptBlock.ToParsedString(),
-                        ScriptSrc = customAction.ScriptSrc.ToParsedString("~site","~sitecollection"),
+                        ScriptBlock = parser.ParseString(customAction.ScriptBlock),
+                        ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site","~sitecollection"),
                         Sequence = customAction.Sequence,
                         Title = customAction.Title,
-                        Url = customAction.Url.ToParsedString()
+                        Url = parser.ParseString(customAction.Url)
                     };
 
                     if (site != null)
@@ -113,9 +115,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         
                         if(customAction.CommandUIExtension != null)
                         {
-                            if (existingCustomAction.CommandUIExtension != customAction.CommandUIExtension.ToString().ToParsedString())
+                            if (existingCustomAction.CommandUIExtension != parser.ParseString(customAction.CommandUIExtension.ToString()))
                             {
-                                existingCustomAction.CommandUIExtension = customAction.CommandUIExtension.ToString().ToParsedString();
+                                existingCustomAction.CommandUIExtension = parser.ParseString(customAction.CommandUIExtension.ToString());
                                 isDirty = true;
                             }
                         }
@@ -130,9 +132,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.Group = customAction.Group;
                             isDirty = true;
                         }
-                        if (existingCustomAction.ImageUrl != customAction.ImageUrl.ToParsedString())
+                        if (existingCustomAction.ImageUrl != parser.ParseString(customAction.ImageUrl))
                         {
-                            existingCustomAction.ImageUrl = customAction.ImageUrl.ToParsedString();
+                            existingCustomAction.ImageUrl = parser.ParseString(customAction.ImageUrl);
                             isDirty = true;
                         }
                         if (existingCustomAction.Location != customAction.Location)
@@ -150,24 +152,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.RegistrationType = customAction.RegistrationType;
                             isDirty = true;
                         }
-                        if (existingCustomAction.ScriptBlock != customAction.ScriptBlock.ToParsedString())
+                        if (existingCustomAction.ScriptBlock != parser.ParseString(customAction.ScriptBlock))
                         {
-                            existingCustomAction.ScriptBlock = customAction.ScriptBlock.ToParsedString();
+                            existingCustomAction.ScriptBlock = parser.ParseString(customAction.ScriptBlock);
                             isDirty = true;
                         }
-                        if (existingCustomAction.ScriptSrc != customAction.ScriptSrc.ToParsedString("~site","~sitecollection"))
+                        if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc,"~site","~sitecollection"))
                         {
-                            existingCustomAction.ScriptSrc = customAction.ScriptSrc.ToParsedString("~site","~sitecollection");
+                            existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc,"~site","~sitecollection");
                             isDirty = true;
                         }
-                        if (existingCustomAction.Title != customAction.Title.ToParsedString())
+                        if (existingCustomAction.Title != parser.ParseString(customAction.Title))
                         {
-                            existingCustomAction.Title = customAction.Title.ToParsedString();
+                            existingCustomAction.Title = parser.ParseString(customAction.Title);
                             isDirty = true;
                         }
-                        if (existingCustomAction.Url != customAction.Url.ToParsedString())
+                        if (existingCustomAction.Url != parser.ParseString(customAction.Url))
                         {
-                            existingCustomAction.Url = customAction.Url.ToParsedString();
+                            existingCustomAction.Url = parser.ParseString(customAction.Url);
                             isDirty = true;
                         }
                         if (isDirty)
