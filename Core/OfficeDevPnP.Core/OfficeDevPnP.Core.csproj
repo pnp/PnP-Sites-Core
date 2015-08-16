@@ -483,6 +483,9 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-05.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

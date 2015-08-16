@@ -56,6 +56,10 @@
     <None Include="..\..\..\ProvisioningSchema-2015-05.md">
       <Link>ProvisioningSchema-2015-05.md</Link>
     </None>
+    <None Include="ProvisioningSchema-2015-08.md" />
+    <None Include="ProvisioningSchema-2015-08.xsd">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="XSD2MD.xslt">
