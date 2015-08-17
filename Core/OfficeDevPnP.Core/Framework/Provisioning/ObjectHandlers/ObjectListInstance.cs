@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -260,9 +261,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 SetAsDefaultView = viewDefault,
             };
 
-            var createdView = createdList.Views.Add(viewCI);
-            web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
-            web.Context.ExecuteQueryRetry();
+			var urlAttribute = viewElement.Attribute("Url");
+			var urlHasValue = urlAttribute != null && !string.IsNullOrEmpty(urlAttribute.Value);
+			if (urlHasValue)
+			{
+				//set Title to be equal to url (in order to generate desired url)
+				viewCI.Title = Path.GetFileNameWithoutExtension(urlAttribute.Value);
+			}
+
+			var createdView = createdList.Views.Add(viewCI);
+			web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
+			web.Context.ExecuteQueryRetry();
+
+			if (urlHasValue)
+			{
+				//restore original title 
+				createdView.Title = viewTitle;
+				createdView.Update();
+				web.Context.ExecuteQueryRetry();
+			}
 
             // Scope
             var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
