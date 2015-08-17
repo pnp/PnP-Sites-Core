@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var field in fields)
             {
-                XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml,"~sitecollection", "~site"));
+                XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                 var fieldId = templateFieldElement.Attribute("ID").Value;
 
                 if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
@@ -130,70 +130,74 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // if this is a sub site then we're not creating field entities.
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Fields))
             {
-                return template;
-            }
 
-            var existingFields = web.Fields;
-            web.Context.Load(web, w => w.ServerRelativeUrl);
-            web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString));
-            web.Context.ExecuteQueryRetry();
 
-            var taxTextFieldsToRemove = new List<Guid>();
-
-            foreach (var field in existingFields)
-            {
-                if (!BuiltInFieldId.Contains(field.Id))
+                // if this is a sub site then we're not creating field entities.
+                if (web.IsSubSite())
                 {
-                    var fieldXml = field.SchemaXml;
-                    XElement element = XElement.Parse(fieldXml);
+                    return template;
+                }
 
-                    // Check if the field contains a reference to a list. If by Guid, rewrite the value of the attribute to use web relative paths
-                    var listIdentifier = element.Attribute("List") != null ? element.Attribute("List").Value : null;
-                    if (!string.IsNullOrEmpty(listIdentifier))
+                var existingFields = web.Fields;
+                web.Context.Load(web, w => w.ServerRelativeUrl);
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString));
+                web.Context.ExecuteQueryRetry();
+
+                var taxTextFieldsToRemove = new List<Guid>();
+
+                foreach (var field in existingFields)
+                {
+                    if (!BuiltInFieldId.Contains(field.Id))
                     {
-                        var listGuid = Guid.Empty;
-                        if (Guid.TryParse(listIdentifier, out listGuid))
-                        {
-                            var list = web.Lists.GetById(listGuid);
-                            web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
-                            web.Context.ExecuteQueryRetry();
+                        var fieldXml = field.SchemaXml;
+                        XElement element = XElement.Parse(fieldXml);
 
-                            var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
-                            element.Attribute("List").SetValue(listUrl);
+                        // Check if the field contains a reference to a list. If by Guid, rewrite the value of the attribute to use web relative paths
+                        var listIdentifier = element.Attribute("List") != null ? element.Attribute("List").Value : null;
+                        if (!string.IsNullOrEmpty(listIdentifier))
+                        {
+                            var listGuid = Guid.Empty;
+                            if (Guid.TryParse(listIdentifier, out listGuid))
+                            {
+                                var list = web.Lists.GetById(listGuid);
+                                web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
+                                web.Context.ExecuteQueryRetry();
+
+                                var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
+                                element.Attribute("List").SetValue(listUrl);
+                                fieldXml = element.ToString();
+                            }
+                        }
+                        // Check if the field is of type TaxonomyField
+                        if (field.TypeAsString.StartsWith("TaxonomyField"))
+                        {
+                            var taxField = (TaxonomyField)field;
+                            web.Context.Load(taxField, tf => tf.TextField, tf => tf.Id);
+                            web.Context.ExecuteQueryRetry();
+                            taxTextFieldsToRemove.Add(taxField.TextField);
+                        }
+                        // Check if we have version attribute. Remove if exists 
+                        if (element.Attribute("Version") != null)
+                        {
+                            element.Attributes("Version").Remove();
                             fieldXml = element.ToString();
                         }
+                        template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
-                    // Check if the field is of type TaxonomyField
-                    if (field.TypeAsString.StartsWith("TaxonomyField"))
-                    {
-                        var taxField = (TaxonomyField)field;
-                        web.Context.Load(taxField, tf => tf.TextField, tf=>tf.Id);
-                        web.Context.ExecuteQueryRetry();
-                        taxTextFieldsToRemove.Add(taxField.TextField);
-                    }
-                    // Check if we have version attribute. Remove if exists 
-                    if (element.Attribute("Version") != null)
-                    {
-                        element.Attributes("Version").Remove();
-                        fieldXml = element.ToString();
-                    }
-                    template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
+                }
+                // Remove hidden taxonomy text fields
+                foreach (var textFieldId in taxTextFieldsToRemove)
+                {
+                    template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
+                }
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
-            // Remove hidden taxonomy text fields
-            foreach (var textFieldId in taxTextFieldsToRemove)
-            {
-                template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
-            }
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
-
             return template;
         }
 

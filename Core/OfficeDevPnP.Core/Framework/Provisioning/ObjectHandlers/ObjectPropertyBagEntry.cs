@@ -18,13 +18,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries);
 
-            var systemPropertyBagEntriesExclusions = new List<string>(new [] 
-            { 
-                "_", 
-                "vti_", 
-                "dlc_", 
+            var systemPropertyBagEntriesExclusions = new List<string>(new[]
+            {
+                "_",
+                "vti_",
+                "dlc_",
                 "ecm_",
-                "profileschemaversion", 
+                "profileschemaversion",
                 "DesignPreview"
             });
 
@@ -69,32 +69,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
-
-            var entries = new List<PropertyBagEntry>();
-
-            var indexedProperties = web.GetIndexedPropertyBagKeys().ToList();
-            foreach (var propbagEntry in web.AllProperties.FieldValues)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries))
             {
-                var indexed = indexedProperties.Contains(propbagEntry.Key);
-                entries.Add(new PropertyBagEntry() { Key = propbagEntry.Key, Value = propbagEntry.Value.ToString(), Indexed = indexed });
+                web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
+                web.Context.ExecuteQueryRetry();
+
+                var entries = new List<PropertyBagEntry>();
+
+                var indexedProperties = web.GetIndexedPropertyBagKeys().ToList();
+                foreach (var propbagEntry in web.AllProperties.FieldValues)
+                {
+                    var indexed = indexedProperties.Contains(propbagEntry.Key);
+                    entries.Add(new PropertyBagEntry() { Key = propbagEntry.Key, Value = propbagEntry.Value.ToString(), Indexed = indexed });
+                }
+
+                template.PropertyBagEntries.Clear();
+                template.PropertyBagEntries.AddRange(entries);
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo);
+                }
+
+                foreach (PropertyBagEntry propbagEntry in template.PropertyBagEntries)
+                {
+                    propbagEntry.Value = Tokenize(propbagEntry.Value, web.ServerRelativeUrl);
+                }
             }
-
-            template.PropertyBagEntries.Clear();
-            template.PropertyBagEntries.AddRange(entries);
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo);
-            }
-
-            foreach (PropertyBagEntry propbagEntry in template.PropertyBagEntries)
-            {
-                propbagEntry.Value = Tokenize(propbagEntry.Value, web.ServerRelativeUrl);
-            }
-
             return template;
         }
 
@@ -114,13 +116,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Scan for "system" properties that should be removed as well. Below list contains
             // prefixes of properties that will be dropped
-            List<string> systemPropertyBagEntriesExclusions = new List<string>(new string[] 
-            { 
-                "_", 
-                "vti_", 
-                "dlc_", 
+            List<string> systemPropertyBagEntriesExclusions = new List<string>(new string[]
+            {
+                "_",
+                "vti_",
+                "dlc_",
                 "ecm_",
-                "profileschemaversion", 
+                "profileschemaversion",
                 "DesignPreview"
             });
 

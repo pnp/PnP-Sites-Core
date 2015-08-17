@@ -95,41 +95,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            var context = web.Context as ClientContext;
-            bool isSubSite = web.IsSubSite();
-            var webFeatures = web.Features;
-            var siteFeatures = context.Site.Features;
-
-            context.Load(webFeatures, fs => fs.Include(f => f.DefinitionId));
-            if (!isSubSite)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Features))
             {
-                context.Load(siteFeatures, fs => fs.Include(f => f.DefinitionId));
-            }
-            context.ExecuteQueryRetry();
+                var context = web.Context as ClientContext;
+                bool isSubSite = web.IsSubSite();
+                var webFeatures = web.Features;
+                var siteFeatures = context.Site.Features;
 
-            var features = new Features();
-            foreach (var feature in webFeatures)
-            {
-                features.WebFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
-            }
-
-            // if this is a sub site then we're not creating  site collection scoped feature entities
-            if (!isSubSite)
-            {
-                foreach (var feature in siteFeatures)
+                context.Load(webFeatures, fs => fs.Include(f => f.DefinitionId));
+                if (!isSubSite)
                 {
-                    features.SiteFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                    context.Load(siteFeatures, fs => fs.Include(f => f.DefinitionId));
+                }
+                context.ExecuteQueryRetry();
+
+                var features = new Features();
+                foreach (var feature in webFeatures)
+                {
+                    features.WebFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                }
+
+                // if this is a sub site then we're not creating  site collection scoped feature entities
+                if (!isSubSite)
+                {
+                    foreach (var feature in siteFeatures)
+                    {
+                        features.SiteFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                    }
+                }
+
+                template.Features = features;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
                 }
             }
-
-            template.Features = features;
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
-            }
-
             return template;
         }
 

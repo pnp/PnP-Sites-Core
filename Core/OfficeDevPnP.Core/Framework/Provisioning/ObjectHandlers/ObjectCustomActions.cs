@@ -83,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         Remove = customAction.Remove,
                         Rights = customAction.Rights,
                         ScriptBlock = parser.ParseString(customAction.ScriptBlock),
-                        ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site","~sitecollection"),
+                        ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"),
                         Sequence = customAction.Sequence,
                         Title = customAction.Title,
                         Url = parser.ParseString(customAction.Url)
@@ -112,8 +112,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (existingCustomAction != null)
                     {
                         var isDirty = false;
-                        
-                        if(customAction.CommandUIExtension != null)
+
+                        if (customAction.CommandUIExtension != null)
                         {
                             if (existingCustomAction.CommandUIExtension != parser.ParseString(customAction.CommandUIExtension.ToString()))
                             {
@@ -121,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 isDirty = true;
                             }
                         }
-                       
+
                         if (existingCustomAction.Description != customAction.Description)
                         {
                             existingCustomAction.Description = customAction.Description;
@@ -157,9 +157,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.ScriptBlock = parser.ParseString(customAction.ScriptBlock);
                             isDirty = true;
                         }
-                        if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc,"~site","~sitecollection"))
+                        if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"))
                         {
-                            existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc,"~site","~sitecollection");
+                            existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection");
                             isDirty = true;
                         }
                         if (existingCustomAction.Title != parser.ParseString(customAction.Title))
@@ -184,34 +184,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            var context = web.Context as ClientContext;
-            bool isSubSite = web.IsSubSite();
-            var webCustomActions = web.GetCustomActions();
-            var siteCustomActions = context.Site.GetCustomActions();
-
-            var customActions = new CustomActions();
-            foreach (var customAction in webCustomActions)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_CustomActions))
             {
-                customActions.WebCustomActions.Add(CopyUserCustomAction(customAction));
-            }
+                var context = web.Context as ClientContext;
+                bool isSubSite = web.IsSubSite();
+                var webCustomActions = web.GetCustomActions();
+                var siteCustomActions = context.Site.GetCustomActions();
 
-            // if this is a sub site then we're not creating entities for site collection scoped custom actions
-            if (!isSubSite)
-            {
-                foreach (var customAction in siteCustomActions)
+                var customActions = new CustomActions();
+                foreach (var customAction in webCustomActions)
                 {
-                    customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction));
+                    customActions.WebCustomActions.Add(CopyUserCustomAction(customAction));
+                }
+
+                // if this is a sub site then we're not creating entities for site collection scoped custom actions
+                if (!isSubSite)
+                {
+                    foreach (var customAction in siteCustomActions)
+                    {
+                        customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction));
+                    }
+                }
+
+                template.CustomActions = customActions;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
                 }
             }
-
-            template.CustomActions = customActions;
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
-            }
-
             return template;
         }
 

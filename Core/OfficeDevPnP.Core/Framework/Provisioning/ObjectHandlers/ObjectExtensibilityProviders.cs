@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders);
 
             var _ctx = web.Context as ClientContext;
-            foreach(var _provider in template.Providers)
+            foreach (var _provider in template.Providers)
             {
                 if (_provider.Enabled)
                 {
@@ -46,12 +46,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders))
             {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
+                }
             }
-
             return template;
         }
 

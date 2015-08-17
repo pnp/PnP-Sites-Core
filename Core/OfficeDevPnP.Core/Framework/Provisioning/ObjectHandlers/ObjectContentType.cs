@@ -19,37 +19,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ContentTypes);
-
-            // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
-                return parser;
-            }
-
-
-            web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks));
-            web.Context.ExecuteQueryRetry();
-            var existingCTs = web.ContentTypes.ToList();
-
-            foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
-            {
-                var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
-                if (existingCT == null)
+                // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
+                if (web.IsSubSite())
                 {
-                    var newCT = CreateContentType(web, ct, parser);
-                    if (newCT != null)
-                    {
-                        existingCTs.Add(newCT);
-                    }
-
+                    return parser;
                 }
-                else
+
+                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks));
+                web.Context.ExecuteQueryRetry();
+                var existingCTs = web.ContentTypes.ToList();
+
+                foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
-                    if (ct.Overwrite)
+                    var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
+                    if (existingCT == null)
                     {
-                        existingCT.DeleteObject();
-                        web.Context.ExecuteQueryRetry();
+                        scope.LogInfo("Creating new Content Type: {0} - {1}", ct.Id, ct.Name);
                         var newCT = CreateContentType(web, ct, parser);
                         if (newCT != null)
                         {
@@ -58,11 +45,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        UpdateContentType(web, existingCT, ct, parser);
+                        if (ct.Overwrite)
+                        {
+                            scope.LogInfo("Recreating existing Content Type: {0} - {1}", ct.Id, ct.Name);
+
+                            existingCT.DeleteObject();
+                            web.Context.ExecuteQueryRetry();
+                            var newCT = CreateContentType(web, ct, parser);
+                            if (newCT != null)
+                            {
+                                existingCTs.Add(newCT);
+                            }
+                        }
+                        else
+                        {
+                            scope.LogInfo("Updating existing Content Type: {0} - {1}", ct.Id, ct.Name);
+                            UpdateContentType(web, existingCT, ct, parser);
+                        }
                     }
                 }
             }
-
             return parser;
         }
 
@@ -114,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             List<Guid> sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
-            
+
             if (fieldsNotPresentInTarget.Any())
             {
                 foreach (var fieldId in fieldsNotPresentInTarget)
@@ -132,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                 if (fieldRef != null)
                 {
-                 
+
                     if (fieldLink.Required != fieldRef.Required)
                     {
                         fieldLink.Required = fieldRef.Required;
@@ -182,24 +184,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // if this is a sub site then we're not creating content type entities. 
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ContentTypes))
             {
-                return template;
+                // if this is a sub site then we're not creating content type entities. 
+                if (web.IsSubSite())
+                {
+                    return template;
+                }
+
+                template.ContentTypes.AddRange(GetEntities(web, scope));
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate, scope);
+                }
             }
-
-            template.ContentTypes.AddRange(GetEntities(web));
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
-
             return template;
         }
 
-        private IEnumerable<ContentType> GetEntities(Web web)
+        private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope)
         {
             var cts = web.ContentTypes;
             web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks));
@@ -234,7 +238,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ctsToReturn;
         }
 
-        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
+        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, PnPMonitoredScope scope)
         {
             foreach (var ct in baseTemplate.ContentTypes)
             {
@@ -242,6 +246,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (index > -1)
                 {
                     template.ContentTypes.RemoveAt(index);
+                } else
+                {
+                    scope.LogInfo("Adding content type to template: {0} - {1}", ct.Id, ct.Name);
                 }
 
             }

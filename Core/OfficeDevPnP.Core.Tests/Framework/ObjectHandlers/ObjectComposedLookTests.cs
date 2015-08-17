@@ -19,14 +19,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanCreateComposedLooks()
         {
-            using (var ctx = TestCommon.CreateClientContext())
+            using (var scope = new Core.Utilities.PnPMonitoredScope("ComposedLookTests"))
             {
-                // Load the base template which will be used for the comparison work
-                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                using (var ctx = TestCommon.CreateClientContext())
+                {
+                    // Load the base template which will be used for the comparison work
+                    var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
-                var template = new ProvisioningTemplate();
-                template = new ObjectComposedLook().ExtractObjects(ctx.Web, template, creationInfo);
-                Assert.IsInstanceOfType(template.ComposedLook, typeof(Core.Framework.Provisioning.Model.ComposedLook));
+                    var template = new ProvisioningTemplate();
+                    template = new ObjectComposedLook().ExtractObjects(ctx.Web, template, creationInfo);
+                    Assert.IsInstanceOfType(template.ComposedLook, typeof(Core.Framework.Provisioning.Model.ComposedLook));
+                }
             }
         }
     }

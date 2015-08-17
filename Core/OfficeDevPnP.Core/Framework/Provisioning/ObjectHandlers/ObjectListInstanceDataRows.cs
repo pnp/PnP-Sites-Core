@@ -150,6 +150,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows))
+            { }
             return template;
         }
 

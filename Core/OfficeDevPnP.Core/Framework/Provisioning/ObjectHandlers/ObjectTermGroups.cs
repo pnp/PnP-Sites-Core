@@ -296,72 +296,75 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            if (creationInfo.IncludeSiteCollectionTermGroup || creationInfo.IncludeAllTermGroups)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_TermGroups))
             {
-                // Find the site collection termgroup, if any
-                TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
-                var termStore = session.GetDefaultSiteCollectionTermStore();
-                web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
-                web.Context.ExecuteQueryRetry();
-
-                List<TermGroup> termGroups = new List<TermGroup>();
-                if (creationInfo.IncludeAllTermGroups)
+                if (creationInfo.IncludeSiteCollectionTermGroup || creationInfo.IncludeAllTermGroups)
                 {
-                    web.Context.Load(termStore.Groups, groups => groups.Include(tg => tg.Name,
-                        tg => tg.Id,
-                        tg => tg.Description,
-                        tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.CustomSortOrder)));
+                    // Find the site collection termgroup, if any
+                    TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+                    var termStore = session.GetDefaultSiteCollectionTermStore();
+                    web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
                     web.Context.ExecuteQueryRetry();
-                    termGroups = termStore.Groups.ToList();
-                }
-                else
-                {
-                    var propertyBagKey = string.Format("SiteCollectionGroupId{0}", termStore.Id);
 
-                    var siteCollectionTermGroupId = web.GetPropertyBagValueString(propertyBagKey, "");
-
-                    Guid termGroupGuid = Guid.Empty;
-                    if (Guid.TryParse(siteCollectionTermGroupId, out termGroupGuid))
+                    List<TermGroup> termGroups = new List<TermGroup>();
+                    if (creationInfo.IncludeAllTermGroups)
                     {
-                        var termGroup = termStore.GetGroup(termGroupGuid);
-                        web.Context.Load(termGroup,
-                            tg => tg.Name,
+                        web.Context.Load(termStore.Groups, groups => groups.Include(tg => tg.Name,
                             tg => tg.Id,
                             tg => tg.Description,
-                            tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.CustomSortOrder));
-
+                            tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.CustomSortOrder)));
                         web.Context.ExecuteQueryRetry();
-
-                        termGroups = new List<TermGroup>() { termGroup };
+                        termGroups = termStore.Groups.ToList();
                     }
-                }
-
-                foreach (var termGroup in termGroups)
-                {
-                    var modelTermGroup = new Model.TermGroup
+                    else
                     {
-                        Name = termGroup.Name,
-                        Id = termGroup.Id,
-                        Description = termGroup.Description
-                    };
+                        var propertyBagKey = string.Format("SiteCollectionGroupId{0}", termStore.Id);
 
-                    foreach (var termSet in termGroup.TermSets)
-                    {
-                        var modelTermSet = new Model.TermSet();
-                        modelTermSet.Name = termSet.Name;
-                        modelTermSet.Id = termSet.Id;
-                        modelTermSet.IsAvailableForTagging = termSet.IsAvailableForTagging;
-                        modelTermSet.IsOpenForTermCreation = termSet.IsOpenForTermCreation;
-                        modelTermSet.Description = termSet.Description;
-                        modelTermSet.Terms.AddRange(GetTerms<TermSet>(web.Context, termSet, termStore.DefaultLanguage));
-                        foreach (var property in termSet.CustomProperties)
+                        var siteCollectionTermGroupId = web.GetPropertyBagValueString(propertyBagKey, "");
+
+                        Guid termGroupGuid = Guid.Empty;
+                        if (Guid.TryParse(siteCollectionTermGroupId, out termGroupGuid))
                         {
-                            modelTermSet.Properties.Add(property.Key, property.Value);
+                            var termGroup = termStore.GetGroup(termGroupGuid);
+                            web.Context.Load(termGroup,
+                                tg => tg.Name,
+                                tg => tg.Id,
+                                tg => tg.Description,
+                                tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.CustomSortOrder));
+
+                            web.Context.ExecuteQueryRetry();
+
+                            termGroups = new List<TermGroup>() { termGroup };
                         }
-                        modelTermGroup.TermSets.Add(modelTermSet);
                     }
 
-                    template.TermGroups.Add(modelTermGroup);
+                    foreach (var termGroup in termGroups)
+                    {
+                        var modelTermGroup = new Model.TermGroup
+                        {
+                            Name = termGroup.Name,
+                            Id = termGroup.Id,
+                            Description = termGroup.Description
+                        };
+
+                        foreach (var termSet in termGroup.TermSets)
+                        {
+                            var modelTermSet = new Model.TermSet();
+                            modelTermSet.Name = termSet.Name;
+                            modelTermSet.Id = termSet.Id;
+                            modelTermSet.IsAvailableForTagging = termSet.IsAvailableForTagging;
+                            modelTermSet.IsOpenForTermCreation = termSet.IsOpenForTermCreation;
+                            modelTermSet.Description = termSet.Description;
+                            modelTermSet.Terms.AddRange(GetTerms<TermSet>(web.Context, termSet, termStore.DefaultLanguage));
+                            foreach (var property in termSet.CustomProperties)
+                            {
+                                modelTermSet.Properties.Add(property.Key, property.Value);
+                            }
+                            modelTermGroup.TermSets.Add(modelTermSet);
+                        }
+
+                        template.TermGroups.Add(modelTermGroup);
+                    }
                 }
             }
             return template;

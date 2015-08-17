@@ -75,84 +75,85 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-
-            // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
             {
-                return template;
-            }
-
-            var ownerGroup = web.AssociatedOwnerGroup;
-            var memberGroup = web.AssociatedMemberGroup;
-            var visitorGroup = web.AssociatedVisitorGroup;
-            web.Context.ExecuteQueryRetry();
-
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(ownerGroup, o => o.Users);
-            }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(memberGroup, o => o.Users);
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(visitorGroup, o => o.Users);
-
-            }
-            web.Context.ExecuteQueryRetry();
-
-            var owners = new List<User>();
-            var members = new List<User>();
-            var visitors = new List<User>();
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in ownerGroup.Users)
+                // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
+                if (web.IsSubSite())
                 {
-                    owners.Add(new User() { Name = member.LoginName });
+                    return template;
+                }
+
+                var ownerGroup = web.AssociatedOwnerGroup;
+                var memberGroup = web.AssociatedMemberGroup;
+                var visitorGroup = web.AssociatedVisitorGroup;
+                web.Context.ExecuteQueryRetry();
+
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(ownerGroup, o => o.Users);
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(memberGroup, o => o.Users);
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(visitorGroup, o => o.Users);
+
+                }
+                web.Context.ExecuteQueryRetry();
+
+                var owners = new List<User>();
+                var members = new List<User>();
+                var visitors = new List<User>();
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in ownerGroup.Users)
+                    {
+                        owners.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in memberGroup.Users)
+                    {
+                        members.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in visitorGroup.Users)
+                    {
+                        visitors.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                var siteSecurity = new SiteSecurity();
+                siteSecurity.AdditionalOwners.AddRange(owners);
+                siteSecurity.AdditionalMembers.AddRange(members);
+                siteSecurity.AdditionalVisitors.AddRange(visitors);
+
+                var query = from user in web.SiteUsers
+                            where user.IsSiteAdmin
+                            select user;
+                var allUsers = web.Context.LoadQuery(query);
+
+                web.Context.ExecuteQueryRetry();
+
+                var admins = new List<User>();
+                foreach (var member in allUsers)
+                {
+                    admins.Add(new User() { Name = member.LoginName });
+                }
+                siteSecurity.AdditionalAdministrators.AddRange(admins);
+
+                template.Security = siteSecurity;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in memberGroup.Users)
-                {
-                    members.Add(new User() { Name = member.LoginName });
-                }
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in visitorGroup.Users)
-                {
-                    visitors.Add(new User() { Name = member.LoginName });
-                }
-            }
-            var siteSecurity = new SiteSecurity();
-            siteSecurity.AdditionalOwners.AddRange(owners);
-            siteSecurity.AdditionalMembers.AddRange(members);
-            siteSecurity.AdditionalVisitors.AddRange(visitors);
-
-            var query = from user in web.SiteUsers
-                        where user.IsSiteAdmin
-                        select user;
-            var allUsers = web.Context.LoadQuery(query);
-
-            web.Context.ExecuteQueryRetry();
-
-            var admins = new List<User>();
-            foreach (var member in allUsers)
-            {
-                admins.Add(new User() { Name = member.LoginName });
-            }
-            siteSecurity.AdditionalAdministrators.AddRange(admins);
-
-            template.Security = siteSecurity;
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
-
             return template;
         }
 
@@ -205,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any();    
+                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any();
             }
             return _willProvision.Value;
 

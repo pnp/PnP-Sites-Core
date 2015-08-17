@@ -22,60 +22,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns></returns>
         internal ProvisioningTemplate GetRemoteTemplate(Web web, ProvisioningTemplateCreationInformation creationInfo)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_StartExtraction);
-            
-            ProvisioningProgressDelegate progressDelegate = null;
-            ProvisioningMessagesDelegate messagesDelegate = null;
-            if (creationInfo != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_StartExtraction))
             {
-                progressDelegate = creationInfo.ProgressDelegate;
-                messagesDelegate = creationInfo.MessagesDelegate;
-            }
-
-            // Create empty object
-            ProvisioningTemplate template = new ProvisioningTemplate();
-
-            // Hookup connector, is handy when the generated template object is used to apply to another site
-            template.Connector = creationInfo.FileConnector;
-
-            List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
-
-            objectHandlers.Add(new ObjectSitePolicy());
-            objectHandlers.Add(new ObjectSiteSecurity());
-            objectHandlers.Add(new ObjectTermGroups());
-            objectHandlers.Add(new ObjectField());
-            objectHandlers.Add(new ObjectContentType());
-            objectHandlers.Add(new ObjectListInstance());
-            objectHandlers.Add(new ObjectCustomActions());
-            objectHandlers.Add(new ObjectFeatures());
-            objectHandlers.Add(new ObjectComposedLook());
-            objectHandlers.Add(new ObjectFiles());
-            objectHandlers.Add(new ObjectPages());
-            objectHandlers.Add(new ObjectPropertyBagEntry());
-            objectHandlers.Add(new ObjectRetrieveTemplateInfo());
-
-            int step = 1;
-
-            var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(web,template,creationInfo));
-
-            foreach (var handler in objectHandlers)
-            {
-                if (handler.WillExtract(web, template, creationInfo))
+                ProvisioningProgressDelegate progressDelegate = null;
+                ProvisioningMessagesDelegate messagesDelegate = null;
+                if (creationInfo != null)
                 {
-                    if (messagesDelegate != null)
-                    {
-                        handler.MessagesDelegate = messagesDelegate;
-                    }
-                    if (handler.ReportProgress && progressDelegate != null)
-                    {
-                        progressDelegate(handler.Name, step, count);
-                        step++;
-                    }
-                    template = handler.ExtractObjects(web, template, creationInfo);
+                    progressDelegate = creationInfo.ProgressDelegate;
+                    messagesDelegate = creationInfo.MessagesDelegate;
                 }
+
+                // Create empty object
+                ProvisioningTemplate template = new ProvisioningTemplate();
+
+                // Hookup connector, is handy when the generated template object is used to apply to another site
+                template.Connector = creationInfo.FileConnector;
+
+                List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
+
+                objectHandlers.Add(new ObjectSitePolicy());
+                objectHandlers.Add(new ObjectSiteSecurity());
+                objectHandlers.Add(new ObjectTermGroups());
+                objectHandlers.Add(new ObjectField());
+                objectHandlers.Add(new ObjectContentType());
+                objectHandlers.Add(new ObjectListInstance());
+                objectHandlers.Add(new ObjectCustomActions());
+                objectHandlers.Add(new ObjectFeatures());
+                objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectFiles());
+                objectHandlers.Add(new ObjectPages());
+                objectHandlers.Add(new ObjectPropertyBagEntry());
+                objectHandlers.Add(new ObjectRetrieveTemplateInfo());
+
+                int step = 1;
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(web, template, creationInfo));
+
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillExtract(web, template, creationInfo))
+                    {
+                        if (messagesDelegate != null)
+                        {
+                            handler.MessagesDelegate = messagesDelegate;
+                        }
+                        if (handler.ReportProgress && progressDelegate != null)
+                        {
+                            progressDelegate(handler.Name, step, count);
+                            step++;
+                        }
+                        template = handler.ExtractObjects(web, template, creationInfo);
+                    }
+                }
+                return template;
             }
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_FinishExtraction);
-            return template;
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 progressDelegate = provisioningInfo.ProgressDelegate;
                 messagesDelegate = provisioningInfo.MessageDelegate;
             }
-            
+
 
             Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_StartProvisioning);
 

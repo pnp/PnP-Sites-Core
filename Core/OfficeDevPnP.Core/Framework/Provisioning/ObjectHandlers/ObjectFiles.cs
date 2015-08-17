@@ -99,13 +99,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 wpEntity.WebPartTitle = webpart.Title;
                                 wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
                                 wpEntity.WebPartZone = webpart.Zone;
-                                wpEntity.WebPartIndex = (int) webpart.Order;
+                                wpEntity.WebPartIndex = (int)webpart.Order;
 
                                 web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
                             }
                         }
                     }
-                  
+
                     if (checkedOut)
                     {
                         targetFile.CheckIn("", CheckinType.MajorCheckIn);
@@ -146,14 +146,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // Impossible to return all files in the site currently
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Files))
             {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
+                // Impossible to return all files in the site currently
 
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
+                }
+            }
             return template;
         }
 

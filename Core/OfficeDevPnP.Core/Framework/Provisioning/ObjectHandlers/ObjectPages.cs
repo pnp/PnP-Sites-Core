@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             WebPartEntity wpEntity = new WebPartEntity();
                             wpEntity.WebPartTitle = webpart.Title;
-                            wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] {'\n', ' '});
+                            wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
                             web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
                         }
                     }
@@ -105,14 +105,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // Impossible to return all files in the site currently
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
             {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
+                // Impossible to return all files in the site currently
 
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
+                }
+            }
             return template;
         }
 
