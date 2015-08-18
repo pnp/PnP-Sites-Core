@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.ObjectHandlers;
@@ -16,59 +17,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_SiteSecurity);
-
-            // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
             {
-                return parser;
-            }
-
-            var siteSecurity = template.Security;
-
-            var ownerGroup = web.AssociatedOwnerGroup;
-            var memberGroup = web.AssociatedMemberGroup;
-            var visitorGroup = web.AssociatedVisitorGroup;
 
 
-            web.Context.Load(ownerGroup, o => o.Users);
-            web.Context.Load(memberGroup, o => o.Users);
-            web.Context.Load(visitorGroup, o => o.Users);
+                // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
+                if (web.IsSubSite())
+                {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
+                    return parser;
+                }
 
-            web.Context.ExecuteQueryRetry();
+                var siteSecurity = template.Security;
 
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners);
-            }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers);
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors);
-            }
+                var ownerGroup = web.AssociatedOwnerGroup;
+                var memberGroup = web.AssociatedMemberGroup;
+                var visitorGroup = web.AssociatedVisitorGroup;
 
-            foreach (var admin in siteSecurity.AdditionalAdministrators)
-            {
-                var user = web.EnsureUser(admin.Name);
-                user.IsSiteAdmin = true;
-                user.Update();
+
+                web.Context.Load(ownerGroup, o => o.Users);
+                web.Context.Load(memberGroup, o => o.Users);
+                web.Context.Load(visitorGroup, o => o.Users);
+
                 web.Context.ExecuteQueryRetry();
-            }
 
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners,scope);
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers,scope);
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors,scope);
+                }
+
+                foreach (var admin in siteSecurity.AdditionalAdministrators)
+                {
+                    var user = web.EnsureUser(admin.Name);
+                    user.IsSiteAdmin = true;
+                    user.Update();
+                    web.Context.ExecuteQueryRetry();
+                }
+            }
             return parser;
         }
 
-        private static void AddUserToGroup(Web web, Group group, List<User> members)
+        private static void AddUserToGroup(Web web, Group group, List<User> members, PnPMonitoredScope scope)
         {
-            foreach (var user in members)
+            try
             {
-                var existingUser = web.EnsureUser(user.Name);
-                group.Users.AddUser(existingUser);
+                foreach (var user in members)
+                {
+                    var existingUser = web.EnsureUser(user.Name);
+                    group.Users.AddUser(existingUser);
+                }
+                web.Context.ExecuteQueryRetry();
             }
-            web.Context.ExecuteQueryRetry();
+            catch (Exception ex)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, group.Title, ex.Message, ex.StackTrace);
+                throw;
+            }
 
         }
 

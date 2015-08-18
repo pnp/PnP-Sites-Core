@@ -23,24 +23,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders);
-
-            var _ctx = web.Context as ClientContext;
-            foreach (var _provider in template.Providers)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders))
             {
-                if (_provider.Enabled)
+                var context = web.Context as ClientContext;
+                foreach (var provider in template.Providers)
                 {
-                    try
+                    if (provider.Enabled)
                     {
-                        _extManager.ExecuteExtensibilityCallOut(_ctx, _provider, template);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log.Error(Constants.LOGGING_SOURCE, ex.Message);
+                        try
+                        {
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_, provider.Assembly);
+                            _extManager.ExecuteExtensibilityCallOut(context, provider, template);
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_, ex.Message, ex.StackTrace);
+                        }
                     }
                 }
             }
-
             return parser;
         }
 

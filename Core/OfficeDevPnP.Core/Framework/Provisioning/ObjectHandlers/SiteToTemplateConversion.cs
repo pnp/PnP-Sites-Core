@@ -12,6 +12,16 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+
+
+    internal static class PnPMonitoredScopeExtensions
+    {
+        public static void LogPropertyUpdate(this PnPMonitoredScope scope, string propertyName)
+        {
+            scope.LogInfo(CoreResources.PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_, propertyName);
+        }
+    }
+
     internal class SiteToTemplateConversion
     {
         /// <summary>
@@ -22,14 +32,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns></returns>
         internal ProvisioningTemplate GetRemoteTemplate(Web web, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_StartExtraction))
+
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Extraction))
             {
+
                 ProvisioningProgressDelegate progressDelegate = null;
                 ProvisioningMessagesDelegate messagesDelegate = null;
                 if (creationInfo != null)
                 {
+                    if (creationInfo.BaseTemplate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_Base_template_available___0_, creationInfo.BaseTemplate.Id);
+                    }
                     progressDelegate = creationInfo.ProgressDelegate;
+                    if (creationInfo.ProgressDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
+                    }
                     messagesDelegate = creationInfo.MessagesDelegate;
+                    if (creationInfo.MessagesDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
+                    }
+                    if (creationInfo.IncludeAllTermGroups)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true);
+                    }
+                    if (creationInfo.IncludeSiteCollectionTermGroup)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true);
+                    }
+                    if (creationInfo.PersistComposedLookFiles)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true);
+                    }
                 }
 
                 // Create empty object
@@ -86,60 +122,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="provisioningInfo"></param>
         internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo)
         {
-            ProvisioningProgressDelegate progressDelegate = null;
-            ProvisioningMessagesDelegate messagesDelegate = null;
-            if (provisioningInfo != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
-                progressDelegate = provisioningInfo.ProgressDelegate;
-                messagesDelegate = provisioningInfo.MessageDelegate;
-            }
-
-
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_StartProvisioning);
-
-            List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
-
-            objectHandlers.Add(new ObjectSitePolicy());
-            objectHandlers.Add(new ObjectSiteSecurity());
-            objectHandlers.Add(new ObjectFeatures());
-            objectHandlers.Add(new ObjectTermGroups());
-            objectHandlers.Add(new ObjectField());
-            objectHandlers.Add(new ObjectContentType());
-            objectHandlers.Add(new ObjectListInstance());
-            objectHandlers.Add(new ObjectLookupFields());
-            objectHandlers.Add(new ObjectListInstanceDataRows());
-            objectHandlers.Add(new ObjectFiles());
-            objectHandlers.Add(new ObjectPages());
-            objectHandlers.Add(new ObjectCustomActions());
-            objectHandlers.Add(new ObjectComposedLook());
-            objectHandlers.Add(new ObjectPropertyBagEntry());
-            objectHandlers.Add(new ObjectExtensibilityProviders());
-            objectHandlers.Add(new ObjectPersistTemplateInfo());
-
-            var tokenParser = new TokenParser(web, template);
-
-            int step = 1;
-
-            var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template));
-
-            foreach (var handler in objectHandlers)
-            {
-                if (handler.WillProvision(web, template))
+                ProvisioningProgressDelegate progressDelegate = null;
+                ProvisioningMessagesDelegate messagesDelegate = null;
+                if (provisioningInfo != null)
                 {
-                    if (messagesDelegate != null)
+                    if (provisioningInfo.OverwriteSystemPropertyBagValues == true)
                     {
-                        handler.MessagesDelegate = messagesDelegate;
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true);
                     }
-                    if (handler.ReportProgress && progressDelegate != null)
+                    progressDelegate = provisioningInfo.ProgressDelegate;
+                    if (provisioningInfo.ProgressDelegate != null)
                     {
-                        progressDelegate(handler.Name, step, count);
-                        step++;
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
                     }
-                    tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+                    messagesDelegate = provisioningInfo.MessageDelegate;
+                    if (provisioningInfo.MessageDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
+                    }
+                }
+
+                List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
+
+                objectHandlers.Add(new ObjectSitePolicy());
+                objectHandlers.Add(new ObjectSiteSecurity());
+                objectHandlers.Add(new ObjectFeatures());
+                objectHandlers.Add(new ObjectTermGroups());
+                objectHandlers.Add(new ObjectField());
+                objectHandlers.Add(new ObjectContentType());
+                objectHandlers.Add(new ObjectListInstance());
+                objectHandlers.Add(new ObjectLookupFields());
+                objectHandlers.Add(new ObjectListInstanceDataRows());
+                objectHandlers.Add(new ObjectFiles());
+                objectHandlers.Add(new ObjectPages());
+                objectHandlers.Add(new ObjectCustomActions());
+                objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectPropertyBagEntry());
+                objectHandlers.Add(new ObjectExtensibilityProviders());
+                objectHandlers.Add(new ObjectPersistTemplateInfo());
+
+                var tokenParser = new TokenParser(web, template);
+
+                int step = 1;
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template));
+
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillProvision(web, template))
+                    {
+                        if (messagesDelegate != null)
+                        {
+                            handler.MessagesDelegate = messagesDelegate;
+                        }
+                        if (handler.ReportProgress && progressDelegate != null)
+                        {
+                            progressDelegate(handler.Name, step, count);
+                            step++;
+                        }
+                        tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+                    }
                 }
             }
-
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_FinishProvisioning);
         }
     }
 }

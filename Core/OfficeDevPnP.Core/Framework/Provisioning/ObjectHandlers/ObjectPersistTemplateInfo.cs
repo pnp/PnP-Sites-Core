@@ -26,20 +26,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            web.SetPropertyBagValue("_PnP_ProvisioningTemplateId", template.Id != null ? template.Id : "");
-            web.AddIndexedPropertyBagKey("_PnP_ProvisioningTemplateId");
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PersistTemplateInformation))
+            {
+                web.SetPropertyBagValue("_PnP_ProvisioningTemplateId", template.Id != null ? template.Id : "");
+                web.AddIndexedPropertyBagKey("_PnP_ProvisioningTemplateId");
 
-            ProvisioningTemplateInfo info = new ProvisioningTemplateInfo();
-            info.TemplateId = template.Id != null ? template.Id : "";
-            info.TemplateVersion = template.Version;
-            info.TemplateSitePolicy = template.SitePolicy;
-            info.Result = true;
-            info.ProvisioningTime = DateTime.Now;
+                ProvisioningTemplateInfo info = new ProvisioningTemplateInfo();
+                info.TemplateId = template.Id != null ? template.Id : "";
+                info.TemplateVersion = template.Version;
+                info.TemplateSitePolicy = template.SitePolicy;
+                info.Result = true;
+                info.ProvisioningTime = DateTime.Now;
 
-            string jsonInfo = JsonConvert.SerializeObject(info);
+                string jsonInfo = JsonConvert.SerializeObject(info);
 
-            web.SetPropertyBagValue("_PnP_ProvisioningTemplateInfo", jsonInfo);
-
+                web.SetPropertyBagValue("_PnP_ProvisioningTemplateInfo", jsonInfo);
+            }
             return parser;
         }
 

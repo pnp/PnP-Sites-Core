@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
                 if (web.IsSubSite())
                 {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
                     return parser;
                 }
 
@@ -36,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                     if (existingCT == null)
                     {
-                        scope.LogInfo("Creating new Content Type: {0} - {1}", ct.Id, ct.Name);
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
                         var newCT = CreateContentType(web, ct, parser);
                         if (newCT != null)
                         {
@@ -47,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (ct.Overwrite)
                         {
-                            scope.LogInfo("Recreating existing Content Type: {0} - {1}", ct.Id, ct.Name);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
@@ -59,8 +60,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            scope.LogInfo("Updating existing Content Type: {0} - {1}", ct.Id, ct.Name);
-                            UpdateContentType(web, existingCT, ct, parser);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                            UpdateContentType(web, existingCT, ct, parser, scope);
                         }
                     }
                 }
@@ -68,41 +69,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser)
+
+        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope)
         {
             var isDirty = false;
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
+                scope.LogPropertyUpdate("Hidden");
                 existingContentType.Hidden = templateContentType.Hidden;
                 isDirty = true;
             }
             if (existingContentType.ReadOnly != templateContentType.ReadOnly)
             {
+                scope.LogPropertyUpdate("ReadOnly");
                 existingContentType.ReadOnly = templateContentType.ReadOnly;
                 isDirty = true;
             }
             if (existingContentType.Sealed != templateContentType.Sealed)
             {
+                scope.LogPropertyUpdate("Sealed");
                 existingContentType.Sealed = templateContentType.Sealed;
                 isDirty = true;
             }
             if (templateContentType.Description != null && existingContentType.Description != parser.ParseString(templateContentType.Description))
             {
+                scope.LogPropertyUpdate("Description");
                 existingContentType.Description = parser.ParseString(templateContentType.Description);
                 isDirty = true;
             }
             if (templateContentType.DocumentTemplate != null && existingContentType.DocumentTemplate != parser.ParseString(templateContentType.DocumentTemplate))
             {
+                scope.LogPropertyUpdate("DocumentTemplate");
                 existingContentType.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
                 isDirty = true;
             }
             if (existingContentType.Name != parser.ParseString(templateContentType.Name))
             {
+                scope.LogPropertyUpdate("Name");
                 existingContentType.Name = parser.ParseString(templateContentType.Name);
                 isDirty = true;
             }
             if (templateContentType.Group != null && existingContentType.Group != parser.ParseString(templateContentType.Group))
             {
+                scope.LogPropertyUpdate("Group");
                 existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
@@ -123,6 +132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                     var field = web.Fields.GetById(fieldId);
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, field.Id);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
             }
@@ -134,14 +144,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                 if (fieldRef != null)
                 {
-
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type, fieldId);
                     if (fieldLink.Required != fieldRef.Required)
                     {
+                        scope.LogPropertyUpdate("Required");
                         fieldLink.Required = fieldRef.Required;
                         isDirty = true;
                     }
                     if (fieldLink.Hidden != fieldRef.Hidden)
                     {
+                        scope.LogPropertyUpdate("Hidden");
                         fieldLink.Hidden = fieldRef.Hidden;
                         isDirty = true;
                     }
@@ -189,6 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not creating content type entities. 
                 if (web.IsSubSite())
                 {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
                     return template;
                 }
 
@@ -246,9 +259,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (index > -1)
                 {
                     template.ContentTypes.RemoveAt(index);
-                } else
+                }
+                else
                 {
-                    scope.LogInfo("Adding content type to template: {0} - {1}", ct.Id, ct.Name);
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_, ct.Id, ct.Name);
                 }
 
             }

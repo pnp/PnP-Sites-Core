@@ -20,41 +20,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Fields);
-
-            // if this is a sub site then we're not provisioning fields. Technically this can be done but it's not a recommended practice
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Fields))
             {
-                return parser;
-            }
-
-
-            var existingFields = web.Fields;
-
-            web.Context.Load(existingFields, fs => fs.Include(f => f.Id));
-            web.Context.ExecuteQueryRetry();
-            var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
-            var fields = template.SiteFields;
-
-            foreach (var field in fields)
-            {
-                XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
-                var fieldId = templateFieldElement.Attribute("ID").Value;
-
-                if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
+                // if this is a sub site then we're not provisioning fields. Technically this can be done but it's not a recommended practice
+                if (web.IsSubSite())
                 {
-                    CreateField(web, templateFieldElement);
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
+                    return parser;
                 }
-                else
+
+                var existingFields = web.Fields;
+
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id));
+                web.Context.ExecuteQueryRetry();
+                var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
+                var fields = template.SiteFields;
+
+                foreach (var field in fields)
                 {
-                    UpdateField(web, fieldId, templateFieldElement);
+                    XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
+                    var fieldId = templateFieldElement.Attribute("ID").Value;
+
+                    if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
+                    {
+                        try
+                        {
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
+                            CreateField(web, templateFieldElement, scope);
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_, fieldId, ex.Message, ex.StackTrace);
+                            throw;
+                        }
+                    }
+                    else
+                        try
+                        {
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
+                            UpdateField(web, fieldId, templateFieldElement, scope);
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_, fieldId, ex.Message, ex.StackTrace);
+                            throw;
+                        }
                 }
             }
-
             return parser;
         }
 
-        private void UpdateField(Web web, string fieldId, XElement templateFieldElement)
+        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope)
         {
             var existingField = web.Fields.GetById(Guid.Parse(fieldId));
             web.Context.Load(existingField, f => f.SchemaXml);
@@ -107,12 +123,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     var fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
-                    WriteWarning(string.Format("Field {0} ({1}) exists but is of different type. Skipping field.", fieldName, fieldId), ProvisioningMessageType.Warning);
+                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId);
+
                 }
             }
         }
 
-        private static void CreateField(Web web, XElement templateFieldElement)
+        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope)
         {
             var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
 
@@ -126,17 +144,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
             web.Context.ExecuteQueryRetry();
+
         }
+
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Fields))
             {
-
-
                 // if this is a sub site then we're not creating field entities.
                 if (web.IsSubSite())
                 {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
                     return template;
                 }
 

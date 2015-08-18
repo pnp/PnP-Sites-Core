@@ -18,28 +18,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_CustomActions);
-
-            var context = web.Context as ClientContext;
-            var site = context.Site;
-
-            // if this is a sub site then we're not enabling the site collection scoped custom actions
-            if (!web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_CustomActions))
             {
-                var siteCustomActions = template.CustomActions.SiteCustomActions;
-                ProvisionCustomActionImplementation(site, siteCustomActions, parser);
+                var context = web.Context as ClientContext;
+                var site = context.Site;
+
+                // if this is a sub site then we're not enabling the site collection scoped custom actions
+                if (!web.IsSubSite())
+                {
+                    var siteCustomActions = template.CustomActions.SiteCustomActions;
+                    ProvisionCustomActionImplementation(site, siteCustomActions, parser, scope);
+                }
+
+                var webCustomActions = template.CustomActions.WebCustomActions;
+                ProvisionCustomActionImplementation(web, webCustomActions, parser, scope);
+
+                // Switch parser context back to it's original context
+                parser.Rebase(web);
             }
-
-            var webCustomActions = template.CustomActions.WebCustomActions;
-            ProvisionCustomActionImplementation(web, webCustomActions, parser);
-
-            // Switch parser context back to it's original context
-            parser.Rebase(web);
-
             return parser;
         }
 
-        private void ProvisionCustomActionImplementation(object parent, List<CustomAction> customActions, TokenParser parser)
+        private void ProvisionCustomActionImplementation(object parent, List<CustomAction> customActions, TokenParser parser, PnPMonitoredScope scope)
         {
             Web web = null;
             Site site = null;
@@ -91,10 +91,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (site != null)
                     {
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
                     }
                     else
                     {
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
                         web.AddCustomAction(customActionEntity);
                     }
                 }
@@ -117,6 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             if (existingCustomAction.CommandUIExtension != parser.ParseString(customAction.CommandUIExtension.ToString()))
                             {
+                                scope.LogPropertyUpdate("CommandUIExtension");
                                 existingCustomAction.CommandUIExtension = parser.ParseString(customAction.CommandUIExtension.ToString());
                                 isDirty = true;
                             }
@@ -124,51 +127,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (existingCustomAction.Description != customAction.Description)
                         {
+                            scope.LogPropertyUpdate("Description");
                             existingCustomAction.Description = customAction.Description;
                             isDirty = true;
                         }
                         if (existingCustomAction.Group != customAction.Group)
                         {
+                            scope.LogPropertyUpdate("Group");
                             existingCustomAction.Group = customAction.Group;
                             isDirty = true;
                         }
                         if (existingCustomAction.ImageUrl != parser.ParseString(customAction.ImageUrl))
                         {
+                            scope.LogPropertyUpdate("ImageUrl");
                             existingCustomAction.ImageUrl = parser.ParseString(customAction.ImageUrl);
                             isDirty = true;
                         }
                         if (existingCustomAction.Location != customAction.Location)
                         {
+                            scope.LogPropertyUpdate("Location");
                             existingCustomAction.Location = customAction.Location;
                             isDirty = true;
                         }
                         if (existingCustomAction.RegistrationId != customAction.RegistrationId)
                         {
+                            scope.LogPropertyUpdate("RegistrationId");
                             existingCustomAction.RegistrationId = customAction.RegistrationId;
                             isDirty = true;
                         }
                         if (existingCustomAction.RegistrationType != customAction.RegistrationType)
                         {
+                            scope.LogPropertyUpdate("RegistrationType");
                             existingCustomAction.RegistrationType = customAction.RegistrationType;
                             isDirty = true;
                         }
                         if (existingCustomAction.ScriptBlock != parser.ParseString(customAction.ScriptBlock))
                         {
+                            scope.LogPropertyUpdate("ScriptBlock");
                             existingCustomAction.ScriptBlock = parser.ParseString(customAction.ScriptBlock);
                             isDirty = true;
                         }
                         if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"))
                         {
+                            scope.LogPropertyUpdate("ScriptSrc");
                             existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection");
                             isDirty = true;
                         }
                         if (existingCustomAction.Title != parser.ParseString(customAction.Title))
                         {
+                            scope.LogPropertyUpdate("Title");
                             existingCustomAction.Title = parser.ParseString(customAction.Title);
                             isDirty = true;
                         }
                         if (existingCustomAction.Url != parser.ParseString(customAction.Url))
                         {
+                            scope.LogPropertyUpdate("Url");
                             existingCustomAction.Url = parser.ParseString(customAction.Url);
                             isDirty = true;
                         }
@@ -194,6 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var customActions = new CustomActions();
                 foreach (var customAction in webCustomActions)
                 {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template, customAction.Name);
                     customActions.WebCustomActions.Add(CopyUserCustomAction(customAction));
                 }
 
@@ -202,6 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var customAction in siteCustomActions)
                     {
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template, customAction.Name);
                         customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction));
                     }
                 }
@@ -211,13 +226,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
-                    template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
+                    template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite, scope);
                 }
             }
             return template;
         }
 
-        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, bool isSubSite)
+        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, bool isSubSite, PnPMonitoredScope scope)
         {
             if (!isSubSite)
             {
@@ -227,6 +242,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (index > -1)
                     {
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
                         template.CustomActions.SiteCustomActions.RemoveAt(index);
                     }
                 }
@@ -238,6 +254,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (index > -1)
                 {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
                     template.CustomActions.WebCustomActions.RemoveAt(index);
                 }
             }

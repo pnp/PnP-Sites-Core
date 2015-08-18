@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Utilities
             _stopWatch.Start();
             _correlationId = Guid.NewGuid();
 
-            LogInfo("Code execution started");
+            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_started);
             Indent();
         }
 
@@ -83,7 +83,7 @@ namespace OfficeDevPnP.Core.Utilities
                     msg = String.Format(CultureInfo.CurrentCulture, message, args);
                 }
 
-                string log = string.Format(CultureInfo.CurrentCulture, "{0} [[{1}]] {2} {3}ms {4}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, msg, _stopWatch.ElapsedMilliseconds, this.CorrelationId);
+                string log = string.Format(CultureInfo.CurrentCulture, "{0} [{1}] {2} {3}ms {4}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, msg, _stopWatch.ElapsedMilliseconds, this.CorrelationId);
                 return log;
             }
             catch (Exception e)
@@ -97,10 +97,11 @@ namespace OfficeDevPnP.Core.Utilities
         {
             _stopWatch.Stop();
             Unindent();
-            LogInfo("Code execution ended", _stopWatch.ElapsedMilliseconds);
+            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_ended, _stopWatch.ElapsedMilliseconds);
             Trace.Flush();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)")]
         [Conditional("DEBUG")]
         private void WriteLogToConsole(string value)
         {

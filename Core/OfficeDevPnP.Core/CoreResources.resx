@@ -669,11 +669,11 @@
   <data name="Provisioning_ObjectHandlers_SiteSecurity" xml:space="preserve">
     <value>Site Security</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_StartExtraction" xml:space="preserve">
-    <value>START - Template Extraction</value>
+  <data name="Provisioning_ObjectHandlers_Extraction" xml:space="preserve">
+    <value>Extraction</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_StartProvisioning" xml:space="preserve">
-    <value>START - Provisioning</value>
+  <data name="Provisioning_ObjectHandlers_Provisioning" xml:space="preserve">
+    <value>Provisioning</value>
   </data>
   <data name="Provisioning_ObjectHandlers_TermGroups" xml:space="preserve">
     <value>Term Groups</value>
@@ -689,5 +689,218 @@
   </data>
   <data name="TimerJob_Authentication_TenantAdmin" xml:space="preserve">
     <value>Tenant admin site set to {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_LookupFields" xml:space="preserve">
+    <value>Lookup Fields</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look" xml:space="preserve">
+    <value>Retrieving current composed look</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector" xml:space="preserve">
+    <value>Creating SharePointConnector</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_" xml:space="preserve">
+    <value>Downloading asset: {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_" xml:space="preserve">
+    <value>Creating new Content Type: {0} - {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_" xml:space="preserve">
+    <value>Recreating existing Content Type: {0} - {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_" xml:space="preserve">
+    <value>Updating existing Content Type: {0} - {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_" xml:space="preserve">
+    <value>Adding content type to template: {0} - {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type" xml:space="preserve">
+    <value>Adding field {0} to content type</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type" xml:space="preserve">
+    <value>Field {0} exists in content type</value>
+  </data>
+  <data name="PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_" xml:space="preserve">
+    <value>Updating property {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site" xml:space="preserve">
+    <value>Adding custom action '{0}' to scope Site</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web" xml:space="preserve">
+    <value>Adding custom action '{0}' to scope Web</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template" xml:space="preserve">
+    <value>Adding site scoped custom action '{0}' to template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template" xml:space="preserve">
+    <value>Adding web scoped custom action '{0}' to template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template" xml:space="preserve">
+    <value>Removing site scoped custom action '{0}' from template because already available in base template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template" xml:space="preserve">
+    <value>Removing web scoped custom action '{0}' from template because already available in base template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_" xml:space="preserve">
+    <value>Calling extensibility callout {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_" xml:space="preserve">
+    <value>Extensibility callout failed: {0} : {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_" xml:space="preserve">
+    <value>Activating {0} scoped feature {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_" xml:space="preserve">
+    <value>Deactivating {0} scoped feature {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns" xml:space="preserve">
+    <value>Context web is subweb, skipping site columns</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_" xml:space="preserve">
+    <value>Field {0} ({1}) exists but is of different type. Skipping field.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_" xml:space="preserve">
+    <value>Context web is subweb. Skipping content types.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site" xml:space="preserve">
+    <value>Adding field {0} to site</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_" xml:space="preserve">
+    <value>Adding field {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site" xml:space="preserve">
+    <value>Updating field {0} in site</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_" xml:space="preserve">
+    <value>Updating field {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_" xml:space="preserve">
+    <value>Uploading and overwriting existing file {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Files_Uploading_file__0_" xml:space="preserve">
+    <value>Uploading file {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page" xml:space="preserve">
+    <value>Adding webpart '{0}' to page</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_list__0_" xml:space="preserve">
+    <value>Creating list {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_" xml:space="preserve">
+    <value>Creating list {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Updating_list__0_" xml:space="preserve">
+    <value>Updating list {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_" xml:space="preserve">
+    <value>Updating list {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_" xml:space="preserve">
+    <value>Field schema has no ID attribute: {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_" xml:space="preserve">
+    <value>ID for field is not a valid Guid: {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_field__0_" xml:space="preserve">
+    <value>Creating field {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_" xml:space="preserve">
+    <value>Creating field {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Updating_field__0_" xml:space="preserve">
+    <value>Updating field {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_" xml:space="preserve">
+    <value>Updating field {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_" xml:space="preserve">
+    <value>Processing data rows for {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_" xml:space="preserve">
+    <value>Processing lookup fields failed: {0} : {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_" xml:space="preserve">
+    <value>Overwriting existing page {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_" xml:space="preserve">
+    <value>Overwriting existing page {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_Creating_new_page__0_" xml:space="preserve">
+    <value>Creating new page {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_" xml:space="preserve">
+    <value>Creating new page {0} failed: {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_PersistTemplateInformation" xml:space="preserve">
+    <value>Persist Template Information</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_" xml:space="preserve">
+    <value>Overwriting existing propertybag entry {0} with value {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_" xml:space="preserve">
+    <value>Creating new propertybag entry {0} with value {1}{2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_RetrieveTemplateInfo" xml:space="preserve">
+    <value>Retrieve Template Info</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning" xml:space="preserve">
+    <value>Context web is subweb, skipping site security provisioning</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_view__0_" xml:space="preserve">
+    <value>Creating view {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_" xml:space="preserve">
+    <value>Creating view failed: {0} : {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_" xml:space="preserve">
+    <value>Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_" xml:space="preserve">
+    <value>List {0} ({1}, {2}) exists but is of a different type. Skipping list.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true" xml:space="preserve">
+    <value>DraftVersionVisibility not applied because EnableModeration is not set to true</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_" xml:space="preserve">
+    <value>Adding list: {0} - {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_" xml:space="preserve">
+    <value>Creating list item {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_" xml:space="preserve">
+    <value>Creating listitem failed: {0} : {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_" xml:space="preserve">
+    <value>Add users failed for group '{0}': {1} : {2}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_" xml:space="preserve">
+    <value>Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}</value>
+  </data>
+  <data name="SiteToTemplateConversion_Base_template_available___0_" xml:space="preserve">
+    <value>Base template available: {0}</value>
+  </data>
+  <data name="SiteToTemplateConversion_ProgressDelegate_registered" xml:space="preserve">
+    <value>ProgressDelegate registered</value>
+  </data>
+  <data name="SiteToTemplateConversion_MessagesDelegate_registered" xml:space="preserve">
+    <value>MessagesDelegate registered</value>
+  </data>
+  <data name="SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true" xml:space="preserve">
+    <value>IncludeAllTermGroups is set to true</value>
+  </data>
+  <data name="SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true" xml:space="preserve">
+    <value>IncludeSiteCollectionTermGroup is set to true</value>
+  </data>
+  <data name="SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true" xml:space="preserve">
+    <value>PersistComposedLookFiles is set to true</value>
+  </data>
+  <data name="SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true" xml:space="preserve">
+    <value>OverwriteSystemPropertyBagValues is to true</value>
+  </data>
+  <data name="PnPMonitoredScope_Code_execution_started" xml:space="preserve">
+    <value>Code execution scope started</value>
+  </data>
+  <data name="PnPMonitoredScope_Code_execution_ended" xml:space="preserve">
+    <value>Code execution scope ended</value>
   </data>
 </root>

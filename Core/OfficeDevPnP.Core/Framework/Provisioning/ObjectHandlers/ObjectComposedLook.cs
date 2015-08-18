@@ -23,8 +23,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                scope.LogInfo("Provisioning");
-                
                 if (template.ComposedLook != null &&
                     !template.ComposedLook.Equals(ComposedLook.Empty))
                 {
@@ -96,8 +94,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                scope.LogInfo("Extraction");
-
                 // Load object if not there
                 bool executeQueryNeeded = false;
                 if (!web.IsPropertyAvailable("Url"))
@@ -136,7 +132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             template.ComposedLook.AlternateCSS = null;
             template.ComposedLook.SiteLogo = null;
 #endif
-                scope.LogInfo("Retrieving current composed look");
+                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look);
                 var theme = web.GetCurrentComposedLook();
 
 
@@ -161,7 +157,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.Context.ExecuteQueryRetry();
                             }
 
-                            scope.LogInfo("Creating SharePointConnector");
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
                             // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
                             SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
 
@@ -176,17 +172,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 spConnectorRoot = spConnector;
                             }
 
-                            scope.LogInfo("Downloading AlternateCss file: {0}", web.AlternateCssUrl);
                             // Download the theme/branding specific files
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl);
-                            scope.LogInfo("ComposedLooks", "Downloading Site Logo: {0}",web.SiteLogoUrl);
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl);
-                            scope.LogInfo("ComposedLooks", "Downloading Background image");
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage);
-                            scope.LogInfo("ComposedLooks", "Downloading Color file");
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme);
-                            scope.LogInfo("ComposedLooks", "Downloading Font file");
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
                         }
 
                         template.ComposedLook.BackgroundFile = FixFileUrl(Tokenize(theme.BackgroundImage, web.Url));
@@ -238,7 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private void DownLoadFile(SharePointConnector reader, SharePointConnector readerRoot, FileConnectorBase writer, string webUrl, string asset)
+        private void DownLoadFile(SharePointConnector reader, SharePointConnector readerRoot, FileConnectorBase writer, string webUrl, string asset, PnPMonitoredScope scope)
         {
 
             // No file passed...leave
@@ -246,6 +237,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return;
             }
+
+            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_,asset);
+            ;
 
             SharePointConnector readerToUse;
             Model.File f = GetComposedLookFile(asset);

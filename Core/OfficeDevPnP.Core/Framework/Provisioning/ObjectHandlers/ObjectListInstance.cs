@@ -24,7 +24,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstances))
             {
-
                 if (template.Lists.Any())
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
@@ -49,24 +48,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var index = existingLists.FindIndex(x => x.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
                         if (index == -1)
                         {
-                            var returnTuple = CreateList(web, templateList, parser);
-                            var createdList = returnTuple.Item1;
-                            parser = returnTuple.Item2;
-                            processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
+                            try
+                            {
+                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
+                                var returnTuple = CreateList(web, templateList, parser, scope);
+                                var createdList = returnTuple.Item1;
+                                parser = returnTuple.Item2;
+                                processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
 
-                            parser.AddToken(new ListIdToken(web, templateList.Title, createdList.Id));
+                                parser.AddToken(new ListIdToken(web, templateList.Title, createdList.Id));
 
-                            parser.AddToken(new ListUrlToken(web, templateList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                                parser.AddToken(new ListUrlToken(web, templateList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                            }
+                            catch (Exception ex)
+                            {
+                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                throw;
+                            }
                         }
                         else
                         {
-                            var existingList = web.Lists[index];
-                            var returnTuple = UpdateList(web, existingList, templateList, parser);
-                            var updatedList = returnTuple.Item1;
-                            parser = returnTuple.Item2;
-                            if (updatedList != null)
+                            try
                             {
-                                processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
+                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
+                                var existingList = web.Lists[index];
+                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope);
+                                var updatedList = returnTuple.Item1;
+                                parser = returnTuple.Item2;
+                                if (updatedList != null)
+                                {
+                                    processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                throw;
                             }
                         }
                     }
@@ -115,25 +132,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var fieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                                 if (fieldElement.Attribute("ID") == null)
                                 {
-                                    throw new Exception(string.Format("Field schema has no ID attribute: {0}", field.SchemaXml));
+                                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml);
+                                    throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml));
                                 }
                                 var id = fieldElement.Attribute("ID").Value;
 
                                 Guid fieldGuid;
                                 if (!Guid.TryParse(id, out fieldGuid))
                                 {
-                                    throw new Exception(string.Format("ID for field is not a valid Guid: {0}", id));
+                                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
+                                    throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, id));
                                 }
                                 else
                                 {
                                     var fieldFromList = listInfo.SiteList.GetFieldById<Field>(fieldGuid);
                                     if (fieldFromList == null)
                                     {
-                                        CreateField(fieldElement, listInfo);
+                                        try
+                                        {
+                                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
+                                            CreateField(fieldElement, listInfo);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_, fieldGuid, ex.Message, ex.StackTrace);
+                                            throw;
+                                        }
                                     }
                                     else
                                     {
-                                        UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList);
+                                        try
+                                        {
+                                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0_, fieldGuid);
+                                            UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_, fieldGuid, ex.Message, ex.StackTrace);
+                                            throw;
+                                        }
+
                                     }
                                 }
                             }
@@ -165,18 +203,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                         foreach (var view in list.Views)
                         {
-                            CreateView(web, view, existingViews, createdList);
+
+                            CreateView(web, view, existingViews, createdList, scope);
+
                         }
 
-                        // Removing existing views set the OnQuickLaunch option to false and need to be re-set.
-                        if (list.OnQuickLaunch && list.RemoveExistingViews && list.Views.Count > 0)
-                        {
-                            createdList.RefreshLoad();
-                            web.Context.ExecuteQueryRetry();
-                            createdList.OnQuickLaunch = list.OnQuickLaunch;
-                            createdList.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        //// Removing existing views set the OnQuickLaunch option to false and need to be re-set.
+                        //if (list.OnQuickLaunch && list.RemoveExistingViews && list.Views.Count > 0)
+                        //{
+                        //    createdList.RefreshLoad();
+                        //    web.Context.ExecuteQueryRetry();
+                        //    createdList.OnQuickLaunch = list.OnQuickLaunch;
+                        //    createdList.Update();
+                        //    web.Context.ExecuteQueryRetry();
+                        //}
                     }
 
                     #endregion
@@ -194,100 +234,110 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void CreateView(Web web, View view, ViewCollection existingViews, List createdList)
+        private void CreateView(Web web, View view, ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope)
         {
-            var viewElement = XElement.Parse(view.SchemaXml);
-            var displayNameElement = viewElement.Attribute("DisplayName");
-            if (displayNameElement == null)
+            try
             {
-                throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
-            }
 
-            var existingView = existingViews.FirstOrDefault(v => v.Title == displayNameElement.Value);
-
-            if (existingView != null)
-            {
-                existingView.DeleteObject();
-                web.Context.ExecuteQueryRetry();
-            }
-
-            var viewTitle = displayNameElement.Value;
-
-            // Type
-            var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
-            viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
-            var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
-
-            // Fields
-            string[] viewFields = null;
-            var viewFieldsElement = viewElement.Descendants("ViewFields").FirstOrDefault();
-            if (viewFieldsElement != null)
-            {
-                viewFields = (from field in viewElement.Descendants("ViewFields").Descendants("FieldRef") select field.Attribute("Name").Value).ToArray();
-            }
-
-            // Default view
-            var viewDefault = viewElement.Attribute("DefaultView") != null && Boolean.Parse(viewElement.Attribute("DefaultView").Value);
-
-            // Row limit
-            var viewPaged = true;
-            uint viewRowLimit = 30;
-            var rowLimitElement = viewElement.Descendants("RowLimit").FirstOrDefault();
-            if (rowLimitElement != null)
-            {
-                if (rowLimitElement.Attribute("Paged") != null)
+                var viewElement = XElement.Parse(view.SchemaXml);
+                var displayNameElement = viewElement.Attribute("DisplayName");
+                if (displayNameElement == null)
                 {
-                    viewPaged = bool.Parse(rowLimitElement.Attribute("Paged").Value);
+                    throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
                 }
-                viewRowLimit = uint.Parse(rowLimitElement.Value);
-            }
 
-            // Query
-            var viewQuery = new StringBuilder();
-            foreach (var queryElement in viewElement.Descendants("Query").Elements())
-            {
-                viewQuery.Append(queryElement.ToString());
-            }
+                monitoredScope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
+                var existingView = existingViews.FirstOrDefault(v => v.Title == displayNameElement.Value);
 
-            var viewCI = new ViewCreationInformation
-            {
-                ViewFields = viewFields,
-                RowLimit = viewRowLimit,
-                Paged = viewPaged,
-                Title = viewTitle,
-                Query = viewQuery.ToString(),
-                ViewTypeKind = viewType,
-                PersonalView = false,
-                SetAsDefaultView = viewDefault,
-            };
-
-            var createdView = createdList.Views.Add(viewCI);
-            web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
-            web.Context.ExecuteQueryRetry();
-
-            // Scope
-            var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
-            ViewScope parsedScope = ViewScope.DefaultValue;
-            if (!string.IsNullOrEmpty(scope) && Enum.TryParse<ViewScope>(scope, out parsedScope))
-            {
-                createdView.Scope = parsedScope;
-                createdView.Update();
-            }
-
-            // JSLink
-            var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
-            if (jslinkElement != null)
-            {
-                var jslink = jslinkElement.Value;
-                if (createdView.JSLink != jslink)
+                if (existingView != null)
                 {
-                    createdView.JSLink = jslink;
+                    existingView.DeleteObject();
+                    web.Context.ExecuteQueryRetry();
+                }
+
+                var viewTitle = displayNameElement.Value;
+
+                // Type
+                var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
+                viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
+                var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
+
+                // Fields
+                string[] viewFields = null;
+                var viewFieldsElement = viewElement.Descendants("ViewFields").FirstOrDefault();
+                if (viewFieldsElement != null)
+                {
+                    viewFields = (from field in viewElement.Descendants("ViewFields").Descendants("FieldRef") select field.Attribute("Name").Value).ToArray();
+                }
+
+                // Default view
+                var viewDefault = viewElement.Attribute("DefaultView") != null && Boolean.Parse(viewElement.Attribute("DefaultView").Value);
+
+                // Row limit
+                var viewPaged = true;
+                uint viewRowLimit = 30;
+                var rowLimitElement = viewElement.Descendants("RowLimit").FirstOrDefault();
+                if (rowLimitElement != null)
+                {
+                    if (rowLimitElement.Attribute("Paged") != null)
+                    {
+                        viewPaged = bool.Parse(rowLimitElement.Attribute("Paged").Value);
+                    }
+                    viewRowLimit = uint.Parse(rowLimitElement.Value);
+                }
+
+                // Query
+                var viewQuery = new StringBuilder();
+                foreach (var queryElement in viewElement.Descendants("Query").Elements())
+                {
+                    viewQuery.Append(queryElement.ToString());
+                }
+
+                var viewCI = new ViewCreationInformation
+                {
+                    ViewFields = viewFields,
+                    RowLimit = viewRowLimit,
+                    Paged = viewPaged,
+                    Title = viewTitle,
+                    Query = viewQuery.ToString(),
+                    ViewTypeKind = viewType,
+                    PersonalView = false,
+                    SetAsDefaultView = viewDefault,
+                };
+
+                var createdView = createdList.Views.Add(viewCI);
+                web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
+                web.Context.ExecuteQueryRetry();
+
+                // Scope
+                var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
+                ViewScope parsedScope = ViewScope.DefaultValue;
+                if (!string.IsNullOrEmpty(scope) && Enum.TryParse<ViewScope>(scope, out parsedScope))
+                {
+                    createdView.Scope = parsedScope;
                     createdView.Update();
                 }
-            }
 
-            createdList.Update();
-            web.Context.ExecuteQueryRetry();
+                // JSLink
+                var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
+                if (jslinkElement != null)
+                {
+                    var jslink = jslinkElement.Value;
+                    if (createdView.JSLink != jslink)
+                    {
+                        createdView.JSLink = jslink;
+                        createdView.Update();
+                    }
+                }
+
+                createdList.Update();
+                web.Context.ExecuteQueryRetry();
+            }
+            catch (Exception ex)
+            {
+                monitoredScope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_, ex.Message, ex.StackTrace);
+                throw;
+            }
         }
 
         private static void UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef)
@@ -356,7 +406,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             listInfo.SiteList.Context.ExecuteQueryRetry();
         }
 
-        private void UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField)
+        private void UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope)
         {
             web.Context.Load(existingField, f => f.SchemaXml);
             web.Context.ExecuteQueryRetry();
@@ -412,12 +462,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     var fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
-                    WriteWarning(string.Format("Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field.", fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id), ProvisioningMessageType.Warning);
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_, fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id);
+                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_, fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id), ProvisioningMessageType.Warning);
                 }
             }
         }
 
-        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser)
+        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -581,12 +632,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             {
-                WriteWarning(string.Format("List {0} ({1}, {2}) exists but is of a different type. Skipping list.", templateList.Title, templateList.Url, existingList.Id), ProvisioningMessageType.Warning);
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id);
+                WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id), ProvisioningMessageType.Warning);
                 return null;
             }
         }
 
-        private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser)
+        private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser, PnPMonitoredScope scope)
         {
             var listCreate = new ListCreationInformation();
             listCreate.Description = list.Description;
@@ -645,7 +697,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                WriteWarning("DraftVersionVisibility not applied because EnableModeration is not set to true", ProvisioningMessageType.Warning);
+                                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true);
+                                WriteWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true, ProvisioningMessageType.Warning);
                             }
                         }
                         else
@@ -758,7 +811,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
                 foreach (var item in lists.AsEnumerable().Where(l => l.Hidden == false))
                 {
-                    scope.LogInfo("Processing list: {0} - {1}", item.Title, item.Id);
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)
                     {
@@ -920,13 +972,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (!baseTemplateList.Equals(list))
                         {
-                            scope.LogInfo("Adding list: {0} - {1}", list.Title, list.Url);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
                         }
                     }
                     else
                     {
-                        scope.LogInfo("Adding list: {0} - {1}", list.Title, list.Url);
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                         template.Lists.Add(list);
                     }
                 }
