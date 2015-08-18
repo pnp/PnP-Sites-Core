@@ -18,101 +18,124 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Pages);
-
-            var context = web.Context as ClientContext;
-
-            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
             {
-                context.Load(web, w => w.ServerRelativeUrl);
-                context.ExecuteQueryRetry();
-            }
-
-            foreach (var page in template.Pages)
-            {
-                var url = parser.ParseString(page.Url);
 
 
-                if (!url.ToLower().StartsWith(web.ServerRelativeUrl.ToLower()))
+                var context = web.Context as ClientContext;
+
+                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
                 {
-                    url = UrlUtility.Combine(web.ServerRelativeUrl, url);
+                    context.Load(web, w => w.ServerRelativeUrl);
+                    context.ExecuteQueryRetry();
                 }
 
+                foreach (var page in template.Pages)
+                {
+                    var url = parser.ParseString(page.Url);
 
-                var exists = true;
-                Microsoft.SharePoint.Client.File file = null;
-                try
-                {
-                    file = web.GetFileByServerRelativeUrl(url);
-                    web.Context.Load(file);
-                    web.Context.ExecuteQuery();
-                }
-                catch (ServerException ex)
-                {
-                    if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
+
+                    if (!url.ToLower().StartsWith(web.ServerRelativeUrl.ToLower()))
                     {
-                        exists = false;
-                    }
-                }
-                if (exists)
-                {
-                    if (page.Overwrite)
-                    {
-                        file.DeleteObject();
-                        web.Context.ExecuteQueryRetry();
-                        web.AddWikiPageByUrl(url);
-                        web.AddLayoutToWikiPage(page.Layout, url);
-                    }
-                }
-                else
-                {
-                    web.AddWikiPageByUrl(url);
-                    web.AddLayoutToWikiPage(page.Layout, url);
-                }
-
-                if (page.WelcomePage)
-                {
-                    if (!web.IsPropertyAvailable("RootFolder"))
-                    {
-                        web.Context.Load(web.RootFolder);
-                        web.Context.ExecuteQueryRetry();
+                        url = UrlUtility.Combine(web.ServerRelativeUrl, url);
                     }
 
-                    var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
-                    web.SetHomePage(rootFolderRelativeUrl);
-                }
 
-                if (page.WebParts != null & page.WebParts.Any())
-                {
-                    var existingWebParts = web.GetWebParts(url);
-
-                    foreach (var webpart in page.WebParts)
+                    var exists = true;
+                    Microsoft.SharePoint.Client.File file = null;
+                    try
                     {
-                        if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                        file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file);
+                        web.Context.ExecuteQuery();
+                    }
+                    catch (ServerException ex)
+                    {
+                        if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
                         {
-                            WebPartEntity wpEntity = new WebPartEntity();
-                            wpEntity.WebPartTitle = webpart.Title;
-                            wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] {'\n', ' '});
-                            web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
+                            exists = false;
+                        }
+                    }
+                    if (exists)
+                    {
+                        if (page.Overwrite)
+                        {
+                            try
+                            {
+                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
+                                file.DeleteObject();
+                                web.Context.ExecuteQueryRetry();
+                                web.AddWikiPageByUrl(url);
+                                web.AddLayoutToWikiPage(page.Layout, url);
+                            }
+                            catch (Exception ex)
+                            {
+                                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_,url,ex.Message,ex.StackTrace);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+
+
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0_, url);
+
+                            web.AddWikiPageByUrl(url);
+                            web.AddLayoutToWikiPage(page.Layout, url);
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_,url, ex.Message,ex.StackTrace);
+                        }
+                    }
+
+                    if (page.WelcomePage)
+                    {
+                        if (!web.IsPropertyAvailable("RootFolder"))
+                        {
+                            web.Context.Load(web.RootFolder);
+                            web.Context.ExecuteQueryRetry();
+                        }
+
+                        var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
+                        web.SetHomePage(rootFolderRelativeUrl);
+                    }
+
+                    if (page.WebParts != null & page.WebParts.Any())
+                    {
+                        var existingWebParts = web.GetWebParts(url);
+
+                        foreach (var webpart in page.WebParts)
+                        {
+                            if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                            {
+                                WebPartEntity wpEntity = new WebPartEntity();
+                                wpEntity.WebPartTitle = webpart.Title;
+                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] {'\n', ' '});
+                                web.AddWebPartToWikiPage(url, wpEntity, (int) webpart.Row, (int) webpart.Column, false);
+                            }
                         }
                     }
                 }
             }
-
             return parser;
         }
 
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // Impossible to return all files in the site currently
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
             {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
+                // Impossible to return all files in the site currently
 
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
+                }
+            }
             return template;
         }
 

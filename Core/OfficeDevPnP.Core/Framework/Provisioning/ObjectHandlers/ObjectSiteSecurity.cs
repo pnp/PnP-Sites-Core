@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.ObjectHandlers;
@@ -16,143 +17,155 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_SiteSecurity);
-
-            // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
             {
-                return parser;
-            }
-
-            var siteSecurity = template.Security;
-
-            var ownerGroup = web.AssociatedOwnerGroup;
-            var memberGroup = web.AssociatedMemberGroup;
-            var visitorGroup = web.AssociatedVisitorGroup;
 
 
-            web.Context.Load(ownerGroup, o => o.Users);
-            web.Context.Load(memberGroup, o => o.Users);
-            web.Context.Load(visitorGroup, o => o.Users);
+                // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
+                if (web.IsSubSite())
+                {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
+                    return parser;
+                }
 
-            web.Context.ExecuteQueryRetry();
+                var siteSecurity = template.Security;
 
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners);
-            }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers);
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors);
-            }
+                var ownerGroup = web.AssociatedOwnerGroup;
+                var memberGroup = web.AssociatedMemberGroup;
+                var visitorGroup = web.AssociatedVisitorGroup;
 
-            foreach (var admin in siteSecurity.AdditionalAdministrators)
-            {
-                var user = web.EnsureUser(admin.Name);
-                user.IsSiteAdmin = true;
-                user.Update();
+
+                web.Context.Load(ownerGroup, o => o.Users);
+                web.Context.Load(memberGroup, o => o.Users);
+                web.Context.Load(visitorGroup, o => o.Users);
+
                 web.Context.ExecuteQueryRetry();
-            }
 
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners,scope);
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers,scope);
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors,scope);
+                }
+
+                foreach (var admin in siteSecurity.AdditionalAdministrators)
+                {
+                    var user = web.EnsureUser(admin.Name);
+                    user.IsSiteAdmin = true;
+                    user.Update();
+                    web.Context.ExecuteQueryRetry();
+                }
+            }
             return parser;
         }
 
-        private static void AddUserToGroup(Web web, Group group, List<User> members)
+        private static void AddUserToGroup(Web web, Group group, List<User> members, PnPMonitoredScope scope)
         {
-            foreach (var user in members)
+            try
             {
-                var existingUser = web.EnsureUser(user.Name);
-                group.Users.AddUser(existingUser);
+                foreach (var user in members)
+                {
+                    var existingUser = web.EnsureUser(user.Name);
+                    group.Users.AddUser(existingUser);
+                }
+                web.Context.ExecuteQueryRetry();
             }
-            web.Context.ExecuteQueryRetry();
+            catch (Exception ex)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, group.Title, ex.Message, ex.StackTrace);
+                throw;
+            }
 
         }
 
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-
-            // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
-            if (web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
             {
-                return template;
-            }
-
-            var ownerGroup = web.AssociatedOwnerGroup;
-            var memberGroup = web.AssociatedMemberGroup;
-            var visitorGroup = web.AssociatedVisitorGroup;
-            web.Context.ExecuteQueryRetry();
-
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(ownerGroup, o => o.Users);
-            }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(memberGroup, o => o.Users);
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(visitorGroup, o => o.Users);
-
-            }
-            web.Context.ExecuteQueryRetry();
-
-            var owners = new List<User>();
-            var members = new List<User>();
-            var visitors = new List<User>();
-            if (!ownerGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in ownerGroup.Users)
+                // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
+                if (web.IsSubSite())
                 {
-                    owners.Add(new User() { Name = member.LoginName });
+                    return template;
+                }
+
+                var ownerGroup = web.AssociatedOwnerGroup;
+                var memberGroup = web.AssociatedMemberGroup;
+                var visitorGroup = web.AssociatedVisitorGroup;
+                web.Context.ExecuteQueryRetry();
+
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(ownerGroup, o => o.Users);
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(memberGroup, o => o.Users);
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    web.Context.Load(visitorGroup, o => o.Users);
+
+                }
+                web.Context.ExecuteQueryRetry();
+
+                var owners = new List<User>();
+                var members = new List<User>();
+                var visitors = new List<User>();
+                if (!ownerGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in ownerGroup.Users)
+                    {
+                        owners.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                if (!memberGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in memberGroup.Users)
+                    {
+                        members.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                if (!visitorGroup.ServerObjectIsNull.Value)
+                {
+                    foreach (var member in visitorGroup.Users)
+                    {
+                        visitors.Add(new User() { Name = member.LoginName });
+                    }
+                }
+                var siteSecurity = new SiteSecurity();
+                siteSecurity.AdditionalOwners.AddRange(owners);
+                siteSecurity.AdditionalMembers.AddRange(members);
+                siteSecurity.AdditionalVisitors.AddRange(visitors);
+
+                var query = from user in web.SiteUsers
+                            where user.IsSiteAdmin
+                            select user;
+                var allUsers = web.Context.LoadQuery(query);
+
+                web.Context.ExecuteQueryRetry();
+
+                var admins = new List<User>();
+                foreach (var member in allUsers)
+                {
+                    admins.Add(new User() { Name = member.LoginName });
+                }
+                siteSecurity.AdditionalAdministrators.AddRange(admins);
+
+                template.Security = siteSecurity;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
-            if (!memberGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in memberGroup.Users)
-                {
-                    members.Add(new User() { Name = member.LoginName });
-                }
-            }
-            if (!visitorGroup.ServerObjectIsNull.Value)
-            {
-                foreach (var member in visitorGroup.Users)
-                {
-                    visitors.Add(new User() { Name = member.LoginName });
-                }
-            }
-            var siteSecurity = new SiteSecurity();
-            siteSecurity.AdditionalOwners.AddRange(owners);
-            siteSecurity.AdditionalMembers.AddRange(members);
-            siteSecurity.AdditionalVisitors.AddRange(visitors);
-
-            var query = from user in web.SiteUsers
-                        where user.IsSiteAdmin
-                        select user;
-            var allUsers = web.Context.LoadQuery(query);
-
-            web.Context.ExecuteQueryRetry();
-
-            var admins = new List<User>();
-            foreach (var member in allUsers)
-            {
-                admins.Add(new User() { Name = member.LoginName });
-            }
-            siteSecurity.AdditionalAdministrators.AddRange(admins);
-
-            template.Security = siteSecurity;
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
-
             return template;
         }
 
@@ -205,7 +218,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any();    
+                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any();
             }
             return _willProvision.Value;
 

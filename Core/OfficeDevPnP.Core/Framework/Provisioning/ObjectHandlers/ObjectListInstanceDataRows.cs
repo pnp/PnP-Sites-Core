@@ -22,127 +22,140 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows);
-
-            if (template.Lists.Any())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows))
             {
-                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
+
+                if (template.Lists.Any())
                 {
-                    web.Context.Load(web, w => w.ServerRelativeUrl);
-                    web.Context.ExecuteQueryRetry();
-                }
-
-                web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
-                web.Context.ExecuteQueryRetry();
-                var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();
-                var serverRelativeUrl = web.ServerRelativeUrl;
-
-                #region DataRows
-
-                foreach (var listInstance in template.Lists)
-                {
-                    if (listInstance.DataRows != null && listInstance.DataRows.Any())
+                    var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                    if (!web.IsPropertyAvailable("ServerRelativeUrl"))
                     {
-                        // Retrieve the target list
-                        var list = web.Lists.GetByTitle(listInstance.Title);
-                        web.Context.Load(list);
-
-                        // Retrieve the fields' types from the list
-                        FieldCollection fields = list.Fields;
-                        web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind));
+                        web.Context.Load(web, w => w.ServerRelativeUrl);
                         web.Context.ExecuteQueryRetry();
+                    }
 
-                        foreach (var dataRow in listInstance.DataRows)
+                    web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.ExecuteQueryRetry();
+                    var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();
+                    var serverRelativeUrl = web.ServerRelativeUrl;
+
+                    #region DataRows
+
+                    foreach (var listInstance in template.Lists)
+                    {
+                        if (listInstance.DataRows != null && listInstance.DataRows.Any())
                         {
-                            var listitemCI = new ListItemCreationInformation();
-                            var listitem = list.AddItem(listitemCI);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
+                            // Retrieve the target list
+                            var list = web.Lists.GetByTitle(listInstance.Title);
+                            web.Context.Load(list);
 
-                            foreach (var dataValue in dataRow.Values)
+                            // Retrieve the fields' types from the list
+                            FieldCollection fields = list.Fields;
+                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind));
+                            web.Context.ExecuteQueryRetry();
+
+                            foreach (var dataRow in listInstance.DataRows)
                             {
-                                Field dataField = fields.FirstOrDefault(
-                                    f => f.InternalName == parser.ParseString(dataValue.Key));
-
-                                if (dataField != null)
+                                try
                                 {
-                                    String fieldValue = parser.ParseString(dataValue.Value);
+                                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
+                                    var listitemCI = new ListItemCreationInformation();
+                                    var listitem = list.AddItem(listitemCI);
 
-                                    switch (dataField.FieldTypeKind)
+                                    foreach (var dataValue in dataRow.Values)
                                     {
-                                        case FieldType.Geolocation:
-                                            // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
-                                            var geolocationArray = fieldValue.Split(',');
-                                            if (geolocationArray.Length == 4)
-                                            {
-                                                var geolocationValue = new FieldGeolocationValue
-                                                {
-                                                    Altitude = Double.Parse(geolocationArray[0]),
-                                                    Latitude = Double.Parse(geolocationArray[1]),
-                                                    Longitude = Double.Parse(geolocationArray[2]),
-                                                    Measure = Double.Parse(geolocationArray[3]),
-                                                };
-                                                listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
-                                            }
-                                            else
-                                            {
-                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                            }
-                                            break;
-                                        case FieldType.Lookup:
-                                            // FieldLookupValue - Expected format: LookupID
-                                            var lookupValue = new FieldLookupValue
-                                            {
-                                                LookupId = Int32.Parse(fieldValue),
-                                            };
-                                            listitem[parser.ParseString(dataValue.Key)] = lookupValue;
-                                            break;
-                                        case FieldType.URL:
-                                            // FieldUrlValue - Expected format: URL,Description
-                                            var urlArray = fieldValue.Split(',');
-                                            var linkValue = new FieldUrlValue();
-                                            if (urlArray.Length == 2)
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[1];
-                                            }
-                                            else
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[0];
-                                            }
-                                            listitem[parser.ParseString(dataValue.Key)] = linkValue;
-                                            break;
-                                        case FieldType.User:
-                                            // FieldUserValue - Expected format: loginName
-                                            var user = web.EnsureUser(fieldValue);
-                                            web.Context.Load(user);
-                                            web.Context.ExecuteQueryRetry();
+                                        Field dataField = fields.FirstOrDefault(
+                                            f => f.InternalName == parser.ParseString(dataValue.Key));
 
-                                            if (user != null)
+                                        if (dataField != null)
+                                        {
+                                            String fieldValue = parser.ParseString(dataValue.Value);
+
+                                            switch (dataField.FieldTypeKind)
                                             {
-                                                var userValue = new FieldUserValue
-                                                {
-                                                    LookupId = user.Id,
-                                                };
-                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                case FieldType.Geolocation:
+                                                    // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
+                                                    var geolocationArray = fieldValue.Split(',');
+                                                    if (geolocationArray.Length == 4)
+                                                    {
+                                                        var geolocationValue = new FieldGeolocationValue
+                                                        {
+                                                            Altitude = Double.Parse(geolocationArray[0]),
+                                                            Latitude = Double.Parse(geolocationArray[1]),
+                                                            Longitude = Double.Parse(geolocationArray[2]),
+                                                            Measure = Double.Parse(geolocationArray[3]),
+                                                        };
+                                                        listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
+                                                    }
+                                                    else
+                                                    {
+                                                        listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                    }
+                                                    break;
+                                                case FieldType.Lookup:
+                                                    // FieldLookupValue - Expected format: LookupID
+                                                    var lookupValue = new FieldLookupValue
+                                                    {
+                                                        LookupId = Int32.Parse(fieldValue),
+                                                    };
+                                                    listitem[parser.ParseString(dataValue.Key)] = lookupValue;
+                                                    break;
+                                                case FieldType.URL:
+                                                    // FieldUrlValue - Expected format: URL,Description
+                                                    var urlArray = fieldValue.Split(',');
+                                                    var linkValue = new FieldUrlValue();
+                                                    if (urlArray.Length == 2)
+                                                    {
+                                                        linkValue.Url = urlArray[0];
+                                                        linkValue.Description = urlArray[1];
+                                                    }
+                                                    else
+                                                    {
+                                                        linkValue.Url = urlArray[0];
+                                                        linkValue.Description = urlArray[0];
+                                                    }
+                                                    listitem[parser.ParseString(dataValue.Key)] = linkValue;
+                                                    break;
+                                                case FieldType.User:
+                                                    // FieldUserValue - Expected format: loginName
+                                                    var user = web.EnsureUser(fieldValue);
+                                                    web.Context.Load(user);
+                                                    web.Context.ExecuteQueryRetry();
+
+                                                    if (user != null)
+                                                    {
+                                                        var userValue = new FieldUserValue
+                                                        {
+                                                            LookupId = user.Id,
+                                                        };
+                                                        listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                    }
+                                                    else
+                                                    {
+                                                        listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                    }
+                                                    break;
+                                                default:
+                                                    listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                    break;
                                             }
-                                            else
-                                            {
-                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                            }
-                                            break;
-                                        default:
-                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                            break;
+                                        }
+                                        listitem.Update();
                                     }
+                                    web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
                                 }
-                                listitem.Update();
+                                catch (Exception ex)
+                                {
+                                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
+                                    throw;
+                                }
                             }
-                            web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
                         }
                     }
+
+                    #endregion
                 }
-                #endregion
             }
 
             return parser;
@@ -150,6 +163,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows))
+            { }
             return template;
         }
 

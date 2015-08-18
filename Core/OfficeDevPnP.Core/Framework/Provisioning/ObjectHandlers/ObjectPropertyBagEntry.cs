@@ -16,85 +16,89 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries);
-
-            var systemPropertyBagEntriesExclusions = new List<string>(new [] 
-            { 
-                "_", 
-                "vti_", 
-                "dlc_", 
-                "ecm_",
-                "profileschemaversion", 
-                "DesignPreview"
-            });
-
-            // To handle situations where the propertybag is not updated fully when applying a theme, 
-            // we need to create a new context and use that one. Reloading the propertybag does not solve this.
-            var newContext = web.Context.Clone(web.Context.Url);
-
-            web = newContext.Web;
-
-            foreach (var propbagEntry in template.PropertyBagEntries)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries))
             {
-                bool propExists = web.PropertyBagContainsKey(propbagEntry.Key);
-
-                if (propbagEntry.Overwrite)
+                var systemPropertyBagEntriesExclusions = new List<string>(new[]
                 {
-                    var systemProp = systemPropertyBagEntriesExclusions.Any(k => propbagEntry.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
-                    if (!systemProp || (systemProp && applyingInformation.OverwriteSystemPropertyBagValues))
+                    "_",
+                    "vti_",
+                    "dlc_",
+                    "ecm_",
+                    "profileschemaversion",
+                    "DesignPreview"
+                });
+
+                // To handle situations where the propertybag is not updated fully when applying a theme, 
+                // we need to create a new context and use that one. Reloading the propertybag does not solve this.
+                var newContext = web.Context.Clone(web.Context.Url);
+
+                web = newContext.Web;
+
+                foreach (var propbagEntry in template.PropertyBagEntries)
+                {
+                    bool propExists = web.PropertyBagContainsKey(propbagEntry.Key);
+
+                    if (propbagEntry.Overwrite)
                     {
-                        web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
-                        if (propbagEntry.Indexed)
+                        var systemProp = systemPropertyBagEntriesExclusions.Any(k => propbagEntry.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
+                        if (!systemProp || (systemProp && applyingInformation.OverwriteSystemPropertyBagValues))
                         {
-                            web.AddIndexedPropertyBagKey(propbagEntry.Key);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_, propbagEntry.Key, propbagEntry.Value);
+                            web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
+                            if (propbagEntry.Indexed)
+                            {
+                                web.AddIndexedPropertyBagKey(propbagEntry.Key);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    if (!propExists)
+                    else
                     {
-                        web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
-                        if (propbagEntry.Indexed)
+                        if (!propExists)
                         {
-                            web.AddIndexedPropertyBagKey(propbagEntry.Key);
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_, propbagEntry.Key, propbagEntry.Value, propbagEntry.Indexed ? ",Indexed = true" : "");
+                            web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
+                            if (propbagEntry.Indexed)
+                            {
+                                web.AddIndexedPropertyBagKey(propbagEntry.Key);
+                            }
                         }
-                    }
 
+                    }
                 }
             }
-
             return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
-
-            var entries = new List<PropertyBagEntry>();
-
-            var indexedProperties = web.GetIndexedPropertyBagKeys().ToList();
-            foreach (var propbagEntry in web.AllProperties.FieldValues)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries))
             {
-                var indexed = indexedProperties.Contains(propbagEntry.Key);
-                entries.Add(new PropertyBagEntry() { Key = propbagEntry.Key, Value = propbagEntry.Value.ToString(), Indexed = indexed });
+                web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
+                web.Context.ExecuteQueryRetry();
+
+                var entries = new List<PropertyBagEntry>();
+
+                var indexedProperties = web.GetIndexedPropertyBagKeys().ToList();
+                foreach (var propbagEntry in web.AllProperties.FieldValues)
+                {
+                    var indexed = indexedProperties.Contains(propbagEntry.Key);
+                    entries.Add(new PropertyBagEntry() { Key = propbagEntry.Key, Value = propbagEntry.Value.ToString(), Indexed = indexed });
+                }
+
+                template.PropertyBagEntries.Clear();
+                template.PropertyBagEntries.AddRange(entries);
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo);
+                }
+
+                foreach (PropertyBagEntry propbagEntry in template.PropertyBagEntries)
+                {
+                    propbagEntry.Value = Tokenize(propbagEntry.Value, web.ServerRelativeUrl);
+                }
             }
-
-            template.PropertyBagEntries.Clear();
-            template.PropertyBagEntries.AddRange(entries);
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo);
-            }
-
-            foreach (PropertyBagEntry propbagEntry in template.PropertyBagEntries)
-            {
-                propbagEntry.Value = Tokenize(propbagEntry.Value, web.ServerRelativeUrl);
-            }
-
             return template;
         }
 
@@ -114,13 +118,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Scan for "system" properties that should be removed as well. Below list contains
             // prefixes of properties that will be dropped
-            List<string> systemPropertyBagEntriesExclusions = new List<string>(new string[] 
-            { 
-                "_", 
-                "vti_", 
-                "dlc_", 
+            List<string> systemPropertyBagEntriesExclusions = new List<string>(new string[]
+            {
+                "_",
+                "vti_",
+                "dlc_",
                 "ecm_",
-                "profileschemaversion", 
+                "profileschemaversion",
                 "DesignPreview"
             });
 

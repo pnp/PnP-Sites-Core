@@ -4,6 +4,7 @@ using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Field = Microsoft.SharePoint.Client.Field;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -21,17 +22,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            parser = ProcessLookupFields(web, template, parser);
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_LookupFields))
+            {
+                try
+                {
+                    parser = ProcessLookupFields(web, template, parser, scope);
+                }
+                catch (Exception ex)
+                {
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_, ex.Message, ex.StackTrace);
+                    throw;
+                }
+
+            }
 
             return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_LookupFields))
+            { }
             return template;
         }
 
-        private TokenParser ProcessLookupFields(Web web, ProvisioningTemplate template, TokenParser parser)
+        private TokenParser ProcessLookupFields(Web web, ProvisioningTemplate template, TokenParser parser, PnPMonitoredScope scope)
         {
             var rootWeb = (web.Context as ClientContext).Site.RootWeb;
             rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));

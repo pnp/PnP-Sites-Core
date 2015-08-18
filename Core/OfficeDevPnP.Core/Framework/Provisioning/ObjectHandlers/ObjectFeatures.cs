@@ -18,24 +18,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_Features);
-
-            var context = web.Context as ClientContext;
-
-            // if this is a sub site then we're not enabling the site collection scoped features
-            if (!web.IsSubSite())
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Features))
             {
-                var siteFeatures = template.Features.SiteFeatures;
-                ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures);
+                var context = web.Context as ClientContext;
+
+                // if this is a sub site then we're not enabling the site collection scoped features
+                if (!web.IsSubSite())
+                {
+                    var siteFeatures = template.Features.SiteFeatures;
+                    ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures, scope);
+                }
+
+                var webFeatures = template.Features.WebFeatures;
+                ProvisionFeaturesImplementation<Web>(web, webFeatures, scope);
             }
-
-            var webFeatures = template.Features.WebFeatures;
-            ProvisionFeaturesImplementation<Web>(web, webFeatures);
-
             return parser;
         }
 
-        private static void ProvisionFeaturesImplementation<T>(T parent, List<Feature> features)
+        private static void ProvisionFeaturesImplementation<T>(T parent, List<Feature> features, PnPMonitoredScope scope)
         {
             var activeFeatures = new List<Microsoft.SharePoint.Client.Feature>();
             Web web = null;
@@ -63,6 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (activeFeatures.FirstOrDefault(f => f.DefinitionId == feature.Id) == null)
                         {
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_, site != null ? "site" :"web", feature.Id);
                             if (site != null)
                             {
                                 site.ActivateFeature(feature.Id);
@@ -78,6 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (activeFeatures.FirstOrDefault(f => f.DefinitionId == feature.Id) != null)
                         {
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_, site != null ? "site" : "web", feature.Id);
                             if (site != null)
                             {
                                 site.DeactivateFeature(feature.Id);
@@ -95,41 +97,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            var context = web.Context as ClientContext;
-            bool isSubSite = web.IsSubSite();
-            var webFeatures = web.Features;
-            var siteFeatures = context.Site.Features;
-
-            context.Load(webFeatures, fs => fs.Include(f => f.DefinitionId));
-            if (!isSubSite)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Features))
             {
-                context.Load(siteFeatures, fs => fs.Include(f => f.DefinitionId));
-            }
-            context.ExecuteQueryRetry();
+                var context = web.Context as ClientContext;
+                bool isSubSite = web.IsSubSite();
+                var webFeatures = web.Features;
+                var siteFeatures = context.Site.Features;
 
-            var features = new Features();
-            foreach (var feature in webFeatures)
-            {
-                features.WebFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
-            }
-
-            // if this is a sub site then we're not creating  site collection scoped feature entities
-            if (!isSubSite)
-            {
-                foreach (var feature in siteFeatures)
+                context.Load(webFeatures, fs => fs.Include(f => f.DefinitionId));
+                if (!isSubSite)
                 {
-                    features.SiteFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                    context.Load(siteFeatures, fs => fs.Include(f => f.DefinitionId));
+                }
+                context.ExecuteQueryRetry();
+
+                var features = new Features();
+                foreach (var feature in webFeatures)
+                {
+                    features.WebFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                }
+
+                // if this is a sub site then we're not creating  site collection scoped feature entities
+                if (!isSubSite)
+                {
+                    foreach (var feature in siteFeatures)
+                    {
+                        features.SiteFeatures.Add(new Feature() { Deactivate = false, Id = feature.DefinitionId });
+                    }
+                }
+
+                template.Features = features;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
                 }
             }
-
-            template.Features = features;
-
-            // If a base template is specified then use that one to "cleanup" the generated template model
-            if (creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate, isSubSite);
-            }
-
             return template;
         }
 

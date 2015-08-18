@@ -39,12 +39,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-
-            var sitePolicyEntity = web.GetAppliedSitePolicy();
-
-            if (sitePolicyEntity != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SitePolicy))
             {
-                template.SitePolicy = sitePolicyEntity.Name;
+                var sitePolicyEntity = web.GetAppliedSitePolicy();
+
+                if (sitePolicyEntity != null)
+                {
+                    template.SitePolicy = sitePolicyEntity.Name;
+                }
             }
             return template;
         }

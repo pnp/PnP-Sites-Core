@@ -17,73 +17,74 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Composed Looks"; }
         }
 
-       
+
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-
-            Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_ComposedLooks);
-            if (template.ComposedLook != null &&
-                !template.ComposedLook.Equals(ComposedLook.Empty))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
-                bool executeQueryNeeded = false;
+                if (template.ComposedLook != null &&
+                    !template.ComposedLook.Equals(ComposedLook.Empty))
+                {
+                    bool executeQueryNeeded = false;
 
-                // Apply alternate CSS
-                if (!string.IsNullOrEmpty(template.ComposedLook.AlternateCSS))
-                {
-                    var alternateCssUrl = parser.ParseString(template.ComposedLook.AlternateCSS);
-                    web.AlternateCssUrl = alternateCssUrl;
-                    web.Update();
-                    executeQueryNeeded = true;
-                }
-
-                // Apply Site logo
-                if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
-                {
-                    var siteLogoUrl = parser.ParseString(template.ComposedLook.SiteLogo);
-                    web.SiteLogoUrl = siteLogoUrl;
-                    web.Update();
-                    executeQueryNeeded = true;
-                }
-
-                if (executeQueryNeeded)
-                {
-                    web.Context.ExecuteQueryRetry();
-                }
-
-                if (String.IsNullOrEmpty(template.ComposedLook.ColorFile) &&
-                    String.IsNullOrEmpty(template.ComposedLook.FontFile) &&
-                    String.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
-                {
-                    // Apply OOB theme
-                    web.SetComposedLookByUrl(template.ComposedLook.Name);
-                }
-                else
-                {
-                    // Apply custom theme
-                    string colorFile = null;
-                    if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
+                    // Apply alternate CSS
+                    if (!string.IsNullOrEmpty(template.ComposedLook.AlternateCSS))
                     {
-                        colorFile = parser.ParseString(template.ComposedLook.ColorFile);
-                    }
-                    string backgroundFile = null;
-                    if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
-                    {
-                        backgroundFile = parser.ParseString(template.ComposedLook.BackgroundFile);
-                    }
-                    string fontFile = null;
-                    if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
-                    {
-                        fontFile = parser.ParseString(template.ComposedLook.FontFile);
+                        var alternateCssUrl = parser.ParseString(template.ComposedLook.AlternateCSS);
+                        web.AlternateCssUrl = alternateCssUrl;
+                        web.Update();
+                        executeQueryNeeded = true;
                     }
 
-                    string masterUrl = null;
-                    if (!string.IsNullOrEmpty(template.ComposedLook.MasterPage))
+                    // Apply Site logo
+                    if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
                     {
-                        masterUrl = parser.ParseString(template.ComposedLook.MasterPage);
+                        var siteLogoUrl = parser.ParseString(template.ComposedLook.SiteLogo);
+                        web.SiteLogoUrl = siteLogoUrl;
+                        web.Update();
+                        executeQueryNeeded = true;
                     }
-                    web.CreateComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
-                    web.SetComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
+
+                    if (executeQueryNeeded)
+                    {
+                        web.Context.ExecuteQueryRetry();
+                    }
+
+                    if (String.IsNullOrEmpty(template.ComposedLook.ColorFile) &&
+                        String.IsNullOrEmpty(template.ComposedLook.FontFile) &&
+                        String.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
+                    {
+                        // Apply OOB theme
+                        web.SetComposedLookByUrl(template.ComposedLook.Name);
+                    }
+                    else
+                    {
+                        // Apply custom theme
+                        string colorFile = null;
+                        if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
+                        {
+                            colorFile = parser.ParseString(template.ComposedLook.ColorFile);
+                        }
+                        string backgroundFile = null;
+                        if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
+                        {
+                            backgroundFile = parser.ParseString(template.ComposedLook.BackgroundFile);
+                        }
+                        string fontFile = null;
+                        if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
+                        {
+                            fontFile = parser.ParseString(template.ComposedLook.FontFile);
+                        }
+
+                        string masterUrl = null;
+                        if (!string.IsNullOrEmpty(template.ComposedLook.MasterPage))
+                        {
+                            masterUrl = parser.ParseString(template.ComposedLook.MasterPage);
+                        }
+                        web.CreateComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
+                        web.SetComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
+                    }
                 }
             }
             return parser;
@@ -91,139 +92,144 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // Load object if not there
-            bool executeQueryNeeded = false;
-            if (!web.IsPropertyAvailable("Url"))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
-                web.Context.Load(web, w => w.Url);
-                executeQueryNeeded = true;
-            }
-            if (!web.IsPropertyAvailable("MasterUrl"))
-            {
-                web.Context.Load(web, w => w.MasterUrl);
-                executeQueryNeeded = true;
-            }
+                // Load object if not there
+                bool executeQueryNeeded = false;
+                if (!web.IsPropertyAvailable("Url"))
+                {
+                    web.Context.Load(web, w => w.Url);
+                    executeQueryNeeded = true;
+                }
+                if (!web.IsPropertyAvailable("MasterUrl"))
+                {
+                    web.Context.Load(web, w => w.MasterUrl);
+                    executeQueryNeeded = true;
+                }
 #if !CLIENTSDKV15
-            if (!web.IsPropertyAvailable("AlternateCssUrl"))
-            {
-                web.Context.Load(web, w => w.AlternateCssUrl);
-                executeQueryNeeded = true;
-            }
-            if (!web.IsPropertyAvailable("SiteLogoUrl"))
-            {
-                web.Context.Load(web, w => w.SiteLogoUrl);
-                executeQueryNeeded = true;
-            }
+                if (!web.IsPropertyAvailable("AlternateCssUrl"))
+                {
+                    web.Context.Load(web, w => w.AlternateCssUrl);
+                    executeQueryNeeded = true;
+                }
+                if (!web.IsPropertyAvailable("SiteLogoUrl"))
+                {
+                    web.Context.Load(web, w => w.SiteLogoUrl);
+                    executeQueryNeeded = true;
+                }
 #endif
-            if (executeQueryNeeded)
-            {
-                web.Context.ExecuteQueryRetry();
-            }
+                if (executeQueryNeeded)
+                {
+                    web.Context.ExecuteQueryRetry();
+                }
 
-            // Information coming from the site
-            template.ComposedLook.MasterPage = Tokenize(web.MasterUrl, web.Url);
+                // Information coming from the site
+                template.ComposedLook.MasterPage = Tokenize(web.MasterUrl, web.Url);
 #if !CLIENTSDKV15
-            template.ComposedLook.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
-            template.ComposedLook.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
+                template.ComposedLook.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
+                template.ComposedLook.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
 #else
             template.ComposedLook.AlternateCSS = null;
             template.ComposedLook.SiteLogo = null;
 #endif
-            var theme = web.GetCurrentComposedLook();
+                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look);
+                var theme = web.GetCurrentComposedLook();
 
 
-            if (theme != null)
-            {
-                if (creationInfo != null)
+                if (theme != null)
                 {
-                    // Don't exclude the DesignPreviewThemedCssFolderUrl property bag, if any
-                    creationInfo.PropertyBagPropertiesToPreserve.Add("DesignPreviewThemedCssFolderUrl");
-                }
-
-                template.ComposedLook.Name = theme.Name;
-
-                if (theme.IsCustomComposedLook)
-                {
-                    if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
+                    if (creationInfo != null)
                     {
-                        Site site = (web.Context as ClientContext).Site;
-                        if (!site.IsObjectPropertyInstantiated("Url"))
+                        // Don't exclude the DesignPreviewThemedCssFolderUrl property bag, if any
+                        creationInfo.PropertyBagPropertiesToPreserve.Add("DesignPreviewThemedCssFolderUrl");
+                    }
+
+                    template.ComposedLook.Name = theme.Name;
+
+                    if (theme.IsCustomComposedLook)
+                    {
+                        if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
                         {
-                            web.Context.Load(site);
-                            web.Context.ExecuteQueryRetry();
+                            Site site = (web.Context as ClientContext).Site;
+                            if (!site.IsObjectPropertyInstantiated("Url"))
+                            {
+                                web.Context.Load(site);
+                                web.Context.ExecuteQueryRetry();
+                            }
+
+                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
+                            // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
+                            SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
+
+                            // to get files from theme catalog we need a connector linked to the root site
+                            SharePointConnector spConnectorRoot;
+                            if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
+                            }
+                            else
+                            {
+                                spConnectorRoot = spConnector;
+                            }
+
+                            // Download the theme/branding specific files
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
                         }
 
-                        // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
-                        SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
+                        template.ComposedLook.BackgroundFile = FixFileUrl(Tokenize(theme.BackgroundImage, web.Url));
+                        template.ComposedLook.ColorFile = FixFileUrl(Tokenize(theme.Theme, web.Url));
+                        template.ComposedLook.FontFile = FixFileUrl(Tokenize(theme.Font, web.Url));
 
-                        // to get files from theme catalog we need a connector linked to the root site
-                        SharePointConnector spConnectorRoot;
-                        if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
+                        // Create file entries for the custom theme files  
+                        if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                         {
-                            spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
+                            template.Files.Add(GetComposedLookFile(template.ComposedLook.BackgroundFile));
                         }
-                        else
+                        if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
                         {
-                            spConnectorRoot = spConnector;
+                            template.Files.Add(GetComposedLookFile(template.ComposedLook.ColorFile));
+                        }
+                        if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
+                        {
+
+                            template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
+                        }
+                        if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
+                        {
+                            template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
                         }
 
-                        // Download the theme/branding specific files
-                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl);
-                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl);
-                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage);
-                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme);
-                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font);
+                        // If a base template is specified then use that one to "cleanup" the generated template model
+                        if (creationInfo != null && creationInfo.BaseTemplate != null)
+                        {
+                            template = CleanupEntities(template, creationInfo.BaseTemplate);
+                        }
                     }
-
-                    template.ComposedLook.BackgroundFile = FixFileUrl(Tokenize(theme.BackgroundImage, web.Url));
-                    template.ComposedLook.ColorFile = FixFileUrl(Tokenize(theme.Theme, web.Url));
-                    template.ComposedLook.FontFile = FixFileUrl(Tokenize(theme.Font, web.Url));
-
-                    // Create file entries for the custom theme files  
-                    if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
+                    else
                     {
-                        template.Files.Add(GetComposedLookFile(template.ComposedLook.BackgroundFile));
-                    }
-                    if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
-                    {
-                        template.Files.Add(GetComposedLookFile(template.ComposedLook.ColorFile));
-                    }
-                    if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
-                    {
-                        template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
-                    }
-                    if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
-                    {
-                        template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
-                    }
-
-                    // If a base template is specified then use that one to "cleanup" the generated template model
-                    if (creationInfo != null && creationInfo.BaseTemplate != null)
-                    {
-                        template = CleanupEntities(template, creationInfo.BaseTemplate);
+                        template.ComposedLook.BackgroundFile = "";
+                        template.ComposedLook.ColorFile = "";
+                        template.ComposedLook.FontFile = "";
                     }
                 }
                 else
                 {
-                    template.ComposedLook.BackgroundFile = "";
-                    template.ComposedLook.ColorFile = "";
-                    template.ComposedLook.FontFile = "";
+                    template.ComposedLook = null;
+                }
+
+                if (creationInfo != null && creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
-            else
-            {
-                template.ComposedLook = null;
-            }
-
-            if (creationInfo != null && creationInfo.BaseTemplate != null)
-            {
-                template = CleanupEntities(template, creationInfo.BaseTemplate);
-            }
-
             return template;
         }
 
-        private void DownLoadFile(SharePointConnector reader, SharePointConnector readerRoot, FileConnectorBase writer, string webUrl, string asset)
+        private void DownLoadFile(SharePointConnector reader, SharePointConnector readerRoot, FileConnectorBase writer, string webUrl, string asset, PnPMonitoredScope scope)
         {
 
             // No file passed...leave
@@ -231,6 +237,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return;
             }
+
+            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_,asset);
+            ;
 
             SharePointConnector readerToUse;
             Model.File f = GetComposedLookFile(asset);
@@ -305,7 +314,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     template.ComposedLook = null;
                 }
-              
+
             }
             return template;
         }

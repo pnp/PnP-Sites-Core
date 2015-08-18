@@ -426,7 +426,6 @@
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
-    <Compile Include="Utilities\Log.cs" />
     <Compile Include="Framework\TimerJobs\Utilities\SiteEnumeration.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\BaseProvider.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\UsernameMixed.cs" />
@@ -438,6 +437,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\CredentialManager.cs" />
+    <Compile Include="Utilities\Log.cs" />
+    <Compile Include="Utilities\PnPMonitoredScope.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>
