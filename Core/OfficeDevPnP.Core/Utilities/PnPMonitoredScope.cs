@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Utilities
 
         public PnPMonitoredScope(string name)
         {
+
             _stopWatch = new Stopwatch();
             _name = name;
             _stopWatch.Start();
@@ -103,10 +104,7 @@ namespace OfficeDevPnP.Core.Utilities
         [Conditional("DEBUG")]
         private void WriteLogToConsole(string value)
         {
-            var part1 = value.Substring(0, value.IndexOf("]]") + 2);
-            var part2 = value.Substring(value.IndexOf("]]") + 2);
-            Console.WriteLine("{0} {1}{2}", part1, new string(' ', Trace.IndentLevel * 2), part2);
-
+            Console.WriteLine("{0}{1}", new string(' ', Trace.IndentLevel * 2), value);
         }
     }
 }
