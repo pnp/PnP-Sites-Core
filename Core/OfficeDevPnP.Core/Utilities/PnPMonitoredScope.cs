@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,9 +19,21 @@ namespace OfficeDevPnP.Core.Utilities
         internal string LocalMachine = Environment.MachineName;
         private Guid _correlationId;
 
+        public PnPMonitoredScope()
+        {
+            StackFrame frame = new StackFrame(1);
+            var method = frame.GetMethod();
+            var name = method.Name;
+            StartScope(name);
+        }
+
         public PnPMonitoredScope(string name)
         {
+            StartScope(name);
+        }
 
+        private void StartScope(string name)
+        {
             _stopWatch = new Stopwatch();
             _name = name;
             _stopWatch.Start();
@@ -28,6 +41,14 @@ namespace OfficeDevPnP.Core.Utilities
 
             LogInfo(CoreResources.PnPMonitoredScope_Code_execution_started);
             Indent();
+        }
+
+        private void EndScope()
+        {
+            _stopWatch.Stop();
+            Unindent();
+            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_ended, _stopWatch.ElapsedMilliseconds);
+            Trace.Flush();
         }
 
         public void Indent()
@@ -95,10 +116,7 @@ namespace OfficeDevPnP.Core.Utilities
 
         public void Dispose()
         {
-            _stopWatch.Stop();
-            Unindent();
-            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_ended, _stopWatch.ElapsedMilliseconds);
-            Trace.Flush();
+            EndScope();
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)")]
