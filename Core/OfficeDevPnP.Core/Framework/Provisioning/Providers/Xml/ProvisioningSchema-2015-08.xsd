@@ -340,7 +340,7 @@
             <xsd:any minOccurs="0" maxOccurs="1" processContents="skip"  />
           </xsd:sequence>
         </xsd:complexType>
-        
+
       </xsd:element>
 
       <xsd:element name="Publishing" type="pnp:Publishing" minOccurs="0" maxOccurs="1">
@@ -358,7 +358,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      
+
       <xsd:element name="Providers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -684,20 +684,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="PropertyBagEntry" minOccurs="1" maxOccurs="unbounded">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="en">
-            The Property Bag Entry of the Provisioning Template.
-          </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-          <xsd:complexContent>
-            <xsd:extension base="pnp:StringDictionaryItem">
-              <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" />
-            </xsd:extension>
-          </xsd:complexContent>
-        </xsd:complexType>
-      </xsd:element>
+      <xsd:element name="PropertyBagEntry" type="pnp:PropertyBagEntry"
+                    minOccurs="1" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -833,6 +821,32 @@
       </xsd:annotation>
     </xsd:attribute>
 
+  </xsd:complexType>
+
+  <xsd:complexType name="PropertyBagEntry" >
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The Property Bag Entry of the Provisioning Template.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="pnp:StringDictionaryItem">
+        <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares whether the Property Bag Entry has to overwrite an already existing entry, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Indexed" type="xsd:boolean" use="optional" default="false">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares whether the Property Bag Entry has to be indexed, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="StringDictionaryItem">
@@ -1140,7 +1154,7 @@
           <xsd:sequence>
             <xsd:element name="RoleAssignment" type="pnp:RoleAssignment" maxOccurs="unbounded" />
           </xsd:sequence>
-        
+
           <xsd:attribute name="CopyRoleAssignments" type="xsd:boolean" use="required">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
@@ -1156,7 +1170,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-        
+
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -1232,7 +1246,7 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="DataRows" maxOccurs="1" minOccurs="0">
-        
+
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a collection of rows that will be added to the List Instance, optional element.
@@ -1264,8 +1278,8 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0"> 
-        
+      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0">
+
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a list of default values for the Fields of the List Instance, optional collection of elements.
@@ -1378,6 +1392,17 @@
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           The MaxVersionLimit for versions history for the List Instance, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DraftVersionVisibility" type="xsd:int" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The DraftVersionVisibility for the List Instance, optional attribute. The property will be cast to enum DraftVersionVisibility
+          0 - Reader - 	Any user who can read items,
+          1 - Author - Only users who can edit items,
+          2 - Approver - Only users who can approve items (and the author of the item)
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -1710,7 +1735,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="FeaturesList">
@@ -1837,7 +1862,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="pnp:FieldRefBase" />
+      <xsd:extension base="pnp:FieldRefFull" />
     </xsd:complexContent>
   </xsd:complexType>
 
@@ -2246,7 +2271,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      
+
       <xsd:element name="WorkflowDefinitions">
         <xsd:complexType>
           <xsd:annotation>
@@ -2309,7 +2334,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                
+
                 <xsd:attribute name="AssociationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
@@ -2381,7 +2406,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                
+
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
@@ -2568,7 +2593,7 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="Publishing">
@@ -2630,7 +2655,7 @@
           </xsd:attribute>
 
         </xsd:complexType>
-        
+
       </xsd:element>
 
       <xsd:element name="AvailableWebTemplates" minOccurs="0" maxOccurs="1">
@@ -2676,7 +2701,7 @@
         </xsd:annotation>
 
         <xsd:complexType>
-        
+
           <xsd:sequence>
             <xsd:element name="PageLayout" minOccurs="0" maxOccurs="unbounded">
               <xsd:annotation>
@@ -2742,7 +2767,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="Provider">

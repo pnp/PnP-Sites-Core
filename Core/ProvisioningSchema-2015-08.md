@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/16/2015*
+*Topic automatically generated on 8/19/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -411,8 +411,7 @@ AuditFlag||An Audit Flag for a single Audit setting, required attribute.
 The Property Bag entries of the Provisioning Template, optional collection of elements.
 
 ```xml
-<pnp:PropertyBagEntries
-      Overwrite="xsd:boolean">
+<pnp:PropertyBagEntries>
    <pnp:PropertyBagEntry />
 </pnp:PropertyBagEntries>
 ```
@@ -423,31 +422,7 @@ Here follow the available child elements for the PropertyBagEntries element.
 
 Element|Type|Description
 -------|----|-----------
-PropertyBagEntry|[PropertyBagEntry](#propertybagentry)|The Property Bag Entry of the Provisioning Template.
-
-Here follow the available attributes for the PropertyBagEntries element.
-
-
-Attibute|Type|Description
---------|----|-----------
-Overwrite|xsd:boolean|
-<a name="propertybagentry"></a>
-###PropertyBagEntry
-The Property Bag Entry of the Provisioning Template.
-
-```xml
-<pnp:PropertyBagEntry
-      Overwrite="xsd:boolean">
-</pnp:PropertyBagEntry>
-```
-
-
-Here follow the available attributes for the  element.
-
-
-Attibute|Type|Description
---------|----|-----------
-Overwrite|xsd:boolean|
+PropertyBagEntry|[PropertyBagEntry](#propertybagentry)|
 <a name="security"></a>
 ###Security
 The Security configurations of the Provisioning Template, optional collection of elements.
@@ -557,6 +532,25 @@ Here follow the available attributes for the Pages element.
 Attibute|Type|Description
 --------|----|-----------
 WelcomePage|xsd:string|Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied, optional attribute.
+<a name="propertybagentry"></a>
+###PropertyBagEntry
+The Property Bag Entry of the Provisioning Template.
+
+```xml
+<pnp:PropertyBagEntry
+      Overwrite="xsd:boolean"
+      Indexed="xsd:boolean">
+</pnp:PropertyBagEntry>
+```
+
+
+Here follow the available attributes for the PropertyBagEntry element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Overwrite|xsd:boolean|Declares whether the Property Bag Entry has to overwrite an already existing entry, optional attribute.
+Indexed|xsd:boolean|Declares whether the Property Bag Entry has to be indexed, optional attribute.
 <a name="stringdictionaryitem"></a>
 ###StringDictionaryItem
 Defines a StringDictionary element.
@@ -824,6 +818,7 @@ Defines a ListInstance element
       EnableModeration="xsd:boolean"
       MinorVersionLimit="xsd:int"
       MaxVersionLimit="xsd:int"
+      DraftVersionVisibility="xsd:int"
       RemoveExistingContentTypes="xsd:boolean"
       TemplateFeatureID="pnp:GUID"
       ContentTypesEnabled="xsd:boolean"
@@ -870,6 +865,7 @@ EnableMinorVersions|xsd:boolean|The EnableMinorVersions flag for the List Instan
 EnableModeration|xsd:boolean|The EnableModeration flag for the List Instance, optional attribute.
 MinorVersionLimit|xsd:int|The MinorVersionLimit for versions history for the List Instance, optional attribute.
 MaxVersionLimit|xsd:int|The MaxVersionLimit for versions history for the List Instance, optional attribute.
+DraftVersionVisibility|xsd:int|The DraftVersionVisibility for the List Instance, optional attribute. The property will be cast to enum DraftVersionVisibility 0 - Reader - Any user who can read items, 1 - Author - Only users who can edit items, 2 - Approver - Only users who can approve items (and the author of the item)
 RemoveExistingContentTypes|xsd:boolean|The RemoveExistingContentTypes flag for the List Instance, optional attribute.
 TemplateFeatureID|GUID|The TemplateFeatureID for the feature on which the List Instance is based, optional attribute.
 ContentTypesEnabled|xsd:boolean|The ContentTypesEnabled flag for the List Instance, optional attribute.
