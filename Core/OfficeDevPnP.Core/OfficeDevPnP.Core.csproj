@@ -441,7 +441,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\CredentialManager.cs" />
-    <Compile Include="Diagnostics\IPnPLogger.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Utilities\Log.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScope.cs" />
     <Compile Include="Diagnostics\Tree\Enums.cs" />
