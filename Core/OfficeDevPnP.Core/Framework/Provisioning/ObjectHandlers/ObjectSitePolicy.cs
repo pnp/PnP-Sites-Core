@@ -1,18 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Web.Services.Discovery;
-using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
-using Microsoft.SharePoint.Client.InformationPolicy;
-using OfficeDevPnP.Core.Enums;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Utilities;
-using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
-using SPField = Microsoft.SharePoint.Client.Field;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
