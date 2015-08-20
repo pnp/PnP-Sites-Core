@@ -14,6 +14,7 @@ using System.Xml.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
+    [Obsolete("The PnP Provisioning Schema v201503 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
     internal class XMLPnPSchemaV201503Formatter :
         IXMLSchemaFormatter, ITemplateFormatter
     {
