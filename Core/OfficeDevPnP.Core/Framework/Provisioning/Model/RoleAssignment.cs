@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Role Assignment for a target Principal
+    /// </summary>
     public class RoleAssignment : IEquatable<RoleAssignment>
     {
         /// <summary>
