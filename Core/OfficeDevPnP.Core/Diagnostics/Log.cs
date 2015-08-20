@@ -13,44 +13,49 @@ namespace OfficeDevPnP.Core.Diagnostics
     public static class Log
     {
         [ThreadStatic]
-        private static ILogger logger;
+        private static ILogger _logger;
 
         [ThreadStatic]
-        private static LogLevel logLevel;
+        private static LogLevel _logLevel;
 
         public static LogLevel LogLevel
         {
-            get { return logLevel; }
-            set { logLevel = value; }
+            get { return _logLevel; }
+            set { _logLevel = value; }
         }
 
+        public static ILogger Logger
+        {
+            get { return _logger; }
+            set { _logger = value; }
+        }
 
         private static void InitializeLogger()
         {
-            if (logger == null)
+            if (_logger == null)
             {
                 var config = (OfficeDevPnP.Core.Diagnostics.LogConfigurationTracingSection)System.Configuration.ConfigurationManager.GetSection("pnp/tracing");
 
                 if (config != null)
                 {
-                    logLevel = config.LogLevel;
+                    _logLevel = config.LogLevel;
 
                     try
                     {
                         if (config.Logger.ElementInformation.IsPresent)
                         {
-                            logger = (ILogger)Activator.CreateInstance(config.Logger.Assembly, config.Logger.Type).Unwrap();
+                            _logger = (ILogger)Activator.CreateInstance(config.Logger.Assembly, config.Logger.Type).Unwrap();
                         }
                         else
                         {
-                            logger = new TraceLogger();
+                            _logger = new TraceLogger();
                         }
                     }
                     catch (Exception ex)
                     {
                         // Something went wrong, fall back to the built-in PnPTraceLogger
-                        logger = new TraceLogger();
-                        logger.Error(
+                        _logger = new TraceLogger();
+                        _logger.Error(
                             new LogEntry()
                             {
                                 Exception = ex,
@@ -65,8 +70,8 @@ namespace OfficeDevPnP.Core.Diagnostics
                 else
                 {
                     // Defaulting to built in logger
-                    logLevel = LogLevel.Information;
-                    logger = new TraceLogger();
+                    _logLevel = LogLevel.Information;
+                    _logger = new TraceLogger();
                 }
             }
         }
@@ -77,9 +82,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Error(string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Error || logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Error || _logLevel == LogLevel.Debug)
             {
-                logger.Error(new LogEntry()
+                _logger.Error(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source
@@ -91,9 +96,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Error(Exception ex, string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Error || logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Error || _logLevel == LogLevel.Debug)
             {
-                logger.Info(new LogEntry()
+                _logger.Info(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -105,9 +110,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Error(LogEntry logEntry)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Error || logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Error || _logLevel == LogLevel.Debug)
             {
-                logger.Error(logEntry);
+                _logger.Error(logEntry);
             }
         }
         #endregion
@@ -116,9 +121,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Info(string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Information || logLevel == LogLevel.Debug || logLevel == LogLevel.Error || logLevel == LogLevel.Warning)
+            if (_logLevel == LogLevel.Information || _logLevel == LogLevel.Debug || _logLevel == LogLevel.Error || _logLevel == LogLevel.Warning)
             {
-                logger.Info(new LogEntry()
+                _logger.Info(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source
@@ -130,9 +135,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Info(Exception ex, string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Information || logLevel == LogLevel.Debug || logLevel == LogLevel.Error || logLevel == LogLevel.Warning)
+            if (_logLevel == LogLevel.Information || _logLevel == LogLevel.Debug || _logLevel == LogLevel.Error || _logLevel == LogLevel.Warning)
             {
-                logger.Info(new LogEntry()
+                _logger.Info(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -144,9 +149,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Info(LogEntry logEntry)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Information || logLevel == LogLevel.Debug || logLevel == LogLevel.Error || logLevel == LogLevel.Warning)
+            if (_logLevel == LogLevel.Information || _logLevel == LogLevel.Debug || _logLevel == LogLevel.Error || _logLevel == LogLevel.Warning)
             {
-                logger.Info(logEntry);
+                _logger.Info(logEntry);
             }
         }
         #endregion
@@ -156,9 +161,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Warning || logLevel == LogLevel.Information)
+            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Information)
             {
-                logger.Warning(new LogEntry()
+                _logger.Warning(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -171,9 +176,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(string source, Exception ex, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Warning || logLevel == LogLevel.Information)
+            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Information)
             {
-                logger.Warning(new LogEntry()
+                _logger.Warning(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -185,9 +190,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(LogEntry logEntry)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Debug)
             {
-                logger.Warning(logEntry);
+                _logger.Warning(logEntry);
             }
         }
         #endregion
@@ -196,9 +201,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Debug(string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Debug)
             {
-                logger.Debug(new LogEntry()
+                _logger.Debug(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -211,9 +216,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Debug(string source, Exception ex, string message, params object[] args)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Debug)
             {
-                logger.Debug(new LogEntry()
+                _logger.Debug(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
@@ -225,9 +230,9 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Debug(LogEntry logEntry)
         {
             InitializeLogger();
-            if (logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Debug)
             {
-                logger.Debug(logEntry);
+                _logger.Debug(logEntry);
             }
         }
         #endregion
