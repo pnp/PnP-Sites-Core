@@ -43,18 +43,18 @@ namespace OfficeDevPnP.Core.Diagnostics
                         }
                         else
                         {
-                            logger = new PnPTraceLogger();
+                            logger = new TraceLogger();
                         }
                     }
                     catch (Exception ex)
                     {
                         // Something went wrong, fall back to the built-in PnPTraceLogger
-                        logger = new PnPTraceLogger();
+                        logger = new TraceLogger();
                         logger.Error(
                             new LogEntry()
                             {
                                 Exception = ex,
-                                Message = "Logger registration failed. Falling back to PnPTraceLogger.",
+                                Message = "Logger registration failed. Falling back to TraceLogger.",
                                 EllapsedMilliseconds = 0,
                                 CorrelationId = Guid.Empty,
                                 ThreadId = Thread.CurrentThread.ManagedThreadId,
@@ -66,7 +66,7 @@ namespace OfficeDevPnP.Core.Diagnostics
                 {
                     // Defaulting to built in logger
                     logLevel = LogLevel.Information;
-                    logger = new PnPTraceLogger();
+                    logger = new TraceLogger();
                 }
             }
         }

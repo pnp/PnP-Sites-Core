@@ -12,6 +12,5 @@ namespace OfficeDevPnP.Core.Diagnostics
         Error,
         Warning,
         Information,
-        ApiTrace
     }
 }

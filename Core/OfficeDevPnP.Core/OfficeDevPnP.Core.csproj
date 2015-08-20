@@ -280,9 +280,9 @@
     <Compile Include="Diagnostics\Log.cs" />
     <Compile Include="Diagnostics\LogConfigurationSection.cs" />
     <Compile Include="Diagnostics\LogLevel.cs" />
-    <Compile Include="Diagnostics\PnPLogEntry.cs" />
+    <Compile Include="Diagnostics\LogEntry.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScope.cs" />
-    <Compile Include="Diagnostics\PnPTraceLogger.cs" />
+    <Compile Include="Diagnostics\TraceLogger.cs" />
     <Compile Include="Entities\AreaNavigationEntity.cs" />
     <Compile Include="Entities\CustomActionEntity.cs" />
     <Compile Include="Entities\DefaultColumnTermPathValue.cs" />

@@ -12,6 +12,5 @@ namespace OfficeDevPnP.Core.Diagnostics
         void Warning(LogEntry entry);
         void Error(LogEntry entry);
         void Debug(LogEntry entry);
-        void TraceApi(LogEntry entry);
     }
 }

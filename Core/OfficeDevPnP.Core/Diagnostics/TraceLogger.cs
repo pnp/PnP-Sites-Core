@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Diagnostics
 {
-    class PnPTraceLogger : ILogger
+    class TraceLogger : ILogger
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.LogEntry.set_Message(System.String)")]
         public void Debug(LogEntry entry)
