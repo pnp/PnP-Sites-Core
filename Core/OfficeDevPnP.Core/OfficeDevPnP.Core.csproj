@@ -279,6 +279,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Diagnostics\LogLevel.cs" />
     <Compile Include="Diagnostics\PnPLogEntry.cs" />
+    <Compile Include="Diagnostics\PnPMonitoredScope.cs" />
     <Compile Include="Diagnostics\PnPTraceLogger.cs" />
     <Compile Include="Entities\AreaNavigationEntity.cs" />
     <Compile Include="Entities\CustomActionEntity.cs" />
@@ -443,7 +444,6 @@
     <Compile Include="Utilities\CredentialManager.cs" />
     <Compile Include="Diagnostics\ILogger.cs" />
     <Compile Include="Utilities\Log.cs" />
-    <Compile Include="Diagnostics\PnPMonitoredScope.cs" />
     <Compile Include="Diagnostics\Tree\Enums.cs" />
     <Compile Include="Diagnostics\Tree\ITreeNodeList.cs" />
     <Compile Include="Diagnostics\Tree\ITreeNode.cs" />
