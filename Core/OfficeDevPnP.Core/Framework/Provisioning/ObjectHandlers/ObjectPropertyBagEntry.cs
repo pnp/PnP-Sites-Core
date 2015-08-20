@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var systemProp = systemPropertyBagEntriesExclusions.Any(k => propbagEntry.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
                         if (!systemProp || (systemProp && applyingInformation.OverwriteSystemPropertyBagValues))
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_, propbagEntry.Key, propbagEntry.Value);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_, propbagEntry.Key, propbagEntry.Value);
                             web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
                             if (propbagEntry.Indexed)
                             {
@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (!propExists)
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_, propbagEntry.Key, propbagEntry.Value, propbagEntry.Indexed ? ",Indexed = true" : "");
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_, propbagEntry.Key, propbagEntry.Value, propbagEntry.Indexed ? ",Indexed = true" : "");
                             web.SetPropertyBagValue(propbagEntry.Key, parser.ParseString(propbagEntry.Value));
                             if (propbagEntry.Indexed)
                             {

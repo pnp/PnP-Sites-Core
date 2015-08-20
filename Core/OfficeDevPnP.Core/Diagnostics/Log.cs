@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Diagnostics
             set { _logger = value; }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.LogEntry.set_Message(System.String)")]
         private static void InitializeLogger()
         {
             if (_logger == null)

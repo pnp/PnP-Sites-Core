@@ -49,7 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (file.Overwrite)
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_,file.Src);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_,file.Src);
                             checkedOut = CheckOutIfNeeded(web, targetFile);
 
                             using (var stream = template.Connector.GetFileStream(file.Src))
@@ -66,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         using (var stream = template.Connector.GetFileStream(file.Src))
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, file.Src);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, file.Src);
                             targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
                         }
 
@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // check if the webpart is already set on the page
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
                                 {
-                                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page,webpart.Title);
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page,webpart.Title);
                                     var wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = webpart.Title;
                                     wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });

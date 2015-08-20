@@ -362,6 +362,7 @@ namespace OfficeDevPnP.Core
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         private void EnsureToken(string siteUrl, string realm, string appId, string appSecret)
         {
             if (appOnlyAccessToken == null)

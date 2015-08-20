@@ -1045,6 +1045,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException("masterPageServerRelativeUrl"); }

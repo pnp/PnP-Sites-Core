@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (activeFeatures.FirstOrDefault(f => f.DefinitionId == feature.Id) == null)
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_, site != null ? "site" :"web", feature.Id);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_, site != null ? "site" :"web", feature.Id);
                             if (site != null)
                             {
                                 site.ActivateFeature(feature.Id);
@@ -78,7 +78,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (activeFeatures.FirstOrDefault(f => f.DefinitionId == feature.Id) != null)
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_, site != null ? "site" : "web", feature.Id);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_, site != null ? "site" : "web", feature.Id);
                             if (site != null)
                             {
                                 site.DeactivateFeature(feature.Id);

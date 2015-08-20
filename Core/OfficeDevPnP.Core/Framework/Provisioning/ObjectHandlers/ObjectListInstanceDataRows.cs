@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (listInstance.DataRows != null && listInstance.DataRows.Any())
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
                             // Retrieve the target list
                             var list = web.Lists.GetByTitle(listInstance.Title);
                             web.Context.Load(list);
@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 try
                                 {
-                                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
                                     var listitemCI = new ListItemCreationInformation();
                                     var listitem = list.AddItem(listitemCI);
 

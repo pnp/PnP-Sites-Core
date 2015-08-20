@@ -835,6 +835,7 @@ namespace Microsoft.SharePoint.Client
             return BestMatchContentTypeIdImplementation(list, baseContentTypeId);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         private static ContentTypeId BestMatchContentTypeIdImplementation(this List list, string baseContentTypeId)
         {
             var contentTypes = list.ContentTypes;

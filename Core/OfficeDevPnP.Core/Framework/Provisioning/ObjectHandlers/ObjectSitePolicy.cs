@@ -13,16 +13,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            Diagnostics.Log.Info(Constants.LOGGING_SOURCE_FRAMEWORK_PROVISIONING, CoreResources.Provisioning_ObjectHandlers_SitePolicy);
-
-            if (template.SitePolicy != null)
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SitePolicy))
             {
-                if (web.GetSitePolicyByName(template.SitePolicy) != null) // Site Policy Available?
+                if (template.SitePolicy != null)
                 {
-                    web.ApplySitePolicy(template.SitePolicy);
+                    if (web.GetSitePolicyByName(template.SitePolicy) != null) // Site Policy Available?
+                    {
+                        web.ApplySitePolicy(template.SitePolicy);
+                    }
                 }
             }
-
             return parser;
         }
 

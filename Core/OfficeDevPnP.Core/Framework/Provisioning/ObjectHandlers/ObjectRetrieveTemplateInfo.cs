@@ -20,6 +20,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_RetrieveTemplateInfo))
+            { }
             return parser;
         }
 

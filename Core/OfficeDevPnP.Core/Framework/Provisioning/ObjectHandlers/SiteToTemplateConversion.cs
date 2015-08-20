@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         public static void LogPropertyUpdate(this PnPMonitoredScope scope, string propertyName)
         {
-            scope.LogInfo(CoreResources.PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_, propertyName);
+            scope.LogDebug(CoreResources.PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_, propertyName);
         }
     }
 
@@ -34,29 +34,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (creationInfo.BaseTemplate != null)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_Base_template_available___0_, creationInfo.BaseTemplate.Id);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_Base_template_available___0_, creationInfo.BaseTemplate.Id);
                     }
                     progressDelegate = creationInfo.ProgressDelegate;
                     if (creationInfo.ProgressDelegate != null)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
                     }
                     messagesDelegate = creationInfo.MessagesDelegate;
                     if (creationInfo.MessagesDelegate != null)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }
                     if (creationInfo.IncludeAllTermGroups)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true);
                     }
                     if (creationInfo.IncludeSiteCollectionTermGroup)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true);
                     }
                     if (creationInfo.PersistComposedLookFiles)
                     {
-                        scope.LogInfo(CoreResources.SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true);
                     }
                 }
 
