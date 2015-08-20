@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Defines a single Supported UI Language for a site
+    /// </summary>
     public class SupportedUILanguage : IEquatable<SupportedUILanguage>
     {
+        /// <summary>
+        /// The Locale ID of a Supported UI Language
+        /// </summary>
         public Int32 LCID { get; set; }
 
         #region Comparison code

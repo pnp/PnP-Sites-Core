@@ -6,20 +6,74 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Defines the Regional Settings for a site
+    /// </summary>
     public class RegionalSettings : IEquatable<RegionalSettings>
     {
+        /// <summary>
+        /// The number of days to extend or reduce the current month in Hijri calendars
+        /// </summary>
         public Int32 AdjustHijriDays { get; set; }
+
+        /// <summary>
+        /// The Alternate Calendar type that is used on the server
+        /// </summary>
         public Microsoft.SharePoint.Client.CalendarType AlternateCalendarType { get; set; }
+
+        /// <summary>
+        /// The Calendar Type that is used on the server
+        /// </summary>
         public Microsoft.SharePoint.Client.CalendarType CalendarType { get; set; }
+
+        /// <summary>
+        /// The Collation that is used on the site
+        /// </summary>
         public Int32 Collation { get; set; }
+
+        /// <summary>
+        /// The First Day of the Week used in calendars on the server
+        /// </summary>
         public DayOfWeek FirstDayOfWeek { get; set; }
+
+        /// <summary>
+        /// The First Week of the Year used in calendars on the server
+        /// </summary>
         public Int32 FirstWeekOfYear { get; set; }
+
+        /// <summary>
+        /// The Locale Identifier in use on the server
+        /// </summary>
         public Int32 LocaleId { get; set; }
+
+        /// <summary>
+        /// Defines whether to display the week number in day or week views of a calendar
+        /// </summary>
         public Boolean ShowWeeks { get; set; }
+
+        /// <summary>
+        /// Defines whether to use a 24-hour time format in representing the hours of the day
+        /// </summary>
         public Boolean Time24 { get; set; }
+
+        /// <summary>
+        /// The Time Zone that is used on the server
+        /// </summary>
         public Int32 TimeZone { get; set; }
+
+        /// <summary>
+        /// The the default hour at which the work day ends on the calendar that is in use on the server
+        /// </summary>
         public WorkHour WorkDayEndHour { get; set; }
+
+        /// <summary>
+        /// The work days of Web site calendars
+        /// </summary>
         public Int32 WorkDays { get; set; }
+
+        /// <summary>
+        /// The the default hour at which the work day starts on the calendar that is in use on the server
+        /// </summary>
         public WorkHour WorkDayStartHour { get; set; }
 
         #region Comparison code
@@ -73,6 +127,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
     }
 
+    /// <summary>
+    /// The Work Hours of a Day
+    /// </summary>
     public enum WorkHour
     {
         AM1200 = 0,

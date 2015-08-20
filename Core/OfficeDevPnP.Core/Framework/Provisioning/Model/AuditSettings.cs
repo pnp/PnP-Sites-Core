@@ -8,8 +8,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     public class AuditSettings : IEquatable<AuditSettings>
     {
+        /// <summary>
+        /// Audit Flags configured for the Site
+        /// </summary>
         public Microsoft.SharePoint.Client.AuditMaskType AuditFlag { get; set; }
+
+        /// <summary>
+        /// The Audit Log Trimming Retention for Audits
+        /// </summary>
         public Int32 AuditLogTrimmingRetention { get; set; }
+
+        /// <summary>
+        /// A flag to enable Audit Log Trimming
+        /// </summary>
         public Boolean TrimAuditLog { get; set; }
 
         #region Comparison code
