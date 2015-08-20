@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}",
+            return (String.Format("{0}|",
                 this.LCID
                 ).GetHashCode());
         }
