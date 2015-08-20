@@ -11,13 +11,7 @@ namespace OfficeDevPnP.Core.Diagnostics
     public sealed class PnPMonitoredScope : TreeNode<PnPMonitoredScope>, IDisposable
     {
         [ThreadStatic]
-        internal static LogLevel LogLevel;
-
-        [ThreadStatic]
         internal static PnPMonitoredScope TopScope;
-
-        [ThreadStatic]
-        internal static ILogger Logger;
 
         private Stopwatch _stopWatch;
         private string _name;
@@ -60,48 +54,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.LogEntry.set_Message(System.String)")]
         private void StartScope(string name)
         {
-            if (Logger == null)
-            {
-                var config = (OfficeDevPnP.Core.Diagnostics.LogConfigurationTracingSection)System.Configuration.ConfigurationManager.GetSection("pnp/tracing");
 
-                if (config != null)
-                {
-                    LogLevel = config.LogLevel;
-
-                    try
-                    {
-                        if (config.Logger.ElementInformation.IsPresent)
-                        {
-                            Logger = (ILogger)Activator.CreateInstance(config.Logger.Assembly, config.Logger.Type).Unwrap();
-                        }
-                        else
-                        {
-                            Logger = new PnPTraceLogger();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        // Something went wrong, fall back to the built-in PnPTraceLogger
-                        Logger = new PnPTraceLogger();
-                        Logger.Error(
-                            new LogEntry()
-                            {
-                                Exception = ex,
-                                Message = "Logger registration failed. Falling back to PnPTraceLogger.",
-                                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                                CorrelationId = TopScope.CorrelationId,
-                                ThreadId = _threadId,
-                                Source = Name
-                            });
-                    }
-                }
-                else
-                {
-                    // Defaulting to built in logger
-                    LogLevel = LogLevel.Information;
-                    Logger = new PnPTraceLogger();
-                }
-            }
 
             _threadId = Thread.CurrentThread.ManagedThreadId;
             _stopWatch = new Stopwatch();
@@ -141,104 +94,87 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         public void LogError(string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Error || LogLevel == LogLevel.Debug)
+            Log.Error(new LogEntry()
             {
-                Logger.Error(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                ThreadId = _threadId
+            });
         }
 
         public void LogError(Exception ex, string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Error || LogLevel == LogLevel.Debug)
+            Log.Error(new LogEntry()
             {
-                Logger.Error(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    Exception = ex,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                Exception = ex,
+                ThreadId = _threadId
+            });
         }
 
         public void LogInfo(string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Information || LogLevel == LogLevel.Debug || LogLevel == LogLevel.Error || LogLevel == LogLevel.Warning)
+            Log.Info(new LogEntry()
             {
-                Logger.Info(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                ThreadId = _threadId
+            });
         }
         public void LogInfo(Exception ex, string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Information || LogLevel == LogLevel.Debug || LogLevel == LogLevel.Error || LogLevel == LogLevel.Warning)
+            Log.Info(new LogEntry()
             {
-                Logger.Info(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    Exception = ex,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                Exception = ex,
+                ThreadId = _threadId
+            });
         }
 
 
 
         public void LogWarning(string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Warning || LogLevel == LogLevel.Information)
+            Log.Warning(new LogEntry()
             {
-                Logger.Warning(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                ThreadId = _threadId
+            });
         }
 
 
 
         public void LogWarning(Exception ex, string message, params object[] args)
         {
-            if (LogLevel == LogLevel.Warning || LogLevel == LogLevel.Information)
+            Log.Warning(new LogEntry()
             {
-                Logger.Warning(new LogEntry()
-                {
-                    CorrelationId = TopScope.CorrelationId,
-                    EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
-                    Message = string.Format(message, args),
-                    Source = Name,
-                    Exception = ex,
-                    ThreadId = _threadId
-                });
-            }
+                CorrelationId = TopScope.CorrelationId,
+                EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
+                Message = string.Format(message, args),
+                Source = Name,
+                Exception = ex,
+                ThreadId = _threadId
+            });
+
         }
 
 
         public void LogDebug(string message, params object[] args)
         {
-            Logger.Debug(new LogEntry()
+            Log.Debug(new LogEntry()
             {
                 CorrelationId = TopScope.CorrelationId,
                 EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
@@ -250,7 +186,7 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         public void LogDebug(Exception ex, string message, params object[] args)
         {
-            Logger.Debug(new LogEntry()
+            Log.Debug(new LogEntry()
             {
                 CorrelationId = TopScope.CorrelationId,
                 EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
@@ -259,41 +195,6 @@ namespace OfficeDevPnP.Core.Diagnostics
                 Exception = ex,
                 ThreadId = _threadId
             });
-        }
-
-        private string GetLogEntry(string source, string message, params object[] args)
-        {
-
-            try
-            {
-                string msg = string.Empty;
-
-                if (args == null || args.Length == 0)
-                {
-                    msg = message.Replace("{", "{{").Replace("}", "}}");
-                }
-                else
-                {
-                    msg = String.Format(CultureInfo.CurrentCulture, message, args);
-                }
-                return string.Format(CultureInfo.CurrentCulture, "{0}\t[{1}]:[{2}]\t{3}\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, this.Depth, ThreadId, msg, _stopWatch.ElapsedMilliseconds, TopScope.CorrelationId);
-            }
-            catch (Exception e)
-            {
-                return string.Format("Error while generating log information, {0}", e);
-            }
-        }
-
-        //private void PnPMonitoredScope_Disposing(object sender, EventArgs e)
-        //{
-        //    EndScope();
-        //}
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Console.WriteLine(System.String,System.Object,System.Object)")]
-        [Conditional("DEBUG")]
-        private void WriteLogToConsole(string value)
-        {
-            Console.WriteLine("{0}{1}", new string(' ', this.Depth * 2), value);
         }
 
         #region IDisposable Support
@@ -306,12 +207,8 @@ namespace OfficeDevPnP.Core.Diagnostics
                 if (disposing)
                 {
                     EndScope();
-                    // TODO: dispose managed state (managed objects).
+
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
                 disposedValue = true;
             }
         }
@@ -325,10 +222,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
         }
         #endregion
 

@@ -8,10 +8,10 @@ using Microsoft.SharePoint.Client.Publishing;
 using Microsoft.SharePoint.Client.Search.Query;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Diagnostics;
+using Utility = OfficeDevPnP.Core.Utilities.Utility;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -752,7 +752,7 @@ namespace Microsoft.SharePoint.Client
                 return null;
             }
         }
-        
+
 
         /// <summary>
         /// Checks if the given property bag entry exists

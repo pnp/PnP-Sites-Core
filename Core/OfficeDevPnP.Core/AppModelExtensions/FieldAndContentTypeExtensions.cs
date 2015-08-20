@@ -1,6 +1,6 @@
 ﻿using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

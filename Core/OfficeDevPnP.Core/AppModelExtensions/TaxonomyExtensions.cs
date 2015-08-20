@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {

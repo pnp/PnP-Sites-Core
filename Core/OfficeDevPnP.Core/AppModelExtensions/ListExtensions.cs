@@ -9,8 +9,8 @@ using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
-using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.WebParts;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {

@@ -10,7 +10,7 @@ using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.TimerJobs.Enums;
 using OfficeDevPnP.Core.Framework.TimerJobs.Utilities;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.TimerJobs
 {
@@ -239,7 +239,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
                 if (String.IsNullOrEmpty(this.realm) && this.authenticationType == AuthenticationType.AppOnly && requestedSites.Count > 0)
                 {
-                    this.realm = TokenHelper.GetRealmFromTargetUrl(new Uri(GetTopLevelSite(requestedSites[0].Replace("*", ""))));
+                    this.realm = Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(GetTopLevelSite(requestedSites[0].Replace("*", ""))));
                 }
 
                 // Prepare the list of sites to process. This will resolve the wildcard site Url's to a list of actual Url's
@@ -417,7 +417,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                             // We should have a value, but you never know...
                             if (!string.IsNullOrEmpty(timerJobProps))
                             {
-                                Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_OnTimerJobRun_PropertiesRead, propertyKey,e.Url);
+                                Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_OnTimerJobRun_PropertiesRead, propertyKey, e.Url);
 
                                 // Deserialize the json string into a TimerJobRun class instance
                                 TimerJobRun timerJobRunProperties = s.Deserialize<TimerJobRun>(timerJobProps);
@@ -620,9 +620,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             if (String.IsNullOrEmpty(password))
             {
                 throw new ArgumentNullException("password");
-            } 
-            
-            UseOffice365Authentication(userUPN, EncryptionUtility.ToSecureString(password));
+            }
+
+            UseOffice365Authentication(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
         }
 
         /// <summary>
@@ -663,7 +663,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
-            NetworkCredential cred = CredentialManager.GetCredential(credentialName);
+            NetworkCredential cred = Core.Utilities.CredentialManager.GetCredential(credentialName);
 
             if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
             {
@@ -689,7 +689,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 throw new ArgumentNullException("password");
             }
 
-            UseNetworkCredentialsAuthentication(samAccountName, EncryptionUtility.ToSecureString(password), domain);
+            UseNetworkCredentialsAuthentication(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
         }
 
         /// <summary>
@@ -737,7 +737,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
-            NetworkCredential cred = CredentialManager.GetCredential(credentialName);
+            NetworkCredential cred = Core.Utilities.CredentialManager.GetCredential(credentialName);
 
             if (!String.IsNullOrEmpty(cred.UserName))
             {
@@ -926,7 +926,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 throw new ArgumentNullException("password");
             }
 
-            SetEnumerationCredentials(userUPN, EncryptionUtility.ToSecureString(password));
+            SetEnumerationCredentials(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
         }
 
         /// <summary>
@@ -964,7 +964,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 throw new ArgumentNullException("password");
             }
 
-            SetEnumerationCredentials(samAccountName, EncryptionUtility.ToSecureString(password), domain);
+            SetEnumerationCredentials(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
         }
 
         /// <summary>
@@ -1008,7 +1008,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
-            NetworkCredential cred = CredentialManager.GetCredential(credentialName);
+            NetworkCredential cred = Core.Utilities.CredentialManager.GetCredential(credentialName);
 
             if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
             {
@@ -1515,7 +1515,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 return false;
             }
-        }        
+        }
         #endregion
     }
 }

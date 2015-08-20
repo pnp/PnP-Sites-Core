@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using OfficeDevPnP.Core;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {

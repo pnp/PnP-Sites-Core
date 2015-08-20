@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Security;
 
+
 namespace OfficeDevPnP.Core.Utilities
 {
     public class MailUtility
@@ -97,11 +98,11 @@ namespace OfficeDevPnP.Core.Utilities
                     {
                         if (args.Error != null)
                         {
-                            Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendFailed, args.Error.Message);
+                            Diagnostics.Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendFailed, args.Error.Message);
                         }
                         else if (args.Cancelled)
                         {
-                            Log.Info(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendMailCancelled);
+                            Diagnostics.Log.Info(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendMailCancelled);
                         }
                     };
                     server.SendAsync(mail, asyncUserToken);
@@ -113,11 +114,11 @@ namespace OfficeDevPnP.Core.Utilities
             }
             catch (SmtpException smtpEx)
             {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendException, smtpEx.Message);
+                Diagnostics.Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendException, smtpEx.Message);
             }
             catch (Exception ex)
             {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendExceptionRethrow0, ex);
+                Diagnostics.Log.Error(Constants.LOGGING_SOURCE, CoreResources.MailUtility_SendExceptionRethrow0, ex);
                 throw;
             }
         }

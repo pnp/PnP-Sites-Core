@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {
