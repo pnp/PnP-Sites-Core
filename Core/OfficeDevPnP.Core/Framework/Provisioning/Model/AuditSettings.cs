@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// The Audit Settings for the Provisioning Template
+    /// </summary>
     public class AuditSettings : IEquatable<AuditSettings>
     {
         /// <summary>
