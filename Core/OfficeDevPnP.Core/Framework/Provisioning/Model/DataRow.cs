@@ -10,13 +10,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private members
         private Dictionary<string, string> _values = new Dictionary<string, string>();
+        private ObjectSecurity _objectSecurity = new ObjectSecurity();
         #endregion
 
         #region public members
+
+        /// <summary>
+        /// Defines the fields to provision within a row that will be added to the List Instance
+        /// </summary>
         public Dictionary<string, string> Values
         {
             get { return _values; }
             private set { _values = value; }
+        }
+
+        /// <summary>
+        /// Defines the security rules for the row that will be added to the List Instance
+        /// </summary>
+        public ObjectSecurity ObjectSecurity
+        {
+            get { return _objectSecurity; }
+            private set { _objectSecurity = value; }
         }
         #endregion
 
