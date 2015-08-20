@@ -1,6 +1,5 @@
 ﻿using OfficeDevPnP.Core.Diagnostics.Tree;
 using System;
-using System.Configuration;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -11,9 +10,15 @@ namespace OfficeDevPnP.Core.Diagnostics
 
     public sealed class PnPMonitoredScope : TreeNode<PnPMonitoredScope>, IDisposable
     {
+        [ThreadStatic]
         internal static LogLevel LogLevel;
+
+        [ThreadStatic]
         internal static PnPMonitoredScope TopScope;
+
+        [ThreadStatic]
         internal static ILogger Logger;
+
         private Stopwatch _stopWatch;
         private string _name;
         private Guid _correlationId;
@@ -52,27 +57,27 @@ namespace OfficeDevPnP.Core.Diagnostics
         }
 
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.LogEntry.set_Message(System.String)")]
         private void StartScope(string name)
         {
-            if (ConfigurationManager.AppSettings.AllKeys.Contains("PnPLogLevel"))
-            {
-                var logLevel = ConfigurationManager.AppSettings.Get("PnPLogLevel");
-                LogLevel = (LogLevel)Enum.Parse(typeof(LogLevel), logLevel);
-            }
-            else
-            {
-                LogLevel = LogLevel.Information;
-            }
             if (Logger == null)
             {
-                if (ConfigurationManager.AppSettings.AllKeys.Contains("PnPLogClass"))
+                var config = (OfficeDevPnP.Core.Diagnostics.LogConfigurationTracingSection)System.Configuration.ConfigurationManager.GetSection("pnp/tracing");
+
+                if (config != null)
                 {
+                    LogLevel = config.LogLevel;
+
                     try
                     {
-                        var classString = ConfigurationManager.AppSettings.Get("PnPLogClass");
-                        var logAssemblyString = classString.Split(',')[0].Trim();
-                        var logTypeString = classString.Split(',')[1].Trim();
-                        Logger = (ILogger)Activator.CreateInstance(logAssemblyString, logTypeString).Unwrap();
+                        if (config.Logger.ElementInformation.IsPresent)
+                        {
+                            Logger = (ILogger)Activator.CreateInstance(config.Logger.Assembly, config.Logger.Type).Unwrap();
+                        }
+                        else
+                        {
+                            Logger = new PnPTraceLogger();
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -82,7 +87,7 @@ namespace OfficeDevPnP.Core.Diagnostics
                             new LogEntry()
                             {
                                 Exception = ex,
-                                Message = "Logger registration failed",
+                                Message = "Logger registration failed. Falling back to PnPTraceLogger.",
                                 EllapsedMilliseconds = _stopWatch.ElapsedMilliseconds,
                                 CorrelationId = TopScope.CorrelationId,
                                 ThreadId = _threadId,
@@ -92,9 +97,12 @@ namespace OfficeDevPnP.Core.Diagnostics
                 }
                 else
                 {
+                    // Defaulting to built in logger
+                    LogLevel = LogLevel.Information;
                     Logger = new PnPTraceLogger();
                 }
             }
+
             _threadId = Thread.CurrentThread.ManagedThreadId;
             _stopWatch = new Stopwatch();
             _name = name;
@@ -110,14 +118,19 @@ namespace OfficeDevPnP.Core.Diagnostics
                 var lastnode = TopScope.Descendants.Any() ? TopScope.Descendants.LastOrDefault() : TopScope;
                 ((PnPMonitoredScope)lastnode).Children.Add(this);
             }
-            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_started);
+            LogDebug(CoreResources.PnPMonitoredScope_Code_execution_started);
         }
 
         private void EndScope()
         {
             _stopWatch.Stop();
-            LogInfo(CoreResources.PnPMonitoredScope_Code_execution_ended, _stopWatch.ElapsedMilliseconds);
+            LogDebug(CoreResources.PnPMonitoredScope_Code_execution_ended, _stopWatch.ElapsedMilliseconds);
+
             Trace.Flush();
+            if (TopScope == this)
+            {
+                TopScope = null;
+            }
             Parent = null;
         }
 
@@ -263,9 +276,7 @@ namespace OfficeDevPnP.Core.Diagnostics
                 {
                     msg = String.Format(CultureInfo.CurrentCulture, message, args);
                 }
-                string log = string.Format("{0}\t[{1}]:[{2}]\t{3}\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, this.Depth, ThreadId, msg, _stopWatch.ElapsedMilliseconds, TopScope.CorrelationId);
-                //string log = string.Format(CultureInfo.CurrentCulture, "{0} [{1}] {2} {3}ms {4}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, msg, _stopWatch.ElapsedMilliseconds, _parentCorrelationId);
-                return log;
+                return string.Format(CultureInfo.CurrentCulture, "{0}\t[{1}]:[{2}]\t{3}\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), source, this.Depth, ThreadId, msg, _stopWatch.ElapsedMilliseconds, TopScope.CorrelationId);
             }
             catch (Exception e)
             {

@@ -277,6 +277,7 @@
     <Compile Include="AppModelExtensions\BrandingExtensions.cs" />
     <Compile Include="BuiltInContentTypeId.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Diagnostics\LogConfigurationSection.cs" />
     <Compile Include="Diagnostics\LogLevel.cs" />
     <Compile Include="Diagnostics\PnPLogEntry.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScope.cs" />

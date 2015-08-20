@@ -13,18 +13,18 @@ namespace OfficeDevPnP.Core.Diagnostics
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.LogEntry.set_Message(System.String)")]
         public void Debug(LogEntry entry)
         {
-            entry.Message = "[DEBUG] " + entry.Message;
-            Trace.TraceInformation(GetLogEntry(entry));
+            entry.Message = entry.Message;
+            Trace.TraceInformation(GetLogEntry(entry, LogLevel.Debug));
         }
 
         public void Error(LogEntry entry)
         {
-            Trace.TraceError(GetLogEntry(entry));
+            Trace.TraceError(GetLogEntry(entry, LogLevel.Error));
         }
 
         public void Info(LogEntry entry)
         {
-            Trace.TraceInformation(GetLogEntry(entry));
+            Trace.TraceInformation(GetLogEntry(entry, LogLevel.Information));
         }
 
         public void TraceApi(LogEntry entry)
@@ -34,15 +34,16 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         public void Warning(LogEntry entry)
         {
-            Trace.TraceWarning(GetLogEntry(entry));
+            Trace.TraceWarning(GetLogEntry(entry, LogLevel.Information));
         }
 
-        private string GetLogEntry(LogEntry entry)
+        private string GetLogEntry(LogEntry entry, LogLevel level)
         {
 
             try
             {
-                string log = string.Format("{0}\t[{1}]:[{2}]\t{3}\t{4}ms\t{5}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), entry.Source, entry.ThreadId, entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId);
+
+                string log = string.Format("{0}\t[{1}]\t[{2}]\t[{3}]\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), entry.Source, entry.ThreadId, level.ToString(), entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId);
 
                 return log;
             }

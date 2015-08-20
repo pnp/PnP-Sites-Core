@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Diagnostics
 {
-    internal enum LogLevel
+    public enum LogLevel
     {
         Debug,
         Error,
