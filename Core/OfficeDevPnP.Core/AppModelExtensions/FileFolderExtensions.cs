@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -662,6 +662,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="stream"></param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static File UploadFile(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
         {
             if (fileName == null)
@@ -738,6 +739,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="stream"></param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static File UploadFileWebDav(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
         {
             if (fileName == null)
@@ -903,6 +905,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="file">Target file object.</param>
         /// <param name="properties">Dictionary of properties to set.</param>
         /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetFileProperties(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
         {
             if (file == null)
@@ -1035,6 +1038,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="file">Target file to publish.</param>
         /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void PublishFileToLevel(this File file, FileLevel level)
         {
             if (file == null)

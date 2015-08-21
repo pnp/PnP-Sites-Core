@@ -3,11 +3,15 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 
+
 namespace OfficeDevPnP.Core.Utilities
 {
+    // The following class will be deprecated on 2015-11
+
     /// <summary>
     /// Logging class
     /// </summary>
+    [Obsolete("Use OfficeDevPnP.Core.Diagnostics.Log")]
     public static class Log
     {
         #region Public Members

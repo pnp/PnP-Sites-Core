@@ -1,9 +1,9 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Diagnostics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {

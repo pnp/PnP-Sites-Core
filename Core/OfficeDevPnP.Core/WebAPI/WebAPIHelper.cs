@@ -12,6 +12,7 @@ using System.Web.UI;
 using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
 using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.SharePoint.Client;
+using Log = OfficeDevPnP.Core.Diagnostics.Log;
 using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.WebAPI

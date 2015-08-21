@@ -4,8 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Utilities;
 using File = Microsoft.SharePoint.Client.File;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {

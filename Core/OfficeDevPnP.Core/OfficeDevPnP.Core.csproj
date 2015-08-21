@@ -210,6 +210,7 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
@@ -276,6 +277,12 @@
     <Compile Include="AppModelExtensions\BrandingExtensions.cs" />
     <Compile Include="BuiltInContentTypeId.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Diagnostics\Log.cs" />
+    <Compile Include="Diagnostics\LogConfigurationSection.cs" />
+    <Compile Include="Diagnostics\LogLevel.cs" />
+    <Compile Include="Diagnostics\LogEntry.cs" />
+    <Compile Include="Diagnostics\PnPMonitoredScope.cs" />
+    <Compile Include="Diagnostics\TraceLogger.cs" />
     <Compile Include="Entities\AreaNavigationEntity.cs" />
     <Compile Include="Entities\CustomActionEntity.cs" />
     <Compile Include="Entities\DefaultColumnTermPathValue.cs" />
@@ -437,8 +444,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Utilities\CredentialManager.cs" />
-    <Compile Include="Utilities\Log.cs" />
-    <Compile Include="Utilities\PnPMonitoredScope.cs" />
+    <Compile Include="Diagnostics\ILogger.cs" />
+    <Compile Include="Utilities\Deprecated\Log.deprecated.cs" />
+    <Compile Include="Diagnostics\Tree\Enums.cs" />
+    <Compile Include="Diagnostics\Tree\ITreeNodeList.cs" />
+    <Compile Include="Diagnostics\Tree\ITreeNode.cs" />
+    <Compile Include="Diagnostics\Tree\ITreeNodeAware.cs" />
+    <Compile Include="Diagnostics\Tree\Tree.cs" />
+    <Compile Include="Diagnostics\Tree\TreeNode.cs" />
+    <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>

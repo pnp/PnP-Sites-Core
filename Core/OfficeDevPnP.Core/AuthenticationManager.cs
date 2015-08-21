@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core
 {
@@ -41,7 +40,7 @@ namespace OfficeDevPnP.Core
         /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetSharePointOnlineAuthenticatedContextTenant(string siteUrl, string tenantUser, string tenantUserPassword)
         {
-            var spoPassword = EncryptionUtility.ToSecureString(tenantUserPassword);
+            var spoPassword = Utilities.EncryptionUtility.ToSecureString(tenantUserPassword);
             return GetSharePointOnlineAuthenticatedContextTenant(siteUrl, tenantUser, spoPassword);
         }
 
@@ -79,7 +78,7 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string realm, string appId, string appSecret)
         {
             EnsureToken(siteUrl, realm, appId, appSecret);
-            ClientContext clientContext = TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
+            ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
             return clientContext;
         }
 
@@ -208,7 +207,7 @@ namespace OfficeDevPnP.Core
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint)
         {
-            var cert = X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
+            var cert = Utilities.X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert);
         }
@@ -224,7 +223,7 @@ namespace OfficeDevPnP.Core
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword)
         {
-            var certPassword = EncryptionUtility.ToSecureString(certificatePassword);
+            var certPassword = Utilities.EncryptionUtility.ToSecureString(certificatePassword);
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, certificatePath, certPassword);
         }
@@ -363,6 +362,7 @@ namespace OfficeDevPnP.Core
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         private void EnsureToken(string siteUrl, string realm, string appId, string appSecret)
         {
             if (appOnlyAccessToken == null)
@@ -372,11 +372,11 @@ namespace OfficeDevPnP.Core
                     Log.Debug(Constants.LOGGING_SOURCE, "AuthenticationManager:EnsureToken(siteUrl:{0},realm:{1},appId:{2},appSecret:PRIVATE)", siteUrl, realm, appId);
                     if (appOnlyAccessToken == null)
                     {
-                        TokenHelper.Realm = realm;
-                        TokenHelper.ServiceNamespace = realm;
-                        TokenHelper.ClientId = appId;
-                        TokenHelper.ClientSecret = appSecret;
-                        var response = TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
+                        Utilities.TokenHelper.Realm = realm;
+                        Utilities.TokenHelper.ServiceNamespace = realm;
+                        Utilities.TokenHelper.ClientId = appId;
+                        Utilities.TokenHelper.ClientSecret = appSecret;
+                        var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
                         string token = response.AccessToken;
                         ThreadPool.QueueUserWorkItem(obj =>
                         {

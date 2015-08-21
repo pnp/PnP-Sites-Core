@@ -6,9 +6,9 @@ using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Utilities;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not provisioning fields. Technically this can be done but it's not a recommended practice
                 if (web.IsSubSite())
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
                     return parser;
                 }
 
@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
                             CreateField(web, templateFieldElement, scope);
                         }
                         catch (Exception ex)
@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     else
                         try
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
                             UpdateField(web, fieldId, templateFieldElement, scope);
                         }
                         catch (Exception ex)
@@ -155,7 +155,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not creating field entities.
                 if (web.IsSubSite())
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
                     return template;
                 }
 

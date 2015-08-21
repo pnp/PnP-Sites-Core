@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using OfficeDevPnP.Core;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -67,6 +67,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Uploads all files defined by the moduleXml
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         static void ProvisionModuleInternal(this Web web, string baseFolder, XElement moduleXml)
         {
             if (moduleXml == null) { throw new ArgumentNullException("module"); }
@@ -107,6 +108,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Uploads the file defined by the fileXml, creating folders as necessary.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         static File ProvisionFileInternal(this Web web, string baseUrl, string baseFolder, XElement fileXml, bool useWebDav = true)
         {
             if (fileXml == null) { throw new ArgumentNullException("fileXml"); }
