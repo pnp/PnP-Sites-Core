@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var field in fields)
                 {
-                    XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
+                    XElement templateFieldElement = XElement.Parse(parser.ParseString(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"), "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
 
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
