@@ -16,11 +16,11 @@ namespace OfficeDevPnP.Core.Diagnostics
         private static ILogger _logger;
 
         [ThreadStatic]
-        private static LogLevel _logLevel;
+        private static LogLevel? _logLevel;
 
         public static LogLevel LogLevel
         {
-            get { return _logLevel; }
+            get { return _logLevel.Value; }
             set { _logLevel = value; }
         }
 
@@ -73,7 +73,10 @@ namespace OfficeDevPnP.Core.Diagnostics
                 else
                 {
                     // Defaulting to built in logger
-                    _logLevel = LogLevel.Information;
+                    if (!_logLevel.HasValue)
+                    {
+                        _logLevel = LogLevel.Information;
+                    }
                     _logger = new TraceLogger();
                 }
             }
