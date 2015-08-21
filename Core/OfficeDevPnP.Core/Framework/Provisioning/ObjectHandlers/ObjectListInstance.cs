@@ -479,7 +479,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.EnableAttachments,
                 l => l.EnableFolderCreation,
                 l => l.EnableMinorVersions,
-                l => l.DraftVersionVisibility
+                l => l.DraftVersionVisibility,
+                l => l.Views
 #if !CLIENTSDKV15
 , l => l.MajorWithMinorVersionsLimit
 #endif
