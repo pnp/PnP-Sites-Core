@@ -665,9 +665,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
             NetworkCredential cred = CredentialManager.GetCredential(credentialName);
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
+            SecureString securePassword = null;
+            if (cred != null)
             {
-                UseOffice365Authentication(cred.UserName, cred.Password);
+                securePassword = cred.SecurePassword;
+            }
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0)
+            {
+                UseOffice365Authentication(cred.UserName, securePassword);
             }
             else
             {
@@ -749,9 +755,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
             }
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password) && !String.IsNullOrEmpty(cred.Domain))
+            SecureString securePassword = null;
+            if (cred != null)
             {
-                UseNetworkCredentialsAuthentication(cred.UserName, cred.Password, cred.Domain);
+                securePassword = cred.SecurePassword;
+            } 
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0 && !String.IsNullOrEmpty(cred.Domain))
+            {
+                UseNetworkCredentialsAuthentication(cred.UserName, securePassword, cred.Domain);
             }
             else
             {
@@ -1010,7 +1022,13 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
             NetworkCredential cred = CredentialManager.GetCredential(credentialName);
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
+            SecureString securePassword = null;
+            if (cred != null)
+            {
+                securePassword = cred.SecurePassword;
+            }
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0)
             {
 
                 if (!String.IsNullOrEmpty(cred.UserName))
@@ -1026,11 +1044,11 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
                 if (String.IsNullOrEmpty(cred.Domain))
                 {
-                    SetEnumerationCredentials(cred.UserName, cred.Password);
+                    SetEnumerationCredentials(cred.UserName, securePassword);
                 }
                 else
                 {
-                    SetEnumerationCredentials(cred.UserName, cred.Password, cred.Domain);
+                    SetEnumerationCredentials(cred.UserName, securePassword, cred.Domain);
                 }
             }
             else
