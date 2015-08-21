@@ -55,6 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
+            _tokens.Add(new DefaultTermGroupSiteCollectionToken(web));
 
             // Add lists
             web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
