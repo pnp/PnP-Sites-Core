@@ -45,7 +45,9 @@ namespace OfficeDevPnP.Core.Diagnostics
                     {
                         if (config.Logger.ElementInformation.IsPresent)
                         {
-                            _logger = (ILogger)Activator.CreateInstance(config.Logger.Assembly, config.Logger.Type).Unwrap();
+                            var loggerType = Type.GetType(config.Logger.Type, false);
+
+                            _logger = (ILogger)Activator.CreateInstance(loggerType.Assembly.FullName, loggerType.FullName).Unwrap();
                         }
                         else
                         {

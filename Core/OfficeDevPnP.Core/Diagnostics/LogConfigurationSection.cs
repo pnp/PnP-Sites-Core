@@ -36,17 +36,6 @@ namespace OfficeDevPnP.Core.Diagnostics
 
     public class LogConfigurationTracingLoggerElement : ConfigurationElement
     {
-        [ConfigurationProperty("assembly", DefaultValue = "false", IsRequired = true)]
-        public string Assembly
-        {
-            get
-            {
-                return (string)this["assembly"];
-            }
-            set
-            { this["assembly"] = value; }
-        }
-
         [ConfigurationProperty("type", DefaultValue = "false", IsRequired = true)]
         public string Type
         {

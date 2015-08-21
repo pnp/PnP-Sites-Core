@@ -13,7 +13,7 @@
   </configSections>
   <pnp>
     <tracing logLevel="Debug">
-      <logger assembly="OfficeDevPnP.Core" type="OfficeDevPnP.Core.Diagnostics.TraceLogger" />
+      <logger type="OfficeDevPnP.Core.Diagnostics.TraceLogger, OfficeDevPnP.Core, Culture=neutral, PublicKeyToken=null" />
     </tracing>
   </pnp>
   <appSettings>
