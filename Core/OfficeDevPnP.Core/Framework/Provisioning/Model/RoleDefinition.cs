@@ -43,10 +43,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Permissions,
-                this.Name,
-                this.Description
-                ).GetHashCode());
+                this.Permissions.GetHashCode(),
+                this.Name.GetHashCode(),
+                this.Description.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

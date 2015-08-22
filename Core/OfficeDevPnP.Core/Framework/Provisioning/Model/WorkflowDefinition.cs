@@ -93,18 +93,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|",
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.FormField,
-                this.Id,
-                this.AssociationUrl,
-                this.Description,
-                this.DisplayName,
-                this.InitiationUrl,
-                this.RequiresAssociationForm,
-                this.RequiresInitiationForm,
-                this.RestrictToScope,
-                this.RestrictToType,
-                this.Xaml.ToString()
-                ).GetHashCode());
+                this.FormField.GetHashCode(),
+                this.Id.GetHashCode(),
+                this.AssociationUrl.GetHashCode(),
+                this.Description.GetHashCode(),
+                this.DisplayName.GetHashCode(),
+                this.InitiationUrl.GetHashCode(),
+                this.RequiresAssociationForm.GetHashCode(),
+                this.RequiresInitiationForm.GetHashCode(),
+                this.RestrictToScope.GetHashCode(),
+                this.RestrictToType.GetHashCode(),
+                this.Xaml.ToString().GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

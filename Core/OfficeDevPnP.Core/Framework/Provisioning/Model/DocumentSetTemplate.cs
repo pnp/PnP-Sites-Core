@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.DefaultDocuments.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.SharedFields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.WelcomePageFields.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-               ).GetHashCode());
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

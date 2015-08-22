@@ -32,8 +32,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
-                this.Deactivate,
-                this.Id).GetHashCode());
+                this.Deactivate.GetHashCode(),
+                this.Id.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

@@ -217,30 +217,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}",
-                this.ContentTypesEnabled,
-                this.Description,
-                this.DocumentTemplate,
-                this.EnableVersioning,
-                this.Hidden,
-                this.MaxVersionLimit,
-                this.MinorVersionLimit,
-                this.OnQuickLaunch,
-                this.EnableAttachments,
-                this.EnableFolderCreation,
-                this.RemoveExistingContentTypes,
-                this.TemplateType,
-                this.Title,
-                this.Url,
-                this.TemplateFeatureID,
-                this.RemoveExistingViews,
-                this.EnableMinorVersions,
-                this.EnableModeration,
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|",
+                this.ContentTypesEnabled.GetHashCode(),
+                this.Description.GetHashCode(),
+                this.DocumentTemplate.GetHashCode(),
+                this.EnableVersioning.GetHashCode(),
+                this.Hidden.GetHashCode(),
+                this.MaxVersionLimit.GetHashCode(),
+                this.MinorVersionLimit.GetHashCode(),
+                this.OnQuickLaunch.GetHashCode(),
+                this.EnableAttachments.GetHashCode(),
+                this.EnableFolderCreation.GetHashCode(),
+                this.RemoveExistingContentTypes.GetHashCode(),
+                this.TemplateType.GetHashCode(),
+                this.Title.GetHashCode(),
+                this.Url.GetHashCode(),
+                this.TemplateFeatureID.GetHashCode(),
+                this.RemoveExistingViews.GetHashCode(),
+                this.EnableMinorVersions.GetHashCode(),
+                this.EnableModeration.GetHashCode(),
                 this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Views.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode() ),
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-                ).GetHashCode());
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

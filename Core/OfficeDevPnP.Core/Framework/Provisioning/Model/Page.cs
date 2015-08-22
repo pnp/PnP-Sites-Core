@@ -48,10 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
-                this.Url,
-                this.Overwrite,
-                this.Layout).GetHashCode());
+            return (String.Format("{0}|{1}|{2}|",
+                this.Url.GetHashCode(),
+                this.Overwrite.GetHashCode(),
+                this.Layout.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

@@ -35,10 +35,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.AuditFlag,
-                this.AuditLogTrimmingRetention,
-                this.TrimAuditLog
-                ).GetHashCode());
+                this.AuditFlag.GetHashCode(),
+                this.AuditLogTrimmingRetention.GetHashCode(),
+                this.TrimAuditLog.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

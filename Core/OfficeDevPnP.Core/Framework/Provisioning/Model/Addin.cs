@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines an Add-in to provision
     /// </summary>
-    public class Addin : IEquatable<Addin>
+    public class AddIn : IEquatable<AddIn>
     {
         #region Public Members
 
@@ -33,21 +33,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                this.PackagePath,
-                this.Source
-                ).GetHashCode());
+                this.PackagePath.GetHashCode(),
+                this.Source.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)
         {
-            if (!(obj is Addin))
+            if (!(obj is AddIn))
             {
                 return (false);
             }
-            return (Equals((Addin)obj));
+            return (Equals((AddIn)obj));
         }
 
-        public bool Equals(Addin other)
+        public bool Equals(AddIn other)
         {
             return (this.PackagePath == other.PackagePath &&
                 this.Source == other.Source

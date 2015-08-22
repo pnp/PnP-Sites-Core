@@ -62,16 +62,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
-                this.AllowMembersEditMembership,
-                this.AllowRequestToJoinLeave,
-                this.AutoAcceptRequestToJoinLeave,
-                this.Description,
+                this.AllowMembersEditMembership.GetHashCode(),
+                this.AllowRequestToJoinLeave.GetHashCode(),
+                this.AutoAcceptRequestToJoinLeave.GetHashCode(),
+                this.Description.GetHashCode(),
                 this.Members.Aggregate(0, (acc, next) => acc += next.GetHashCode()),,
-                this.OnlyAllowMembersViewMembership,
-                this.Owner,
-                this.RequestToJoinLeaveEmailSetting,
-                this.Title
-                ).GetHashCode());
+                this.OnlyAllowMembersViewMembership.GetHashCode(),
+                this.Owner.GetHashCode(),
+                this.RequestToJoinLeaveEmailSetting.GetHashCode(),
+                this.Title.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

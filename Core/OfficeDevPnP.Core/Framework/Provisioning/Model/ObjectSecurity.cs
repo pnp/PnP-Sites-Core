@@ -42,10 +42,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.RoleAssignment,
-                this.CopyRoleAssignments,
-                this.ClearSubscopes
-                ).GetHashCode());
+                this.RoleAssignment.GetHashCode(),
+                this.CopyRoleAssignments.GetHashCode(),
+                this.ClearSubscopes.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

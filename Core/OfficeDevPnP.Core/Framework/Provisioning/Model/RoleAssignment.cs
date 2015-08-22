@@ -30,9 +30,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                this.Principal,
-                this.RoleDefinition
-                ).GetHashCode());
+                this.Principal.GetHashCode(),
+                this.RoleDefinition.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

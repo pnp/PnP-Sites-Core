@@ -85,21 +85,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|",
-                this.AdjustHijriDays,
-                this.AlternateCalendarType,
-                this.CalendarType,
-                this.Collation,
-                this.FirstDayOfWeek,
-                this.FirstWeekOfYear,
-                this.LocaleId,
-                this.ShowWeeks,
-                this.Time24,
-                this.TimeZone,
-                this.WorkDayEndHour,
-                this.WorkDays,
-                this.WorkDayStartHour
-                ).GetHashCode());
-        }
+                this.AdjustHijriDays.GetHashCode(),
+                this.AlternateCalendarType.GetHashCode(),
+                this.CalendarType.GetHashCode(),
+                this.Collation.GetHashCode(),
+                this.FirstDayOfWeek.GetHashCode(),
+                this.FirstWeekOfYear.GetHashCode(),
+                this.LocaleId.GetHashCode(),
+                this.ShowWeeks.GetHashCode(),
+                this.Time24.GetHashCode(),
+                this.TimeZone.GetHashCode(),
+                this.WorkDayEndHour.GetHashCode(),
+                this.WorkDays.GetHashCode(),
+                this.WorkDayStartHour.GetHashCode()
+            ).GetHashCode());
+    }
 
         public override bool Equals(object obj)
         {

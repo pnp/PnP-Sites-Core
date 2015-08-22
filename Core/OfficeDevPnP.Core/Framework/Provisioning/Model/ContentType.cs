@@ -110,18 +110,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
-                this.Id,
-                this.Name,
-                this.Description,
-                this.Group,
-                this.Hidden,
-                this.ReadOnly,
-                this.Overwrite,
-                this.Sealed,
-                this.DocumentTemplate,
-                this.DocumentSetTemplate,
+                this.Id.GetHashCode(),
+                this.Name.GetHashCode(),
+                this.Description.GetHashCode(),
+                this.Group.GetHashCode(),
+                this.Hidden.GetHashCode(),
+                this.ReadOnly.GetHashCode(),
+                this.Overwrite.GetHashCode(),
+                this.Sealed.GetHashCode(),
+                this.DocumentTemplate.GetHashCode(),
+                this.DocumentSetTemplate.GetHashCode(),
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-               ).GetHashCode());
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)
