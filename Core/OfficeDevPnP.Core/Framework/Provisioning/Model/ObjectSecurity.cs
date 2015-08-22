@@ -8,10 +8,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     public class ObjectSecurity : IEquatable<ObjectSecurity>
     {
+        #region Private Members
+
+        private RoleAssignment _roleAssignment = new RoleAssignment();
+
+        #endregion
+
+        #region Public Members
+
         /// <summary>
         /// Role Assignment for a target Principal
         /// </summary>
-        public RoleAssignment RoleAssignment { get; set; }
+        public RoleAssignment RoleAssignment
+        {
+            get { return this._roleAssignment; }
+            set { this._roleAssignment = value; }
+        }
 
         /// <summary>
         /// Defines whether to copy role assignments or not while breaking role inheritance
@@ -22,6 +34,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines whether to clear subscopes or not while breaking role inheritance
         /// </summary>
         public Boolean ClearSubscopes { get; set; }
+
+        #endregion
 
         #region Comparison code
 

@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ObjectSecurity _objectSecurity = new ObjectSecurity();
         #endregion
 
-        #region public members
+        #region Public Members
 
         /// <summary>
         /// Defines the fields to provision within a row that will be added to the List Instance

@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class AuditSettings : IEquatable<AuditSettings>
     {
+        #region Public Members
+
         /// <summary>
         /// Audit Flags configured for the Site
         /// </summary>
@@ -25,6 +27,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// A flag to enable Audit Log Trimming
         /// </summary>
         public Boolean TrimAuditLog { get; set; }
+
+        #endregion
 
         #region Comparison code
 

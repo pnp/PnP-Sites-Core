@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class DefaultDocument : IEquatable<DefaultDocument>
     {
+        #region Public Members
+
         /// <summary>
         /// The name (including the relative path) of the Default Document for a Document Set
         /// </summary>
@@ -25,6 +27,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The path of the file to upload as a Default Document for the Document Set
         /// </summary>
         public String FileSourcePath { get; set; }
+
+        #endregion
 
         #region Comparison code
 

@@ -11,14 +11,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class SiteSecurityPermissions
     {
+        #region Private Members
+
+        private List<RoleDefinition> _roleDefinitions = new List<RoleDefinition>();
+        private List<RoleAssignment> _roleAssignments = new List<RoleAssignment>();
+
+        #endregion
+
+        #region Public Members
+
         /// <summary>
         /// List of Role Definitions for the Site
         /// </summary>
-        public List<RoleDefinition> RoleDefinitions { get; set; }
+        public List<RoleDefinition> RoleDefinitions
+        {
+            get { return this._roleDefinitions; }
+            set { this._roleDefinitions = value; }
+        }
 
         /// <summary>
         /// List of Role Assignments for the Site
         /// </summary>
-        public List<RoleAssignment> RoleAssignments { get; set; }
+        public List<RoleAssignment> RoleAssignments
+        {
+            get { return this._roleAssignments; }
+            set { this._roleAssignments = value; }
+        }
+
+        #endregion
     }
 }

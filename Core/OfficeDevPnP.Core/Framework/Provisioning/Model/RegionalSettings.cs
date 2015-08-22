@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class RegionalSettings : IEquatable<RegionalSettings>
     {
+        #region Public Members
+
         /// <summary>
         /// The number of days to extend or reduce the current month in Hijri calendars
         /// </summary>
@@ -75,6 +77,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The the default hour at which the work day starts on the calendar that is in use on the server
         /// </summary>
         public WorkHour WorkDayStartHour { get; set; }
+
+        #endregion
 
         #region Comparison code
 

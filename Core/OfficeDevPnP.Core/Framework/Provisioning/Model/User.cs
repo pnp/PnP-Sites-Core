@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class User : IEquatable<User>
     {
-        #region Properties
+        #region Public Members
 
         /// <summary>
         /// The User email Address or the group name.

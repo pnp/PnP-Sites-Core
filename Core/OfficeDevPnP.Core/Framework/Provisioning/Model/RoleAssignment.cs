@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class RoleAssignment : IEquatable<RoleAssignment>
     {
+        #region Public Members
+
         /// <summary>
         /// Defines the Role to which the assignment will apply
         /// </summary>
@@ -20,6 +22,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the Role to which the assignment will apply
         /// </summary>
         public String RoleDefinition { get; set; }
+
+        #endregion
 
         #region Comparison code
 

@@ -9,10 +9,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     public class RoleDefinition : IEquatable<RoleDefinition>
     {
+        #region Private Members
+
+        private List<Microsoft.SharePoint.Client.PermissionKind> _permissions = new List<Microsoft.SharePoint.Client.PermissionKind>();
+
+        #endregion
+
+        #region Public Members
+
         /// <summary>
         /// Defines the Permissions of the Role Definition
         /// </summary>
-        public List<Microsoft.SharePoint.Client.PermissionKind> Permissions { get; set; }
+        public List<Microsoft.SharePoint.Client.PermissionKind> Permissions
+        {
+            get { return this._permissions; }
+            set { this._permissions = value; }
+        }
 
         /// <summary>
         /// Defines the Name of the Role Definition
@@ -23,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the Description of the Role Definition
         /// </summary>
         public String Description { get; set; }
+
+        #endregion
 
         #region Comparison code
 

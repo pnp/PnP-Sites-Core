@@ -12,25 +12,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class DocumentSetTemplate : IEquatable<DocumentSetTemplate>
     {
+        #region Private Members
+
+        private List<String> _allowedContentTypes = new List<String>();
+        private List<DefaultDocument> _defaultDocuments = new List<DefaultDocument>();
+        private List<Guid> _sharedFields = new List<Guid>();
+        private List<Guid> _welcomePageFields = new List<Guid>();
+
+        #endregion
+
+        #region Public Members
+
         /// <summary>
         /// The list of allowed Content Types for the Document Set
         /// </summary>
-        public List<String> AllowedContentTypes { get; set; }
+        public List<String> AllowedContentTypes
+        {
+            get { return this._allowedContentTypes; }
+            set { this._allowedContentTypes = value; }
+        }
 
         /// <summary>
         /// The list of default Documents for the Document Set
         /// </summary>
-        public List<DefaultDocument> DefaultDocuments { get; set; }
+        public List<DefaultDocument> DefaultDocuments
+        {
+            get { return this._defaultDocuments; }
+            set { this._defaultDocuments = value; }
+        }
 
         /// <summary>
         /// The list of Shared Fields for the Document Set
         /// </summary>
-        public List<Guid> SharedFields { get; set; }
+        public List<Guid> SharedFields
+        {
+            get { return this._sharedFields; }
+            set { this._sharedFields = value; }
+        }
 
         /// <summary>
         /// The list of Welcome Page Fields for the Document Set
         /// </summary>
-        public List<Guid> WelcomePageFields { get; set; }
+        public List<Guid> WelcomePageFields
+        {
+            get { return this._welcomePageFields; }
+            set { this._welcomePageFields = value; }
+        }
+
+        #endregion
 
         #region Comparison code
 
