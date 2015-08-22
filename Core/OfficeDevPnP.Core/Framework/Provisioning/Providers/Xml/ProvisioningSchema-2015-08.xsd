@@ -2646,7 +2646,7 @@
             </xsd:annotation>
           </xsd:attribute>
 
-          <xsd:attribute name="PackageName " type="xsd:string" use="required">
+          <xsd:attribute name="PackageName" type="xsd:string" use="required">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
                 The Name of the Design Package to import into the current Publishing site, required attribute.

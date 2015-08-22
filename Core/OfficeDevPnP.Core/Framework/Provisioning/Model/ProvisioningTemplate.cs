@@ -27,6 +27,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<TermGroup> _termGroups = new List<TermGroup>();
         private FileConnectorBase connector;
         private string _id;
+
+        private RegionalSettings _regionalSettings = new RegionalSettings();
+        private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
+        private AuditSettings _auditSettings = new AuditSettings();
+        private Workflows _workflows = new Workflows();
+        private List<AddIn> _addins = new List<AddIn>();
+        private Publishing _publishing = new Publishing();
+
         #endregion
 
         #region Constructor
@@ -168,6 +176,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._termGroups = value; }
         }
 
+        /// <summary>
+        /// Defines the Workflows to provision
+        /// </summary>
+        public Workflows Workflows
+        {
+            get { return this._workflows; }
+            set { this._workflows = value; }
+        }
+
+        /// <summary>
+        /// Defines the SharePoint Add-ins to provision
+        /// </summary>
+        public List<AddIn> Addins
+        {
+            get { return this._addins; }
+            set { this._addins = value; }
+        }
+
+        /// <summary>
+        /// Defines the Publishing configuration to provision
+        /// </summary>
+        public Publishing Publishing
+        {
+            get { return this._publishing; }
+            set { this._publishing = value; }
+        }
+
         public FileConnectorBase Connector
         {
             get
@@ -186,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|",
                 this.ComposedLook.GetHashCode(),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
@@ -194,7 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Features.SiteFeatures.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Features.WebFeatures.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Files.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Id,
+                this.Id.GetHashCode(),
                 this.Lists.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Providers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
@@ -202,12 +237,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Security.AdditionalMembers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Security.AdditionalOwners.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Security.AdditionalVisitors.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Security.SiteGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Security.SiteSecurityPermissions.RoleAssignments.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Security.SiteSecurityPermissions.RoleDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.SiteFields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.SitePolicy,
-                this.Version,
+                this.SitePolicy.GetHashCode(),
+                this.Version.GetHashCode(),
                 this.Pages.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.TermGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-                ).GetHashCode());
+                this.TermGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Workflows.WorkflowDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Workflows.WorkflowSubscriptions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Addins.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Publishing.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)
@@ -237,11 +279,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Security.AdditionalMembers.DeepEquals(other.Security.AdditionalMembers) &&
                 this.Security.AdditionalOwners.DeepEquals(other.Security.AdditionalOwners) &&
                 this.Security.AdditionalVisitors.DeepEquals(other.Security.AdditionalVisitors) &&
+                this.Security.SiteGroups.DeepEquals(other.Security.SiteGroups) &&
+                this.Security.SiteSecurityPermissions.RoleAssignments.DeepEquals(other.Security.SiteSecurityPermissions.RoleAssignments) &&
+                this.Security.SiteSecurityPermissions.RoleDefinitions.DeepEquals(other.Security.SiteSecurityPermissions.RoleDefinitions) &&
                 this.SiteFields.DeepEquals(other.SiteFields) &&
                 this.SitePolicy == other.SitePolicy &&
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
-                this.TermGroups.DeepEquals(other.TermGroups)
+                this.TermGroups.DeepEquals(other.TermGroups) &&
+                this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) &&
+                this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) &&
+                this.Addins.DeepEquals(other.Addins) &&
+                this.Publishing == other.Publishing
             );
         }
 
