@@ -50,6 +50,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<Field> _fields = new List<Field>();
         private List<FieldRef> _fieldRefs = new List<FieldRef>();
         private List<DataRow> _dataRows = new List<DataRow>();
+        private Dictionary<String, String> _fieldDefaults = new Dictionary<String, String>();
+        private ObjectSecurity _security = new ObjectSecurity();
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         #endregion
@@ -189,6 +191,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._dataRows; }
             private set { this._dataRows = value; }
+        }
+
+        /// <summary>
+        /// Defines a list of default values for the Fields of the List Instance
+        /// </summary>
+        public Dictionary<String, String> FieldDefaults
+        {
+            get { return this._fieldDefaults; }
+            private set { this._fieldDefaults = value; }
+        }
+
+        /// <summary>
+        /// Defines the Security rules for the List Instance
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return this._security; }
+            private set { this._security = value; }
         }
 
         #endregion
