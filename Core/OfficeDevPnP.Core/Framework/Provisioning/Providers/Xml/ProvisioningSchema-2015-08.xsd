@@ -517,16 +517,20 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="None" />
       <xsd:enumeration value="Gregorian" />
-      <xsd:enumeration value="Japanese Emperor Era" />
-      <xsd:enumeration value="Korean Tangun Era" />
+      <xsd:enumeration value="Japan" />
+      <xsd:enumeration value="Taiwan" />
+      <xsd:enumeration value="Korea" />
       <xsd:enumeration value="Hijri" />
-      <xsd:enumeration value="Buddhist" />
-      <xsd:enumeration value="Hebrew Lunar" />
+      <xsd:enumeration value="Thai" />
+      <xsd:enumeration value="Hebrew" />
       <xsd:enumeration value="Gregorian Middle East French Calendar" />
       <xsd:enumeration value="Gregorian Arabic Calendar" />
       <xsd:enumeration value="Gregorian Transliterated English Calendar" />
       <xsd:enumeration value="Gregorian Transliterated French Calendar" />
+      <xsd:enumeration value="Korea and Japanese Lunar" />
+      <xsd:enumeration value="Chinese Lunar" />
       <xsd:enumeration value="Saka Era" />
+      <xsd:enumeration value="Umm al-Qura" />
     </xsd:restriction>
   </xsd:simpleType>
 

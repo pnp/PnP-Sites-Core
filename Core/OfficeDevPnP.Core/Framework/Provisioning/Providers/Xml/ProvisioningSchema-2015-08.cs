@@ -1727,22 +1727,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         Gregorian,
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("Japanese Emperor Era")]
-        JapaneseEmperorEra,
+        Japan,
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("Korean Tangun Era")]
-        KoreanTangunEra,
+        Taiwan,
+        
+        /// <remarks/>
+        Korea,
         
         /// <remarks/>
         Hijri,
         
         /// <remarks/>
-        Buddhist,
+        Thai,
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("Hebrew Lunar")]
-        HebrewLunar,
+        Hebrew,
         
         /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("Gregorian Middle East French Calendar")]
@@ -1761,8 +1761,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         GregorianTransliteratedFrenchCalendar,
         
         /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("Korea and Japanese Lunar")]
+        KoreaandJapaneseLunar,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("Chinese Lunar")]
+        ChineseLunar,
+        
+        /// <remarks/>
         [System.Xml.Serialization.XmlEnumAttribute("Saka Era")]
         SakaEra,
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlEnumAttribute("Umm al-Qura")]
+        UmmalQura,
     }
     
     /// <remarks/>

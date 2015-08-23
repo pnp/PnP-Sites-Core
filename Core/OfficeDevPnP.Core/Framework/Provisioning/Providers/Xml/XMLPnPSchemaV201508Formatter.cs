@@ -92,14 +92,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             };
 
             #region Basic Properties
+
             // Translate basic properties
             result.ID = template.Id;
             result.Version = (Decimal)template.Version;
             result.VersionSpecified = true;
             result.SitePolicy = template.SitePolicy;
+            
             #endregion
 
             #region Property Bag
+
             // Translate PropertyBagEntries, if any
             if (template.PropertyBagEntries != null && template.PropertyBagEntries.Count > 0)
             {
@@ -116,9 +119,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.PropertyBagEntries = null;
             }
+
+            #endregion
+
+            #region Regional Settings
+
+            if (template.RegionalSettings != null)
+            {
+                result.RegionalSettings = new V201508.RegionalSettings() {
+                    AdjustHijriDays = template.RegionalSettings.AdjustHijriDays,
+                    AdjustHijriDaysSpecified = true,
+                    AlternateCalendarType = template.RegionalSettings.AlternateCalendarType.FromTemplateToSchemaCalendarType(),
+                    AlternateCalendarTypeSpecified = true,
+                    CalendarType  = template.RegionalSettings.CalendarType.FromTemplateToSchemaCalendarType(),
+                    CalendarTypeSpecified = true,
+                    Collation = template.RegionalSettings.Collation,
+                    CollationSpecified = true,
+                    FirstDayOfWeek = (V201508.DayOfWeek)Enum.Parse(typeof(V201508.DayOfWeek), template.RegionalSettings.FirstDayOfWeek.ToString()),
+                    FirstDayOfWeekSpecified = true,
+                    FirstWeekOfYear = template.RegionalSettings.FirstWeekOfYear,
+                    FirstWeekOfYearSpecified = true,
+                    LocaleId = template.RegionalSettings.LocaleId,
+                    LocaleIdSpecified = true,
+                    ShowWeeks = template.RegionalSettings.ShowWeeks,
+                    ShowWeeksSpecified = true,
+                    Time24  = template.RegionalSettings.Time24,
+                    Time24Specified = true,
+                    TimeZone = template.RegionalSettings.TimeZone.ToString(),
+                    WorkDayEndHour = template.RegionalSettings.WorkDayEndHour.FromTemplateToSchemaWorkHour(),
+                    WorkDayEndHourSpecified = true,
+                    WorkDays = template.RegionalSettings.WorkDays,
+                    WorkDaysSpecified = true,
+                    WorkDayStartHour = template.RegionalSettings.WorkDayStartHour.FromTemplateToSchemaWorkHour(),
+                    WorkDayStartHourSpecified = true,
+                };
+            }
+            else
+            {
+                result.RegionalSettings = null;
+            }
+            
             #endregion
 
             #region Security
+
             // Translate Security configuration, if any
             if (template.Security != null)
             {
@@ -246,6 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                 }
             }
+            
             #endregion
 
             #region Site Columns
@@ -1164,7 +1209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         }
     }
 
-    internal static class TaxonomyTermExtensions
+    internal static class V201508Extensions
     {
         public static V201508.Term[] FromModelTermsToSchemaTerms(this List<Model.Term> terms)
         {
@@ -1238,6 +1283,102 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 );
 
             return (result);
+        }
+
+        public static V201508.CalendarType FromTemplateToSchemaCalendarType(this Microsoft.SharePoint.Client.CalendarType calendarType)
+        {
+            switch (calendarType)
+            {
+                case Microsoft.SharePoint.Client.CalendarType.ChineseLunar:
+                    return V201508.CalendarType.ChineseLunar;
+                case Microsoft.SharePoint.Client.CalendarType.Gregorian:
+                    return V201508.CalendarType.Gregorian;
+                case Microsoft.SharePoint.Client.CalendarType.GregorianArabic:
+                    return V201508.CalendarType.GregorianArabicCalendar;
+                case Microsoft.SharePoint.Client.CalendarType.GregorianMEFrench:
+                    return V201508.CalendarType.GregorianMiddleEastFrenchCalendar;
+                case Microsoft.SharePoint.Client.CalendarType.GregorianXLITEnglish:
+                    return V201508.CalendarType.GregorianTransliteratedEnglishCalendar;
+                case Microsoft.SharePoint.Client.CalendarType.GregorianXLITFrench:
+                    return V201508.CalendarType.GregorianTransliteratedFrenchCalendar;
+                case Microsoft.SharePoint.Client.CalendarType.Hebrew:
+                    return V201508.CalendarType.Hebrew;
+                case Microsoft.SharePoint.Client.CalendarType.Hijri:
+                    return V201508.CalendarType.Hijri;
+                case Microsoft.SharePoint.Client.CalendarType.Japan:
+                    return V201508.CalendarType.Japan;
+                case Microsoft.SharePoint.Client.CalendarType.Korea:
+                    return V201508.CalendarType.Korea;
+                case Microsoft.SharePoint.Client.CalendarType.KoreaJapanLunar:
+                    return V201508.CalendarType.KoreaandJapaneseLunar;
+                case Microsoft.SharePoint.Client.CalendarType.None:
+                    return V201508.CalendarType.None;
+                case Microsoft.SharePoint.Client.CalendarType.SakaEra:
+                    return V201508.CalendarType.SakaEra;
+                case Microsoft.SharePoint.Client.CalendarType.Taiwan:
+                    return V201508.CalendarType.Taiwan;
+                case Microsoft.SharePoint.Client.CalendarType.Thai:
+                    return V201508.CalendarType.Thai;
+                case Microsoft.SharePoint.Client.CalendarType.UmAlQura:
+                    return V201508.CalendarType.UmmalQura;
+                default:
+                    return V201508.CalendarType.None;
+            }
+        }
+
+        public static V201508.WorkHour FromTemplateToSchemaWorkHour(this OfficeDevPnP.Core.Framework.Provisioning.Model.WorkHour workHour)
+        {
+            switch(workHour)
+            {
+                case Model.WorkHour.AM0100:
+                    return V201508.WorkHour.Item100AM;
+                case Model.WorkHour.AM0200:
+                    return V201508.WorkHour.Item200AM;
+                case Model.WorkHour.AM0300:
+                    return V201508.WorkHour.Item300AM;
+                case Model.WorkHour.AM0400:
+                    return V201508.WorkHour.Item400AM;
+                case Model.WorkHour.AM0500:
+                    return V201508.WorkHour.Item500AM;
+                case Model.WorkHour.AM0600:
+                    return V201508.WorkHour.Item600AM;
+                case Model.WorkHour.AM0700:
+                    return V201508.WorkHour.Item700AM;
+                case Model.WorkHour.AM0800:
+                    return V201508.WorkHour.Item800AM;
+                case Model.WorkHour.AM0900:
+                    return V201508.WorkHour.Item900AM;
+                case Model.WorkHour.AM1000:
+                    return V201508.WorkHour.Item1000AM;
+                case Model.WorkHour.AM1100:
+                    return V201508.WorkHour.Item1100AM;
+                case Model.WorkHour.AM1200:
+                    return V201508.WorkHour.Item1200AM;
+                case Model.WorkHour.PM0100:
+                    return V201508.WorkHour.Item100PM;
+                case Model.WorkHour.PM0200:
+                    return V201508.WorkHour.Item200PM;
+                case Model.WorkHour.PM0300:
+                    return V201508.WorkHour.Item300PM;
+                case Model.WorkHour.PM0400:
+                    return V201508.WorkHour.Item400PM;
+                case Model.WorkHour.PM0500:
+                    return V201508.WorkHour.Item500PM;
+                case Model.WorkHour.PM0600:
+                    return V201508.WorkHour.Item600PM;
+                case Model.WorkHour.PM0700:
+                    return V201508.WorkHour.Item700PM;
+                case Model.WorkHour.PM0800:
+                    return V201508.WorkHour.Item800PM;
+                case Model.WorkHour.PM0900:
+                    return V201508.WorkHour.Item900PM;
+                case Model.WorkHour.PM1000:
+                    return V201508.WorkHour.Item1000PM;
+                case Model.WorkHour.PM1100:
+                    return V201508.WorkHour.Item1100PM;
+                case Model.WorkHour.PM1200:
+                    return V201508.WorkHour.Item1200PM;
+            }
         }
     }
 }

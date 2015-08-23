@@ -177,6 +177,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// The Regional Settings of the Provisioning Template
+        /// </summary>
+        public RegionalSettings RegionalSettings
+        {
+            get { return this._regionalSettings; }
+            set { this._regionalSettings = value; }
+        }
+
+        /// <summary>
+        /// The Supported UI Languages for the Provisioning Template
+        /// </summary>
+        public List<SupportedUILanguage> SupportedUILanguages
+        {
+            get { return this._supportedUILanguages; }
+            set { this._supportedUILanguages = value; }
+        }
+
+        /// <summary>
+        /// The Audit Settings for the Provisioning Template
+        /// </summary>
+        public AuditSettings AuditSettings
+        {
+            get { return this._auditSettings; }
+            set { this._auditSettings = value; }
+        }
+
+        /// <summary>
         /// Defines the Workflows to provision
         /// </summary>
         public Workflows Workflows
