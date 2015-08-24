@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/19/2015*
+*Topic automatically generated on 8/24/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1315,9 +1315,17 @@ Defines a Custom Action, which will be provisioned while applying the Provisioni
       ScriptBlock="xsd:string"
       ImageUrl="xsd:string"
       ScriptSrc="xsd:string">
+   <pnp:CommandUIExtension />
 </pnp:CustomAction>
 ```
 
+
+Here follow the available child elements for the CustomAction element.
+
+
+Element|Type|Description
+-------|----|-----------
+CommandUIExtension|[CommandUIExtension](#commanduiextension)|Defines the Custom UI Extension XML, optional element.
 
 Here follow the available attributes for the CustomAction element.
 
@@ -1336,6 +1344,16 @@ Enabled|xsd:boolean|The Enabled flag for the CustomAction, optional attribute.
 ScriptBlock|xsd:string|The ScriptBlock of the CustomAction, optional attribute.
 ImageUrl|xsd:string|The ImageUrl of the CustomAction, optional attribute.
 ScriptSrc|xsd:string|The ScriptSrc of the CustomAction, optional attribute.
+<a name="commanduiextension"></a>
+###CommandUIExtension
+Defines the Custom UI Extension XML, optional element.
+
+```xml
+<pnp:CommandUIExtension>
+   <!-- Any other XML content -->
+</pnp:CommandUIExtension>
+```
+
 <a name="fileproperties"></a>
 ###FileProperties
 A collection of File Properties.
@@ -1668,7 +1686,7 @@ Defines a Design Package to import into the current Publishing site, optional el
       MajorVersion="xsd:int"
       MinorVersion="xsd:int"
       PackageGuid="pnp:GUID"
-      PackageName ="xsd:string">
+      PackageName="xsd:string">
 </pnp:DesignPackage>
 ```
 
@@ -1682,7 +1700,7 @@ DesignPackagePath|xsd:string|Defines the path of the Design Package to import in
 MajorVersion|xsd:int|The Major Version of the Design Package to import into the current Publishing site, optional attribute.
 MinorVersion|xsd:int|The Minor Version of the Design Package to import into the current Publishing site, optional attribute.
 PackageGuid|GUID|The ID of the Design Package to import into the current Publishing site, optional attribute.
-PackageName |xsd:string|The Name of the Design Package to import into the current Publishing site, required attribute.
+PackageName|xsd:string|The Name of the Design Package to import into the current Publishing site, required attribute.
 <a name="availablewebtemplates"></a>
 ###AvailableWebTemplates
 Defines the Available Web Templates for the current Publishing site, optional collection of elements.

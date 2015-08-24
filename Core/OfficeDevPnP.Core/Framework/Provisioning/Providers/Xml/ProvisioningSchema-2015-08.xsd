@@ -1902,6 +1902,22 @@
       </xsd:documentation>
     </xsd:annotation>
 
+    <xsd:sequence>
+      <xsd:element name="CommandUIExtension" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Defines the Custom UI Extension XML, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+
+
     <xsd:attribute name="Name" type="xsd:string" use="required">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">

@@ -81,9 +81,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Boolean RestrictToType { get; set; }
 
         /// <summary>
-        /// Defines the XAML of the Workflow to provision
+        /// Defines path of the XAML of the Workflow to provision
         /// </summary>
-        public XElement Xaml { get; set; }
+        public String XamlPath { get; set; }
 
         #endregion
 

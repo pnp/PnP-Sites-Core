@@ -528,7 +528,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Features, if any
             if (template.Features != null)
             {
-                result.Features = new V201508.ProvisioningTemplateFeatures();
+                result.Features = new V201508.Features();
 
                 // TODO: This nullability check could be useless, because
                 // the SiteFeatures property is initialized in the Features
@@ -574,7 +574,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate CustomActions, if any
             if (template.CustomActions != null)
             {
-                result.CustomActions = new V201508.ProvisioningTemplateCustomActions();
+                result.CustomActions = new V201508.CustomActions();
 
                 if (template.CustomActions.SiteCustomActions != null && template.CustomActions.SiteCustomActions.Count > 0)
                 {
@@ -796,6 +796,81 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Version = template.ComposedLook.Version,
                     VersionSpecified = true,
                 };
+            }
+
+            #endregion
+
+            #region Workflows
+
+            if (template.Workflows != null)
+            {
+                result.Workflows = new V201508.Workflows
+                {
+                    WorkflowDefinitions = template.Workflows.WorkflowDefinitions.Count > 0 ?
+                        (from wd in template.Workflows.WorkflowDefinitions
+                         select new WorkflowsWorkflowDefinition
+                         {
+                             AssociationUrl = wd.AssociationUrl,
+                             Description = wd.Description,
+                             DisplayName = wd.DisplayName,
+                             FormField = wd.FormField.ToXmlElement(),
+                             Id = wd.Id.ToString(),
+                             InitiationUrl = wd.InitiationUrl,
+                             Properties = (wd.Properties != null && wd.Properties.Count > 0) ?
+                                (from p in wd.Properties
+                                 select new V201508.StringDictionaryItem
+                                 {
+                                     Key = p.Key,
+                                     Value = p.Value,
+                                 }).ToArray() : null,
+                             RequiresAssociationForm = wd.RequiresAssociationForm,
+                             RequiresAssociationFormSpecified = true,
+                             RequiresInitiationForm = wd.RequiresInitiationForm,
+                             RequiresInitiationFormSpecified = true,
+                             RestrictToScope = wd.RestrictToScope,
+                             RestrictToScopeSpecified = true,
+                             RestrictToType = wd.RestrictToType,
+                             RestrictToTypeSpecified = true,
+                             XamlPath = wd.XamlPath,
+                         }).ToArray() : null,
+                    WorkflowSubscriptions = template.Workflows.WorkflowSubscriptions.Count > 0 ?
+                        (from ws in template.Workflows.WorkflowSubscriptions
+                         select new WorkflowsWorkflowSubscription
+                         {
+                             DefinitionId = ws.DefinitionId.ToString(),
+                             Enabled = ws.Enabled,
+                             EventSourceId = ws.EventSourceId.ToString(),
+                             ItemAddedEvent = ws.EventTypes.Contains("ItemAddedEvent"),
+                             ItemUpdatedEvent = ws.EventTypes.Contains("ItemUpdatedEvent"),
+                             WorkflowStartEvent = ws.EventTypes.Contains("WorkflowStartEvent"),
+                             ListId = ws.ListId,
+                             ManualStartBypassesActivationLimit = ws.ManualStartBypassesActivationLimit,
+                             ManualStartBypassesActivationLimitSpecified = true,
+                             Name = ws.Name,
+                             ParentContentTypeId = ws.ParentContentTypeId,
+                             PropertyDefinitions = (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Count > 0) ?
+                                (from pd in ws.PropertyDefinitions
+                                 select new V201508.StringDictionaryItem
+                                 {
+                                     Key = pd.Key,
+                                     Value = pd.Value,
+                                 }).ToArray() : null,
+                             StatusFieldName = ws.StatusFieldName,
+                         }).ToArray() : null,
+                };
+            }
+            else
+            {
+                result.Workflows = null;
+            }
+
+            #endregion
+
+            #region Search Settings
+
+            if (!String.IsNullOrEmpty(template.SearchSettings))
+            {
+                result.SearchSettings = template.SearchSettings.ToXmlElement();
             }
 
             #endregion

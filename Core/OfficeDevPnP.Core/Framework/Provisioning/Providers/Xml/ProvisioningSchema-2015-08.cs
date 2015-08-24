@@ -3870,6 +3870,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema")]
     public partial class CustomAction {
         
+        private CustomActionCommandUIExtension commandUIExtensionField;
+        
         private string nameField;
         
         private string descriptionField;
@@ -3900,6 +3902,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         public CustomAction() {
             this.enabledField = true;
+        }
+        
+        /// <remarks/>
+        public CustomActionCommandUIExtension CommandUIExtension {
+            get {
+                return this.commandUIExtensionField;
+            }
+            set {
+                this.commandUIExtensionField = value;
+            }
         }
         
         /// <remarks/>
@@ -4054,6 +4066,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.scriptSrcField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema")]
+    public partial class CustomActionCommandUIExtension {
+        
+        private System.Xml.XmlElement[] anyField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAnyElementAttribute()]
+        public System.Xml.XmlElement[] Any {
+            get {
+                return this.anyField;
+            }
+            set {
+                this.anyField = value;
             }
         }
     }
