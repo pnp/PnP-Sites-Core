@@ -73,6 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Add TermSetIds
             TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+
             var termStore = session.GetDefaultSiteCollectionTermStore();
             web.Context.Load(termStore);
             web.Context.ExecuteQueryRetry();
@@ -94,6 +95,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            _tokens.Add(new SiteCollectionTermGroupIdToken(web));
+            _tokens.Add(new SiteCollectionTermGroupNameToken(web));
 
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
@@ -120,6 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public string ParseString(string input, params string[] tokensToSkip)
         {
+            var origInput = input;
             if (!string.IsNullOrEmpty(input))
             {
                 foreach (var token in _tokens)
@@ -147,7 +152,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            while (origInput != input)
+            {
+                foreach (var token in _tokens)
+                {
+                    origInput = input;
+                    if (tokensToSkip != null)
+                    {
+                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        {
+                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            {
+                                var regex = token.GetRegexForToken(filteredToken);
+                                if (regex.IsMatch(input))
+                                {
+                                    input = regex.Replace(input, token.GetReplaceValue());
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        {
+                            origInput = input;
+                            input = regex.Replace(input, token.GetReplaceValue());
+                        }
+                    }
+                }
+            }
+
             return input;
         }
+
     }
 }
