@@ -59,6 +59,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             set { this._welcomePageFields = value; }
         }
 
+        /// <summary>
+        /// Defines the custom WelcomePage for the Document Set
+        /// </summary>
+        public String WelcomePage { get; set; }
+
         #endregion
 
         #region Comparison code

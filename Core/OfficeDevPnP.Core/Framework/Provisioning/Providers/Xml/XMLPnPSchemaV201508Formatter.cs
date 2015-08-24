@@ -158,7 +158,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.RegionalSettings = null;
             }
-            
+
+            #endregion
+
+            #region Supported UI Languages
+
+            if (template.SupportedUILanguages != null && template.SupportedUILanguages.Count > 0)
+            {
+                result.SupportedUILanguages = 
+                    (from l in template.SupportedUILanguages
+                    select new V201508.SupportedUILanguagesSupportedUILanguage
+                    {
+                        LCID = l.LCID,
+                    }).ToArray();
+            }
+            else
+            {
+                result.SupportedUILanguages = null;
+            }
+
+            #endregion
+
+            #region Audit Settings
+
+            if (template.AuditSettings != null)
+            {
+                result.AuditSettings = new V201508.AuditSettings {
+                    AuditLogTrimmingRetention = template.AuditSettings.AuditLogTrimmingRetention,
+                    AuditLogTrimmingRetentionSpecified = true,
+                    TrimAuditLog = template.AuditSettings.TrimAuditLog,
+                    TrimAuditLogSpecified = true,
+                    Audit = template.AuditSettings.AuditFlag.FromTemplateToSchemaAudits(),
+                };
+            }
+            else
+            {
+                result.AuditSettings = null;
+            }
+
             #endregion
 
             #region Security
@@ -294,6 +331,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #endregion
 
             #region Site Columns
+
             // Translate Site Columns (Fields), if any
             if (template.SiteFields != null && template.SiteFields.Count > 0)
             {
@@ -308,38 +346,73 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.SiteFields = null;
             }
+
             #endregion
 
             #region Content Types
+
             // Translate ContentTypes, if any
             if (template.ContentTypes != null && template.ContentTypes.Count > 0)
             {
-                result.ContentTypes = (from ct in template.ContentTypes
-                                       select new V201508.ContentType
-                                       {
-                                           ID = ct.Id,
-                                           Description = ct.Description,
-                                           Group = ct.Group,
-                                           Name = ct.Name,
-                                           FieldRefs = ct.FieldRefs.Count > 0 ?
-                    (from fieldRef in ct.FieldRefs
-                     select new V201508.ContentTypeFieldRef
-                     {
-                         Name = fieldRef.Name,
-                         ID = fieldRef.Id.ToString(),
-                         Hidden = fieldRef.Hidden,
-                         Required = fieldRef.Required
-                     }).ToArray() : null,
-                                       }).ToArray();
-
+                result.ContentTypes = 
+                    (from ct in template.ContentTypes
+                        select new V201508.ContentType
+                        {
+                            ID = ct.Id,
+                            Description = ct.Description,
+                            Group = ct.Group,
+                            Name = ct.Name,
+                            FieldRefs = ct.FieldRefs.Count > 0 ?
+                            (from fieldRef in ct.FieldRefs
+                             select new V201508.ContentTypeFieldRef
+                             {
+                                 Name = fieldRef.Name,
+                                 ID = fieldRef.Id.ToString(),
+                                 Hidden = fieldRef.Hidden,
+                                 Required = fieldRef.Required
+                             }).ToArray() : null,
+                            DocumentSetTemplate = 
+                                new V201508.DocumentSetTemplate
+                                {
+                                    AllowedContentTypes = ct.DocumentSetTemplate.AllowedContentTypes.Count > 0 ?
+                                        (from act in ct.DocumentSetTemplate.AllowedContentTypes
+                                        select new DocumentSetTemplateAllowedContentType
+                                        {
+                                            ContentTypeID = act
+                                        }).ToArray() : null,
+                                    DefaultDocuments = ct.DocumentSetTemplate.DefaultDocuments.Count > 0 ?
+                                        (from dd in ct.DocumentSetTemplate.DefaultDocuments
+                                         select new DocumentSetTemplateDefaultDocument
+                                         {
+                                             ContentTypeID = dd.ContentTypeId,
+                                             FileSourcePath = dd.FileSourcePath,
+                                             Name = dd.Name,
+                                         }).ToArray() : null,
+                                    SharedFields = ct.DocumentSetTemplate.SharedFields.Count > 0 ?
+                                        (from sf in ct.DocumentSetTemplate.SharedFields
+                                         select new DocumentSetFieldRef
+                                         {
+                                             ID = sf.ToString(),
+                                         }).ToArray() : null,
+                                    WelcomePage = ct.DocumentSetTemplate.WelcomePage,
+                                    WelcomePageFields = ct.DocumentSetTemplate.WelcomePageFields.Count > 0 ?
+                                        (from wpf in ct.DocumentSetTemplate.WelcomePageFields
+                                         select new DocumentSetFieldRef
+                                         {
+                                             ID = wpf.ToString(),
+                                         }).ToArray() : null,
+                                },
+                }).ToArray();
             }
             else
             {
                 result.ContentTypes = null;
             }
+
             #endregion
 
             #region List Instances
+
             // Translate Lists Instances, if any
             if (template.Lists != null && template.Lists.Count > 0)
             {
@@ -354,6 +427,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          EnableMinorVersions = list.EnableMinorVersions,
                          EnableModeration = list.EnableModeration,
                          DraftVersionVisibility = list.DraftVersionVisibility,
+                         DraftVersionVisibilitySpecified = true,
                          Hidden = list.Hidden,
                          MinorVersionLimit = list.MinorVersionLimit,
                          MinorVersionLimitSpecified = true,
@@ -389,6 +463,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              (from field in list.Fields
                               select field.SchemaXml.ToXmlElement()).ToArray(),
                          } : null,
+                         FieldDefaults = list.FieldDefaults.Count > 0 ?
+                            (from value in list.FieldDefaults
+                                select new FieldDefault { FieldName = value.Key, Value = value.Value }).ToArray() : null,
                          FieldRefs = list.FieldRefs.Count > 0 ?
                          (from fieldRef in list.FieldRefs
                           select new V201508.ListInstanceFieldRef
@@ -400,22 +477,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               ID = fieldRef.Id.ToString(),
                           }).ToArray() : null,
                          DataRows = list.DataRows.Count > 0 ?
-                             new List<DataValue[]>(
-                                from row in list.DataRows
-                                select new List<DataValue>(
-                                    from value in row.Values
-                                    select new DataValue { FieldName = value.Key, Value = value.Value }
-                                    ).ToArray()
-                                ).ToArray() : null,
+                            (from dr in list.DataRows
+                             select new ListInstanceDataRow
+                             {
+                                 DataValue = dr.Values.Count > 0 ?
+                                    (from value in dr.Values
+                                     select new DataValue { FieldName = value.Key, Value = value.Value }).ToArray() : null,
+                                 Security = new V201508.ObjectSecurity
+                                 {
+                                     BreakRoleInheritance = new ObjectSecurityBreakRoleInheritance
+                                     {
+                                         ClearSubscopes = dr.ObjectSecurity.ClearSubscopes,
+                                         CopyRoleAssignments = dr.ObjectSecurity.CopyRoleAssignments,
+                                         RoleAssignment = dr.ObjectSecurity.RoleAssignments.Count > 0 ?
+                                            (from ra in dr.ObjectSecurity.RoleAssignments
+                                             select new V201508.RoleAssignment
+                                             {
+                                                 Principal = ra.Principal,
+                                                 RoleDefinition = ra.RoleDefinition,
+                                             }).ToArray() : null,
+                                     }
+                                 }
+                             }).ToArray() : null,
+                         Security = new V201508.ObjectSecurity
+                         {
+                             BreakRoleInheritance = new ObjectSecurityBreakRoleInheritance
+                             {
+                                 ClearSubscopes = list.Security.ClearSubscopes,
+                                 CopyRoleAssignments = list.Security.CopyRoleAssignments,
+                                 RoleAssignment = list.Security.RoleAssignments.Count > 0 ?
+                                            (from ra in list.Security.RoleAssignments
+                                             select new V201508.RoleAssignment
+                                             {
+                                                 Principal = ra.Principal,
+                                                 RoleDefinition = ra.RoleDefinition,
+                                             }).ToArray() : null,
+                             }
+                         },
                      }).ToArray();
             }
             else
             {
                 result.Lists = null;
             }
+
             #endregion
 
             #region Features
+
             // Translate Features, if any
             if (template.Features != null)
             {
@@ -457,9 +566,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     result.Features.WebFeatures = null;
                 }
             }
+
             #endregion
 
             #region Custom Actions
+
             // Translate CustomActions, if any
             if (template.CustomActions != null)
             {
@@ -529,9 +640,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     result.CustomActions.WebCustomActions = null;
                 }
             }
+
             #endregion
 
             #region Files
+
             // Translate Files, if any
             if (template.Files != null && template.Files.Count > 0)
             {
@@ -564,9 +677,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Files = null;
             }
+
             #endregion
 
             #region Pages
+
             // Translate Pages, if any
             if (template.Pages != null && template.Pages.Count > 0)
             {
@@ -624,9 +739,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 result.Pages = pages.ToArray();
             }
+
             #endregion
 
             #region Taxonomy
+
             // Translate Taxonomy elements, if any
             if (template.TermGroups != null && template.TermGroups.Count > 0)
             {
@@ -659,9 +776,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             }).ToArray(),
                      }).ToArray();
             }
+
             #endregion
 
             #region Composed Looks
+
             // Translate ComposedLook, if any
             if (template.ComposedLook != null)
             {
@@ -678,9 +797,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     VersionSpecified = true,
                 };
             }
+
             #endregion
 
             #region Providers
+
             // Translate Providers, if any
             if (template.Providers != null && template.Providers.Count > 0)
             {
@@ -697,6 +818,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
+
             #endregion
 
             XmlSerializerNamespaces ns =
@@ -1378,7 +1500,80 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return V201508.WorkHour.Item1100PM;
                 case Model.WorkHour.PM1200:
                     return V201508.WorkHour.Item1200PM;
+                default:
+                    return V201508.WorkHour.Item100AM;
             }
+        }
+
+        public static V201508.AuditSettingsAudit[] FromTemplateToSchemaAudits(this Microsoft.SharePoint.Client.AuditMaskType audits)
+        {
+            List<V201508.AuditSettingsAudit> result = new List<AuditSettingsAudit>();
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.All))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.All });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.CheckIn))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.CheckIn });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.CheckOut))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.CheckOut });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.ChildDelete))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.ChildDelete });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Copy))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Copy });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Move))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Move });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.None))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.None });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.ObjectDelete))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.ObjectDelete });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.ProfileChange))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.ProfileChange });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.SchemaChange))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.SchemaChange });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Search))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Search });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.SecurityChange))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.SecurityChange });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Undelete))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Undelete });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Update))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Update });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.View))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.View });
+            }
+            if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.Workflow))
+            {
+                result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.Workflow });
+            }
+
+            return result.ToArray();
         }
     }
 }

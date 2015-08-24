@@ -10,19 +10,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private RoleAssignment _roleAssignment = new RoleAssignment();
+        private List<RoleAssignment> _roleAssignments = new List<RoleAssignment>();
 
         #endregion
 
         #region Public Members
 
         /// <summary>
-        /// Role Assignment for a target Principal
+        /// Role Assignments for a target Principal
         /// </summary>
-        public RoleAssignment RoleAssignment
+        public List<RoleAssignment> RoleAssignments
         {
-            get { return this._roleAssignment; }
-            set { this._roleAssignment = value; }
+            get { return this._roleAssignments; }
+            set { this._roleAssignments = value; }
         }
 
         /// <summary>
