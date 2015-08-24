@@ -4,6 +4,10 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20150825-OnlineAppOnly-635760581743904631.md) | Tuesday, August 25, 2015 | 10:09 PM | dev | debug | 215 | 2 | 34
+ [OnlineCred](PnPUnitTestResults-20150824-OnlineCred-635760561227694106.md) | Monday, August 24, 2015 | 9:35 PM | dev | debug | 224 | 24 | 3
+ [OnPremAppOnly](PnPUnitTestResults-20150824-OnPremAppOnly-635760551095505776.md) | Monday, August 24, 2015 | 9:18 PM | dev | debug15 | 197 | 0 | 46
+ [OnPremCred](PnPUnitTestResults-20150824-OnPremCred-635760540194262851.md) | Monday, August 24, 2015 | 9:00 PM | dev | debug15 | 226 | 0 | 17
  [OnlineAppOnly](PnPUnitTestResults-20150824-OnlineAppOnly-635759720956802212.md) | Monday, August 24, 2015 | 10:14 PM | dev | debug | 216 | 2 | 33
  [OnlineCred](PnPUnitTestResults-20150823-OnlineCred-635759697127354938.md) | Sunday, August 23, 2015 | 9:35 PM | dev | debug | 225 | 23 | 3
  [OnPremAppOnly](PnPUnitTestResults-20150823-OnPremAppOnly-635759687114841120.md) | Sunday, August 23, 2015 | 9:18 PM | dev | debug15 | 197 | 0 | 46
@@ -100,7 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnPremCred](PnPUnitTestResults-20150714-OnPremCred-635725116406057370.md) | Tuesday, July 14, 2015 | 9:00 PM | dev | debug15 | 216 | 8 | 17
  [OnlineAppOnly](PnPUnitTestResults-20150714-OnlineAppOnly-635724297993116735.md) | Tuesday, July 14, 2015 | 10:16 PM | dev | debug | 205 | 15 | 29
  [OnlineCred](PnPUnitTestResults-20150713-OnlineCred-635724273366044283.md) | Monday, July 13, 2015 | 9:35 PM | dev | debug | 208 | 38 | 3
- [OnPremAppOnly](PnPUnitTestResults-20150713-OnPremAppOnly-635724263420195968.md) | Monday, July 13, 2015 | 9:19 PM | dev | debug15 | 188 | 10 | 43
- [OnPremCred](PnPUnitTestResults-20150713-OnPremCred-635724252395074683.md) | Monday, July 13, 2015 | 9:00 PM | dev | debug15 | 216 | 8 | 17
- [OnlineAppOnly](PnPUnitTestResults-20150713-OnlineAppOnly-635723424002740090.md) | Monday, July 13, 2015 | 10:00 PM | dev | debug | 206 | 14 | 29
- [OnlineCred](PnPUnitTestResults-20150712-OnlineCred-635723409461060274.md) | Sunday, July 12, 2015 | 9:35 PM | dev | debug | 208 | 38 | 3
