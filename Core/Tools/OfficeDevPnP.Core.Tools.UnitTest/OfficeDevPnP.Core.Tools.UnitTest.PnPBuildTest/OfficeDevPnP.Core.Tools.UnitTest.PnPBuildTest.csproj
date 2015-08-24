@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="debugalm.cmd" />
     <None Include="msbuildrun.cmd" />
   </ItemGroup>
   <ItemGroup>
