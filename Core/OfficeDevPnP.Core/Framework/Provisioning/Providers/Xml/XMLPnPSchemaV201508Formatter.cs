@@ -875,6 +875,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Publishing
+
+            if (template.Publishing != null)
+            {
+                result.Publishing = new V201508.Publishing
+                {
+                    AutoCheckRequirements = (V201508.PublishingAutoCheckRequirements)Enum.Parse(typeof(V201508.PublishingAutoCheckRequirements), template.Publishing.AutoCheckRequirements.ToString()),
+                    AvailableWebTemplates = template.Publishing.AvailableWebTemplates.Count > 0 ?
+                        (from awt in template.Publishing.AvailableWebTemplates
+                         select new V201508.PublishingWebTemplate
+                         {
+                             LanguageCode = awt.LanguageCode,
+                             LanguageCodeSpecified = true,
+                             TemplateName = awt.TemplateName,
+                         }).ToArray() : null,
+                    DesignPackage = new V201508.PublishingDesignPackage
+                    {
+                        DesignPackagePath = template.Publishing.DesignPackage.DesignPackagePath,
+                        MajorVersion = template.Publishing.DesignPackage.MajorVersion,
+                        MajorVersionSpecified = true,
+                        MinorVersion = template.Publishing.DesignPackage.MinorVersion,
+                        MinorVersionSpecified = true,
+                        PackageGuid = template.Publishing.DesignPackage.PackageGuid.ToString(),
+                        PackageName = template.Publishing.DesignPackage.PackageName,
+                    },
+                    PageLayouts = template.Publishing.PageLayouts.Count > 0 ?
+                        (from pl in template.Publishing.PageLayouts
+                         select new V201508.PublishingPageLayout
+                         {
+                             IsDefault = pl.IsDefault,
+                             Path = pl.Path,
+                         }).ToArray() : null,
+                };
+            }
+            else
+            {
+                result.Publishing = null;
+            }
+
+            #endregion
+
+            #region AddIns
+
+            if (template.Addins != null && template.Addins.Count > 0)
+            {
+                result.AddIns =
+                    (from addin in template.Addins
+                     select new V201508.AddInsAddin
+                     {
+                         PackagePath = addin.PackagePath,
+                         Source = (V201508.AddInsAddinSource)Enum.Parse(typeof(V201508.AddInsAddinSource), addin.Source),
+                     }).ToArray();
+            }
+            else
+            {
+                result.AddIns = null;
+            }
+
+            #endregion
+
             #region Providers
 
             // Translate Providers, if any
