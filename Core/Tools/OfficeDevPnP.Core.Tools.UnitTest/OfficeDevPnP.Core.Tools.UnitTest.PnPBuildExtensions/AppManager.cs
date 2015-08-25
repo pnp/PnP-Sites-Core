@@ -125,7 +125,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 
 
 
-        public bool RegisterApplication(string clientId, string clientSecret, string title, string appDomain, string redirectUri)
+        public bool RegisterApplication(ref string clientId, ref string clientSecret, string title, string appDomain, string redirectUri)
         {
             bool appRegNewResult = false;
 

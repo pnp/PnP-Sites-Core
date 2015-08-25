@@ -99,8 +99,12 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
                     am = new AppManager(SharePointSiteUrl, UserName, spoPassword);
                 }
 
-                if (am.RegisterApplication(ClientId, ClientSecret, Title, AppDomain, RedirectUri))
+                string clientId = ClientId;
+                string clientSecret = ClientSecret;
+                if (am.RegisterApplication(ref clientId, ref clientSecret, Title, AppDomain, RedirectUri))
                 {
+                    ClientId = clientId;
+                    ClientSecret = clientSecret;
                     return true;
                 }
                 else
