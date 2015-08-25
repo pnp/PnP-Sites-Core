@@ -105,9 +105,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     foreach (var element in templateFieldElement.Elements())
                     {
-                        if (existingFieldElement.HasAttributes && existingFieldElement.Attribute(element.Name) != null)
+                        if (existingFieldElement.Element(element.Name) != null)
                         {
-                            existingFieldElement.Attribute(element.Name).Remove();
+                            existingFieldElement.Element(element.Name).Remove();
                         }
                         existingFieldElement.Add(element);
                     }
