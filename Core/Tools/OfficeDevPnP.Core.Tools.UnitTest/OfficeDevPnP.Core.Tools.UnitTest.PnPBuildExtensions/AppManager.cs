@@ -1,6 +1,8 @@
-﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
+﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Resources;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security;
@@ -77,6 +79,52 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Public Methods
+        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost)
+        {
+            bool createAppPackageResult = false;
+
+            if (String.IsNullOrEmpty(sharePointProjectFile) || !System.IO.File.Exists(sharePointProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint project file ({0}) is invalid.", sharePointProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(sharePointWebProjectFile) || !System.IO.File.Exists(sharePointWebProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint Web project file ({0}) is invalid.", sharePointWebProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentException("Please provide a client id");
+            }
+
+            if (String.IsNullOrEmpty(clientSecret))
+            {
+                throw new ArgumentException("Please provide a client secret");
+            }
+
+            if (String.IsNullOrEmpty(applicationHost))
+            {
+                throw new ArgumentException("Please provide an application host");
+            }
+
+            // Do we already have a publishing XML defined?
+
+
+            // Get a base template that will be used for the publishing
+            using (Stream publishingTemplate = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite))
+            {
+
+            }
+
+
+
+
+            return createAppPackageResult;
+        }
+
+
+
         public bool RegisterApplication(string clientId, string clientSecret, string title, string appDomain, string redirectUri)
         {
             bool appRegNewResult = false;

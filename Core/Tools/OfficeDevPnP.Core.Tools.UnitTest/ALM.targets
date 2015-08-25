@@ -10,7 +10,7 @@
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="RegisterNewApp" />
   
   <Target Name="AppTest">
-    <Message Text="==============================================================================" />
+    <Message Text="=============================================================================" />
     <RegisterNewApp CredentialManagerLabel="bertonline" SharePointSiteUrl="$(SharePointSite)" Title="test app" AppDomain="www.test.com" RedirectUri="https://www.test.com" >
       <Output PropertyName="ClientId" TaskParameter="ClientId" />
       <Output PropertyName="ClientSecret" TaskParameter="ClientSecret" />
@@ -21,7 +21,7 @@
 
     <Message Text="Following client id will be used: $(ClientId)" />
     <Message Text="Following client secret will be used: $(ClientSecret)" />
-    <Message Text="==============================================================================" />
+    <Message Text="=============================================================================" />
     
   </Target>
 </Project>
