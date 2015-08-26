@@ -1199,7 +1199,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security.SiteGroups.AddRange(
                         from g in source.Security.SiteGroups
-                        select new Model.SiteGroup(from m in g.Members select new Model.User { Name = m.Name })
+                        select new Model.SiteGroup(g.Members != null ? from m in g.Members select new Model.User { Name = m.Name } : null)
                         {
                             AllowMembersEditMembership = g.AllowMembersEditMembershipSpecified ? g.AllowMembersEditMembership : false,
                             AllowRequestToJoinLeave = g.AllowRequestToJoinLeaveSpecified ? g.AllowRequestToJoinLeave : false,
@@ -1350,7 +1350,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                         (from dataRow in list.DataRows
                                          select new Model.DataRow(
                                      (from dataValue in dataRow.DataValue
-                                             select dataValue).ToDictionary(k => k.FieldName, v => v.Value),
+                                      select dataValue).ToDictionary(k => k.FieldName, v => v.Value),
                                      dataRow.Security.FromSchemaToTemplateObjectSecurityV201508()
                                  )).ToList() : null),
                             (list.FieldDefaults != null ?
