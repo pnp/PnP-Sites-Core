@@ -43,15 +43,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners,scope);
+                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope);
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers,scope);
+                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope);
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors,scope);
+                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope);
+                }
+
+                foreach (var siteGroup in siteSecurity.SiteGroups)
+                {
+                    var group = web.AddGroup(siteGroup.Title, siteGroup.Description, false, true);
+                    group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
+                    group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
+                    group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                    group.Owner = web.EnsureUser(siteGroup.Owner);
+                    group.Update();
+                    web.Context.ExecuteQueryRetry();
+
+                    if (siteGroup.Members.Any())
+                    {
+                        AddUserToGroup(web, group, siteGroup.Members, scope);
+                    }
                 }
 
                 foreach (var admin in siteSecurity.AdditionalAdministrators)
