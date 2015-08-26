@@ -15,7 +15,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private Dictionary<String, String> _properties = new Dictionary<String, String>;
+        private Dictionary<String, String> _properties = new Dictionary<String, String>();
+
+        #endregion
+
+        #region Constructors
+
+        public WorkflowDefinition() { }
+
+        public WorkflowDefinition(Dictionary<String, String> properties)
+        {
+            if (properties != null)
+            {
+                this._properties = properties;
+            }
+        }
 
         #endregion
 
@@ -27,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Dictionary<String, String> Properties
         {
             get { return this._properties; }
-            set {  this._properties = value; }
+            private set {  this._properties = value; }
         }
 
         /// <summary>
@@ -103,7 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.RequiresInitiationForm.GetHashCode(),
                 this.RestrictToScope.GetHashCode(),
                 this.RestrictToType.GetHashCode(),
-                this.Xaml.ToString().GetHashCode()
+                this.XamlPath.GetHashCode()
             ).GetHashCode());
         }
 
@@ -130,7 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.RequiresInitiationForm == other.RequiresInitiationForm &&
                 this.RestrictToScope == other.RestrictToScope &&
                 this.RestrictToType == other.RestrictToType &&
-                this.Xaml.Equals(other.Xaml)
+                this.XamlPath == other.XamlPath
                 );
         }
 

@@ -6,8 +6,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public class File : IEquatable<File>
     {
         #region Private Members
+
         private List<WebPart> _webParts = new List<WebPart>();
         private Dictionary<string, string> _properties = new Dictionary<string,string>();
+        private ObjectSecurity _security = new ObjectSecurity();
+
         #endregion
 
         #region Properties
@@ -29,12 +32,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _properties = value; }
         }
 
+        /// <summary>
+        /// Defines the Security rules for the File
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return this._security; }
+            private set { this._security = value; }
+        }
+
         #endregion
 
         #region Constructors
         public File() { }
 
-        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string,string> properties )
+        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string,string> properties, ObjectSecurity security = null)
         {
             this.Src = src;
             this.Overwrite = overwrite;
@@ -49,6 +61,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 {
                     this.Properties.Add(property.Key,property.Value);
                 }
+            }
+            if (security != null)
+            {
+                this._security = security;
             }
         }
 

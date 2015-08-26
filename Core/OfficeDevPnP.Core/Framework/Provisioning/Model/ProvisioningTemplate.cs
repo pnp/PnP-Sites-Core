@@ -11,7 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
     {
-        #region private members
+        #region Private Members
+
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private List<Field> _siteFields = new List<Field>();
         private List<ContentType> _contentTypes = new List<ContentType>();
@@ -34,10 +35,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private Workflows _workflows = new Workflows();
         private List<AddIn> _addins = new List<AddIn>();
         private Publishing _publishing = new Publishing();
+        private Dictionary<String, String> _properties = new Dictionary<String, String>();
 
         #endregion
 
-        #region Constructor
+        #region Constructors
+
         public ProvisioningTemplate()
         {
             this.connector = new FileSystemConnector(".", "");
@@ -47,9 +50,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this.connector = connector;
         }
+
         #endregion
 
-        #region Properties
+        #region Public Members
 
         /// <summary>
         /// Any parameters that can be used throughout the template
@@ -191,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<SupportedUILanguage> SupportedUILanguages
         {
             get { return this._supportedUILanguages; }
-            set { this._supportedUILanguages = value; }
+            private set { this._supportedUILanguages = value; }
         }
 
         /// <summary>
@@ -220,10 +224,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the SharePoint Add-ins to provision
         /// </summary>
-        public List<AddIn> Addins
+        public List<AddIn> AddIns
         {
             get { return this._addins; }
-            set { this._addins = value; }
+            private set { this._addins = value; }
         }
 
         /// <summary>
@@ -234,6 +238,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return this._publishing; }
             set { this._publishing = value; }
         }
+
+        /// <summary>
+        /// A set of custom Properties for the Provisioning Template
+        /// </summary>
+        public Dictionary<String, String> Properties
+        {
+            get { return this._properties; }
+            private set { this._properties = value; }
+        }
+
+        /// <summary>
+        /// The Image Preview Url of the Provisioning Template
+        /// </summary>
+        public String ImagePreviewUrl { get; set; }
+
+        /// <summary>
+        /// The Display Name of the Provisioning Template
+        /// </summary>
+        public String DisplayName { get; set; }
+
+        /// <summary>
+        /// The Description of the Provisioning Template
+        /// </summary>
+        public String Description { get; set; }
 
         public FileConnectorBase Connector
         {
@@ -253,7 +281,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|",
                 this.ComposedLook.GetHashCode(),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
@@ -279,7 +307,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.TermGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Workflows.WorkflowDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Workflows.WorkflowSubscriptions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Addins.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.AddIns.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Publishing.GetHashCode()
             ).GetHashCode());
         }
@@ -321,7 +349,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.TermGroups.DeepEquals(other.TermGroups) &&
                 this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) &&
                 this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) &&
-                this.Addins.DeepEquals(other.Addins) &&
+                this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing
             );
         }

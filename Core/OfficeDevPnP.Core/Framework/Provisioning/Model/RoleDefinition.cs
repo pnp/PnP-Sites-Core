@@ -15,6 +15,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #endregion
 
+        #region Constructors
+
+        public RoleDefinition() { }
+
+        public RoleDefinition(IEnumerable<Microsoft.SharePoint.Client.PermissionKind> permissions)
+        {
+            if(permissions != null)
+            {
+                this._permissions.AddRange(permissions);
+            }
+        }
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -23,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<Microsoft.SharePoint.Client.PermissionKind> Permissions
         {
             get { return this._permissions; }
-            set { this._permissions = value; }
+            private set { this._permissions = value; }
         }
 
         /// <summary>

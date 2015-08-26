@@ -1092,6 +1092,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema", IsNullable=false)]
     public partial class ProvisioningTemplate {
         
+        private StringDictionaryItem[] propertiesField;
+        
         private string sitePolicyField;
         
         private RegionalSettings regionalSettingsField;
@@ -1137,6 +1139,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         private decimal versionField;
         
         private bool versionFieldSpecified;
+        
+        private string imagePreviewUrlField;
+        
+        private string displayNameField;
+        
+        private string descriptionField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("Property", IsNullable=false)]
+        public StringDictionaryItem[] Properties {
+            get {
+                return this.propertiesField;
+            }
+            set {
+                this.propertiesField = value;
+            }
+        }
         
         /// <remarks/>
         public string SitePolicy {
@@ -1376,6 +1395,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.versionFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ImagePreviewUrl {
+            get {
+                return this.imagePreviewUrlField;
+            }
+            set {
+                this.imagePreviewUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DisplayName {
+            get {
+                return this.displayNameField;
+            }
+            set {
+                this.displayNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Description {
+            get {
+                return this.descriptionField;
+            }
+            set {
+                this.descriptionField = value;
             }
         }
     }

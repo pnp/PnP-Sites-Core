@@ -17,7 +17,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private DesignPackage _designPackage = new DesignPackage();
         private List<AvailableWebTemplate> _availableWebTemplates = new List<AvailableWebTemplate>();
         private List<PageLayout> _pageLayouts = new List<PageLayout>();
-        
+
+        #endregion
+
+        #region Constructors
+
+        public Publishing() { }
+
+        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null)
+        {
+            this.AutoCheckRequirements = autoCheckRequirements;
+
+            if (designPackage != null)
+            {
+                this.DesignPackage = designPackage;
+            }
+            if (availableWebTemplates != null)
+            {
+                this._availableWebTemplates.AddRange(availableWebTemplates);
+            }
+            if (pageLayouts != null)
+            {
+                this._pageLayouts.AddRange(pageLayouts);
+            }
+        }
+
         #endregion
 
         #region Public Members
@@ -37,7 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<AvailableWebTemplate> AvailableWebTemplates
         {
             get { return this._availableWebTemplates; }
-            set { this._availableWebTemplates = value; }
+            private set { this._availableWebTemplates = value; }
         }
 
         /// <summary>
@@ -46,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<PageLayout> PageLayouts
         {
             get { return this._pageLayouts; }
-            set { this._pageLayouts = value; }
+            private set { this._pageLayouts = value; }
         }
 
         /// <summary>

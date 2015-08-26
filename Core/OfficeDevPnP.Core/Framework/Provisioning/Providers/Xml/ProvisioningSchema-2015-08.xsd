@@ -165,6 +165,14 @@
 
     <xsd:all>
 
+      <xsd:element name="Properties" type="pnp:ProvisioningTemplateProperties" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A set of custom Properties for the Provisioning Template, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
       <xsd:element name="SitePolicy" type="pnp:ReplaceableString" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -393,6 +401,48 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="ImagePreviewUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Image Preview Url of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DisplayName" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Display Name of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Description" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Description of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+
+  </xsd:complexType>
+
+  <xsd:complexType name="ProvisioningTemplateProperties">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A set of custom Properties for the Provisioning Template.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Property" type="pnp:StringDictionaryItem" minOccurs="1" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A custom Property for the Provisioning Template, collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="RegionalSettings">
@@ -1916,7 +1966,6 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-
 
     <xsd:attribute name="Name" type="xsd:string" use="required">
       <xsd:annotation>

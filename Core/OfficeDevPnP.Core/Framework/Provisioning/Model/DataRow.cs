@@ -40,13 +40,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         }
 
-        public DataRow(Dictionary<string, string> values)
+        public DataRow(Dictionary<string, string> values): this(values, null)
         {
-            foreach (var key in values.Keys)
+        }
+
+        public DataRow(Dictionary<string, string> values, ObjectSecurity security)
+        {
+            if (values != null)
             {
-                Values.Add(key, values[key]);
+                foreach (var key in values.Keys)
+                {
+                    Values.Add(key, values[key]);
+                }
+            }
+
+            if (security != null)
+            {
+                this.ObjectSecurity = security;
             }
         }
+
         #endregion
     }
 }

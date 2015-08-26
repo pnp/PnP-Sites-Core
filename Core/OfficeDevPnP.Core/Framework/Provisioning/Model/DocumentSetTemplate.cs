@@ -21,6 +21,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #endregion
 
+        #region Constructors
+
+        public DocumentSetTemplate() { }
+
+        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null)
+        {
+            if (!String.IsNullOrEmpty(welcomePage))
+            {
+                this.WelcomePage = welcomePage;
+            }
+            if (allowedContentTypes != null)
+            {
+                this._allowedContentTypes.AddRange(allowedContentTypes);
+            }
+            if (defaultDocuments != null)
+            {
+                this._defaultDocuments.AddRange(defaultDocuments);
+            }
+            if (sharedFields != null)
+            {
+                this._sharedFields.AddRange(sharedFields);
+            }
+            if (welcomePageFields != null)
+            {
+                this._welcomePageFields.AddRange(welcomePageFields);
+            }
+        }
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -29,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<String> AllowedContentTypes
         {
             get { return this._allowedContentTypes; }
-            set { this._allowedContentTypes = value; }
+            private set { this._allowedContentTypes = value; }
         }
 
         /// <summary>
@@ -38,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<DefaultDocument> DefaultDocuments
         {
             get { return this._defaultDocuments; }
-            set { this._defaultDocuments = value; }
+            private set { this._defaultDocuments = value; }
         }
 
         /// <summary>
@@ -47,7 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<Guid> SharedFields
         {
             get { return this._sharedFields; }
-            set { this._sharedFields = value; }
+            private set { this._sharedFields = value; }
         }
 
         /// <summary>
@@ -56,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<Guid> WelcomePageFields
         {
             get { return this._welcomePageFields; }
-            set { this._welcomePageFields = value; }
+            private set { this._welcomePageFields = value; }
         }
 
         /// <summary>

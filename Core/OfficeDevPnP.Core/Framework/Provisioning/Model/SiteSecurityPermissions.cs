@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<RoleDefinition> RoleDefinitions
         {
             get { return this._roleDefinitions; }
-            set { this._roleDefinitions = value; }
+            private set { this._roleDefinitions = value; }
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<RoleAssignment> RoleAssignments
         {
             get { return this._roleAssignments; }
-            set { this._roleAssignments = value; }
+            private set { this._roleAssignments = value; }
         }
 
         #endregion

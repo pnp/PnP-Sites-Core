@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/24/2015*
+*Topic automatically generated on 8/26/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -45,7 +45,11 @@ Represents the root element of the SharePoint Provisioning Template.
 <pnp:ProvisioningTemplate
       xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema"
       ID="xsd:ID"
-      Version="xsd:decimal">
+      Version="xsd:decimal"
+      ImagePreviewUrl="xsd:string"
+      DisplayName="xsd:string"
+      Description="xsd:string">
+   <pnp:Properties />
    <pnp:SitePolicy />
    <pnp:RegionalSettings />
    <pnp:SupportedUILanguages />
@@ -75,6 +79,7 @@ Here follow the available child elements for the ProvisioningTemplate element.
 
 Element|Type|Description
 -------|----|-----------
+Properties|[ProvisioningTemplateProperties](#provisioningtemplateproperties)|A set of custom Properties for the Provisioning Template, optional element.
 SitePolicy|[ReplaceableString](#replaceablestring)|The Site Policy of the Provisioning Template, optional element.
 RegionalSettings|[RegionalSettings](#regionalsettings)|The Regional Settings of the Provisioning Template, optional element.
 SupportedUILanguages|[SupportedUILanguages](#supporteduilanguages)|The Supported UI Languages for the Provisioning Template, optional element.
@@ -103,6 +108,9 @@ Attibute|Type|Description
 --------|----|-----------
 ID|xsd:ID|The ID of the Provisioning Template, required attribute.
 Version|xsd:decimal|The Version of the Provisioning Template, optional attribute.
+ImagePreviewUrl|xsd:string|The Image Preview Url of the Provisioning Template, optional attribute.
+DisplayName|xsd:string|The Display Name of the Provisioning Template, optional attribute.
+Description|xsd:string|The Description of the Provisioning Template, optional attribute.
 
 
 ##Child Elements and Complex Types
@@ -287,6 +295,23 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Provider|[Provider](#provider)|
+<a name="provisioningtemplateproperties"></a>
+###ProvisioningTemplateProperties
+A set of custom Properties for the Provisioning Template.
+
+```xml
+<pnp:ProvisioningTemplateProperties>
+   <pnp:Property />
+</pnp:ProvisioningTemplateProperties>
+```
+
+
+Here follow the available child elements for the ProvisioningTemplateProperties element.
+
+
+Element|Type|Description
+-------|----|-----------
+Property|[StringDictionaryItem](#stringdictionaryitem)|A custom Property for the Provisioning Template, collection of elements.
 <a name="regionalsettings"></a>
 ###RegionalSettings
 Defines the Regional Settings for a site.

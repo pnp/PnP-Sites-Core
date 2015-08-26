@@ -18,6 +18,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #endregion
 
+        #region Constructors
+        public SiteGroup() { }
+
+        public SiteGroup(IEnumerable<User> members)
+        {
+            if (members != null)
+            {
+                this._members.AddRange(members);
+            }
+        }
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -25,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public List<User> Members {
             get { return this._members;  }
-            set { this._members = value; }
+            private set { this._members = value; }
         }
 
         /// <summary>
@@ -79,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AllowRequestToJoinLeave.GetHashCode(),
                 this.AutoAcceptRequestToJoinLeave.GetHashCode(),
                 this.Description.GetHashCode(),
-                this.Members.Aggregate(0, (acc, next) => acc += next.GetHashCode()),,
+                this.Members.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.OnlyAllowMembersViewMembership.GetHashCode(),
                 this.Owner.GetHashCode(),
                 this.RequestToJoinLeaveEmailSetting.GetHashCode(),

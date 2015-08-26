@@ -15,7 +15,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ListInstance() { }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows)
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null)
+        {
+        }
+
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security)
         {
             if (contentTypeBindings != null)
             {
@@ -39,6 +45,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             if (dataRows != null)
             {
                 this._dataRows.AddRange(dataRows);
+            }
+            if (fieldDefaults != null)
+            {
+                this._fieldDefaults = fieldDefaults;
+            }
+            if (security != null)
+            {
+                this._security = security;
             }
         }
 

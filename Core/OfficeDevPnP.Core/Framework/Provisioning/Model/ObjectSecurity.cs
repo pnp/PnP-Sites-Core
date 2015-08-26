@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -14,6 +15,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #endregion
 
+        #region Constructors
+
+        public ObjectSecurity() { }
+
+        public ObjectSecurity(IEnumerable<RoleAssignment> roleAssignments)
+        {
+            if (roleAssignments != null)
+            {
+                this._roleAssignments.AddRange(roleAssignments);
+            }
+        }
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -22,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public List<RoleAssignment> RoleAssignments
         {
             get { return this._roleAssignments; }
-            set { this._roleAssignments = value; }
+            private set { this._roleAssignments = value; }
         }
 
         /// <summary>
@@ -42,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.RoleAssignment.GetHashCode(),
+                this.RoleAssignments.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.CopyRoleAssignments.GetHashCode(),
                 this.ClearSubscopes.GetHashCode()
             ).GetHashCode());
@@ -60,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public bool Equals(ObjectSecurity other)
         {
             return (
-                this.RoleAssignment == other.RoleAssignment &&
+                this.RoleAssignments.DeepEquals(other.RoleAssignments) &&
                 this.CopyRoleAssignments == other.CopyRoleAssignments &&
                 this.ClearSubscopes == other.ClearSubscopes
                 );
