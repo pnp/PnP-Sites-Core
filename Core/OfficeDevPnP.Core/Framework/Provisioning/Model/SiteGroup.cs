@@ -12,10 +12,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class SiteGroup : IEquatable<SiteGroup>
     {
+        #region Private Members
+
+        private List<User> _members = new List<User>();
+
+        #endregion
+
+        #region Public Members
+
         /// <summary>
         /// The list of members of the Site Group
         /// </summary>
-        public List<User> Members { get; set; }
+        public List<User> Members {
+            get { return this._members;  }
+            set { this._members = value; }
+        }
 
         /// <summary>
         /// The Title of the Site Group
@@ -56,6 +67,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the email address used for membership requests to join or leave will be sent for the Site Group
         /// </summary>
         public String RequestToJoinLeaveEmailSetting { get; set; }
+
+        #endregion
 
         #region Comparison code
 

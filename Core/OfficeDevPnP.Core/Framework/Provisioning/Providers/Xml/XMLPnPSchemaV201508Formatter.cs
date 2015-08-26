@@ -992,7 +992,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             sourceStream.Position = 0;
             XDocument xml = XDocument.Load(sourceStream);
-            XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05;
+            XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08;
 
             // Prepare a variable to hold the single source formatted template
             V201508.ProvisioningTemplate source = null;
@@ -1066,13 +1066,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
 
             #region Basic Properties
+
             // Translate basic properties
             result.Id = source.ID;
             result.Version = (Double)source.Version;
             result.SitePolicy = source.SitePolicy;
+            
             #endregion
 
             #region Property Bag
+            
             // Translate PropertyBagEntries, if any
             if (source.PropertyBagEntries != null)
             {
@@ -1085,53 +1088,168 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         Indexed = bag.Indexed
                     });
             }
+
+            #endregion
+
+            #region Regional Settings
+
+            if (source.RegionalSettings != null)
+            {
+                result.RegionalSettings = new Model.RegionalSettings()
+                {
+                    AdjustHijriDays = source.RegionalSettings.AdjustHijriDaysSpecified ? source.RegionalSettings.AdjustHijriDays : 0,
+                    AlternateCalendarType = source.RegionalSettings.AlternateCalendarTypeSpecified ? source.RegionalSettings.AlternateCalendarType.FromSchemaToTemplateCalendarType() : Microsoft.SharePoint.Client.CalendarType.None,
+                    CalendarType = source.RegionalSettings.CalendarTypeSpecified ? source.RegionalSettings.CalendarType.FromSchemaToTemplateCalendarType() : Microsoft.SharePoint.Client.CalendarType.None,
+                    Collation = source.RegionalSettings.CollationSpecified ? source.RegionalSettings.Collation : 0,
+                    FirstDayOfWeek = source.RegionalSettings.FirstDayOfWeekSpecified ? 
+                        (System.DayOfWeek)Enum.Parse(typeof(System.DayOfWeek), source.RegionalSettings.FirstDayOfWeek.ToString()) : System.DayOfWeek.Sunday, 
+                    FirstWeekOfYear = source.RegionalSettings.FirstWeekOfYearSpecified ? source.RegionalSettings.FirstWeekOfYear : 0,
+                    LocaleId = source.RegionalSettings.LocaleIdSpecified ? source.RegionalSettings.LocaleId : 1033,
+                    ShowWeeks = source.RegionalSettings.ShowWeeksSpecified ? source.RegionalSettings.ShowWeeks : false,
+                    Time24 = source.RegionalSettings.Time24Specified ? source.RegionalSettings.Time24 : false,
+                    TimeZone = Int32.Parse(source.RegionalSettings.TimeZone),
+                    WorkDayEndHour = source.RegionalSettings.WorkDayEndHourSpecified ? source.RegionalSettings.WorkDayEndHour.FromSchemaToTemplateWorkHour() : Model.WorkHour.PM0600,
+                    WorkDays = source.RegionalSettings.WorkDaysSpecified ? source.RegionalSettings.WorkDays : 5,
+                    WorkDayStartHour = source.RegionalSettings.WorkDayStartHourSpecified ? source.RegionalSettings.WorkDayStartHour.FromSchemaToTemplateWorkHour() : Model.WorkHour.AM0900,
+                };
+            }
+            else
+            {
+                result.RegionalSettings = null;
+            }
+
+            #endregion
+
+            #region Supported UI Languages
+
+            if (source.SupportedUILanguages != null && source.SupportedUILanguages.Count > 0)
+            {
+                result.SupportedUILanguages.AddRange(
+                    from l in source.SupportedUILanguages
+                    select new SupportedUILanguage
+                    {
+                        LCID = l.LCID,
+                    });
+            }
+            else
+            {
+                result.SupportedUILanguages = null;
+            }
+
+            #endregion
+
+            #region Audit Settings
+
+            if (source.AuditSettings != null)
+            {
+                result.AuditSettings = new Model.AuditSettings
+                {
+                    AuditLogTrimmingRetention = source.AuditSettings.AuditLogTrimmingRetentionSpecified ? source.AuditSettings.AuditLogTrimmingRetention : 0,
+                    TrimAuditLog = source.AuditSettings.TrimAuditLogSpecified ? source.AuditSettings.TrimAuditLog : false,
+                    AuditFlag = source.AuditSettings.Audit.Aggregate(Microsoft.SharePoint.Client.AuditMaskType.None, (acc, next) => acc &= (Microsoft.SharePoint.Client.AuditMaskType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AuditMaskType), next.AuditFlag.ToString())),
+                };
+            }
+            else
+            {
+                result.AuditSettings = null;
+            }
+
             #endregion
 
             #region Security
+
             // Translate Security configuration, if any
             if (source.Security != null)
             {
                 if (source.Security.AdditionalAdministrators != null)
                 {
                     result.Security.AdditionalAdministrators.AddRange(
-                    from user in source.Security.AdditionalAdministrators
-                    select new Model.User
-                    {
-                        Name = user.Name,
-                    });
+                        from user in source.Security.AdditionalAdministrators
+                        select new Model.User
+                        {
+                            Name = user.Name,
+                        });
                 }
                 if (source.Security.AdditionalOwners != null)
                 {
                     result.Security.AdditionalOwners.AddRange(
-                    from user in source.Security.AdditionalOwners
-                    select new Model.User
-                    {
-                        Name = user.Name,
-                    });
+                        from user in source.Security.AdditionalOwners
+                        select new Model.User
+                        {
+                            Name = user.Name,
+                        });
                 }
                 if (source.Security.AdditionalMembers != null)
                 {
                     result.Security.AdditionalMembers.AddRange(
-                    from user in source.Security.AdditionalMembers
-                    select new Model.User
-                    {
-                        Name = user.Name,
-                    });
+                        from user in source.Security.AdditionalMembers
+                        select new Model.User
+                        {
+                            Name = user.Name,
+                        });
                 }
                 if (source.Security.AdditionalVisitors != null)
                 {
                     result.Security.AdditionalVisitors.AddRange(
-                    from user in source.Security.AdditionalVisitors
-                    select new Model.User
-                    {
-                        Name = user.Name,
-                    });
+                        from user in source.Security.AdditionalVisitors
+                        select new Model.User
+                        {
+                            Name = user.Name,
+                        });
                 }
-            }
-            #endregion
+                if (source.Security.SiteGroups != null)
+                {
+                    result.Security.SiteGroups.AddRange(
+                        from g in source.Security.SiteGroups
+                        select new Model.SiteGroup
+                        {
+                            AllowMembersEditMembership = g.AllowMembersEditMembershipSpecified ? g.AllowMembersEditMembership : false,
+                            AllowRequestToJoinLeave = g.AllowRequestToJoinLeaveSpecified ? g.AllowRequestToJoinLeave : false,
+                            AutoAcceptRequestToJoinLeave = g.AutoAcceptRequestToJoinLeaveSpecified ? g.AutoAcceptRequestToJoinLeave : false,
+                            Description = g.Description,
+                            Members = new List<Model.User>(from m in g.Members
+                                       select new Model.User
+                                       {
+                                           Name = m.Name,
+                                       }),
+                            OnlyAllowMembersViewMembership = g.OnlyAllowMembersViewMembershipSpecified ? g.OnlyAllowMembersViewMembership : false,
+                            Owner = g.Owner,
+                            RequestToJoinLeaveEmailSetting = g.RequestToJoinLeaveEmailSetting,
+                            Title = g.Title,
+                        });
+                }
+                if (source.Security.Permissions != null)
+                {
+                    if (source.Security.Permissions.RoleAssignments != null && source.Security.Permissions.RoleAssignments.Length > 0)
+                    {
+                        result.Security.SiteSecurityPermissions.RoleAssignments.AddRange
+                            (from ra in source.Security.Permissions.RoleAssignments
+                             select new Model.RoleAssignment
+                             {
+                                 Principal = ra.Principal,
+                                 RoleDefinition = ra.RoleDefinition,
+                             });
+                    }
+                    if (source.Security.Permissions.RoleDefinitions != null && source.Security.Permissions.RoleDefinitions.Length > 0)
+                    {
+                        result.Security.SiteSecurityPermissions.RoleDefinitions.AddRange
+                            (from rd in source.Security.Permissions.RoleDefinitions
+                             select new Model.RoleDefinition
+                             {
+                                 Description = rd.Description,
+                                 Name = rd.Name,
+                                 Permissions = new List<Microsoft.SharePoint.Client.PermissionKind>
+                                    (from p in rd.Permissions
+                                     select (Microsoft.SharePoint.Client.PermissionKind)Enum.Parse(typeof(Microsoft.SharePoint.Client.PermissionKind), p.ToString())),
+                             });
+                    }
+                }
+
+                #endregion
 
             #region Site Columns
-            // Translate Site Columns (Fields), if any
+
+                // Translate Site Columns (Fields), if any
             if ((source.SiteFields != null) && (source.SiteFields.Any != null))
             {
                 result.SiteFields.AddRange(
@@ -1141,6 +1259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         SchemaXml = field.OuterXml,
                     });
             }
+
             #endregion
 
             #region Content Types
@@ -1568,8 +1687,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return V201508.CalendarType.Korea;
                 case Microsoft.SharePoint.Client.CalendarType.KoreaJapanLunar:
                     return V201508.CalendarType.KoreaandJapaneseLunar;
-                case Microsoft.SharePoint.Client.CalendarType.None:
-                    return V201508.CalendarType.None;
                 case Microsoft.SharePoint.Client.CalendarType.SakaEra:
                     return V201508.CalendarType.SakaEra;
                 case Microsoft.SharePoint.Client.CalendarType.Taiwan:
@@ -1578,12 +1695,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return V201508.CalendarType.Thai;
                 case Microsoft.SharePoint.Client.CalendarType.UmAlQura:
                     return V201508.CalendarType.UmmalQura;
+                case Microsoft.SharePoint.Client.CalendarType.None:
                 default:
                     return V201508.CalendarType.None;
             }
         }
 
-        public static V201508.WorkHour FromTemplateToSchemaWorkHour(this OfficeDevPnP.Core.Framework.Provisioning.Model.WorkHour workHour)
+        public static Microsoft.SharePoint.Client.CalendarType FromSchemaToTemplateCalendarType(this V201508.CalendarType calendarType)
+        {
+            switch (calendarType)
+            {
+                case V201508.CalendarType.ChineseLunar:
+                    return Microsoft.SharePoint.Client.CalendarType.ChineseLunar;
+                case V201508.CalendarType.Gregorian:
+                    return Microsoft.SharePoint.Client.CalendarType.Gregorian;
+                case V201508.CalendarType.GregorianArabicCalendar:
+                    return Microsoft.SharePoint.Client.CalendarType.GregorianArabic;
+                case V201508.CalendarType.GregorianMiddleEastFrenchCalendar:
+                    return Microsoft.SharePoint.Client.CalendarType.GregorianMEFrench;
+                case V201508.CalendarType.GregorianTransliteratedEnglishCalendar:
+                    return Microsoft.SharePoint.Client.CalendarType.GregorianXLITEnglish;
+                case V201508.CalendarType.GregorianTransliteratedFrenchCalendar:
+                    return Microsoft.SharePoint.Client.CalendarType.GregorianXLITFrench;
+                case V201508.CalendarType.Hebrew:
+                    return Microsoft.SharePoint.Client.CalendarType.Hebrew;
+                case V201508.CalendarType.Hijri:
+                    return Microsoft.SharePoint.Client.CalendarType.Hijri;
+                case V201508.CalendarType.Japan:
+                    return Microsoft.SharePoint.Client.CalendarType.Japan;
+                case V201508.CalendarType.Korea:
+                    return Microsoft.SharePoint.Client.CalendarType.Korea;
+                case V201508.CalendarType.KoreaandJapaneseLunar:
+                    return Microsoft.SharePoint.Client.CalendarType.KoreaJapanLunar;
+                case V201508.CalendarType.SakaEra:
+                    return Microsoft.SharePoint.Client.CalendarType.SakaEra;
+                case V201508.CalendarType.Taiwan:
+                    return Microsoft.SharePoint.Client.CalendarType.Taiwan;
+                case V201508.CalendarType.Thai:
+                    return Microsoft.SharePoint.Client.CalendarType.Thai;
+                case V201508.CalendarType.UmmalQura:
+                    return Microsoft.SharePoint.Client.CalendarType.UmAlQura;
+                case V201508.CalendarType.None:
+                default:
+                    return Microsoft.SharePoint.Client.CalendarType.None;
+            }
+        }
+
+        public static V201508.WorkHour FromTemplateToSchemaWorkHour(this Model.WorkHour workHour)
         {
             switch(workHour)
             {
@@ -1637,6 +1795,63 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return V201508.WorkHour.Item1200PM;
                 default:
                     return V201508.WorkHour.Item100AM;
+            }
+        }
+
+        public static Model.WorkHour FromSchemaToTemplateWorkHour(this V201508.WorkHour workHour)
+        {
+            switch (workHour)
+            {
+                case V201508.WorkHour.Item100AM:
+                    return Model.WorkHour.AM0100;
+                case V201508.WorkHour.Item200AM:
+                    return Model.WorkHour.AM0200;
+                case V201508.WorkHour.Item300AM:
+                    return Model.WorkHour.AM0300;
+                case V201508.WorkHour.Item400AM:
+                    return Model.WorkHour.AM0400;
+                case V201508.WorkHour.Item500AM:
+                    return Model.WorkHour.AM0500;
+                case V201508.WorkHour.Item600AM:
+                    return Model.WorkHour.AM0600;
+                case V201508.WorkHour.Item700AM:
+                    return Model.WorkHour.AM0700;
+                case V201508.WorkHour.Item800AM:
+                    return Model.WorkHour.AM0800;
+                case V201508.WorkHour.Item900AM:
+                    return Model.WorkHour.AM0900;
+                case V201508.WorkHour.Item1000AM:
+                    return Model.WorkHour.AM1000;
+                case V201508.WorkHour.Item1100AM:
+                    return Model.WorkHour.AM1100;
+                case V201508.WorkHour.Item1200AM:
+                    return Model.WorkHour.AM1200;
+                case V201508.WorkHour.Item100PM:
+                    return Model.WorkHour.PM0100;
+                case V201508.WorkHour.Item200PM:
+                    return Model.WorkHour.PM0200;
+                case V201508.WorkHour.Item300PM:
+                    return Model.WorkHour.PM0300;
+                case V201508.WorkHour.Item400PM:
+                    return Model.WorkHour.PM0400;
+                case V201508.WorkHour.Item500PM:
+                    return Model.WorkHour.PM0500;
+                case V201508.WorkHour.Item600PM:
+                    return Model.WorkHour.PM0600;
+                case V201508.WorkHour.Item700PM:
+                    return Model.WorkHour.PM0700;
+                case V201508.WorkHour.Item800PM:
+                    return Model.WorkHour.PM0800;
+                case V201508.WorkHour.Item900PM:
+                    return Model.WorkHour.PM0900;
+                case V201508.WorkHour.Item1000PM:
+                    return Model.WorkHour.PM1000;
+                case V201508.WorkHour.Item1100PM:
+                    return Model.WorkHour.PM1100;
+                case V201508.WorkHour.Item1200PM:
+                    return Model.WorkHour.PM1200;
+                default:
+                    return Model.WorkHour.AM0100;
             }
         }
 
