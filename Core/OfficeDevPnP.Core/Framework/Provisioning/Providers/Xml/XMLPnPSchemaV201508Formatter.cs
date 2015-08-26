@@ -392,7 +392,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
-                         DocumentSetTemplate =
+                         DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201508.DocumentSetTemplate
                              {
                                  AllowedContentTypes = ct.DocumentSetTemplate.AllowedContentTypes.Count > 0 ?
@@ -422,7 +422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                       {
                                           ID = wpf.ToString(),
                                       }).ToArray() : null,
-                             },
+                             } : null,
                      }).ToArray();
             }
             else
@@ -1239,314 +1239,314 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 #endregion
 
-            #region Site Columns
+                #region Site Columns
 
-            // Translate Site Columns (Fields), if any
-            if ((source.SiteFields != null) && (source.SiteFields.Any != null))
-            {
-                result.SiteFields.AddRange(
-                    from field in source.SiteFields.Any
-                    select new Field
-                    {
-                        SchemaXml = field.OuterXml,
-                    });
-            }
-
-            #endregion
-
-            #region Content Types
-
-            // Translate ContentTypes, if any
-            if ((source.ContentTypes != null) && (source.ContentTypes != null))
-            {
-                result.ContentTypes.AddRange(
-                    from contentType in source.ContentTypes
-                    select new ContentType(
-                        contentType.ID,
-                        contentType.Name,
-                        contentType.Description,
-                        contentType.Group,
-                        contentType.Sealed,
-                        contentType.Hidden,
-                        contentType.ReadOnly,
-                        (contentType.DocumentTemplate != null ?
-                            contentType.DocumentTemplate.TargetName : null),
-                        contentType.Overwrite,
-                        (contentType.FieldRefs != null ?
-                            (from fieldRef in contentType.FieldRefs
-                                select new Model.FieldRef(fieldRef.Name)
-                                {
-                                    Id = Guid.Parse(fieldRef.ID),
-                                    Hidden = fieldRef.Hidden,
-                                    Required = fieldRef.Required
-                                }) : null)
-
-                        )
-                    {
-                        DocumentSetTemplate = contentType.DocumentSetTemplate != null ?
-                            new Model.DocumentSetTemplate(
-                                contentType.DocumentSetTemplate.WelcomePage,
-                                contentType.DocumentSetTemplate.AllowedContentTypes != null ?
-                                    (from act in contentType.DocumentSetTemplate.AllowedContentTypes
-                                        select act.ContentTypeID) : null,
-                                contentType.DocumentSetTemplate.DefaultDocuments != null ?
-                                    (from dd in contentType.DocumentSetTemplate.DefaultDocuments
-                                        select new Model.DefaultDocument
-                                        {
-                                            ContentTypeId = dd.ContentTypeID,
-                                            FileSourcePath = dd.FileSourcePath,
-                                            Name = dd.Name,
-                                        }) : null,
-                                contentType.DocumentSetTemplate.SharedFields != null ?
-                                    (from sf in contentType.DocumentSetTemplate.SharedFields
-                                        select Guid.Parse(sf.ID)) : null,
-                                contentType.DocumentSetTemplate.WelcomePageFields != null ?
-                                    (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
-                                        select Guid.Parse(wpf.ID)) : null
-                                ) : null,
-                    }
-                );
-            }
-
-            #endregion
-
-            #region List Instances
-
-            // Translate Lists Instances, if any
-            if (source.Lists != null)
-            {
-                result.Lists.AddRange(
-                    from list in source.Lists
-                    select new Model.ListInstance(
-                        (list.ContentTypeBindings != null ?
-                                (from contentTypeBinding in list.ContentTypeBindings
-                                    select new Model.ContentTypeBinding
-                                    {
-                                        ContentTypeId = contentTypeBinding.ContentTypeID,
-                                        Default = contentTypeBinding.Default,
-                                    }) : null),
-                        (list.Views != null ?
-                                (from view in list.Views.Any
-                                    select new View
-                                    {
-                                        SchemaXml = view.OuterXml,
-                                    }) : null),
-                        (list.Fields != null ?
-                                (from field in list.Fields.Any
-                                    select new Field
-                                    {
-                                        SchemaXml = field.OuterXml,
-                                    }) : null),
-                        (list.FieldRefs != null ?
-                                    (from fieldRef in list.FieldRefs
-                                        select new Model.FieldRef(fieldRef.Name)
-                                        {
-                                            DisplayName = fieldRef.DisplayName,
-                                            Hidden = fieldRef.Hidden,
-                                            Required = fieldRef.Required,
-                                            Id = Guid.Parse(fieldRef.ID)
-                                        }) : null),
-                        (list.DataRows != null ?
-                                    (from dataRow in list.DataRows
-                                        select new Model.DataRow(
-                                        (from dataValue in dataRow.DataValue
-                                            select dataValue).ToDictionary(k => k.FieldName, v => v.Value),
-                                        dataRow.Security.FromSchemaToTemplateObjectSecurityV201508()
-                                    )).ToList() : null),
-                        (list.FieldDefaults != null ?
-                            (from fd in list.FieldDefaults
-                                select fd).ToDictionary(k => k.FieldName, v => v.Value) : null),
-                        list.Security.FromSchemaToTemplateObjectSecurityV201508()
-                        )
-                    {
-                        ContentTypesEnabled = list.ContentTypesEnabled,
-                        Description = list.Description,
-                        DocumentTemplate = list.DocumentTemplate,
-                        EnableVersioning = list.EnableVersioning,
-                        EnableMinorVersions = list.EnableMinorVersions,
-                        DraftVersionVisibility = list.DraftVersionVisibility,
-                        EnableModeration = list.EnableModeration,
-                        Hidden = list.Hidden,
-                        MinorVersionLimit = list.MinorVersionLimitSpecified ? list.MinorVersionLimit : 0,
-                        MaxVersionLimit = list.MaxVersionLimitSpecified ? list.MaxVersionLimit : 0,
-                        OnQuickLaunch = list.OnQuickLaunch,
-                        EnableAttachments = list.EnableAttachments,
-                        EnableFolderCreation = list.EnableFolderCreation,
-                        RemoveExistingContentTypes = list.RemoveExistingContentTypes,
-                        TemplateFeatureID = !String.IsNullOrEmpty(list.TemplateFeatureID) ? Guid.Parse(list.TemplateFeatureID) : Guid.Empty,
-                        RemoveExistingViews = list.Views != null ? list.Views.RemoveExistingViews : false,
-                        TemplateType = list.TemplateType,
-                        Title = list.Title,
-                        Url = list.Url,
-                    });
-            }
-
-            #endregion
-
-            #region Features
-
-            // Translate Features, if any
-            if (source.Features != null)
-            {
-                if (result.Features.SiteFeatures != null && source.Features.SiteFeatures != null)
+                // Translate Site Columns (Fields), if any
+                if ((source.SiteFields != null) && (source.SiteFields.Any != null))
                 {
-                    result.Features.SiteFeatures.AddRange(
-                        from feature in source.Features.SiteFeatures
-                        select new Model.Feature
+                    result.SiteFields.AddRange(
+                        from field in source.SiteFields.Any
+                        select new Field
                         {
-                            Id = new Guid(feature.ID),
-                            Deactivate = feature.Deactivate,
+                            SchemaXml = field.OuterXml,
                         });
                 }
-                if (result.Features.WebFeatures != null && source.Features.WebFeatures != null)
+
+                #endregion
+
+                #region Content Types
+
+                // Translate ContentTypes, if any
+                if ((source.ContentTypes != null) && (source.ContentTypes != null))
                 {
-                    result.Features.WebFeatures.AddRange(
-                        from feature in source.Features.WebFeatures
-                        select new Model.Feature
+                    result.ContentTypes.AddRange(
+                        from contentType in source.ContentTypes
+                        select new ContentType(
+                            contentType.ID,
+                            contentType.Name,
+                            contentType.Description,
+                            contentType.Group,
+                            contentType.Sealed,
+                            contentType.Hidden,
+                            contentType.ReadOnly,
+                            (contentType.DocumentTemplate != null ?
+                                contentType.DocumentTemplate.TargetName : null),
+                            contentType.Overwrite,
+                            (contentType.FieldRefs != null ?
+                                (from fieldRef in contentType.FieldRefs
+                                 select new Model.FieldRef(fieldRef.Name)
+                                 {
+                                     Id = Guid.Parse(fieldRef.ID),
+                                     Hidden = fieldRef.Hidden,
+                                     Required = fieldRef.Required
+                                 }) : null)
+
+                            )
                         {
-                            Id = new Guid(feature.ID),
-                            Deactivate = feature.Deactivate,
-                        });
-                }
-            }
-
-            #endregion
-
-            #region Custom Actions
-
-            // Translate CustomActions, if any
-            if (source.CustomActions != null)
-            {
-                if (result.CustomActions.SiteCustomActions != null && source.CustomActions.SiteCustomActions != null)
-                {
-                    result.CustomActions.SiteCustomActions.AddRange(
-                        from customAction in source.CustomActions.SiteCustomActions
-                        select new Model.CustomAction
-                        {
-                            CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
-                                (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
-                            Description = customAction.Description,
-                            Enabled = customAction.Enabled,
-                            Group = customAction.Group,
-                            ImageUrl = customAction.ImageUrl,
-                            Location = customAction.Location,
-                            Name = customAction.Name,
-                            RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
-                            ScriptBlock = customAction.ScriptBlock,
-                            ScriptSrc = customAction.ScriptSrc,
-                            Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
-                            Title = customAction.Title,
-                            Url = customAction.Url,
-                        });
-                }
-                if (result.CustomActions.WebCustomActions != null && source.CustomActions.WebCustomActions != null)
-                {
-                    result.CustomActions.WebCustomActions.AddRange(
-                        from customAction in source.CustomActions.WebCustomActions
-                        select new Model.CustomAction
-                        {
-                            CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
-                                (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
-                            Description = customAction.Description,
-                            Enabled = customAction.Enabled,
-                            Group = customAction.Group,
-                            ImageUrl = customAction.ImageUrl,
-                            Location = customAction.Location,
-                            Name = customAction.Name,
-                            RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
-                            ScriptBlock = customAction.ScriptBlock,
-                            ScriptSrc = customAction.ScriptSrc,
-                            Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
-                            Title = customAction.Title,
-                            Url = customAction.Url,
-                        });
-                }
-            }
-
-            #endregion
-
-            #region Files
-
-            // Translate Files, if any
-            if (source.Files != null)
-            {
-                result.Files.AddRange(
-                    from file in source.Files
-                    select new Model.File(file.Src,
-                        file.Folder,
-                        file.Overwrite,
-                        file.WebParts != null ?
-                            (from wp in file.WebParts
-                                select new Model.WebPart
-                                {
-                                    Order = (uint)wp.Order,
-                                    Zone = wp.Zone,
-                                    Title = wp.Title,
-                                    Contents = wp.Contents
-                                }) : null,
-                        file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
-                        file.Security.FromSchemaToTemplateObjectSecurityV201508()
-                        )
+                            DocumentSetTemplate = contentType.DocumentSetTemplate != null ?
+                                new Model.DocumentSetTemplate(
+                                    contentType.DocumentSetTemplate.WelcomePage,
+                                    contentType.DocumentSetTemplate.AllowedContentTypes != null ?
+                                        (from act in contentType.DocumentSetTemplate.AllowedContentTypes
+                                         select act.ContentTypeID) : null,
+                                    contentType.DocumentSetTemplate.DefaultDocuments != null ?
+                                        (from dd in contentType.DocumentSetTemplate.DefaultDocuments
+                                         select new Model.DefaultDocument
+                                         {
+                                             ContentTypeId = dd.ContentTypeID,
+                                             FileSourcePath = dd.FileSourcePath,
+                                             Name = dd.Name,
+                                         }) : null,
+                                    contentType.DocumentSetTemplate.SharedFields != null ?
+                                        (from sf in contentType.DocumentSetTemplate.SharedFields
+                                         select Guid.Parse(sf.ID)) : null,
+                                    contentType.DocumentSetTemplate.WelcomePageFields != null ?
+                                        (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
+                                         select Guid.Parse(wpf.ID)) : null
+                                    ) : null,
+                        }
                     );
+                }
+
+                #endregion
+
+                #region List Instances
+
+                // Translate Lists Instances, if any
+                if (source.Lists != null)
+                {
+                    result.Lists.AddRange(
+                        from list in source.Lists
+                        select new Model.ListInstance(
+                            (list.ContentTypeBindings != null ?
+                                    (from contentTypeBinding in list.ContentTypeBindings
+                                     select new Model.ContentTypeBinding
+                                     {
+                                         ContentTypeId = contentTypeBinding.ContentTypeID,
+                                         Default = contentTypeBinding.Default,
+                                     }) : null),
+                            (list.Views != null ?
+                                    (from view in list.Views.Any
+                                     select new View
+                                     {
+                                         SchemaXml = view.OuterXml,
+                                     }) : null),
+                            (list.Fields != null ?
+                                    (from field in list.Fields.Any
+                                     select new Field
+                                     {
+                                         SchemaXml = field.OuterXml,
+                                     }) : null),
+                            (list.FieldRefs != null ?
+                                        (from fieldRef in list.FieldRefs
+                                         select new Model.FieldRef(fieldRef.Name)
+                                         {
+                                             DisplayName = fieldRef.DisplayName,
+                                             Hidden = fieldRef.Hidden,
+                                             Required = fieldRef.Required,
+                                             Id = Guid.Parse(fieldRef.ID)
+                                         }) : null),
+                            (list.DataRows != null ?
+                                        (from dataRow in list.DataRows
+                                         select new Model.DataRow(
+                                     (from dataValue in dataRow.DataValue
+                                             select dataValue).ToDictionary(k => k.FieldName, v => v.Value),
+                                     dataRow.Security.FromSchemaToTemplateObjectSecurityV201508()
+                                 )).ToList() : null),
+                            (list.FieldDefaults != null ?
+                                (from fd in list.FieldDefaults
+                                 select fd).ToDictionary(k => k.FieldName, v => v.Value) : null),
+                            list.Security.FromSchemaToTemplateObjectSecurityV201508()
+                            )
+                        {
+                            ContentTypesEnabled = list.ContentTypesEnabled,
+                            Description = list.Description,
+                            DocumentTemplate = list.DocumentTemplate,
+                            EnableVersioning = list.EnableVersioning,
+                            EnableMinorVersions = list.EnableMinorVersions,
+                            DraftVersionVisibility = list.DraftVersionVisibility,
+                            EnableModeration = list.EnableModeration,
+                            Hidden = list.Hidden,
+                            MinorVersionLimit = list.MinorVersionLimitSpecified ? list.MinorVersionLimit : 0,
+                            MaxVersionLimit = list.MaxVersionLimitSpecified ? list.MaxVersionLimit : 0,
+                            OnQuickLaunch = list.OnQuickLaunch,
+                            EnableAttachments = list.EnableAttachments,
+                            EnableFolderCreation = list.EnableFolderCreation,
+                            RemoveExistingContentTypes = list.RemoveExistingContentTypes,
+                            TemplateFeatureID = !String.IsNullOrEmpty(list.TemplateFeatureID) ? Guid.Parse(list.TemplateFeatureID) : Guid.Empty,
+                            RemoveExistingViews = list.Views != null ? list.Views.RemoveExistingViews : false,
+                            TemplateType = list.TemplateType,
+                            Title = list.Title,
+                            Url = list.Url,
+                        });
+                }
+
+                #endregion
+
+                #region Features
+
+                // Translate Features, if any
+                if (source.Features != null)
+                {
+                    if (result.Features.SiteFeatures != null && source.Features.SiteFeatures != null)
+                    {
+                        result.Features.SiteFeatures.AddRange(
+                            from feature in source.Features.SiteFeatures
+                            select new Model.Feature
+                            {
+                                Id = new Guid(feature.ID),
+                                Deactivate = feature.Deactivate,
+                            });
+                    }
+                    if (result.Features.WebFeatures != null && source.Features.WebFeatures != null)
+                    {
+                        result.Features.WebFeatures.AddRange(
+                            from feature in source.Features.WebFeatures
+                            select new Model.Feature
+                            {
+                                Id = new Guid(feature.ID),
+                                Deactivate = feature.Deactivate,
+                            });
+                    }
+                }
+
+                #endregion
+
+                #region Custom Actions
+
+                // Translate CustomActions, if any
+                if (source.CustomActions != null)
+                {
+                    if (result.CustomActions.SiteCustomActions != null && source.CustomActions.SiteCustomActions != null)
+                    {
+                        result.CustomActions.SiteCustomActions.AddRange(
+                            from customAction in source.CustomActions.SiteCustomActions
+                            select new Model.CustomAction
+                            {
+                                CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
+                                    (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
+                                Description = customAction.Description,
+                                Enabled = customAction.Enabled,
+                                Group = customAction.Group,
+                                ImageUrl = customAction.ImageUrl,
+                                Location = customAction.Location,
+                                Name = customAction.Name,
+                                RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
+                                ScriptBlock = customAction.ScriptBlock,
+                                ScriptSrc = customAction.ScriptSrc,
+                                Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
+                                Title = customAction.Title,
+                                Url = customAction.Url,
+                            });
+                    }
+                    if (result.CustomActions.WebCustomActions != null && source.CustomActions.WebCustomActions != null)
+                    {
+                        result.CustomActions.WebCustomActions.AddRange(
+                            from customAction in source.CustomActions.WebCustomActions
+                            select new Model.CustomAction
+                            {
+                                CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
+                                    (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
+                                Description = customAction.Description,
+                                Enabled = customAction.Enabled,
+                                Group = customAction.Group,
+                                ImageUrl = customAction.ImageUrl,
+                                Location = customAction.Location,
+                                Name = customAction.Name,
+                                RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
+                                ScriptBlock = customAction.ScriptBlock,
+                                ScriptSrc = customAction.ScriptSrc,
+                                Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
+                                Title = customAction.Title,
+                                Url = customAction.Url,
+                            });
+                    }
+                }
+
+                #endregion
+
+                #region Files
+
+                // Translate Files, if any
+                if (source.Files != null)
+                {
+                    result.Files.AddRange(
+                        from file in source.Files
+                        select new Model.File(file.Src,
+                            file.Folder,
+                            file.Overwrite,
+                            file.WebParts != null ?
+                                (from wp in file.WebParts
+                                 select new Model.WebPart
+                                 {
+                                     Order = (uint)wp.Order,
+                                     Zone = wp.Zone,
+                                     Title = wp.Title,
+                                     Contents = wp.Contents
+                                 }) : null,
+                            file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
+                            file.Security.FromSchemaToTemplateObjectSecurityV201508()
+                            )
+                        );
+                }
+
+                #endregion
+
+                #region Pages
+
+                // Translate Pages, if any
+                if (source.Pages != null)
+                {
+                    foreach (var page in source.Pages.Page)
+                    {
+
+                        var pageLayout = WikiPageLayout.OneColumn;
+                        switch (page.Layout)
+                        {
+                            case V201508.WikiPageLayout.OneColumn:
+                                pageLayout = WikiPageLayout.OneColumn;
+                                break;
+                            case V201508.WikiPageLayout.OneColumnSidebar:
+                                pageLayout = WikiPageLayout.OneColumnSideBar;
+                                break;
+                            case V201508.WikiPageLayout.TwoColumns:
+                                pageLayout = WikiPageLayout.TwoColumns;
+                                break;
+                            case V201508.WikiPageLayout.TwoColumnsHeader:
+                                pageLayout = WikiPageLayout.TwoColumnsHeader;
+                                break;
+                            case V201508.WikiPageLayout.TwoColumnsHeaderFooter:
+                                pageLayout = WikiPageLayout.TwoColumnsHeaderFooter;
+                                break;
+                            case V201508.WikiPageLayout.ThreeColumns:
+                                pageLayout = WikiPageLayout.ThreeColumns;
+                                break;
+                            case V201508.WikiPageLayout.ThreeColumnsHeader:
+                                pageLayout = WikiPageLayout.ThreeColumnsHeader;
+                                break;
+                            case V201508.WikiPageLayout.ThreeColumnsHeaderFooter:
+                                pageLayout = WikiPageLayout.ThreeColumnsHeaderFooter;
+                                break;
+                        }
+
+                        result.Pages.Add(new Model.Page(page.Url, page.Overwrite, pageLayout,
+                            (page.WebParts != null ?
+                                (from wp in page.WebParts
+                                 select new Model.WebPart
+                                 {
+                                     Title = wp.Title,
+                                     Column = (uint)wp.Column,
+                                     Row = (uint)wp.Row,
+                                     Contents = wp.Contents
+
+                                 }).ToList() : null),
+                            source.Pages.WelcomePage == page.Url,
+                            page.Security.FromSchemaToTemplateObjectSecurityV201508()));
+                    }
+                }
             }
 
             #endregion
-
-            #region Pages
-
-            // Translate Pages, if any
-            if (source.Pages != null)
-            {
-                foreach (var page in source.Pages.Page)
-                {
-
-                    var pageLayout = WikiPageLayout.OneColumn;
-                    switch (page.Layout)
-                    {
-                        case V201508.WikiPageLayout.OneColumn:
-                            pageLayout = WikiPageLayout.OneColumn;
-                            break;
-                        case V201508.WikiPageLayout.OneColumnSidebar:
-                            pageLayout = WikiPageLayout.OneColumnSideBar;
-                            break;
-                        case V201508.WikiPageLayout.TwoColumns:
-                            pageLayout = WikiPageLayout.TwoColumns;
-                            break;
-                        case V201508.WikiPageLayout.TwoColumnsHeader:
-                            pageLayout = WikiPageLayout.TwoColumnsHeader;
-                            break;
-                        case V201508.WikiPageLayout.TwoColumnsHeaderFooter:
-                            pageLayout = WikiPageLayout.TwoColumnsHeaderFooter;
-                            break;
-                        case V201508.WikiPageLayout.ThreeColumns:
-                            pageLayout = WikiPageLayout.ThreeColumns;
-                            break;
-                        case V201508.WikiPageLayout.ThreeColumnsHeader:
-                            pageLayout = WikiPageLayout.ThreeColumnsHeader;
-                            break;
-                        case V201508.WikiPageLayout.ThreeColumnsHeaderFooter:
-                            pageLayout = WikiPageLayout.ThreeColumnsHeaderFooter;
-                            break;
-                    }
-
-                    result.Pages.Add(new Model.Page(page.Url, page.Overwrite, pageLayout,
-                        (page.WebParts != null ?
-                            (from wp in page.WebParts
-                                select new Model.WebPart
-                                {
-                                    Title = wp.Title,
-                                    Column = (uint)wp.Column,
-                                    Row = (uint)wp.Row,
-                                    Contents = wp.Contents
-
-                                }).ToList() : null),
-                        source.Pages.WelcomePage == page.Url,
-                        page.Security.FromSchemaToTemplateObjectSecurityV201508()));
-                }
-            }
-        }
-
-        #endregion
 
             #region Taxonomy
 
@@ -1603,43 +1603,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.Workflows = new Model.Workflows(
                     source.Workflows.WorkflowDefinitions.Length > 0 ?
                         (from wd in source.Workflows.WorkflowDefinitions
-                        select new Model.WorkflowDefinition(
-                            (wd.Properties != null && wd.Properties.Length > 0) ?
-                            (from p in wd.Properties
-                             select p).ToDictionary(i => i.Key, i => i.Value) : null)
-                        {
-                            AssociationUrl = wd.AssociationUrl,
-                            Description = wd.Description,
-                            DisplayName = wd.DisplayName,
-                            FormField = wd.FormField.ToString(),
-                            Id = Guid.Parse(wd.Id),
-                            InitiationUrl = wd.InitiationUrl,
-                            RequiresAssociationForm = wd.RequiresAssociationFormSpecified ? wd.RequiresAssociationForm : false,
-                            RequiresInitiationForm = wd.RequiresInitiationFormSpecified ? wd.RequiresInitiationForm : false,
-                            RestrictToScope = wd.RestrictToScopeSpecified ? wd.RestrictToScope : false,
-                            RestrictToType = wd.RestrictToTypeSpecified ? wd.RestrictToType : false,
-                            XamlPath = wd.XamlPath,
-                        }) : null,
+                         select new Model.WorkflowDefinition(
+                             (wd.Properties != null && wd.Properties.Length > 0) ?
+                             (from p in wd.Properties
+                              select p).ToDictionary(i => i.Key, i => i.Value) : null)
+                         {
+                             AssociationUrl = wd.AssociationUrl,
+                             Description = wd.Description,
+                             DisplayName = wd.DisplayName,
+                             FormField = wd.FormField.ToString(),
+                             Id = Guid.Parse(wd.Id),
+                             InitiationUrl = wd.InitiationUrl,
+                             RequiresAssociationForm = wd.RequiresAssociationFormSpecified ? wd.RequiresAssociationForm : false,
+                             RequiresInitiationForm = wd.RequiresInitiationFormSpecified ? wd.RequiresInitiationForm : false,
+                             RestrictToScope = wd.RestrictToScopeSpecified ? wd.RestrictToScope : false,
+                             RestrictToType = wd.RestrictToTypeSpecified ? wd.RestrictToType : false,
+                             XamlPath = wd.XamlPath,
+                         }) : null,
                     source.Workflows.WorkflowSubscriptions.Length > 0 ?
                         (from ws in source.Workflows.WorkflowSubscriptions
-                        select new Model.WorkflowSubscription
-                        {
-                            DefinitionId = Guid.Parse(ws.DefinitionId),
-                            Enabled = ws.Enabled,
-                            EventSourceId = Guid.Parse(ws.EventSourceId),
-                            EventTypes = (new String[] {
+                         select new Model.WorkflowSubscription
+                         {
+                             DefinitionId = Guid.Parse(ws.DefinitionId),
+                             Enabled = ws.Enabled,
+                             EventSourceId = Guid.Parse(ws.EventSourceId),
+                             EventTypes = (new String[] {
                                 ws.ItemAddedEvent ? "ItemAddedEvent" : null,
                                 ws.ItemUpdatedEvent ? "ItemUpdatedEvent" : null,
                                 ws.WorkflowStartEvent ? "WorkflowStartEvent" : null }).Where(e => e != null).ToList(),
-                            ListId = ws.ListId,
-                            ManualStartBypassesActivationLimit = ws.ManualStartBypassesActivationLimitSpecified ? ws.ManualStartBypassesActivationLimit : false,
-                            Name = ws.Name,
-                            ParentContentTypeId = ws.ParentContentTypeId,
-                            PropertyDefinitions = (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Length > 0) ?
-                            (from pd in ws.PropertyDefinitions
-                                select pd).ToDictionary(i => i.Key, i => i.Value) : null,
-                            StatusFieldName = ws.StatusFieldName,
-                        }) : null
+                             ListId = ws.ListId,
+                             ManualStartBypassesActivationLimit = ws.ManualStartBypassesActivationLimitSpecified ? ws.ManualStartBypassesActivationLimit : false,
+                             Name = ws.Name,
+                             ParentContentTypeId = ws.ParentContentTypeId,
+                             PropertyDefinitions = (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Length > 0) ?
+                             (from pd in ws.PropertyDefinitions
+                              select pd).ToDictionary(i => i.Key, i => i.Value) : null,
+                             StatusFieldName = ws.StatusFieldName,
+                         }) : null
                     );
             }
 
@@ -2081,10 +2081,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     objectSecurity.BreakRoleInheritance.RoleAssignment != null ?
                         (from ra in objectSecurity.BreakRoleInheritance.RoleAssignment
                          select new Model.RoleAssignment
-                            {
-                                Principal = ra.Principal,
-                                RoleDefinition = ra.RoleDefinition,
-                            }) : null
+                         {
+                             Principal = ra.Principal,
+                             RoleDefinition = ra.RoleDefinition,
+                         }) : null
                     )
                 {
                     ClearSubscopes = objectSecurity.BreakRoleInheritance.ClearSubscopes,
