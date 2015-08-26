@@ -9,6 +9,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 {
@@ -108,15 +109,43 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 throw new ArgumentException("Please provide an application host");
             }
 
-            // Do we already have a publishing XML defined?
-
-
-            // Get a base template that will be used for the publishing
-            using (Stream publishingTemplate = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite))
+            bool publishingXmlWasDefined = false;
+            try
             {
+                // Do we already have a publishing XML defined?
+                string publishingXmlFile = GetAvailablePublishingXml(sharePointProjectFile, sharePointWebProjectFile);
 
+                // We've a publishing xml file in the project, let's update it
+                if (!String.IsNullOrEmpty(publishingXmlFile))
+                {
+                    publishingXmlWasDefined = true;
+
+
+                }
+                else
+                {
+                    //Add a new publishing xml file
+                }
+
+                // Get a base template that will be used for the publishing
+                using (Stream publishingTemplate = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite))
+                {
+
+                }
             }
+            finally
+            {
+                if (publishingXmlWasDefined)
+                {
+                    // revert back to the original publishing XML if there was one defined
 
+                }
+                else
+                {
+                    // delete the created publishing xml file to restore the project back in it's original state
+
+                }
+            }
 
 
 
@@ -214,6 +243,66 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             }
 
             return true;
+        }
+
+        private string GetAvailablePublishingXml(string sharePointProjectFile, string sharePointWebProjectFile)
+        {
+            string publishingXmlFile = "";
+
+            if (String.IsNullOrEmpty(sharePointProjectFile) || !System.IO.File.Exists(sharePointProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint project file ({0}) is invalid.", sharePointProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(sharePointWebProjectFile) || !System.IO.File.Exists(sharePointWebProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint Web project file ({0}) is invalid.", sharePointWebProjectFile));
+            }
+
+            // e.g. C:\GitHub\BertPnP\Samples\Core.EmbedJavaScript\Core.EmbedJavaScriptWeb\Properties\PublishProfiles\bert2.pubxml
+            string folder = String.Format("{0}\\Properties\\PublishProfiles", Path.GetDirectoryName(sharePointWebProjectFile));
+
+            // Get the pubxml files in this folder
+            string[] publishingXmlFiles = Directory.GetFiles(folder, "*.pubxml");
+            if (publishingXmlFile.Length == 1)
+            {
+                publishingXmlFile = publishingXmlFiles[0];
+            }
+            else if (publishingXmlFiles.Length > 1)
+            {
+                //There are multiple publish xml files in the project, figure out which one is the active one by looking at the SharePoint project properties
+                XmlElement sharePointProjectFileXml = LoadXmlFile(sharePointProjectFile);
+
+                //We've a namespace to take in account
+                XmlNamespaceManager nsmgr = new XmlNamespaceManager(sharePointProjectFileXml.OwnerDocument.NameTable);
+                nsmgr.AddNamespace("ns", sharePointProjectFileXml.OwnerDocument.DocumentElement.NamespaceURI);
+
+                // Query the ActivePublishProfile property node
+                XmlNode activePublishProfile = sharePointProjectFileXml.SelectSingleNode("/ns:Project/ns:PropertyGroup[1]/ns:ActivePublishProfile", nsmgr);
+
+                if (activePublishProfile != null && !String.IsNullOrEmpty(activePublishProfile.InnerText))
+                {
+                    publishingXmlFile = String.Format("{0}\\{1}.pubxml", folder, activePublishProfile.InnerText);
+                }
+            }
+
+            return publishingXmlFile;
+        }
+
+        private XmlElement LoadXmlFile(string fileName)
+        {
+            if (File.Exists(fileName))
+            {
+                XmlDocument xDoc = new XmlDocument();
+                xDoc.Load(fileName);
+
+                // If there's a namespace, then add it 
+                return xDoc.DocumentElement;
+            }
+            else
+            {
+                throw new FileNotFoundException(String.Format("XML file {0} was not found", fileName));
+            }
         }
         #endregion
 
