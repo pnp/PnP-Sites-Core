@@ -34,9 +34,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var visitorGroup = web.AssociatedVisitorGroup;
 
 
-                web.Context.Load(ownerGroup, o => o.Users);
-                web.Context.Load(memberGroup, o => o.Users);
-                web.Context.Load(visitorGroup, o => o.Users);
+                web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
+                web.Context.Load(memberGroup, o => o.Title, o => o.Users);
+                web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
 
                 web.Context.ExecuteQueryRetry();
 
@@ -55,14 +55,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var siteGroup in siteSecurity.SiteGroups)
                 {
-                    var group = web.AddGroup(siteGroup.Title, siteGroup.Description, false, true);
-                    group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
-                    group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
-                    group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
-                    group.Owner = web.EnsureUser(siteGroup.Owner);
-                    group.Update();
-                    web.Context.ExecuteQueryRetry();
-
+                    Group group = null;
+                    if (!web.GroupExists(siteGroup.Title))
+                    {
+                        scope.LogDebug("Creating group {0}", siteGroup.Title);
+                        group = web.AddGroup(siteGroup.Title, siteGroup.Description, siteGroup.Title == siteGroup.Owner);
+                        group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
+                        group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
+                        group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                        if (siteGroup.Title != siteGroup.Owner)
+                        {
+                            group.Owner = web.EnsureUser(siteGroup.Owner);
+                        }
+                        group.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        group = web.SiteGroups.GetByName(siteGroup.Title);
+                        web.Context.Load(group,
+                            g => g.Title,
+                            g => g.Description,
+                            g => g.AllowMembersEditMembership,
+                            g => g.AllowRequestToJoinLeave,
+                            g => g.AutoAcceptRequestToJoinLeave,
+                            g => g.Owner.LoginName);
+                        web.Context.ExecuteQueryRetry();
+                        var isDirty = false;
+                        if (group.Description != siteGroup.Description)
+                        {
+                            group.Description = siteGroup.Description;
+                            isDirty = true;
+                        }
+                        if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
+                        {
+                            group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
+                            isDirty = true;
+                        }
+                        if (group.AllowRequestToJoinLeave != siteGroup.AllowRequestToJoinLeave)
+                        {
+                            group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
+                            isDirty = true;
+                        }
+                        if (group.AutoAcceptRequestToJoinLeave != siteGroup.AutoAcceptRequestToJoinLeave)
+                        {
+                            group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                            isDirty = true;
+                        }
+                        if (group.Owner.LoginName != siteGroup.Owner)
+                        {
+                            if (siteGroup.Title != siteGroup.Owner)
+                            {
+                                group.Owner = web.EnsureUser(siteGroup.Owner);
+                            }
+                            else
+                            {
+                                group.Owner = group;
+                            }
+                            isDirty = true;
+                        }
+                        if (isDirty)
+                        {
+                            scope.LogDebug("Updating existing group {0}", group.Title);
+                            group.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    }
                     if (siteGroup.Members.Any())
                     {
                         AddUserToGroup(web, group, siteGroup.Members, scope);
@@ -82,21 +140,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void AddUserToGroup(Web web, Group group, List<User> members, PnPMonitoredScope scope)
         {
-            try
+            if (members.Any())
             {
-                foreach (var user in members)
+                scope.LogDebug("Adding users to group {0}", group.Title);
+                try
                 {
-                    var existingUser = web.EnsureUser(user.Name);
-                    group.Users.AddUser(existingUser);
-                }
-                web.Context.ExecuteQueryRetry();
-            }
-            catch (Exception ex)
-            {
-                scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, group.Title, ex.Message, ex.StackTrace);
-                throw;
-            }
+                    foreach (var user in members)
+                    {
+                        scope.LogDebug("Adding user {0}", user.Name);
+                        var existingUser = web.EnsureUser(user.Name);
+                        group.Users.AddUser(existingUser);
 
+                    }
+                    web.Context.ExecuteQueryRetry();
+                }
+                catch (Exception ex)
+                {
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_, group.Title, ex.Message, ex.StackTrace);
+                    throw;
+                }
+            }
         }
 
 
@@ -233,7 +296,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any();
+                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any() || template.Security.SiteGroups.Any();
             }
             return _willProvision.Value;
 
