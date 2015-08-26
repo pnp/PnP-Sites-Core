@@ -6,10 +6,10 @@ using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Utilities;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -50,7 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             try
                             {
-                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
                                 var returnTuple = CreateList(web, templateList, parser, scope);
                                 var createdList = returnTuple.Item1;
                                 parser = returnTuple.Item2;
@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             catch (Exception ex)
                             {
-                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
                                 throw;
                             }
                         }
@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             try
                             {
-                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
                                 var existingList = web.Lists[index];
                                 var returnTuple = UpdateList(web, existingList, templateList, parser, scope);
                                 var updatedList = returnTuple.Item1;
@@ -82,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             catch (Exception ex)
                             {
-                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
                                 throw;
                             }
                         }
@@ -150,7 +150,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         try
                                         {
-                                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
+                                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
                                             CreateField(fieldElement, listInfo);
                                         }
                                         catch (Exception ex)
@@ -163,7 +163,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         try
                                         {
-                                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0_, fieldGuid);
+                                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0_, fieldGuid);
                                             UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope);
                                         }
                                         catch (Exception ex)
@@ -246,7 +246,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
                 }
 
-                monitoredScope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
+                monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
                 var existingView = existingViews.FirstOrDefault(v => v.Title == displayNameElement.Value);
 
                 if (existingView != null)
@@ -444,9 +444,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     foreach (var element in templateFieldElement.Elements())
                     {
-                        if (existingFieldElement.HasAttributes && existingFieldElement.Attribute(element.Name) != null)
+                        if (existingFieldElement.Element(element.Name) != null)
                         {
-                            existingFieldElement.Attribute(element.Name).Remove();
+                            existingFieldElement.Element(element.Name).Remove();
                         }
                         existingFieldElement.Add(element);
                     }
@@ -479,7 +479,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.EnableAttachments,
                 l => l.EnableFolderCreation,
                 l => l.EnableMinorVersions,
-                l => l.DraftVersionVisibility
+                l => l.DraftVersionVisibility,
+                l => l.Views
 #if !CLIENTSDKV15
 , l => l.MajorWithMinorVersionsLimit
 #endif
@@ -972,13 +973,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (!baseTemplateList.Equals(list))
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
                         }
                     }
                     else
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                         template.Lists.Add(list);
                     }
                 }

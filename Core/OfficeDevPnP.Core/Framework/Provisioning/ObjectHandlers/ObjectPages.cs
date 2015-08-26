@@ -2,9 +2,8 @@
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -62,7 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             try
                             {
-                                scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
                                 file.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
                                 web.AddWikiPageByUrl(url);
@@ -80,7 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
 
 
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0_, url);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0_, url);
 
                             web.AddWikiPageByUrl(url);
                             web.AddLayoutToWikiPage(page.Layout, url);

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -24,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
                 if (web.IsSubSite())
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
                     return parser;
                 }
 
@@ -37,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                     if (existingCT == null)
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
                         var newCT = CreateContentType(web, ct, parser);
                         if (newCT != null)
                         {
@@ -48,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (ct.Overwrite)
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
@@ -60,7 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
                             UpdateContentType(web, existingCT, ct, parser, scope);
                         }
                     }
@@ -132,7 +130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                     var field = web.Fields.GetById(fieldId);
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, field.Id);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, field.Id);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
             }
@@ -144,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                 if (fieldRef != null)
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type, fieldId);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type, fieldId);
                     if (fieldLink.Required != fieldRef.Required)
                     {
                         scope.LogPropertyUpdate("Required");
@@ -201,7 +199,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // if this is a sub site then we're not creating content type entities. 
                 if (web.IsSubSite())
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
                     return template;
                 }
 
@@ -262,7 +260,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_, ct.Id, ct.Name);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_, ct.Id, ct.Name);
                 }
 
             }

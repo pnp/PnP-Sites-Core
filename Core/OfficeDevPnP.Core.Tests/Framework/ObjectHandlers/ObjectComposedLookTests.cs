@@ -1,14 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -19,7 +12,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanCreateComposedLooks()
         {
-            using (var scope = new Core.Utilities.PnPMonitoredScope("ComposedLookTests"))
+            using (var scope = new Core.Diagnostics.PnPMonitoredScope("ComposedLookTests"))
             {
                 using (var ctx = TestCommon.CreateClientContext())
                 {

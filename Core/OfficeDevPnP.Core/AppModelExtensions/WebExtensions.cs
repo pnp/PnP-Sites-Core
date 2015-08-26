@@ -8,10 +8,10 @@ using Microsoft.SharePoint.Client.Publishing;
 using Microsoft.SharePoint.Client.Search.Query;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Diagnostics;
+using Utility = OfficeDevPnP.Core.Utilities.Utility;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -85,6 +85,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="parentWeb">The parent Web (site) to delete from</param>
         /// <param name="leafUrl">A string that represents the URL leaf name.</param>
         /// <returns>true if the web was deleted; otherwise false if nothing was done</returns>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static bool DeleteWeb(this Web parentWeb, string leafUrl)
         {
             if (leafUrl.ContainsInvalidUrlChars())
@@ -340,6 +341,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to remove the app instance from</param>
         /// <param name="appTitle">Title of the app instance to remove</param>
         /// <returns>true if the the app instance was removed; false if it does not exist</returns>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static bool RemoveAppInstanceByTitle(this Web web, string appTitle)
         {
             // Removes the association between the App and the Web
@@ -372,6 +374,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sourceFilePath">Path to the sandbox solution package (.WSP) file</param>
         /// <param name="majorVersion">Optional major version of the solution, defaults to 1</param>
         /// <param name="minorVersion">Optional minor version of the solution, defaults to 0</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void InstallSolution(this Site site, Guid packageGuid, string sourceFilePath, int majorVersion = 1, int minorVersion = 0)
         {
             string fileName = Path.GetFileName(sourceFilePath);
@@ -492,6 +495,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="keywordQueryValue">Keyword query</param>
         /// <param name="trimDublicates">Indicates if dublicates should be trimmed or not</param>
         /// <returns>All found site collections</returns>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDublicates = true)
         {
             try
@@ -752,7 +756,7 @@ namespace Microsoft.SharePoint.Client
                 return null;
             }
         }
-        
+
 
         /// <summary>
         /// Checks if the given property bag entry exists

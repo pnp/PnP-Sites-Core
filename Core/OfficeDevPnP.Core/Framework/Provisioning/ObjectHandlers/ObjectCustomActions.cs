@@ -2,9 +2,8 @@
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Diagnostics;
 using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -91,12 +90,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (site != null)
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
                     }
                     else
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
                         web.AddCustomAction(customActionEntity);
                     }
                 }
@@ -207,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var customActions = new CustomActions();
                 foreach (var customAction in webCustomActions)
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template, customAction.Name);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template, customAction.Name);
                     customActions.WebCustomActions.Add(CopyUserCustomAction(customAction));
                 }
 
@@ -216,7 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var customAction in siteCustomActions)
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template, customAction.Name);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template, customAction.Name);
                         customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction));
                     }
                 }
@@ -242,7 +241,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (index > -1)
                     {
-                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
                         template.CustomActions.SiteCustomActions.RemoveAt(index);
                     }
                 }
@@ -254,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (index > -1)
                 {
-                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template, customAction.Name);
                     template.CustomActions.WebCustomActions.RemoveAt(index);
                 }
             }

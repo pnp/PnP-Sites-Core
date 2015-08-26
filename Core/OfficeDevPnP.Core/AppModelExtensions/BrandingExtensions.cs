@@ -4,12 +4,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.SharePoint.Client.Utilities;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Utilities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 using Utility = OfficeDevPnP.Core.Utilities.Utility;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -248,7 +247,7 @@ namespace Microsoft.SharePoint.Client
             web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
 
             // Update/create the "Current" reference in the composed looks gallery
-            web.CreateComposedLookByUrl(CurrentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder:0);            
+            web.CreateComposedLookByUrl(CurrentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
         }
 
         /// <summary>
@@ -260,6 +259,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="backgroundServerRelativeUrl">URL of background image to apply</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetThemeByUrl(this Web web, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             var websToUpdate = new List<Web>();
@@ -747,7 +747,7 @@ namespace Microsoft.SharePoint.Client
 
             ListItemCollection themes = designCatalog.GetItems(camlQuery);
             web.Context.Load(themes);
-            web.Context.Load(web, w => w.Url);            
+            web.Context.Load(web, w => w.Url);
             web.Context.ExecuteQueryRetry();
 
             string siteCollectionUrl = "";
@@ -796,7 +796,7 @@ namespace Microsoft.SharePoint.Client
 
                     if (name != null)
                     {
-                        if (!name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase) && 
+                        if (!name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase) &&
                             !defaultComposedLooks.Contains(name))
                         {
                             customComposedLooks.Add(name);
@@ -901,7 +901,7 @@ namespace Microsoft.SharePoint.Client
                         if (!web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0; )
+                            for (int i = themes.Count; i-- > 0;)
                             {
                                 var themeItem = themes[i];
                                 if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
@@ -947,7 +947,7 @@ namespace Microsoft.SharePoint.Client
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
-            if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase) 
+            if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
                 && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
             {
                 return null;
@@ -1045,6 +1045,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException("masterPageServerRelativeUrl"); }
@@ -1101,6 +1102,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetCustomMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException("masterPageServerRelativeUrl"); }
