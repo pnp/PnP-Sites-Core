@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Audit Flags configured for the Site
         /// </summary>
-        public Microsoft.SharePoint.Client.AuditMaskType AuditFlag { get; set; }
+        public Microsoft.SharePoint.Client.AuditMaskType AuditFlags { get; set; }
 
         /// <summary>
         /// The Audit Log Trimming Retention for Audits
@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.AuditFlag.GetHashCode(),
+                this.AuditFlags.GetHashCode(),
                 this.AuditLogTrimmingRetention.GetHashCode(),
                 this.TrimAuditLog.GetHashCode()
             ).GetHashCode());
@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(AuditSettings other)
         {
-            return (this.AuditFlag == other.AuditFlag  &&
+            return (this.AuditFlags == other.AuditFlags  &&
                 this.AuditLogTrimmingRetention == other.AuditLogTrimmingRetention &&
                 this.TrimAuditLog == other.TrimAuditLog
                 );
