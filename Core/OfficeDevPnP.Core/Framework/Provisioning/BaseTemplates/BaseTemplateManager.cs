@@ -20,11 +20,17 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web, p => p.WebTemplate, p => p.Configuration);
             web.Context.ExecuteQueryRetry();
 
+            return GetBaseTemplate(web, web.WebTemplate, web.Configuration);
+        }
+
+        public static ProvisioningTemplate GetBaseTemplate(this Web web, string webTemplate, short configuration)
+        {
+
             ProvisioningTemplate provisioningTemplate = null;
 
             try
             {
-                string baseTemplate = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{0}.{1}{2}Template.xml", GetSharePointVersion(), web.WebTemplate, web.Configuration);
+                string baseTemplate = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{0}.{1}{2}Template.xml", GetSharePointVersion(), webTemplate, configuration);
                 using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(baseTemplate))
                 {
                     // Get the XML document from the stream
@@ -34,13 +40,14 @@ namespace Microsoft.SharePoint.Client
                     provisioningTemplate = formatter.ToProvisioningTemplate(stream);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 //TODO: log message
             }
 
             return provisioningTemplate;
         }
+
 
         private static int GetSharePointVersion()
         {
