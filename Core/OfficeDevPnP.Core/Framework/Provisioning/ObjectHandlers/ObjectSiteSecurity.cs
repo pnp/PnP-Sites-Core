@@ -180,24 +180,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(ownerGroup, o => o.Users);
+                    web.Context.Load(ownerGroup, o => o.Id, o => o.Users);
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(memberGroup, o => o.Users);
+                    web.Context.Load(memberGroup, o => o.Id, o => o.Users);
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(visitorGroup, o => o.Users);
+                    web.Context.Load(visitorGroup, o => o.Id, o => o.Users);
 
                 }
                 web.Context.ExecuteQueryRetry();
 
+                List<int> associatedGroupIds = new List<int>();
                 var owners = new List<User>();
                 var members = new List<User>();
                 var visitors = new List<User>();
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
+                    associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
                     {
                         owners.Add(new User() { Name = member.LoginName });
@@ -205,6 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
+                    associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
                     {
                         members.Add(new User() { Name = member.LoginName });
@@ -212,6 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
+                    associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
                     {
                         visitors.Add(new User() { Name = member.LoginName });
@@ -236,12 +240,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 siteSecurity.AdditionalAdministrators.AddRange(admins);
 
+                if (creationInfo.IncludeSiteGroups)
+                {
+                    web.Context.Load(web.SiteGroups,
+                        o => o.IncludeWithDefaultProperties(
+                            gr => gr.Title,
+                            gr => gr.AllowMembersEditMembership,
+                            gr => gr.AutoAcceptRequestToJoinLeave,
+                            gr => gr.AllowRequestToJoinLeave,
+                            gr => gr.Description,
+                            gr => gr.Users.Include(u => u.LoginName),
+                            gr => gr.OnlyAllowMembersViewMembership,
+                            gr => gr.Owner.LoginName,
+                            gr => gr.RequestToJoinLeaveEmailSetting
+                            ));
+
+                    web.Context.ExecuteQueryRetry();
+
+                    foreach (var group in web.SiteGroups.Where(o => !associatedGroupIds.Contains(o.Id)))
+                    {
+                        scope.LogDebug("Processing group {0}", group.Title);
+                        var siteGroup = new SiteGroup()
+                        {
+                            Title = group.Title,
+                            AllowMembersEditMembership = group.AllowMembersEditMembership,
+                            AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
+                            AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
+                            Description = group.Description,
+                            OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
+                            Owner = group.Owner.LoginName,
+                            RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
+                        };
+
+                        foreach (var member in group.Users)
+                        {
+                            siteGroup.Members.Add(new User() { Name = member.LoginName });
+                        }
+                        siteSecurity.SiteGroups.Add(siteGroup);
+                    }
+                }
+
                 template.Security = siteSecurity;
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
                     template = CleanupEntities(template, creationInfo.BaseTemplate);
+
                 }
             }
             return template;
