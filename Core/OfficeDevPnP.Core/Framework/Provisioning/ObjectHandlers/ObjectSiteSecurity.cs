@@ -121,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                         }
                     }
-                    if (siteGroup.Members.Any())
+                    if (group != null && siteGroup.Members.Any())
                     {
                         AddUserToGroup(web, group, siteGroup.Members, scope);
                     }
