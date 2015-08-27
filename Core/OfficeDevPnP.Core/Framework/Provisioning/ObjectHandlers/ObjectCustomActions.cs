@@ -288,7 +288,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any();
+                _willProvision = template.CustomActions != null ? template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any() : false;
             }
             return _willProvision.Value;
         }
