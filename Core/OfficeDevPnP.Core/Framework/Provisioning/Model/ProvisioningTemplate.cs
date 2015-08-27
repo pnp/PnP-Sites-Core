@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ComposedLook _composedLook = new ComposedLook();
         private Features _features = new Features();
         private SiteSecurity _siteSecurity = new SiteSecurity();
-        private CustomActions _customActions = new CustomActions();
+        private CustomActions _customActions = null;
         private List<File> _files = new List<File>();
         private List<Provider> _providers = new List<Provider>();
         private List<Page> _pages = new List<Page>();
@@ -32,9 +32,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private RegionalSettings _regionalSettings = new RegionalSettings();
         private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
         private AuditSettings _auditSettings = new AuditSettings();
-        private Workflows _workflows = new Workflows();
+        private Workflows _workflows = null;
         private List<AddIn> _addins = new List<AddIn>();
-        private Publishing _publishing = new Publishing();
+        private Publishing _publishing = null;
         private Dictionary<String, String> _properties = new Dictionary<String, String>();
 
         #endregion
