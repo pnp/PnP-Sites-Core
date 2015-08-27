@@ -890,7 +890,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              LanguageCodeSpecified = true,
                              TemplateName = awt.TemplateName,
                          }).ToArray() : null,
-                    DesignPackage = new V201508.PublishingDesignPackage
+                    DesignPackage = template.Publishing.DesignPackage != null ? new V201508.PublishingDesignPackage
                     {
                         DesignPackagePath = template.Publishing.DesignPackage.DesignPackagePath,
                         MajorVersion = template.Publishing.DesignPackage.MajorVersion,
@@ -899,7 +899,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         MinorVersionSpecified = true,
                         PackageGuid = template.Publishing.DesignPackage.PackageGuid.ToString(),
                         PackageName = template.Publishing.DesignPackage.PackageName,
-                    },
+                    } : null,
                     PageLayouts = template.Publishing.PageLayouts.Count > 0 ?
                         (from pl in template.Publishing.PageLayouts
                          select new V201508.PublishingPageLayout
@@ -1660,14 +1660,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Publishing = new Model.Publishing(
                     (Model.AutoCheckRequirementsOptions)Enum.Parse(typeof(Model.AutoCheckRequirementsOptions), source.Publishing.AutoCheckRequirements.ToString()),
-                    new Model.DesignPackage
-                    {
-                        DesignPackagePath = source.Publishing.DesignPackage.DesignPackagePath,
-                        MajorVersion = source.Publishing.DesignPackage.MajorVersionSpecified ? source.Publishing.DesignPackage.MajorVersion : 0,
-                        MinorVersion = source.Publishing.DesignPackage.MinorVersionSpecified ? source.Publishing.DesignPackage.MinorVersion : 0,
-                        PackageGuid = Guid.Parse(source.Publishing.DesignPackage.PackageGuid),
-                        PackageName = source.Publishing.DesignPackage.PackageName,
-                    },
+                    source.Publishing.DesignPackage != null ?
+                        new Model.DesignPackage
+                        {
+                            DesignPackagePath = source.Publishing.DesignPackage.DesignPackagePath,
+                            MajorVersion = source.Publishing.DesignPackage.MajorVersionSpecified ? source.Publishing.DesignPackage.MajorVersion : 0,
+                            MinorVersion = source.Publishing.DesignPackage.MinorVersionSpecified ? source.Publishing.DesignPackage.MinorVersion : 0,
+                            PackageGuid = Guid.Parse(source.Publishing.DesignPackage.PackageGuid),
+                            PackageName = source.Publishing.DesignPackage.PackageName,
+                        } : null,
                     source.Publishing.AvailableWebTemplates != null && source.Publishing.AvailableWebTemplates.Length > 0 ?
                          (from awt in source.Publishing.AvailableWebTemplates
                           select new Model.AvailableWebTemplate
