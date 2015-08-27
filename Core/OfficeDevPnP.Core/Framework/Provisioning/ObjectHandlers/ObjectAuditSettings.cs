@@ -28,11 +28,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
                 web.Context.ExecuteQueryRetry();
 
-                auditSettings.AuditFlags = siteAuditSettings.AuditFlags;
-                auditSettings.AuditLogTrimmingRetention = site.AuditLogTrimmingRetention;
-                auditSettings.TrimAuditLog = site.TrimAuditLog;
+                bool include = false;
+                if (siteAuditSettings.AuditFlags != auditSettings.AuditFlags)
+                {
+                    include = true;
+                    auditSettings.AuditFlags = siteAuditSettings.AuditFlags;
+                }
 
-                template.AuditSettings = auditSettings;
+                if (site.AuditLogTrimmingRetention != auditSettings.AuditLogTrimmingRetention)
+                {
+                    include = true;
+                    auditSettings.AuditLogTrimmingRetention = site.AuditLogTrimmingRetention;
+                }
+
+                if (site.TrimAuditLog != auditSettings.TrimAuditLog)
+                {
+                    include = true;
+                    auditSettings.TrimAuditLog = site.TrimAuditLog;
+                }
+
+                if (include)
+                {
+                    template.AuditSettings = auditSettings;
+                }
             }
             return template;
         }
