@@ -4,18 +4,18 @@
   <PropertyGroup>
     <WebPublishMethod>MSDeploy</WebPublishMethod>
     <ADUsesOwinOrOpenIdConnect>False</ADUsesOwinOrOpenIdConnect>
-    <LastUsedBuildConfiguration>{BuildConfiguration}</LastUsedBuildConfiguration>
+    <LastUsedBuildConfiguration>%BuildConfiguration%</LastUsedBuildConfiguration>
     <LastUsedPlatform>Any CPU</LastUsedPlatform>
-    <SiteUrlToLaunchAfterPublish>{SiteUrlToLaunchAfterPublish}</SiteUrlToLaunchAfterPublish>
+    <SiteUrlToLaunchAfterPublish>%SiteUrlToLaunchAfterPublish%</SiteUrlToLaunchAfterPublish>
     <LaunchSiteAfterPublish>False</LaunchSiteAfterPublish>
     <ExcludeApp_Data>False</ExcludeApp_Data>
-    <MSDeployServiceURL>{ServiceURL}</MSDeployServiceURL>
-    <DeployIisAppPath>{IisAppPath}</DeployIisAppPath>
+    <MSDeployServiceURL>%ServiceURL%</MSDeployServiceURL>
+    <DeployIisAppPath>%IisAppPath%</DeployIisAppPath>
     <RemoteSitePhysicalPath />
     <SkipExtraFilesOnServer>True</SkipExtraFilesOnServer>
     <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
     <EnableMSDeployBackup>True</EnableMSDeployBackup>
-    <UserName>{UserName}</UserName>
+    <UserName>%UserName%</UserName>
     <_SavePWD>True</_SavePWD>
     <_DestinationType>AzureWebSite</_DestinationType>
   </PropertyGroup>
@@ -26,8 +26,8 @@
       <Scope>web.config$</Scope>
       <Match>/configuration/appSettings/add[@key='ClientId']/@value</Match>
       <Description>Value for ClientId here.</Description>
-      <DefaultValue>{ClientId}</DefaultValue>
-      <Value>{ClientId}</Value>
+      <DefaultValue>%ClientId%</DefaultValue>
+      <Value>%ClientId%</Value>
       <Tags>applicationSettings</Tags>
     </MsDeployDeclareParameters>
     <MsDeployDeclareParameters Include="ClientSecret">
@@ -35,8 +35,8 @@
       <Scope>web.config$</Scope>
       <Match>/configuration/appSettings/add[@key='ClientSecret']/@value</Match>
       <Description>Value for ClientSecret here.</Description>
-      <DefaultValue>{ClientSecret}</DefaultValue>
-      <Value>{ClientSecret}</Value>
+      <DefaultValue>%ClientSecret%</DefaultValue>
+      <Value>%ClientSecret%</Value>
       <Tags>applicationSettings</Tags>
     </MsDeployDeclareParameters>
   </ItemGroup>

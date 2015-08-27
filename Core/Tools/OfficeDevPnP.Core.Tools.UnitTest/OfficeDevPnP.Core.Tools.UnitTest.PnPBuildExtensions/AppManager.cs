@@ -1,6 +1,7 @@
 ﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Resources;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,16 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 {
     public class AppManager
     {
+        #region Constants
+        private static string PubXmlBuildConfiguration = "%BuildConfiguration%";
+        private static string PubXmlSiteUrlToLaunchAfterPublish = "%SiteUrlToLaunchAfterPublish%";
+        private static string PubXmlServiceURL = "%ServiceURL%";
+        private static string PubXmlIisAppPath = "%IisAppPath%";
+        private static string PubXmlUserName = "%UserName%";
+        private static string PubXmlClientId = "%ClientId%";
+        private static string PubXmlClientSecret = "%ClientSecret%";
+        #endregion
+
         #region Private variables
         private string sharePointUrl;
         private AuthenticationType authenticationType = AuthenticationType.Office365;
@@ -80,7 +91,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Public Methods
-        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost)
+        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, out string appPackageName)
         {
             bool createAppPackageResult = false;
 
@@ -109,46 +120,73 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 throw new ArgumentException("Please provide an application host");
             }
 
+            // Get a base template that will be used for the publishing
+            string publishingTemplateString = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite);
+
+            // replace tokens in the publishing template
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientId, clientId);
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientSecret, clientSecret);
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlServiceURL, applicationHost);
+
+            // insert the publishing template in the solution
             bool publishingXmlWasDefined = false;
+            string publishingXmlFile = "";
             try
             {
                 // Do we already have a publishing XML defined?
-                string publishingXmlFile = GetAvailablePublishingXml(sharePointProjectFile, sharePointWebProjectFile);
+                publishingXmlFile = GetAvailablePublishingXml(sharePointProjectFile, sharePointWebProjectFile);
 
                 // We've a publishing xml file in the project, let's update it
                 if (!String.IsNullOrEmpty(publishingXmlFile))
                 {
                     publishingXmlWasDefined = true;
 
+                    // Rename the original active publishing XML file
+                    File.Move(publishingXmlFile, String.Format("{0}.old", publishingXmlFile));
 
+                    // Create a new file version of the active publishing file
+                    File.WriteAllText(publishingXmlFile, publishingTemplateString);            
                 }
                 else
                 {
-                    //Add a new publishing xml file
+                    // We need a new publishing xml file
+                    publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\automation.pubxml", Path.GetDirectoryName(sharePointWebProjectFile));
+
+                    // Add a new publishing xml file
+                    File.WriteAllText(publishingXmlFile, publishingTemplateString);
                 }
 
-                // Get a base template that will be used for the publishing
-                using (Stream publishingTemplate = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite))
-                {
+                // Trigger package build
+                Hashtable packageBuildParameters = new Hashtable();
+                packageBuildParameters.Add("ProjectFile", sharePointProjectFile);
+                packageBuildParameters.Add("OutputPath", @"c:\temp\");
+                string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackage.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
 
+                if (!packageBuildResult.Contains("Build FAILED"))
+                {
+                    createAppPackageResult = true;
+                    appPackageName = "todo";
+                }
+                else
+                {
+                    Console.WriteLine("App Package creation failed");
+                    Console.WriteLine(packageBuildResult);
+                    appPackageName = "";
                 }
             }
             finally
             {
+                // delete the created publishing xml file to restore the project back in it's original state
+                File.Delete(publishingXmlFile);
+
                 if (publishingXmlWasDefined)
                 {
                     // revert back to the original publishing XML if there was one defined
-
+                    File.Move(String.Format("{0}.old", publishingXmlFile), publishingXmlFile);
                 }
-                else
-                {
-                    // delete the created publishing xml file to restore the project back in it's original state
-
-                }
+                
             }
-
-
-
+            
             return createAppPackageResult;
         }
 
