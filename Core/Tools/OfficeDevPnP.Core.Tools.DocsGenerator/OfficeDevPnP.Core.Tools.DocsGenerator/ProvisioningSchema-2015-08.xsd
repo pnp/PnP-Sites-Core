@@ -670,7 +670,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="Audit" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Audit" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             A single Audit setting defined by an AuditFlag.
@@ -2787,17 +2787,18 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="IsDefault" type="xsd:boolean" use="required">
-                  <xsd:annotation>
-                    <xsd:documentation xml:lang="en">
-                      Defines whether the Page Layout is the default for the current Publishing site, just one Page Layout can be the default, required attribute.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:attribute>
               </xsd:complexType>
 
             </xsd:element>
           </xsd:sequence>
+
+          <xsd:attribute name="Default" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Defines the URL of the Default Page Layout for the current Publishing site, if any. Optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
 
         </xsd:complexType>
       </xsd:element>

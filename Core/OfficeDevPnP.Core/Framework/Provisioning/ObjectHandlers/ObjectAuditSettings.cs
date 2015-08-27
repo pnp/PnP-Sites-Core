@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
                 web.Context.ExecuteQueryRetry();
 
-                auditSettings.AuditFlag = siteAuditSettings.AuditFlags;
+                auditSettings.AuditFlags = siteAuditSettings.AuditFlags;
                 auditSettings.AuditLogTrimmingRetention = site.AuditLogTrimmingRetention;
                 auditSettings.TrimAuditLog = site.TrimAuditLog;
 
@@ -48,9 +48,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 var isDirty = false;
-                if (template.AuditSettings.AuditFlag != siteAuditSettings.AuditFlags)
+                if (template.AuditSettings.AuditFlags != siteAuditSettings.AuditFlags)
                 {
-                    site.Audit.AuditFlags = template.AuditSettings.AuditFlag;
+                    site.Audit.AuditFlags = template.AuditSettings.AuditFlags;
                     site.Audit.Update();
                     isDirty = true;
                 }

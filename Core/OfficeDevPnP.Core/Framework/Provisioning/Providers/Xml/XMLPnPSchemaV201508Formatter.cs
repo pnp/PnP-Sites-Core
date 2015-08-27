@@ -209,7 +209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     AuditLogTrimmingRetentionSpecified = true,
                     TrimAuditLog = template.AuditSettings.TrimAuditLog,
                     TrimAuditLogSpecified = true,
-                    Audit = template.AuditSettings.AuditFlag.FromTemplateToSchemaAuditsV201508(),
+                    Audit = template.AuditSettings.AuditFlags.FromTemplateToSchemaAuditsV201508(),
                 };
             }
             else
@@ -900,13 +900,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         PackageGuid = template.Publishing.DesignPackage.PackageGuid.ToString(),
                         PackageName = template.Publishing.DesignPackage.PackageName,
                     } : null,
-                    PageLayouts = template.Publishing.PageLayouts.Count > 0 ?
+                    PageLayouts = template.Publishing.PageLayouts != null ?
+                        new V201508.PublishingPageLayouts
+                        {
+                            PageLayout = template.Publishing.PageLayouts.Count > 0 ?
                         (from pl in template.Publishing.PageLayouts
-                         select new V201508.PublishingPageLayout
+                         select new V201508.PublishingPageLayoutsPageLayout
                          {
-                             IsDefault = pl.IsDefault,
                              Path = pl.Path,
                          }).ToArray() : null,
+                            Default = template.Publishing.PageLayouts.Any(p => p.IsDefault) ?
+                                template.Publishing.PageLayouts.Last(p => p.IsDefault).Path : null,
+                        } : null,
                 };
             }
             else
@@ -1148,7 +1153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     AuditLogTrimmingRetention = source.AuditSettings.AuditLogTrimmingRetentionSpecified ? source.AuditSettings.AuditLogTrimmingRetention : 0,
                     TrimAuditLog = source.AuditSettings.TrimAuditLogSpecified ? source.AuditSettings.TrimAuditLog : false,
-                    AuditFlag = source.AuditSettings.Audit.Aggregate(Microsoft.SharePoint.Client.AuditMaskType.None, (acc, next) => acc &= (Microsoft.SharePoint.Client.AuditMaskType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AuditMaskType), next.AuditFlag.ToString())),
+                    AuditFlags = source.AuditSettings.Audit.Aggregate(Microsoft.SharePoint.Client.AuditMaskType.None, (acc, next) => acc &= (Microsoft.SharePoint.Client.AuditMaskType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AuditMaskType), next.AuditFlag.ToString())),
                 };
             }
 
@@ -1661,14 +1666,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.Publishing = new Model.Publishing(
                     (Model.AutoCheckRequirementsOptions)Enum.Parse(typeof(Model.AutoCheckRequirementsOptions), source.Publishing.AutoCheckRequirements.ToString()),
                     source.Publishing.DesignPackage != null ?
-                        new Model.DesignPackage
-                        {
-                            DesignPackagePath = source.Publishing.DesignPackage.DesignPackagePath,
-                            MajorVersion = source.Publishing.DesignPackage.MajorVersionSpecified ? source.Publishing.DesignPackage.MajorVersion : 0,
-                            MinorVersion = source.Publishing.DesignPackage.MinorVersionSpecified ? source.Publishing.DesignPackage.MinorVersion : 0,
-                            PackageGuid = Guid.Parse(source.Publishing.DesignPackage.PackageGuid),
-                            PackageName = source.Publishing.DesignPackage.PackageName,
-                        } : null,
+                    new Model.DesignPackage
+                    {
+                        DesignPackagePath = source.Publishing.DesignPackage.DesignPackagePath,
+                        MajorVersion = source.Publishing.DesignPackage.MajorVersionSpecified ? source.Publishing.DesignPackage.MajorVersion : 0,
+                        MinorVersion = source.Publishing.DesignPackage.MinorVersionSpecified ? source.Publishing.DesignPackage.MinorVersion : 0,
+                        PackageGuid = Guid.Parse(source.Publishing.DesignPackage.PackageGuid),
+                        PackageName = source.Publishing.DesignPackage.PackageName,
+                    } : null,
                     source.Publishing.AvailableWebTemplates != null && source.Publishing.AvailableWebTemplates.Length > 0 ?
                          (from awt in source.Publishing.AvailableWebTemplates
                           select new Model.AvailableWebTemplate
@@ -1676,11 +1681,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               LanguageCode = awt.LanguageCodeSpecified ? awt.LanguageCode : 1033,
                               TemplateName = awt.TemplateName,
                           }) : null,
-                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.Length > 0 ?
-                        (from pl in source.Publishing.PageLayouts
+                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
+                        (from pl in source.Publishing.PageLayouts.PageLayout
                          select new Model.PageLayout
                          {
-                             IsDefault = pl.IsDefault,
+                             IsDefault = pl.Path == source.Publishing.PageLayouts.Default,
                              Path = pl.Path,
                          }) : null
                     );

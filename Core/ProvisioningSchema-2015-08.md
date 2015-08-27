@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/26/2015*
+*Topic automatically generated on 8/27/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1748,7 +1748,8 @@ WebTemplate|[WebTemplate](#webtemplate)|Defines an available Web Template for th
 Defines the Available Page Layouts for the current Publishing site, optional collection of elements.
 
 ```xml
-<pnp:PageLayouts>
+<pnp:PageLayouts
+      Default="xsd:string">
    <pnp:PageLayout />
 </pnp:PageLayouts>
 ```
@@ -1760,6 +1761,13 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 PageLayout|[PageLayout](#pagelayout)|Defines an available Page Layout for the current Publishing site.
+
+Here follow the available attributes for the  element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Default|xsd:string|Defines the URL of the Default Page Layout for the current Publishing site, if any. Optional attribute.
 <a name="provider"></a>
 ###Provider
 Defines an Extensibility Provider.
