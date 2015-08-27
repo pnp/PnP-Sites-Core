@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private DesignPackage _designPackage = new DesignPackage();
+        private DesignPackage _designPackage = null;
         private List<AvailableWebTemplate> _availableWebTemplates = new List<AvailableWebTemplate>();
         private List<PageLayout> _pageLayouts = new List<PageLayout>();
 

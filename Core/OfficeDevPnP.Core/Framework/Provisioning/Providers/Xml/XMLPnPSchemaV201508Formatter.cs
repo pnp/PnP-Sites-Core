@@ -49,7 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XDocument xml = XDocument.Load(template);
 
             // Load the XSD embedded resource
-            Stream stream = typeof(XMLPnPSchemaV201505Formatter)
+            Stream stream = typeof(XMLPnPSchemaV201508Formatter)
                 .Assembly
                 .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2015-08.xsd");
 
@@ -103,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.DisplayName = template.DisplayName;
             result.Description = template.Description;
 
-            if (template.Properties != null)
+            if (template.Properties != null && template.Properties.Any())
             {
                 result.Properties =
                     (from p in template.Properties
@@ -565,7 +565,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Custom Actions
 
             // Translate CustomActions, if any
-            if (template.CustomActions != null)
+            if (template.CustomActions != null && (template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any()))
             {
                 result.CustomActions = new V201508.CustomActions();
 
