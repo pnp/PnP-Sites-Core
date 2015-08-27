@@ -143,18 +143,15 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 
                     // Rename the original active publishing XML file
                     File.Move(publishingXmlFile, String.Format("{0}.old", publishingXmlFile));
-
-                    // Create a new file version of the active publishing file
-                    File.WriteAllText(publishingXmlFile, publishingTemplateString);            
                 }
                 else
                 {
-                    // We need a new publishing xml file
+                    // We need a new publishing xml file name
                     publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\automation.pubxml", Path.GetDirectoryName(sharePointWebProjectFile));
-
-                    // Add a new publishing xml file
-                    File.WriteAllText(publishingXmlFile, publishingTemplateString);
                 }
+
+                // Add a new publishing xml file
+                File.WriteAllText(publishingXmlFile, publishingTemplateString);
 
                 // Trigger package build
                 Hashtable packageBuildParameters = new Hashtable();
