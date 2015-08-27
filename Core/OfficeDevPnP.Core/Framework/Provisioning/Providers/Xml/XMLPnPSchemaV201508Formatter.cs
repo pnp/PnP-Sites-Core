@@ -900,13 +900,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         PackageGuid = template.Publishing.DesignPackage.PackageGuid.ToString(),
                         PackageName = template.Publishing.DesignPackage.PackageName,
                     },
-                    PageLayouts = template.Publishing.PageLayouts.Count > 0 ?
-                        (from pl in template.Publishing.PageLayouts
-                         select new V201508.PublishingPageLayout
-                         {
-                             IsDefault = pl.IsDefault,
-                             Path = pl.Path,
-                         }).ToArray() : null,
+                    PageLayouts = template.Publishing.PageLayouts != null ?
+                        new V201508.PublishingPageLayouts
+                        {
+                            PageLayout = template.Publishing.PageLayouts.Count > 0 ?
+                                (from pl in template.Publishing.PageLayouts
+                                 select new V201508.PublishingPageLayoutsPageLayout
+                                 {
+                                     Path = pl.Path,
+                                 }).ToArray() : null,
+                            Default = template.Publishing.PageLayouts.Any(p => p.IsDefault) ?
+                                template.Publishing.PageLayouts.Last(p => p.IsDefault).Path : null,
+                        } : null,
                 };
             }
             else
@@ -1675,11 +1680,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               LanguageCode = awt.LanguageCodeSpecified ? awt.LanguageCode : 1033,
                               TemplateName = awt.TemplateName,
                           }) : null,
-                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.Length > 0 ?
-                        (from pl in source.Publishing.PageLayouts
+                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
+                        (from pl in source.Publishing.PageLayouts.PageLayout
                          select new Model.PageLayout
                          {
-                             IsDefault = pl.IsDefault,
+                             IsDefault = pl.Path == source.Publishing.PageLayouts.Default,
                              Path = pl.Path,
                          }) : null
                     );

@@ -5066,7 +5066,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         private PublishingWebTemplate[] availableWebTemplatesField;
         
-        private PublishingPageLayout[] pageLayoutsField;
+        private PublishingPageLayouts pageLayoutsField;
         
         private PublishingAutoCheckRequirements autoCheckRequirementsField;
         
@@ -5092,8 +5092,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("PageLayout", IsNullable=false)]
-        public PublishingPageLayout[] PageLayouts {
+        public PublishingPageLayouts PageLayouts {
             get {
                 return this.pageLayoutsField;
             }
@@ -5268,11 +5267,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema")]
-    public partial class PublishingPageLayout {
+    public partial class PublishingPageLayouts {
+        
+        private PublishingPageLayoutsPageLayout[] pageLayoutField;
+        
+        private string defaultField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("PageLayout")]
+        public PublishingPageLayoutsPageLayout[] PageLayout {
+            get {
+                return this.pageLayoutField;
+            }
+            set {
+                this.pageLayoutField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Default {
+            get {
+                return this.defaultField;
+            }
+            set {
+                this.defaultField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema")]
+    public partial class PublishingPageLayoutsPageLayout {
         
         private string pathField;
-        
-        private bool isDefaultField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -5282,17 +5314,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.pathField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool IsDefault {
-            get {
-                return this.isDefaultField;
-            }
-            set {
-                this.isDefaultField = value;
             }
         }
     }
