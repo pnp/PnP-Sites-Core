@@ -1,8 +1,8 @@
 using Microsoft.SharePoint.Client;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class MasterPageCatalogToken : TokenDefinition
+    internal class MasterPageCatalogToken : TokenDefinition
     {
         public MasterPageCatalogToken(Web web)
             : base(web, "~masterpagecatalog","{masterpagecatalog}")
