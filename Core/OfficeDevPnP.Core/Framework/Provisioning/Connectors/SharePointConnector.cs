@@ -181,6 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override Stream GetFileStream(string fileName, string container)
         {
+            Log.Debug("SharePointConnector", "GetFileStream('{0}','{1}')", fileName, container);
             if (String.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("fileName");
@@ -341,6 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region Private Methods
         private MemoryStream GetFileFromStorage(string fileName, string container)
         {
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -382,18 +384,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
                     cc.Load(file);
                     cc.ExecuteQueryRetry();
+                    if (file.Exists)
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        var streamResult = file.OpenBinaryStream();
+                        cc.ExecuteQueryRetry();
 
-                    MemoryStream stream = new MemoryStream();
-                    var streamResult = file.OpenBinaryStream();
-                    cc.ExecuteQueryRetry();
+                        streamResult.Value.CopyTo(stream);
 
-                    streamResult.Value.CopyTo(stream);
+                        Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_SharePoint_FileRetrieved, fileName, GetConnectionString(), container);
 
-                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_SharePoint_FileRetrieved, fileName, GetConnectionString(), container);
-
-                    // Set the stream position to the beginning
-                    stream.Position = 0;
-                    return stream;
+                        // Set the stream position to the beginning
+                        stream.Position = 0;
+                        return stream;
+                    } 
+                    else
+                    {
+                        throw new Exception("File not found");
+                    }
                 }
             }
             catch(Exception ex)
