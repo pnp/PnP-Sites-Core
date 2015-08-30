@@ -71,6 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectCustomActions());
                 objectHandlers.Add(new ObjectFeatures());
                 objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectSearchSettings());
                 objectHandlers.Add(new ObjectFiles());
                 objectHandlers.Add(new ObjectPages());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
@@ -149,6 +150,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectCustomActions());
                 objectHandlers.Add(new ObjectPublishing());
                 objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectSearchSettings());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
                 objectHandlers.Add(new ObjectExtensibilityProviders());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
