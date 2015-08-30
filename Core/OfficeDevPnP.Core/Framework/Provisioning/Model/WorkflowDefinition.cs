@@ -87,12 +87,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Scope Restriction for the Workflow
         /// </summary>
-        public Boolean RestrictToScope { get; set; }
+        public String RestrictToScope { get; set; }
 
         /// <summary>
         /// Defines the Type of Scope Restriction for the Workflow
         /// </summary>
-        public Boolean RestrictToType { get; set; }
+        public String RestrictToType { get; set; }
 
         /// <summary>
         /// Defines path of the XAML of the Workflow to provision

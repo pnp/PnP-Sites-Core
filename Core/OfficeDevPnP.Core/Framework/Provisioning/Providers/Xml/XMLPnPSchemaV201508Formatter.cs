@@ -828,9 +828,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              RequiresInitiationForm = wd.RequiresInitiationForm,
                              RequiresInitiationFormSpecified = true,
                              RestrictToScope = wd.RestrictToScope,
-                             RestrictToScopeSpecified = true,
-                             RestrictToType = wd.RestrictToType,
-                             RestrictToTypeSpecified = true,
+                             RestrictToType = (V201508.WorkflowsWorkflowDefinitionRestrictToType)Enum.Parse(typeof(V201508.WorkflowsWorkflowDefinitionRestrictToType), wd.RestrictToType),
                              XamlPath = wd.XamlPath,
                          }).ToArray() : null,
                     WorkflowSubscriptions = template.Workflows.WorkflowSubscriptions.Count > 0 ?
@@ -1621,8 +1619,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              InitiationUrl = wd.InitiationUrl,
                              RequiresAssociationForm = wd.RequiresAssociationFormSpecified ? wd.RequiresAssociationForm : false,
                              RequiresInitiationForm = wd.RequiresInitiationFormSpecified ? wd.RequiresInitiationForm : false,
-                             RestrictToScope = wd.RestrictToScopeSpecified ? wd.RestrictToScope : false,
-                             RestrictToType = wd.RestrictToTypeSpecified ? wd.RestrictToType : false,
+                             RestrictToScope = wd.RestrictToScope,
+                             RestrictToType = wd.RestrictToType.ToString(),
                              XamlPath = wd.XamlPath,
                          }) : null,
                     source.Workflows.WorkflowSubscriptions.Length > 0 ?
