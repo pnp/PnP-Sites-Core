@@ -84,6 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectPages());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
                 objectHandlers.Add(new ObjectPublishing());
+                objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -159,6 +160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectPublishing());
                 objectHandlers.Add(new ObjectComposedLook());
                 objectHandlers.Add(new ObjectSearchSettings());
+                objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
                 objectHandlers.Add(new ObjectExtensibilityProviders());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());

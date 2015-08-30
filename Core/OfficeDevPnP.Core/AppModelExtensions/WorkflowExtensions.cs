@@ -211,6 +211,23 @@ namespace Microsoft.SharePoint.Client
             return definition;
         }
 
+        /// <summary>
+        /// Returns all the workflow definitions
+        /// </summary>
+        /// <param name="web">The target Web</param>
+        /// <param name="publishedOnly">Defines whether to include only published definition, or all the definitions</param>
+        /// <returns></returns>
+        public static WorkflowDefinition[] GetWorkflowDefinitions(this Web web, Boolean publishedOnly)
+        {
+            var servicesManager = new WorkflowServicesManager(web.Context, web);
+            var deploymentService = servicesManager.GetWorkflowDeploymentService();
+
+            var definitions = deploymentService.EnumerateDefinitions(publishedOnly);
+            web.Context.Load(definitions);
+            web.Context.ExecuteQueryRetry();
+            return definitions.ToArray();
+        }
+
         public static Guid AddWorkflowDefinition(this Web web, WorkflowDefinition definition, bool publish = true)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
