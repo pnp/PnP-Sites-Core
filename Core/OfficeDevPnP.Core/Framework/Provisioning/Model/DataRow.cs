@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the security rules for the row that will be added to the List Instance
         /// </summary>
-        public ObjectSecurity ObjectSecurity
+        public ObjectSecurity Security
         {
             get { return _objectSecurity; }
             private set { _objectSecurity = value; }
@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             if (security != null)
             {
-                this.ObjectSecurity = security;
+                this.Security = security;
             }
         }
 

@@ -222,7 +222,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ObjectSecurity Security
         {
             get { return this._security; }
-            private set { this._security = value; }
+            set { this._security = value; }
         }
 
         #endregion
@@ -252,7 +252,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.EnableModeration.GetHashCode(),
                 this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Views.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode() ),
+                this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());
         }

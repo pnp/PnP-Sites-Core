@@ -134,6 +134,76 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     user.Update();
                     web.Context.ExecuteQueryRetry();
                 }
+
+                if (siteSecurity.SiteSecurityPermissions != null)
+                {
+                    var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions));
+                    web.Context.ExecuteQueryRetry();
+
+                    if (siteSecurity.SiteSecurityPermissions.RoleDefinitions.Any())
+                    {
+                        foreach (var templateRoleDefinition in siteSecurity.SiteSecurityPermissions.RoleDefinitions)
+                        {
+                            var siteRoleDefinition = existingRoleDefinitions.FirstOrDefault(erd => erd.Name == templateRoleDefinition.Name);
+                            if (siteRoleDefinition == null)
+                            {
+                                scope.LogDebug("Creation role definition {0}", templateRoleDefinition.Name);
+                                var roleDefinitionCI = new RoleDefinitionCreationInformation();
+                                roleDefinitionCI.Name = templateRoleDefinition.Name;
+                                roleDefinitionCI.Description = templateRoleDefinition.Description;
+                                BasePermissions basePermissions = new BasePermissions();
+
+                                foreach (var permission in templateRoleDefinition.Permissions)
+                                {
+                                    basePermissions.Set(permission);
+                                }
+
+                                roleDefinitionCI.BasePermissions = basePermissions;
+
+                                web.RoleDefinitions.Add(roleDefinitionCI);
+                                web.Context.ExecuteQueryRetry();
+                            }
+                            else
+                            {
+                                scope.LogDebug("Updating role definition {0}", templateRoleDefinition.Name);
+                                siteRoleDefinition.Description = templateRoleDefinition.Description;
+                                foreach (var permission in templateRoleDefinition.Permissions)
+                                {
+                                    siteRoleDefinition.BasePermissions.Set(permission);
+                                }
+                                siteRoleDefinition.Update();
+                                web.Context.ExecuteQueryRetry();
+                            }
+                        }
+                    }
+
+                    var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
+                    var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+                    web.Context.ExecuteQueryRetry();
+
+                    if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
+                    {
+                        foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
+                        {
+                            Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignment.Principal);
+                            if (principal == null)
+                            {
+                                principal = web.EnsureUser(roleAssignment.Principal);
+                            }
+
+                            var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
+
+                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignment.RoleDefinition);
+
+                            if (roleDefinition != null)
+                            {
+                                roleDefinitionBindingCollection.Add(roleDefinition);
+                            }
+                            web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    }
+                }
             }
             return parser;
         }
@@ -172,6 +242,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     return template;
                 }
+
+                web.Context.Load(web, w => w.HasUniqueRoleAssignments);
 
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
@@ -280,8 +352,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                template.Security = siteSecurity;
+                var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(r => r.Name, r => r.Description, r => r.BasePermissions));
+                web.Context.ExecuteQueryRetry();
 
+                if (web.HasUniqueRoleAssignments)
+                {
+                    var permissionKeys = Enum.GetNames(typeof(PermissionKind));
+
+                    foreach (var webRoleDefinition in webRoleDefinitions)
+                    {
+                        var modelRoleDefinitions = new Model.RoleDefinition();
+
+                        modelRoleDefinitions.Description = webRoleDefinition.Description;
+                        modelRoleDefinitions.Name = webRoleDefinition.Name;
+                        var permissions = new List<PermissionKind>();
+
+                        foreach (var permissionKey in permissionKeys)
+                        {
+                            var permissionKind = (PermissionKind)Enum.Parse(typeof(PermissionKind), permissionKey);
+                            if (webRoleDefinition.BasePermissions.Has(permissionKind))
+                            {
+                                modelRoleDefinitions.Permissions.Add(permissionKind);
+                            }
+                        }
+                        siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
+                    }
+
+                    var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments.Include(r => r.RoleDefinitionBindings.Include(rd => rd.Name), r => r.Member.LoginName));
+                    web.Context.ExecuteQueryRetry();
+
+                    foreach (var webRoleAssignment in webRoleAssignments)
+                    {
+                        if (webRoleAssignment.Member.LoginName != "Excel Services Viewers")
+                        {
+                            foreach (var roleDefinition in webRoleAssignment.RoleDefinitionBindings)
+                            {
+                                var modelRoleAssignment = new Model.RoleAssignment();
+                                modelRoleAssignment.RoleDefinition = roleDefinition.Name;
+                                modelRoleAssignment.Principal = webRoleAssignment.Member.LoginName;
+
+                                siteSecurity.SiteSecurityPermissions.RoleAssignments.Add(modelRoleAssignment);
+                            }
+                        }
+                    }
+
+                    template.Security = siteSecurity;
+                }
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {

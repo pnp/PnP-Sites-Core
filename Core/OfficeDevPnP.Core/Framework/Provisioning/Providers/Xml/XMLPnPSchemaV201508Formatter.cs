@@ -504,7 +504,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  DataValue = dr.Values.Count > 0 ?
                                     (from value in dr.Values
                                      select new DataValue { FieldName = value.Key, Value = value.Value }).ToArray() : null,
-                                 Security = dr.ObjectSecurity.FromTemplateToSchemaObjectSecurityV201508()
+                                 Security = dr.Security.FromTemplateToSchemaObjectSecurityV201508()
                              }).ToArray() : null,
                          Security = list.Security.FromTemplateToSchemaObjectSecurityV201508(),
                      }).ToArray();

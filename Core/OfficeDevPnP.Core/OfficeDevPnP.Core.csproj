@@ -387,6 +387,8 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowDefinition.cs" />
     <Compile Include="Framework\Provisioning\Model\Workflows.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishing.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectAuditSettings.cs" />
