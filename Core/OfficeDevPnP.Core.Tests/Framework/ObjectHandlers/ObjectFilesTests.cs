@@ -1,17 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
-using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -27,7 +20,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             resourceFolder = string.Format(@"{0}\..\..\Resources\Templates",
                 AppDomain.CurrentDomain.BaseDirectory);
-            
+
             folder = string.Format("test{0}", DateTime.Now.Ticks);
         }
 
@@ -63,13 +56,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public void CanProvisionObjects()
         {
             var template = new ProvisioningTemplate();
-            
-            FileSystemConnector connector = new FileSystemConnector(resourceFolder,"");
+
+            FileSystemConnector connector = new FileSystemConnector(resourceFolder, "");
 
             template.Connector = connector;
 
             template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = folder });
-            
+
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
