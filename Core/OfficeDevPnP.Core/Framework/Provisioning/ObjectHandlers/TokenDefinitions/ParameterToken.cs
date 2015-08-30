@@ -1,9 +1,9 @@
 using Microsoft.SharePoint.Client;
 using System;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class ParameterToken : TokenDefinition
+    internal class ParameterToken : TokenDefinition
     {
         private readonly string _value = null;
         public ParameterToken(Web web, string name, string value)

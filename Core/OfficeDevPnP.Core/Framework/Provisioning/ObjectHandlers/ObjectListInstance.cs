@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -220,6 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     #endregion
+
 
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
@@ -629,6 +631,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
                     }
                 }
+                if (templateList.Security != null)
+                {
+                    existingList.SetSecurity(templateList.Security);
+                }
                 return Tuple.Create(existingList, parser);
             }
             else
@@ -759,6 +765,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
 
+            if (list.Security != null)
+            {
+                createdList.SetSecurity(list.Security);
+            }
             return Tuple.Create(createdList, parser);
         }
 
@@ -968,6 +978,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
                         }
+
+                        list.Security = item.GetSecurity();
                     }
                     if (baseTemplateList != null)
                     {
