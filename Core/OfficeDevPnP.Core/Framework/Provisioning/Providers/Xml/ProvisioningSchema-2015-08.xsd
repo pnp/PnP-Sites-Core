@@ -2452,7 +2452,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToScope" type="xsd:boolean" use="optional">
+                <xsd:attribute name="RestrictToScope" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Scope Restriction for the Workflow, optional attribute.
@@ -2460,12 +2460,19 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToType" type="xsd:boolean" use="optional">
+                <xsd:attribute name="RestrictToType" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Type of Scope Restriction for the Workflow, optional attribute.
                     </xsd:documentation>
                   </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:enumeration value="Universal" />
+                      <xsd:enumeration value="List" />
+                      <xsd:enumeration value="Site" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
                 </xsd:attribute>
 
                 <xsd:attribute name="XamlPath" type="xsd:string" use="required">

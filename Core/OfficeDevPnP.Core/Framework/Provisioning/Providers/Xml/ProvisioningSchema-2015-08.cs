@@ -4690,11 +4690,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         private bool requiresInitiationFormFieldSpecified;
         
-        private bool restrictToScopeField;
+        private string restrictToScopeField;
         
-        private bool restrictToScopeFieldSpecified;
-        
-        private bool restrictToTypeField;
+        private WorkflowsWorkflowDefinitionRestrictToType restrictToTypeField;
         
         private bool restrictToTypeFieldSpecified;
         
@@ -4822,7 +4820,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool RestrictToScope {
+        public string RestrictToScope {
             get {
                 return this.restrictToScopeField;
             }
@@ -4832,19 +4830,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool RestrictToScopeSpecified {
-            get {
-                return this.restrictToScopeFieldSpecified;
-            }
-            set {
-                this.restrictToScopeFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool RestrictToType {
+        public WorkflowsWorkflowDefinitionRestrictToType RestrictToType {
             get {
                 return this.restrictToTypeField;
             }
@@ -4874,6 +4861,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
                 this.xamlPathField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.0.30319.33440")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema")]
+    public enum WorkflowsWorkflowDefinitionRestrictToType {
+        
+        /// <remarks/>
+        Universal,
+        
+        /// <remarks/>
+        List,
+        
+        /// <remarks/>
+        Site,
     }
     
     /// <remarks/>
