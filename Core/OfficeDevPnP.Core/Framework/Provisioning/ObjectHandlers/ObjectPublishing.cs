@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope("Publishing"))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
                 {
@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope("Publishing"))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var site = (web.Context as ClientContext).Site;
 

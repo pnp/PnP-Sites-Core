@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
 
 
@@ -123,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file.ListItemAllFields);
                         web.Context.ExecuteQuery();
-                        file.ListItemAllFields.SetSecurity(page.Security);
+                        file.ListItemAllFields.SetSecurity(parser, page.Security);
                     }
                 }
             }
@@ -133,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 

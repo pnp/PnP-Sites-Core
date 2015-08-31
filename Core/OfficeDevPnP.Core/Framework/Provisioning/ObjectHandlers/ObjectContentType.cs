@@ -195,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ContentTypes))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // if this is a sub site then we're not creating content type entities. 
                 if (web.IsSubSite())
