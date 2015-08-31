@@ -348,7 +348,7 @@
             <xsd:any minOccurs="0" maxOccurs="1" processContents="skip"  />
           </xsd:sequence>
         </xsd:complexType>
-
+        
       </xsd:element>
 
       <xsd:element name="Publishing" type="pnp:Publishing" minOccurs="0" maxOccurs="1">
@@ -366,7 +366,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
+      
       <xsd:element name="Providers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -443,8 +443,8 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-  </xsd:complexType>
-
+  </xsd:complexType>                    
+  
   <xsd:complexType name="RegionalSettings">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -1208,7 +1208,7 @@
           <xsd:sequence>
             <xsd:element name="RoleAssignment" type="pnp:RoleAssignment" maxOccurs="unbounded" />
           </xsd:sequence>
-
+        
           <xsd:attribute name="CopyRoleAssignments" type="xsd:boolean" use="required">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
@@ -1224,7 +1224,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-
+        
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -1300,7 +1300,7 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="DataRows" maxOccurs="1" minOccurs="0">
-
+        
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a collection of rows that will be added to the List Instance, optional element.
@@ -1332,8 +1332,8 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0">
-
+      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0"> 
+        
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a list of default values for the Fields of the List Instance, optional collection of elements.
@@ -1789,7 +1789,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-
+    
   </xsd:complexType>
 
   <xsd:complexType name="FeaturesList">
@@ -2340,7 +2340,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-
+      
       <xsd:element name="WorkflowDefinitions">
         <xsd:complexType>
           <xsd:annotation>
@@ -2403,7 +2403,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-
+                
                 <xsd:attribute name="AssociationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
@@ -2428,10 +2428,26 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
+                <xsd:attribute name="DraftVersion" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines the DraftVersion of the Workflow, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
                 <xsd:attribute name="InitiationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the URL of the Workflow Initiation page, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="Published" type="xsd:boolean" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines if the Workflow is Published, optional attribute.
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
@@ -2452,7 +2468,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToScope" type="xsd:string" use="optional">
+                <xsd:attribute name="RestrictToScope" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Scope Restriction for the Workflow, optional attribute.
@@ -2482,7 +2498,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-
+                
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
@@ -2556,7 +2572,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="EventSourceId" type="pnp:GUID" use="optional">
+                <xsd:attribute name="EventSourceId" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the ID of the Event Source for the current Subscription, optional attribute.
@@ -2669,7 +2685,7 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-
+    
   </xsd:complexType>
 
   <xsd:complexType name="Publishing">
@@ -2731,7 +2747,7 @@
           </xsd:attribute>
 
         </xsd:complexType>
-
+        
       </xsd:element>
 
       <xsd:element name="AvailableWebTemplates" minOccurs="0" maxOccurs="1">
@@ -2777,7 +2793,7 @@
         </xsd:annotation>
 
         <xsd:complexType>
-
+        
           <xsd:sequence>
             <xsd:element name="PageLayout" minOccurs="0" maxOccurs="unbounded">
               <xsd:annotation>
@@ -2844,7 +2860,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-
+    
   </xsd:complexType>
 
   <xsd:complexType name="Provider">
