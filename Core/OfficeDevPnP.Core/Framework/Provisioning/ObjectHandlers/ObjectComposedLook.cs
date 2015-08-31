@@ -301,7 +301,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             file.Src = FixFileName(asset.Substring(index + 1));
             file.Folder = asset.Substring(0, index);
             file.Overwrite = true;
-
+            file.Security = null;
             return file;
         }
 

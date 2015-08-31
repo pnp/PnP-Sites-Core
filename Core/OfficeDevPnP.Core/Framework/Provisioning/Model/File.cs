@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ObjectSecurity Security
         {
             get { return this._security; }
-            private set { this._security = value; }
+            set { this._security = value; }
         }
 
         #endregion
