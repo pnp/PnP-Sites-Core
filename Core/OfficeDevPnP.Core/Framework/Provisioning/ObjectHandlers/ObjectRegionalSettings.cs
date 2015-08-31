@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope("Regional Settings"))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
 
                 web.Context.Load(web.RegionalSettings);
@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope("Regional Settings"))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.RegionalSettings.AdjustHijriDays = Convert.ToInt16(template.RegionalSettings.AdjustHijriDays);
                 web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;

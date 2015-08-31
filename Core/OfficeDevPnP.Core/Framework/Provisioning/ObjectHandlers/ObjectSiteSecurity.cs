@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
 
 
@@ -252,7 +252,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_SiteSecurity))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
                 if (web.IsSubSite())
@@ -379,6 +379,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (webRoleDefinition.RoleTypeKind == RoleType.None)
                         {
+                            scope.LogDebug("Processing custom role definition {0}", webRoleDefinition.Name);
                             var modelRoleDefinitions = new Model.RoleDefinition();
 
                             modelRoleDefinitions.Description = webRoleDefinition.Description;
@@ -394,6 +395,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                             siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
+                        }
+                        else
+                        {
+                            scope.LogDebug("Skipping OOTB role definition {0}", webRoleDefinition.Name);
                         }
                     }
 

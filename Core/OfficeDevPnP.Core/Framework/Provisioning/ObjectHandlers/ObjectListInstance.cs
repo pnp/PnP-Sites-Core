@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstances))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Lists.Any())
                 {
@@ -783,7 +783,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstances))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var propertyLoadRequired = false;
                 if (!web.IsPropertyAvailable("ServerRelativeUrl"))

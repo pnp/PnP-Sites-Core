@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PersistTemplateInformation))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.SetPropertyBagValue("_PnP_ProvisioningTemplateId", template.Id != null ? template.Id : "");
                 web.AddIndexedPropertyBagKey("_PnP_ProvisioningTemplateId");
@@ -41,8 +41,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope("Template Info"))
-            { }
+            //using (var scope = new PnPMonitoredScope(this.Name))
+            //{ }
             return template;
         }
 
