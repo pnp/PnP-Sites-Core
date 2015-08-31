@@ -59,20 +59,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!web.GroupExists(siteGroup.Title))
                     {
                         scope.LogDebug("Creating group {0}", siteGroup.Title);
-                        group = web.AddGroup(siteGroup.Title, siteGroup.Description, siteGroup.Title == siteGroup.Owner);
+                        group = web.AddGroup(
+                            parser.ParseString(siteGroup.Title),
+                            parser.ParseString(siteGroup.Description),
+                            parser.ParseString(siteGroup.Title) == parser.ParseString(siteGroup.Owner));
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
                         group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
-                        if (siteGroup.Title != siteGroup.Owner)
+                        if (parser.ParseString(siteGroup.Title) != parser.ParseString(siteGroup.Owner))
                         {
-                            group.Owner = web.EnsureUser(siteGroup.Owner);
+                            group.Owner = web.EnsureUser(parser.ParseString(siteGroup.Owner));
                         }
                         group.Update();
                         web.Context.ExecuteQueryRetry();
                     }
                     else
                     {
-                        group = web.SiteGroups.GetByName(siteGroup.Title);
+                        group = web.SiteGroups.GetByName(parser.ParseString(siteGroup.Title));
                         web.Context.Load(group,
                             g => g.Title,
                             g => g.Description,
@@ -82,9 +85,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
                         var isDirty = false;
-                        if (group.Description != siteGroup.Description)
+                        if (group.Description != parser.ParseString(siteGroup.Description))
                         {
-                            group.Description = siteGroup.Description;
+                            group.Description = parser.ParseString(siteGroup.Description);
                             isDirty = true;
                         }
                         if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
@@ -102,11 +105,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
                             isDirty = true;
                         }
-                        if (group.Owner.LoginName != siteGroup.Owner)
+                        if (group.Owner.LoginName != parser.ParseString(siteGroup.Owner))
                         {
-                            if (siteGroup.Title != siteGroup.Owner)
+                            if (parser.ParseString(siteGroup.Title) != parser.ParseString(siteGroup.Owner))
                             {
-                                group.Owner = web.EnsureUser(siteGroup.Owner);
+                                group.Owner = web.EnsureUser(parser.ParseString(siteGroup.Owner));
                             }
                             else
                             {
@@ -144,13 +147,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var templateRoleDefinition in siteSecurity.SiteSecurityPermissions.RoleDefinitions)
                         {
-                            var siteRoleDefinition = existingRoleDefinitions.FirstOrDefault(erd => erd.Name == templateRoleDefinition.Name);
+                            var siteRoleDefinition = existingRoleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
                             if (siteRoleDefinition == null)
                             {
-                                scope.LogDebug("Creation role definition {0}", templateRoleDefinition.Name);
+                                scope.LogDebug("Creation role definition {0}", parser.ParseString(templateRoleDefinition.Name));
                                 var roleDefinitionCI = new RoleDefinitionCreationInformation();
-                                roleDefinitionCI.Name = templateRoleDefinition.Name;
-                                roleDefinitionCI.Description = templateRoleDefinition.Description;
+                                roleDefinitionCI.Name = parser.ParseString(templateRoleDefinition.Name);
+                                roleDefinitionCI.Description = parser.ParseString(templateRoleDefinition.Description);
                                 BasePermissions basePermissions = new BasePermissions();
 
                                 foreach (var permission in templateRoleDefinition.Permissions)
@@ -166,9 +169,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else
                             {
                                 var isDirty = false;
-                                if (siteRoleDefinition.Description != templateRoleDefinition.Description)
+                                if (siteRoleDefinition.Description != parser.ParseString(templateRoleDefinition.Description))
                                 {
-                                    siteRoleDefinition.Description = templateRoleDefinition.Description;
+                                    siteRoleDefinition.Description = parser.ParseString(templateRoleDefinition.Description);
                                     isDirty = true;
                                 }
                                 var templateBasePermissions = new BasePermissions();
@@ -183,7 +186,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 if (isDirty)
                                 {
-                                    scope.LogDebug("Updating role definition {0}", templateRoleDefinition.Name);
+                                    scope.LogDebug("Updating role definition {0}", parser.ParseString(templateRoleDefinition.Name));
                                     siteRoleDefinition.Update();
                                     web.Context.ExecuteQueryRetry();
                                 }
@@ -353,7 +356,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
                             Description = group.Description,
                             OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
-                            Owner = group.Owner.LoginName,
+                            Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
                             RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
                         };
 
@@ -365,7 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(r => r.Name, r => r.Description, r => r.BasePermissions));
+                var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(r => r.Name, r => r.Description, r => r.BasePermissions, r => r.RoleTypeKind));
                 web.Context.ExecuteQueryRetry();
 
                 if (web.HasUniqueRoleAssignments)
@@ -374,21 +377,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var webRoleDefinition in webRoleDefinitions)
                     {
-                        var modelRoleDefinitions = new Model.RoleDefinition();
-
-                        modelRoleDefinitions.Description = webRoleDefinition.Description;
-                        modelRoleDefinitions.Name = webRoleDefinition.Name;
-                        var permissions = new List<PermissionKind>();
-
-                        foreach (var permissionKey in permissionKeys)
+                        if (webRoleDefinition.RoleTypeKind == RoleType.None)
                         {
-                            var permissionKind = (PermissionKind)Enum.Parse(typeof(PermissionKind), permissionKey);
-                            if (webRoleDefinition.BasePermissions.Has(permissionKind))
+                            var modelRoleDefinitions = new Model.RoleDefinition();
+
+                            modelRoleDefinitions.Description = webRoleDefinition.Description;
+                            modelRoleDefinitions.Name = webRoleDefinition.Name;
+                            var permissions = new List<PermissionKind>();
+
+                            foreach (var permissionKey in permissionKeys)
                             {
-                                modelRoleDefinitions.Permissions.Add(permissionKind);
+                                var permissionKind = (PermissionKind)Enum.Parse(typeof(PermissionKind), permissionKey);
+                                if (webRoleDefinition.BasePermissions.Has(permissionKind))
+                                {
+                                    modelRoleDefinitions.Permissions.Add(permissionKind);
+                                }
                             }
+                            siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
                         }
-                        siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
                     }
 
                     var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments.Include(r => r.RoleDefinitionBindings.Include(rd => rd.Name), r => r.Member.LoginName));
