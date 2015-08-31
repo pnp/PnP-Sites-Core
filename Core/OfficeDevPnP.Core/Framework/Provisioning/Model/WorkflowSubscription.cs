@@ -66,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the ID of the Event Source for the current Subscription
         /// </summary>
-        public Guid EventSourceId { get; set; }
+        public String EventSourceId { get; set; }
 
         /// <summary>
         /// Defines the list of events that will start the workflow instance

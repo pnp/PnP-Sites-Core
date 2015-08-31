@@ -35,7 +35,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var site = (web.Context as ClientContext).Site;
-                var siteAuditSettings = site.Audit;
                 if (!String.IsNullOrEmpty(template.SearchSettings))
                 {
                     site.SetSearchConfiguration(template.SearchSettings);

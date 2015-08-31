@@ -32,6 +32,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
+                    // Retrieve all the lists and libraries
+                    var lists = web.Lists;
+                    web.Context.Load(lists);
+                    web.Context.ExecuteQuery();
+
                     // Retrieve the workflow definitions (including unpublished ones)
                     var definitions = web.GetWorkflowDefinitions(false);
 
@@ -49,16 +54,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Published = d.Published,
                             RequiresAssociationForm = d.RequiresAssociationForm,
                             RequiresInitiationForm = d.RequiresInitiationForm,
-                            RestrictToScope = d.RestrictToScope,
+                            RestrictToScope = (!String.IsNullOrEmpty(d.RestrictToScope) && Guid.Parse(d.RestrictToScope) != web.Id) ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(d.RestrictToScope)).Title) : null,
                             RestrictToType = !String.IsNullOrEmpty(d.RestrictToType) ? d.RestrictToType : "Universal",
                             XamlPath = d.Xaml.SaveXamlToFile(d.Id, creationInfo.FileConnector),
                         }
                         );
-
-                    // Retrieve all the lists and libraries
-                    var lists = web.Lists;
-                    web.Context.Load(lists);
-                    web.Context.ExecuteQuery();
 
                     // Retrieve the workflow subscriptions
                     var subscriptions = web.GetWorkflowSubscriptions();
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             DefinitionId = s.DefinitionId,
                             Enabled = s.Enabled,
-                            EventSourceId = s.EventSourceId,
+                            EventSourceId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
                             EventTypes = s.EventTypes.ToList(),
                             ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
                             Name = s.Name,
@@ -112,20 +112,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             InitiationUrl = definition.InitiationUrl,
                             RequiresAssociationForm = definition.RequiresAssociationForm,
                             RequiresInitiationForm = definition.RequiresInitiationForm,
-                            RestrictToScope = definition.RestrictToScope,
+                            RestrictToScope = parser.ParseString(definition.RestrictToScope),
                             RestrictToType = definition.RestrictToType != "Universal" ? definition.RestrictToType : null,
                             Xaml = xaml.ToString(),
                         };
 
-                    foreach (var p in definition.Properties)
-                    {
-                        workflowDefinition.Properties.Add(p.Key, p.Value);
-                    }
+                    //foreach (var p in definition.Properties)
+                    //{
+                    //    workflowDefinition.SetProperty(p.Key, parser.ParseString(p.Value));
+                    //}
 
                     // Save the Workflow Definition
                     var definitionId = deploymentService.SaveDefinition(workflowDefinition);
                     web.Context.Load(workflowDefinition);
-                    web.Context.ExecuteQuery();
+                    web.Context.ExecuteQueryRetry();
 
                     // Let's publish the Workflow Definition, if needed
                     if (definition.Published)
@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             DefinitionId = subscription.DefinitionId,
                             Enabled = subscription.Enabled,
-                            EventSourceId = subscription.EventSourceId,
+                            EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
                             EventTypes = subscription.EventTypes,
                             ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,
                             Name =  subscription.Name,
@@ -150,12 +150,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             StatusFieldName = subscription.StatusFieldName,
                         };
 
-                    foreach (var p in subscription.PropertyDefinitions)
-                    {
-                        workflowSubscription.PropertyDefinitions.Add(p.Key, p.Value);
-                    }
+                    //foreach (var p in subscription.PropertyDefinitions)
+                    //{
+                    //    workflowSubscription.SetProperty(p.Key, parser.ParseString(p.Value));
+                    //}
 
-                    if (String.IsNullOrEmpty(subscription.ListId))
+                    if (!String.IsNullOrEmpty(subscription.ListId))
                     {
                         Guid targetListId = Guid.Parse(parser.ParseString(subscription.ListId));
                         // It is a List Workflow
@@ -166,6 +166,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // It is a Site Workflow
                         subscriptionService.PublishSubscription(workflowSubscription);
                     }
+                    web.Context.ExecuteQueryRetry();
                 }
             }
 
@@ -180,19 +181,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
             return (template.Workflows != null && 
-                template.Workflows.WorkflowDefinitions.Count > 0 ||
-                template.Workflows.WorkflowSubscriptions.Count > 0);
+                (template.Workflows.WorkflowDefinitions.Count > 0 ||
+                template.Workflows.WorkflowSubscriptions.Count > 0));
         }
     }
 
-    internal static class XamlExtension
+    internal static class WorkflowExtension
     {
         public static String SaveXamlToFile(this String xaml, Guid id, OfficeDevPnP.Core.Framework.Provisioning.Connectors.FileConnectorBase connector)
         {
-            Stream stream = null;
-            String xamlFileName = String.Format("{0}.xaml", id.ToString());
-            connector.SaveFileStream(xamlFileName, stream);
-            return (xamlFileName);
+            using (Stream mem = new MemoryStream())
+            {
+                using (StreamWriter sw = new StreamWriter(mem, Encoding.Unicode, 2048, true))
+                {
+                    sw.Write(xaml);
+                }
+                mem.Position = 0;
+
+                String xamlFileName = String.Format("{0}.xaml", id.ToString());
+                connector.SaveFileStream(xamlFileName, mem);
+                return (xamlFileName);
+            }
+        }
+
+        public static Dictionary<String, String> TokenizeProperties(this IDictionary<String, String> properties)
+        {
+            Dictionary<String, String> result = new Dictionary<String, String>();
+            foreach (var p in properties)
+            {
+                switch (p.Key)
+                {
+                    case "RestrictToScope":
+                        break;
+                    case "HistoryListId":
+                        break;
+                    case "TaskListId":
+                        break;
+                    case "SubscriptionId":
+                        break;
+                }
+            }
+            return (result);
         }
     }
 }
