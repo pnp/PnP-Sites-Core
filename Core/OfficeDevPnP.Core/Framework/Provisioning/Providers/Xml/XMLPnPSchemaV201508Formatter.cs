@@ -2,12 +2,8 @@
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http.ModelBinding;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -61,6 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 
@@ -295,11 +292,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              AutoAcceptRequestToJoinLeave = g.AutoAcceptRequestToJoinLeave,
                              AutoAcceptRequestToJoinLeaveSpecified = true,
                              Description = g.Description,
-                             Members = (from m in g.Members
-                                        select new V201508.User
-                                        {
-                                            Name = m.Name,
-                                        }).ToArray(),
+                             Members = g.Members.Any() ? (from m in g.Members
+                                                          select new V201508.User
+                                                          {
+                                                              Name = m.Name,
+                                                          }).ToArray() : null,
                              OnlyAllowMembersViewMembership = g.OnlyAllowMembersViewMembership,
                              OnlyAllowMembersViewMembershipSpecified = true,
                              Owner = g.Owner,
