@@ -137,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (siteSecurity.SiteSecurityPermissions != null)
                 {
-                    var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions));
+                    var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
 
                     if (siteSecurity.SiteSecurityPermissions.RoleDefinitions.Any())
@@ -165,14 +165,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                scope.LogDebug("Updating role definition {0}", templateRoleDefinition.Name);
-                                siteRoleDefinition.Description = templateRoleDefinition.Description;
-                                foreach (var permission in templateRoleDefinition.Permissions)
+                                var isDirty = false;
+                                if (siteRoleDefinition.Description != templateRoleDefinition.Description)
                                 {
-                                    siteRoleDefinition.BasePermissions.Set(permission);
+                                    siteRoleDefinition.Description = templateRoleDefinition.Description;
+                                    isDirty = true;
                                 }
-                                siteRoleDefinition.Update();
-                                web.Context.ExecuteQueryRetry();
+                                var templateBasePermissions = new BasePermissions();
+                                templateRoleDefinition.Permissions.ForEach(p => templateBasePermissions.Set(p));
+                                if (siteRoleDefinition.BasePermissions != templateBasePermissions)
+                                {
+                                    isDirty = true;
+                                    foreach (var permission in templateRoleDefinition.Permissions)
+                                    {
+                                        siteRoleDefinition.BasePermissions.Set(permission);
+                                    }
+                                }
+                                if (isDirty)
+                                {
+                                    scope.LogDebug("Updating role definition {0}", templateRoleDefinition.Name);
+                                    siteRoleDefinition.Update();
+                                    web.Context.ExecuteQueryRetry();
+                                }
                             }
                         }
                     }
@@ -243,25 +257,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return template;
                 }
 
-                web.Context.Load(web, w => w.HasUniqueRoleAssignments);
+                web.Context.Load(web, w => w.HasUniqueRoleAssignments, w => w.Title);
 
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
-                web.Context.ExecuteQueryRetry();
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(ownerGroup, o => o.Id, o => o.Users);
+                    web.Context.Load(ownerGroup, o => o.Id, o => o.Users, o => o.Title);
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(memberGroup, o => o.Id, o => o.Users);
+                    web.Context.Load(memberGroup, o => o.Id, o => o.Users, o => o.Title);
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    web.Context.Load(visitorGroup, o => o.Id, o => o.Users);
-
+                    web.Context.Load(visitorGroup, o => o.Id, o => o.Users, o => o.Title);
                 }
                 web.Context.ExecuteQueryRetry();
 
@@ -334,7 +346,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         scope.LogDebug("Processing group {0}", group.Title);
                         var siteGroup = new SiteGroup()
                         {
-                            Title = group.Title,
+                            Title = group.Title.Replace(web.Title, "{sitename}"),
                             AllowMembersEditMembership = group.AllowMembersEditMembership,
                             AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
                             AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
@@ -389,7 +401,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 var modelRoleAssignment = new Model.RoleAssignment();
                                 modelRoleAssignment.RoleDefinition = roleDefinition.Name;
-                                modelRoleAssignment.Principal = webRoleAssignment.Member.LoginName;
+                                modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
 
                                 siteSecurity.SiteSecurityPermissions.RoleAssignments.Add(modelRoleAssignment);
                             }
@@ -406,6 +418,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return template;
+        }
+
+        private string ReplaceGroupTokens(Web web, string loginName)
+        {
+            loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+            loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+            loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+
+            return loginName;
         }
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
