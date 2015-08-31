@@ -2468,7 +2468,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToScope" type="xsd:string" use="optional">
+                <xsd:attribute name="RestrictToScope" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Scope Restriction for the Workflow, optional attribute.
@@ -2572,7 +2572,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="EventSourceId" type="pnp:GUID" use="optional">
+                <xsd:attribute name="EventSourceId" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the ID of the Event Source for the current Subscription, optional attribute.
