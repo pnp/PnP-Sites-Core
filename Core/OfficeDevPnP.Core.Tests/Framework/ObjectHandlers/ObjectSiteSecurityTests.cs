@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     }
                     catch (ServerException)
                     {
-                        
+
                     }
                 }
             }
@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             foreach (var user in admins)
             {
-                template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName});
+                template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName });
             }
 
 
@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
-        public void CanCreateEntities()
+        public void CanCreateEntities1()
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -90,6 +90,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+            }
+        }
+
+        [TestMethod]
+        public void CanCreateEntities2()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Load the base template which will be used for the comparison work
+                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                creationInfo.IncludeSiteGroups = true;
+                var template = new ProvisioningTemplate();
+                template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
+
+                Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+                Assert.IsTrue(template.Security.SiteGroups.Any());
+
             }
         }
     }
