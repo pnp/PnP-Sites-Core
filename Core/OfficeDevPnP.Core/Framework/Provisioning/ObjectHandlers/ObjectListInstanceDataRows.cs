@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     if (dataRow.Security != null)
                                     {
-                                        listitem.SetSecurity(dataRow.Security);
+                                        listitem.SetSecurity(parser, dataRow.Security);
                                     }
                                 }
                                 catch (Exception ex)

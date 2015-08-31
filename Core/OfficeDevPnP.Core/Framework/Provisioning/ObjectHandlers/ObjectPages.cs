@@ -123,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file.ListItemAllFields);
                         web.Context.ExecuteQuery();
-                        file.ListItemAllFields.SetSecurity(page.Security);
+                        file.ListItemAllFields.SetSecurity(parser, page.Security);
                     }
                 }
             }

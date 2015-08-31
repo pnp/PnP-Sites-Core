@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (file.Security != null)
                         {
-                            targetFile.ListItemAllFields.SetSecurity(file.Security);
+                            targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
                     }
 

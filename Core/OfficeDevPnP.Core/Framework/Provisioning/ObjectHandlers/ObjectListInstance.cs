@@ -382,15 +382,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             field.SchemaXml = element.ToString();
 
             var createdField = listInfo.SiteList.Fields.Add(field);
-            if (!string.IsNullOrEmpty(fieldRef.DisplayName))
+
+            createdField.Context.Load(createdField, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
+            createdField.Context.ExecuteQueryRetry();
+
+            var isDirty = false;
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && createdField.Title != fieldRef.DisplayName)
             {
                 createdField.Title = fieldRef.DisplayName;
+                isDirty = true;
             }
-            createdField.Hidden = fieldRef.Hidden;
-            createdField.Required = fieldRef.Required;
-
-            createdField.Update();
-            createdField.Context.ExecuteQueryRetry();
+            if (createdField.Hidden != fieldRef.Hidden)
+            {
+                createdField.Hidden = fieldRef.Hidden;
+                isDirty = true;
+            }
+            if (createdField.Required != fieldRef.Required)
+            {
+                createdField.Required = fieldRef.Required;
+                isDirty = true;
+            }
+            if (isDirty)
+            {
+                createdField.Update();
+                createdField.Context.ExecuteQueryRetry();
+            }
         }
 
         private static void CreateField(XElement fieldElement, ListInfo listInfo)
@@ -633,7 +649,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (templateList.Security != null)
                 {
-                    existingList.SetSecurity(templateList.Security);
+                    existingList.SetSecurity(parser, templateList.Security);
                 }
                 return Tuple.Create(existingList, parser);
             }
@@ -767,7 +783,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (list.Security != null)
             {
-                createdList.SetSecurity(list.Security);
+                createdList.SetSecurity(parser, list.Security);
             }
             return Tuple.Create(createdList, parser);
         }

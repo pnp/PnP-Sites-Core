@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
     internal static class SecurableObjectExtensions
     {
-        public static void SetSecurity(this SecurableObject securable, ObjectSecurity security)
+        public static void SetSecurity(this SecurableObject securable, TokenParser parser, ObjectSecurity security)
         {
             //using (var scope = new PnPMonitoredScope("Set Security"))
             //{
@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
-                Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignment.Principal);
+                Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
                 if (principal == null)
                 {
                     principal = context.Web.EnsureUser(roleAssignment.Principal);
@@ -58,7 +58,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 context.Load(context.Web, w => w.AssociatedMemberGroup.Title, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedVisitorGroup.Title);
                 var roleAssignments = context.LoadQuery(securable.RoleAssignments.Include(
                     r => r.Member.LoginName,
-                    r => r.RoleDefinitionBindings.Include(rdb => rdb.Name)));
+                    r => r.RoleDefinitionBindings.Include(
+                        rdb => rdb.Name,
+                        rdb => rdb.RoleTypeKind
+                        )));
                 context.ExecuteQueryRetry();
 
                 if (securable.HasUniqueRoleAssignments)
@@ -71,11 +74,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                         {
                             foreach (var roleDefinition in roleAssignment.RoleDefinitionBindings)
                             {
-                                security.RoleAssignments.Add(new Model.RoleAssignment()
+                                if (roleDefinition.RoleTypeKind != RoleType.Guest)
                                 {
-                                    Principal = ReplaceGroupTokens(context.Web, roleAssignment.Member.LoginName),
-                                    RoleDefinition = roleDefinition.Name
-                                });
+                                    security.RoleAssignments.Add(new Model.RoleAssignment()
+                                    {
+                                        Principal = ReplaceGroupTokens(context.Web, roleAssignment.Member.LoginName),
+                                        RoleDefinition = roleDefinition.Name
+                                    });
+                                }
                             }
                         }
                     }
