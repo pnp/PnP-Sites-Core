@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel.Configuration;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
@@ -21,7 +14,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                ctx.Load(ctx.Web, w => w.ServerRelativeUrl);
+                ctx.Load(ctx.Web, w => w.Id, w => w.ServerRelativeUrl, w => w.Title, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
                 ctx.Load(ctx.Site, s => s.ServerRelativeUrl);
 
                 var masterCatalog = ctx.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
@@ -32,12 +25,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 ctx.ExecuteQueryRetry();
 
-                
+
                 ProvisioningTemplate template = new ProvisioningTemplate();
                 template.Parameters.Add("test", "test");
 
                 var parser = new TokenParser(ctx.Web, template);
-
+                var siteName = parser.ParseString("{sitename}");
+                var siteId = parser.ParseString("{siteid}");
                 var site1 = parser.ParseString("~siTE/test");
                 var site2 = parser.ParseString("{site}/test");
                 var sitecol1 = parser.ParseString("~siteCOLLECTION/test");
@@ -48,6 +42,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var themeUrl2 = parser.ParseString("{themecatalog}/test");
                 var parameterTest1 = parser.ParseString("abc{parameter:TEST}/test");
                 var parameterTest2 = parser.ParseString("abc{$test}/test");
+                var associatedOwnerGroup = parser.ParseString("{associatedownergroup}");
+                var associatedVisitorGroup = parser.ParseString("{associatedvisitorgroup}");
+                var associatedMemberGroup = parser.ParseString("{associatedmembergroup}");
 
                 Assert.IsTrue(site1 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
                 Assert.IsTrue(site2 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
@@ -59,7 +56,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(themeUrl2 == string.Format("{0}/test", themesCatalog.RootFolder.ServerRelativeUrl));
                 Assert.IsTrue(parameterTest1 == "abctest/test");
                 Assert.IsTrue(parameterTest2 == "abctest/test");
-
+                Assert.IsTrue(associatedOwnerGroup == ctx.Web.AssociatedOwnerGroup.Title);
+                Assert.IsTrue(associatedVisitorGroup == ctx.Web.AssociatedVisitorGroup.Title);
+                Assert.IsTrue(associatedMemberGroup == ctx.Web.AssociatedMemberGroup.Title);
+                Assert.IsTrue(siteName == ctx.Web.Title);
+                Assert.IsTrue(siteId == ctx.Web.Id.ToString());
             }
         }
     }

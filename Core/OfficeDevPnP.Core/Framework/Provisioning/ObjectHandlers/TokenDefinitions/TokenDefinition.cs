@@ -2,13 +2,13 @@
 using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public abstract class TokenDefinition
+    internal abstract class TokenDefinition
     {
         protected string CacheValue;
         private readonly string[] _tokens;
-     
+
         protected TokenDefinition(Web web, params string[] token)
         {
             this._tokens = token;

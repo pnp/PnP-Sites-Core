@@ -6,14 +6,6 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal static class PnPMonitoredScopeExtensions
-    {
-        public static void LogPropertyUpdate(this PnPMonitoredScope scope, string propertyName)
-        {
-            scope.LogDebug(CoreResources.PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_, propertyName);
-        }
-    }
-
     internal class SiteToTemplateConversion
     {
         /// <summary>

@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Management;
-using Microsoft.IdentityModel.Protocols.WSIdentity;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    public class TokenParser
+    internal class TokenParser
     {
         public Web _web;
 
@@ -55,7 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
-
+            _tokens.Add(new SiteNameToken(web));
+            _tokens.Add(new SiteIdToken(web));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
             // Add lists
             web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
             web.Context.ExecuteQueryRetry();

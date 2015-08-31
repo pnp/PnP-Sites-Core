@@ -2,10 +2,10 @@ using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteCollectionToken : TokenDefinition
+    internal class SiteNameToken : TokenDefinition
     {
-        public SiteCollectionToken(Web web)
-            : base(web, "~sitecollection", "{sitecollection}")
+        public SiteNameToken(Web web)
+            : base(web, "~sitename", "{sitename}")
         {
         }
 
@@ -14,10 +14,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             if (CacheValue == null)
             {
                 var context = this.Web.Context as ClientContext;
-                var site = context.Site;
-                context.Load(site, s => s.RootWeb.ServerRelativeUrl);
+                context.Load(Web, w => w.Title);
                 context.ExecuteQueryRetry();
-                CacheValue = site.RootWeb.ServerRelativeUrl.TrimEnd('/');
+                CacheValue = Web.Title;
             }
             return CacheValue;
         }

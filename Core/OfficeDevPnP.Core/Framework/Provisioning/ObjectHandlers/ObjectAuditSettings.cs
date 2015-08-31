@@ -59,32 +59,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope("Audit Settings"))
             {
-                var site = (web.Context as ClientContext).Site;
-                var siteAuditSettings = site.Audit;
-                web.Context.Load(siteAuditSettings);
-                web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
-                web.Context.ExecuteQueryRetry();
-
-                var isDirty = false;
-                if (template.AuditSettings.AuditFlags != siteAuditSettings.AuditFlags)
+                if (template.AuditSettings != null)
                 {
-                    site.Audit.AuditFlags = template.AuditSettings.AuditFlags;
-                    site.Audit.Update();
-                    isDirty = true;
-                }
-                if (template.AuditSettings.AuditLogTrimmingRetention != site.AuditLogTrimmingRetention)
-                {
-                    site.AuditLogTrimmingRetention = template.AuditSettings.AuditLogTrimmingRetention;
-                    isDirty = true;
-                }
-                if (template.AuditSettings.TrimAuditLog != site.TrimAuditLog)
-                {
-                    site.TrimAuditLog = template.AuditSettings.TrimAuditLog;
-                    isDirty = true;
-                }
-                if (isDirty)
-                {
+                    var site = (web.Context as ClientContext).Site;
+                    var siteAuditSettings = site.Audit;
+                    web.Context.Load(siteAuditSettings);
+                    web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
                     web.Context.ExecuteQueryRetry();
+
+                    var isDirty = false;
+                    if (template.AuditSettings.AuditFlags != siteAuditSettings.AuditFlags)
+                    {
+                        site.Audit.AuditFlags = template.AuditSettings.AuditFlags;
+                        site.Audit.Update();
+                        isDirty = true;
+                    }
+                    if (template.AuditSettings.AuditLogTrimmingRetention != site.AuditLogTrimmingRetention)
+                    {
+                        site.AuditLogTrimmingRetention = template.AuditSettings.AuditLogTrimmingRetention;
+                        isDirty = true;
+                    }
+                    if (template.AuditSettings.TrimAuditLog != site.TrimAuditLog)
+                    {
+                        site.TrimAuditLog = template.AuditSettings.TrimAuditLog;
+                        isDirty = true;
+                    }
+                    if (isDirty)
+                    {
+                        web.Context.ExecuteQueryRetry();
+                    }
                 }
             }
 
@@ -98,7 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return !web.IsSubSite();
+            return !web.IsSubSite() && template.AuditSettings != null;
         }
     }
 }
