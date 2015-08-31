@@ -2428,10 +2428,26 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
+                <xsd:attribute name="DraftVersion" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines the DraftVersion of the Workflow, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
                 <xsd:attribute name="InitiationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the URL of the Workflow Initiation page, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="Published" type="xsd:boolean" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines if the Workflow is Published, optional attribute.
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
