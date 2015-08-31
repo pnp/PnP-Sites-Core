@@ -4680,7 +4680,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         private string displayNameField;
         
+        private string draftVersionField;
+        
         private string initiationUrlField;
+        
+        private bool publishedField;
+        
+        private bool publishedFieldSpecified;
         
         private bool requiresAssociationFormField;
         
@@ -4765,12 +4771,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DraftVersion {
+            get {
+                return this.draftVersionField;
+            }
+            set {
+                this.draftVersionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string InitiationUrl {
             get {
                 return this.initiationUrlField;
             }
             set {
                 this.initiationUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool Published {
+            get {
+                return this.publishedField;
+            }
+            set {
+                this.publishedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool PublishedSpecified {
+            get {
+                return this.publishedFieldSpecified;
+            }
+            set {
+                this.publishedFieldSpecified = value;
             }
         }
         

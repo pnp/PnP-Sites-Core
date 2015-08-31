@@ -11,13 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectComposedLook : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "Composed Looks"; }
         }
-
-
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {

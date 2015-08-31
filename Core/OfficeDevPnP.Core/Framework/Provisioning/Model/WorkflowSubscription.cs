@@ -15,7 +15,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private Dictionary<String, String> _propertyDefinitions = new Dictionary<String, String>();
-        private List<String> _eventTypes = new List<String>(); 
+        private List<String> _eventTypes = new List<String>();
+
+        #endregion
+
+        #region Constructors
+
+        public WorkflowSubscription() { }
+
+        public WorkflowSubscription(Dictionary<String, String> propertyDefinitions)
+        {
+            if (propertyDefinitions != null)
+            {
+                this._propertyDefinitions = propertyDefinitions;
+            }
+        }
 
         #endregion
 
@@ -27,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Dictionary<string, string> PropertyDefinitions
         {
             get { return this._propertyDefinitions; }
-            set { this._propertyDefinitions = value; }
+            private set { this._propertyDefinitions = value; }
         }
 
         /// <summary>

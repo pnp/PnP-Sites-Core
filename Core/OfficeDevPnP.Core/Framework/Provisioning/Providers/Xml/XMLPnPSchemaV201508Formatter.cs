@@ -813,6 +813,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              AssociationUrl = wd.AssociationUrl,
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
+                             DraftVersion = wd.DraftVersion,
                              FormField = wd.FormField.ToXmlElement(),
                              Id = wd.Id.ToString(),
                              InitiationUrl = wd.InitiationUrl,
@@ -823,6 +824,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      Key = p.Key,
                                      Value = p.Value,
                                  }).ToArray() : null,
+                             Published = wd.Published,
+                             PublishedSpecified = true,
                              RequiresAssociationForm = wd.RequiresAssociationForm,
                              RequiresAssociationFormSpecified = true,
                              RequiresInitiationForm = wd.RequiresInitiationForm,
@@ -1614,9 +1617,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              AssociationUrl = wd.AssociationUrl,
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
+                             DraftVersion = wd.DraftVersion,
                              FormField = wd.FormField.ToString(),
                              Id = Guid.Parse(wd.Id),
                              InitiationUrl = wd.InitiationUrl,
+                             Published = wd.PublishedSpecified ? wd.Published : false,
                              RequiresAssociationForm = wd.RequiresAssociationFormSpecified ? wd.RequiresAssociationForm : false,
                              RequiresInitiationForm = wd.RequiresInitiationFormSpecified ? wd.RequiresInitiationForm : false,
                              RestrictToScope = wd.RestrictToScope,
@@ -1625,7 +1630,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          }) : null,
                     source.Workflows.WorkflowSubscriptions.Length > 0 ?
                         (from ws in source.Workflows.WorkflowSubscriptions
-                         select new Model.WorkflowSubscription
+                         select new Model.WorkflowSubscription(
+                             (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Length > 0) ?
+                             (from pd in ws.PropertyDefinitions
+                              select pd).ToDictionary(i => i.Key, i => i.Value) : null)
                          {
                              DefinitionId = Guid.Parse(ws.DefinitionId),
                              Enabled = ws.Enabled,
@@ -1638,9 +1646,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ManualStartBypassesActivationLimit = ws.ManualStartBypassesActivationLimitSpecified ? ws.ManualStartBypassesActivationLimit : false,
                              Name = ws.Name,
                              ParentContentTypeId = ws.ParentContentTypeId,
-                             PropertyDefinitions = (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Length > 0) ?
-                             (from pd in ws.PropertyDefinitions
-                              select pd).ToDictionary(i => i.Key, i => i.Value) : null,
                              StatusFieldName = ws.StatusFieldName,
                          }) : null
                     );

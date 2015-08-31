@@ -70,9 +70,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String DisplayName { get; set; }
 
         /// <summary>
+        /// Defines the DraftVersion of the Workflow, optional attribute.
+        /// </summary>
+        public String DraftVersion { get; set; }
+
+        /// <summary>
         /// Defines the URL of the Workflow Initiation page
         /// </summary>
         public String InitiationUrl { get; set; }
+
+        /// <summary>
+        /// Defines if the Workflow is Published, optional attribute.
+        /// </summary>
+        public Boolean Published { get; set; }
 
         /// <summary>
         /// Defines if the Workflow requires the Association Form

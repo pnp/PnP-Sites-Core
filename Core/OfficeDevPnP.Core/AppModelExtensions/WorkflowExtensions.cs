@@ -63,6 +63,24 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Returns all the workflow subscriptions (associations) for the web and the lists of that web
+        /// </summary>
+        /// <param name="web">The target Web</param>
+        /// <returns></returns>
+        public static WorkflowSubscription[] GetWorkflowSubscriptions(this Web web)
+        {
+            // Get a reference to infrastructural services
+            var servicesManager = new WorkflowServicesManager(web.Context, web);
+            var subscriptionService = servicesManager.GetWorkflowSubscriptionService();
+
+            // Retrieve all the subscriptions (site and lists)
+            var subscriptions = subscriptionService.EnumerateSubscriptions();
+            web.Context.Load(subscriptions);
+            web.Context.ExecuteQueryRetry();
+            return subscriptions.ToArray();
+        }
+
+        /// <summary>
         /// Adds a workflow subscription
         /// </summary>
         /// <param name="list"></param>
@@ -219,6 +237,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static WorkflowDefinition[] GetWorkflowDefinitions(this Web web, Boolean publishedOnly)
         {
+            // Get a reference to infrastructural services
             var servicesManager = new WorkflowServicesManager(web.Context, web);
             var deploymentService = servicesManager.GetWorkflowDeploymentService();
 
