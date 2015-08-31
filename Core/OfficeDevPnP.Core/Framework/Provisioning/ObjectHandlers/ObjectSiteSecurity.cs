@@ -56,6 +56,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var siteGroup in siteSecurity.SiteGroups)
                 {
                     Group group = null;
+                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
+                    web.Context.ExecuteQueryRetry();
+
                     if (!web.GroupExists(siteGroup.Title))
                     {
                         scope.LogDebug("Creating group {0}", siteGroup.Title);
@@ -66,9 +69,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
                         group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+
                         if (parser.ParseString(siteGroup.Title) != parser.ParseString(siteGroup.Owner))
                         {
-                            group.Owner = web.EnsureUser(parser.ParseString(siteGroup.Owner));
+                            Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parser.ParseString(siteGroup.Owner));
+                            if (ownerPrincipal == null)
+                            {
+                                ownerPrincipal = web.EnsureUser(parser.ParseString(siteGroup.Owner));
+                            }
+                            group.Owner = ownerPrincipal;
+
                         }
                         group.Update();
                         web.Context.ExecuteQueryRetry();
@@ -109,7 +119,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             if (parser.ParseString(siteGroup.Title) != parser.ParseString(siteGroup.Owner))
                             {
-                                group.Owner = web.EnsureUser(parser.ParseString(siteGroup.Owner));
+                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parser.ParseString(siteGroup.Owner));
+                                if (ownerPrincipal == null)
+                                {
+                                    ownerPrincipal = web.EnsureUser(parser.ParseString(siteGroup.Owner));
+                                }
+                                group.Owner = ownerPrincipal;
                             }
                             else
                             {
@@ -202,10 +217,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                         {
-                            Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignment.Principal);
+                            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
                             if (principal == null)
                             {
-                                principal = web.EnsureUser(roleAssignment.Principal);
+                                principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
                             }
 
                             var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
@@ -402,7 +417,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments.Include(r => r.RoleDefinitionBindings.Include(rd => rd.Name), r => r.Member.LoginName));
+                    var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments.Include(
+                        r => r.RoleDefinitionBindings.Include(
+                            rd => rd.Name,
+                            rd => rd.RoleTypeKind),
+                        r => r.Member.LoginName));
+
                     web.Context.ExecuteQueryRetry();
 
                     foreach (var webRoleAssignment in webRoleAssignments)
@@ -411,11 +431,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             foreach (var roleDefinition in webRoleAssignment.RoleDefinitionBindings)
                             {
-                                var modelRoleAssignment = new Model.RoleAssignment();
-                                modelRoleAssignment.RoleDefinition = roleDefinition.Name;
-                                modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
-
-                                siteSecurity.SiteSecurityPermissions.RoleAssignments.Add(modelRoleAssignment);
+                                if (roleDefinition.RoleTypeKind != RoleType.Guest)
+                                {
+                                    var modelRoleAssignment = new Model.RoleAssignment();
+                                    modelRoleAssignment.RoleDefinition = roleDefinition.Name;
+                                    modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
+                                    siteSecurity.SiteSecurityPermissions.RoleAssignments.Add(modelRoleAssignment);
+                                }
                             }
                         }
                     }

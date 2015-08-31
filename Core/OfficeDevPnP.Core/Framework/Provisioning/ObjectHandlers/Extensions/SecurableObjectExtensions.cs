@@ -55,6 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 var context = securable.Context as ClientContext;
 
                 context.Load(securable, sec => sec.HasUniqueRoleAssignments);
+                context.Load(context.Web, w => w.AssociatedMemberGroup.Title, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedVisitorGroup.Title);
                 var roleAssignments = context.LoadQuery(securable.RoleAssignments.Include(
                     r => r.Member.LoginName,
                     r => r.RoleDefinitionBindings.Include(rdb => rdb.Name)));
@@ -72,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                             {
                                 security.RoleAssignments.Add(new Model.RoleAssignment()
                                 {
-                                    Principal = roleAssignment.Member.LoginName,
+                                    Principal = ReplaceGroupTokens(context.Web, roleAssignment.Member.LoginName),
                                     RoleDefinition = roleDefinition.Name
                                 });
                             }
@@ -81,6 +82,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 }
             }
             return security;
+        }
+
+        private static string ReplaceGroupTokens(Web web, string loginName)
+        {
+            loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+            loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+            loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+
+            return loginName;
         }
     }
 }
