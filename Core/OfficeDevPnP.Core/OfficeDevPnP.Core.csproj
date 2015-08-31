@@ -340,6 +340,7 @@
     <Compile Include="Framework\Provisioning\Deprecated\Model\Term.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\TermGroup.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\TermSet.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\ObjectHandlers\ProvisioningTemplateApplyingInformation.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\ExtensibilityManager.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\ExtensiblityPipelineException.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityProvider.cs" />
