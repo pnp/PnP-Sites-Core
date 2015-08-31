@@ -262,6 +262,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
+                web.Context.ExecuteQueryRetry();
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
