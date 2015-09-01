@@ -20,14 +20,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_RetrieveTemplateInfo))
-            { }
+            //using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_RetrieveTemplateInfo))
+            //{ }
             return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_RetrieveTemplateInfo))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Set default values for Template ID and Version
                 template.Id = String.Format("TEMPLATE-{0:N}", Guid.NewGuid()).ToUpper();

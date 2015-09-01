@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var systemPropertyBagEntriesExclusions = new List<string>(new[]
                 {
@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_PropertyBagEntries))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
