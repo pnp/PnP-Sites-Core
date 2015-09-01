@@ -810,6 +810,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     lc => lc.IncludeWithDefaultProperties(
                         l => l.ContentTypes,
                         l => l.Views,
+                        l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.Fields.IncludeWithDefaultProperties(
@@ -820,7 +821,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             f => f.Required)));
 
                 web.Context.ExecuteQueryRetry();
-                foreach (var item in lists.AsEnumerable().Where(l => l.Hidden == false))
+
+                // Let's see if there are workflow subscriptions
+                var workflowSubscriptions = web.GetWorkflowSubscriptions();
+
+                // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
+                foreach (var item in lists.AsEnumerable().Where(l => (l.Hidden == false || (workflowSubscriptions.Length > 0 && l.BaseTemplate == 140))))
                 {
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)

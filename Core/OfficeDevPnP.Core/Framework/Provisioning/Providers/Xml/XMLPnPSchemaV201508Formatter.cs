@@ -829,6 +829,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              RequiresInitiationFormSpecified = true,
                              RestrictToScope = wd.RestrictToScope,
                              RestrictToType = (V201508.WorkflowsWorkflowDefinitionRestrictToType)Enum.Parse(typeof(V201508.WorkflowsWorkflowDefinitionRestrictToType), wd.RestrictToType),
+                             RestrictToTypeSpecified = true,
                              XamlPath = wd.XamlPath,
                          }).ToArray() : null,
                     WorkflowSubscriptions = template.Workflows.WorkflowSubscriptions.Count > 0 ?
@@ -1615,7 +1616,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
                              DraftVersion = wd.DraftVersion,
-                             FormField = wd.FormField.ToString(),
+                             FormField = wd.FormField.OuterXml,
                              Id = Guid.Parse(wd.Id),
                              InitiationUrl = wd.InitiationUrl,
                              Published = wd.PublishedSpecified ? wd.Published : false,

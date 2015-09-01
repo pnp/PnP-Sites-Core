@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     template.Workflows.WorkflowDefinitions.AddRange(
                         from d in definitions
-                        select new Model.WorkflowDefinition(d.Properties.ToDictionary(i => i.Key, i => i.Value))
+                        select new Model.WorkflowDefinition(d.Properties.TokenizeWorkflowDefinitionProperties(lists))
                         {
                             AssociationUrl = d.AssociationUrl,
                             Description = d.Description,
@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     template.Workflows.WorkflowSubscriptions.AddRange(
                         from s in subscriptions
-                        select new Model.WorkflowSubscription(s.PropertyDefinitions.ToDictionary(i => i.Key, i => i.Value))
+                        select new Model.WorkflowSubscription(s.PropertyDefinitions.TokenizeWorkflowSubscriptionProperties(lists))
                         {
                             DefinitionId = s.DefinitionId,
                             Enabled = s.Enabled,
@@ -150,15 +150,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             StatusFieldName = subscription.StatusFieldName,
                         };
 
-                    //foreach (var p in subscription.PropertyDefinitions)
-                    //{
-                    //    workflowSubscription.SetProperty(p.Key, parser.ParseString(p.Value));
-                    //}
+                    foreach (var p in subscription.PropertyDefinitions
+                        .Where(d => d.Key == "TaskListId" || d.Key == "HistoryListId"))
+                    {
+                        workflowSubscription.SetProperty(p.Key, parser.ParseString(p.Value));
+                    }
 
                     if (!String.IsNullOrEmpty(subscription.ListId))
                     {
-                        Guid targetListId = Guid.Parse(parser.ParseString(subscription.ListId));
                         // It is a List Workflow
+                        Guid targetListId = Guid.Parse(parser.ParseString(subscription.ListId));
                         subscriptionService.PublishSubscriptionForList(workflowSubscription, targetListId);
                     }
                     else
@@ -204,7 +205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        public static Dictionary<String, String> TokenizeProperties(this IDictionary<String, String> properties)
+        public static Dictionary<String, String> TokenizeWorkflowDefinitionProperties(this IDictionary<String, String> properties, ListCollection lists)
         {
             Dictionary<String, String> result = new Dictionary<String, String>();
             foreach (var p in properties)
@@ -212,12 +213,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 switch (p.Key)
                 {
                     case "RestrictToScope":
-                        break;
                     case "HistoryListId":
-                        break;
                     case "TaskListId":
+                        if (!String.IsNullOrEmpty(p.Value))
+                        {
+                            result.Add(p.Key, String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(p.Value)).Title));
+                        }
                         break;
-                    case "SubscriptionId":
+                    //case "SubscriptionId":
+                    //case "ServerUrl":
+                    //case "EncodedAbsUrl":
+                    //case "MetaInfo":
+                    default:
+                        result.Add(p.Key, p.Value);
+                        break;
+                }
+            }
+            return (result);
+        }
+
+        public static Dictionary<String, String> TokenizeWorkflowSubscriptionProperties(this IDictionary<String, String> properties, ListCollection lists)
+        {
+            Dictionary<String, String> result = new Dictionary<String, String>();
+            foreach (var p in properties)
+            {
+                switch (p.Key)
+                {
+                    case "TaskListId":
+                    case "HistoryListId":
+                        if (!String.IsNullOrEmpty(p.Value))
+                        {
+                            result.Add(p.Key, String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(p.Value)).Title));
+                        }
+                        break;
+                    //case "Microsoft.SharePoint.ActivationProperties.ListId":
+                    //case "SharePointWorkflowContext.Subscription.Id":
+                    //case "CurrentWebUri":
+                    //case "SharePointWorkflowContext.Subscription.EventSourceId":
+                    //case "SharePointWorkflowContext.Subscription.EventType":
+                    //case "SharePointWorkflowContext.ActivationProperties.SiteId":
+                    //case "SharePointWorkflowContext.ActivationProperties.WebId":
+                    //case "ScopeId":
+                    default:
+                        result.Add(p.Key, p.Value);
                         break;
                 }
             }
