@@ -1857,6 +1857,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
+        /// </summary>
+        internal static string TimerJob_Authentication_AzureADAppOnly {
+            get {
+                return ResourceManager.GetString("TimerJob_Authentication_AzureADAppOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
         /// </summary>
         internal static string TimerJob_Authentication_Network {
