@@ -46,6 +46,10 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string realm;
         private string clientId;
         private string clientSecret;
+        private string azureTenant;
+        private string certificatePath;
+        private SecureString certificatePassword;
+
         private int sharePointVersion = 16;
         private string enumerationUser;
         private SecureString enumerationPassword;
@@ -786,6 +790,62 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         }
 
         /// <summary>
+        /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
+        /// to AuthenticationType.AzureADAppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="azureTenant">The Azure tenant name, like contoso.com</param>
+        /// <param name="certificatePath">The path to the *.pfx certicate file</param>
+        /// <param name="certificatePassword">The password to the certificate</param>
+        public void UseAzureADAppOnlyAuthentication(string clientId, string azureTenant, string certificatePath, string certificatePassword)
+        {
+            if (String.IsNullOrEmpty(certificatePassword))
+            {
+                throw new ArgumentNullException("certificatePassword");
+            }
+            UseAzureADAppOnlyAuthentication(clientId, azureTenant, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword));
+        }
+
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
+        /// to AuthenticationType.AzureADAppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="azureTenant">The Azure tenant name, like contoso.com</param>
+        /// <param name="certificatePath">The path to the *.pfx certicate file</param>
+        /// <param name="certificatePassword">The password to the certificate</param>
+        public void UseAzureADAppOnlyAuthentication(string clientId, string azureTenant, string certificatePath, SecureString certificatePassword)
+        {
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+
+            if (String.IsNullOrEmpty(azureTenant))
+            {
+                throw new ArgumentNullException("azureTenant");
+            }
+
+            if (String.IsNullOrEmpty(certificatePath))
+            {
+                throw new ArgumentNullException("certificatePath");
+            }
+
+            if (certificatePassword == null || certificatePassword.Length == 0)
+            {
+                throw new ArgumentNullException("certificatePassword");
+            }
+            this.authenticationType = AuthenticationType.AzureADAppOnly;
+            this.clientId = clientId;
+            this.azureTenant = azureTenant;
+            this.certificatePath = certificatePath;
+            this.certificatePassword = certificatePassword;
+
+            Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AzureADAppOnly, clientId, certificatePath);
+
+        }
+
+        /// <summary>
         /// Takes over the settings from the passed timer job. Is useful when you run multiple jobs in a row or chain 
         /// job execution. Settings that are taken over are all the authentication, enumeration settings and SharePointVersion
         /// </summary>
@@ -1292,6 +1352,10 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 else if (AuthenticationType == AuthenticationType.AppOnly)
                 {
                     return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                }
+                else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
+                {
+                    return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
                 }
             }
 

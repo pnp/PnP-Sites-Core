@@ -7,6 +7,7 @@
     {
         Office365 = 0,
         NetworkCredentials = 1,
-        AppOnly = 2
+        AppOnly = 2,
+        AzureADAppOnly = 3
     }
 }
