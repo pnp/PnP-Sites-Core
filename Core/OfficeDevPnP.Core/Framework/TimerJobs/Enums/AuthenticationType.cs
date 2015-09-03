@@ -8,6 +8,8 @@
         Office365 = 0,
         NetworkCredentials = 1,
         AppOnly = 2,
+#if !CLIENTSDKV15
         AzureADAppOnly = 3
+#endif
     }
 }
