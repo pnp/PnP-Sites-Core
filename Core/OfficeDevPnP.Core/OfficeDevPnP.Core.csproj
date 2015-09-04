@@ -242,7 +242,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
-    <Compile Include="AppModelExtensions\ClientObjectExtensions.cs" />
     <Compile Include="AppModelExtensions\Deprecated\BrandingExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\ClientContextExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\FeatureExtensions.deprecated.cs" />
@@ -270,7 +269,6 @@
     <Compile Include="AppModelExtensions\ProvisioningExtensions.cs" />
     <Compile Include="AppModelExtensions\RecordsManagementExtensions.cs" />
     <Compile Include="AppModelExtensions\SearchExtensions.cs" />
-    <Compile Include="AppModelExtensions\SecurableObjectExtensions.cs" />
     <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
     <Compile Include="AppModelExtensions\TenantExtensions.cs" />
     <Compile Include="AppModelExtensions\VariationExtensions.cs" />

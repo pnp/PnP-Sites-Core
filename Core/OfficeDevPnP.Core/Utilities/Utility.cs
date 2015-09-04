@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Net;
+using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
+using System.Net;
 
 namespace OfficeDevPnP.Core.Utilities
 {
@@ -40,6 +41,44 @@ namespace OfficeDevPnP.Core.Utilities
                 cc.ExecuteQueryRetry();
             }
             return web;
+        }
+
+        /// <summary>
+        /// Check if a property is available on a object
+        /// </summary>
+        /// <typeparam name="T">Type of object to operate on</typeparam>
+        /// <param name="clientObject">Object to operate on</param>
+        /// <param name="propertySelector">Lamda expression containing the properties to check (e.g. w => w.HasUniqueRoleAssignments)</param>
+        /// <returns>True if the property is available, false otherwise</returns>
+        public static bool IsPropertyAvailable<T>(this T clientObject, Expression<Func<T, object>> propertySelector) where T : ClientObject
+        {
+            var body = propertySelector.Body as MemberExpression;
+
+            if (body == null)
+            {
+                body = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
+            }
+
+            return clientObject.IsPropertyAvailable(body.Member.Name);
+        }
+
+        /// <summary>
+        /// Check if a property is instantiated on a object
+        /// </summary>
+        /// <typeparam name="T">Type of object to operate on</typeparam>
+        /// <param name="clientObject">Object to operate on</param>
+        /// <param name="propertySelector">Lamda expression containing the properties to check (e.g. w => w.HasUniqueRoleAssignments)</param>
+        /// <returns>True if the property is instantiated, false otherwise</returns>
+        public static bool IsObjectPropertyInstantiated<T>(this T clientObject, Expression<Func<T, object>> propertySelector) where T : ClientObject
+        {
+            var body = propertySelector.Body as MemberExpression;
+
+            if (body == null)
+            {
+                body = ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
+            }
+
+            return clientObject.IsObjectPropertyInstantiated(body.Member.Name);
         }
 
         /// <summary>

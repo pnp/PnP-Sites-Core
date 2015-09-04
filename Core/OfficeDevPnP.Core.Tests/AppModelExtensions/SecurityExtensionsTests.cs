@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Tests;
-using OfficeDevPnP.Core.AppModelExtensions;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
