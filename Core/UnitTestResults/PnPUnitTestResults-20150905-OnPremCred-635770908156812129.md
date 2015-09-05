@@ -1,4 +1,4 @@
-# PnP Unit Test report for OnPremCred on Wednesday, August 5, 2015 #
+# PnP Unit Test report for OnPremCred on Saturday, September 5, 2015 #
 This page is showing the results of the PnP unit test run.
 
 ## Test configuration ##
@@ -7,19 +7,19 @@ This report contains the unit test results from the following run:
 Parameter | Value
 ----------|------
 PnP Unit Test configuration | OnPremCred
-Test run date | Wednesday, August 5, 2015
+Test run date | Saturday, September 5, 2015
 Test run time | 9:00 PM
 PnP branch | dev
 Visual Studio build configuration | debug15
 
 ## Test summary ##
-During this test run 241 tests have been executed with following outcome:
+During this test run 248 tests have been executed with following outcome:
 
 Parameter | Value
 ----------|------
-Executed tests | 241
-Elapsed time | 0h 17m 52s
-Passed tests | 224
+Executed tests | 248
+Elapsed time | 0h 17m 55s
+Passed tests | 231
 Failed tests | **0**
 Skipped tests | 17
 Was canceled | False
@@ -76,18 +76,18 @@ Error |
 <td><b>Test outcome</b></td>
 <td><b>Duration</b></td>
 </tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadHtmlPageLayoutAndConvertItToAspxVersionTest</td><td>Passed</td><td>0h 1m 4s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutWithPathTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.AllowAllPageLayoutsTest</td><td>Passed</td><td>0h 0m 37s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.DeployThemeAndCreateComposedLookTest</td><td>Passed</td><td>0h 0m 41s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.ComposedLookExistsTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.GetCurrentComposedLookTest</td><td>Passed</td><td>0h 0m 47s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookShouldWorkTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookByNameShouldWorkTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookInheritsTest</td><td>Passed</td><td>0h 0m 57s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookResetInheritanceTest</td><td>Passed</td><td>0h 1m 15s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SeattleMasterPageIsUnchangedTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadHtmlPageLayoutAndConvertItToAspxVersionTest</td><td>Passed</td><td>0h 0m 58s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutTest</td><td>Passed</td><td>0h 0m 41s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutWithPathTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.AllowAllPageLayoutsTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.DeployThemeAndCreateComposedLookTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.ComposedLookExistsTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.GetCurrentComposedLookTest</td><td>Passed</td><td>0h 0m 48s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookShouldWorkTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookByNameShouldWorkTest</td><td>Passed</td><td>0h 0m 38s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookInheritsTest</td><td>Passed</td><td>0h 0m 58s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookResetInheritanceTest</td><td>Passed</td><td>0h 1m 17s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SeattleMasterPageIsUnchangedTest</td><td>Passed</td><td>0h 0m 38s</td></tr>
 <tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.IsSubsiteTest</td><td>Passed</td><td>0h 0m 39s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FeatureExtensionsTests.ActivateSiteFeatureTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FeatureExtensionsTests.ActivateWebFeatureTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -99,17 +99,17 @@ Error |
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanAddContentTypeToListByName</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanRemoveContentTypeFromListByName</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanRemoveContentTypeFromListById</td><td>Passed</td><td>0h 0m 5s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CreateExistingFieldTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CreateExistingFieldTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.GetContentTypeByIdTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.RemoveFieldByInternalNameThrowsOnNoMatchTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CreateFieldFromXmlTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameInSubWebTest</td><td>Passed</td><td>0h 0m 9s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdInSubWebTest</td><td>Passed</td><td>0h 0m 7s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.AddFieldToContentTypeTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.AddFieldToContentTypeTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.AddFieldToContentTypeMakeRequiredTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.SetDefaultContentTypeToListTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ReorderContentTypesTest</td><td>Passed</td><td>0h 0m 6s</td></tr>
@@ -122,24 +122,28 @@ Error |
 <tr><td>Microsoft.SharePoint.Client.Tests.JavaScriptExtensionsTests.DeleteJsLinkFromSiteTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.JavaScriptExtensionsTests.AddJsBlockToWebTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.JavaScriptExtensionsTests.AddJsBlockToSiteTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.ListExtensionsTests.CreateListTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.ListExtensionsTests.CreateListTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.ListExtensionsTests.SetDefaultColumnValuesTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.ListRatingExtensionTest.EnableRatingExperienceTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.ListRatingExtensionTest.EnableLikesExperienceTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
-<tr><td>Tests.AppModelExtensions.SearchExtensionsTests.SetSiteCollectionSearchCenterUrlTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.AppModelExtensions.SearchExtensionsTests.GetSearchConfigurationFromWebTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.SearchExtensionsTests.SetSiteCollectionSearchCenterUrlTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Tests.AppModelExtensions.SearchExtensionsTests.GetSearchConfigurationFromWebTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.SearchExtensionsTests.GetSearchConfigurationFromSiteTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.GetAdministratorsTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddAdministratorsTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddGroupTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.GroupExistsTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToGroupTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToGroupSubSiteTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToGroupListTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToGroupListItemTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.RemovePermissionLevelFromGroupSubSiteTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelByRoleDefToGroupTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToUserTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToUserTestByRoleDefTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddReaderAccessToEveryoneTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.GetNavigationSettingsTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.UpdateNavigationSettingsTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.UpdateNavigationSettingsTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.UpdateNavigationSettings2Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.CreateTaxonomyFieldTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.CreateTaxonomyFieldMultiValueTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
@@ -153,28 +157,28 @@ Error |
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.GetTermGroupByNameTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.GetTermGroupByIdTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.GetTermByNameTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.GetTaxonomyItemByPathTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.GetTaxonomyItemByPathTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.AddTermToTermsetTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.AddTermToTermsetWithTermIdTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermsTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermsToTermStoreTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermSetSampleShouldCreateSetTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermSetShouldUpdateSetTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermSetShouldUpdateByGuidTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermSetShouldUpdateSetTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ImportTermSetShouldUpdateByGuidTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportTermSetTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportTermSetFromTermstoreTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportAllTermsTest</td><td>Passed</td><td>0h 0m 38s</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckOutFileTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckInFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckOutFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckInFileTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileWebDavTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.VerifyIfUploadRequiredTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.SetFilePropertiesTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.GetFileTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureSiteFolderTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureSiteFolderTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderRecursiveTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.AppModelExtensions.Tenant15ExtensionsTests.CreateDeleteSiteCollectionTest</td><td>Passed</td><td>0h 0m 31s</td></tr>
+<tr><td>Tests.AppModelExtensions.Tenant15ExtensionsTests.CreateDeleteSiteCollectionTest</td><td>Passed</td><td>0h 0m 27s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddTopNavigationNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddQuickLaunchNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddSearchNavigationNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -182,6 +186,7 @@ Error |
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.DeleteQuickLaunchNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.DeleteSearchNavigationNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.DeleteAllQuickLaunchNodesTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Diagnostics.LogTests.LogTest1</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorFileSystemTests.FileConnectorGetFile1Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorFileSystemTests.FileConnectorGetFile2Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorFileSystemTests.FileConnectorGetFile3Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -204,22 +209,23 @@ Error |
 <tr><td>Tests.Framework.Connectors.ConnectorSharePointTests.SharePointConnectorSaveStream2Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorSharePointTests.SharePointConnectorSaveStream3Test</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorSharePointTests.SharePointConnectorDelete1Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.Connectors.ConnectorSharePointTests.SharePointConnectorDelete2Test</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.Connectors.ConnectorSharePointTests.SharePointConnectorDelete2Test</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.CanProviderCallOut</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.ProviderCallOutThrowsException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.ProviderAssemblyMissingThrowsAgrumentException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.ProviderTypeNameMissingThrowsAgrumentException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.ProviderClientCtxIsNullThrowsAgrumentNullException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectComposedLookTests.CanCreateComposedLooks</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectTermGroupsTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectTermGroupsTests.CanProvisionToSiteCollectionTermGroupUsingToken</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectTermGroupsTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 4s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 2s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 13s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 9s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFeaturesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -275,31 +281,32 @@ Error |
 <tr><td>Tests.Utilities.EncryptionUtilityTests.ToInSecureStringTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Utilities.EncryptionUtilityTests.EncryptStringWithDPAPITest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Utilities.EncryptionUtilityTests.DecryptStringWithDPAPITest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Diagnostics.PnPMonitoredScopeTests.PnPMonitoredScopeNestingTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.ContainsInvalidCharsReturnsFalseForValidString</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.ContainsInvalidUrlCharsReturnsTrueForInvalidString</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.StripInvalidUrlCharsReturnsStrippedString</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.ReplaceInvalidUrlCharsReturnsStrippedString</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueMultipleRunsTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemovePropertyBagValueTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.PropertyBagContainsKeyTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetIndexedPropertyBagKeysTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.AddIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetProvisioningTemplateTest</td><td>Passed</td><td>0h 0m 19s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueMultipleRunsTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemovePropertyBagValueTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.PropertyBagContainsKeyTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetIndexedPropertyBagKeysTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.AddIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetProvisioningTemplateTest</td><td>Passed</td><td>0h 0m 20s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetAppInstancesTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveAppInstanceByTitleTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanAddLayoutToWikiPageTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanAddHtmlToWikiPageTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.ProveThatWeCanAddHtmlToPageAfterChangingLayoutTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.ProveThatWeCanAddHtmlToPageAfterChangingLayoutTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishingPageTest</td><td>Passed</td><td>0h 0m 13s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.PublishingPageWithInvalidCharsIsCorrectlyCreatedTest</td><td>Passed</td><td>0h 0m 13s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsEnabledTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsDisabledTest</td><td>Passed</td><td>0h 0m 13s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CreatedPublishingPagesSetsTitleCorrectlyTest</td><td>Passed</td><td>0h 0m 15s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsEnabledTest</td><td>Passed</td><td>0h 0m 13s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsDisabledTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CreatedPublishingPagesSetsTitleCorrectlyTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
 
 </table>
 
