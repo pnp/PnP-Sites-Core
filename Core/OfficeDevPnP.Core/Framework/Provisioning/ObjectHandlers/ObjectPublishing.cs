@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var layoutsXml = web.GetPropertyBagValueString(AVAILABLEPAGELAYOUTS, null);
 
-            if (layoutsXml != null)
+            if (!string.IsNullOrEmpty(layoutsXml))
             {
                 var layoutsElement = XElement.Parse(layoutsXml);
 
