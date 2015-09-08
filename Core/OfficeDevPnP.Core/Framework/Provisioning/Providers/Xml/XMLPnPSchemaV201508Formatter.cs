@@ -799,7 +799,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Workflows
 
-            if (template.Workflows != null)
+            if (template.Workflows != null &&
+                (template.Workflows.WorkflowDefinitions.Any() || template.Workflows.WorkflowSubscriptions.Any()))
             {
                 result.Workflows = new V201508.Workflows
                 {
