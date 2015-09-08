@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private FileConnectorBase connector;
         private string _id;
 
-        private RegionalSettings _regionalSettings = new RegionalSettings();
+        private RegionalSettings _regionalSettings = null;
         private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
         private AuditSettings _auditSettings = null;
         private Workflows _workflows = null;

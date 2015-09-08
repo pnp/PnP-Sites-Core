@@ -11,6 +11,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public class RegionalSettings : IEquatable<RegionalSettings>
     {
+
+        public RegionalSettings()
+        {
+            AdjustHijriDays = 0;
+            AlternateCalendarType = Microsoft.SharePoint.Client.CalendarType.None;
+            CalendarType = Microsoft.SharePoint.Client.CalendarType.None;
+            Collation = 0;
+            FirstDayOfWeek = DayOfWeek.Sunday;
+            FirstWeekOfYear = 0;
+            LocaleId = 1033;
+            ShowWeeks = false;
+            WorkDayEndHour = WorkHour.PM0600;
+            WorkDays = 5;
+            WorkDayStartHour = WorkHour.AM0900;
+        }
+
         #region Public Members
 
         /// <summary>
@@ -99,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WorkDays.GetHashCode(),
                 this.WorkDayStartHour.GetHashCode()
             ).GetHashCode());
-    }
+        }
 
         public override bool Equals(object obj)
         {
@@ -118,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Collation == other.Collation &&
                 this.FirstDayOfWeek == other.FirstDayOfWeek &&
                 this.FirstWeekOfYear == other.FirstWeekOfYear &&
-                this.LocaleId== other.LocaleId &&
+                this.LocaleId == other.LocaleId &&
                 this.ShowWeeks == other.ShowWeeks &&
                 this.Time24 == other.Time24 &&
                 this.TimeZone == other.TimeZone &&
