@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
 
                 web.Context.Load(web.RegionalSettings);
-                web.Context.Load(web.RegionalSettings.TimeZone);
+                web.Context.Load(web.RegionalSettings.TimeZone, tz => tz.Id);
                 web.Context.ExecuteQuery();
 
                 Model.RegionalSettings settings = new Model.RegionalSettings();
@@ -50,20 +50,76 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                web.RegionalSettings.AdjustHijriDays = Convert.ToInt16(template.RegionalSettings.AdjustHijriDays);
-                web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;
-                web.RegionalSettings.Collation = Convert.ToInt16(template.RegionalSettings.Collation);
-                web.RegionalSettings.FirstDayOfWeek = (uint)template.RegionalSettings.FirstDayOfWeek;
-                web.RegionalSettings.FirstWeekOfYear = Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear);
-                web.RegionalSettings.LocaleId = Convert.ToUInt32(template.RegionalSettings.LocaleId);
-                web.RegionalSettings.ShowWeeks = template.RegionalSettings.ShowWeeks;
-                web.RegionalSettings.Time24 = template.RegionalSettings.Time24;
-                web.RegionalSettings.TimeZone = web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone);
-                web.RegionalSettings.WorkDayEndHour = (short)template.RegionalSettings.WorkDayEndHour;
-                web.RegionalSettings.WorkDays = Convert.ToInt16(template.RegionalSettings.WorkDays);
-                web.RegionalSettings.WorkDayStartHour = (short)template.RegionalSettings.WorkDayStartHour;
-                web.RegionalSettings.Update();
+                web.Context.Load(web.RegionalSettings);
+                web.Context.Load(web.RegionalSettings.TimeZone, tz => tz.Id);
                 web.Context.ExecuteQueryRetry();
+
+                var isDirty = false;
+                if (web.RegionalSettings.AdjustHijriDays != template.RegionalSettings.AdjustHijriDays)
+                {
+                    web.RegionalSettings.AdjustHijriDays = Convert.ToInt16(template.RegionalSettings.AdjustHijriDays);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.AlternateCalendarType != (short)template.RegionalSettings.AlternateCalendarType)
+                {
+                    web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.Collation != Convert.ToInt16(template.RegionalSettings.Collation))
+                {
+                    web.RegionalSettings.Collation = Convert.ToInt16(template.RegionalSettings.Collation);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.FirstDayOfWeek != (uint)template.RegionalSettings.FirstDayOfWeek)
+                {
+                    web.RegionalSettings.FirstDayOfWeek = (uint)template.RegionalSettings.FirstDayOfWeek;
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.FirstWeekOfYear != Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear))
+                {
+                    web.RegionalSettings.FirstWeekOfYear = Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.LocaleId != Convert.ToUInt32(template.RegionalSettings.LocaleId))
+                {
+                    web.RegionalSettings.LocaleId = Convert.ToUInt32(template.RegionalSettings.LocaleId);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.ShowWeeks != template.RegionalSettings.ShowWeeks)
+                {
+                    web.RegionalSettings.ShowWeeks = template.RegionalSettings.ShowWeeks;
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.Time24 != template.RegionalSettings.Time24)
+                {
+                    web.RegionalSettings.Time24 = template.RegionalSettings.Time24;
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.TimeZone != web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone))
+                {
+                    web.RegionalSettings.TimeZone = web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.WorkDayEndHour != (short)template.RegionalSettings.WorkDayEndHour)
+                {
+                    web.RegionalSettings.WorkDayEndHour = (short)template.RegionalSettings.WorkDayEndHour;
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.WorkDays != Convert.ToInt16(template.RegionalSettings.WorkDays))
+                {
+                    web.RegionalSettings.WorkDays = Convert.ToInt16(template.RegionalSettings.WorkDays);
+                    isDirty = true;
+                }
+                if (web.RegionalSettings.WorkDayStartHour != (short)template.RegionalSettings.WorkDayStartHour)
+                {
+                    web.RegionalSettings.WorkDayStartHour = (short)template.RegionalSettings.WorkDayStartHour;
+                    isDirty = true;
+                }
+                if (isDirty)
+                {
+                    web.RegionalSettings.Update();
+                    web.Context.ExecuteQueryRetry();
+                }
             }
 
             return parser;
@@ -76,7 +132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return !web.IsSubSite();
+            return !web.IsSubSite() && template.RegionalSettings != null;
         }
     }
 }
