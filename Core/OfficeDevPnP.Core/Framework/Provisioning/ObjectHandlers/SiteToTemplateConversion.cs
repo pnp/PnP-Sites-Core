@@ -61,6 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
                 objectHandlers.Add(new ObjectRegionalSettings());
+                objectHandlers.Add(new ObjectSupportedUILanguages());
                 objectHandlers.Add(new ObjectAuditSettings());
                 objectHandlers.Add(new ObjectSitePolicy());
                 objectHandlers.Add(new ObjectSiteSecurity());
@@ -136,6 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
                 objectHandlers.Add(new ObjectRegionalSettings());
+                objectHandlers.Add(new ObjectSupportedUILanguages());
                 objectHandlers.Add(new ObjectAuditSettings());
                 objectHandlers.Add(new ObjectSitePolicy());
                 objectHandlers.Add(new ObjectSiteSecurity());

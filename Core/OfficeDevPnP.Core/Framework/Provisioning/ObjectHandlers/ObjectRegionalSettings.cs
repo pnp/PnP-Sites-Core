@@ -80,7 +80,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.RegionalSettings.FirstWeekOfYear = Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.LocaleId != Convert.ToUInt32(template.RegionalSettings.LocaleId))
+                if (template.RegionalSettings.LocaleId > 0 && (web.RegionalSettings.LocaleId != Convert.ToUInt32(template.RegionalSettings.LocaleId)))
                 {
                     web.RegionalSettings.LocaleId = Convert.ToUInt32(template.RegionalSettings.LocaleId);
                     isDirty = true;
@@ -95,7 +95,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.RegionalSettings.Time24 = template.RegionalSettings.Time24;
                     isDirty = true;
                 }
-                if (web.RegionalSettings.TimeZone != web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone))
+                if (template.RegionalSettings.TimeZone != 0 && (web.RegionalSettings.TimeZone.Id != template.RegionalSettings.TimeZone))
                 {
                     web.RegionalSettings.TimeZone = web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone);
                     isDirty = true;
@@ -105,7 +105,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.RegionalSettings.WorkDayEndHour = (short)template.RegionalSettings.WorkDayEndHour;
                     isDirty = true;
                 }
-                if (web.RegionalSettings.WorkDays != Convert.ToInt16(template.RegionalSettings.WorkDays))
+                if (template.RegionalSettings.WorkDays > 0 && (web.RegionalSettings.WorkDays != Convert.ToInt16(template.RegionalSettings.WorkDays)))
                 {
                     web.RegionalSettings.WorkDays = Convert.ToInt16(template.RegionalSettings.WorkDays);
                     isDirty = true;
@@ -127,12 +127,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return !web.IsSubSite();
+            return true;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return !web.IsSubSite() && template.RegionalSettings != null;
+            return template.RegionalSettings != null;
         }
     }
 }
