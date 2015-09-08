@@ -1011,7 +1011,7 @@ namespace Microsoft.SharePoint.Client
                         }
                     }
 
-                    if (checkOutRequired && file.CheckOutType == CheckOutType.None)
+                    if (checkoutIfRequired && checkOutRequired && file.CheckOutType == CheckOutType.None)
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Checking out file '{0}'", file.Name);
                         file.CheckOut();

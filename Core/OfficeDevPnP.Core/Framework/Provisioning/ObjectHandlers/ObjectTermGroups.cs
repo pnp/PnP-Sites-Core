@@ -42,7 +42,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     TermGroup group = termStore.Groups.FirstOrDefault(g => g.Id == modelTermGroup.Id);
                     if (group == null)
                     {
-                        group = termStore.Groups.FirstOrDefault(g => g.Name == modelTermGroup.Name);
+                        var parsedGroupName = parser.ParseString(modelTermGroup.Name);
+                        group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
 
                         if (group == null)
                         {
@@ -50,7 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 modelTermGroup.Id = Guid.NewGuid();
                             }
-                            group = termStore.CreateGroup(parser.ParseString(modelTermGroup.Name), modelTermGroup.Id);
+                            group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
 
                             group.Description = modelTermGroup.Description;
 
