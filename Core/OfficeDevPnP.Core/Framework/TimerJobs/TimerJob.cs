@@ -46,6 +46,10 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string realm;
         private string clientId;
         private string clientSecret;
+        private string azureTenant;
+        private string certificatePath;
+        private SecureString certificatePassword;
+
         private int sharePointVersion = 16;
         private string enumerationUser;
         private SecureString enumerationPassword;
@@ -665,9 +669,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
             NetworkCredential cred = Core.Utilities.CredentialManager.GetCredential(credentialName);
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
+            SecureString securePassword = null;
+            if (cred != null)
             {
-                UseOffice365Authentication(cred.UserName, cred.Password);
+                securePassword = cred.SecurePassword;
+            }
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0)
+            {
+                UseOffice365Authentication(cred.UserName, securePassword);
             }
             else
             {
@@ -749,9 +759,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
             }
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password) && !String.IsNullOrEmpty(cred.Domain))
+            SecureString securePassword = null;
+            if (cred != null)
             {
-                UseNetworkCredentialsAuthentication(cred.UserName, cred.Password, cred.Domain);
+                securePassword = cred.SecurePassword;
+            } 
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0 && !String.IsNullOrEmpty(cred.Domain))
+            {
+                UseNetworkCredentialsAuthentication(cred.UserName, securePassword, cred.Domain);
             }
             else
             {
@@ -784,6 +800,65 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AppOnly, clientId);
         }
+
+#if !CLIENTSDKV15
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
+        /// to AuthenticationType.AzureADAppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="azureTenant">The Azure tenant name, like contoso.com</param>
+        /// <param name="certificatePath">The path to the *.pfx certicate file</param>
+        /// <param name="certificatePassword">The password to the certificate</param>
+        public void UseAzureADAppOnlyAuthentication(string clientId, string azureTenant, string certificatePath, string certificatePassword)
+        {
+            if (String.IsNullOrEmpty(certificatePassword))
+            {
+                throw new ArgumentNullException("certificatePassword");
+            }
+            UseAzureADAppOnlyAuthentication(clientId, azureTenant, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword));
+        }
+
+
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
+        /// to AuthenticationType.AzureADAppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="azureTenant">The Azure tenant name, like contoso.com</param>
+        /// <param name="certificatePath">The path to the *.pfx certicate file</param>
+        /// <param name="certificatePassword">The password to the certificate</param>
+        public void UseAzureADAppOnlyAuthentication(string clientId, string azureTenant, string certificatePath, SecureString certificatePassword)
+        {
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+
+            if (String.IsNullOrEmpty(azureTenant))
+            {
+                throw new ArgumentNullException("azureTenant");
+            }
+
+            if (String.IsNullOrEmpty(certificatePath))
+            {
+                throw new ArgumentNullException("certificatePath");
+            }
+
+            if (certificatePassword == null || certificatePassword.Length == 0)
+            {
+                throw new ArgumentNullException("certificatePassword");
+            }
+            this.authenticationType = AuthenticationType.AzureADAppOnly;
+            this.clientId = clientId;
+            this.azureTenant = azureTenant;
+            this.certificatePath = certificatePath;
+            this.certificatePassword = certificatePassword;
+
+            Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AzureADAppOnly, clientId, certificatePath);
+
+        }
+#endif
 
         /// <summary>
         /// Takes over the settings from the passed timer job. Is useful when you run multiple jobs in a row or chain 
@@ -829,9 +904,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return am;
             }
         }
-        #endregion
+#endregion
 
-        #region Site scope methods and attributes
+#region Site scope methods and attributes
         /// <summary>
         /// Does the timerjob need to fire as well for every sub site in the site?
         /// </summary>
@@ -1010,7 +1085,13 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
             NetworkCredential cred = Core.Utilities.CredentialManager.GetCredential(credentialName);
 
-            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && !String.IsNullOrEmpty(cred.Password))
+            SecureString securePassword = null;
+            if (cred != null)
+            {
+                securePassword = cred.SecurePassword;
+            }
+
+            if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0)
             {
 
                 if (!String.IsNullOrEmpty(cred.UserName))
@@ -1026,11 +1107,11 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
                 if (String.IsNullOrEmpty(cred.Domain))
                 {
-                    SetEnumerationCredentials(cred.UserName, cred.Password);
+                    SetEnumerationCredentials(cred.UserName, securePassword);
                 }
                 else
                 {
-                    SetEnumerationCredentials(cred.UserName, cred.Password, cred.Domain);
+                    SetEnumerationCredentials(cred.UserName, securePassword, cred.Domain);
                 }
             }
             else
@@ -1293,6 +1374,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
                 }
+#if !CLIENTSDKV15
+                else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
+                {
+                    return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                }
+#endif
             }
 
             return null;
@@ -1314,7 +1401,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             else
             {
                 //Good, we can use search for user profile and tenant API enumeration for regular sites
-                ClientContext ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                var ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
                 Tenant tenant = new Tenant(ccEnumerate);
                 SiteEnumeration.Instance.ResolveSite(tenant, site, resolvedSites);
             }
@@ -1350,9 +1437,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 yield return currentUrl;
             }
         }
-        #endregion
+#endregion
 
-        #region Helper methods
+#region Helper methods
         /// <summary>
         /// Verifies if the passed Url has a valid structure
         /// </summary>
@@ -1516,6 +1603,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return false;
             }
         }
-        #endregion
+#endregion
     }
 }

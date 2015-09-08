@@ -126,8 +126,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
                     }
-                    messagesDelegate = provisioningInfo.MessageDelegate;
-                    if (provisioningInfo.MessageDelegate != null)
+                    messagesDelegate = provisioningInfo.MessagesDelegate;
+                    if (provisioningInfo.MessagesDelegate != null)
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }

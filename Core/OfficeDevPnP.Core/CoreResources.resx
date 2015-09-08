@@ -861,4 +861,7 @@
   <data name="PnPMonitoredScope_Code_execution_ended" xml:space="preserve">
     <value>Code execution scope ended</value>
   </data>
+  <data name="TimerJob_Authentication_AzureADAppOnly" xml:space="preserve">
+    <value>Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}</value>
+  </data>
 </root>

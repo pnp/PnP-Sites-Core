@@ -99,7 +99,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 throw new ArgumentException("uri");
             }
-
+            
             // Get the XML document from a File Stream
             Stream stream = this.Connector.GetFileStream(uri);
 
@@ -181,6 +181,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         private Stream ResolveXIncludes(Stream stream)
         {
+            if(stream == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
             var res = stream;
             XDocument xml = XDocument.Load(stream);
 
