@@ -63,6 +63,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Retrieve the workflow subscriptions
                     var subscriptions = web.GetWorkflowSubscriptions();
 
+#if CLIENTSDKV15
+                    template.Workflows.WorkflowSubscriptions.AddRange(
+                        from s in subscriptions
+                        select new Model.WorkflowSubscription(s.PropertyDefinitions.TokenizeWorkflowSubscriptionProperties(lists))
+                        {
+                            DefinitionId = s.DefinitionId,
+                            Enabled = s.Enabled,
+                            EventSourceId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+                            EventTypes = s.EventTypes.ToList(),
+                            ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
+                            Name = s.Name,
+                            ListId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+                            StatusFieldName = s.StatusFieldName,
+                        }
+                        );
+#else
                     template.Workflows.WorkflowSubscriptions.AddRange(
                         from s in subscriptions
                         select new Model.WorkflowSubscription(s.PropertyDefinitions.TokenizeWorkflowSubscriptionProperties(lists))
@@ -78,6 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             StatusFieldName = s.StatusFieldName,
                         }
                         );
+#endif
                 }
             }
             return template;
@@ -136,6 +153,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var subscription in template.Workflows.WorkflowSubscriptions)
                 {
+#if CLIENTSDKV15
+                    // Create the WorkflowDefinition instance
+                    Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
+                        new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)
+                        {
+                            DefinitionId = subscription.DefinitionId,
+                            Enabled = subscription.Enabled,
+                            EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
+                            EventTypes = subscription.EventTypes,
+                            ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,
+                            Name =  subscription.Name,
+                            StatusFieldName = subscription.StatusFieldName,
+                        };
+#else
                     // Create the WorkflowDefinition instance
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
                         new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)
@@ -149,7 +180,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ParentContentTypeId = subscription.ParentContentTypeId,
                             StatusFieldName = subscription.StatusFieldName,
                         };
-
+#endif
                     foreach (var p in subscription.PropertyDefinitions
                         .Where(d => d.Key == "TaskListId" || d.Key == "HistoryListId"))
                     {
