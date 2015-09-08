@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
@@ -20,9 +21,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
+                var loadRequired = false;
                 if (!web.IsPropertyAvailable("ServerRelativeUrl"))
                 {
                     context.Load(web, w => w.ServerRelativeUrl);
+                    loadRequired = true;
+                }
+
+                
+                
+                var rootWeb = context.Site.RootWeb;
+                if (!rootWeb.IsPropertyAvailable("ServerRelativeUrl"))
+                {
+                    context.Load(rootWeb, w => w.ServerRelativeUrl);
+                    loadRequired = true;
+                }
+
+                if (loadRequired)
+                {
                     context.ExecuteQueryRetry();
                 }
 
@@ -30,15 +46,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
 
                     var folderName = parser.ParseString(file.Folder);
-
-                    if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+                    var isRootWebFolder = parser.ContainsRootWebToken(file.Folder);
+                    var targetWeb = isRootWebFolder ? rootWeb : web;
+                    if (folderName.ToLower().StartsWith((targetWeb.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = folderName.Substring(targetWeb.ServerRelativeUrl.Length);
                     }
 
-
-                    var folder = web.EnsureFolderPath(folderName);
-
+                    var folder = targetWeb.EnsureFolderPath(folderName);
+                    
                     File targetFile = null;
 
                     var checkedOut = false;
@@ -50,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Overwrite)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_,file.Src);
-                            checkedOut = CheckOutIfNeeded(web, targetFile);
+                            checkedOut = CheckOutIfNeeded(targetWeb, targetFile);
 
                             using (var stream = template.Connector.GetFileStream(file.Src))
                             {
@@ -59,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            checkedOut = CheckOutIfNeeded(web, targetFile);
+                            checkedOut = CheckOutIfNeeded(targetWeb, targetFile);
                         }
                     }
                     else
@@ -70,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
                         }
 
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                        checkedOut = CheckOutIfNeeded(targetWeb, targetFile);
                     }
 
                     if (targetFile != null)
@@ -85,10 +101,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             if (!targetFile.IsPropertyAvailable("ServerRelativeUrl"))
                             {
-                                web.Context.Load(targetFile, f => f.ServerRelativeUrl);
-                                web.Context.ExecuteQuery();
+                                targetWeb.Context.Load(targetFile, f => f.ServerRelativeUrl);
+                                targetWeb.Context.ExecuteQuery();
                             }
-                            var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
+                            var existingWebParts = targetWeb.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
@@ -101,7 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     wpEntity.WebPartZone = webpart.Zone;
                                     wpEntity.WebPartIndex = (int)webpart.Order;
 
-                                    web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+                                    targetWeb.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
                                 }
                             }
                         }
@@ -109,7 +125,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (checkedOut)
                         {
                             targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            targetWeb.Context.ExecuteQueryRetry();
                         }
                     }
 

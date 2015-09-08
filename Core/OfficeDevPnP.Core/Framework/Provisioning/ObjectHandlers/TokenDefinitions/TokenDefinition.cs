@@ -49,5 +49,13 @@ namespace OfficeDevPnP.Core.Framework.ObjectHandlers
         {
             this.CacheValue = null;
         }
+
+        /// <summary>
+        /// Determines if this token automatically corresponds to a Root Web URL
+        /// </summary>
+        public virtual bool IsRootWebToken
+        {
+            get { return false; }
+        }
     }
 }
