@@ -1664,7 +1664,6 @@
         </pnp:WebFeatures>
       </pnp:Features>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" MasterPage="{masterpagecatalog}/seattle.master" SiteLogo="" AlternateCSS="" Version="0" />
-      <pnp:Workflows />
       <pnp:SearchSettings>
         <SearchConfigurationSettings xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Portability">
           <SearchQueryConfigurationSettings>
