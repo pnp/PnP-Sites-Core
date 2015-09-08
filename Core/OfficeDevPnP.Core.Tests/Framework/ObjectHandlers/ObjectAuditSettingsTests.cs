@@ -24,6 +24,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
                 ctx.ExecuteQueryRetry();
 
+                auditLogTrimmingRetention = site.AuditLogTrimmingRetention;
+                trimAuditLog = site.TrimAuditLog;
+
                 // set audit flags for test
                 site.Audit.AuditFlags = AuditMaskType.All;
                 site.Audit.Update();
