@@ -183,6 +183,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion
 
+                    #region Default Field Values
+                    foreach (var listInfo in processedLists)
+                    {
+                        if (listInfo.TemplateList.FieldDefaults.Any())
+                        {
+                            foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
+                            {
+                                var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
+                                field.DefaultValue = fieldDefault.Value;
+                                field.Update();
+                                web.Context.ExecuteQueryRetry();
+                            }
+                        }
+                    }
+                    #endregion
+
+
                     #region Views
 
                     foreach (var listInfo in processedLists)
@@ -508,9 +525,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (existingList.BaseTemplate == templateList.TemplateType)
             {
                 var isDirty = false;
-                if (templateList.Title != existingList.Title)
+                if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
-                    existingList.Title = templateList.Title;
+                    existingList.Title = parser.ParseString(templateList.Title);
                     isDirty = true;
                 }
                 if (!string.IsNullOrEmpty(templateList.DocumentTemplate))
@@ -666,7 +683,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var listCreate = new ListCreationInformation();
             listCreate.Description = list.Description;
             listCreate.TemplateType = list.TemplateType;
-            listCreate.Title = list.Title;
+            listCreate.Title = parser.ParseString(list.Title);
 
             // the line of code below doesn't add the list to QuickLaunch
             // the OnQuickLaunch property is re-set on the Created List object
