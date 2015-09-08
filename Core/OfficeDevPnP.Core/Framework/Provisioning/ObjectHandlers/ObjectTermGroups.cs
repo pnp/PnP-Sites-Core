@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, Model.ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_TermGroups))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(web.Context);
 
@@ -156,7 +156,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var sortedTerms = modelTermSet.Terms.OrderBy(t => t.CustomSortOrder);
 
                             var customSortString = sortedTerms.Aggregate(string.Empty, (a, i) => a + i.Id.ToString() + ":");
-                            customSortString = customSortString.TrimEnd(new[] {':'});
+                            customSortString = customSortString.TrimEnd(new[] { ':' });
 
                             set.CustomSortOrder = customSortString;
                             termStore.CommitAll();
@@ -291,7 +291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_TermGroups))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (creationInfo.IncludeSiteCollectionTermGroup || creationInfo.IncludeAllTermGroups)
                 {

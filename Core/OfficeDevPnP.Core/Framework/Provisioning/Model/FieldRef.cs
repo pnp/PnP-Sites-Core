@@ -62,10 +62,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
-                this.Id,
-                this.Required,
-                this.Hidden).GetHashCode());
+            return (String.Format("{0}|{1}|{2}|",
+                this.Id.GetHashCode(),
+                this.Required.GetHashCode(),
+                this.Hidden.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

@@ -10,13 +10,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private members
         private Dictionary<string, string> _values = new Dictionary<string, string>();
+        private ObjectSecurity _objectSecurity = new ObjectSecurity();
         #endregion
 
-        #region public members
+        #region Public Members
+
+        /// <summary>
+        /// Defines the fields to provision within a row that will be added to the List Instance
+        /// </summary>
         public Dictionary<string, string> Values
         {
             get { return _values; }
             private set { _values = value; }
+        }
+
+        /// <summary>
+        /// Defines the security rules for the row that will be added to the List Instance
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return _objectSecurity; }
+            private set { _objectSecurity = value; }
         }
         #endregion
 
@@ -26,13 +40,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         }
 
-        public DataRow(Dictionary<string, string> values)
+        public DataRow(Dictionary<string, string> values): this(values, null)
         {
-            foreach (var key in values.Keys)
+        }
+
+        public DataRow(Dictionary<string, string> values, ObjectSecurity security)
+        {
+            if (values != null)
             {
-                Values.Add(key, values[key]);
+                foreach (var key in values.Keys)
+                {
+                    Values.Add(key, values[key]);
+                }
+            }
+
+            if (security != null)
+            {
+                this.Security = security;
             }
         }
+
         #endregion
     }
 }

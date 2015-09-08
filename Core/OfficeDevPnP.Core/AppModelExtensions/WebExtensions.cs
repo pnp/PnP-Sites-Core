@@ -398,7 +398,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            DesignPackage.UnInstall(site.Context, site, packageInfo);
+            Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
             site.Context.ExecuteQueryRetry();
 
 
@@ -408,7 +408,7 @@ namespace Microsoft.SharePoint.Client
             // NOTE: The lines below (in OfficeDev PnP) wipe/clear all items in the composed looks aka design catalog (_catalogs/design, list template 124).
             // The solution package should be loaded into the solutions catalog (_catalogs/solutions, list template 121).
 
-            DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
+            Microsoft.SharePoint.Client.Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
             site.Context.ExecuteQueryRetry();
 
             // Remove package from rootfolder
@@ -456,7 +456,7 @@ namespace Microsoft.SharePoint.Client
                     MinorVersion = minorVersion
                 };
 
-                DesignPackage.UnInstall(site.Context, site, packageInfo);
+                Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
                 site.Context.ExecuteQueryRetry();
             }
         }

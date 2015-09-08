@@ -1,9 +1,9 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class SiteCollectionTermStoreIdToken : TokenDefinition
+    internal class SiteCollectionTermStoreIdToken : TokenDefinition
     {
         public SiteCollectionTermStoreIdToken(Web web)
             : base(web, "~sitecollectiontermstoreid", "{sitecollectiontermstoreid}")

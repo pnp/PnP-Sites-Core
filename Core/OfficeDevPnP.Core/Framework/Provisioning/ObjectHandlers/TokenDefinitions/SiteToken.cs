@@ -1,8 +1,8 @@
 using Microsoft.SharePoint.Client;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class SiteToken : TokenDefinition
+    internal class SiteToken : TokenDefinition
     {
         public SiteToken(Web web)
             : base(web, "~site", "{site}")

@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201505Formatter());
+                return (new XMLPnPSchemaV201508Formatter());
             }
         }
 
@@ -46,8 +46,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201503Formatter());
                 case XMLPnPSchemaVersion.V201505:
                     return (new XMLPnPSchemaV201505Formatter());
+                case XMLPnPSchemaVersion.V201508:
+                    return (new XMLPnPSchemaV201508Formatter());
                 default:
-                    return (new XMLPnPSchemaV201505Formatter());
+                    return (new XMLPnPSchemaV201508Formatter());
             }
         }
 
@@ -64,8 +66,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201503Formatter());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05:
                     return (new XMLPnPSchemaV201505Formatter());
+                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08:
+                    return (new XMLPnPSchemaV201508Formatter());
                 default:
-                    return (new XMLPnPSchemaV201505Formatter());
+                    return (new XMLPnPSchemaV201508Formatter());
             }
         }
 

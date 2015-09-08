@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -22,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstances))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Lists.Any())
                 {
@@ -221,6 +222,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion
 
+
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
                     {
@@ -380,15 +382,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             field.SchemaXml = element.ToString();
 
             var createdField = listInfo.SiteList.Fields.Add(field);
-            if (!string.IsNullOrEmpty(fieldRef.DisplayName))
+
+            createdField.Context.Load(createdField, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
+            createdField.Context.ExecuteQueryRetry();
+
+            var isDirty = false;
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && createdField.Title != fieldRef.DisplayName)
             {
                 createdField.Title = fieldRef.DisplayName;
+                isDirty = true;
             }
-            createdField.Hidden = fieldRef.Hidden;
-            createdField.Required = fieldRef.Required;
-
-            createdField.Update();
-            createdField.Context.ExecuteQueryRetry();
+            if (createdField.Hidden != fieldRef.Hidden)
+            {
+                createdField.Hidden = fieldRef.Hidden;
+                isDirty = true;
+            }
+            if (createdField.Required != fieldRef.Required)
+            {
+                createdField.Required = fieldRef.Required;
+                isDirty = true;
+            }
+            if (isDirty)
+            {
+                createdField.Update();
+                createdField.Context.ExecuteQueryRetry();
+            }
         }
 
         private static void CreateField(XElement fieldElement, ListInfo listInfo)
@@ -629,6 +647,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
                     }
                 }
+                if (templateList.Security != null)
+                {
+                    existingList.SetSecurity(parser, templateList.Security);
+                }
                 return Tuple.Create(existingList, parser);
             }
             else
@@ -759,6 +781,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
 
+            if (list.Security != null)
+            {
+                createdList.SetSecurity(parser, list.Security);
+            }
             return Tuple.Create(createdList, parser);
         }
 
@@ -773,7 +799,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstances))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var propertyLoadRequired = false;
                 if (!web.IsPropertyAvailable("ServerRelativeUrl"))
@@ -800,6 +826,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     lc => lc.IncludeWithDefaultProperties(
                         l => l.ContentTypes,
                         l => l.Views,
+                        l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.Fields.IncludeWithDefaultProperties(
@@ -810,7 +837,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             f => f.Required)));
 
                 web.Context.ExecuteQueryRetry();
-                foreach (var item in lists.AsEnumerable().Where(l => l.Hidden == false))
+
+                // Let's see if there are workflow subscriptions
+                var workflowSubscriptions = web.GetWorkflowSubscriptions();
+
+                // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
+                foreach (var item in lists.AsEnumerable().Where(l => (l.Hidden == false || (workflowSubscriptions.Length > 0 && l.BaseTemplate == 140))))
                 {
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)
@@ -968,6 +1000,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
                         }
+
+                        list.Security = item.GetSecurity();
                     }
                     if (baseTemplateList != null)
                     {

@@ -19,11 +19,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}",
-                this.Key,
-                this.Value,
-                this.Indexed,
-                this.Overwrite).GetHashCode());
+            return (String.Format("{0}|{1}|{2}|{3}|",
+                this.Key.GetHashCode(),
+                this.Value.GetHashCode(),
+                this.Indexed.GetHashCode(),
+                this.Overwrite.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

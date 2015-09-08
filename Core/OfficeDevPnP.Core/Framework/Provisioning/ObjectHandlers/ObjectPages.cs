@@ -4,6 +4,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -17,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
 
 
@@ -69,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             catch (Exception ex)
                             {
-                                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_,url,ex.Message,ex.StackTrace);
+                                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_, url, ex.Message, ex.StackTrace);
                             }
                         }
                     }
@@ -86,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception ex)
                         {
-                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_,url, ex.Message,ex.StackTrace);
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_, url, ex.Message, ex.StackTrace);
                         }
                     }
 
@@ -112,10 +113,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 WebPartEntity wpEntity = new WebPartEntity();
                                 wpEntity.WebPartTitle = webpart.Title;
-                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] {'\n', ' '});
-                                web.AddWebPartToWikiPage(url, wpEntity, (int) webpart.Row, (int) webpart.Column, false);
+                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
+                                web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
                             }
                         }
+                    }
+                    if (page.Security != null)
+                    {
+                        file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file.ListItemAllFields);
+                        web.Context.ExecuteQuery();
+                        file.ListItemAllFields.SetSecurity(parser, page.Security);
                     }
                 }
             }
@@ -125,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Pages))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 

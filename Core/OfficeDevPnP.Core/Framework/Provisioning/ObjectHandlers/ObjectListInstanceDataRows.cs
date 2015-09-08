@@ -4,6 +4,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Field = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -16,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
 
                 if (template.Lists.Any())
@@ -138,6 +139,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem.Update();
                                     }
                                     web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+
+                                    if (dataRow.Security != null)
+                                    {
+                                        listitem.SetSecurity(parser, dataRow.Security);
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -157,8 +163,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows))
-            { }
+            //using (var scope = new PnPMonitoredScope(this.Name))
+            //{ }
             return template;
         }
 

@@ -2,9 +2,9 @@ using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class SiteCollectionTermGroupNameToken : TokenDefinition
+    internal class SiteCollectionTermGroupNameToken : TokenDefinition
     {
         public SiteCollectionTermGroupNameToken(Web web)
             : base(web, "~sitecollectiontermgroupname", "{sitecollectiontermgroupname}")

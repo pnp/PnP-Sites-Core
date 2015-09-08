@@ -60,6 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 
@@ -536,7 +537,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 Description = termSet.Description,
                                 Language = termSet.Language.HasValue ? termSet.Language.Value : 0,
                                 LanguageSpecified = termSet.Language.HasValue,
-                                Terms = termSet.Terms.FromModelTermsToSchemaTerms(),
+                                Terms = termSet.Terms.FromModelTermsToSchemaTermsV201505(),
                                 CustomProperties = termSet.Properties.Count > 0 ?
                                      (from p in termSet.Properties
                                       select new V201505.StringDictionaryItem
@@ -1041,7 +1042,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 termSet.LanguageSpecified ? (int?)termSet.Language : null,
                                 termSet.IsAvailableForTagging,
                                 termSet.IsOpenForTermCreation,
-                                termSet.Terms != null ? termSet.Terms.FromSchemaTermsToModelTerms() : null,
+                                termSet.Terms != null ? termSet.Terms.FromSchemaTermsToModelTermsV201505() : null,
                                 termSet.CustomProperties != null ? termSet.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null)
                             {
                                 Description = termSet.Description,
@@ -1099,7 +1100,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class TaxonomyTermExtensions
     {
-        public static V201505.Term[] FromModelTermsToSchemaTerms(this List<Model.Term> terms)
+        public static V201505.Term[] FromModelTermsToSchemaTermsV201505(this List<Model.Term> terms)
         {
             V201505.Term[] result = terms.Count > 0 ? (
                 from term in terms
@@ -1113,7 +1114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
                     CustomSortOrder = term.CustomSortOrder,
-                    Terms = term.Terms.Count > 0 ? new TermTerms { Items = term.Terms.FromModelTermsToSchemaTerms() } : null,
+                    Terms = term.Terms.Count > 0 ? new TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201505() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
                         (from p in term.Properties
                          select new V201505.StringDictionaryItem
@@ -1141,7 +1142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
-        public static List<Model.Term> FromSchemaTermsToModelTerms(this V201505.Term[] terms)
+        public static List<Model.Term> FromSchemaTermsToModelTermsV201505(this V201505.Term[] terms)
         {
             List<Model.Term> result = new List<Model.Term>(
                 from term in terms
@@ -1149,7 +1150,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     !string.IsNullOrEmpty(term.ID) ? Guid.Parse(term.ID) : Guid.Empty,
                     term.Name,
                     term.LanguageSpecified ? term.Language : (int?)null,
-                    (term.Terms != null && term.Terms.Items != null) ? term.Terms.Items.FromSchemaTermsToModelTerms() : null,
+                    (term.Terms != null && term.Terms.Items != null) ? term.Terms.Items.FromSchemaTermsToModelTermsV201505() : null,
                     term.Labels != null ?
                     (new List<Model.TermLabel>(
                         from label in term.Labels

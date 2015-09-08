@@ -2468,7 +2468,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToScope" type="pnp:ReplaceableString" use="optional">
+                <xsd:attribute name="RestrictToScope" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Scope Restriction for the Workflow, optional attribute.
@@ -2816,12 +2816,12 @@
           </xsd:sequence>
 
           <xsd:attribute name="Default" type="xsd:string" use="optional">
-            <xsd:annotation>
-              <xsd:documentation xml:lang="en">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
                 Defines the URL of the Default Page Layout for the current Publishing site, if any. Optional attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
 
         </xsd:complexType>
       </xsd:element>
