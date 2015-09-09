@@ -856,10 +856,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 // Let's see if there are workflow subscriptions
-                var workflowSubscriptions = web.GetWorkflowSubscriptions();
+                Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription[] workflowSubscriptions = null;
+                try
+                {
+                    workflowSubscriptions = web.GetWorkflowSubscriptions();
+                }
+                catch (ServerException)
+                {
+                    // If there is no workflow service present in the farm this method will throw an error. 
+                    // Swallow the exception
+                }
 
                 // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
-                foreach (var item in lists.AsEnumerable().Where(l => (l.Hidden == false || (workflowSubscriptions.Length > 0 && l.BaseTemplate == 140))))
+                foreach (var item in lists.AsEnumerable().Where(l => (l.Hidden == false || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))))
                 {
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)
