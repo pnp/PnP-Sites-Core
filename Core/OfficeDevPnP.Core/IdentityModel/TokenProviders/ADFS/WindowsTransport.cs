@@ -9,24 +9,12 @@ using System.ServiceModel.Security;
 namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
 {
     /// <summary>
-<<<<<<< HEAD
     /// ADFS Active authentication based on NetworkCredentials. Uses the trust/13/windowstransport ADFS endpoint.
-=======
-    /// ADFS Active authentication based on username + password. Uses the trust/13/usernamemixed ADFS endpoint.
->>>>>>> 1ee38d007d59c2c2ea40148a256e9f7a71b82103
     /// </summary>
     public class WindowsTransport : BaseProvider
     {
         /// <summary>
-<<<<<<< HEAD
         /// Performs active authentication against ADFS using the trust/13/windowstransport ADFS endpoint.
-=======
-<<<<<<< HEAD
-        /// Performs active authentication against ADFS using the trust/13/windowstransport ADFS endpoint.
-=======
-        /// Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
->>>>>>> 1ee38d007d59c2c2ea40148a256e9f7a71b82103
->>>>>>> ff441d089b76d40ca817ff1f4b988685228df519
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
         /// <param name="credentials">Credentials to authenticate against endpoint.</param>
