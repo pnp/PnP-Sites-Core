@@ -20,11 +20,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var site = (web.Context as ClientContext).Site;
-                var searchSettings = site.GetSearchConfiguration();
-
-                if (!String.IsNullOrEmpty(searchSettings))
+                try
                 {
-                    template.SearchSettings = searchSettings;
+                    var searchSettings = site.GetSearchConfiguration();
+
+                    if (!String.IsNullOrEmpty(searchSettings))
+                    {
+                        template.SearchSettings = searchSettings;
+                    }
+                }
+                catch (ServerException)
+                {
+                    // The search service is not necessarily configured
+                    // Swallow the exception
                 }
             }
             return template;
@@ -46,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return true;
+            return creationInfo.IncludeSearchConfiguration;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
