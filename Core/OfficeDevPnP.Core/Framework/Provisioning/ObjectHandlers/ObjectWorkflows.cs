@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (creationInfo.FileConnector == null)
                 {
-                    scope.LogWarning("Cannot export Workflow definitios without a FileConnector.");
+                    scope.LogWarning("Cannot export Workflow definitions without a FileConnector.");
                 }
                 else
                 {

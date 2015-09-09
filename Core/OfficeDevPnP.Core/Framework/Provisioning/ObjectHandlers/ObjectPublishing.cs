@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(webTemplates, wts => wts.Include(wt => wt.Name, wt => wt.Lcid));
                     web.Context.ExecuteQueryRetry();
                     Publishing publishing = new Publishing();
-                    publishing.AvailableWebTemplates.AddRange(webTemplates.Select(wt => new AvailableWebTemplate() { TemplateName = wt.Name, LanguageCode = (int)wt.Lcid }));
+                    publishing.AvailableWebTemplates.AddRange(webTemplates.AsEnumerable<WebTemplate>().Select(wt => new AvailableWebTemplate() { TemplateName = wt.Name, LanguageCode = (int)wt.Lcid }));
                     publishing.AutoCheckRequirements = AutoCheckRequirementsOptions.MakeCompliant;
                     publishing.DesignPackage = null;
                     publishing.PageLayouts.AddRange(GetAvailablePageLayouts(web));
