@@ -280,6 +280,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TestCommon.cs" />
+    <Compile Include="Utilities\UtilityTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
