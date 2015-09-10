@@ -145,5 +145,30 @@ namespace OfficeDevPnP.Core.Tests.Utilities
 				Assert.IsNotNull(clientContext.Web.RootFolder.ServerRelativeUrl);
 			}
 		}
+
+		[TestMethod]
+		public void EnsureMultiplePropertiesTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				//Arrange
+				Exception expectedException = null;
+				try
+				{
+					//Act
+					clientContext.Web.EnsureProperties(w => w.Fields, w => w.ServerRelativeUrl);
+
+				}
+				catch (Exception ex)
+				{
+					expectedException = ex;
+				}
+
+				//Assert
+				Assert.IsNull(expectedException);
+				Assert.IsTrue(clientContext.Web.IsObjectPropertyInstantiated(w => w.Fields));
+				Assert.IsTrue(clientContext.Web.IsPropertyAvailable(w => w.ServerRelativeUrl));
+			}
+		}
 	}
 }

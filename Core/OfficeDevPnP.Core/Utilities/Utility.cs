@@ -72,12 +72,12 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
 		/// <summary>
-		/// Ensures that particular property is loaded on the <see cref="ClientObject"/> and returns this property
+		/// Ensures that particular property is loaded on the <see cref="ClientObject"/> and immediately returns this property
 		/// </summary>
 		/// <typeparam name="T"><see cref="ClientObject"/> type</typeparam>
 		/// <typeparam name="TResult">Property type</typeparam>
 		/// <param name="clientObject"><see cref="ClientObject"/></param>
-		/// <param name="propertySelector">Lamda expression containing the properties to ensure (e.g. w => w.HasUniqueRoleAssignments)</param>
+		/// <param name="propertySelector">Lamda expression containing the property to ensure (e.g. w => w.HasUniqueRoleAssignments)</param>
 		/// <returns>Property value</returns>
 		public static TResult EnsureProperty<T, TResult>(this T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
 		{
@@ -89,6 +89,31 @@ namespace OfficeDevPnP.Core.Utilities
 			}
 
 			return (propertySelector.Compile())(clientObject);
+		}
+
+		/// <summary>
+		/// Ensures that particular properties are loaded on the <see cref="ClientObject"/> 
+		/// </summary>
+		/// <typeparam name="T"><see cref="ClientObject"/> type</typeparam>
+		/// <param name="clientObject"><see cref="ClientObject"/></param>
+		/// <param name="propertySelector">Lamda expressions containing the properties to ensure (e.g. w => w.HasUniqueRoleAssignments, w => w.ServerRelativeUrl)</param>
+		/// <returns>Property value</returns>
+		public static void EnsureProperties<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+		{
+			var dirty = false;
+			foreach (Expression<Func<T, object>> expression in propertySelector)
+			{
+				if (!clientObject.IsPropertyAvailable(expression) && !clientObject.IsObjectPropertyInstantiated(expression))
+				{
+					clientObject.Context.Load(clientObject, expression);
+					dirty = true;
+				}
+			}
+
+			if (dirty)
+			{
+				clientObject.Context.ExecuteQueryRetry();
+			}
 		}
 
 		/// <summary>
