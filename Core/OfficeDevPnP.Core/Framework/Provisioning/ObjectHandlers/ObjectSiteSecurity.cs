@@ -513,6 +513,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            foreach (var baseSiteGroup in baseTemplate.Security.SiteGroups)
+            {
+                var templateSiteGroup = template.Security.SiteGroups.FirstOrDefault(sg => sg.Title == baseSiteGroup.Title);
+                if (templateSiteGroup != null)
+                {
+                    if (templateSiteGroup.Equals(baseSiteGroup))
+                    {
+                        template.Security.SiteGroups.Remove(templateSiteGroup);
+                    }
+                }
+            }
+
+            foreach (var baseRoleDef in baseTemplate.Security.SiteSecurityPermissions.RoleDefinitions)
+            {
+                var templateRoleDef = template.Security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(rd => rd.Name == baseRoleDef.Name);
+                if (templateRoleDef != null)
+                {
+                    if (templateRoleDef.Equals(baseRoleDef))
+                    {
+                        template.Security.SiteSecurityPermissions.RoleDefinitions.Remove(templateRoleDef);
+                    }
+                }
+            }
+
+            foreach (var baseRoleAssignment in baseTemplate.Security.SiteSecurityPermissions.RoleAssignments)
+            {
+                var templateRoleAssignments = template.Security.SiteSecurityPermissions.RoleAssignments.Where(ra => ra.Principal == baseRoleAssignment.Principal).ToList();
+                foreach (var templateRoleAssignment in templateRoleAssignments)
+                {
+                    if (templateRoleAssignment.Equals(baseRoleAssignment))
+                    {
+                        template.Security.SiteSecurityPermissions.RoleAssignments.Remove(templateRoleAssignment);
+                    }
+                }
+            }
+
             return template;
         }
 
