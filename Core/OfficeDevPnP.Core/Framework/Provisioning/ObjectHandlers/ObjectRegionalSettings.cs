@@ -42,6 +42,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 settings.WorkDayStartHour = (WorkHour)web.RegionalSettings.WorkDayStartHour;
 
                 template.RegionalSettings = settings;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    template = CleanupEntities(template, creationInfo.BaseTemplate);
+
+                }
             }
             return template;
         }
@@ -123,6 +130,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return parser;
+        }
+
+        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
+        {
+            if (template.RegionalSettings != null && baseTemplate.RegionalSettings != null && baseTemplate.RegionalSettings.Equals(template.RegionalSettings))
+            {
+                template.RegionalSettings = null;
+            }
+            return template;
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

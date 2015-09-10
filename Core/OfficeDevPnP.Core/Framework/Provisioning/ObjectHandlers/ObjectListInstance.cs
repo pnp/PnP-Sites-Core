@@ -46,6 +46,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var templateList in template.Lists)
                     {
+                        // Check for the presence of the references content types and throw an exception if not present or in template
+                        if (templateList.ContentTypesEnabled)
+                        {
+                            var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
+                            web.Context.ExecuteQueryRetry();
+                            foreach (var ct in templateList.ContentTypeBindings)
+                            {
+                                var found = template.ContentTypes.Any(t => t.Id.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                if (found == false)
+                                {
+                                    found = existingCts.Any(t => t.StringId.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                }
+                                if (!found)
+                                {
+                                    scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
+                                    throw new Exception(string.Format("Referenced content type {0} not available in site or in template", ct.ContentTypeId));
+                                }
+                            }
+                        }
                         var index = existingLists.FindIndex(x => x.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
                         if (index == -1)
                         {
@@ -868,14 +887,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
-                foreach (var item in lists.AsEnumerable().Where(l => (l.Hidden == false || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))))
+                foreach (var siteList in lists.AsEnumerable().Where(l => (l.Hidden == false || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))))
                 {
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)
                     {
                         // Check if we need to skip this list...if so let's do it before we gather all the other information for this list...improves performance
-                        var index = creationInfo.BaseTemplate.Lists.FindIndex(f => f.Url.Equals(item.RootFolder.ServerRelativeUrl.Substring(serverRelativeUrl.Length + 1)) &&
-                                                                                   f.TemplateType.Equals(item.BaseTemplate));
+                        var index = creationInfo.BaseTemplate.Lists.FindIndex(f => f.Url.Equals(siteList.RootFolder.ServerRelativeUrl.Substring(serverRelativeUrl.Length + 1)) &&
+                                                                                   f.TemplateType.Equals(siteList.BaseTemplate));
                         if (index != -1)
                         {
                             baseTemplateList = creationInfo.BaseTemplate.Lists[index];
@@ -885,44 +904,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var contentTypeFields = new List<FieldRef>();
                     var list = new ListInstance
                     {
-                        Description = item.Description,
-                        EnableVersioning = item.EnableVersioning,
-                        TemplateType = item.BaseTemplate,
-                        Title = item.Title,
-                        Hidden = item.Hidden,
-                        EnableFolderCreation = item.EnableFolderCreation,
-                        DocumentTemplate = Tokenize(item.DocumentTemplateUrl, web.Url),
-                        ContentTypesEnabled = item.ContentTypesEnabled,
-                        Url = item.RootFolder.ServerRelativeUrl.Substring(serverRelativeUrl.Length).TrimStart('/'),
-                        TemplateFeatureID = item.TemplateFeatureId,
-                        EnableAttachments = item.EnableAttachments,
-                        OnQuickLaunch = item.OnQuickLaunch,
+                        Description = siteList.Description,
+                        EnableVersioning = siteList.EnableVersioning,
+                        TemplateType = siteList.BaseTemplate,
+                        Title = siteList.Title,
+                        Hidden = siteList.Hidden,
+                        EnableFolderCreation = siteList.EnableFolderCreation,
+                        DocumentTemplate = Tokenize(siteList.DocumentTemplateUrl, web.Url),
+                        ContentTypesEnabled = siteList.ContentTypesEnabled,
+                        Url = siteList.RootFolder.ServerRelativeUrl.Substring(serverRelativeUrl.Length).TrimStart('/'),
+                        TemplateFeatureID = siteList.TemplateFeatureId,
+                        EnableAttachments = siteList.EnableAttachments,
+                        OnQuickLaunch = siteList.OnQuickLaunch,
                         MaxVersionLimit =
-                            item.IsObjectPropertyInstantiated("MajorVersionLimit") ? item.MajorVersionLimit : 0,
-                        EnableMinorVersions = item.EnableMinorVersions,
+                            siteList.IsObjectPropertyInstantiated("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
+                        EnableMinorVersions = siteList.EnableMinorVersions,
                         MinorVersionLimit =
-                            item.IsObjectPropertyInstantiated("MajorWithMinorVersionsLimit")
-                                ? item.MajorWithMinorVersionsLimit
+                            siteList.IsObjectPropertyInstantiated("MajorWithMinorVersionsLimit")
+                                ? siteList.MajorWithMinorVersionsLimit
                                 : 0
                     };
                     var count = 0;
 
-                    foreach (var ct in item.ContentTypes)
+                    foreach (var ct in siteList.ContentTypes)
                     {
                         web.Context.Load(ct, c => c.Parent);
                         web.Context.ExecuteQueryRetry();
-                        if (ct.Parent != null)
+
+                        list.ContentTypeBindings.Add(new ContentTypeBinding
                         {
-                            // Add the parent to the list of content types
-                            if (!BuiltInContentTypeId.Contains(ct.Parent.StringId))
-                            {
-                                list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
-                            }
-                        }
-                        else
-                        {
-                            list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.StringId, Default = count == 0 });
-                        }
+                            ContentTypeId = ct.Parent != null ? ct.Parent.StringId : ct.StringId,
+                            Default = count == 0
+                        });
+
+                        //if (ct.Parent != null)
+                        //{
+                        //    //Add the parent to the list of content types
+                        //    if (!BuiltInContentTypeId.Contains(ct.Parent.StringId))
+                        //    {
+                        //    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+                        //    }
+                        //}
+                        //else
+                        //{
+                        //    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.StringId, Default = count == 0 });
+                        //}
 
                         web.Context.Load(ct.FieldLinks);
                         web.Context.ExecuteQueryRetry();
@@ -936,7 +962,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         count++;
                     }
 
-                    foreach (var view in item.Views.AsEnumerable().Where(view => !view.Hidden))
+                    foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden))
                     {
                         var schemaElement = XElement.Parse(view.ListViewXml);
 
@@ -962,12 +988,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id));
                     web.Context.ExecuteQueryRetry();
 
-                    foreach (var field in item.Fields.AsEnumerable().Where(field => !field.Hidden))
+                    foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
                     {
                         if (siteColumns.FirstOrDefault(sc => sc.Id == field.Id) != null)
                         {
                             var addField = true;
-                            if (item.ContentTypesEnabled && contentTypeFields.FirstOrDefault(c => c.Id == field.Id) == null)
+                            if (siteList.ContentTypesEnabled && contentTypeFields.FirstOrDefault(c => c.Id == field.Id) == null)
                             {
                                 if (contentTypeFields.FirstOrDefault(c => c.Id == field.Id) == null)
                                 {
@@ -1027,20 +1053,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
                         }
 
-                        list.Security = item.GetSecurity();
+                        list.Security = siteList.GetSecurity();
                     }
+                    var logCTWarning = false;
                     if (baseTemplateList != null)
                     {
                         if (!baseTemplateList.Equals(list))
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
+                            if (list.ContentTypesEnabled && list.ContentTypeBindings.Any() && web.IsSubSite())
+                            {
+                                logCTWarning = true;
+                            }
                         }
                     }
                     else
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                         template.Lists.Add(list);
+                        if (list.ContentTypesEnabled && list.ContentTypeBindings.Any() && web.IsSubSite())
+                        {
+                            logCTWarning = true;
+                        }
+
+                    }
+                    if (logCTWarning)
+                    {
+                        scope.LogWarning("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", list.Title);
+                        WriteWarning(string.Format("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", list.Title), ProvisioningMessageType.Warning);
                     }
                 }
 

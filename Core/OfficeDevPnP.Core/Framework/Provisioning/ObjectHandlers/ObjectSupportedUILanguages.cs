@@ -31,6 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
             }
+
             return template;
         }
 
@@ -71,7 +72,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             return parser;
         }
-
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             return true;

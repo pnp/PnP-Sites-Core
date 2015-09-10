@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public RoleDefinition(IEnumerable<Microsoft.SharePoint.Client.PermissionKind> permissions)
         {
-            if(permissions != null)
+            if (permissions != null)
             {
                 this._permissions.AddRange(permissions);
             }
@@ -59,7 +59,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (String.Format("{0}|{1}|{2}|",
                 this.Permissions.GetHashCode(),
                 this.Name.GetHashCode(),
-                this.Description.GetHashCode()
+                this.Description.GetHashCode(),
+                this.Permissions.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());
         }
 
@@ -74,9 +75,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(RoleDefinition other)
         {
-            return (this.Permissions.DeepEquals(other.Permissions) &&
-                this.Name == other.Name &&
-                this.Description == other.Description );
+            return (this.Name == other.Name &&
+                this.Description == other.Description &&
+                this.Permissions.DeepEquals(other.Permissions));
         }
 
         #endregion
