@@ -49,10 +49,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                             foreach (var ct in templateList.ContentTypeBindings)
                             {
-                                var found = template.ContentTypes.Any(t => t.Id.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
                                 if (found == false)
                                 {
-                                    found = existingCts.Any(t => t.StringId.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                    found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
                                 }
                                 if (!found)
                                 {
@@ -833,8 +833,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var propertyLoadRequired = false;
-
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
                 
                 var serverRelativeUrl = web.ServerRelativeUrl;

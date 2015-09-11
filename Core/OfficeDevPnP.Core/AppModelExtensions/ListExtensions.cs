@@ -1056,11 +1056,8 @@ namespace Microsoft.SharePoint.Client
                                 // Term value
                                 foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
                                 {
-                                    if (!term.IsPropertyAvailable("Id") || !term.IsPropertyAvailable("Name"))
-                                    {
-                                        clientContext.Load(term, t => t.Id, t => t.Name);
-                                        clientContext.ExecuteQueryRetry();
-                                    }
+                                    term.EnsureProperties(t => t.Id, t => t.Name);
+                                    
                                     var wssId = list.ParentWeb.GetWssIdForTerm(term);
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }

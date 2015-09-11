@@ -170,12 +170,8 @@ namespace Microsoft.SharePoint.Client.Tests
 				//Arrange
 				var subSite = CreateTestTeamSubSite(clientContext.Web);
 
-				if (!subSite.IsPropertyAvailable(w => w.HasUniqueRoleAssignments))
-				{
-					clientContext.Load(subSite, w => w.HasUniqueRoleAssignments);
-					clientContext.ExecuteQueryRetry();
-				}
-
+                subSite.EnsureProperty(s => s.HasUniqueRoleAssignments);
+				
 				if (!subSite.HasUniqueRoleAssignments)
 				{
 					subSite.BreakRoleInheritance(false, true);
@@ -205,12 +201,8 @@ namespace Microsoft.SharePoint.Client.Tests
 				//Arrange
 				var list = clientContext.Web.CreateList(ListTemplateType.GenericList, GetRandomString(), false);
 
-				if (!list.IsPropertyAvailable(w => w.HasUniqueRoleAssignments))
-				{
-					clientContext.Load(list, w => w.HasUniqueRoleAssignments);
-					clientContext.ExecuteQueryRetry();
-				}
-
+                list.EnsureProperty(l => l.HasUniqueRoleAssignments);
+                
 				if (!list.HasUniqueRoleAssignments)
 				{
 					list.BreakRoleInheritance(false, true);
@@ -245,12 +237,8 @@ namespace Microsoft.SharePoint.Client.Tests
 				clientContext.Load(item);
 				clientContext.ExecuteQueryRetry();
 
-				if (!item.IsPropertyAvailable(w => w.HasUniqueRoleAssignments))
-				{
-					clientContext.Load(item, w => w.HasUniqueRoleAssignments);
-					clientContext.ExecuteQueryRetry();
-				}
-
+                item.EnsureProperty(i => i.HasUniqueRoleAssignments);
+				
 				if (!item.HasUniqueRoleAssignments)
 				{
 					item.BreakRoleInheritance(false, true);
@@ -280,12 +268,9 @@ namespace Microsoft.SharePoint.Client.Tests
 				//Arrange
 				var subSite = CreateTestTeamSubSite(clientContext.Web);
 
-				if (!subSite.IsPropertyAvailable(w => w.HasUniqueRoleAssignments))
-				{
-					clientContext.Load(subSite, w => w.HasUniqueRoleAssignments);
-					clientContext.ExecuteQueryRetry();
-				}
 
+                subSite.EnsureProperty(s => s.HasUniqueRoleAssignments);
+				
 				if (!subSite.HasUniqueRoleAssignments)
 				{
 					subSite.BreakRoleInheritance(true, true);

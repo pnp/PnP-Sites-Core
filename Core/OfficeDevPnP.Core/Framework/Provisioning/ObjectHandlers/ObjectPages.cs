@@ -24,12 +24,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var context = web.Context as ClientContext;
 
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    context.Load(web, w => w.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                }
-
+                web.EnsureProperty(w => w.ServerRelativeUrl);
+                
                 foreach (var page in template.Pages)
                 {
                     var url = parser.ParseString(page.Url);
@@ -93,12 +89,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WelcomePage)
                     {
-                        if (!web.IsPropertyAvailable("RootFolder"))
-                        {
-                            web.Context.Load(web.RootFolder);
-                            web.Context.ExecuteQueryRetry();
-                        }
-
+                        web.EnsureProperty(w => w.RootFolder);
+                        
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
                     }

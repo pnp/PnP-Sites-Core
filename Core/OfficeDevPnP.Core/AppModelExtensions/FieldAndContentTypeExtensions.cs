@@ -663,11 +663,8 @@ namespace Microsoft.SharePoint.Client
                 return;
             }
 
-            if (!list.IsPropertyAvailable("ContentTypesEnabled"))
-            {
-                list.Context.Load(list, l => l.ContentTypesEnabled);
-                list.Context.ExecuteQueryRetry();
-            }
+            list.EnsureProperty(l => l.ContentTypesEnabled);
+
             if (list.ContentTypesEnabled == false)
             {
                 list.ContentTypesEnabled = true;
@@ -741,41 +738,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="hidden">Optionally make this a hidden field</param>
         public static void AddFieldToContentType(this Web web, ContentType contentType, Field field, bool required = false, bool hidden = false)
         {
-            var propertyLoadRequired = false;
-            if (!contentType.IsPropertyAvailable("Id"))
-            {
-                web.Context.Load(contentType, ct => ct.Id);
-                propertyLoadRequired = true;
-            }
-
-            if (!field.IsPropertyAvailable("Id"))
-            {
-                web.Context.Load(field, f => f.Id);
-                propertyLoadRequired = true;
-            }
-
-            if (!contentType.IsPropertyAvailable("FieldLinks"))
-            {
-                web.Context.Load(contentType.FieldLinks);
-                propertyLoadRequired = true;
-            }
-
-            if (!contentType.IsPropertyAvailable("SchemaXml"))
-            {
-                web.Context.Load(contentType, ct => ct.SchemaXml);
-                propertyLoadRequired = true;
-            }
-
-            if (!field.IsPropertyAvailable("SchemaXml"))
-            {
-                web.Context.Load(field, f => f.SchemaXml);
-                propertyLoadRequired = true;
-            }
-
-            if (propertyLoadRequired)
-            {
-                web.Context.ExecuteQueryRetry();
-            }
+            contentType.EnsureProperties(c => c.Id, c => c.FieldLinks, c => c.SchemaXml);
+            field.EnsureProperties(f => f.Id, f => f.SchemaXml);
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_AddField0ToContentType1, field.Id, contentType.Id);
 
@@ -960,11 +924,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("contentTypeId");
             }
 
-            if (!list.IsPropertyAvailable("ContentTypesEnabled"))
-            {
-                list.Context.Load(list, l => l.ContentTypesEnabled);
-                list.Context.ExecuteQueryRetry();
-            }
+            list.EnsureProperty(l => l.ContentTypesEnabled);
 
             if (!list.ContentTypesEnabled)
             {
@@ -1014,11 +974,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("contentTypeName");
             }
 
-            if (!list.IsPropertyAvailable("ContentTypesEnabled"))
-            {
-                list.Context.Load(list, l => l.ContentTypesEnabled);
-                list.Context.ExecuteQueryRetry();
-            }
+            list.EnsureProperty(l => l.ContentTypesEnabled);
 
             if (!list.ContentTypesEnabled)
             {
@@ -1397,7 +1353,7 @@ namespace Microsoft.SharePoint.Client
                                  .OrderBy(x => !x.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase))
                                  .ToArray();
             list.RootFolder.UniqueContentTypeOrder = newOrder;
-           
+
             list.RootFolder.Update();
             list.Update();
             list.Context.ExecuteQueryRetry();
