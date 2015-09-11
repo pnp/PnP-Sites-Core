@@ -23,10 +23,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var auditSettings = new AuditSettings();
 
                 var site = (web.Context as ClientContext).Site;
+
+                site.EnsureProperties(s => s.Audit, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
+
                 var siteAuditSettings = site.Audit;
-                web.Context.Load(siteAuditSettings);
-                web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
-                web.Context.ExecuteQueryRetry();
 
                 bool include = false;
                 if (siteAuditSettings.AuditFlags != auditSettings.AuditFlags)
@@ -62,10 +62,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (template.AuditSettings != null)
                 {
                     var site = (web.Context as ClientContext).Site;
+
+                    site.EnsureProperties(s => s.Audit, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
+
                     var siteAuditSettings = site.Audit;
-                    web.Context.Load(siteAuditSettings);
-                    web.Context.Load(site, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
-                    web.Context.ExecuteQueryRetry();
 
                     var isDirty = false;
                     if (template.AuditSettings.AuditFlags != siteAuditSettings.AuditFlags)
