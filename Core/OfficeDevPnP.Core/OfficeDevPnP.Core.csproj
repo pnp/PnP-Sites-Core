@@ -242,6 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
+    <Compile Include="AppModelExtensions\ClientObjectExtensions.cs" />
     <Compile Include="AppModelExtensions\Deprecated\BrandingExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\ClientContextExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\FeatureExtensions.deprecated.cs" />
