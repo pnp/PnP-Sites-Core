@@ -229,6 +229,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AppModelExtensions\BrandingExtensionsTests.cs" />
+    <Compile Include="AppModelExtensions\ClientObjectExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\FeatureExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\FieldAndContentTypeExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\JavaScriptExtensionsTests.cs" />
@@ -280,7 +281,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TestCommon.cs" />
-    <Compile Include="Utilities\UtilityTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
