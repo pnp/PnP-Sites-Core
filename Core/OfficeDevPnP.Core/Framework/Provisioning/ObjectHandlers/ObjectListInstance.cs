@@ -29,11 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
 
-                    if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                    {
-                        web.Context.Load(web, w => w.ServerRelativeUrl);
-                        web.Context.ExecuteQueryRetry();
-                    }
+                    web.EnsureProperty(w => w.ServerRelativeUrl);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
@@ -838,21 +834,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var propertyLoadRequired = false;
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    web.Context.Load(web, w => w.ServerRelativeUrl);
-                    propertyLoadRequired = true;
-                }
-                if (!web.IsPropertyAvailable("Url"))
-                {
-                    web.Context.Load(web, w => w.Url);
-                    propertyLoadRequired = true;
-                }
-                if (propertyLoadRequired)
-                {
-                    web.Context.ExecuteQueryRetry();
-                }
 
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
                 // For each list in the site

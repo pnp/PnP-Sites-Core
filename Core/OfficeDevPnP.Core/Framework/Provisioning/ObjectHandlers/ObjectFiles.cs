@@ -21,11 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    context.Load(web, w => w.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                }
+                web.EnsureProperty(w => w.ServerRelativeUrl);
 
                 foreach (var file in template.Files)
                 {
