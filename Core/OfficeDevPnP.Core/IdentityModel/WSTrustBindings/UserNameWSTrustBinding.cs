@@ -1,6 +1,4 @@
-﻿/* Based on reflectored code coming from Microsoft.IdentityModel.Protocols.WSTrust.Bindings.UserNameWSTrustBinding class */
-
-using System;
+﻿using System;
 using System.Net;
 using System.ServiceModel;
 using System.ServiceModel.Channels;

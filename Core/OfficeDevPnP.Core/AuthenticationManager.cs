@@ -299,6 +299,39 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
+        /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS using Windows Authentication
+        /// </summary>
+        /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="credentials">Credentials to authenticate against endpoint.</param>
+        /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
+        /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
+        /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetADFSWindowsTransportAuthenticatedContext(string siteUrl, NetworkCredential credentials, string sts, string idpId, int logonTokenCacheExpirationWindow = 10) {
+
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.ExecutingWebRequest += delegate(object oSender, WebRequestEventArgs webRequestEventArgs) {
+                if (fedAuth != null) {
+                    Cookie fedAuthCookie = fedAuth.GetCookies(new Uri(siteUrl))["FedAuth"];
+                    // If cookie is expired a new fedAuth cookie needs to be requested
+                    if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now) {
+                        fedAuth = new WindowsTransport().GetFedAuthCookie(siteUrl, credentials, new Uri(String.Format("https://{0}/adfs/services/trust/13/windowstransport", sts)), idpId, logonTokenCacheExpirationWindow);
+                    }
+                } else {
+                    fedAuth = new WindowsTransport().GetFedAuthCookie(siteUrl, credentials, new Uri(String.Format("https://{0}/adfs/services/trust/13/windowstransport", sts)), idpId, logonTokenCacheExpirationWindow);
+                }
+
+                if (fedAuth == null) {
+                    throw new Exception("No fedAuth cookie acquired");
+                }
+
+                webRequestEventArgs.WebRequestExecutor.WebRequest.CookieContainer = fedAuth;
+            };
+
+            return clientContext;
+        }
+
+        /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>

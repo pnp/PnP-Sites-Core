@@ -470,6 +470,8 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
+    <Compile Include="IdentityModel\TokenProviders\ADFS\WindowsTransport.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\WindowsWSTrustBinding.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
     <Compile Include="Framework\TimerJobs\Utilities\SiteEnumeration.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\BaseProvider.cs" />
