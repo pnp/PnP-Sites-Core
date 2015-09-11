@@ -41,6 +41,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 {
                     //Act
                     var serverRelativeUrl = clientContext.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                    var id = clientContext.Web.EnsureProperty(w => w.Id);
                 }
                 catch (Exception ex)
                 {

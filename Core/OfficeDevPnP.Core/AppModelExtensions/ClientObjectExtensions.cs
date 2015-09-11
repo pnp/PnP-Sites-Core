@@ -91,12 +91,17 @@ namespace Microsoft.SharePoint.Client
         /// <returns>New Expression where return type is object and not generic</returns>
         public static Expression<Func<TInput, object>> ToUntypedPropertyExpression<TInput, TOutput>(this Expression<Func<TInput, TOutput>> expression)
         {
+
             var body = expression.Body as MemberExpression ?? ((UnaryExpression)expression.Body).Operand as MemberExpression;
+
             var memberName = body.Member.Name;
 
             var param = Expression.Parameter(typeof(TInput));
             var field = Expression.Property(param, memberName);
-            return Expression.Lambda<Func<TInput, object>>(field, param);
+
+            return Expression.Lambda<Func<TInput, object>>(
+                Expression.Convert(field, typeof(object)),
+                param);
         }
     }
 }
