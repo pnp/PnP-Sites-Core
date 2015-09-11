@@ -1174,7 +1174,7 @@ namespace Microsoft.SharePoint.Client
 
             Guid returnGuid = Guid.Empty;
 
-            web.EnsureProperty(w => w.Url);
+            web.EnsureProperties(w => w.Url);
 
             returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
 
