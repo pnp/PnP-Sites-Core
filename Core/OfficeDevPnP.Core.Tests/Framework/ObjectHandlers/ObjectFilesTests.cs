@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
                 
                 var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "test/" + fileName));
                 ctx.Load(file, f => f.Exists);
@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
 
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
                 
                 var file = ctx.Web.GetFileByServerRelativeUrl(
                     UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
