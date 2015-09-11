@@ -37,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Web web, ProvisioningTemplate template)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
             
             _web = web;
 

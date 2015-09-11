@@ -70,7 +70,7 @@ namespace Microsoft.SharePoint.Client
             var backgroundUrl = default(string);
             var masterUrl = default(string);
 
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
 
             if (!string.IsNullOrEmpty(paletteFileName))
             {
@@ -106,7 +106,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
         public static void CreateComposedLookByUrl(this Web web, string lookName, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, string masterServerRelativeUrl, int displayOrder = 1, bool replaceContent = true)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
 
             var composedLooksList = web.GetCatalog((int)ListTemplateType.DesignCatalog);
 
@@ -1214,7 +1214,7 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentNullException("url");
 
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
 
             string newUrl = url.Substring(web.ServerRelativeUrl.Length);
             if (newUrl.Length > 0 && newUrl[0] == '/')

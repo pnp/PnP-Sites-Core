@@ -94,7 +94,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             var deleted = false;
-            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
+            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
 
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
@@ -194,7 +194,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
             }
 
-            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
+            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
 
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
@@ -1014,7 +1014,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="descriptionResource">Localized Description string</param>
         public static void SetLocalizationLabels(this Web web, string cultureName, string titleResource, string descriptionResource)
         {
-            web.EnsureProperty(w => w.TitleResource);
+            web.EnsureProperties(w => w.TitleResource);
 
             // Set translations for the culture
             web.TitleResource.SetValueForUICulture(cultureName, titleResource);

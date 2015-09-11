@@ -294,7 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                         }
                     }
 
-                    spFolder.EnsureProperty(f => f.ServerRelativeUrl);
+                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
 
                     var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
                     File file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
@@ -370,7 +370,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                         }
                     }
 
-                    spFolder.EnsureProperty(f => f.ServerRelativeUrl);
+                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
                     
                     var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
                     file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);

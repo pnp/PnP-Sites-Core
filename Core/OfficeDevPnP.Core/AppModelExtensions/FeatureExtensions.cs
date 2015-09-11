@@ -92,8 +92,8 @@ namespace Microsoft.SharePoint.Client
             features.Context.ExecuteQueryRetry();
 
             Feature iprFeature = features.GetById(featureID);
-            iprFeature.EnsureProperty(f => f.DefinitionId);
-            
+            iprFeature.EnsureProperties(f => f.DefinitionId);
+
             if (iprFeature != null && iprFeature.IsPropertyAvailable("DefinitionId") && !iprFeature.ServerObjectIsNull.Value && iprFeature.DefinitionId.Equals(featureID))
             {
                 featureIsActive = true;

@@ -224,8 +224,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The folder structure</returns>
         public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
-            parentFolder.EnsureProperty(f => f.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
 
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
@@ -795,7 +795,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                folder.EnsureProperty(f => f.ServerRelativeUrl);
+                folder.EnsureProperties(f => f.ServerRelativeUrl);
                 
                 var fileServerRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
                 var context = folder.Context as ClientContext;

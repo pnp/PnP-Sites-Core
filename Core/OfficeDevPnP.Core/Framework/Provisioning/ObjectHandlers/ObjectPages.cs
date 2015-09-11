@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperty(w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.ServerRelativeUrl);
                 
                 foreach (var page in template.Pages)
                 {
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WelcomePage)
                     {
-                        web.EnsureProperty(w => w.RootFolder);
+                        web.EnsureProperties(w => w.RootFolder);
                         
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
