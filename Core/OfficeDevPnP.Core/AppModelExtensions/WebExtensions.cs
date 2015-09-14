@@ -11,7 +11,6 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using Utility = OfficeDevPnP.Core.Utilities.Utility;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -170,7 +169,8 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
             }
 
-            Utility.EnsureWeb(parentWeb.Context, parentWeb, "ServerRelativeUrl");
+            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
+
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
             // NOTE: Predicate does not take into account a required case-insensitive comparison
