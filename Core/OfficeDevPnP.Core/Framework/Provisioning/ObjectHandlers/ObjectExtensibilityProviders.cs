@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_, provider.Assembly);
-                            _extManager.ExecuteExtensibilityCallOut(context, provider, template);
+                            _extManager.ExecuteExtensibilityCallOut(context, provider, template, parser);
                         }
                         catch (Exception ex)
                         {

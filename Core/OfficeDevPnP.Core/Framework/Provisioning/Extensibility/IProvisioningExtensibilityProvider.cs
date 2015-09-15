@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 {
@@ -13,7 +14,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// </summary>
         /// <param name="ctx"></param>
         /// <param name="template"></param>
-        /// <param name="configurationData"></param>
-        void ProcessRequest(ClientContext ctx, ProvisioningTemplate template, string configurationData);
+		/// <param name="parser"></param>
+		/// <param name="configurationData"></param>
+        void ProcessRequest(ClientContext ctx, ProvisioningTemplate template, TokenParser parser, string configurationData);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 {
@@ -17,10 +18,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <param name="ctx">Authenticated ClientContext that is passed to teh custom provider.</param>
         /// <param name="provider">A custom Extensibility Provisioning Provider</param>
         /// <param name="template">ProvisioningTemplate that is passed to the custom provider</param>
-        /// <exception cref="ExtensiblityPipelineException"></exception>
+		/// <param name="parser">Instance of Token Parser that is passed to the custom provider</param>
+		/// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public void ExecuteExtensibilityCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template)
+        public void ExecuteExtensibilityCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template, TokenParser parser)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
 
@@ -44,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                     provider.Type);
 
                 var _instance = (IProvisioningExtensibilityProvider)Activator.CreateInstance(provider.Assembly, provider.Type).Unwrap();
-                _instance.ProcessRequest(ctx, template, provider.Configuration);
+                _instance.ProcessRequest(ctx, template, parser, provider.Configuration);
 
                 Log.Info(_loggingSource,
                     CoreResources.Provisioning_Extensibility_Pipeline_Success,
