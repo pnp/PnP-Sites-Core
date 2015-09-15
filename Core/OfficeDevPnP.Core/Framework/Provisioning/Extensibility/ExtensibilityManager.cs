@@ -45,8 +45,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                     provider.Assembly,
                     provider.Type);
 
-                var _instance = (IProvisioningExtensibilityProvider)Activator.CreateInstance(provider.Assembly, provider.Type).Unwrap();
-                _instance.ProcessRequest(ctx, template, parser, provider.Configuration);
+                var _instance = Activator.CreateInstance(provider.Assembly, provider.Type).Unwrap();
+				if (_instance is IProvisioningExtensibilityProvider2)
+				{
+					((IProvisioningExtensibilityProvider2)_instance).ProcessRequest(ctx, template, parser, provider.Configuration);
+				}
+				else
+				{
+					((IProvisioningExtensibilityProvider)_instance).ProcessRequest(ctx, template, provider.Configuration);
+				}
 
                 Log.Info(_loggingSource,
                     CoreResources.Provisioning_Extensibility_Pipeline_Success,
