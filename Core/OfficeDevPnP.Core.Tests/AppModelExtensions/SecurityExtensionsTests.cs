@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Tests;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
@@ -161,6 +162,139 @@ namespace Microsoft.SharePoint.Client.Tests
             }
         }
 
+		[TestMethod]
+		public void AddPermissionLevelToGroupSubSiteTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				//Arrange
+				var subSite = CreateTestTeamSubSite(clientContext.Web);
+
+                subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
+				
+				if (!subSite.HasUniqueRoleAssignments)
+				{
+					subSite.BreakRoleInheritance(false, true);
+				}
+
+				// Test
+				subSite.AddPermissionLevelToGroup(_testGroupName, RoleType.Contributor, false);
+
+				//Get Group
+				Group group = subSite.SiteGroups.GetByName(_testGroupName);
+				clientContext.ExecuteQueryRetry();
+
+				//Assert
+				Assert.IsTrue(CheckPermissionOnPrinciple(subSite, group, RoleType.Contributor));
+
+				//Teardown
+				subSite.DeleteObject();
+				clientContext.ExecuteQueryRetry();
+			}
+		}
+
+		[TestMethod]
+		public void AddPermissionLevelToGroupListTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				//Arrange
+				var list = clientContext.Web.CreateList(ListTemplateType.GenericList, GetRandomString(), false);
+
+                list.EnsureProperties(l => l.HasUniqueRoleAssignments);
+                
+				if (!list.HasUniqueRoleAssignments)
+				{
+					list.BreakRoleInheritance(false, true);
+				}
+
+				// Test
+				list.AddPermissionLevelToGroup(_testGroupName, RoleType.Contributor, false);
+
+				//Get Group
+				Group group = list.ParentWeb.SiteGroups.GetByName(_testGroupName);
+				clientContext.ExecuteQueryRetry();
+
+				//Assert
+				Assert.IsTrue(CheckPermissionOnPrinciple(list, group, RoleType.Contributor));
+
+				//Teardown
+				list.DeleteObject();
+				clientContext.ExecuteQueryRetry();
+			}
+		}
+
+		[TestMethod]
+		public void AddPermissionLevelToGroupListItemTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				//Arrange
+				var list = clientContext.Web.CreateList(ListTemplateType.GenericList, GetRandomString(), false);
+				var item = list.AddItem(new ListItemCreationInformation());
+				item["Title"] = "Test";
+				item.Update();
+				clientContext.Load(item);
+				clientContext.ExecuteQueryRetry();
+
+                item.EnsureProperties(i => i.HasUniqueRoleAssignments);
+				
+				if (!item.HasUniqueRoleAssignments)
+				{
+					item.BreakRoleInheritance(false, true);
+				}
+
+				//Get Group
+				Group group = list.ParentWeb.SiteGroups.GetByName(_testGroupName);
+				clientContext.ExecuteQueryRetry();
+
+				// Test
+				item.AddPermissionLevelToPrincipal(group, RoleType.Contributor, false);
+
+				//Assert
+				Assert.IsTrue(CheckPermissionOnPrinciple(item, group, RoleType.Contributor));
+
+				//Teardown
+				list.DeleteObject();
+				clientContext.ExecuteQueryRetry();
+			}
+		}
+
+		[TestMethod]
+		public void RemovePermissionLevelFromGroupSubSiteTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				//Arrange
+				var subSite = CreateTestTeamSubSite(clientContext.Web);
+
+
+                subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
+				
+				if (!subSite.HasUniqueRoleAssignments)
+				{
+					subSite.BreakRoleInheritance(true, true);
+				}
+
+				//Get Group
+				Group group = subSite.SiteGroups.GetByName(_testGroupName);
+				clientContext.ExecuteQueryRetry();
+
+				subSite.AddPermissionLevelToPrincipal(group, RoleType.Contributor);
+				subSite.AddPermissionLevelToPrincipal(group, RoleType.Editor);
+
+				// Test
+				subSite.RemovePermissionLevelFromPrincipal(group, RoleType.Contributor);
+
+				//Assert
+				Assert.IsFalse(CheckPermissionOnPrinciple(subSite, group, RoleType.Contributor));
+
+				//Teardown
+				subSite.DeleteObject();
+				clientContext.ExecuteQueryRetry();
+			}
+		}
+
         [TestMethod]
         public void AddPermissionLevelByRoleDefToGroupTest()
         {
@@ -211,7 +345,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (ClientContext clientContext = TestCommon.CreateClientContext())
             {
                 Web web = clientContext.Web;
-
+				
                 //Setup: Make sure permission does not already exist
                 web.RemovePermissionLevelFromUser(_userLogin, "Approve");
 
@@ -288,13 +422,13 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region helper methods
-        private bool CheckPermissionOnPrinciple(Web web, Principal principle, RoleType roleType)
+        private bool CheckPermissionOnPrinciple(SecurableObject securableObject, Principal principle, RoleType roleType)
         {
             //Get Roles for the User
             RoleDefinitionBindingCollection roleDefinitionBindingCollection =
-                web.RoleAssignments.GetByPrincipal(principle).RoleDefinitionBindings;
-            web.Context.Load(roleDefinitionBindingCollection);
-            web.Context.ExecuteQueryRetry();
+                securableObject.RoleAssignments.GetByPrincipal(principle).RoleDefinitionBindings;
+            securableObject.Context.Load(roleDefinitionBindingCollection);
+            securableObject.Context.ExecuteQueryRetry();
 
             //Check if assigned role is found
             bool roleExists = false;
@@ -309,13 +443,13 @@ namespace Microsoft.SharePoint.Client.Tests
             return roleExists;
         }
 
-        private bool CheckPermissionOnPrinciple(Web web, Principal principle, string roleDefinitionName)
+        private bool CheckPermissionOnPrinciple(SecurableObject securableObject, Principal principle, string roleDefinitionName)
         {
             //Get Roles for the User
             RoleDefinitionBindingCollection roleDefinitionBindingCollection =
-                web.RoleAssignments.GetByPrincipal(principle).RoleDefinitionBindings;
-            web.Context.Load(roleDefinitionBindingCollection);
-            web.Context.ExecuteQueryRetry();
+                securableObject.RoleAssignments.GetByPrincipal(principle).RoleDefinitionBindings;
+            securableObject.Context.Load(roleDefinitionBindingCollection);
+            securableObject.Context.ExecuteQueryRetry();
 
             //Check if assigned role is found
             bool roleExists = false;
@@ -328,7 +462,36 @@ namespace Microsoft.SharePoint.Client.Tests
             }
 
             return roleExists;
-        }
+        
+		}
+
+	    private Web CreateTestTeamSubSite(Web parentWeb)
+	    {
+		    var siteUrl = GetRandomString();
+		    var webInfo = new WebCreationInformation
+		    {
+			    Title = siteUrl,
+			    Url = siteUrl,
+			    Description = siteUrl,
+			    Language = 1033,
+			    UseSamePermissionsAsParentSite = true,
+			    WebTemplate = "STS#0"
+		    };
+
+		    var web = parentWeb.Webs.Add(webInfo);
+			parentWeb.Context.Load(web);
+			parentWeb.Context.ExecuteQueryRetry();
+
+		    return web;
+
+	    }
+
+	    private string GetRandomString()
+	    {
+			var chars = "abcdefghijklmnopqrstuvwxyz";
+			var random = new Random();
+			return new string(Enumerable.Repeat(chars, 4).Select(s => s[random.Next(s.Length)]).ToArray());
+	    }
         #endregion
     }
 }

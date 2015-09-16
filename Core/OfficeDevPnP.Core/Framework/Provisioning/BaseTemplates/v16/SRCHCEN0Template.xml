@@ -1,8 +1,12 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=1.5.915.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=1.7.1015.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCEN0template">
     <pnp:ProvisioningTemplate ID="SRCHCEN0template" Version="1">
+      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
+      <pnp:SupportedUILanguages>
+        <pnp:SupportedUILanguage LCID="1033" />
+      </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="__SearchReportsAndDataRuleId" Value="edd1e68d-2edc-4b18-8131-952d8108cf44" />
         <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="4b48bb85-06a7-41dc-a714-d9fe357bddf3;" />
@@ -17,6 +21,7 @@
         <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="1785eadd-abc1-4b4e-b043-0629525b3a3a" />
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="ce29a9ee-0fa5-405e-8acd-367d05ea7ea8" />
         <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="f25b62f4-0933-4603-93d7-ef6511d050bc" />
+        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="2015-09-02 01:56:53" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="2793cbee-786c-4b83-8a5b-97f12baa06a6" />
         <pnp:PropertyBagEntry Key="__DocumentsListId" Value="bc62934b-46eb-46df-ac6d-a214242f0d5e" />
@@ -27,13 +32,14 @@
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" />
         <pnp:PropertyBagEntry Key="__PagesListId" Value="a4bb011b-377b-45b0-9bae-38c257c43955" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="4b48bb85-06a7-41dc-a714-d9fe357bddf3;" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="f6a72c6a-94c8-4c33-9179-132ad12244cd" />
         <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="15439eb0-8491-4eb3-bb65-67c532d3a517" />
         <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" />
         <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" />
         <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;2371ca89-74d7-4454-8103-112427be1bb1&quot; TermSetId=&quot;5ac10d9c-55bb-433e-a372-9471cbd83564&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;2371ca89-74d7-4454-8103-112427be1bb1&quot; TermSetId=&quot;5ac10d9c-55bb-433e-a372-9471cbd83564&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" />
         <pnp:PropertyBagEntry Key="showurlstructure" Value="1" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;fd344f56-b88a-4689-b570-e77f65248118&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;" />
+        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="2015-09-02 03:07:29" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" />
         <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" />
@@ -45,6 +51,7 @@
         <pnp:PropertyBagEntry Key="__NoMobileMapping47373c7ebbb640709d1731e8f91c2e36" Value="True" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4316" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;fd344f56-b88a-4689-b570-e77f65248118&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="061cb90c-021b-4e18-b638-9b9e0b84c7cb" />
@@ -70,6 +77,112 @@
         <pnp:AdditionalOwners>
           <pnp:User Name="SHAREPOINT\system" />
         </pnp:AdditionalOwners>
+        <pnp:Permissions>
+          <pnp:RoleDefinitions>
+            <pnp:RoleDefinition Name="Approve" Description="Can edit and approve pages, list items, and documents.">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>AddListItems</pnp:Permission>
+                <pnp:Permission>EditListItems</pnp:Permission>
+                <pnp:Permission>DeleteListItems</pnp:Permission>
+                <pnp:Permission>ApproveItems</pnp:Permission>
+                <pnp:Permission>OpenItems</pnp:Permission>
+                <pnp:Permission>ViewVersions</pnp:Permission>
+                <pnp:Permission>DeleteVersions</pnp:Permission>
+                <pnp:Permission>CancelCheckout</pnp:Permission>
+                <pnp:Permission>ManagePersonalViews</pnp:Permission>
+                <pnp:Permission>ViewFormPages</pnp:Permission>
+                <pnp:Permission>Open</pnp:Permission>
+                <pnp:Permission>ViewPages</pnp:Permission>
+                <pnp:Permission>CreateSSCSite</pnp:Permission>
+                <pnp:Permission>BrowseDirectories</pnp:Permission>
+                <pnp:Permission>BrowseUserInfo</pnp:Permission>
+                <pnp:Permission>AddDelPrivateWebParts</pnp:Permission>
+                <pnp:Permission>UpdatePersonalWebParts</pnp:Permission>
+                <pnp:Permission>UseClientIntegration</pnp:Permission>
+                <pnp:Permission>UseRemoteAPIs</pnp:Permission>
+                <pnp:Permission>CreateAlerts</pnp:Permission>
+                <pnp:Permission>EditMyUserInfo</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="Manage Hierarchy" Description="Can create sites and edit pages, list items, and documents.">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>AddListItems</pnp:Permission>
+                <pnp:Permission>EditListItems</pnp:Permission>
+                <pnp:Permission>DeleteListItems</pnp:Permission>
+                <pnp:Permission>OpenItems</pnp:Permission>
+                <pnp:Permission>ViewVersions</pnp:Permission>
+                <pnp:Permission>DeleteVersions</pnp:Permission>
+                <pnp:Permission>CancelCheckout</pnp:Permission>
+                <pnp:Permission>ManagePersonalViews</pnp:Permission>
+                <pnp:Permission>ManageLists</pnp:Permission>
+                <pnp:Permission>ViewFormPages</pnp:Permission>
+                <pnp:Permission>Open</pnp:Permission>
+                <pnp:Permission>ViewPages</pnp:Permission>
+                <pnp:Permission>AddAndCustomizePages</pnp:Permission>
+                <pnp:Permission>ViewUsageData</pnp:Permission>
+                <pnp:Permission>CreateSSCSite</pnp:Permission>
+                <pnp:Permission>ManageSubwebs</pnp:Permission>
+                <pnp:Permission>ManagePermissions</pnp:Permission>
+                <pnp:Permission>BrowseDirectories</pnp:Permission>
+                <pnp:Permission>BrowseUserInfo</pnp:Permission>
+                <pnp:Permission>AddDelPrivateWebParts</pnp:Permission>
+                <pnp:Permission>UpdatePersonalWebParts</pnp:Permission>
+                <pnp:Permission>ManageWeb</pnp:Permission>
+                <pnp:Permission>UseClientIntegration</pnp:Permission>
+                <pnp:Permission>UseRemoteAPIs</pnp:Permission>
+                <pnp:Permission>ManageAlerts</pnp:Permission>
+                <pnp:Permission>CreateAlerts</pnp:Permission>
+                <pnp:Permission>EditMyUserInfo</pnp:Permission>
+                <pnp:Permission>EnumeratePermissions</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="Restricted Read" Description="Can view pages and documents, but cannot view historical versions or user permissions.">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>OpenItems</pnp:Permission>
+                <pnp:Permission>Open</pnp:Permission>
+                <pnp:Permission>ViewPages</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="Restricted Interfaces for Translation" Description="Can open lists and folders, and use remote interfaces.">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+                <pnp:Permission>Open</pnp:Permission>
+                <pnp:Permission>UseRemoteAPIs</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="View Only" Description="Can view pages, list items, and documents. Document types with server-side file handlers can be viewed in the browser but not downloaded.">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>ViewVersions</pnp:Permission>
+                <pnp:Permission>ViewFormPages</pnp:Permission>
+                <pnp:Permission>Open</pnp:Permission>
+                <pnp:Permission>ViewPages</pnp:Permission>
+                <pnp:Permission>CreateSSCSite</pnp:Permission>
+                <pnp:Permission>BrowseUserInfo</pnp:Permission>
+                <pnp:Permission>UseClientIntegration</pnp:Permission>
+                <pnp:Permission>UseRemoteAPIs</pnp:Permission>
+                <pnp:Permission>CreateAlerts</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+          </pnp:RoleDefinitions>
+          <pnp:RoleAssignments>
+            <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+            <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+            <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
+            <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
+            <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Manage Hierarchy" />
+            <pnp:RoleAssignment Principal="Approvers" RoleDefinition="Approve" />
+            <pnp:RoleAssignment Principal="Restricted Readers" RoleDefinition="Restricted Read" />
+            <pnp:RoleAssignment Principal="Translation Managers" RoleDefinition="Restricted Interfaces for Translation" />
+          </pnp:RoleAssignments>
+        </pnp:Permissions>
       </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{56747800-D36E-4625-ABE3-B1BC74A7D5F8}" Name="LowerValuesAreBetter" StaticName="LowerValuesAreBetter" Description="Whether lower is better or higher is better" Group="Status Indicators" Type="Boolean" DisplayName="Lower values are better" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
@@ -3475,7 +3588,7 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Content and Structure Reports" Description="Use the reports list to customize the queries that appear in the Content and Structure Tool views" DocumentTemplate="" TemplateType="100" Url="Reports List" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableAttachments="false" EnableFolderCreation="false">
+        <pnp:ListInstance Title="Content and Structure Reports" Description="Use the reports list to customize the queries that appear in the Content and Structure Tool views" DocumentTemplate="" TemplateType="100" Url="Reports List" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:Views>
             <View Name="{9A977D94-BBDD-45D8-8BDA-B44E410F2240}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateSRCHCEN0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=40">
               <Query>
@@ -3504,7 +3617,7 @@
             <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Report_x0020_Description" DisplayName="Report Description" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="" TemplateType="101" Url="Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="" TemplateType="101" Url="Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:Views>
             <View Name="{AE47FCF9-405E-405A-BAED-1BBEBE405E3F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
@@ -3527,7 +3640,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false">
+        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
@@ -3584,7 +3697,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -3689,7 +3802,7 @@
             <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" DisplayName="People In Video" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D" />
@@ -3739,7 +3852,7 @@
             <pnp:FieldRef ID="27761311-936a-40ba-80cd-ca5e7a540a36" Name="SummaryLinks2" DisplayName="Summary Links 2" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Reusable Content" Description="Items in this list contain HTML or text content which can be inserted into web pages. If an item has automatic update selected, the content will be inserted into web pages as a read-only reference, and the content will update if the item is changed. If the item does not have automatic update selected, the content will be inserted as a copy in the web page, and the content will not update if the item is changed." DocumentTemplate="" TemplateType="100" Url="ReusableContent" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Reusable Content" Description="Items in this list contain HTML or text content which can be inserted into web pages. If an item has automatic update selected, the content will be inserted into web pages as a read-only reference, and the content will update if the item is changed. If the item does not have automatic update selected, the content will be inserted as a copy in the web page, and the content will not update if the item is changed." DocumentTemplate="" TemplateType="100" Url="ReusableContent" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01002CF74A4DAE39480396EEA7A4BA2BE5FB" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x01004D5A79BAFA4A4576B79C56FF3D0D662D" />
@@ -3850,7 +3963,7 @@
             <pnp:FieldRef ID="890e9d41-5a0e-4988-87bf-0fb9d80f60df" Name="ReusableText" DisplayName="Reusable Text" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="" TemplateType="101" Url="SiteCollectionDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="" TemplateType="101" Url="SiteCollectionDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:Views>
             <View Name="{675296C6-A41D-41FC-9D99-345E529B6EF1}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
@@ -3873,7 +3986,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -3977,8 +4090,20 @@
             <pnp:FieldRef ID="6e4ee0c4-4d06-4c04-8d02-58d10fdf912d" Name="VideoSetShowEmbedLink" DisplayName="Show Embed Link" />
             <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" DisplayName="People In Video" />
           </pnp:FieldRefs>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Style Resource Readers" RoleDefinition="Restricted Read" />
+              <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
+              <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Approvers" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Restricted Readers" RoleDefinition="Restricted Read" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:Views>
             <View Name="{07DE7983-F3DD-4A32-B15F-00FCF81A8E18}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
@@ -4000,8 +4125,20 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Style Resource Readers" RoleDefinition="Restricted Read" />
+              <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
+              <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Restricted Read" />
+              <pnp:RoleAssignment Principal="Approvers" RoleDefinition="Restricted Read" />
+              <pnp:RoleAssignment Principal="Restricted Readers" RoleDefinition="Restricted Read" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Tabs in Search Pages" Description="Use this list to store the tabs displayed in the default blank search pages." DocumentTemplate="" TemplateType="301" Url="SearchCenter" MinorVersionLimit="0" MaxVersionLimit="0" EnableAttachments="false" EnableFolderCreation="false">
+        <pnp:ListInstance Title="Tabs in Search Pages" Description="Use this list to store the tabs displayed in the default blank search pages." DocumentTemplate="" TemplateType="301" Url="SearchCenter" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:Views>
             <View Name="{F8E2A1CF-D422-4F82-9F0E-1A2E4833A3DE}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
@@ -4084,7 +4221,7 @@
             </Field>
           </pnp:Fields>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Tabs in Search Results" Description="Use this list to store the tabs displayed in search results." DocumentTemplate="" TemplateType="301" Url="SearchResults" MinorVersionLimit="0" MaxVersionLimit="0" EnableAttachments="false" EnableFolderCreation="false">
+        <pnp:ListInstance Title="Tabs in Search Results" Description="Use this list to store the tabs displayed in search results." DocumentTemplate="" TemplateType="301" Url="SearchResults" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:Views>
             <View Name="{9233B20E-9D83-417E-8760-7FEE646E47AC}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
@@ -4167,7 +4304,7 @@
             </Field>
           </pnp:Fields>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false">
+        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false">
           <pnp:Views>
             <View Name="{67FF2690-9201-423F-8FDC-DF3CFD1798E5}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
@@ -4468,8 +4605,135 @@
           <pnp:Feature ID="9e99f7d7-08e9-455c-b3aa-fc71b9210027" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:CustomActions />
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" MasterPage="{masterpagecatalog}/seattle.master" SiteLogo="" AlternateCSS="" Version="0" />
+      <pnp:SearchSettings>
+        <SearchConfigurationSettings xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Portability">
+          <SearchQueryConfigurationSettings>
+            <SearchQueryConfigurationSettings>
+              <BestBets xmlns:d4p1="http://www.microsoft.com/sharepoint/search/KnownTypes/2008/08" />
+              <DefaultSourceId>00000000-0000-0000-0000-000000000000</DefaultSourceId>
+              <DefaultSourceIdSet>true</DefaultSourceIdSet>
+              <DeployToParent>false</DeployToParent>
+              <DisableInheritanceOnImport>false</DisableInheritanceOnImport>
+              <QueryRuleGroups xmlns:d4p1="http://www.microsoft.com/sharepoint/search/KnownTypes/2008/08" />
+              <QueryRules xmlns:d4p1="http://www.microsoft.com/sharepoint/search/KnownTypes/2008/08" />
+              <ResultTypes xmlns:d4p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration" />
+              <Sources xmlns:d4p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration.Query" />
+              <UserSegments xmlns:d4p1="http://www.microsoft.com/sharepoint/search/KnownTypes/2008/08" />
+            </SearchQueryConfigurationSettings>
+          </SearchQueryConfigurationSettings>
+          <SearchRankingModelConfigurationSettings>
+            <RankingModels xmlns:d3p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+          </SearchRankingModelConfigurationSettings>
+          <SearchSchemaConfigurationSettings>
+            <Aliases xmlns:d3p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration">
+              <d3p1:LastItemName i:nil="true" />
+              <d3p1:dictionary xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+            </Aliases>
+            <CategoriesAndCrawledProperties xmlns:d3p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+            <CrawledProperties xmlns:d3p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration" i:nil="true" />
+            <ManagedProperties xmlns:d3p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration">
+              <d3p1:LastItemName i:nil="true" />
+              <d3p1:dictionary xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+              <d3p1:TotalCount>0</d3p1:TotalCount>
+            </ManagedProperties>
+            <Mappings xmlns:d3p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration">
+              <d3p1:LastItemName i:nil="true" />
+              <d3p1:dictionary xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+            </Mappings>
+            <Overrides xmlns:d3p1="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Administration">
+              <d3p1:LastItemName i:nil="true" />
+              <d3p1:dictionary xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+            </Overrides>
+          </SearchSchemaConfigurationSettings>
+        </SearchConfigurationSettings>
+      </pnp:SearchSettings>
+      <pnp:Publishing AutoCheckRequirements="MakeCompliant">
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="GLOBAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#3" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#4" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="CENTRALADMIN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="WIKI#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SGS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="TENANTADMIN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="APP#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="APPCATALOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSRV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSVC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSVC#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BDR#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="TBH#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="DEV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EDISC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EDISC#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EXPRESS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="FunSite#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OFFILE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OFFILE#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EHS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EHS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EHS#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OSRV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PPSMASite#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BICenterSite#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PWA#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PWS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="POLICYCTR#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#3" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#4" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#5" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#6" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#7" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#8" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#9" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#10" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSMSITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSTOC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSTOPIC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSNEWS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="CMSPUBLISHING#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSNHOME#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSSITES#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSCOMMU#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSREPORTCENTER#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPORTAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCEN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PROFILES#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNETCONTAINER#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSMSITEHOST#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ENTERWIKI#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PROJECTSITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PRODUCTCATALOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="COMMUNITY#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="COMMUNITYPORTAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="GROUP#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="POINTPUBLISHINGHUB#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="POINTPUBLISHINGPERSONAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="POINTPUBLISHINGTOPIC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCENTERLITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCENTERLITE#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="TenantAdminSpo#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="visprus#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SAPWorkflowSite#0" />
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="_catalogs/masterpage/SearchResults.aspx">
+          <pnp:PageLayout Path="_catalogs/masterpage/SearchResults.aspx" />
+        </pnp:PageLayouts>
+      </pnp:Publishing>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
 </pnp:Provisioning>

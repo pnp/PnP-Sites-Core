@@ -27,11 +27,6 @@ namespace OfficeDevPnP.Core.Diagnostics
             Trace.TraceInformation(GetLogEntry(entry, LogLevel.Information));
         }
 
-        public void TraceApi(LogEntry entry)
-        {
-            // not implemented
-        }
-
         public void Warning(LogEntry entry)
         {
             Trace.TraceWarning(GetLogEntry(entry, LogLevel.Information));
@@ -39,11 +34,9 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         private string GetLogEntry(LogEntry entry, LogLevel level)
         {
-
             try
             {
-
-                string log = string.Format("{0}\t[{1}]\t[{2}]\t[{3}]\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), entry.Source, entry.ThreadId, level.ToString(), entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId);
+                string log = string.Format("{0}\t[{1}]\t[{2}]\t[{3}]\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), entry.Source, entry.ThreadId, level.ToString(), entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId != Guid.Empty ? entry.CorrelationId.ToString() : "");
 
                 return log;
             }

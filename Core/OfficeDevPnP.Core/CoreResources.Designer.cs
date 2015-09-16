@@ -759,15 +759,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Composed Looks.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_ComposedLooks {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Downloading asset: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_ {
@@ -793,15 +784,6 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_compo" +
                         "sed_look", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Content Types.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_ContentTypes {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes", resourceCulture);
             }
         }
         
@@ -873,15 +855,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Custom Actions.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_CustomActions {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_CustomActions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Adding custom action &apos;{0}&apos; to scope Site.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site {
@@ -942,15 +915,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Extensibility Providers.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_ExtensibilityProviders {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ExtensibilityProviders", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Calling extensibility callout {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_ {
@@ -979,15 +943,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Features.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_Features {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_Features", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Activating {0} scoped feature {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_ {
@@ -1002,15 +957,6 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Fields.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_Fields {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_Fields", resourceCulture);
             }
         }
         
@@ -1070,15 +1016,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Files.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_Files {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_Files", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Adding webpart &apos;{0}&apos; to page.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page {
@@ -1120,15 +1057,6 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_FinishProvisioning {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_FinishProvisioning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Lists.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_ListInstances {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances", resourceCulture);
             }
         }
         
@@ -1317,30 +1245,12 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lookup Fields.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_LookupFields {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_LookupFields", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____" +
                         "1_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pages.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_Pages {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_Pages", resourceCulture);
             }
         }
         
@@ -1391,15 +1301,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Property Bag.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_PropertyBagEntries {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_PropertyBagEntries", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_ {
@@ -1438,24 +1339,6 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Site Policy.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_SitePolicy {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_SitePolicy", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Site Security.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_SiteSecurity {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_SiteSecurity", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Add users failed for group &apos;{0}&apos;: {1} : {2}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_ {
@@ -1472,15 +1355,6 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_sec" +
                         "urity_provisioning", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Term Groups.
-        /// </summary>
-        internal static string Provisioning_ObjectHandlers_TermGroups {
-            get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups", resourceCulture);
             }
         }
         
@@ -1853,6 +1727,15 @@ namespace OfficeDevPnP.Core {
         internal static string TimerJob_Authentication_AppOnly {
             get {
                 return ResourceManager.GetString("TimerJob_Authentication_AppOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
+        /// </summary>
+        internal static string TimerJob_Authentication_AzureADAppOnly {
+            get {
+                return ResourceManager.GetString("TimerJob_Authentication_AzureADAppOnly", resourceCulture);
             }
         }
         

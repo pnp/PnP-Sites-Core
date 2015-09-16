@@ -70,11 +70,7 @@ namespace Microsoft.SharePoint.Client
             var backgroundUrl = default(string);
             var masterUrl = default(string);
 
-            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-            {
-                web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.ExecuteQueryRetry();
-            }
+            web.EnsureProperties(w => w.ServerRelativeUrl);
 
             if (!string.IsNullOrEmpty(paletteFileName))
             {
@@ -110,7 +106,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
         public static void CreateComposedLookByUrl(this Web web, string lookName, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, string masterServerRelativeUrl, int displayOrder = 1, bool replaceContent = true)
         {
-            Utility.EnsureWeb(web.Context, web, "ServerRelativeUrl");
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+
             var composedLooksList = web.GetCatalog((int)ListTemplateType.DesignCatalog);
 
             // Check for existing, by name
@@ -976,26 +973,35 @@ namespace Microsoft.SharePoint.Client
 
         private static bool IsUsingOfficeTheme(this Web web)
         {
-            ThemeInfo ti = web.ThemeInfo;
-            web.Context.Load(ti);
-            var accentText = ti.GetThemeShadeByName("AccentText");
-            var backgroundOverlay = ti.GetThemeShadeByName("BackgroundOverlay");
-            var bodyText = ti.GetThemeShadeByName("BodyText");
-            web.Context.ExecuteQueryRetry();
-
-            string accentTextRGB = accentText.Value.Substring(2);
-            string backgroundOverlayARGB = backgroundOverlay.Value.Substring(2);
-            string bodyTextRGB = bodyText.Value.Substring(2);
-
-            if (accentTextRGB.Equals("0072C6") &&
-                backgroundOverlayARGB.Equals("FFFFFF") &&
-                bodyTextRGB.Equals("444444") &&
-                ti.ThemeBackgroundImageUri == null)
+            try
             {
-                return true;
+                ThemeInfo ti = web.ThemeInfo;
+                web.Context.Load(ti);
+                var accentText = ti.GetThemeShadeByName("AccentText");
+                var backgroundOverlay = ti.GetThemeShadeByName("BackgroundOverlay");
+                var bodyText = ti.GetThemeShadeByName("BodyText");
+                web.Context.ExecuteQueryRetry();
+
+                string accentTextRGB = accentText.Value.Substring(2);
+                string backgroundOverlayARGB = backgroundOverlay.Value.Substring(2);
+                string bodyTextRGB = bodyText.Value.Substring(2);
+
+                if (accentTextRGB.Equals("0072C6") &&
+                    backgroundOverlayARGB.Equals("FFFFFF") &&
+                    bodyTextRGB.Equals("444444") &&
+                    ti.ThemeBackgroundImageUri == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
-            else
+            catch (Exception)
             {
+                //Can cause issues in OnPrem-installations, because the theme is not found by SharePoint (see https://github.com/OfficeDev/PnP/issues/671).
+                //Assuming the branding is not the office theme to continue.
                 return false;
             }
         }
@@ -1208,7 +1214,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentNullException("url");
 
-            Utility.EnsureWeb(web.Context, web, "ServerRelativeUrl");
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+
             string newUrl = url.Substring(web.ServerRelativeUrl.Length);
             if (newUrl.Length > 0 && newUrl[0] == '/')
             {

@@ -68,15 +68,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
-                this.AlternateCSS,
-                this.BackgroundFile,
-                this.ColorFile,
-                this.FontFile,
-                this.MasterPage,
-                this.Name,
-                this.SiteLogo,
-                this.Version
-                ).GetHashCode());
+                this.AlternateCSS.GetHashCode(),
+                this.BackgroundFile.GetHashCode(),
+                this.ColorFile.GetHashCode(),
+                this.FontFile.GetHashCode(),
+                this.MasterPage.GetHashCode(),
+                this.Name.GetHashCode(),
+                this.SiteLogo.GetHashCode(),
+                this.Version.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

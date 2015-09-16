@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -16,15 +17,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Files))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var context = web.Context as ClientContext;
 
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    context.Load(web, w => w.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                }
+                web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 foreach (var file in template.Files)
                 {
@@ -49,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (file.Overwrite)
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_,file.Src);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_, file.Src);
                             checkedOut = CheckOutIfNeeded(web, targetFile);
 
                             using (var stream = template.Connector.GetFileStream(file.Src))
@@ -83,18 +80,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (file.WebParts != null && file.WebParts.Any())
                         {
-                            if (!targetFile.IsPropertyAvailable("ServerRelativeUrl"))
-                            {
-                                web.Context.Load(targetFile, f => f.ServerRelativeUrl);
-                                web.Context.ExecuteQuery();
-                            }
+                            targetFile.EnsureProperties(f => f.ServerRelativeUrl);
+                            
                             var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
                                 {
-                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page,webpart.Title);
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webpart.Title);
                                     var wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = webpart.Title;
                                     wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
@@ -110,6 +104,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             targetFile.CheckIn("", CheckinType.MajorCheckIn);
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        if (file.Security != null)
+                        {
+                            targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
                     }
 
@@ -146,7 +145,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Files))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 

@@ -15,7 +15,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ListInstance() { }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows)
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null)
+        {
+        }
+
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security)
         {
             if (contentTypeBindings != null)
             {
@@ -40,6 +46,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this._dataRows.AddRange(dataRows);
             }
+            if (fieldDefaults != null)
+            {
+                this._fieldDefaults = fieldDefaults;
+            }
+            if (security != null)
+            {
+                this._security = security;
+            }
         }
 
         #endregion
@@ -50,6 +64,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<Field> _fields = new List<Field>();
         private List<FieldRef> _fieldRefs = new List<FieldRef>();
         private List<DataRow> _dataRows = new List<DataRow>();
+        private Dictionary<String, String> _fieldDefaults = new Dictionary<String, String>();
+        private ObjectSecurity _security = new ObjectSecurity();
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         #endregion
@@ -191,36 +207,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._dataRows = value; }
         }
 
+        /// <summary>
+        /// Defines a list of default values for the Fields of the List Instance
+        /// </summary>
+        public Dictionary<String, String> FieldDefaults
+        {
+            get { return this._fieldDefaults; }
+            private set { this._fieldDefaults = value; }
+        }
+
+        /// <summary>
+        /// Defines the Security rules for the List Instance
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return this._security; }
+            set { this._security = value; }
+        }
+
         #endregion
 
         #region Comparison code
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}",
-                this.ContentTypesEnabled,
-                this.Description,
-                this.DocumentTemplate,
-                this.EnableVersioning,
-                this.Hidden,
-                this.MaxVersionLimit,
-                this.MinorVersionLimit,
-                this.OnQuickLaunch,
-                this.EnableAttachments,
-                this.EnableFolderCreation,
-                this.RemoveExistingContentTypes,
-                this.TemplateType,
-                this.Title,
-                this.Url,
-                this.TemplateFeatureID,
-                this.RemoveExistingViews,
-                this.EnableMinorVersions,
-                this.EnableModeration,
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|",
+                this.ContentTypesEnabled.GetHashCode(),
+                this.Description.GetHashCode(),
+                this.DocumentTemplate.GetHashCode(),
+                this.EnableVersioning.GetHashCode(),
+                this.Hidden.GetHashCode(),
+                this.MaxVersionLimit.GetHashCode(),
+                this.MinorVersionLimit.GetHashCode(),
+                this.OnQuickLaunch.GetHashCode(),
+                this.EnableAttachments.GetHashCode(),
+                this.EnableFolderCreation.GetHashCode(),
+                this.RemoveExistingContentTypes.GetHashCode(),
+                this.TemplateType.GetHashCode(),
+                this.Title.GetHashCode(),
+                this.Url.GetHashCode(),
+                this.TemplateFeatureID.GetHashCode(),
+                this.RemoveExistingViews.GetHashCode(),
+                this.EnableMinorVersions.GetHashCode(),
+                this.EnableModeration.GetHashCode(),
                 this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.Views.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode() ),
+                this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-                ).GetHashCode());
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

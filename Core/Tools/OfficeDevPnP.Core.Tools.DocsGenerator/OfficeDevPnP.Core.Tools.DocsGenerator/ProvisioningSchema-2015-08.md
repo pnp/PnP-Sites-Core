@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/16/2015*
+*Topic automatically generated on 8/31/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -45,7 +45,11 @@ Represents the root element of the SharePoint Provisioning Template.
 <pnp:ProvisioningTemplate
       xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema"
       ID="xsd:ID"
-      Version="xsd:decimal">
+      Version="xsd:decimal"
+      ImagePreviewUrl="xsd:string"
+      DisplayName="xsd:string"
+      Description="xsd:string">
+   <pnp:Properties />
    <pnp:SitePolicy />
    <pnp:RegionalSettings />
    <pnp:SupportedUILanguages />
@@ -75,6 +79,7 @@ Here follow the available child elements for the ProvisioningTemplate element.
 
 Element|Type|Description
 -------|----|-----------
+Properties|[ProvisioningTemplateProperties](#provisioningtemplateproperties)|A set of custom Properties for the Provisioning Template, optional element.
 SitePolicy|[ReplaceableString](#replaceablestring)|The Site Policy of the Provisioning Template, optional element.
 RegionalSettings|[RegionalSettings](#regionalsettings)|The Regional Settings of the Provisioning Template, optional element.
 SupportedUILanguages|[SupportedUILanguages](#supporteduilanguages)|The Supported UI Languages for the Provisioning Template, optional element.
@@ -103,6 +108,9 @@ Attibute|Type|Description
 --------|----|-----------
 ID|xsd:ID|The ID of the Provisioning Template, required attribute.
 Version|xsd:decimal|The Version of the Provisioning Template, optional attribute.
+ImagePreviewUrl|xsd:string|The Image Preview Url of the Provisioning Template, optional attribute.
+DisplayName|xsd:string|The Display Name of the Provisioning Template, optional attribute.
+Description|xsd:string|The Description of the Provisioning Template, optional attribute.
 
 
 ##Child Elements and Complex Types
@@ -287,6 +295,23 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Provider|[Provider](#provider)|
+<a name="provisioningtemplateproperties"></a>
+###ProvisioningTemplateProperties
+A set of custom Properties for the Provisioning Template.
+
+```xml
+<pnp:ProvisioningTemplateProperties>
+   <pnp:Property />
+</pnp:ProvisioningTemplateProperties>
+```
+
+
+Here follow the available child elements for the ProvisioningTemplateProperties element.
+
+
+Element|Type|Description
+-------|----|-----------
+Property|[StringDictionaryItem](#stringdictionaryitem)|A custom Property for the Provisioning Template, collection of elements.
 <a name="regionalsettings"></a>
 ###RegionalSettings
 Defines the Regional Settings for a site.
@@ -411,8 +436,7 @@ AuditFlag||An Audit Flag for a single Audit setting, required attribute.
 The Property Bag entries of the Provisioning Template, optional collection of elements.
 
 ```xml
-<pnp:PropertyBagEntries
-      Overwrite="xsd:boolean">
+<pnp:PropertyBagEntries>
    <pnp:PropertyBagEntry />
 </pnp:PropertyBagEntries>
 ```
@@ -423,31 +447,7 @@ Here follow the available child elements for the PropertyBagEntries element.
 
 Element|Type|Description
 -------|----|-----------
-PropertyBagEntry|[PropertyBagEntry](#propertybagentry)|The Property Bag Entry of the Provisioning Template.
-
-Here follow the available attributes for the PropertyBagEntries element.
-
-
-Attibute|Type|Description
---------|----|-----------
-Overwrite|xsd:boolean|
-<a name="propertybagentry"></a>
-###PropertyBagEntry
-The Property Bag Entry of the Provisioning Template.
-
-```xml
-<pnp:PropertyBagEntry
-      Overwrite="xsd:boolean">
-</pnp:PropertyBagEntry>
-```
-
-
-Here follow the available attributes for the  element.
-
-
-Attibute|Type|Description
---------|----|-----------
-Overwrite|xsd:boolean|
+PropertyBagEntry|[PropertyBagEntry](#propertybagentry)|
 <a name="security"></a>
 ###Security
 The Security configurations of the Provisioning Template, optional collection of elements.
@@ -557,6 +557,25 @@ Here follow the available attributes for the Pages element.
 Attibute|Type|Description
 --------|----|-----------
 WelcomePage|xsd:string|Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied, optional attribute.
+<a name="propertybagentry"></a>
+###PropertyBagEntry
+The Property Bag Entry of the Provisioning Template.
+
+```xml
+<pnp:PropertyBagEntry
+      Overwrite="xsd:boolean"
+      Indexed="xsd:boolean">
+</pnp:PropertyBagEntry>
+```
+
+
+Here follow the available attributes for the PropertyBagEntry element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Overwrite|xsd:boolean|Declares whether the Property Bag Entry has to overwrite an already existing entry, optional attribute.
+Indexed|xsd:boolean|Declares whether the Property Bag Entry has to be indexed, optional attribute.
 <a name="stringdictionaryitem"></a>
 ###StringDictionaryItem
 Defines a StringDictionary element.
@@ -824,6 +843,7 @@ Defines a ListInstance element
       EnableModeration="xsd:boolean"
       MinorVersionLimit="xsd:int"
       MaxVersionLimit="xsd:int"
+      DraftVersionVisibility="xsd:int"
       RemoveExistingContentTypes="xsd:boolean"
       TemplateFeatureID="pnp:GUID"
       ContentTypesEnabled="xsd:boolean"
@@ -870,6 +890,7 @@ EnableMinorVersions|xsd:boolean|The EnableMinorVersions flag for the List Instan
 EnableModeration|xsd:boolean|The EnableModeration flag for the List Instance, optional attribute.
 MinorVersionLimit|xsd:int|The MinorVersionLimit for versions history for the List Instance, optional attribute.
 MaxVersionLimit|xsd:int|The MaxVersionLimit for versions history for the List Instance, optional attribute.
+DraftVersionVisibility|xsd:int|The DraftVersionVisibility for the List Instance, optional attribute. The property will be cast to enum DraftVersionVisibility 0 - Reader - Any user who can read items, 1 - Author - Only users who can edit items, 2 - Approver - Only users who can approve items (and the author of the item)
 RemoveExistingContentTypes|xsd:boolean|The RemoveExistingContentTypes flag for the List Instance, optional attribute.
 TemplateFeatureID|GUID|The TemplateFeatureID for the feature on which the List Instance is based, optional attribute.
 ContentTypesEnabled|xsd:boolean|The ContentTypesEnabled flag for the List Instance, optional attribute.
@@ -1319,9 +1340,17 @@ Defines a Custom Action, which will be provisioned while applying the Provisioni
       ScriptBlock="xsd:string"
       ImageUrl="xsd:string"
       ScriptSrc="xsd:string">
+   <pnp:CommandUIExtension />
 </pnp:CustomAction>
 ```
 
+
+Here follow the available child elements for the CustomAction element.
+
+
+Element|Type|Description
+-------|----|-----------
+CommandUIExtension|[CommandUIExtension](#commanduiextension)|Defines the Custom UI Extension XML, optional element.
 
 Here follow the available attributes for the CustomAction element.
 
@@ -1340,6 +1369,16 @@ Enabled|xsd:boolean|The Enabled flag for the CustomAction, optional attribute.
 ScriptBlock|xsd:string|The ScriptBlock of the CustomAction, optional attribute.
 ImageUrl|xsd:string|The ImageUrl of the CustomAction, optional attribute.
 ScriptSrc|xsd:string|The ScriptSrc of the CustomAction, optional attribute.
+<a name="commanduiextension"></a>
+###CommandUIExtension
+Defines the Custom UI Extension XML, optional element.
+
+```xml
+<pnp:CommandUIExtension>
+   <!-- Any other XML content -->
+</pnp:CommandUIExtension>
+```
+
 <a name="fileproperties"></a>
 ###FileProperties
 A collection of File Properties.
@@ -1672,7 +1711,7 @@ Defines a Design Package to import into the current Publishing site, optional el
       MajorVersion="xsd:int"
       MinorVersion="xsd:int"
       PackageGuid="pnp:GUID"
-      PackageName ="xsd:string">
+      PackageName="xsd:string">
 </pnp:DesignPackage>
 ```
 
@@ -1686,7 +1725,7 @@ DesignPackagePath|xsd:string|Defines the path of the Design Package to import in
 MajorVersion|xsd:int|The Major Version of the Design Package to import into the current Publishing site, optional attribute.
 MinorVersion|xsd:int|The Minor Version of the Design Package to import into the current Publishing site, optional attribute.
 PackageGuid|GUID|The ID of the Design Package to import into the current Publishing site, optional attribute.
-PackageName |xsd:string|The Name of the Design Package to import into the current Publishing site, required attribute.
+PackageName|xsd:string|The Name of the Design Package to import into the current Publishing site, required attribute.
 <a name="availablewebtemplates"></a>
 ###AvailableWebTemplates
 Defines the Available Web Templates for the current Publishing site, optional collection of elements.
@@ -1709,7 +1748,8 @@ WebTemplate|[WebTemplate](#webtemplate)|Defines an available Web Template for th
 Defines the Available Page Layouts for the current Publishing site, optional collection of elements.
 
 ```xml
-<pnp:PageLayouts>
+<pnp:PageLayouts
+      Default="xsd:string">
    <pnp:PageLayout />
 </pnp:PageLayouts>
 ```
@@ -1721,6 +1761,13 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 PageLayout|[PageLayout](#pagelayout)|Defines an available Page Layout for the current Publishing site.
+
+Here follow the available attributes for the  element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Default|xsd:string|Defines the URL of the Default Page Layout for the current Publishing site, if any. Optional attribute.
 <a name="provider"></a>
 ###Provider
 Defines an Extensibility Provider.

@@ -224,12 +224,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The folder structure</returns>
         public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath)
         {
-            if (!web.IsPropertyAvailable("ServerRelativeUrl") || !parentFolder.IsPropertyAvailable("ServerRelativeUrl"))
-            {
-                web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.Load(parentFolder, f => f.ServerRelativeUrl);
-                web.Context.ExecuteQueryRetry();
-            }
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
 
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
@@ -799,12 +795,8 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                if (!folder.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    folder.Context.Load(folder, w => w.ServerRelativeUrl);
-                    folder.Context.ExecuteQueryRetry();
-                }
-
+                folder.EnsureProperties(f => f.ServerRelativeUrl);
+                
                 var fileServerRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
                 var context = folder.Context as ClientContext;
 
@@ -1011,7 +1003,7 @@ namespace Microsoft.SharePoint.Client
                         }
                     }
 
-                    if (checkOutRequired && file.CheckOutType == CheckOutType.None)
+                    if (checkoutIfRequired && checkOutRequired && file.CheckOutType == CheckOutType.None)
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Checking out file '{0}'", file.Name);
                         file.CheckOut();

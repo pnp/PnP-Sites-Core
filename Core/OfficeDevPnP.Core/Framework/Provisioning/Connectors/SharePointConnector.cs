@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
     /// <summary>
     /// Connector for files in SharePoint
     /// </summary>
-    public class SharePointConnector: FileConnectorBase
+    public class SharePointConnector : FileConnectorBase
     {
         #region public variables
         public const string CLIENTCONTEXT = "ClientContext";
@@ -100,11 +100,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 cc.Load(listItems);
                 cc.ExecuteQueryRetry();
 
-                foreach(var listItem in listItems)
+                foreach (var listItem in listItems)
                 {
                     result.Add(listItem.FieldValues["FileLeafRef"].ToString());
 
-                    
+
                 }
             }
 
@@ -181,6 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override Stream GetFileStream(string fileName, string container)
         {
+            Log.Debug("SharePointConnector", "GetFileStream('{0}','{1}')", fileName, container);
             if (String.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("fileName");
@@ -293,11 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                         }
                     }
 
-                    if (!spFolder.IsPropertyAvailable("ServerRelativeUrl"))
-                    {
-                        spFolder.Context.Load(spFolder, w => w.ServerRelativeUrl);
-                        spFolder.Context.ExecuteQueryRetry();
-                    }
+                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
 
                     var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
                     File file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
@@ -341,6 +338,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region Private Methods
         private MemoryStream GetFileFromStorage(string fileName, string container)
         {
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -369,34 +367,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                         for (int i = startFrom; i < parts.Length; i++)
                         {
                             spFolder = spFolder.ResolveSubFolder(parts[i]);
-                        }                        
+                        }
                     }
 
-                    if (!spFolder.IsPropertyAvailable("ServerRelativeUrl"))
-                    {
-                        spFolder.Context.Load(spFolder, w => w.ServerRelativeUrl);
-                        spFolder.Context.ExecuteQueryRetry();
-                    }
-
+                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
+                    
                     var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
                     file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
                     cc.Load(file);
                     cc.ExecuteQueryRetry();
+                    if (file.Exists)
+                    {
+                        MemoryStream stream = new MemoryStream();
+                        var streamResult = file.OpenBinaryStream();
+                        cc.ExecuteQueryRetry();
 
-                    MemoryStream stream = new MemoryStream();
-                    var streamResult = file.OpenBinaryStream();
-                    cc.ExecuteQueryRetry();
+                        streamResult.Value.CopyTo(stream);
 
-                    streamResult.Value.CopyTo(stream);
+                        Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_SharePoint_FileRetrieved, fileName, GetConnectionString(), container);
 
-                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_SharePoint_FileRetrieved, fileName, GetConnectionString(), container);
-
-                    // Set the stream position to the beginning
-                    stream.Position = 0;
-                    return stream;
+                        // Set the stream position to the beginning
+                        stream.Position = 0;
+                        return stream;
+                    }
+                    else
+                    {
+                        throw new Exception("File not found");
+                    }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_SharePoint_FileNotFound, fileName, GetConnectionString(), container, ex.Message);
                 return null;
@@ -429,9 +429,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 {
                     startFrom = 2;
                 }
-                
+
                 string folder = "";
-                for (int i = startFrom; i < parts.Length;i++)
+                for (int i = startFrom; i < parts.Length; i++)
                 {
                     folder = folder + "/" + parts[i];
                 }
@@ -457,6 +457,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         }
         #endregion
 
-      
+
     }
 }

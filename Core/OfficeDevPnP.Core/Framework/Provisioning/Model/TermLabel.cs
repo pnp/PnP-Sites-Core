@@ -25,8 +25,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
-                this.Language,
-                this.Value).GetHashCode());
+                this.Language.GetHashCode(),
+                this.Value.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

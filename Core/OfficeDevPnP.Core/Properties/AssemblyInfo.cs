@@ -35,10 +35,10 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // Convention:
 // Major version = current version 1
-// Minor version = Sequence...version 0 was with March release...so 1=April, 2=May, 3=June, 4=August, 5=September, 6=October, 7=November, 8=December
+// Minor version = Sequence...version 0 was with March release...so 1=April, 2=May, 3=June, 4=August, 6=September, 7=October, 8=November, 9=December
 // Third part = version indenpendant showing the release month in MMYY
 // Fourth part = 0
-[assembly: AssemblyVersion("1.5.0915.0")]
-[assembly: AssemblyFileVersion("1.5.0915.0")]
+[assembly: AssemblyVersion("1.7.1015.0")]
+[assembly: AssemblyFileVersion("1.7.1015.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

@@ -1,5 +1,4 @@
 ﻿using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
@@ -11,13 +10,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectComposedLook : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "Composed Looks"; }
         }
-
-
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
@@ -95,33 +91,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Load object if not there
-                bool executeQueryNeeded = false;
-                if (!web.IsPropertyAvailable("Url"))
-                {
-                    web.Context.Load(web, w => w.Url);
-                    executeQueryNeeded = true;
-                }
-                if (!web.IsPropertyAvailable("MasterUrl"))
-                {
-                    web.Context.Load(web, w => w.MasterUrl);
-                    executeQueryNeeded = true;
-                }
 #if !CLIENTSDKV15
-                if (!web.IsPropertyAvailable("AlternateCssUrl"))
-                {
-                    web.Context.Load(web, w => w.AlternateCssUrl);
-                    executeQueryNeeded = true;
-                }
-                if (!web.IsPropertyAvailable("SiteLogoUrl"))
-                {
-                    web.Context.Load(web, w => w.SiteLogoUrl);
-                    executeQueryNeeded = true;
-                }
+                web.EnsureProperties(w => w.Url, w => w.MasterUrl, w => w.AlternateCssUrl, w => w.SiteLogoUrl);
+#else
+                web.EnsureProperties(w => w.AlternateCssUrl, w => w.SiteLogoUrl);
 #endif
-                if (executeQueryNeeded)
-                {
-                    web.Context.ExecuteQueryRetry();
-                }
 
                 // Information coming from the site
                 template.ComposedLook.MasterPage = Tokenize(web.MasterUrl, web.Url);
@@ -302,7 +276,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             file.Src = FixFileName(asset.Substring(index + 1));
             file.Folder = asset.Substring(0, index);
             file.Overwrite = true;
-
+            file.Security = null;
             return file;
         }
 

@@ -11,7 +11,6 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using Utility = OfficeDevPnP.Core.Utilities.Utility;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -94,7 +93,8 @@ namespace Microsoft.SharePoint.Client
             }
 
             var deleted = false;
-            Utility.EnsureWeb(parentWeb.Context, parentWeb, "ServerRelativeUrl");
+            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
+
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
             // NOTE: Predicate does not take into account a required case-insensitive comparison
@@ -169,7 +169,8 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
             }
 
-            Utility.EnsureWeb(parentWeb.Context, parentWeb, "ServerRelativeUrl");
+            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
+
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
             // NOTE: Predicate does not take into account a required case-insensitive comparison
@@ -193,7 +194,8 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
             }
 
-            Utility.EnsureWeb(parentWeb.Context, parentWeb, "ServerRelativeUrl");
+            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
+
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
             // NOTE: Predicate does not take into account a required case-insensitive comparison
@@ -398,7 +400,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            DesignPackage.UnInstall(site.Context, site, packageInfo);
+            Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
             site.Context.ExecuteQueryRetry();
 
 
@@ -408,7 +410,7 @@ namespace Microsoft.SharePoint.Client
             // NOTE: The lines below (in OfficeDev PnP) wipe/clear all items in the composed looks aka design catalog (_catalogs/design, list template 124).
             // The solution package should be loaded into the solutions catalog (_catalogs/solutions, list template 121).
 
-            DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
+            Microsoft.SharePoint.Client.Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
             site.Context.ExecuteQueryRetry();
 
             // Remove package from rootfolder
@@ -456,7 +458,7 @@ namespace Microsoft.SharePoint.Client
                     MinorVersion = minorVersion
                 };
 
-                DesignPackage.UnInstall(site.Context, site, packageInfo);
+                Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
                 site.Context.ExecuteQueryRetry();
             }
         }
@@ -1012,8 +1014,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="descriptionResource">Localized Description string</param>
         public static void SetLocalizationLabels(this Web web, string cultureName, string titleResource, string descriptionResource)
         {
-            // Ensure web
-            Utility.EnsureWeb(web.Context, web, "TitleResource");
+            web.EnsureProperties(w => w.TitleResource);
+
             // Set translations for the culture
             web.TitleResource.SetValueForUICulture(cultureName, titleResource);
             web.DescriptionResource.SetValueForUICulture(cultureName, descriptionResource);

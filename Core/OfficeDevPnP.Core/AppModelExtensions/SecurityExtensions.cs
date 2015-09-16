@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
+using OfficeDevPnP.Core.AppModelExtensions;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
@@ -629,30 +630,29 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Add a permission level (e.g.Contribute, Reader,...) to a user
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="userLoginName">Loginname of the user</param>
         /// <param name="permissionLevel">Permission level to add</param>
         /// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that user</param>
-        public static void AddPermissionLevelToUser(this Web web, string userLoginName, RoleType permissionLevel, bool removeExistingPermissionLevels = false)
+        public static void AddPermissionLevelToUser(this SecurableObject securableObject, string userLoginName, RoleType permissionLevel, bool removeExistingPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("userLoginName");
 
-            User user = web.EnsureUser(userLoginName);
-            web.Context.Load(user);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
-            web.AddPermissionLevelImplementation(user, roleDefinition, removeExistingPermissionLevels);
+	        Web web = securableObject.GetAssociatedWeb();
+
+			User user = web.EnsureUser(userLoginName);
+			securableObject.AddPermissionLevelToPrincipal(user, permissionLevel, removeExistingPermissionLevels);
         }
 
         /// <summary>
         /// Add a role definition (e.g.Contribute, Read, Approve) to a user
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="userLoginName">Loginname of the user</param>
         /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Hierarchy|Restricted Read. Use the correct name of the language of the root site you are using</param>
         /// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that user</param>
-        public static void AddPermissionLevelToUser(this Web web, string userLoginName, string roleDefinitionName, bool removeExistingPermissionLevels = false)
+		public static void AddPermissionLevelToUser(this SecurableObject securableObject, string userLoginName, string roleDefinitionName, bool removeExistingPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("userLoginName");
@@ -660,63 +660,105 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("roleDefinitionName");
 
-            User user = web.EnsureUser(userLoginName);
-            web.Context.Load(user);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
-            web.AddPermissionLevelImplementation(user, roleDefinition, removeExistingPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			User user = web.EnsureUser(userLoginName);
+			securableObject.AddPermissionLevelToPrincipal(user, roleDefinitionName, removeExistingPermissionLevels);
         }
 
         /// <summary>
         /// Add a permission level (e.g.Contribute, Reader,...) to a group
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="groupName">Name of the group</param>
         /// <param name="permissionLevel">Permission level to add</param>
         /// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that group</param>
-        public static void AddPermissionLevelToGroup(this Web web, string groupName, RoleType permissionLevel, bool removeExistingPermissionLevels = false)
+		public static void AddPermissionLevelToGroup(this SecurableObject securableObject, string groupName, RoleType permissionLevel, bool removeExistingPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
-            var group = web.SiteGroups.GetByName(groupName);
-            web.Context.Load(group);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
-            web.AddPermissionLevelImplementation(group, roleDefinition, removeExistingPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			var group = web.SiteGroups.GetByName(groupName);
+
+			securableObject.AddPermissionLevelToPrincipal(group, permissionLevel, removeExistingPermissionLevels);
+        }
+
+		/// <summary>
+		/// Add a permission level (e.g.Contribute, Reader,...) to a group
+		/// </summary>
+		/// <param name="securableObject">Web/List/Item to operate against</param>
+		/// <param name="principal">Principal to add permission to</param>
+		/// <param name="permissionLevel">Permission level to add</param>
+		/// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that group</param>
+		public static void AddPermissionLevelToPrincipal(this SecurableObject securableObject, Principal principal, RoleType permissionLevel, bool removeExistingPermissionLevels = false)
+		{
+			if (principal == null)
+				throw new ArgumentNullException("principal");
+
+			Web web = securableObject.GetAssociatedWeb();
+
+			securableObject.Context.Load(principal);
+			securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
+			securableObject.AddPermissionLevelImplementation(principal, roleDefinition, removeExistingPermissionLevels);
+		}
+
+        /// <summary>
+        /// Add a role definition (e.g.Contribute, Read, Approve) to a group
+        /// </summary>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
+        /// <param name="groupName">Name of the group</param>
+        /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Hierarchy|Restricted Read. Use the correct name of the language of the root site you are using</param>
+        /// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that group</param>
+		public static void AddPermissionLevelToGroup(this SecurableObject securableObject, string groupName, string roleDefinitionName, bool removeExistingPermissionLevels = false)
+        {
+            if (string.IsNullOrEmpty(groupName))
+                throw new ArgumentNullException("groupName");
+
+			if (string.IsNullOrEmpty(roleDefinitionName))
+                throw new ArgumentNullException("roleDefinitionName");
+
+			Web web = securableObject.GetAssociatedWeb();
+
+			var group = web.SiteGroups.GetByName(groupName);
+
+			securableObject.AddPermissionLevelToPrincipal(group, roleDefinitionName, removeExistingPermissionLevels);
         }
 
         /// <summary>
         /// Add a role definition (e.g.Contribute, Read, Approve) to a group
         /// </summary>
-        /// <param name="web">Web to operate against</param>
-        /// <param name="groupName">Name of the group</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
+        /// <param name="principal">Principal to add permission to</param>
         /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Hierarchy|Restricted Read. Use the correct name of the language of the root site you are using</param>
         /// <param name="removeExistingPermissionLevels">Set to true to remove all other permission levels for that group</param>
-        public static void AddPermissionLevelToGroup(this Web web, string groupName, string roleDefinitionName, bool removeExistingPermissionLevels = false)
-        {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException("groupName");
+        public static void AddPermissionLevelToPrincipal(this SecurableObject securableObject, Principal principal, string roleDefinitionName, bool removeExistingPermissionLevels = false)
+		{
+			if (principal == null)
+				throw new ArgumentNullException("principal");
 
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException("roleDefinitionName");
+			if (string.IsNullOrEmpty(roleDefinitionName))
+				throw new ArgumentNullException("roleDefinitionName");
 
-            var group = web.SiteGroups.GetByName(groupName);
-            web.Context.Load(group);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
-            web.AddPermissionLevelImplementation(group, roleDefinition, removeExistingPermissionLevels);
-        }
+			Web web = securableObject.GetAssociatedWeb();
 
-        private static void AddPermissionLevelImplementation(this Web web, Principal principal, RoleDefinition roleDefinition, bool removeExistingPermissionLevels = false)
+			securableObject.Context.Load(principal);
+			securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
+			securableObject.AddPermissionLevelImplementation(principal, roleDefinition, removeExistingPermissionLevels);
+		}
+
+        private static void AddPermissionLevelImplementation(this SecurableObject securableObject, Principal principal, RoleDefinition roleDefinition, bool removeExistingPermissionLevels = false)
         {
             if (principal != null)
             {
                 bool processed = false;
 
-                RoleAssignmentCollection rac = web.RoleAssignments;
-                web.Context.Load(rac);
-                web.Context.ExecuteQueryRetry();
+                RoleAssignmentCollection rac = securableObject.RoleAssignments;
+                securableObject.Context.Load(rac);
+                securableObject.Context.ExecuteQueryRetry();
 
                 //Find the roles assigned to the principal
                 foreach (RoleAssignment ra in rac)
@@ -726,12 +768,10 @@ namespace Microsoft.SharePoint.Client
                     {
                         // load the role definitions for this role assignment
                         RoleDefinitionBindingCollection rdc = ra.RoleDefinitionBindings;
-                        web.Context.Load(rdc);
-                        web.Context.Load(web.RoleDefinitions);
-                        web.Context.ExecuteQueryRetry();
+                        securableObject.Context.Load(rdc);
+                        securableObject.Context.ExecuteQueryRetry();
 
                         // Load the role definition to add (e.g. contribute)
-                        //RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
                         if (removeExistingPermissionLevels)
                         {
                             // Remove current role definitions by removing all current role definitions
@@ -743,7 +783,7 @@ namespace Microsoft.SharePoint.Client
                         //update                        
                         ra.ImportRoleDefinitionBindings(rdc);
                         ra.Update();
-                        web.Context.ExecuteQueryRetry();
+                        securableObject.Context.ExecuteQueryRetry();
 
                         // Leave the for each loop
                         processed = true;
@@ -754,10 +794,10 @@ namespace Microsoft.SharePoint.Client
                 // For a principal without role definitions set we follow a different code path
                 if (!processed)
                 {
-                    RoleDefinitionBindingCollection rdc = new RoleDefinitionBindingCollection(web.Context);
+                    RoleDefinitionBindingCollection rdc = new RoleDefinitionBindingCollection(securableObject.Context);
                     rdc.Add(roleDefinition);
-                    web.RoleAssignments.Add(principal, rdc);
-                    web.Context.ExecuteQueryRetry();
+                    securableObject.RoleAssignments.Add(principal, rdc);
+                    securableObject.Context.ExecuteQueryRetry();
                 }
             }
         }
@@ -765,86 +805,132 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Removes a permission level from a user
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="userLoginName">Loginname of user</param>
         /// <param name="permissionLevel">Permission level to remove. If null all permission levels are removed</param>
         /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
-        public static void RemovePermissionLevelFromUser(this Web web, string userLoginName, RoleType permissionLevel, bool removeAllPermissionLevels = false)
+        public static void RemovePermissionLevelFromUser(this SecurableObject securableObject, string userLoginName, RoleType permissionLevel, bool removeAllPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("userLoginName");
 
-            User user = web.EnsureUser(userLoginName);
-            web.Context.Load(user);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
-            web.RemovePermissionLevelImplementation(user, roleDefinition, removeAllPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			User user = web.EnsureUser(userLoginName);
+
+			securableObject.RemovePermissionLevelFromPrincipal(user, permissionLevel, removeAllPermissionLevels);
         }
 
         /// <summary>
         /// Removes a permission level from a user
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
+        /// <param name="principal">Principal to remove permission from</param>
+        /// <param name="permissionLevel">Permission level to remove. If null all permission levels are removed</param>
+        /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
+        public static void RemovePermissionLevelFromPrincipal(this SecurableObject securableObject, Principal principal, RoleType permissionLevel, bool removeAllPermissionLevels = false)
+		{
+			if (principal == null)
+				throw new ArgumentNullException("principal");
+
+			Web web = securableObject.GetAssociatedWeb();
+
+			securableObject.Context.Load(principal);
+			securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
+
+			securableObject.RemovePermissionLevelImplementation(principal, roleDefinition, removeAllPermissionLevels);
+		}
+
+        /// <summary>
+        /// Removes a permission level from a user
+        /// </summary>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="userLoginName">Loginname of user</param>
         /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Heirarchy|Restricted Read. Use the correct name of the language of the site you are using</param>
         /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
-        public static void RemovePermissionLevelFromUser(this Web web, string userLoginName, string roleDefinitionName, bool removeAllPermissionLevels = false)
+        public static void RemovePermissionLevelFromUser(this SecurableObject securableObject, string userLoginName, string roleDefinitionName, bool removeAllPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("userLoginName");
 
-            User user = web.EnsureUser(userLoginName);
-            web.Context.Load(user);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
-            web.RemovePermissionLevelImplementation(user, roleDefinition, removeAllPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			User user = web.EnsureUser(userLoginName);
+
+			securableObject.RemovePermissionLevelFromPrincipal(user, roleDefinitionName, removeAllPermissionLevels);
         }
+
+        /// <summary>
+        /// Removes a permission level from a user
+        /// </summary>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
+        /// <param name="principal">Principal to remove permission from</param>
+        /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Heirarchy|Restricted Read. Use the correct name of the language of the site you are using</param>
+        /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
+        public static void RemovePermissionLevelFromPrincipal(this SecurableObject securableObject, Principal principal, string roleDefinitionName, bool removeAllPermissionLevels = false)
+		{
+			if (principal == null)
+				throw new ArgumentNullException("principal");
+
+			Web web = securableObject.GetAssociatedWeb();
+
+			securableObject.Context.Load(principal);
+			securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
+
+			securableObject.RemovePermissionLevelImplementation(principal, roleDefinition, removeAllPermissionLevels);
+		}
 
         /// <summary>
         /// Removes a permission level from a group
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="groupName">name of the group</param>
         /// <param name="permissionLevel">Permission level to remove. If null all permission levels are removed</param>
         /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
-        public static void RemovePermissionLevelFromGroup(this Web web, string groupName, RoleType permissionLevel, bool removeAllPermissionLevels = false)
+        public static void RemovePermissionLevelFromGroup(this SecurableObject securableObject, string groupName, RoleType permissionLevel, bool removeAllPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
-            var group = web.SiteGroups.GetByName(groupName);
-            web.Context.Load(group);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
-            web.RemovePermissionLevelImplementation(group, roleDefinition, removeAllPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			var group = web.SiteGroups.GetByName(groupName);
+            securableObject.Context.Load(group);
+            securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(permissionLevel);
+            securableObject.RemovePermissionLevelImplementation(group, roleDefinition, removeAllPermissionLevels);
         }
 
         /// <summary>
         /// Removes a permission level from a group
         /// </summary>
-        /// <param name="web">Web to operate against</param>
+        /// <param name="securableObject">Web/List/Item to operate against</param>
         /// <param name="groupName">name of the group</param>
         /// <param name="roleDefinitionName">Name of the role definition to add, Full Control|Design|Contribute|Read|Approve|Manage Heirarchy|Restricted Read. Use the correct name of the language of the site you are using</param>
         /// <param name="removeAllPermissionLevels">Set to true to remove all permission level.</param>
-        public static void RemovePermissionLevelFromGroup(this Web web, string groupName, string roleDefinitionName, bool removeAllPermissionLevels = false)
+		public static void RemovePermissionLevelFromGroup(this SecurableObject securableObject, string groupName, string roleDefinitionName, bool removeAllPermissionLevels = false)
         {
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
-            var group = web.SiteGroups.GetByName(groupName);
-            web.Context.Load(group);
-            web.Context.ExecuteQueryRetry();
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
-            web.RemovePermissionLevelImplementation(group, roleDefinition, removeAllPermissionLevels);
+			Web web = securableObject.GetAssociatedWeb();
+
+			var group = web.SiteGroups.GetByName(groupName);
+            securableObject.Context.Load(group);
+            securableObject.Context.ExecuteQueryRetry();
+			RoleDefinition roleDefinition = web.RoleDefinitions.GetByName(roleDefinitionName);
+            securableObject.RemovePermissionLevelImplementation(group, roleDefinition, removeAllPermissionLevels);
         }
 
-        private static void RemovePermissionLevelImplementation(this Web web, Principal principal, RoleDefinition roleDefinition, bool removeAllPermissionLevels = false)
+        private static void RemovePermissionLevelImplementation(this SecurableObject securableObject, Principal principal, RoleDefinition roleDefinition, bool removeAllPermissionLevels = false)
         {
             if (principal != null)
             {
-                RoleAssignmentCollection rac = web.RoleAssignments;
-                web.Context.Load(rac);
-                web.Context.ExecuteQueryRetry();
+                RoleAssignmentCollection rac = securableObject.RoleAssignments;
+                securableObject.Context.Load(rac);
+                securableObject.Context.ExecuteQueryRetry();
 
                 //Find the roles assigned to the principal
                 foreach (RoleAssignment ra in rac)
@@ -854,9 +940,8 @@ namespace Microsoft.SharePoint.Client
                     {
                         // load the role definitions for this role assignment
                         RoleDefinitionBindingCollection rdc = ra.RoleDefinitionBindings;
-                        web.Context.Load(rdc);
-                        web.Context.Load(web.RoleDefinitions);
-                        web.Context.ExecuteQueryRetry();
+                        securableObject.Context.Load(rdc);
+                        securableObject.Context.ExecuteQueryRetry();
 
                         if (removeAllPermissionLevels)
                         {
@@ -872,13 +957,43 @@ namespace Microsoft.SharePoint.Client
                         //update                      
                         ra.ImportRoleDefinitionBindings(rdc);
                         ra.Update();
-                        web.Context.ExecuteQueryRetry();
+                        securableObject.Context.ExecuteQueryRetry();
 
                         // Leave the for each loop
                         break;
                     }
                 }
             }
+        }
+
+        private static Web GetAssociatedWeb(this SecurableObject securable)
+        {
+            if (securable is Web)
+            {
+                return (Web)securable;
+            }
+
+            if (securable is List)
+            {
+                var list = (List)securable;
+                var web = list.ParentWeb;
+                securable.Context.Load(web);
+                securable.Context.ExecuteQueryRetry();
+
+                return web;
+            }
+
+            if (securable is ListItem)
+            {
+                var listItem = (ListItem)securable;
+                var web = listItem.ParentList.ParentWeb;
+                securable.Context.Load(web);
+                securable.Context.ExecuteQueryRetry();
+
+                return web;
+            }
+
+            throw new Exception("Only Web, List, ListItem supported as SecurableObjects");
         }
 
         /// <summary>
@@ -1058,11 +1173,8 @@ namespace Microsoft.SharePoint.Client
         {
 
             Guid returnGuid = Guid.Empty;
-            if (!web.IsPropertyAvailable("Url"))
-            {
-                web.Context.Load(web, w => w.Url);
-                web.Context.ExecuteQueryRetry();
-            }
+
+            web.EnsureProperties(w => w.Url);
 
             returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
 

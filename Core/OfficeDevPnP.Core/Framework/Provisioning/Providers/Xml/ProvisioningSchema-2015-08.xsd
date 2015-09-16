@@ -165,6 +165,14 @@
 
     <xsd:all>
 
+      <xsd:element name="Properties" type="pnp:ProvisioningTemplateProperties" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A set of custom Properties for the Provisioning Template, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
       <xsd:element name="SitePolicy" type="pnp:ReplaceableString" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -340,7 +348,7 @@
             <xsd:any minOccurs="0" maxOccurs="1" processContents="skip"  />
           </xsd:sequence>
         </xsd:complexType>
-        
+
       </xsd:element>
 
       <xsd:element name="Publishing" type="pnp:Publishing" minOccurs="0" maxOccurs="1">
@@ -358,7 +366,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      
+
       <xsd:element name="Providers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -393,6 +401,48 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="ImagePreviewUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Image Preview Url of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DisplayName" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Display Name of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Description" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Description of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+
+  </xsd:complexType>
+
+  <xsd:complexType name="ProvisioningTemplateProperties">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A set of custom Properties for the Provisioning Template.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="Property" type="pnp:StringDictionaryItem" minOccurs="1" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            A custom Property for the Provisioning Template, collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="RegionalSettings">
@@ -517,16 +567,20 @@
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="None" />
       <xsd:enumeration value="Gregorian" />
-      <xsd:enumeration value="Japanese Emperor Era" />
-      <xsd:enumeration value="Korean Tangun Era" />
+      <xsd:enumeration value="Japan" />
+      <xsd:enumeration value="Taiwan" />
+      <xsd:enumeration value="Korea" />
       <xsd:enumeration value="Hijri" />
-      <xsd:enumeration value="Buddhist" />
-      <xsd:enumeration value="Hebrew Lunar" />
+      <xsd:enumeration value="Thai" />
+      <xsd:enumeration value="Hebrew" />
       <xsd:enumeration value="Gregorian Middle East French Calendar" />
       <xsd:enumeration value="Gregorian Arabic Calendar" />
       <xsd:enumeration value="Gregorian Transliterated English Calendar" />
       <xsd:enumeration value="Gregorian Transliterated French Calendar" />
+      <xsd:enumeration value="Korea and Japanese Lunar" />
+      <xsd:enumeration value="Chinese Lunar" />
       <xsd:enumeration value="Saka Era" />
+      <xsd:enumeration value="Umm al-Qura" />
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -616,7 +670,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="Audit" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="Audit" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             A single Audit setting defined by an AuditFlag.
@@ -684,20 +738,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="PropertyBagEntry" minOccurs="1" maxOccurs="unbounded">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="en">
-            The Property Bag Entry of the Provisioning Template.
-          </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-          <xsd:complexContent>
-            <xsd:extension base="pnp:StringDictionaryItem">
-              <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" />
-            </xsd:extension>
-          </xsd:complexContent>
-        </xsd:complexType>
-      </xsd:element>
+      <xsd:element name="PropertyBagEntry" type="pnp:PropertyBagEntry"
+                    minOccurs="1" maxOccurs="unbounded" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -833,6 +875,32 @@
       </xsd:annotation>
     </xsd:attribute>
 
+  </xsd:complexType>
+
+  <xsd:complexType name="PropertyBagEntry" >
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The Property Bag Entry of the Provisioning Template.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexContent>
+      <xsd:extension base="pnp:StringDictionaryItem">
+        <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares whether the Property Bag Entry has to overwrite an already existing entry, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Indexed" type="xsd:boolean" use="optional" default="false">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares whether the Property Bag Entry has to be indexed, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="StringDictionaryItem">
@@ -1140,7 +1208,7 @@
           <xsd:sequence>
             <xsd:element name="RoleAssignment" type="pnp:RoleAssignment" maxOccurs="unbounded" />
           </xsd:sequence>
-        
+
           <xsd:attribute name="CopyRoleAssignments" type="xsd:boolean" use="required">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
@@ -1156,7 +1224,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-        
+
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -1232,7 +1300,7 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="DataRows" maxOccurs="1" minOccurs="0">
-        
+
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a collection of rows that will be added to the List Instance, optional element.
@@ -1264,8 +1332,8 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0"> 
-        
+      <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0">
+
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines a list of default values for the Fields of the List Instance, optional collection of elements.
@@ -1378,6 +1446,17 @@
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           The MaxVersionLimit for versions history for the List Instance, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DraftVersionVisibility" type="xsd:int" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The DraftVersionVisibility for the List Instance, optional attribute. The property will be cast to enum DraftVersionVisibility
+          0 - Reader - 	Any user who can read items,
+          1 - Author - Only users who can edit items,
+          2 - Approver - Only users who can approve items (and the author of the item)
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -1710,7 +1789,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="FeaturesList">
@@ -1837,7 +1916,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:complexContent>
-      <xsd:extension base="pnp:FieldRefBase" />
+      <xsd:extension base="pnp:FieldRefFull" />
     </xsd:complexContent>
   </xsd:complexType>
 
@@ -1872,6 +1951,21 @@
         Defines a Custom Action, which will be provisioned while applying the Provisioning Template.
       </xsd:documentation>
     </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="CommandUIExtension" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Defines the Custom UI Extension XML, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
 
     <xsd:attribute name="Name" type="xsd:string" use="required">
       <xsd:annotation>
@@ -2246,7 +2340,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      
+
       <xsd:element name="WorkflowDefinitions">
         <xsd:complexType>
           <xsd:annotation>
@@ -2309,7 +2403,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                
+
                 <xsd:attribute name="AssociationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
@@ -2334,10 +2428,26 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
+                <xsd:attribute name="DraftVersion" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines the DraftVersion of the Workflow, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
                 <xsd:attribute name="InitiationUrl" type="xsd:string" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the URL of the Workflow Initiation page, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
+                <xsd:attribute name="Published" type="xsd:boolean" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Defines if the Workflow is Published, optional attribute.
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
@@ -2358,7 +2468,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToScope" type="xsd:boolean" use="optional">
+                <xsd:attribute name="RestrictToScope" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Scope Restriction for the Workflow, optional attribute.
@@ -2366,12 +2476,19 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="RestrictToType" type="xsd:boolean" use="optional">
+                <xsd:attribute name="RestrictToType" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the Type of Scope Restriction for the Workflow, optional attribute.
                     </xsd:documentation>
                   </xsd:annotation>
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:enumeration value="Universal" />
+                      <xsd:enumeration value="List" />
+                      <xsd:enumeration value="Site" />
+                    </xsd:restriction>
+                  </xsd:simpleType>
                 </xsd:attribute>
 
                 <xsd:attribute name="XamlPath" type="xsd:string" use="required">
@@ -2381,7 +2498,7 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                
+
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
@@ -2455,7 +2572,7 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
-                <xsd:attribute name="EventSourceId" type="pnp:GUID" use="optional">
+                <xsd:attribute name="EventSourceId" type="pnp:ReplaceableString" use="optional">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       Defines the ID of the Event Source for the current Subscription, optional attribute.
@@ -2568,7 +2685,7 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="Publishing">
@@ -2621,7 +2738,7 @@
             </xsd:annotation>
           </xsd:attribute>
 
-          <xsd:attribute name="PackageName " type="xsd:string" use="required">
+          <xsd:attribute name="PackageName" type="xsd:string" use="required">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
                 The Name of the Design Package to import into the current Publishing site, required attribute.
@@ -2630,7 +2747,7 @@
           </xsd:attribute>
 
         </xsd:complexType>
-        
+
       </xsd:element>
 
       <xsd:element name="AvailableWebTemplates" minOccurs="0" maxOccurs="1">
@@ -2676,7 +2793,7 @@
         </xsd:annotation>
 
         <xsd:complexType>
-        
+
           <xsd:sequence>
             <xsd:element name="PageLayout" minOccurs="0" maxOccurs="unbounded">
               <xsd:annotation>
@@ -2693,17 +2810,18 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-                <xsd:attribute name="IsDefault" type="xsd:boolean" use="required">
-                  <xsd:annotation>
-                    <xsd:documentation xml:lang="en">
-                      Defines whether the Page Layout is the default for the current Publishing site, just one Page Layout can be the default, required attribute.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:attribute>
               </xsd:complexType>
 
             </xsd:element>
           </xsd:sequence>
+
+          <xsd:attribute name="Default" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Defines the URL of the Default Page Layout for the current Publishing site, if any. Optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
 
         </xsd:complexType>
       </xsd:element>
@@ -2742,7 +2860,7 @@
         </xsd:restriction>
       </xsd:simpleType>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="Provider">

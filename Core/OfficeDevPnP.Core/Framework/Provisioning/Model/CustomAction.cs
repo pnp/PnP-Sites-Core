@@ -111,22 +111,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}",
-                this.CommandUIExtension,
-                this.Description,
-                this.Enabled,
-                this.Group,
-                this.ImageUrl,
-                this.Location,
-                this.Name,
-                this.RegistrationId,
-                this.RegistrationType,
-                this.Remove,
-                this.RightsValue,
-                this.ScriptBlock,
-                this.ScriptSrc,
-                this.Sequence,
-                this.Title,
-                this.Url).GetHashCode());
+                this.CommandUIExtension.GetHashCode(),
+                this.Description.GetHashCode(),
+                this.Enabled.GetHashCode(),
+                this.Group.GetHashCode(),
+                this.ImageUrl.GetHashCode(),
+                this.Location.GetHashCode(),
+                this.Name.GetHashCode(),
+                this.RegistrationId.GetHashCode(),
+                this.RegistrationType.GetHashCode(),
+                this.Remove.GetHashCode(),
+                this.RightsValue.GetHashCode(),
+                this.ScriptBlock.GetHashCode(),
+                this.ScriptSrc.GetHashCode(),
+                this.Sequence.GetHashCode(),
+                this.Title.GetHashCode(),
+                this.Url.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

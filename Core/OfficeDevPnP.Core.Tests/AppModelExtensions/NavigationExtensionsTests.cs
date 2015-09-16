@@ -150,12 +150,12 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
-        public void DeleteAllQuickLaunchNodesTest()
+        public void DeleteAllNavigationNodesTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var web = clientContext.Web;
-                web.DeleteAllQuickLaunchNodes();
+                web.DeleteAllNavigationNodes(NavigationType.QuickLaunch);
                 clientContext.Load(web, w => w.Navigation.QuickLaunch);
                 clientContext.ExecuteQueryRetry();
                 Assert.IsFalse(web.Navigation.QuickLaunch.Any());

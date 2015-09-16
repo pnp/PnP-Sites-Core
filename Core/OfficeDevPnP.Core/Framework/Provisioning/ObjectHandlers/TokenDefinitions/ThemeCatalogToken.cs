@@ -1,11 +1,11 @@
 using Microsoft.SharePoint.Client;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class ThemeCatalogToken : TokenDefinition
+    internal class ThemeCatalogToken : TokenDefinition
     {
         public ThemeCatalogToken(Web web)
-            : base(web, "~themecatalog","{themecatalog}")
+            : base(web, "~themecatalog", "{themecatalog}")
         {
         }
 

@@ -454,14 +454,15 @@ namespace Microsoft.SharePoint.Client
                 else if (navigationType == NavigationType.TopNavigationBar)
                 {
                     var topLink = web.Navigation.TopNavigationBar;
-                    if(string.IsNullOrEmpty(parentNodeTitle))
+                    if (string.IsNullOrEmpty(parentNodeTitle))
                     {
                         deleteNode = topLink.SingleOrDefault(n => n.Title == nodeTitle);
-                    } else
+                    }
+                    else
                     {
-                        foreach(var nodeInfo in topLink)
+                        foreach (var nodeInfo in topLink)
                         {
-                            if(nodeInfo.Title != parentNodeTitle)
+                            if (nodeInfo.Title != parentNodeTitle)
                             {
                                 continue;
                             }
@@ -488,20 +489,44 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Deletes all Quick Launch nodes
+        /// Deletes all Navigation Nodes from a given navigation
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        public static void DeleteAllQuickLaunchNodes(this Web web)
+        /// <param name="navigationType">The type of navigation to support</param>
+        public static void DeleteAllNavigationNodes(this Web web, NavigationType navigationType)
         {
-            web.Context.Load(web, w => w.Navigation.QuickLaunch);
-            web.Context.ExecuteQueryRetry();
-
-            var quickLaunch = web.Navigation.QuickLaunch;
-            for (int i = quickLaunch.Count - 1; i >= 0; i--)
+            if (navigationType == NavigationType.QuickLaunch)
             {
-                quickLaunch[i].DeleteObject();
+                web.Context.Load(web, w => w.Navigation.QuickLaunch);
+                web.Context.ExecuteQueryRetry();
+
+                var quickLaunch = web.Navigation.QuickLaunch;
+                for (int i = quickLaunch.Count - 1; i >= 0; i--)
+                {
+                    quickLaunch[i].DeleteObject();
+                }
+                web.Context.ExecuteQueryRetry();
             }
-            web.Context.ExecuteQueryRetry();
+            else if (navigationType == NavigationType.TopNavigationBar)
+            {
+                web.Context.Load(web, w => w.Navigation.TopNavigationBar);
+                web.Context.ExecuteQueryRetry();
+                var topNavigation = web.Navigation.TopNavigationBar;
+                for (int i = topNavigation.Count - 1; i >= 0; i--)
+                {
+                    topNavigation[i].DeleteObject();
+                }
+                web.Context.ExecuteQueryRetry();
+            }
+            else if (navigationType == NavigationType.SearchNav)
+            {
+                var searchNavigation = web.LoadSearchNavigation();
+                for (int i = searchNavigation.Count - 1; i >= 0; i--)
+                {
+                    searchNavigation[i].DeleteObject();
+                }
+                web.Context.ExecuteQueryRetry();
+            }
         }
 
         /// <summary>

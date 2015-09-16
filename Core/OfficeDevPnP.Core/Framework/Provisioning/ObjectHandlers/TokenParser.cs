@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Management;
-using Microsoft.IdentityModel.Protocols.WSIdentity;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    public class TokenParser
+    internal class TokenParser
     {
         public Web _web;
 
@@ -40,11 +37,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Web web, ProvisioningTemplate template)
         {
-            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-            {
-                web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.ExecuteQueryRetry();
-            }
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            
             _web = web;
 
             _tokens = new List<TokenDefinition>();
@@ -55,7 +49,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
-
+            _tokens.Add(new SiteNameToken(web));
+            _tokens.Add(new SiteIdToken(web));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
             // Add lists
             web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
             web.Context.ExecuteQueryRetry();
@@ -73,6 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Add TermSetIds
             TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+
             var termStore = session.GetDefaultSiteCollectionTermStore();
             web.Context.Load(termStore);
             web.Context.ExecuteQueryRetry();
@@ -94,6 +93,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            _tokens.Add(new SiteCollectionTermGroupIdToken(web));
+            _tokens.Add(new SiteCollectionTermGroupNameToken(web));
 
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
@@ -120,6 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public string ParseString(string input, params string[] tokensToSkip)
         {
+            var origInput = input;
             if (!string.IsNullOrEmpty(input))
             {
                 foreach (var token in _tokens)
@@ -147,7 +150,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            while (origInput != input)
+            {
+                foreach (var token in _tokens)
+                {
+                    origInput = input;
+                    if (tokensToSkip != null)
+                    {
+                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        {
+                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            {
+                                var regex = token.GetRegexForToken(filteredToken);
+                                if (regex.IsMatch(input))
+                                {
+                                    input = regex.Replace(input, token.GetReplaceValue());
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        {
+                            origInput = input;
+                            input = regex.Replace(input, token.GetReplaceValue());
+                        }
+                    }
+                }
+            }
+
             return input;
         }
+
     }
 }

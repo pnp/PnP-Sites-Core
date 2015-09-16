@@ -14,6 +14,7 @@ using System.Xml.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
+    [Obsolete("The PnP Provisioning Schema v201503 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
     internal class XMLPnPSchemaV201503Formatter :
         IXMLSchemaFormatter, ITemplateFormatter
     {
@@ -23,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             this._provider = provider;
         }
-        
+
         string IXMLSchemaFormatter.NamespaceUri
         {
             get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03); }
@@ -57,6 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 

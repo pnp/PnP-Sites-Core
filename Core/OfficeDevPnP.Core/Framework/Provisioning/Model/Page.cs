@@ -6,10 +6,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public class Page : IEquatable<Page>
     {
         #region Private Members
+
         private List<WebPart> _webParts = new List<WebPart>();
+        private ObjectSecurity _security = new ObjectSecurity();
+
         #endregion
 
         #region Properties
+
         public string Url { get; set; }
 
         public WikiPageLayout Layout { get; set; }
@@ -23,12 +27,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _webParts = value; }
         }
 
+        /// <summary>
+        /// Defines the Security rules for the Page
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return this._security; }
+            private set { this._security = value; }
+        }
+
         #endregion
 
         #region Constructors
         public Page() { }
 
-        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false)
+        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false, ObjectSecurity security = null)
         {
             this.Url = url;
             this.Overwrite = overwrite;
@@ -39,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this.WebParts.AddRange(webParts);
             }
+
+            if (security != null)
+            {
+                this.Security = security;
+            }
         }
 
 
@@ -48,10 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
-                this.Url,
-                this.Overwrite,
-                this.Layout).GetHashCode());
+            return (String.Format("{0}|{1}|{2}|",
+                this.Url.GetHashCode(),
+                this.Overwrite.GetHashCode(),
+                this.Layout.GetHashCode()
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

@@ -33,6 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 DumpTemplate(ctx, "BDR0");
                 DumpTemplate(ctx, "DEV0");
                 DumpTemplate(ctx, "OFFILE1");
+
 #if !CLIENTSDKV15
                 DumpTemplate(ctx, "EHS1");
                 DumpTemplate(ctx, "BLANKINTERNETCONTAINER0", "", "BLANKINTERNET0");

@@ -6,14 +6,6 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal static class PnPMonitoredScopeExtensions
-    {
-        public static void LogPropertyUpdate(this PnPMonitoredScope scope, string propertyName)
-        {
-            scope.LogDebug(CoreResources.PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_, propertyName);
-        }
-    }
-
     internal class SiteToTemplateConversion
     {
         /// <summary>
@@ -68,6 +60,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
+                objectHandlers.Add(new ObjectRegionalSettings());
+                objectHandlers.Add(new ObjectSupportedUILanguages());
+                objectHandlers.Add(new ObjectAuditSettings());
                 objectHandlers.Add(new ObjectSitePolicy());
                 objectHandlers.Add(new ObjectSiteSecurity());
                 objectHandlers.Add(new ObjectTermGroups());
@@ -77,9 +72,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectCustomActions());
                 objectHandlers.Add(new ObjectFeatures());
                 objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectSearchSettings());
                 objectHandlers.Add(new ObjectFiles());
                 objectHandlers.Add(new ObjectPages());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
+                objectHandlers.Add(new ObjectPublishing());
+                objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -129,8 +127,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
                     }
-                    messagesDelegate = provisioningInfo.MessageDelegate;
-                    if (provisioningInfo.MessageDelegate != null)
+                    messagesDelegate = provisioningInfo.MessagesDelegate;
+                    if (provisioningInfo.MessagesDelegate != null)
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }
@@ -138,6 +136,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
+                objectHandlers.Add(new ObjectRegionalSettings());
+                objectHandlers.Add(new ObjectSupportedUILanguages());
+                objectHandlers.Add(new ObjectAuditSettings());
                 objectHandlers.Add(new ObjectSitePolicy());
                 objectHandlers.Add(new ObjectSiteSecurity());
                 objectHandlers.Add(new ObjectFeatures());
@@ -150,7 +151,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectFiles());
                 objectHandlers.Add(new ObjectPages());
                 objectHandlers.Add(new ObjectCustomActions());
+                objectHandlers.Add(new ObjectPublishing());
                 objectHandlers.Add(new ObjectComposedLook());
+                objectHandlers.Add(new ObjectSearchSettings());
+                objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
                 objectHandlers.Add(new ObjectExtensibilityProviders());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
