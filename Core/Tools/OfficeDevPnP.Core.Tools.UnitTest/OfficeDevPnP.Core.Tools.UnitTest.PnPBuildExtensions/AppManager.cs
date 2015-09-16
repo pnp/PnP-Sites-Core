@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         private static string PubXmlUserName = "%UserName%";
         private static string PubXmlClientId = "%ClientId%";
         private static string PubXmlClientSecret = "%ClientSecret%";
+        private static string PublishingProfileName = "Automation";
         #endregion
 
         #region Private variables
@@ -91,7 +92,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Public Methods
-        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, out string appPackageName)
+        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, string packageFolder, out string appPackageName, string buildConfiguration = "Release")
         {
             bool createAppPackageResult = false;
 
@@ -127,28 +128,40 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientId, clientId);
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientSecret, clientSecret);
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlServiceURL, applicationHost);
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlBuildConfiguration, buildConfiguration);
 
             // insert the publishing template in the solution
-            bool publishingXmlWasDefined = false;
+            //bool publishingXmlWasDefined = false;
             string publishingXmlFile = "";
+            string currentActivePublishingProfile = null;
+            XmlDocument xDoc = null;
             try
             {
-                // Do we already have a publishing XML defined?
-                publishingXmlFile = GetAvailablePublishingXml(sharePointProjectFile, sharePointWebProjectFile);
+                //// Do we already have a publishing XML defined?
+                //publishingXmlFile = GetAvailablePublishingXml(sharePointProjectFile, sharePointWebProjectFile);
 
-                // We've a publishing xml file in the project, let's update it
-                if (!String.IsNullOrEmpty(publishingXmlFile))
-                {
-                    publishingXmlWasDefined = true;
+                //// We've a publishing xml file in the project, let's update it
+                //if (!String.IsNullOrEmpty(publishingXmlFile))
+                //{
+                //    publishingXmlWasDefined = true;
 
-                    // Rename the original active publishing XML file
-                    File.Move(publishingXmlFile, String.Format("{0}.old", publishingXmlFile));
-                }
-                else
-                {
-                    // We need a new publishing xml file name
-                    publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\automation.pubxml", Path.GetDirectoryName(sharePointWebProjectFile));
-                }
+                //    // Rename the original active publishing XML file
+                //    File.Move(publishingXmlFile, String.Format("{0}.old", publishingXmlFile));
+                //}
+                //else
+                //{
+                //    // We need a new publishing xml file name
+                //    publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\\automation.pubxml", Path.GetDirectoryName(sharePointWebProjectFile));
+                //}
+
+
+                // We need a new publishing xml file name
+                publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\\{1}.pubxml", Path.GetDirectoryName(sharePointWebProjectFile), AppManager.PublishingProfileName);
+
+                // Load SharePoint Project file to find/set the ActivePublishingProfile
+                xDoc = new XmlDocument();
+                xDoc.Load(sharePointProjectFile);
+                currentActivePublishingProfile = SetActivePublishingProfile(xDoc, sharePointProjectFile, AppManager.PublishingProfileName);
 
                 // Add a new publishing xml file
                 File.WriteAllText(publishingXmlFile, publishingTemplateString);
@@ -156,7 +169,19 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 // Trigger package build
                 Hashtable packageBuildParameters = new Hashtable();
                 packageBuildParameters.Add("ProjectFile", sharePointProjectFile);
-                packageBuildParameters.Add("OutputPath", @"c:\temp\");
+
+                // Package folder need to end with a \
+                if (!packageFolder.EndsWith(@"\"))
+                {
+                    packageFolder = packageFolder + @"\";
+                }
+
+                if (Directory.Exists(packageFolder))
+                {
+                    Console.WriteLine("Package directory already exists...it will be removed as part of the build process");
+                }
+
+                packageBuildParameters.Add("OutputPath", packageFolder);
                 string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackage.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
 
                 if (!packageBuildResult.Contains("Build FAILED"))
@@ -176,11 +201,14 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 // delete the created publishing xml file to restore the project back in it's original state
                 File.Delete(publishingXmlFile);
 
-                if (publishingXmlWasDefined)
-                {
-                    // revert back to the original publishing XML if there was one defined
-                    File.Move(String.Format("{0}.old", publishingXmlFile), publishingXmlFile);
-                }
+                // restore the project file to it's original state. 
+                SetActivePublishingProfile(xDoc, sharePointProjectFile, currentActivePublishingProfile);
+
+                //if (publishingXmlWasDefined)
+                //{
+                //    // revert back to the original publishing XML if there was one defined
+                //    File.Move(String.Format("{0}.old", publishingXmlFile), publishingXmlFile);
+                //}
                 
             }
             
@@ -280,6 +308,59 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             return true;
         }
 
+        private string SetActivePublishingProfile(XmlDocument xDoc, string sharePointProjectFile, string publishingProfile)
+        {
+            string previousValue = null;
+            
+            //We've a namespace to take in account
+            XmlNamespaceManager nsmgr = new XmlNamespaceManager(xDoc.NameTable);
+            nsmgr.AddNamespace("ns", xDoc.DocumentElement.NamespaceURI);
+
+            // Query the ActivePublishProfile property node
+            XmlNode activePublishProfile = xDoc.DocumentElement.SelectSingleNode("/ns:Project/ns:PropertyGroup[1]/ns:ActivePublishProfile", nsmgr);
+
+            if (activePublishProfile != null && !String.IsNullOrEmpty(activePublishProfile.InnerText))
+            {
+                // we've a publishing profile value
+                if (publishingProfile != null)
+                {
+                    // The node was there, so let's update
+
+                    // store the previous value as we need to restore it afterwards
+                    previousValue = activePublishProfile.InnerText;
+                    // update the node with the new value
+                    activePublishProfile.InnerText = publishingProfile;
+                }
+                else
+                {
+                    // there's no publishing profile value...happens when there was none set and we're now restoring the old settings --> we need to remove the node
+                    activePublishProfile.ParentNode.RemoveChild(activePublishProfile);
+                }
+            }
+            else
+            {
+                // The node was not there, let's add it
+
+                if (publishingProfile != null)
+                {
+                    // Query the ActivePublishProfile property node
+                    XmlNode propertyGroup = xDoc.DocumentElement.SelectSingleNode("/ns:Project/ns:PropertyGroup[1]", nsmgr);
+                    XmlElement activePublishingProfileNode = xDoc.CreateElement("ActivePublishingProfile");
+                    activePublishingProfileNode.InnerText = publishingProfile;
+                    propertyGroup.AppendChild(activePublishingProfileNode);
+                }
+                else
+                {
+                    throw new ArgumentException("Provided publishing profile is null which is not a supported case.");
+                }
+            }
+
+            // persist the changes
+            xDoc.Save(sharePointProjectFile);
+
+            return previousValue;
+        }
+
         private string GetAvailablePublishingXml(string sharePointProjectFile, string sharePointWebProjectFile)
         {
             string publishingXmlFile = "";
@@ -297,9 +378,13 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             // e.g. C:\GitHub\BertPnP\Samples\Core.EmbedJavaScript\Core.EmbedJavaScriptWeb\Properties\PublishProfiles\bert2.pubxml
             string folder = String.Format("{0}\\Properties\\PublishProfiles", Path.GetDirectoryName(sharePointWebProjectFile));
 
+            // Load the project file as we need to understand the 
+            //XmlElement sharePointProjectFileXml = LoadXmlFile(sharePointProjectFile);
+
+
             // Get the pubxml files in this folder
             string[] publishingXmlFiles = Directory.GetFiles(folder, "*.pubxml");
-            if (publishingXmlFile.Length == 1)
+            if (publishingXmlFiles.Length == 1)
             {
                 publishingXmlFile = publishingXmlFiles[0];
             }
