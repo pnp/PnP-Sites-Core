@@ -164,6 +164,10 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 currentActivePublishingProfile = SetActivePublishingProfile(xDoc, sharePointProjectFile, AppManager.PublishingProfileName);
 
                 // Add a new publishing xml file
+                if (!Directory.Exists(Path.GetDirectoryName(publishingXmlFile)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(publishingXmlFile));
+                }
                 File.WriteAllText(publishingXmlFile, publishingTemplateString);
 
                 // Trigger package build
@@ -345,7 +349,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 {
                     // Query the ActivePublishProfile property node
                     XmlNode propertyGroup = xDoc.DocumentElement.SelectSingleNode("/ns:Project/ns:PropertyGroup[1]", nsmgr);
-                    XmlElement activePublishingProfileNode = xDoc.CreateElement("ActivePublishingProfile");
+                    XmlElement activePublishingProfileNode = xDoc.CreateElement("ActivePublishingProfile", xDoc.DocumentElement.NamespaceURI);
                     activePublishingProfileNode.InnerText = publishingProfile;
                     propertyGroup.AppendChild(activePublishingProfileNode);
                 }
