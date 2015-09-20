@@ -16,9 +16,13 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
 
             string appPackageName = "";
             AppManager am = new AppManager("https://bertonline.sharepoint.com/sites/dev", AuthenticationType.Office365, "bertonline");
-            am.CreateAppPackageForProviderHostedApp(@"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScript\Core.EmbedJavaScript.csproj", 
-                                                    @"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScriptWeb\Core.EmbedJavaScriptWeb.csproj", 
-                                                    "yes", "sure", "myhost.com", @"c:\temp\Core.EmbedJavaScript.Package", out appPackageName);
+            //am.CreateAppPackageForProviderHostedApp(@"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScript\Core.EmbedJavaScript.csproj",
+            //                                        @"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScriptWeb\Core.EmbedJavaScriptWeb.csproj",
+            //                                        "yes", "sure", "myhost.com", @"c:\temp\Core.EmbedJavaScript.Package", out appPackageName);
+
+            am.CreateAppPackageForProviderHostedApp(@"C:\temp\providerhostedapp1\providerhostedapp1\providerhostedapp1.csproj",
+                                        @"C:\temp\providerhostedapp1\providerhostedapp1Web\providerhostedapp1Web.csproj",
+                                        "yes", "sure", "myhost.com", @"c:\temp\providerhostedapp1.Package", out appPackageName);
 
 
             //PnPAppConfigManager p = new PnPAppConfigManager(@"C:\Users\bjansen\Documents\Visual Studio 2013\Projects\MSBuildTests\PnPBuildExtensions\mastertestconfiguration.xml");
