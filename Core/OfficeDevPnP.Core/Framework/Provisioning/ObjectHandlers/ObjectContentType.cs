@@ -186,6 +186,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
             }
+            if (!String.IsNullOrEmpty(templateContentType.NewFormUrl))
+            {
+                createdCT.NewFormUrl = templateContentType.NewFormUrl;
+            }
+            if (!String.IsNullOrEmpty(templateContentType.EditFormUrl))
+            {
+                createdCT.EditFormUrl = templateContentType.EditFormUrl;
+            }
+            if (!String.IsNullOrEmpty(templateContentType.DisplayFormUrl))
+            {
+                createdCT.DisplayFormUrl = templateContentType.DisplayFormUrl;
+            }
 
             web.Context.Load(createdCT);
             web.Context.ExecuteQueryRetry();
@@ -244,7 +256,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
                              })
-                        ));
+                        )
+                    {
+                        DisplayFormUrl = ct.DisplayFormUrl,
+                        EditFormUrl = ct.EditFormUrl,
+                        NewFormUrl = ct.NewFormUrl,
+                    });
                 }
             }
             return ctsToReturn;
