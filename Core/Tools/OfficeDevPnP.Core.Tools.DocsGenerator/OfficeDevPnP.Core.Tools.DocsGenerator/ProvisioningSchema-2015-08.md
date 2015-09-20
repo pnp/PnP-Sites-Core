@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 8/31/2015*
+*Topic automatically generated on 9/20/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1024,7 +1024,10 @@ Defines a Content Type.
       Hidden="xsd:boolean"
       Sealed="xsd:boolean"
       ReadOnly="xsd:boolean"
-      Overwrite="xsd:boolean">
+      Overwrite="xsd:boolean"
+      NewFormUrl="xsd:string"
+      EditFormUrl="xsd:string"
+      DisplayFormUrl="xsd:string">
    <pnp:FieldRefs />
    <pnp:DocumentTemplate />
    <pnp:DocumentSetTemplate />
@@ -1054,6 +1057,9 @@ Hidden|xsd:boolean|Optional Boolean. True to define the content type as hidden. 
 Sealed|xsd:boolean|Optional Boolean. True to prevent changes to this content type. You cannot change the value of this attribute through the user interface, but you can change it in code if you have sufficient rights. You must have site collection administrator rights to unseal a content type.
 ReadOnly|xsd:boolean|Optional Boolean. TRUE to specify that the content type cannot be edited without explicitly removing the read-only setting. This can be done either in the user interface or in code.
 Overwrite|xsd:boolean|Optional Boolean. TRUE to overwrite an existing content type with the same ID.
+NewFormUrl|xsd:string|Specifies the URL of a custom new form to use for list items that have been assigned the content type, optional attribute.
+EditFormUrl|xsd:string|Specifies the URL of a custom edit form to use for list items that have been assigned the content type, optional attribute.
+DisplayFormUrl|xsd:string|Specifies the URL of a custom display form to use for list items that have been assigned the content type, optional attribute.
 <a name="fieldrefs"></a>
 ###FieldRefs
 The FieldRefs entries of the List Instance, optional collection of elements.
