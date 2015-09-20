@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Public Methods
-        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, string packageFolder, out string appPackageName, string buildConfiguration = "Release", string visualStudioVersion="14.0")
+        public bool DeployProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, string siteUrl, string IisAppPath, string packageFolder, out string appPackageName, string buildConfiguration = "Release", string visualStudioVersion="14.0")
         {
             bool createAppPackageResult = false;
 
@@ -121,14 +121,34 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 throw new ArgumentException("Please provide an application host");
             }
 
+            if (String.IsNullOrEmpty(siteUrl))
+            {
+                throw new ArgumentException("Please provide an site Url");
+            }
+
+            if (String.IsNullOrEmpty(buildConfiguration))
+            {
+                throw new ArgumentException("Please provide a build configuration (e.g. release or debug)");
+            }
+
+            if (String.IsNullOrEmpty(visualStudioVersion))
+            {
+                throw new ArgumentException("Please provide a Visual Studio version (e.g. 12.0 or 14.0)");
+            }
+
             // Get a base template that will be used for the publishing
             string publishingTemplateString = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite);
 
             // replace tokens in the publishing template
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientId, clientId);
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientSecret, clientSecret);
-            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlServiceURL, applicationHost);
             publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlBuildConfiguration, buildConfiguration);
+            // Applicationhost is like bjansen-automation1.scm.azurewebsites.net:443                        
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlServiceURL, applicationHost);
+            // Site Url to launch after publish is like https://bjansen-automation1.azurewebsites.net
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlSiteUrlToLaunchAfterPublish, siteUrl);
+            // IIS app path is like bjansen-automation1
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlIisAppPath, IisAppPath);
 
             // insert the publishing template in the solution
             string publishingXmlFile = "";
@@ -169,16 +189,18 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 
                 string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackage.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
 
-                if (!packageBuildResult.Contains("Build FAILED"))
-                {
-                    createAppPackageResult = true;
-                    appPackageName = GetAppPackageFile(packageFolder);
-                }
-                else
+                if (packageBuildResult.Contains("Build FAILED"))
                 {
                     Console.WriteLine("App Package creation failed");
                     Console.WriteLine(packageBuildResult);
                     appPackageName = "";
+                }
+                else
+                {
+                    createAppPackageResult = true;
+                    appPackageName = GetAppPackageFile(packageFolder);
+                    // Remove all unneeded files from the package folder
+                    CleanupAppPackageFolder(packageFolder);
                 }
             }
             finally
@@ -190,7 +212,176 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             return createAppPackageResult;
         }
 
+        public bool CreateAppPackageForProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string siteUrl, string packageFolder, out string appPackageName, string buildConfiguration = "Release", string visualStudioVersion = "14.0")
+        {
+            bool createAppPackageResult = false;
 
+            if (String.IsNullOrEmpty(sharePointProjectFile) || !System.IO.File.Exists(sharePointProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint project file ({0}) is invalid.", sharePointProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(sharePointWebProjectFile) || !System.IO.File.Exists(sharePointWebProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint Web project file ({0}) is invalid.", sharePointWebProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentException("Please provide a client id");
+            }
+
+            if (String.IsNullOrEmpty(siteUrl))
+            {
+                throw new ArgumentException("Please provide an site Url");
+            }
+
+            if (String.IsNullOrEmpty(buildConfiguration))
+            {
+                throw new ArgumentException("Please provide a build configuration (e.g. release or debug)");
+            }
+
+            if (String.IsNullOrEmpty(visualStudioVersion))
+            {
+                throw new ArgumentException("Please provide a Visual Studio version (e.g. 12.0 or 14.0)");
+            }
+
+            // Get a base template that will be used for the publishing - just take Azure template...doesn't matter since 
+            // we're only creating the app package
+            string publishingTemplateString = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite);
+
+            // replace tokens in the publishing template
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlClientId, clientId);
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlBuildConfiguration, buildConfiguration);
+            // Site Url to launch after publish is like https://bjansen-automation1.azurewebsites.net
+            publishingTemplateString = publishingTemplateString.Replace(AppManager.PubXmlSiteUrlToLaunchAfterPublish, siteUrl);
+
+            // insert the publishing template in the solution
+            string publishingXmlFile = "";
+            try
+            {
+                // We need a new publishing xml file name
+                publishingXmlFile = String.Format("{0}\\Properties\\PublishProfiles\\{1}.pubxml", Path.GetDirectoryName(sharePointWebProjectFile), AppManager.PublishingProfileName);
+
+                // Add a new publishing xml file
+                if (!Directory.Exists(Path.GetDirectoryName(publishingXmlFile)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(publishingXmlFile));
+                }
+                File.WriteAllText(publishingXmlFile, publishingTemplateString);
+
+                // Trigger package build
+                Hashtable packageBuildParameters = new Hashtable();
+                packageBuildParameters.Add("ProjectFile", sharePointProjectFile);
+
+                // Package folder need to end with a \
+                if (!packageFolder.EndsWith(@"\"))
+                {
+                    packageFolder = packageFolder + @"\";
+                }
+
+                if (Directory.Exists(packageFolder))
+                {
+                    Console.WriteLine("Package directory already exists...it will be removed as part of the build process");
+                }
+
+                packageBuildParameters.Add("OutputPath", packageFolder);
+                // we pass the visual studio version: important that to know that the visual studio version defined in the
+                // project file is also installed. Ideally the passed version and the one define in the project match
+                packageBuildParameters.Add("VisualStudioVersion", visualStudioVersion);
+                packageBuildParameters.Add("BuildConfiguration", buildConfiguration);
+                // override the publishing profile that's needed for packaging the app
+                packageBuildParameters.Add("ActivePublishProfile", AppManager.PublishingProfileName);
+
+                string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackageProviderHosted.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
+
+                if (packageBuildResult.Contains("Build FAILED"))
+                {
+                    Console.WriteLine("App Package creation failed");
+                    Console.WriteLine(packageBuildResult);
+                    appPackageName = "";
+                }
+                else
+                {
+                    createAppPackageResult = true;
+                    appPackageName = GetAppPackageFile(packageFolder);
+                    // Remove all unneeded files from the package folder
+                    CleanupAppPackageFolder(packageFolder);
+                }
+            }
+            finally
+            {
+                // delete the created publishing xml file to restore the project back in it's original state
+                File.Delete(publishingXmlFile);
+            }
+
+            return createAppPackageResult;
+        }
+
+        public bool CreateAppPackageForSharePointHostedApp(string sharePointProjectFile, string packageFolder, out string appPackageName, string buildConfiguration = "Release", string visualStudioVersion = "14.0")
+        {
+            bool createAppPackageResult = false;
+
+            if (String.IsNullOrEmpty(sharePointProjectFile) || !System.IO.File.Exists(sharePointProjectFile))
+            {
+                throw new ArgumentException(String.Format("Provide SharePoint project file ({0}) is invalid.", sharePointProjectFile));
+            }
+
+            if (String.IsNullOrEmpty(buildConfiguration))
+            {
+                throw new ArgumentException("Please provide a build configuration (e.g. release or debug)");
+            }
+
+            if (String.IsNullOrEmpty(visualStudioVersion))
+            {
+                throw new ArgumentException("Please provide a Visual Studio version (e.g. 12.0 or 14.0)");
+            }
+
+            try
+            {
+                // Trigger package build
+                Hashtable packageBuildParameters = new Hashtable();
+                packageBuildParameters.Add("ProjectFile", sharePointProjectFile);
+
+                // Package folder need to end with a \
+                if (!packageFolder.EndsWith(@"\"))
+                {
+                    packageFolder = packageFolder + @"\";
+                }
+
+                if (Directory.Exists(packageFolder))
+                {
+                    Console.WriteLine("Package directory already exists...it will be removed as part of the build process");
+                }
+
+                packageBuildParameters.Add("OutputPath", packageFolder);
+                // we pass the visual studio version: important that to know that the visual studio version defined in the
+                // project file is also installed. Ideally the passed version and the one define in the project match
+                packageBuildParameters.Add("VisualStudioVersion", visualStudioVersion);
+                packageBuildParameters.Add("BuildConfiguration", buildConfiguration);
+
+                string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackageSharePointHosted.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
+
+                if (packageBuildResult.Contains("Build FAILED"))
+                {
+                    Console.WriteLine("App Package creation failed");
+                    Console.WriteLine(packageBuildResult);
+                    appPackageName = "";
+                }
+                else
+                {
+                    createAppPackageResult = true;
+                    appPackageName = GetAppPackageFile(packageFolder);
+                    // Remove all unneeded files from the package folder
+                    CleanupAppPackageFolder(packageFolder);
+                }
+            }
+            finally
+            {
+            }
+
+            return createAppPackageResult;
+        }
 
         public bool RegisterApplication(ref string clientId, ref string clientSecret, string title, string appDomain, string redirectUri)
         {
@@ -259,6 +450,41 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Private methods
+
+        private void CleanupAppPackageFolder(string packageFolder)
+        {
+            string[] files = Directory.GetFiles(packageFolder);
+
+            // clean up in root folder
+            for (int i = 0; i < files.Length; i++)
+            {
+                File.Delete(files[i]);
+            }
+
+            // cleanup directories
+            string[] directories = Directory.GetDirectories(packageFolder);
+            for (int i = 0; i < directories.Length; i++)
+            {
+                if (!directories[i].Equals(Path.Combine(packageFolder, "app.publish"), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    Directory.Delete(directories[i], true);
+                }
+            }
+
+            // cleanup in app.publish folder
+            files = Directory.GetFiles(Path.Combine(packageFolder, "app.publish"), "*.*", SearchOption.AllDirectories);
+            for (int i = 0; i < files.Length; i++)
+            {
+                if (!files[i].EndsWith(".app"))
+                {
+                    if (File.Exists(files[i]))
+                    {
+                        File.Delete(files[i]);
+                    }
+                }
+            }
+        }
+
         private string GetAppPackageFile(string packageFolder)
         {
             string appPackageFile = null;

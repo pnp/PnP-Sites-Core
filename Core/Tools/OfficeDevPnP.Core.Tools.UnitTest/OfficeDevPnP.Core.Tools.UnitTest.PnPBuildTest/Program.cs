@@ -16,14 +16,18 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
 
             string appPackageName = "";
             AppManager am = new AppManager("https://bertonline.sharepoint.com/sites/dev", AuthenticationType.Office365, "bertonline");
+            
+
+            // Provider hosted testing
             //am.CreateAppPackageForProviderHostedApp(@"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScript\Core.EmbedJavaScript.csproj",
             //                                        @"C:\temp\Core.EmbedJavaScript\Core.EmbedJavaScriptWeb\Core.EmbedJavaScriptWeb.csproj",
-            //                                        "yes", "sure", "myhost.com", @"c:\temp\Core.EmbedJavaScript.Package", out appPackageName);
+            //                                        "yesImaclientid", "https://localhost:7776", @"c:\temp\Core.EmbedJavaScript.Package", out appPackageName);
 
-            am.CreateAppPackageForProviderHostedApp(@"C:\temp\providerhostedapp1\providerhostedapp1\providerhostedapp1.csproj",
-                                        @"C:\temp\providerhostedapp1\providerhostedapp1Web\providerhostedapp1Web.csproj",
-                                        "yes", "sure", "myhost.com", @"c:\temp\providerhostedapp1.Package", out appPackageName);
+            //am.CreateAppPackageForProviderHostedApp(@"C:\temp\providerhostedapp1\providerhostedapp1\providerhostedapp1.csproj", @"C:\temp\providerhostedapp1\providerhostedapp1Web\providerhostedapp1Web.csproj",
+            //                            "d643a56c-5319-48a8-a97f-d7c8b905dac5", "https://bjansen-automation1.azurewebsites.net", @"c:\temp\providerhostedapp1.Package", out appPackageName);
 
+            // Sharepoint hosted testing
+            am.CreateAppPackageForSharePointHostedApp(@"C:\temp\SharePointHostedApp1\SharePointHostedApp1\SharePointHostedApp1.csproj", @"c:\temp\SharePointHostedApp1.Package", out appPackageName);
 
             //PnPAppConfigManager p = new PnPAppConfigManager(@"C:\Users\bjansen\Documents\Visual Studio 2013\Projects\MSBuildTests\PnPBuildExtensions\mastertestconfiguration.xml");
             ////Console.WriteLine(p.GetConfigurationElement("OnPremAppOnly", "PnPbranch"));

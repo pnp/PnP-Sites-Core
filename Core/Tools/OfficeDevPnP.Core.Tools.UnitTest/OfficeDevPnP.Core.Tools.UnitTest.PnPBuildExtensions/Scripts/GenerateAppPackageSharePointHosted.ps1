@@ -6,8 +6,7 @@ Param(
     [Parameter(Mandatory = $true)] [String]$ProjectFile,         # Point to the .csproj file of the project you want to deploy
 	[Parameter(Mandatory = $true)] [String]$OutputPath,
 	[Parameter(Mandatory = $true)] [String]$VisualStudioVersion,
-	[Parameter(Mandatory = $true)] [String]$BuildConfiguration,
-	[Parameter(Mandatory = $true)] [String]$ActivePublishProfile
+	[Parameter(Mandatory = $true)] [String]$BuildConfiguration
 )
 # Begin - Actual script -----------------------------------------------------------------------------------------------------------------------------
  
@@ -23,8 +22,7 @@ $startTime = Get-Date
 Write-Verbose ("[Start] App Package creation for project {0}" -f $ProjectFile)
 
 # Run MSBuild to publish the project
-& "$env:windir\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" /t:Package $ProjectFile /p:Configuration=$BuildConfiguration /p:OutputPath=$OutputPath /p:VisualStudioVersion=$VisualStudioVersion /p:ActivePublishProfile=$ActivePublishProfile
-
+& "$env:windir\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" /t:Package $ProjectFile /p:Configuration=$BuildConfiguration /p:OutputPath=$OutputPath /p:VisualStudioVersion=$VisualStudioVersion
 
 Write-Verbose ("[Finish] App Package creation for project {0}" -f $ProjectFile)
 
