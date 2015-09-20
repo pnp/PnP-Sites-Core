@@ -20,6 +20,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         }
 
+        public TokenParser AddExtendedTokens(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                var context = web.Context as ClientContext;
+                foreach (var provider in template.Providers)
+                {
+                    if (provider.Enabled)
+                    {
+                        var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, provider, template);
+                        if (_providedTokens != null)
+                        { 
+                            foreach (var token in _providedTokens)
+                            {
+                                parser.AddToken(token);
+                            }
+                        }
+                    }
+                }
+                return parser;
+            }
+        }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -80,5 +103,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return _willExtract.Value;
         }
+
     }
 }

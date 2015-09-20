@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -135,7 +136,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
-
                 objectHandlers.Add(new ObjectRegionalSettings());
                 objectHandlers.Add(new ObjectSupportedUILanguages());
                 objectHandlers.Add(new ObjectAuditSettings());
@@ -156,10 +156,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 objectHandlers.Add(new ObjectSearchSettings());
                 objectHandlers.Add(new ObjectWorkflows());
                 objectHandlers.Add(new ObjectPropertyBagEntry());
-                objectHandlers.Add(new ObjectExtensibilityProviders());
+                var extensibilityHandler = new ObjectExtensibilityProviders();
+                objectHandlers.Add(extensibilityHandler);
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
 
                 var tokenParser = new TokenParser(web, template);
+                extensibilityHandler.AddExtendedTokens(web, template, tokenParser, provisioningInfo);
 
                 int step = 1;
 
