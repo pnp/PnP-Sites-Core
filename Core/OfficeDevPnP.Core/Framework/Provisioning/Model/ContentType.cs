@@ -81,6 +81,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public DocumentSetTemplate DocumentSetTemplate { get; set; }
 
+        /// <summary>
+        /// Specifies the URL of a custom display form to use for list items that have been assigned the content type
+        /// </summary>
+        public String DisplayFormUrl { get; set; }
+
+        /// <summary>
+        /// Specifies the URL of a custom edit form to use for list items that have been assigned the content type
+        /// </summary>
+        public String EditFormUrl { get; set; }
+
+        /// <summary>
+        /// Specifies the URL of a custom new form to use for list items that have been assigned the content type
+        /// </summary>
+        public String NewFormUrl { get; set; }
+
         #endregion
 
         #region Constructors
