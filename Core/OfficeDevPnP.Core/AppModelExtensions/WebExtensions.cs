@@ -916,13 +916,13 @@ namespace Microsoft.SharePoint.Client
                    in web.EventReceivers
                         where receiver.ReceiverName == name
                         select receiver;
-            web.Context.LoadQuery(query);
+            var receivers = web.Context.LoadQuery(query);
             web.Context.ExecuteQueryRetry();
 
-            var receiverExists = query.Any();
+            var receiverExists = receivers.Any();
             if (receiverExists && force)
             {
-                var receiver = query.FirstOrDefault();
+                var receiver = receivers.FirstOrDefault();
                 receiver.DeleteObject();
                 web.Context.ExecuteQueryRetry();
                 receiverExists = false;
