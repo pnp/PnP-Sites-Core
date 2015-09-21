@@ -420,6 +420,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                           ID = wpf.ToString(),
                                       }).ToArray() : null,
                              } : null,
+                         DisplayFormUrl = ct.DisplayFormUrl,
+                         EditFormUrl = ct.EditFormUrl,
+                         NewFormUrl = ct.NewFormUrl,
                      }).ToArray();
             }
             else
@@ -1290,7 +1293,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Hidden = fieldRef.Hidden,
                                  Required = fieldRef.Required
                              }) : null)
-
                         )
                     {
                         DocumentSetTemplate = contentType.DocumentSetTemplate != null ?
@@ -1314,6 +1316,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
                                      select Guid.Parse(wpf.ID)) : null
                                 ) : null,
+                        DisplayFormUrl = contentType.DisplayFormUrl,
+                        EditFormUrl = contentType.EditFormUrl,
+                        NewFormUrl = contentType.NewFormUrl,
                     }
                 );
             }
