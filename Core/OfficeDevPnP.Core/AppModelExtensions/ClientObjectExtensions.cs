@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -102,6 +103,15 @@ namespace Microsoft.SharePoint.Client
             return Expression.Lambda<Func<TInput, object>>(
                 Expression.Convert(field, typeof(object)),
                 param);
+        }
+
+        internal static void ClearObjectData(this ClientObject clientObject)
+        {
+            PropertyInfo info_ClientObject_ObjectData = typeof(ClientObject)
+                .GetProperty("ObjectData", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);
+            objectData.MethodReturnObjects.Clear();
         }
     }
 }
