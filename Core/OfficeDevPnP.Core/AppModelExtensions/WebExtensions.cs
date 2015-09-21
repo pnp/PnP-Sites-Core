@@ -245,27 +245,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True is sub site, false otherwise</returns>
         public static bool IsSubSite(this Web web)
         {
-            bool executeQueryNeeded = false;
             Site site = (web.Context as ClientContext).Site;
 
-            if (!web.IsObjectPropertyInstantiated("Url"))
-            {
-                web.Context.Load(web);
-                executeQueryNeeded = true;
-            }
+            var webUrl = web.EnsureProperty(s => s.Url);
+            var siteUrl = site.EnsureProperty(s => s.Url);
 
-            if (!site.IsObjectPropertyInstantiated("Url"))
-            {
-                web.Context.Load(site);
-                executeQueryNeeded = true;
-            }
-
-            if (executeQueryNeeded)
-            {
-                web.Context.ExecuteQueryRetry();
-            }
-
-            if (web.Url.Equals(site.Url, StringComparison.InvariantCultureIgnoreCase))
+            if (webUrl.Equals(siteUrl, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false;
             }
@@ -931,13 +916,13 @@ namespace Microsoft.SharePoint.Client
                    in web.EventReceivers
                         where receiver.ReceiverName == name
                         select receiver;
-            web.Context.LoadQuery(query);
+            var receivers = web.Context.LoadQuery(query);
             web.Context.ExecuteQueryRetry();
 
-            var receiverExists = query.Any();
+            var receiverExists = receivers.Any();
             if (receiverExists && force)
             {
-                var receiver = query.FirstOrDefault();
+                var receiver = receivers.FirstOrDefault();
                 receiver.DeleteObject();
                 web.Context.ExecuteQueryRetry();
                 receiverExists = false;
