@@ -634,7 +634,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="value">Value for the property bag entry</param>
         private static void SetPropertyBagValueInternal(Web web, string key, object value)
         {
-            ClearObjectData(web.AllProperties);
+            web.AllProperties.ClearObjectData();
+
             var props = web.AllProperties;
 
             // Get the value, if the web properties are already loaded
@@ -654,16 +655,6 @@ namespace Microsoft.SharePoint.Client
             web.Update();
             web.Context.ExecuteQueryRetry();
         }
-
-        private static void ClearObjectData(ClientObject clientObject)
-        {
-            PropertyInfo info_ClientObject_ObjectData = typeof(ClientObject)
-                .GetProperty("ObjectData", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);
-            objectData.MethodReturnObjects.Clear();
-        }
-
 
         /// <summary>
         /// Removes a property bag value from the property bag
@@ -743,7 +734,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Value of the property bag entry</returns>
         private static object GetPropertyBagValueInternal(Web web, string key)
         {
-            ClearObjectData(web.AllProperties);
+            web.AllProperties.ClearObjectData();
+
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();
@@ -766,7 +758,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the entry exists, false otherwise</returns>
         public static bool PropertyBagContainsKey(this Web web, string key)
         {
-            ClearObjectData(web.AllProperties);
+            web.AllProperties.ClearObjectData();
+            
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();
