@@ -681,10 +681,10 @@ namespace Microsoft.SharePoint.Client
                   ? new ArgumentNullException("listTitle")
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
             }
-            ListCollection lists = web.Lists;
-            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Where(list => list.Title == listTitle));
+
+            var lists = web.Context.LoadQuery(web.Lists).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
             web.Context.ExecuteQueryRetry();
-            return results.FirstOrDefault();
+            return lists.FirstOrDefault();
         }
 
         /// <summary>
@@ -1057,7 +1057,7 @@ namespace Microsoft.SharePoint.Client
                                 foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
                                 {
                                     term.EnsureProperties(t => t.Id, t => t.Name);
-                                    
+
                                     var wssId = list.ParentWeb.GetWssIdForTerm(term);
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }
