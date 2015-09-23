@@ -184,5 +184,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return input;
         }
 
+        /// <summary>
+        /// Determines whether the specified <paramref name="input"/> contains a token that will be converted into a URL that belongs to the Root Web
+        /// </summary>
+        /// <param name="input">The input string that contains tokens that should be converted.</param>
+        /// <param name="tokensToSkip">Tokens that should be skipped</param>
+        /// <returns><c>true</c> if the input string contains tokens that will be converted to a URL that belongs to the Root Web</returns>
+        public bool ContainsRootWebToken(string input, params string[] tokensToSkip)
+        {
+            if (!string.IsNullOrEmpty(input))
+            {
+                foreach (var token in _tokens)
+                {
+                    if (tokensToSkip != null)
+                    {
+                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        {
+                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            {
+                                var regex = token.GetRegexForToken(filteredToken);
+                                if (regex.IsMatch(input))
+                                {
+                                    if (token.IsRootWebToken)
+                                    {
+                                        return true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        {
+                            if (token.IsRootWebToken)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return false;
+        }
     }
 }
