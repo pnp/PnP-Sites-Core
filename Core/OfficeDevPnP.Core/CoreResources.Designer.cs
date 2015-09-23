@@ -826,11 +826,29 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field {0} exists in content type.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request", resourceCulture);
             }
         }
         
