@@ -11,6 +11,7 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -670,10 +671,11 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="listTitle">Title of the list to return</param>
+        /// <param name="retrievals">The list properties to load</param>
         /// <returns>Loaded list instance matching to title or null</returns>
         /// <exception cref="System.ArgumentException">Thrown when listTitle is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">listTitle is null</exception>
-        public static List GetListByTitle(this Web web, string listTitle)
+        public static List GetListByTitle(this Web web, string listTitle, params Expression<Func<List, object>>[] retrievals)
         {
             if (string.IsNullOrEmpty(listTitle))
             {
@@ -682,7 +684,7 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
             }
             ListCollection lists = web.Lists;
-            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Where(list => list.Title == listTitle));
+            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Include(retrievals).Where(list => list.Title == listTitle));
             web.Context.ExecuteQueryRetry();
             return results.FirstOrDefault();
         }
