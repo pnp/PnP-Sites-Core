@@ -82,6 +82,22 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
+
+        /// <summary>
+        /// Returns an app only ClientContext object for On-Premises
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
+        /// <param name="appId">Application ID which is requesting the ClientContext object</param>        
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetOnPremisesAppOnlyAuthenticatedContext(string siteUrl, string realm, string appId)
+        {
+            Uri siteUri = new Uri(siteUrl);
+            string appOnlyAccessToken = Utilities.TokenHelper.GetS2SAccessTokenWithWindowsIdentity(siteUri, null);
+            ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
+            return clientContext;
+        }
+
         /// <summary>
         /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
         /// </summary>

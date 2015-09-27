@@ -1360,8 +1360,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     return GetAuthenticationManager(site).GetNetworkCredentialAuthenticatedContext(site, username, password, domain);
                 }
                 else if (AuthenticationType == AuthenticationType.AppOnly)
-                {
-                    return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                {                    
+                    return GetAuthenticationManager(site).GetOnPremisesAppOnlyAuthenticatedContext(site, this.realm, this.clientId);
                 }
             }
             else
