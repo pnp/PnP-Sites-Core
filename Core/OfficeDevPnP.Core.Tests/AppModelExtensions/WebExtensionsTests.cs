@@ -67,9 +67,9 @@ namespace Microsoft.SharePoint.Client.Tests
             clientContext.ExecuteQueryRetry();
 
             string appToRemove = APPNAME;
-            #if CLIENTSDKV15
+#if CLIENTSDKV15
             appToRemove += "15";
-            #endif            
+#endif
 
             foreach (var instance in instances)
             {
@@ -300,7 +300,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var template = clientContext.Web.GetProvisioningTemplate();
-                Assert.IsInstanceOfType(template, typeof (ProvisioningTemplate));
+                Assert.IsInstanceOfType(template, typeof(ProvisioningTemplate));
             }
         }
         #endregion
@@ -315,11 +315,11 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.IsInstanceOfType(instances, typeof(ClientObjectList<AppInstance>), "Incorrect return value");
             int instanceCount = instances.Count;
 
-            #if !CLIENTSDKV15
+#if !CLIENTSDKV15
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp;
-            #else
+#else
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp15;
-            #endif
+#endif
 
             using (MemoryStream stream = new MemoryStream(appToLoad))
             {
@@ -340,11 +340,11 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.IsInstanceOfType(instances, typeof(ClientObjectList<AppInstance>), "Incorrect return value");
             int instanceCount = instances.Count;
 
-            #if !CLIENTSDKV15
+#if !CLIENTSDKV15
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp;
-            #else
+#else
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp15;
-            #endif
+#endif
 
             using (MemoryStream stream = new MemoryStream(appToLoad))
             {
@@ -353,11 +353,11 @@ namespace Microsoft.SharePoint.Client.Tests
             }
 
             string appToRemove = APPNAME;
-            
-            #if CLIENTSDKV15
+
+#if CLIENTSDKV15
             appToRemove += "15";
-            #endif
-            
+#endif
+
             Assert.IsTrue(web.RemoveAppInstanceByTitle(appToRemove));
 
             instances = web.GetAppInstances();
@@ -400,19 +400,19 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Test
 
-                Assert.IsTrue(solutions.Any(),"No solution files available");
+                Assert.IsTrue(solutions.Any(), "No solution files available");
 
                 // Check if we can activate Test Feature on rootweb
                 clientContext.Load(clientContext.Web);
                 clientContext.ExecuteQueryRetry();
 
-              //  clientContext.Web.ActivateFeature(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionFeatureGuid));
-              //  Assert.IsTrue(clientContext.Web.IsFeatureActive(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionFeatureGuid)), "Test feature not activated");
-             
+                //  clientContext.Web.ActivateFeature(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionFeatureGuid));
+                //  Assert.IsTrue(clientContext.Web.IsFeatureActive(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionFeatureGuid)), "Test feature not activated");
+
                 // Teardown
                 // Done using the local file, remove it
                 System.IO.File.Delete(solutionpath);
-                clientContext.Site.UninstallSolution(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionGuid),"testsolution.wsp");
+                clientContext.Site.UninstallSolution(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionGuid), "testsolution.wsp");
             }
         }
 
@@ -429,7 +429,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
             // Execute test
 
-            clientContext.Site.UninstallSolution(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionGuid),"testsolution.wsp");
+            clientContext.Site.UninstallSolution(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionGuid), "testsolution.wsp");
 
             // Check if the solution file is uploaded
             var solutionGallery = clientContext.Site.RootWeb.GetCatalog((int)ListTemplateType.SolutionCatalog);
@@ -446,12 +446,29 @@ namespace Microsoft.SharePoint.Client.Tests
             var solutions = solutionGallery.GetItems(camlQuery);
             clientContext.Load(solutions);
             clientContext.ExecuteQueryRetry();
-            Assert.IsFalse(solutions.Any(),"There are still solutions installed");
+            Assert.IsFalse(solutions.Any(), "There are still solutions installed");
 
             Assert.IsFalse(clientContext.Web.IsFeatureActive(new Guid(OfficeDevPnP.Core.Tests.Properties.Resources.TestSolutionFeatureGuid)));
-      
+
             // Teardown
             System.IO.File.Delete(solutionpath);
+        }
+        #endregion
+
+        #region Various other tests
+        [TestMethod]
+        public void IsSubWebTest()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var site = ctx.Site;
+
+                var rootWeb = site.RootWeb;
+
+                var isSubweb = rootWeb.IsSubSite();
+
+                Assert.IsFalse(isSubweb);
+            }
         }
         #endregion
 
