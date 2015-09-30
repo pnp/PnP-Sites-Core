@@ -1050,7 +1050,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
+                            var fieldElement = XElement.Parse(field.SchemaXml);
+                            var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
+
+                            if (listId == null)
+                                list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
+                            else
+                            {
+                                var sourceList = lists.AsEnumerable().Where(l => l.Id == Guid.Parse(listId)).FirstOrDefault();
+                                if (sourceList != null)
+                                    fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
+
+                                list.Fields.Add(new Model.Field { SchemaXml = fieldElement.ToString() });
+                            }
                         }
 
                         list.Security = siteList.GetSecurity();
