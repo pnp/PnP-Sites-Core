@@ -4,7 +4,7 @@ using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal abstract class TokenDefinition
+    public abstract class TokenDefinition
     {
         protected string CacheValue;
         private readonly string[] _tokens;
