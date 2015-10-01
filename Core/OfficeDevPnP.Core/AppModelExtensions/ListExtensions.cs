@@ -683,10 +683,11 @@ namespace Microsoft.SharePoint.Client
                   ? new ArgumentNullException("listTitle")
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
             }
-
-            var lists = web.Context.LoadQuery(web.Lists).AsQueryable().Include(retrievals).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
+            
+            ListCollection lists = web.Lists;
+            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Include(retrievals).Where(list => list.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase)));
             web.Context.ExecuteQueryRetry();
-            return lists.FirstOrDefault();
+            return results.FirstOrDefault();
         }
 
         /// <summary>
