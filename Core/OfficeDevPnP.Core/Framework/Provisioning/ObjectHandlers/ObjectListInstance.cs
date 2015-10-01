@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -29,11 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
 
-                    if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                    {
-                        web.Context.Load(web, w => w.ServerRelativeUrl);
-                        web.Context.ExecuteQueryRetry();
-                    }
+                    web.EnsureProperties(w => w.ServerRelativeUrl);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
@@ -53,10 +50,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                             foreach (var ct in templateList.ContentTypeBindings)
                             {
-                                var found = template.ContentTypes.Any(t => t.Id.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
                                 if (found == false)
                                 {
-                                    found = existingCts.Any(t => t.StringId.ToLowerInvariant() == ct.ContentTypeId.ToLowerInvariant());
+                                    found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
                                 }
                                 if (!found)
                                 {
@@ -343,9 +340,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     SetAsDefaultView = viewDefault,
                 };
 
+                // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need, 
+                // create the view and then set title back to the original value
+                var urlAttribute = viewElement.Attribute("Url");
+                var urlHasValue = urlAttribute != null && !string.IsNullOrEmpty(urlAttribute.Value);
+                if (urlHasValue)
+                {
+                    //set Title to be equal to url (in order to generate desired url)
+                    viewCI.Title = Path.GetFileNameWithoutExtension(urlAttribute.Value);
+                }
+
                 var createdView = createdList.Views.Add(viewCI);
-                web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
+                web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
                 web.Context.ExecuteQueryRetry();
+
+                if (urlHasValue)
+                {
+                    //restore original title 
+                    createdView.Title = viewTitle;
+                    createdView.Update();
+                }
 
                 // Scope
                 var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
@@ -603,7 +617,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.EnableVersioning = templateList.EnableVersioning;
                         isDirty = true;
                     }
-                    if (existingList.MajorVersionLimit != templateList.MaxVersionLimit)
+                    if (existingList.IsObjectPropertyInstantiated("MajorVersionLimit") && existingList.MajorVersionLimit != templateList.MaxVersionLimit)
                     {
                         existingList.MajorVersionLimit = templateList.MaxVersionLimit;
                         isDirty = true;
@@ -837,22 +851,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var propertyLoadRequired = false;
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    web.Context.Load(web, w => w.ServerRelativeUrl);
-                    propertyLoadRequired = true;
-                }
-                if (!web.IsPropertyAvailable("Url"))
-                {
-                    web.Context.Load(web, w => w.Url);
-                    propertyLoadRequired = true;
-                }
-                if (propertyLoadRequired)
-                {
-                    web.Context.ExecuteQueryRetry();
-                }
-
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
                 // For each list in the site

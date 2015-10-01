@@ -2,6 +2,7 @@
 using System.Linq;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Reflection;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -88,12 +89,13 @@ namespace Microsoft.SharePoint.Client
         {
             bool featureIsActive = false;
 
+            features.ClearObjectData();
+
             features.Context.Load(features);
             features.Context.ExecuteQueryRetry();
 
             Feature iprFeature = features.GetById(featureID);
-            features.Context.Load(iprFeature, f => f.DefinitionId);
-            features.Context.ExecuteQueryRetry();
+            iprFeature.EnsureProperties(f => f.DefinitionId);
 
             if (iprFeature != null && iprFeature.IsPropertyAvailable("DefinitionId") && !iprFeature.ServerObjectIsNull.Value && iprFeature.DefinitionId.Equals(featureID))
             {
@@ -101,6 +103,15 @@ namespace Microsoft.SharePoint.Client
             }
 
             return featureIsActive;
+        }
+
+        private static void ClearObjectData(ClientObject clientObject)
+        {
+            PropertyInfo info_ClientObject_ObjectData = typeof(ClientObject)
+                .GetProperty("ObjectData", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);
+            objectData.MethodReturnObjects.Clear();
         }
 
         /// <summary>

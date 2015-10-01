@@ -864,4 +864,10 @@
   <data name="TimerJob_Authentication_AzureADAppOnly" xml:space="preserve">
     <value>Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request" xml:space="preserve">
+    <value>Content Type {0} with ID {1} cannot be transformed into a DocumentSet</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold" xml:space="preserve">
+    <value>Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold.</value>
+  </data>
 </root>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
@@ -92,10 +93,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
         private static string ReplaceGroupTokens(Web web, string loginName)
         {
-            loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
-            loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
-            loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
-
+			Regex regex = new Regex("{associated(owner|member|visitor)group}");
+			if(regex.IsMatch(loginName))
+			{
+				loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+				loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+				loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+			}
             return loginName;
         }
     }

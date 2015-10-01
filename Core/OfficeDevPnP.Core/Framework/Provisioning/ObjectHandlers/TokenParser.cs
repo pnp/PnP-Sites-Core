@@ -37,11 +37,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Web web, ProvisioningTemplate template)
         {
-            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-            {
-                web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.ExecuteQueryRetry();
-            }
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            
             _web = web;
 
             _tokens = new List<TokenDefinition>();

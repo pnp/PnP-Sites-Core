@@ -23,12 +23,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (template.Lists.Any())
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                    if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                    {
-                        web.Context.Load(web, w => w.ServerRelativeUrl);
-                        web.Context.ExecuteQueryRetry();
-                    }
 
+                    web.EnsureProperties(w => w.ServerRelativeUrl);
+                    
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();

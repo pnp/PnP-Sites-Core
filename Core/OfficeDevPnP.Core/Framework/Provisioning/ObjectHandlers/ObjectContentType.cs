@@ -6,6 +6,8 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -28,8 +30,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks));
+                web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
+
                 web.Context.ExecuteQueryRetry();
+
                 var existingCTs = web.ContentTypes.ToList();
+                var existingFields = web.Fields.ToList();
 
                 foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
@@ -37,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (existingCT == null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser);
+                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
                         if (newCT != null)
                         {
                             existingCTs.Add(newCT);
@@ -51,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
-                            var newCT = CreateContentType(web, ct, parser);
+                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -158,6 +164,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
+            // The new CT is a DocumentSet, and the target should be, as well
+            if (templateContentType.DocumentSetTemplate != null)
+            {
+                if (!Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType).Value)
+                {
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request, existingContentType.Id, existingContentType.Name);
+                }
+                else
+                {
+                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate templateToUpdate =
+                        Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, existingContentType);
+
+                    // TODO: Implement Delta Handling
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold, existingContentType.Id, existingContentType.Name);
+                }
+            }
+
             if (isDirty)
             {
                 existingContentType.Update(true);
@@ -165,7 +189,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser)
+        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null)
         {
             var name = parser.ParseString(templateContentType.Name);
             var description = parser.ParseString(templateContentType.Description);
@@ -185,6 +210,73 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
             {
                 createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+            }
+            if (!String.IsNullOrEmpty(templateContentType.NewFormUrl))
+            {
+                createdCT.NewFormUrl = templateContentType.NewFormUrl;
+            }
+            if (!String.IsNullOrEmpty(templateContentType.EditFormUrl))
+            {
+                createdCT.EditFormUrl = templateContentType.EditFormUrl;
+            }
+            if (!String.IsNullOrEmpty(templateContentType.DisplayFormUrl))
+            {
+                createdCT.DisplayFormUrl = templateContentType.DisplayFormUrl;
+            }
+
+            // If the CT is a DocumentSet
+            if (templateContentType.DocumentSetTemplate != null)
+            {
+                // Retrieve a reference to the DocumentSet Content Type
+                Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
+                    Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, createdCT);
+
+                if (!String.IsNullOrEmpty(templateContentType.DocumentSetTemplate.WelcomePage))
+                {
+                    // TODO: Customize the WelcomePage of the DocumentSet
+                }
+
+                foreach (String ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                {
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                    if (ct != null)
+                    {
+                        documentSetTemplate.AllowedContentTypes.Add(ct.Id);
+                    }
+                }
+
+                foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                {
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                    if (ct != null)
+                    {
+                        using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                        {
+                            documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                        }
+                    }
+                }
+
+                foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
+                {
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                    if (field != null)
+                    {
+                        documentSetTemplate.SharedFields.Add(field);
+                    }
+                }
+
+                foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
+                {
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                    if (field != null)
+                    {
+                        documentSetTemplate.WelcomePageFields.Add(field);
+                    }
+                }
+
+                documentSetTemplate.Update(true);
+                web.Context.ExecuteQueryRetry();
             }
 
             web.Context.Load(createdCT);
@@ -227,7 +319,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!BuiltInContentTypeId.Contains(ct.StringId))
                 {
-                    ctsToReturn.Add(new ContentType
+                    ContentType newCT = new ContentType
                         (ct.StringId,
                         ct.Name,
                         ct.Description,
@@ -244,7 +336,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
                              })
-                        ));
+                        )
+                    {
+                        DisplayFormUrl = ct.DisplayFormUrl,
+                        EditFormUrl = ct.EditFormUrl,
+                        NewFormUrl = ct.NewFormUrl,
+                    };
+
+                    // If the Content Type is a DocumentSet
+                    if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||
+                        ct.StringId.StartsWith(BuiltInContentTypeId.DocumentSet)) // TODO: This is kind of an hack... we should find a better solution ...
+                    {
+                        Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
+                            Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, ct);
+
+                        // Retrieve the Document Set
+                        web.Context.Load(documentSetTemplate, 
+                            t => t.AllowedContentTypes, 
+                            t => t.DefaultDocuments, 
+                            t => t.SharedFields, 
+                            t => t.WelcomePageFields);
+                        web.Context.ExecuteQueryRetry();
+
+                        newCT.DocumentSetTemplate = new DocumentSetTemplate(
+                            null, // TODO: WelcomePage not yet supported
+                            (from allowedCT in documentSetTemplate.AllowedContentTypes
+                            select allowedCT.StringValue).ToArray(),
+                            (from defaultDocument in documentSetTemplate.DefaultDocuments
+                             select new DefaultDocument
+                             {
+                                 ContentTypeId = defaultDocument.ContentTypeId.StringValue,
+                                 Name = defaultDocument.Name,
+                                 FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
+                             }).ToArray(),
+                            (from sharedField in documentSetTemplate.SharedFields
+                             select sharedField.Id).ToArray(),
+                            (from welcomePageField in documentSetTemplate.WelcomePageFields
+                             select welcomePageField.Id).ToArray()
+                        );
+                    }
+
+                    ctsToReturn.Add(newCT);
                 }
             }
             return ctsToReturn;
@@ -285,6 +417,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
+        }
+
+        private static Byte[] ReadFullStream(Stream input)
+        {
+            byte[] buffer = new byte[16 * 1024];
+            using (MemoryStream mem = new MemoryStream())
+            {
+                int read;
+                while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
+                {
+                    mem.Write(buffer, 0, read);
+                }
+                return mem.ToArray();
+            }
         }
     }
 }

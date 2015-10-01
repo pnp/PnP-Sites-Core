@@ -21,11 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                if (!web.IsPropertyAvailable("ServerRelativeUrl"))
-                {
-                    context.Load(web, w => w.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                }
+                web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 foreach (var file in template.Files)
                 {
@@ -84,11 +80,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (file.WebParts != null && file.WebParts.Any())
                         {
-                            if (!targetFile.IsPropertyAvailable("ServerRelativeUrl"))
-                            {
-                                web.Context.Load(targetFile, f => f.ServerRelativeUrl);
-                                web.Context.ExecuteQuery();
-                            }
+                            targetFile.EnsureProperties(f => f.ServerRelativeUrl);
+                            
                             var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {

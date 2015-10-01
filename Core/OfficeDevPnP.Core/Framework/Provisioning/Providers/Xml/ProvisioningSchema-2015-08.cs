@@ -2707,6 +2707,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         private bool overwriteField;
         
+        private string newFormUrlField;
+        
+        private string editFormUrlField;
+        
+        private string displayFormUrlField;
+        
         private System.Xml.XmlAttribute[] anyAttrField;
         
         public ContentType() {
@@ -2836,6 +2842,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.overwriteField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string NewFormUrl {
+            get {
+                return this.newFormUrlField;
+            }
+            set {
+                this.newFormUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string EditFormUrl {
+            get {
+                return this.editFormUrlField;
+            }
+            set {
+                this.editFormUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string DisplayFormUrl {
+            get {
+                return this.displayFormUrlField;
+            }
+            set {
+                this.displayFormUrlField = value;
             }
         }
         
