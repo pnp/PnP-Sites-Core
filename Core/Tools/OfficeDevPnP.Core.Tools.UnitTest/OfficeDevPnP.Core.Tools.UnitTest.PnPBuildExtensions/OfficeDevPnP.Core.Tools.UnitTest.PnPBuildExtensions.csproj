@@ -100,6 +100,9 @@
     <None Include="msbuildrun.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Scripts\PublishProviderHosted.ps1">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Scripts\GenerateAppPackageSharePointHosted.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

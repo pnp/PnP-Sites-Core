@@ -92,19 +92,25 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Public Methods
-        public bool DeployProviderHostedApp(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, string siteUrl, string IisAppPath, string packageFolder, out string appPackageName, string buildConfiguration = "Release", string visualStudioVersion="14.0")
+        public bool DeployProviderHostedAppAsAzureWebSite(string sharePointProjectFile, string sharePointWebProjectFile, string clientId, string clientSecret, string applicationHost, string siteUrl, string IisAppPath, string azurePublishingSettingsFile, string packageFolder, string buildConfiguration = "Release", string visualStudioVersion="14.0")
         {
             bool createAppPackageResult = false;
 
             if (String.IsNullOrEmpty(sharePointProjectFile) || !System.IO.File.Exists(sharePointProjectFile))
             {
-                throw new ArgumentException(String.Format("Provide SharePoint project file ({0}) is invalid.", sharePointProjectFile));
+                throw new ArgumentException(String.Format("Provided SharePoint project file ({0}) is invalid.", sharePointProjectFile));
             }
 
             if (String.IsNullOrEmpty(sharePointWebProjectFile) || !System.IO.File.Exists(sharePointWebProjectFile))
             {
-                throw new ArgumentException(String.Format("Provide SharePoint Web project file ({0}) is invalid.", sharePointWebProjectFile));
+                throw new ArgumentException(String.Format("Provided SharePoint Web project file ({0}) is invalid.", sharePointWebProjectFile));
             }
+
+            if (String.IsNullOrEmpty(azurePublishingSettingsFile) || !System.IO.File.Exists(azurePublishingSettingsFile))
+            {
+                throw new ArgumentException(String.Format("Provided Azure publishing settings file ({0}) is invalid.", azurePublishingSettingsFile));
+            }
+            
 
             if (String.IsNullOrEmpty(clientId))
             {
@@ -135,6 +141,11 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             {
                 throw new ArgumentException("Please provide a Visual Studio version (e.g. 12.0 or 14.0)");
             }
+
+            // update web.config - clientid and secret
+
+            // read azure publishing file, grab username and password
+
 
             // Get a base template that will be used for the publishing
             string publishingTemplateString = ResourceManager.GetPublishingXmlTemplate(true, true, PublishingTypes.AzureWebSite);
@@ -187,20 +198,16 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 // override the publishing profile that's needed for packaging the app
                 packageBuildParameters.Add("ActivePublishProfile", AppManager.PublishingProfileName);
 
-                string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\GenerateAppPackage.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
+                string packageBuildResult = Run.RunScript(String.Format(@"{0}\Scripts\PublishProviderHosted.ps1", ResourceManager.GetAssemblyDirectory()), packageBuildParameters);
 
                 if (packageBuildResult.Contains("Build FAILED"))
                 {
                     Console.WriteLine("App Package creation failed");
                     Console.WriteLine(packageBuildResult);
-                    appPackageName = "";
                 }
                 else
                 {
                     createAppPackageResult = true;
-                    appPackageName = GetAppPackageFile(packageFolder);
-                    // Remove all unneeded files from the package folder
-                    CleanupAppPackageFolder(packageFolder);
                 }
             }
             finally
