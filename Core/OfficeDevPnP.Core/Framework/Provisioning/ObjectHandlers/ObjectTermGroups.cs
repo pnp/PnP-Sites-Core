@@ -298,8 +298,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
                     var termStore = session.GetDefaultSiteCollectionTermStore();
-                    web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
-                    web.Context.ExecuteQueryRetry();
+					web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+					web.Context.ExecuteQueryRetry();
+
+					if (termStore.ServerObjectIsNull.Value)
+					{
+						termStore = session.GetDefaultKeywordsTermStore();
+						web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+						web.Context.ExecuteQueryRetry();
+					}
 
                     List<TermGroup> termGroups = new List<TermGroup>();
                     if (creationInfo.IncludeAllTermGroups)
