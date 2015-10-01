@@ -1057,10 +1057,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
                             else
                             {
-                                var sourceList = lists.AsEnumerable().Where(l => l.Id == Guid.Parse(listId)).FirstOrDefault();
-                                if (sourceList != null)
-                                    fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
-
+                                var listIdValue = Guid.Empty;
+                                if (Guid.TryParse(listId, out listIdValue))
+                                {
+                                    var sourceList = lists.AsEnumerable().Where(l => l.Id == listIdValue).FirstOrDefault();
+                                    if (sourceList != null)
+                                        fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
+                                }
                                 list.Fields.Add(new Model.Field { SchemaXml = fieldElement.ToString() });
                             }
                         }
