@@ -1206,7 +1206,7 @@
           </xsd:annotation>
 
           <xsd:sequence>
-            <xsd:element name="RoleAssignment" type="pnp:RoleAssignment" maxOccurs="unbounded" />
+            <xsd:element name="RoleAssignment" type="pnp:RoleAssignment" minOccurs="0" maxOccurs="unbounded" />
           </xsd:sequence>
 
           <xsd:attribute name="CopyRoleAssignments" type="xsd:boolean" use="required">
