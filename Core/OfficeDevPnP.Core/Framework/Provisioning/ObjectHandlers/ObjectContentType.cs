@@ -29,7 +29,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return parser;
                 }
 
-                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks));
+                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks, 
+                                                                                         c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));                
                 web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
 
                 web.Context.ExecuteQueryRetry();
