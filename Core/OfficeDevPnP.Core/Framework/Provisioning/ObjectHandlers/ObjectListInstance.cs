@@ -290,6 +290,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var viewTitle = displayNameElement.Value;
+                
+                //The file name of the view
+                var viewName = viewTitle;
+                if (viewElement.Attribute("Url") != null)
+                {
+                    viewName = GetViewFileName(viewElement.Attribute("Url").Value);
+                    if (string.IsNullOrEmpty(viewName))
+                    {
+                        //GetViewFileName was not successful - using default viewTitle instead
+                        viewName = viewTitle;
+                    }
+                }
 
                 // Type
                 var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
@@ -332,7 +344,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     ViewFields = viewFields,
                     RowLimit = viewRowLimit,
                     Paged = viewPaged,
-                    Title = viewTitle,
+                    Title = viewName,
                     Query = viewQuery.ToString(),
                     ViewTypeKind = viewType,
                     PersonalView = false,
@@ -340,8 +352,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
                 var createdView = createdList.Views.Add(viewCI);
-                web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
+                web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
                 web.Context.ExecuteQueryRetry();
+
+                //Reset name
+                if (!string.Equals(viewName, viewTitle))
+                {
+                    createdView.Title = viewTitle;
+                    createdView.Update();
+                }
 
                 // Scope
                 var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
@@ -371,6 +390,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 monitoredScope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_, ex.Message, ex.StackTrace);
                 throw;
+            }
+        }
+
+        private static string GetViewFileName(string fileName)
+        {
+            try
+            {
+                var name = fileName;
+                name = name.Substring(name.LastIndexOf("/", StringComparison.Ordinal) + 1);
+                name = name.Substring(0, name.LastIndexOf(".", StringComparison.Ordinal));
+                return name;
+            }
+            catch (Exception)
+            {
+                //Signal error so that the default approach can be used
+                return null;
             }
         }
 
