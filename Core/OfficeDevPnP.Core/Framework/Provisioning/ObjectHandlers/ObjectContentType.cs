@@ -361,18 +361,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
-                            (from allowedCT in documentSetTemplate.AllowedContentTypes
-                            select allowedCT.StringValue).ToArray(),
-                            (from defaultDocument in documentSetTemplate.DefaultDocuments
+                            (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
+                             select allowedCT.StringValue).ToArray(),
+                            (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
                                  FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
                              }).ToArray(),
-                            (from sharedField in documentSetTemplate.SharedFields
+                            (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
                              select sharedField.Id).ToArray(),
-                            (from welcomePageField in documentSetTemplate.WelcomePageFields
+                            (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
                              select welcomePageField.Id).ToArray()
                         );
                     }

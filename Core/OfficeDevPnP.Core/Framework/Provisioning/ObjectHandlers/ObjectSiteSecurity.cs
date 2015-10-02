@@ -360,7 +360,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     web.Context.ExecuteQueryRetry();
 
-                    foreach (var group in web.SiteGroups.Where(o => !associatedGroupIds.Contains(o.Id)))
+                    foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
                         scope.LogDebug("Processing group {0}", group.Title);
                         var siteGroup = new SiteGroup()
