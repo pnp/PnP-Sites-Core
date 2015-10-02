@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}",
                 this.Language.GetHashCode(),
-                this.Value.GetHashCode()
+                (this.Value != null ? this.Value.GetHashCode() : 0)
             ).GetHashCode());
         }
 

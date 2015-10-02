@@ -91,12 +91,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AllowMembersEditMembership.GetHashCode(),
                 this.AllowRequestToJoinLeave.GetHashCode(),
                 this.AutoAcceptRequestToJoinLeave.GetHashCode(),
-                this.Description.GetHashCode(),
-                this.Members.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                this.Members.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.OnlyAllowMembersViewMembership.GetHashCode(),
-                this.Owner.GetHashCode(),
-                this.RequestToJoinLeaveEmailSetting.GetHashCode(),
-                this.Title.GetHashCode()
+                (this.Owner != null ? this.Owner.GetHashCode() : 0),
+                (this.RequestToJoinLeaveEmailSetting != null ? this.RequestToJoinLeaveEmailSetting.GetHashCode() : 0),
+                (this.Title != null ? this.Title.GetHashCode() : 0)
             ).GetHashCode());
         }
 

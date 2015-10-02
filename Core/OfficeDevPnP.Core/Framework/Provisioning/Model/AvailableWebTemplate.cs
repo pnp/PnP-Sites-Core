@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|",
                 this.LanguageCode.GetHashCode(),
-                this.TemplateName.GetHashCode()
+                (this.TemplateName != null ? this.TemplateName.GetHashCode() : 0)
             ).GetHashCode());
         }
 

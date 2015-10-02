@@ -76,9 +76,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Folder.GetHashCode(),
+                (this.Folder != null ? this.Folder.GetHashCode() : 0),
                 this.Overwrite.GetHashCode(),
-                this.Src.GetHashCode()
+                (this.Src != null ? this.Src.GetHashCode() : 0)
             ).GetHashCode());
         }
 
