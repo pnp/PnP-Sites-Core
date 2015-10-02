@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
+#if !CLIENTSDKV15
 namespace Microsoft.SharePoint.Client
 {
     public enum ExternalSharingDocumentOption
@@ -332,3 +333,4 @@ namespace Microsoft.SharePoint.Client
         }
     }
 }
+#endif
