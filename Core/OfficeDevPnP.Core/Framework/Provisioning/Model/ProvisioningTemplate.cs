@@ -347,8 +347,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) &&
-                this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing
             );
