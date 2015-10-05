@@ -51,7 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var defaultLayoutXml = web.GetPropertyBagValueString(DEFAULTPAGELAYOUT, null);
 
             var defaultPageLayoutUrl = string.Empty;
-            if (defaultLayoutXml != null)
+            if (defaultLayoutXml != null && defaultLayoutXml != "__inherit")
             {
                 defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value;
             }
