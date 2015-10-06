@@ -130,8 +130,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (targetFile.CheckOutType == CheckOutType.None)
                 {
                     targetFile.CheckOut();
-                }
-                checkedOut = true;
+                    checkedOut = true;
+                }    
             }
             catch (ServerException ex)
             {
