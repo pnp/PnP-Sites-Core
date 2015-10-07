@@ -102,8 +102,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (checkedOut)
                         {
-                            targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            try {
+                                targetFile.CheckIn("", CheckinType.MajorCheckIn);
+                                web.Context.ExecuteQueryRetry();
+                            } catch(ServerException e)
+                            {
+                                // TODO - File could not be checked in
+                            }
                         }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
@@ -130,8 +135,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (targetFile.CheckOutType == CheckOutType.None)
                 {
                     targetFile.CheckOut();
-                }
-                checkedOut = true;
+                    checkedOut = true;
+                }    
             }
             catch (ServerException ex)
             {
