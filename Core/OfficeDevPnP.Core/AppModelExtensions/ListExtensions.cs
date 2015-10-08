@@ -173,6 +173,7 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
 
             props[key] = value;
+            list.RootFolder.Update();
             list.Update();
             list.Context.ExecuteQueryRetry();
         }
