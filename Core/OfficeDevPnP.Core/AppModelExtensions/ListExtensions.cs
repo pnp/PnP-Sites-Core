@@ -1262,5 +1262,21 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+
+        /// <summary>
+        /// Queues a list for a full crawl the next incremental crawl
+        /// </summary>
+        /// <param name="list"></param>
+        public static void ReIndexList(this List list)
+        {
+            const string reIndexKey = "vti_searchversion";
+            var searchversion = 0;
+
+            if (list.PropertyBagContainsKey(reIndexKey))
+            {
+                searchversion = (int)list.GetPropertyBagValueInt(reIndexKey, 0);
+            }
+            list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+        }
     }
 }
