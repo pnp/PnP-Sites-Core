@@ -46,7 +46,6 @@ namespace Microsoft.SharePoint.Client
         {
             if (propertySelector.Body.NodeType == ExpressionType.Call && propertySelector.Body is MethodCallExpression)
             {
-                
                 var body = (MethodCallExpression)propertySelector.Body;
                 if (body.Method.IsGenericMethod &&
                     body.Method.DeclaringType == typeof(ClientObjectQueryableExtension) &&
@@ -73,6 +72,10 @@ namespace Microsoft.SharePoint.Client
             {
                 clientObject.Context.Load(clientObject, untypedExpresssion);
                 clientObject.Context.ExecuteQueryRetry();
+            }
+            else if (clientObject.IsObjectPropertyInstantiated(untypedExpresssion))
+            {
+                EnsureCollectionLoaded(clientObject, untypedExpresssion);
             }
 
             return (propertySelector.Compile())(clientObject);
@@ -114,6 +117,11 @@ namespace Microsoft.SharePoint.Client
                     clientObject.Context.Load(clientObject, expression);
                     dirty = true;
                 }
+                else if (clientObject.IsObjectPropertyInstantiated(expression))
+                {
+                    EnsureCollectionLoaded(clientObject, expression);
+                    dirty = true;
+                }
             }
 
             if (dirty)
@@ -150,7 +158,6 @@ namespace Microsoft.SharePoint.Client
         /// <returns>New Expression where return type is object and not generic</returns>
         public static Expression<Func<TInput, object>> ToUntypedPropertyExpression<TInput, TOutput>(this Expression<Func<TInput, TOutput>> expression)
         {
-
             var body = expression.Body as MemberExpression ?? ((UnaryExpression)expression.Body).Operand as MemberExpression;
 
             var memberName = body.Member.Name;
@@ -161,6 +168,23 @@ namespace Microsoft.SharePoint.Client
             return Expression.Lambda<Func<TInput, object>>(
                 Expression.Convert(field, typeof(object)),
                 param);
+        }
+
+        internal static void EnsureCollectionLoaded<T>(T clientObject, Expression<Func<T, object>> propertySelector) where T : ClientObject
+        {
+            var body = propertySelector.Body as MemberExpression ?? ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
+            var propertyInfo = (PropertyInfo)body.Member;
+            var propertyValue = propertyInfo.GetValue(clientObject);
+
+            if (propertyValue is ClientObjectCollection)
+            {
+                var clientCollection = propertyValue as ClientObjectCollection;
+                if (!clientCollection.AreItemsAvailable)
+                {
+                    clientObject.Context.Load(clientObject, propertySelector);
+                    clientObject.Context.ExecuteQueryRetry();
+                }
+            }
         }
 
         internal static void ClearObjectData(this ClientObject clientObject)
