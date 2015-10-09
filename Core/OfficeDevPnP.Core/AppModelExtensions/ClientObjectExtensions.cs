@@ -75,7 +75,10 @@ namespace Microsoft.SharePoint.Client
             }
             else if (clientObject.IsObjectPropertyInstantiated(untypedExpresssion))
             {
-                EnsureCollectionLoaded(clientObject, untypedExpresssion);
+                if (EnsureCollectionLoaded(clientObject, untypedExpresssion))
+                {
+                    clientObject.Context.ExecuteQueryRetry();
+                }
             }
 
             return (propertySelector.Compile())(clientObject);
@@ -119,8 +122,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 else if (clientObject.IsObjectPropertyInstantiated(expression))
                 {
-                    EnsureCollectionLoaded(clientObject, expression);
-                    dirty = true;
+                    dirty  = dirty || EnsureCollectionLoaded(clientObject, expression);
                 }
             }
 
@@ -158,6 +160,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>New Expression where return type is object and not generic</returns>
         public static Expression<Func<TInput, object>> ToUntypedPropertyExpression<TInput, TOutput>(this Expression<Func<TInput, TOutput>> expression)
         {
+
             var body = expression.Body as MemberExpression ?? ((UnaryExpression)expression.Body).Operand as MemberExpression;
 
             var memberName = body.Member.Name;
@@ -170,7 +173,7 @@ namespace Microsoft.SharePoint.Client
                 param);
         }
 
-        internal static void EnsureCollectionLoaded<T>(T clientObject, Expression<Func<T, object>> propertySelector) where T : ClientObject
+        private static bool EnsureCollectionLoaded<T>(T clientObject, Expression<Func<T, object>> propertySelector) where T : ClientObject
         {
             var body = propertySelector.Body as MemberExpression ?? ((UnaryExpression)propertySelector.Body).Operand as MemberExpression;
             var propertyInfo = (PropertyInfo)body.Member;
@@ -182,9 +185,10 @@ namespace Microsoft.SharePoint.Client
                 if (!clientCollection.AreItemsAvailable)
                 {
                     clientObject.Context.Load(clientObject, propertySelector);
-                    clientObject.Context.ExecuteQueryRetry();
+                    return true;
                 }
             }
+            return false;
         }
 
         internal static void ClearObjectData(this ClientObject clientObject)
