@@ -65,7 +65,7 @@ namespace Microsoft.SharePoint.Client
 
                     return (TResult)prop.GetValue(clientObject);
                 }
-                throw new Exception("Only 'Include' and 'IncludeWithDefaultProperties' methods supported.");
+                throw new Exception("Only 'Include' and 'IncludeWithDefaultProperties' methods are supported.");
             }
 
             var untypedExpresssion = propertySelector.ToUntypedPropertyExpression();
@@ -107,7 +107,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        throw new Exception("Only 'Include' and 'IncludeWithDefaultProperties' methods supported.");
+                        throw new Exception("Only 'Include' and 'IncludeWithDefaultProperties' methods are supported.");
                     }
                 } else if (!clientObject.IsPropertyAvailable(expression) && !clientObject.IsObjectPropertyInstantiated(expression))
                 {
