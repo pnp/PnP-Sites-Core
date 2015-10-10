@@ -57,10 +57,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Permissions.GetHashCode(),
-                this.Name.GetHashCode(),
-                this.Description.GetHashCode(),
-                this.Permissions.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                this.Permissions.Aggregate(0, (acc, next) => acc += (next.GetHashCode()))
             ).GetHashCode());
         }
 

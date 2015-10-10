@@ -106,7 +106,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                         }
 
-                        if (file.Security != null)
+                        // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
+                        if (file.Security != null &&
+                            (file.Security.ClearSubscopes == true || file.Security.CopyRoleAssignments == true || file.Security.RoleAssignments.Count > 0))
                         {
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }

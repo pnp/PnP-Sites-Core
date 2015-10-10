@@ -86,9 +86,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
                 this.AutoCheckRequirements.GetHashCode(),
-                this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.DesignPackage.GetHashCode(),
-                this.PageLayouts.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.DesignPackage != null ? this.DesignPackage.GetHashCode() : 0),
+                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 

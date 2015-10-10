@@ -108,15 +108,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 this.PropertyDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.DefinitionId.GetHashCode(),
-                this.ListId.GetHashCode(),
+                (this.DefinitionId != null ? this.DefinitionId.GetHashCode() : 0),
+                (this.ListId != null ? this.ListId.GetHashCode() : 0),
                 this.Enabled.GetHashCode(),
-                this.EventSourceId.GetHashCode(),
-                this.EventTypes.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                (this.EventSourceId != null ? this.EventSourceId.GetHashCode() : 0),
+                this.EventTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.ManualStartBypassesActivationLimit.GetHashCode(),
-                this.Name.GetHashCode(),
-                this.ParentContentTypeId.GetHashCode(),
-                this.StatusFieldName.GetHashCode()
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.ParentContentTypeId != null ? this.ParentContentTypeId.GetHashCode() : 0),
+                (this.StatusFieldName != null ? this.StatusFieldName.GetHashCode() : 0)
             ).GetHashCode());
         }
 
