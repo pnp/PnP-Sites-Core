@@ -94,13 +94,14 @@ for(var i = 0; i < scripts.length; i++) {
                     if (!string.IsNullOrEmpty(link))
                     {
                         scripts.Append(@"
-if (scriptsSrc.indexOf('{0}') === -1)  {  
+if (scriptsSrc.indexOf('{1}') === -1)  {  
     var newScript = document.createElement('script');
+    newScript.id = '{0}';
     newScript.type = 'text/javascript';
-    newScript.src = '{0}';
+    newScript.src = '{1}';
     headID.appendChild(newScript);
-    scriptsSrc.push('{0}');
-}".Replace("{0}", link));
+    scriptsSrc.push('{1}');
+}".Replace("{0}", key).Replace("{1}", link));
                     }
 
                 }
@@ -114,7 +115,6 @@ if (scriptsSrc.indexOf('{0}') === -1)  {
 
             }
             return ret;
-
         }
 
         /// <summary>
@@ -220,6 +220,56 @@ if (scriptsSrc.indexOf('{0}') === -1)  {
                 throw new ArgumentException("Only Site or Web supported as clientObject");
             }
             return ret;
+        }
+
+        /// <summary>
+        /// Checks if the target web already has a custom JsLink with a specified key
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <returns></returns>
+        public static Boolean ExistsJsLink(this Web web, String key)
+        {
+            return (ExistsJsLinkImplementation(web, key));
+        }
+
+        /// <summary>
+        /// Checks if the target site already has a custom JsLink with a specified key
+        /// </summary>
+        /// <param name="site">Site to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <returns></returns>
+        public static Boolean ExistsJsLink(this Site site, String key)
+        {
+            return (ExistsJsLinkImplementation(site, key));
+        }
+
+        public static Boolean ExistsJsLinkImplementation(ClientObject clientObject, String key)
+        {
+            UserCustomActionCollection existingActions = null;
+            if (clientObject is Web)
+            {
+                existingActions = ((Web)clientObject).UserCustomActions;
+            }
+            else
+            {
+                existingActions = ((Site)clientObject).UserCustomActions;
+            }
+
+            clientObject.Context.Load(existingActions);
+            clientObject.Context.ExecuteQueryRetry();
+
+            var actions = existingActions.ToArray();
+            foreach (var action in actions)
+            {
+                if (action.Name == key &&
+                    action.Location == "ScriptLink")
+                {
+                    return (true);
+                }
+            }
+
+            return (false);
         }
     }
 }
