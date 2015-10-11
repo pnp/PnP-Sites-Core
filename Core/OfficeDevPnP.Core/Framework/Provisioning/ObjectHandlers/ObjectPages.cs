@@ -20,22 +20,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-
-
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder);
                 
                 foreach (var page in template.Pages)
                 {
                     var url = parser.ParseString(page.Url);
 
-
                     if (!url.ToLower().StartsWith(web.ServerRelativeUrl.ToLower()))
                     {
                         url = UrlUtility.Combine(web.ServerRelativeUrl, url);
                     }
-
 
                     var exists = true;
                     Microsoft.SharePoint.Client.File file = null;
@@ -59,6 +55,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             try
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
+
+                                if (page.WelcomePage && url.Contains(web.RootFolder.WelcomePage))
+                                    web.SetHomePage(string.Empty);
+
                                 file.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
                                 web.AddWikiPageByUrl(url);
@@ -74,8 +74,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
-
-
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0_, url);
 
                             web.AddWikiPageByUrl(url);
@@ -89,8 +87,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WelcomePage)
                     {
-                        web.EnsureProperties(w => w.RootFolder);
-                        
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
