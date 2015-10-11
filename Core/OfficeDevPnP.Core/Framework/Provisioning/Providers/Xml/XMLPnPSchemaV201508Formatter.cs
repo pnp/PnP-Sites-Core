@@ -1693,7 +1693,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               LanguageCode = awt.LanguageCodeSpecified ? awt.LanguageCode : 1033,
                               TemplateName = awt.TemplateName,
                           }) : null,
-                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
+                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
                         (from pl in source.Publishing.PageLayouts.PageLayout
                          select new Model.PageLayout
                          {
