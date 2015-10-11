@@ -75,7 +75,7 @@ namespace OfficeDevPnP.Core.Diagnostics
                     // Defaulting to built in logger
                     if (!_logLevel.HasValue)
                     {
-                        _logLevel = LogLevel.Information;
+                        _logLevel = LogLevel.Debug;
                     }
                     _logger = new TraceLogger();
                 }

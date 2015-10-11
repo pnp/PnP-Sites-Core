@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.RoleAssignments.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.RoleAssignments.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CopyRoleAssignments.GetHashCode(),
                 this.ClearSubscopes.GetHashCode()
             ).GetHashCode());

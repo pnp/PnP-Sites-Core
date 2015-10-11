@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -339,9 +340,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     SetAsDefaultView = viewDefault,
                 };
 
+                // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need, 
+                // create the view and then set title back to the original value
+                var urlAttribute = viewElement.Attribute("Url");
+                var urlHasValue = urlAttribute != null && !string.IsNullOrEmpty(urlAttribute.Value);
+                if (urlHasValue)
+                {
+                    //set Title to be equal to url (in order to generate desired url)
+                    viewCI.Title = Path.GetFileNameWithoutExtension(urlAttribute.Value);
+                }
+
                 var createdView = createdList.Views.Add(viewCI);
-                web.Context.Load(createdView, v => v.Scope, v => v.JSLink);
+                web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
                 web.Context.ExecuteQueryRetry();
+
+                if (urlHasValue)
+                {
+                    //restore original title 
+                    createdView.Title = viewTitle;
+                    createdView.Update();
+                }
 
                 // Scope
                 var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
@@ -599,7 +617,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.EnableVersioning = templateList.EnableVersioning;
                         isDirty = true;
                     }
-                    if (existingList.MajorVersionLimit != templateList.MaxVersionLimit)
+                    if (existingList.IsObjectPropertyInstantiated("MajorVersionLimit") && existingList.MajorVersionLimit != templateList.MaxVersionLimit)
                     {
                         existingList.MajorVersionLimit = templateList.MaxVersionLimit;
                         isDirty = true;

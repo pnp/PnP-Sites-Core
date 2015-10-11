@@ -42,25 +42,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     TermGroup group = termStore.Groups.FirstOrDefault(g => g.Id == modelTermGroup.Id);
                     if (group == null)
                     {
-                        var parsedGroupName = parser.ParseString(modelTermGroup.Name);
-                        group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
-
-                        if (group == null)
+                        if (modelTermGroup.Name == "Site Collection")
                         {
-                            if (modelTermGroup.Id == Guid.Empty)
-                            {
-                                modelTermGroup.Id = Guid.NewGuid();
-                            }
-                            group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
-
-                            group.Description = modelTermGroup.Description;
-
-                            termStore.CommitAll();
-                            web.Context.Load(group);
+                            var site = (web.Context as ClientContext).Site;
+                            group = termStore.GetSiteCollectionGroup(site, true);
+                            web.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
+                                tset => tset.Name,
+                                tset => tset.Id));
                             web.Context.ExecuteQueryRetry();
+                        }
+                        else
+                        {
+                            var parsedGroupName = parser.ParseString(modelTermGroup.Name);
+                            group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
 
-                            newGroup = true;
+                            if (group == null)
+                            {
+                                if (modelTermGroup.Id == Guid.Empty)
+                                {
+                                    modelTermGroup.Id = Guid.NewGuid();
+                                }
+                                group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
 
+                                group.Description = modelTermGroup.Description;
+
+                                termStore.CommitAll();
+                                web.Context.Load(group);
+                                web.Context.ExecuteQueryRetry();
+
+                                newGroup = true;
+
+                            }
                         }
                     }
 
@@ -298,8 +310,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
                     var termStore = session.GetDefaultSiteCollectionTermStore();
-                    web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
-                    web.Context.ExecuteQueryRetry();
+					web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+					web.Context.ExecuteQueryRetry();
+
+					if (termStore.ServerObjectIsNull.Value)
+					{
+						termStore = session.GetDefaultKeywordsTermStore();
+						web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+						web.Context.ExecuteQueryRetry();
+					}
 
                     List<TermGroup> termGroups = new List<TermGroup>();
                     if (creationInfo.IncludeAllTermGroups)

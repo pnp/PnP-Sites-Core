@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !CLIENTSDKV15
                 web.EnsureProperties(w => w.Url, w => w.MasterUrl, w => w.AlternateCssUrl, w => w.SiteLogoUrl);
 #else
-                web.EnsureProperties(w => w.AlternateCssUrl, w => w.SiteLogoUrl);
+                web.EnsureProperties(w => w.Url, w => w.MasterUrl);
 #endif
 
                 // Information coming from the site

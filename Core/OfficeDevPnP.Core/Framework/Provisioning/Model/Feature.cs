@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}",
                 this.Deactivate.GetHashCode(),
-                this.Id.GetHashCode()
+                (this.Id != null ? this.Id.GetHashCode() : 0)
             ).GetHashCode());
         }
 

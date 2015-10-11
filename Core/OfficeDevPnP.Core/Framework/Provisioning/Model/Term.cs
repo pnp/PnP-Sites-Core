@@ -99,15 +99,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|",
-                this.Id.GetHashCode(),
-                this.Name.GetHashCode(),
-                this.Description.GetHashCode(),
-                this.Language.GetHashCode(),
-                this.Owner.GetHashCode(),
+                (this.Id != null ? this.Id.GetHashCode() : 0),
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                (this.Language != null ? this.Language.GetHashCode() : 0),
+                (this.Owner != null ? this.Owner.GetHashCode() : 0),
                 this.IsAvailableForTagging.GetHashCode(),
                 this.CustomSortOrder.GetHashCode(),
-                this.Labels.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Terms.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Labels.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Terms.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.LocalProperties.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());

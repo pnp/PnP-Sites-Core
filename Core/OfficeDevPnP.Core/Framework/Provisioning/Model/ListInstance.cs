@@ -233,8 +233,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|",
                 this.ContentTypesEnabled.GetHashCode(),
-                this.Description.GetHashCode(),
-                this.DocumentTemplate.GetHashCode(),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
                 this.EnableVersioning.GetHashCode(),
                 this.Hidden.GetHashCode(),
                 this.MaxVersionLimit.GetHashCode(),
@@ -244,16 +244,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.EnableFolderCreation.GetHashCode(),
                 this.RemoveExistingContentTypes.GetHashCode(),
                 this.TemplateType.GetHashCode(),
-                this.Title.GetHashCode(),
-                this.Url.GetHashCode(),
-                this.TemplateFeatureID.GetHashCode(),
+                (this.Title != null ? this.Title.GetHashCode() : 0),
+                (this.Url != null ? this.Url.GetHashCode() : 0),
+                (this.TemplateFeatureID != null ? this.TemplateFeatureID.GetHashCode() : 0),
                 this.RemoveExistingViews.GetHashCode(),
                 this.EnableMinorVersions.GetHashCode(),
                 this.EnableModeration.GetHashCode(),
-                this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Views.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Views.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Fields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
