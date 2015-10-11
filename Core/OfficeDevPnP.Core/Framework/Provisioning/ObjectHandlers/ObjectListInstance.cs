@@ -808,10 +808,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ContentTypeBinding defaultCtBinding = null;
             foreach (var ctBinding in list.ContentTypeBindings)
             {
-                createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
-                if (ctBinding.Default)
+                var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId);
+                if (tempCT != null)
                 {
-                    defaultCtBinding = ctBinding;
+                    // Check if CT is already available
+                    var name = tempCT.EnsureProperty(ct => ct.Name);
+                    if (!createdList.ContentTypeExistsByName(name))
+                    {
+                        createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                    }
+                    if (ctBinding.Default)
+                    {
+                        defaultCtBinding = ctBinding;
+                    }
                 }
             }
 
@@ -852,7 +861,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
-                
+
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
                 // For each list in the site
