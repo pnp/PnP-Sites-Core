@@ -974,18 +974,11 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("contentTypeName");
             }
 
-            list.EnsureProperty(l => l.ContentTypesEnabled);
-
-            if (!list.ContentTypesEnabled)
-            {
-                return false;
-            }
-
             var ctCol = list.ContentTypes;
             var results = list.Context.LoadQuery(ctCol.Where(item => item.Name == contentTypeName));
             list.Context.ExecuteQueryRetry();
 
-            return results.FirstOrDefault() != null;
+            return results.Any();
         }
 
         /// <summary>
