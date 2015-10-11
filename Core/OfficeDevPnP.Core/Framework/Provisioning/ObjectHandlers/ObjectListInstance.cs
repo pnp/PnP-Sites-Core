@@ -1061,9 +1061,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
                         }
-
-                        list.Security = siteList.GetSecurity();
                     }
+
+                    list.Security = siteList.GetSecurity();
+
                     var logCTWarning = false;
                     if (baseTemplateList != null)
                     {
