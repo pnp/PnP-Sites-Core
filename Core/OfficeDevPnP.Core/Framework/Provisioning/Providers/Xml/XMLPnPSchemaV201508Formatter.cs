@@ -1666,7 +1666,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (source.SearchSettings != null)
             {
-                result.SearchSettings = source.SearchSettings.ToString();
+                result.SearchSettings = source.SearchSettings.OuterXml;
             }
 
             #endregion

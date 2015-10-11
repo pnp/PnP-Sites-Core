@@ -738,7 +738,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="hidden">Optionally make this a hidden field</param>
         public static void AddFieldToContentType(this Web web, ContentType contentType, Field field, bool required = false, bool hidden = false)
         {
-            contentType.EnsureProperties(c => c.Id, c => c.FieldLinks, c => c.SchemaXml);
+            //// Forcibly include Ids of FieldLinks
+            //web.Context.Load(contentType, c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden));
+            //web.Context.ExecuteQueryRetry();
+
+            // Ensure other content-type properties
+            contentType.EnsureProperties(c => c.Id, c => c.SchemaXml, c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden));
             field.EnsureProperties(f => f.Id, f => f.SchemaXml);
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_AddField0ToContentType1, field.Id, contentType.Id);
