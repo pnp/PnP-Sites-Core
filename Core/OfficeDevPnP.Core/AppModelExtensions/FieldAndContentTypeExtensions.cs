@@ -765,14 +765,10 @@ namespace Microsoft.SharePoint.Client
                 flink = contentType.FieldLinks.GetById(field.Id);
             }
 
-			//update field link required and hidden properties
-			if (!flink.IsObjectPropertyInstantiated("Required") || !flink.IsObjectPropertyInstantiated("Hidden"))
-			{
-				web.Context.Load(flink, f => f.Required, f => f.Hidden);
-				web.Context.ExecuteQueryRetry();
-			}
+            //update field link required and hidden properties
+            flink.EnsureProperties(f => f.Required, f => f.Hidden);
 
-			if ((required != flink.Required) || (hidden != flink.Hidden))
+            if ((required != flink.Required) || (hidden != flink.Hidden))
 			{
                 // Update FieldLink
                 flink.Required = required;
