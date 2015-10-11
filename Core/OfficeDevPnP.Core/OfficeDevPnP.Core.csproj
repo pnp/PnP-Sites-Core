@@ -471,9 +471,9 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
-    <Compile Include="Knowit\Export.cs" />
-    <Compile Include="Knowit\List.cs" />
-    <Compile Include="Knowit\Search.cs" />
+    <Compile Include="MyStuff\Export.cs" />
+    <Compile Include="MyStuff\List.cs" />
+    <Compile Include="MyStuff\Search.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
     <Compile Include="Framework\TimerJobs\Utilities\SiteEnumeration.cs" />
