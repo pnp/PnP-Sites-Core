@@ -4,6 +4,10 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20151012-OnlineAppOnly-635802059341246639.md) | Monday, October 12, 2015 | 10:18 PM | dev | debug | 235 | 6 | 34
+ [OnlineCred](PnPUnitTestResults-20151011-OnlineCred-635802035754432963.md) | Sunday, October 11, 2015 | 9:39 PM | dev | debug | 244 | 28 | 3
+ [OnPremAppOnly](PnPUnitTestResults-20151011-OnPremAppOnly-635802024412278775.md) | Sunday, October 11, 2015 | 9:20 PM | dev | debug15 | 219 | 1 | 47
+ [OnPremCred](PnPUnitTestResults-20151011-OnPremCred-635802012206277379.md) | Sunday, October 11, 2015 | 9:00 PM | dev | debug15 | 249 | 1 | 17
  [OnlineAppOnly](PnPUnitTestResults-20151011-OnlineAppOnly-635801204211635151.md) | Sunday, October 11, 2015 | 10:33 PM | dev | debug | 231 | 5 | 35
  [OnlineCred](PnPUnitTestResults-20151010-OnlineCred-635801179813935529.md) | Saturday, October 10, 2015 | 9:53 PM | dev | debug | 240 | 28 | 3
  [OnPremAppOnly](PnPUnitTestResults-20151010-OnPremAppOnly-635801162962386755.md) | Saturday, October 10, 2015 | 9:24 PM | dev | debug15 | 215 | 1 | 47
@@ -100,7 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnlineCred](PnPUnitTestResults-20150917-OnlineCred-635781303326973504.md) | Thursday, September 17, 2015 | 9:45 PM | dev | debug | 235 | 32 | 3
  [OnPremAppOnly](PnPUnitTestResults-20150917-OnPremAppOnly-635781290336650566.md) | Thursday, September 17, 2015 | 9:23 PM | dev | debug15 | 208 | 7 | 47
  [OnPremCred](PnPUnitTestResults-20150917-OnPremCred-635781276188690659.md) | Thursday, September 17, 2015 | 9:00 PM | dev | debug15 | 238 | 7 | 17
- [OnlineAppOnly](PnPUnitTestResults-20150917-OnlineAppOnly-635780470927460583.md) | Thursday, September 17, 2015 | 10:38 PM | dev | debug | 226 | 9 | 35
- [OnlineCred](PnPUnitTestResults-20150916-OnlineCred-635780439898137103.md) | Wednesday, September 16, 2015 | 9:46 PM | dev | debug | 232 | 35 | 3
- [OnPremAppOnly](PnPUnitTestResults-20150916-OnPremAppOnly-635780426292727509.md) | Wednesday, September 16, 2015 | 9:23 PM | dev | debug15 | 208 | 7 | 47
- [OnPremCred](PnPUnitTestResults-20150916-OnPremCred-635780412196954203.md) | Wednesday, September 16, 2015 | 9:00 PM | dev | debug15 | 238 | 7 | 17
