@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder.WelcomePage);
                 
                 foreach (var page in template.Pages)
                 {
