@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<FieldRef> _fieldRefs = new List<FieldRef>();
         private List<DataRow> _dataRows = new List<DataRow>();
         private Dictionary<String, String> _fieldDefaults = new Dictionary<String, String>();
-        private ObjectSecurity _security = new ObjectSecurity();
+        private ObjectSecurity _security = null;
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         #endregion
