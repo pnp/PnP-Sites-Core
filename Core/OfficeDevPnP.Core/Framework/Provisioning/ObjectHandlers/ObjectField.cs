@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -46,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
-                            CreateField(web, templateFieldElement, scope);
+                            CreateField(web, templateFieldElement, scope, parser);
                         }
                         catch (Exception ex)
                         {
@@ -58,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
-                            UpdateField(web, fieldId, templateFieldElement, scope);
+                            UpdateField(web, fieldId, templateFieldElement, scope, parser);
                         }
                         catch (Exception ex)
                         {
@@ -70,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope)
+        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
         {
             var existingField = web.Fields.GetById(Guid.Parse(fieldId));
             web.Context.Load(existingField, f => f.SchemaXml);
@@ -116,7 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         existingFieldElement.Attributes("Version").Remove();
                     }
-                    existingField.SchemaXml = existingFieldElement.ToString();
+                    existingField.SchemaXml = parser.ParseString(existingFieldElement.ToString());
                     existingField.UpdateAndPushChanges(true);
                     web.Context.ExecuteQueryRetry();
                 }
@@ -130,7 +131,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope)
+        private string ParseFieldSchema(string schemaXml, ListCollection lists)
+        {
+            foreach (var list in lists)
+            {
+                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
+            }
+
+            return schemaXml;
+        }
+
+        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
         {
             var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
 
@@ -140,7 +151,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 templateFieldElement.Attribute("List").Remove();
             }
 
-            var fieldXml = templateFieldElement.ToString();
+            var fieldXml = parser.ParseString(templateFieldElement.ToString());
 
             web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
             web.Context.ExecuteQueryRetry();
@@ -162,9 +173,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingFields = web.Fields;
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString));
+                web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title));
                 web.Context.ExecuteQueryRetry();
 
-                var taxTextFieldsToRemove = new List<Guid>();
+                var taxTextFieldsToMoveUp = new List<Guid>();
 
                 foreach (var field in existingFields)
                 {
@@ -178,16 +190,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (!string.IsNullOrEmpty(listIdentifier))
                         {
                             var listGuid = Guid.Empty;
-                            if (Guid.TryParse(listIdentifier, out listGuid))
-                            {
-                                var list = web.Lists.GetById(listGuid);
-                                web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
-                                web.Context.ExecuteQueryRetry();
+                            fieldXml = ParseFieldSchema(fieldXml, web.Lists);
+                            element = XElement.Parse(fieldXml);
+                            //if (Guid.TryParse(listIdentifier, out listGuid))
+                            //{
+                            //    fieldXml = ParseListSchema(fieldXml, web.Lists);
+                                //if (newfieldXml == fieldXml)
+                                //{
+                                //    var list = web.Lists.GetById(listGuid);
+                                //    web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
+                                //    web.Context.ExecuteQueryRetry();
 
-                                var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
-                                element.Attribute("List").SetValue(listUrl);
-                                fieldXml = element.ToString();
-                            }
+                                //    var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
+                                //    element.Attribute("List").SetValue(listUrl);
+                                //    fieldXml = element.ToString();
+                                //}
+                            //}
                         }
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
@@ -195,7 +213,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var taxField = (TaxonomyField)field;
                             web.Context.Load(taxField, tf => tf.TextField, tf => tf.Id);
                             web.Context.ExecuteQueryRetry();
-                            taxTextFieldsToRemove.Add(taxField.TextField);
+                            taxTextFieldsToMoveUp.Add(taxField.TextField);
                         }
                         // Check if we have version attribute. Remove if exists 
                         if (element.Attribute("Version") != null)
@@ -206,10 +224,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
                 }
-                // Remove hidden taxonomy text fields
-                foreach (var textFieldId in taxTextFieldsToRemove)
+                // move hidden taxonomy text fields to the top of the list
+                foreach (var textFieldId in taxTextFieldsToMoveUp)
                 {
+                    var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
+                    template.SiteFields.Insert(0, field);
                 }
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
