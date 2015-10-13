@@ -76,8 +76,16 @@ namespace Microsoft.SharePoint.Client
             // Retrieve all the subscriptions (site and lists)
             var subscriptions = subscriptionService.EnumerateSubscriptions();
             web.Context.Load(subscriptions);
-            web.Context.ExecuteQueryRetry();
-            return subscriptions.ToArray();
+            try
+            {
+                web.Context.ExecuteQueryRetry();
+            }
+            catch (ServerException)
+            {
+                // If there is no workflow service present in the farm this method will throw an error. 
+                // Swallow the exception
+            }
+            return subscriptions.IsPropertyAvailable(d => d.Count) ? subscriptions.ToArray() : null;
         }
 
         /// <summary>
@@ -173,7 +181,7 @@ namespace Microsoft.SharePoint.Client
             return subscriptionResult.Value;
         }
 
-      
+
 
         /// <summary>
         /// Deletes the subscription
@@ -222,7 +230,7 @@ namespace Microsoft.SharePoint.Client
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
             var deploymentService = servicesManager.GetWorkflowDeploymentService();
-            
+
             var definition = deploymentService.GetDefinition(id);
             web.Context.Load(definition);
             web.Context.ExecuteQueryRetry();
@@ -243,15 +251,23 @@ namespace Microsoft.SharePoint.Client
 
             var definitions = deploymentService.EnumerateDefinitions(publishedOnly);
             web.Context.Load(definitions);
-            web.Context.ExecuteQueryRetry();
-            return definitions.ToArray();
+            try 
+            { 
+                web.Context.ExecuteQueryRetry(); 
+            }
+            catch (ServerException)
+            {
+                // If there is no workflow service present in the farm this method will throw an error. 
+                // Swallow the exception
+            }
+            return definitions.IsPropertyAvailable(d => d.Count) ? definitions.ToArray() : null;
         }
 
         public static Guid AddWorkflowDefinition(this Web web, WorkflowDefinition definition, bool publish = true)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
             var deploymentService = servicesManager.GetWorkflowDeploymentService();
-            
+
             WorkflowDefinition def = new WorkflowDefinition(web.Context);
             def.AssociationUrl = definition.AssociationUrl;
             def.Description = definition.Description;
@@ -261,7 +277,7 @@ namespace Microsoft.SharePoint.Client
             def.Id = definition.Id != Guid.Empty ? definition.Id : Guid.NewGuid();
             foreach (var prop in definition.Properties)
             {
-                def.SetProperty(prop.Key,prop.Value);
+                def.SetProperty(prop.Key, prop.Value);
             }
             def.RequiresAssociationForm = definition.RequiresAssociationForm;
             def.RequiresInitiationForm = definition.RequiresInitiationForm;
