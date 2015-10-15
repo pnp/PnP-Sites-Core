@@ -60,6 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
                     var listIdentifier = fieldElement.Attribute("List").Value;
+                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : "None";
                     var webId = string.Empty;
 
                     var field = rootWeb.Fields.GetById(fieldId);
@@ -84,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (listGuid != Guid.Empty)
                     {
-                        ProcessField(field, listGuid, webId);
+                        ProcessField(field, listGuid, webId, relationshipDeleteBehavior);
                     }
                 }
             }
@@ -101,6 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
                     var listIdentifier = fieldElement.Attribute("List").Value;
+                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : "None";
                     var webId = string.Empty;
 
                     var listUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listInstance.Url));
@@ -129,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         if (listGuid != Guid.Empty)
                         {
-                            ProcessField(field, listGuid, webId);
+                            ProcessField(field, listGuid, webId, relationshipDeleteBehavior);
                         }
                     }
                 }
@@ -138,7 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private static void ProcessField(Field field, Guid listGuid, string webId)
+        private static void ProcessField(Field field, Guid listGuid, string webId, string relationshipDeleteBehavior)
         {
             var isDirty = false;
 
@@ -149,6 +151,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             isDirty = UpdateFieldAttribute(existingFieldElement, "WebId", webId, isDirty);
 
             isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", webId, isDirty);
+
+            isDirty = UpdateFieldAttribute(existingFieldElement, "RelationshipDeleteBehavior", relationshipDeleteBehavior, isDirty);
 
             if (isDirty)
             {
