@@ -11,7 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
     {
-        #region private members
+        #region Private Members
+
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private List<Field> _siteFields = new List<Field>();
         private List<ContentType> _contentTypes = new List<ContentType>();
@@ -27,9 +28,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<TermGroup> _termGroups = new List<TermGroup>();
         private FileConnectorBase connector;
         private string _id;
+
+        private RegionalSettings _regionalSettings = null;
+        private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
+        private AuditSettings _auditSettings = null;
+        private Workflows _workflows = null;
+        private List<AddIn> _addins = new List<AddIn>();
+        private Publishing _publishing = null;
+        private Dictionary<String, String> _properties = new Dictionary<string, string>();
+
         #endregion
 
-        #region Constructor
+        #region Constructors
+
         public ProvisioningTemplate()
         {
             this.connector = new FileSystemConnector(".", "");
@@ -39,9 +50,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this.connector = connector;
         }
+
         #endregion
 
-        #region Properties
+        #region Public Members
 
         /// <summary>
         /// Any parameters that can be used throughout the template
@@ -168,6 +180,89 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._termGroups = value; }
         }
 
+        /// <summary>
+        /// The Regional Settings of the Provisioning Template
+        /// </summary>
+        public RegionalSettings RegionalSettings
+        {
+            get { return this._regionalSettings; }
+            set { this._regionalSettings = value; }
+        }
+
+        /// <summary>
+        /// The Supported UI Languages for the Provisioning Template
+        /// </summary>
+        public List<SupportedUILanguage> SupportedUILanguages
+        {
+            get { return this._supportedUILanguages; }
+            private set { this._supportedUILanguages = value; }
+        }
+
+        /// <summary>
+        /// The Audit Settings for the Provisioning Template
+        /// </summary>
+        public AuditSettings AuditSettings
+        {
+            get { return this._auditSettings; }
+            set { this._auditSettings = value; }
+        }
+
+        /// <summary>
+        /// Defines the Workflows to provision
+        /// </summary>
+        public Workflows Workflows
+        {
+            get { return this._workflows; }
+            set { this._workflows = value; }
+        }
+
+        /// <summary>
+        /// The Search Settings for the Provisioning Template
+        /// </summary>
+        public String SearchSettings { get; set; }
+
+        /// <summary>
+        /// Defines the SharePoint Add-ins to provision
+        /// </summary>
+        public List<AddIn> AddIns
+        {
+            get { return this._addins; }
+            private set { this._addins = value; }
+        }
+
+        /// <summary>
+        /// Defines the Publishing configuration to provision
+        /// </summary>
+        public Publishing Publishing
+        {
+            get { return this._publishing; }
+            set { this._publishing = value; }
+        }
+
+        /// <summary>
+        /// A set of custom Properties for the Provisioning Template
+        /// </summary>
+        public Dictionary<String, String> Properties
+        {
+            get { return this._properties; }
+            private set { this._properties = value; }
+        }
+
+        /// <summary>
+        /// The Image Preview Url of the Provisioning Template
+        /// </summary>
+        public String ImagePreviewUrl { get; set; }
+
+        /// <summary>
+        /// The Display Name of the Provisioning Template
+        /// </summary>
+        public String DisplayName { get; set; }
+
+        /// <summary>
+        /// The Description of the Provisioning Template
+        /// </summary>
+        public String Description { get; set; }
+
         public FileConnectorBase Connector
         {
             get
@@ -186,28 +281,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}",
-                this.ComposedLook.GetHashCode(),
-                this.ContentTypes.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.CustomActions.WebCustomActions.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Features.SiteFeatures.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Features.WebFeatures.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Files.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Id,
-                this.Lists.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Providers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.AdditionalMembers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.AdditionalOwners.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.AdditionalVisitors.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.SiteFields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.SitePolicy,
-                this.Version,
-                this.Pages.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.TermGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-                ).GetHashCode());
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|",
+                (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
+                this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.CustomActions.WebCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Features.SiteFeatures.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Features.WebFeatures.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Files.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.Id != null ? this.Id.GetHashCode() : 0),
+                this.Lists.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Providers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.AdditionalMembers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.AdditionalOwners.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.AdditionalVisitors.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.SiteGroups.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.SiteSecurityPermissions.RoleAssignments.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Security.SiteSecurityPermissions.RoleDefinitions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.SiteFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.SitePolicy != null ? this.SitePolicy.GetHashCode() : 0),
+                this.Version.GetHashCode(),
+                this.Pages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.TermGroups.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Workflows.WorkflowDefinitions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Workflows.WorkflowSubscriptions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.AddIns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.Publishing != null ? this.Publishing.GetHashCode() : 0)
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)
@@ -223,9 +325,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (
                 this.ComposedLook.Equals(other.ComposedLook) &&
-                this.ContentTypes.DeepEquals(other.ContentTypes) &&
+                this.ContentTypes.DeepEquals(other.ContentTypes) && 
                 this.CustomActions.SiteCustomActions.DeepEquals(other.CustomActions.SiteCustomActions) &&
-                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) &&
+                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) && 
                 this.Features.SiteFeatures.DeepEquals(other.Features.SiteFeatures) &&
                 this.Features.WebFeatures.DeepEquals(other.Features.WebFeatures) &&
                 this.Files.DeepEquals(other.Files) &&
@@ -237,11 +339,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Security.AdditionalMembers.DeepEquals(other.Security.AdditionalMembers) &&
                 this.Security.AdditionalOwners.DeepEquals(other.Security.AdditionalOwners) &&
                 this.Security.AdditionalVisitors.DeepEquals(other.Security.AdditionalVisitors) &&
+                this.Security.SiteGroups.DeepEquals(other.Security.SiteGroups) &&
+                this.Security.SiteSecurityPermissions.RoleAssignments.DeepEquals(other.Security.SiteSecurityPermissions.RoleAssignments) &&
+                this.Security.SiteSecurityPermissions.RoleDefinitions.DeepEquals(other.Security.SiteSecurityPermissions.RoleDefinitions) &&
                 this.SiteFields.DeepEquals(other.SiteFields) &&
                 this.SitePolicy == other.SitePolicy &&
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
-                this.TermGroups.DeepEquals(other.TermGroups)
+                this.TermGroups.DeepEquals(other.TermGroups) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
+                this.AddIns.DeepEquals(other.AddIns) &&
+                this.Publishing == other.Publishing
             );
         }
 

@@ -10,6 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     {
         LATEST = 0,
         V201503 = 1,
-        V201505 = 2
+        V201505 = 2,
+        V201508 = 3,
     }
 }

@@ -1,9 +1,9 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class KeywordsTermStoreIdToken : TokenDefinition
+    internal class KeywordsTermStoreIdToken : TokenDefinition
     {
         public KeywordsTermStoreIdToken(Web web)
             : base(web, "~keywordstermstoreid", "{keywordstermstoreid}")

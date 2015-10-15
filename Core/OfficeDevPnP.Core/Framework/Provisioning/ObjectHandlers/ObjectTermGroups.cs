@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         public override TokenParser ProvisionObjects(Web web, Model.ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_TermGroups))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(web.Context);
 
@@ -42,25 +42,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     TermGroup group = termStore.Groups.FirstOrDefault(g => g.Id == modelTermGroup.Id);
                     if (group == null)
                     {
-                        var parsedGroupName = parser.ParseString(modelTermGroup.Name);
-                        group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
-
-                        if (group == null)
+                        if (modelTermGroup.Name == "Site Collection")
                         {
-                            if (modelTermGroup.Id == Guid.Empty)
-                            {
-                                modelTermGroup.Id = Guid.NewGuid();
-                            }
-                            group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
-
-                            group.Description = modelTermGroup.Description;
-
-                            termStore.CommitAll();
-                            web.Context.Load(group);
+                            var site = (web.Context as ClientContext).Site;
+                            group = termStore.GetSiteCollectionGroup(site, true);
+                            web.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
+                                tset => tset.Name,
+                                tset => tset.Id));
                             web.Context.ExecuteQueryRetry();
+                        }
+                        else
+                        {
+                            var parsedGroupName = parser.ParseString(modelTermGroup.Name);
+                            group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
 
-                            newGroup = true;
+                            if (group == null)
+                            {
+                                if (modelTermGroup.Id == Guid.Empty)
+                                {
+                                    modelTermGroup.Id = Guid.NewGuid();
+                                }
+                                group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
 
+                                group.Description = modelTermGroup.Description;
+
+                                termStore.CommitAll();
+                                web.Context.Load(group);
+                                web.Context.ExecuteQueryRetry();
+
+                                newGroup = true;
+
+                            }
                         }
                     }
 
@@ -156,7 +168,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var sortedTerms = modelTermSet.Terms.OrderBy(t => t.CustomSortOrder);
 
                             var customSortString = sortedTerms.Aggregate(string.Empty, (a, i) => a + i.Id.ToString() + ":");
-                            customSortString = customSortString.TrimEnd(new[] {':'});
+                            customSortString = customSortString.TrimEnd(new[] { ':' });
 
                             set.CustomSortOrder = customSortString;
                             termStore.CommitAll();
@@ -291,15 +303,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_TermGroups))
+            using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (creationInfo.IncludeSiteCollectionTermGroup || creationInfo.IncludeAllTermGroups)
                 {
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
                     var termStore = session.GetDefaultSiteCollectionTermStore();
-                    web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
-                    web.Context.ExecuteQueryRetry();
+					web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+					web.Context.ExecuteQueryRetry();
+
+					if (termStore.ServerObjectIsNull.Value)
+					{
+						termStore = session.GetDefaultKeywordsTermStore();
+						web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+						web.Context.ExecuteQueryRetry();
+					}
 
                     List<TermGroup> termGroups = new List<TermGroup>();
                     if (creationInfo.IncludeAllTermGroups)
