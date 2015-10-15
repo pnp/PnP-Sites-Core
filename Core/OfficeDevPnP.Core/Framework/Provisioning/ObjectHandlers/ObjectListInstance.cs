@@ -408,16 +408,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listField.Title = fieldRef.DisplayName;
                 isDirty = true;
             }
-            if (fieldRef.Hidden != listField.Hidden)
+            // We cannot configure Hidden property for Phonetic fields 
+            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
+                (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
             {
-                listField.Hidden = fieldRef.Hidden;
-                isDirty = true;
+                if (fieldRef.Hidden != listField.Hidden)
+                {
+                    listField.Hidden = fieldRef.Hidden;
+                    isDirty = true;
+                }
             }
+
             if (fieldRef.Required != listField.Required)
             {
                 listField.Required = fieldRef.Required;
                 isDirty = true;
             }
+
             if (isDirty)
             {
                 listField.UpdateAndPushChanges(true);
@@ -746,39 +755,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             createdList.EnableModeration = list.EnableModeration;
 
-            createdList.EnableVersioning = list.EnableVersioning;
-            if (list.EnableVersioning)
+            // Done for all other lists than for Survey - With Surveys versioning configuration will cause an exception
+            if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
             {
-                createdList.MajorVersionLimit = list.MaxVersionLimit;
-
-                if (createdList.BaseTemplate == (int)ListTemplateType.DocumentLibrary)
+                createdList.EnableVersioning = list.EnableVersioning;
+                if (list.EnableVersioning)
                 {
-                    // Only supported on Document Libraries
-                    createdList.EnableMinorVersions = list.EnableMinorVersions;
-                    createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
+                    createdList.MajorVersionLimit = list.MaxVersionLimit;
 
-                    if (list.EnableMinorVersions)
+                    if (createdList.BaseTemplate == (int)ListTemplateType.DocumentLibrary)
                     {
-                        createdList.MajorWithMinorVersionsLimit = list.MinorVersionLimit; // Set only if enabled, otherwise you'll get exception due setting value to zero.
+                        // Only supported on Document Libraries
+                        createdList.EnableMinorVersions = list.EnableMinorVersions;
+                        createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
 
-                        // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
-                        if (DraftVisibilityType.Approver ==
-                            (DraftVisibilityType)list.DraftVersionVisibility)
+                        if (list.EnableMinorVersions)
                         {
-                            if (list.EnableModeration)
+                            createdList.MajorWithMinorVersionsLimit = list.MinorVersionLimit; // Set only if enabled, otherwise you'll get exception due setting value to zero.
+
+                            // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
+                            if (DraftVisibilityType.Approver ==
+                                (DraftVisibilityType)list.DraftVersionVisibility)
                             {
-                                createdList.DraftVersionVisibility =
-                                    (DraftVisibilityType)list.DraftVersionVisibility;
+                                if (list.EnableModeration)
+                                {
+                                    createdList.DraftVersionVisibility =
+                                        (DraftVisibilityType)list.DraftVersionVisibility;
+                                }
+                                else
+                                {
+                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true);
+                                    WriteWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true, ProvisioningMessageType.Warning);
+                                }
                             }
                             else
                             {
-                                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true);
-                                WriteWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true, ProvisioningMessageType.Warning);
+                                createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
                             }
-                        }
-                        else
-                        {
-                            createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
                         }
                     }
                 }
