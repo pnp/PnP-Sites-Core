@@ -111,22 +111,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}",
-                this.CommandUIExtension,
-                this.Description,
-                this.Enabled,
-                this.Group,
-                this.ImageUrl,
-                this.Location,
-                this.Name,
-                this.RegistrationId,
-                this.RegistrationType,
-                this.Remove,
-                this.RightsValue,
-                this.ScriptBlock,
-                this.ScriptSrc,
-                this.Sequence,
-                this.Title,
-                this.Url).GetHashCode());
+                (this.CommandUIExtension != null ? this.CommandUIExtension.GetHashCode() : 0),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                this.Enabled.GetHashCode(),
+                (this.Group != null ? this.Group.GetHashCode() : 0),
+                (this.ImageUrl != null ? this.ImageUrl.GetHashCode() : 0),
+                (this.Location != null ? this.Location.GetHashCode() : 0),
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.RegistrationId != null ? this.RegistrationId.GetHashCode() : 0),
+                this.RegistrationType.GetHashCode(),
+                this.Remove.GetHashCode(),
+                this.RightsValue.GetHashCode(),
+                (this.ScriptBlock != null ? this.ScriptBlock.GetHashCode() : 0),
+                (this.ScriptSrc != null ? this.ScriptSrc.GetHashCode() : 0),
+                this.Sequence.GetHashCode(),
+                (this.Title != null ? this.Title.GetHashCode() : 0),
+                (this.Url != null ? this.Url.GetHashCode() : 0)
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

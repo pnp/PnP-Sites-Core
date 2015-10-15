@@ -7,14 +7,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class SiteSecurity
     {
-        #region Private
+        #region Private Members
+
         private List<User> _additionalAdministrators = new List<User>();
         private List<User> _additionalOwners = new List<User>();
         private List<User> _additionalMembers = new List<User>();
         private List<User> _additionalVisitors = new List<User>();
+        private List<SiteGroup> _siteGroups = new List<SiteGroup>();
+        private SiteSecurityPermissions _permissions = new SiteSecurityPermissions();
+        
         #endregion
 
-        #region Properties
+        #region Public Members
+
         /// <summary>
         /// A Collection of users that are associated as site collection adminsitrators
         /// </summary>
@@ -49,6 +54,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return _additionalVisitors; }
             private set { _additionalVisitors = value; }
+        }
+
+        /// <summary>
+        /// List of additional Groups for the Site
+        /// </summary>
+        public List<SiteGroup> SiteGroups
+        {
+            get { return _siteGroups; }
+            private set { _siteGroups = value; }
+        }
+
+        /// <summary>
+        /// List of Site Security Permissions for the Site
+        /// </summary>
+        public SiteSecurityPermissions SiteSecurityPermissions
+        {
+            get { return _permissions; }
+            private set { _permissions = value; }
         }
 
         #endregion

@@ -1,9 +1,9 @@
 using Microsoft.SharePoint.Client;
 using System;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class ListIdToken : TokenDefinition
+    internal class ListIdToken : TokenDefinition
     {
         private string _listId = null;
         public ListIdToken(Web web, string name, Guid listid)

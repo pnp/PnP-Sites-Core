@@ -1659,6 +1659,30 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="NewFormUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Specifies the URL of a custom new form to use for list items that have been assigned the content type, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="EditFormUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Specifies the URL of a custom edit form to use for list items that have been assigned the content type, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DisplayFormUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Specifies the URL of a custom display form to use for list items that have been assigned the content type, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
     <xsd:anyAttribute processContents="skip"/>
 
   </xsd:complexType>

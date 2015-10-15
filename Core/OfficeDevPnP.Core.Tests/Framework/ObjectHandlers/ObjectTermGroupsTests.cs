@@ -48,8 +48,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                         var termSet = store.GetTermSet(_termSetGuid);
                         termSet.DeleteObject();
 
-                        var termGroup = store.GetGroup(_termGroupGuid);
-                        termGroup.DeleteObject();
+                        if (_termGroupGuid != Guid.Empty)
+                        {
+                            var termGroup = store.GetGroup(_termGroupGuid);
+                            termGroup.DeleteObject(); 
+                        }
                         store.CommitAll();
                         ctx.ExecuteQueryRetry();
                     }
@@ -58,6 +61,47 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     }
                 }
             }
+        }
+
+        [TestMethod]
+        public void CanProvisionToSiteCollectionTermGroupUsingToken()
+        {
+            var template = new ProvisioningTemplate();
+            _termGroupGuid = Guid.Empty;
+
+            TermGroup termGroup = new TermGroup(_termGroupGuid, "{sitecollectiontermgroupname}", null);
+
+            List<TermSet> termSets = new List<TermSet>();
+
+            TermSet termSet = new TermSet(_termSetGuid, "TestProvisioningTermSet", null, true, false, null, null);
+            termSets.Add(termSet);
+
+            termGroup.TermSets.AddRange(termSets);
+
+            template.TermGroups.Add(termGroup);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+
+                var store = session.GetDefaultSiteCollectionTermStore();
+
+                var set = store.GetTermSet(_termSetGuid);
+                var group = set.Group;
+
+                ctx.Load(set);
+                ctx.Load(group);
+                ctx.ExecuteQueryRetry();
+
+                Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
+                Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
+                Assert.IsTrue(group.IsSiteCollectionGroup);
+
+            }
+
         }
 
         [TestMethod]

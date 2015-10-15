@@ -229,6 +229,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="AppModelExtensions\BrandingExtensionsTests.cs" />
+    <Compile Include="AppModelExtensions\ClientObjectExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\FeatureExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\FieldAndContentTypeExtensionsTests.cs" />
     <Compile Include="AppModelExtensions\JavaScriptExtensionsTests.cs" />
@@ -249,6 +250,9 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectTermGroupsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectPagesTests.cs" />

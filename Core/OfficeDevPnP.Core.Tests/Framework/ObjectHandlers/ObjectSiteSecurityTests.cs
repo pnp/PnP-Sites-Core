@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
-using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using User = OfficeDevPnP.Core.Framework.Provisioning.Model.User;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
@@ -47,7 +41,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     }
                     catch (ServerException)
                     {
-                        
+
                     }
                 }
             }
@@ -61,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             foreach (var user in admins)
             {
-                template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName});
+                template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName });
             }
 
 
@@ -85,7 +79,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
-        public void CanCreateEntities()
+        public void CanCreateEntities1()
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -96,6 +90,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+            }
+        }
+
+        [TestMethod]
+        public void CanCreateEntities2()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Load the base template which will be used for the comparison work
+                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                creationInfo.IncludeSiteGroups = true;
+                var template = new ProvisioningTemplate();
+                template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
+
+                Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
+                Assert.IsTrue(template.Security.SiteGroups.Any());
+
             }
         }
     }

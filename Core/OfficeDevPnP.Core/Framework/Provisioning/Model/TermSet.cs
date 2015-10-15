@@ -78,16 +78,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}",
-                this.Id,
-                this.Name,
-                this.Description,
-                this.Language,
-                this.IsOpenForTermCreation,
-                this.IsAvailableForTagging,
-                this.Owner,
-                this.Terms.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                (this.Id != null ? this.Id.GetHashCode() : 0),
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                (this.Language != null ? this.Language.GetHashCode() : 0),
+                this.IsOpenForTermCreation.GetHashCode(),
+                this.IsAvailableForTagging.GetHashCode(),
+                (this.Owner != null ? this.Owner.GetHashCode() : 0),
+                this.Terms.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode())
-                ).GetHashCode());
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

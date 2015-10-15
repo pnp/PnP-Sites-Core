@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             XElement element = PrepareViewForCompare(this.SchemaXml);
-            return element.ToString().GetHashCode();
+            return (element != null ? element.ToString().GetHashCode() : 0);
         }
 
         public override bool Equals(object obj)

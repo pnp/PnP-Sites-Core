@@ -1,5 +1,4 @@
 ﻿using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
 

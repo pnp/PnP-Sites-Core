@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         {
             try
             {
-                string log = string.Format("{0}\t[{1}]\t[{2}]\t[{3}]\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), entry.Source, entry.ThreadId, level.ToString(), entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId);
+                string log = string.Format("{0}\t[{1}]\t[{2}]\t[{3}]\t{4}\t{5}ms\t{6}", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.ffff"), entry.Source, entry.ThreadId, level.ToString(), entry.Message, entry.EllapsedMilliseconds, entry.CorrelationId != Guid.Empty ? entry.CorrelationId.ToString() : "");
 
                 return log;
             }

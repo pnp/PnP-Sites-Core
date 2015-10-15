@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 30/04/2015*
+*Topic automatically generated on 8/24/2015*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -184,7 +184,7 @@ Here follow the available child elements for the  element.
 
 Element|Type|Description
 -------|----|-----------
-PropertyBagEntry|[StringDictionaryItem](#stringdictionaryitem)|
+PropertyBagEntry|[PropertyBagEntry](#propertybagentry)|
 <a name="security"></a>
 ###Security
 The Security Groups Members of the Provisioning Template, optional collection of elements
@@ -358,6 +358,23 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Provider|[Provider](#provider)|
+<a name="propertybagentry"></a>
+###PropertyBagEntry
+A property bag entry
+
+```xml
+<pnp:PropertyBagEntry
+      Indexed="xsd:boolean">
+</pnp:PropertyBagEntry>
+```
+
+
+Here follow the available attributes for the PropertyBagEntry element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Indexed|xsd:boolean|
 <a name="stringdictionaryitem"></a>
 ###StringDictionaryItem
 Defines a StringDictionary element
@@ -428,6 +445,7 @@ Defines a ListInstance element
       EnableModeration="xsd:boolean"
       MinorVersionLimit="xsd:int"
       MaxVersionLimit="xsd:int"
+      DraftVersionVisibility="xsd:int"
       RemoveExistingContentTypes="xsd:boolean"
       TemplateFeatureID="pnp:GUID"
       ContentTypesEnabled="xsd:boolean"
@@ -470,6 +488,7 @@ EnableMinorVersions|xsd:boolean|The EnableMinorVersions flag for the List Instan
 EnableModeration|xsd:boolean|The EnableModeration flag for the List Instance, optional attribute
 MinorVersionLimit|xsd:int|The MinorVersionLimit for versions history for the List Instance, optional attribute
 MaxVersionLimit|xsd:int|The MaxVersionLimit for versions history for the List Instance, optional attribute
+DraftVersionVisibility|xsd:int|The DraftVersionVisibility for the List Instance, optional attribute. The property will be cast to enum DraftVersionVisibility 0 - Reader - Any user who can read items, 1 - Author - Only users who can edit items, 2 - Approver - Only users who can approve items (and the author of the item)
 RemoveExistingContentTypes|xsd:boolean|The RemoveExistingContentTypes flag for the List Instance, optional attribute
 TemplateFeatureID|GUID|The TemplateFeatureID for the feature on which the List Instance is based, optional attribute
 ContentTypesEnabled|xsd:boolean|The ContentTypesEnabled flag for the List Instance, optional attribute
@@ -787,9 +806,17 @@ Defines a Custom Action, which will be provisioned while applying the Provisioni
       ScriptBlock="xsd:string"
       ImageUrl="xsd:string"
       ScriptSrc="xsd:string">
+   <pnp:CommandUIExtension />
 </pnp:CustomAction>
 ```
 
+
+Here follow the available child elements for the CustomAction element.
+
+
+Element|Type|Description
+-------|----|-----------
+CommandUIExtension|[CommandUIExtension](#commanduiextension)|Defines the Custom UI Extension XML, optional element.
 
 Here follow the available attributes for the CustomAction element.
 
@@ -808,6 +835,16 @@ Enabled|xsd:boolean|The Enabled flag for the CustomAction, optional attribute
 ScriptBlock|xsd:string|The ScriptBlock of the CustomAction, optional attribute
 ImageUrl|xsd:string|The ImageUrl of the CustomAction, optional attribute
 ScriptSrc|xsd:string|The ScriptSrc of the CustomAction, optional attribute
+<a name="commanduiextension"></a>
+###CommandUIExtension
+Defines the Custom UI Extension XML, optional element.
+
+```xml
+<pnp:CommandUIExtension>
+   <!-- Any other XML content -->
+</pnp:CommandUIExtension>
+```
+
 <a name="fileproperties"></a>
 ###FileProperties
 A collection of File Properties
@@ -881,7 +918,8 @@ Defines a Page element, to describe a page that will be provisioned into the tar
 <pnp:Page
       Url="xsd:string"
       Overwrite="xsd:boolean"
-      Layout="pnp:WikiPageLayout">
+      Layout="pnp:WikiPageLayout"
+      WelcomePage="xsd:boolean">
    <pnp:WebParts />
 </pnp:Page>
 ```
@@ -902,6 +940,7 @@ Attibute|Type|Description
 Url|xsd:string|Required: The server relative url of the page, supports tokens
 Overwrite|xsd:boolean|Optional: if set, overwrites an existing page in the case of a wikipage.
 Layout|WikiPageLayout|Required: Defines the layout of the wikipage
+WelcomePage|xsd:boolean|Defines whether the page should be set as Welcomepage of the web rootfolder
 <a name="webparts"></a>
 ###WebParts
 The webparts to add to the page, optional collection of elements

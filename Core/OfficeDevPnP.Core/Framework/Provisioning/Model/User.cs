@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class User : IEquatable<User>
     {
-        #region Properties
+        #region Public Members
 
         /// <summary>
         /// The User email Address or the group name.
@@ -21,7 +21,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}",
-                this.Name).GetHashCode());
+                (this.Name != null ? this.Name.GetHashCode() : 0)
+            ).GetHashCode());
         }
 
         public override bool Equals(object obj)

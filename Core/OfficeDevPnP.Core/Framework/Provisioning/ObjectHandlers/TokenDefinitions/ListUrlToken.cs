@@ -1,9 +1,9 @@
 using Microsoft.SharePoint.Client;
 using System;
 
-namespace OfficeDevPnP.Core.Framework.ObjectHandlers.TokenDefinitions
+namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    public class ListUrlToken : TokenDefinition
+    internal class ListUrlToken : TokenDefinition
     {
         private string _listUrl = null;
         public ListUrlToken(Web web, string name, string url)

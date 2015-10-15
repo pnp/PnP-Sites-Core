@@ -16,6 +16,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool persistComposedLookFiles = false;
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
+        private bool includeSiteGroups = false;
+        private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
@@ -92,6 +94,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return this.propertyBagPropertiesToPreserve; }
             set { this.propertyBagPropertiesToPreserve = value; }
+        }
+
+        public bool IncludeSiteGroups
+        {
+            get
+            {
+                return this.includeSiteGroups;
+            }
+            set { this.includeSiteGroups = value; }
+        }
+
+        public bool IncludeSearchConfiguration
+        {
+            get
+            {
+                return this.includeSearchConfiguration;
+            }
+            set
+            {
+                this.includeSearchConfiguration = value;
+            }
         }
     }
 }
