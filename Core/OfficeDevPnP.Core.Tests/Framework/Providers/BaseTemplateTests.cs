@@ -146,6 +146,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             }
         }
 
+#if !CLIENTSDKV15
         private static void CreateSiteCollection(string template, string siteUrl)
         {
             // check if site exists
@@ -171,6 +172,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             }
         }
+#endif
 
         /// <summary>
         /// Get the base template for the current site
