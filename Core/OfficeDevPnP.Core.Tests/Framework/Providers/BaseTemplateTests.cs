@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         /// This is not a test, merely used to dump the needed template files
         /// </summary>
         [TestMethod]
-        [Ignore]
+        //[Ignore]
         public void DumpBaseTemplates()
         {
             using (ClientContext ctx = TestCommon.CreateClientContext())
@@ -146,6 +146,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             }
         }
 
+#if !CLIENTSDKV15
         private static void CreateSiteCollection(string template, string siteUrl)
         {
             // check if site exists
@@ -171,6 +172,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             }
         }
+#endif
 
         /// <summary>
         /// Get the base template for the current site
