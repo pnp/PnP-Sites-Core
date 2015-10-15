@@ -20,6 +20,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (web.GetSitePolicyByName(template.SitePolicy) != null) // Site Policy Available?
                     {
                         web.ApplySitePolicy(template.SitePolicy);
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_SitePolicy_PolicyAdded, template.SitePolicy);
+                    }
+                    else
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound, template.SitePolicy);
                     }
                 }
             }
