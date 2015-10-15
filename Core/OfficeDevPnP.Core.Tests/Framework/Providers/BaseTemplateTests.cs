@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         /// This is not a test, merely used to dump the needed template files
         /// </summary>
         [TestMethod]
-        //[Ignore]
+        [Ignore]
         public void DumpBaseTemplates()
         {
             using (ClientContext ctx = TestCommon.CreateClientContext())
