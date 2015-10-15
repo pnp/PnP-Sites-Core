@@ -66,7 +66,7 @@ namespace OfficeDevPnP.Core.Tests {
         public static string DevSiteUrl { get; set; }
         static string UserName { get; set; }
         static SecureString Password { get; set; }
-        static ICredentials Credentials { get; set; }
+        public static ICredentials Credentials { get; set; }
         static string Realm { get; set; }
         static string AppId { get; set; }
         static string AppSecret { get; set; }

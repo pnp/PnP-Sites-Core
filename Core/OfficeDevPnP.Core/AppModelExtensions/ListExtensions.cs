@@ -426,7 +426,10 @@ namespace Microsoft.SharePoint.Client
             if (enableVersioning)
             {
                 newList.EnableVersioning = true;
-                newList.EnableMinorVersions = true;
+                if (templateType == (int)ListTemplateType.DocumentLibrary)
+                {
+                    newList.EnableMinorVersions = true;
+                }
             }
             if (enableContentTypes)
             {
