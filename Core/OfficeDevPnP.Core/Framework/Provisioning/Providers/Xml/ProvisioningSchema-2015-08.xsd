@@ -3442,6 +3442,20 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="IsReused" type="xsd:boolean" use="optional" default="false">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares if this term is reused, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="SourceTermId" type="pnp:GUID" use="optional">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              The ID of the source term if this term is reused, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>

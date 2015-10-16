@@ -1766,6 +1766,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     LanguageSpecified = term.Language.HasValue,
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsReused = term.IsReused,
+                    SourceTermId = (term.SourceTermId != Guid.Empty) ? term.SourceTermId.ToString() : null,
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new V201508.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201508() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
@@ -1815,7 +1817,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         }
                     )) : null,
                     term.CustomProperties != null ? term.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
-                    term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null
+                    term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
+                    term.IsReused,
+                    !string.IsNullOrEmpty(term.SourceTermId) ? Guid.Parse(term.SourceTermId) : Guid.Empty
                     )
                 {
                     CustomSortOrder = term.CustomSortOrder,

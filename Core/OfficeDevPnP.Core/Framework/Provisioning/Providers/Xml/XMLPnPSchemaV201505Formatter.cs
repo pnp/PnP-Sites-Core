@@ -1162,7 +1162,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         }
                     )) : null,
                     term.CustomProperties != null ? term.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
-                    term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null
+                    term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
+                    false,
+                    Guid.Empty
                     )
                     {
                         CustomSortOrder = term.CustomSortOrder,
