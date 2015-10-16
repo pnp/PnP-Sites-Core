@@ -1028,19 +1028,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(ct, c => c.Parent);
                 web.Context.ExecuteQueryRetry();
 
-                //list.ContentTypeBindings.Add(new ContentTypeBinding
-                //{
-                //    ContentTypeId = ct.Parent != null ? ct.Parent.StringId : ct.StringId,
-                //    Default = count == 0
-                //});
-
                 if (ct.Parent != null)
                 {
-                    //Add the parent to the list of content types
-                    if (!BuiltInContentTypeId.Contains(ct.Parent.StringId))
-                    {
+                    // Removed this - so that we are getting full list of content types and if it's oob content type,
+                    // We are taking parent - VesaJ.
+                    //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
+                    //{
                         list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
-                    }
+                    //}
                 }
                 else
                 {
