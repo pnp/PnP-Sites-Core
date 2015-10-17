@@ -152,6 +152,7 @@ namespace Microsoft.SharePoint.Client
 
             // The original number of active features...use this to track if the feature activation went OK
             int oldCount = features.Count();
+            var errMsg = string.Empty;
 
             if (activate)
             {
@@ -159,7 +160,14 @@ namespace Microsoft.SharePoint.Client
 
                 // FeatureDefinitionScope defines how the features have been deployed. All OOB features are farm deployed
                 features.Add(featureID, true, scope);
-                features.Context.ExecuteQueryRetry();
+                try
+                {
+                    features.Context.ExecuteQueryRetry();
+                }
+                catch (Exception ex)
+                {
+                    errMsg = ex.Message;
+                }
 
                 // retry logic needed to make this more bulletproof :-(
                 features.Context.Load(features);
@@ -171,10 +179,22 @@ namespace Microsoft.SharePoint.Client
                 {
                     tries++;
                     features.Add(featureID, true, scope);
-                    features.Context.ExecuteQueryRetry();
+                    try
+                    {
+                        features.Context.ExecuteQueryRetry();
+                        errMsg = string.Empty;
+                    }
+                    catch (Exception ex)
+                    {
+                        errMsg = ex.Message;
+                    }
                     features.Context.Load(features);
                     features.Context.ExecuteQueryRetry();
                     currentCount = features.Count();
+                }
+                if (!string.IsNullOrEmpty(errMsg))
+                {
+                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_FeatureActivationProblem, featureID, errMsg);
                 }
             }
             else
