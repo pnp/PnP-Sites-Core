@@ -66,8 +66,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     rootWeb.Context.Load(field, f => f.SchemaXml);
                     rootWeb.Context.ExecuteQueryRetry();
 
+
                     Guid listGuid;
-                    if (!Guid.TryParse(listIdentifier, out listGuid))
+                    if (!Guid.TryParse(parser.ParseString(listIdentifier), out listGuid))
                     {
                         var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
                         var sourceList = rootWeb.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
@@ -112,7 +113,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
 
                         Guid listGuid;
-                        if (!Guid.TryParse(listIdentifier, out listGuid))
+                        if (!Guid.TryParse(parser.ParseString(listIdentifier), out listGuid))
                         {
                             var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
                             var sourceList = web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));

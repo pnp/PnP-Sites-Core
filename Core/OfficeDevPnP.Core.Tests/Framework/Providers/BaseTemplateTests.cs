@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
@@ -28,44 +29,73 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         {
             using (ClientContext ctx = TestCommon.CreateClientContext())
             {
-                DumpTemplate(ctx, "STS0");
-                DumpTemplate(ctx, "BLOG0");
-                DumpTemplate(ctx, "BDR0");
-                DumpTemplate(ctx, "DEV0");
-                DumpTemplate(ctx, "OFFILE1");
+                DumpTemplate(ctx, "STS#0");
+                DumpTemplate(ctx, "BLOG#0");
+                DumpTemplate(ctx, "BDR#0");
+                DumpTemplate(ctx, "DEV#0");
+                DumpTemplate(ctx, "OFFILE#1");
 
 #if !CLIENTSDKV15
-                DumpTemplate(ctx, "EHS1");
-                DumpTemplate(ctx, "BLANKINTERNETCONTAINER0", "", "BLANKINTERNET0");
+                DumpTemplate(ctx, "EHS#1");
+                DumpTemplate(ctx, "BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0");
 #else
-                DumpTemplate(ctx, "STS1");
-                DumpTemplate(ctx, "BLANKINTERNET0");
+                DumpTemplate(ctx, "STS#1");
+                DumpTemplate(ctx, "BLANKINTERNET#0");
 #endif
-                DumpTemplate(ctx, "BICENTERSITE0");
-                DumpTemplate(ctx, "SRCHCEN0");
-                DumpTemplate(ctx, "BLANKINTERNETCONTAINER0", "CMSPUBLISHING0");
-                DumpTemplate(ctx, "ENTERWIKI0");
-                DumpTemplate(ctx, "PROJECTSITE0");
-                DumpTemplate(ctx, "COMMUNITY0");
-                DumpTemplate(ctx, "COMMUNITYPORTAL0");
-                DumpTemplate(ctx, "SRCHCENTERLITE0");
-                DumpTemplate(ctx, "VISPRUS0");
+                DumpTemplate(ctx, "BICENTERSITE#0");
+                DumpTemplate(ctx, "SRCHCEN#0");
+                DumpTemplate(ctx, "BLANKINTERNETCONTAINER#0", "CMSPUBLISHING#0");
+                DumpTemplate(ctx, "ENTERWIKI#0");
+                DumpTemplate(ctx, "PROJECTSITE#0");
+                DumpTemplate(ctx, "COMMUNITY#0");
+                DumpTemplate(ctx, "COMMUNITYPORTAL#0");
+                DumpTemplate(ctx, "SRCHCENTERLITE#0");
+                DumpTemplate(ctx, "VISPRUS#0");
+            }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void DumpSingleTemplate()
+        {
+            using (ClientContext ctx = TestCommon.CreateClientContext())
+            {
+                DumpTemplate(ctx, "STS#0");
             }
         }
 
         private void DumpTemplate(ClientContext ctx, string template, string subSiteTemplate = "", string saveAsTemplate = "")
         {
+
             Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
             string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
 
             string siteUrl = "";
             if (subSiteTemplate.Length > 0)
             {
-                siteUrl = (String.Format("{1}/sites/template{0}/template{2}", template, baseUrl, subSiteTemplate));
+                siteUrl = string.Format("{1}/sites/template{0}/template{2}", template.Replace("#", ""), baseUrl, subSiteTemplate.Replace("#", ""));
+#if !CLIENTSDKV15
+                var siteCollectionUrl = string.Format("{1}/sites/template{0}", template.Replace("#", ""), baseUrl);
+                CreateSiteCollection(template, siteCollectionUrl);
+                using (var sitecolCtx = ctx.Clone(siteCollectionUrl))
+                {
+                    sitecolCtx.Web.Webs.Add(new WebCreationInformation()
+                    {
+                        Title = string.Format("template{0}", subSiteTemplate),
+                        Language = 1033,
+                        Url = string.Format("template{0}", subSiteTemplate.Replace("#", "")),
+                        UseSamePermissionsAsParentSite = true
+                    });
+                    sitecolCtx.ExecuteQueryRetry();
+                }
+#endif
             }
             else
             {
-                siteUrl = (String.Format("{1}/sites/template{0}", template, baseUrl));
+                siteUrl = string.Format("{1}/sites/template{0}", template.Replace("#", ""), baseUrl);
+#if !CLIENTSDKV15
+                CreateSiteCollection(template, siteUrl);
+#endif
             }
 
             using (ClientContext cc = ctx.Clone(siteUrl))
@@ -84,11 +114,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 ProvisioningTemplate p = cc.Web.GetProvisioningTemplate(creationInfo);
                 if (subSiteTemplate.Length > 0)
                 {
-                    p.Id = String.Format("{0}template", subSiteTemplate);
+                    p.Id = String.Format("{0}template", subSiteTemplate.Replace("#", ""));
                 }
                 else
                 {
-                    p.Id = String.Format("{0}template", template);
+                    p.Id = String.Format("{0}template", template.Replace("#", ""));
                 }
 
                 // Cleanup before saving
@@ -98,14 +128,51 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 XMLFileSystemTemplateProvider provider = new XMLFileSystemTemplateProvider(".", "");
                 if (subSiteTemplate.Length > 0)
                 {
-                    provider.SaveAs(p, String.Format("{0}Template.xml", subSiteTemplate));
+                    provider.SaveAs(p, String.Format("{0}Template.xml", subSiteTemplate.Replace("#", "")));
                 }
                 else
                 {
-                    provider.SaveAs(p, String.Format("{0}Template.xml", template));
+                    provider.SaveAs(p, String.Format("{0}Template.xml", template.Replace("#", "")));
                 }
+
+#if !CLIENTSDKV15
+                using (var tenantCtx = TestCommon.CreateTenantClientContext())
+                {
+                    Tenant tenant = new Tenant(tenantCtx);
+                    Console.WriteLine("Deleting new site {0}", string.Format("{1}/sites/template{0}", template.Replace("#", ""), baseUrl));
+                    tenant.DeleteSiteCollection(siteUrl, false);
+                }
+#endif
             }
         }
+
+#if !CLIENTSDKV15
+        private static void CreateSiteCollection(string template, string siteUrl)
+        {
+            // check if site exists
+            using (var tenantCtx = TestCommon.CreateTenantClientContext())
+            {
+                Tenant tenant = new Tenant(tenantCtx);
+
+                if (tenant.SiteExists(siteUrl))
+                {
+                    Console.WriteLine("Deleting existing site {0}", siteUrl);
+                    tenant.DeleteSiteCollection(siteUrl, false);
+                }
+                Console.WriteLine("Creating new site {0}", siteUrl);
+                tenant.CreateSiteCollection(new Entities.SiteEntity()
+                {
+                    Lcid = 1033,
+                    TimeZoneId = 4,
+                    SiteOwnerLogin = (TestCommon.Credentials as SharePointOnlineCredentials).UserName,
+                    Title = "Template Site",
+                    Template = template,
+                    Url = siteUrl,
+                }, true, true);
+
+            }
+        }
+#endif
 
         /// <summary>
         /// Get the base template for the current site

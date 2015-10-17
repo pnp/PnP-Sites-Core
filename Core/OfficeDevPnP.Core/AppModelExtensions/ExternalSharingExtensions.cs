@@ -24,11 +24,11 @@ namespace Microsoft.SharePoint.Client
     {
         /// <summary>
         /// Can be used to get needed people picker search result value for given email account. 
+        /// See <a href="https://msdn.microsoft.com/en-us/library/office/jj179690.aspx">MSDN</a>
         /// </summary>
         /// <param name="web">Web for the context used for people picker search</param>
         /// <param name="emailAddress">Email address to be used as the query parameter. Should be pointing to unique person which is then searched using people picker capability programatically.</param>
         /// <returns>Resolves people picker value which can be used for sharing objects in the SharePoint site</returns>
-        /// <see cref="https://msdn.microsoft.com/en-us/library/office/jj179690.aspx"/>
         public static string ResolvePeoplePickerValueForEmail(this Web web, string emailAddress)
         {
             ClientPeoplePickerQueryParameters param = new ClientPeoplePickerQueryParameters();
@@ -54,12 +54,12 @@ namespace Microsoft.SharePoint.Client
         }
         /// <summary>
         /// Creates anonymous link to given document.
+        /// See <a href="https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.web.createanonymouslink.aspx">MSDN</a>
         /// </summary>
         /// <param name="web">Web for the context used for people picker search</param>
         /// <param name="urlToDocument">Full URL to the file which is shared</param>
         /// <param name="shareOption">Type of the link to be created - View or Edit</param>
         /// <returns>Anonymous URL to the file as string</returns>
-        /// <see cref="https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.web.createanonymouslink.aspx"/>
         public static string CreateAnonymousLinkForDocument(this Web web, string urlToDocument, ExternalSharingDocumentOption shareOption)
         {
             bool isEditLink = true;
@@ -83,13 +83,13 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Creates anonymous link to the given document with automatic expiration time.
+        /// See <a href="https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.web.createanonymouslinkwithexpiration.aspx">MSDN</a>
         /// </summary>
         /// <param name="web">Web for the context used for people picker search</param>
         /// <param name="urlToDocument">Full URL to the file which is shared</param>
         /// <param name="shareOption">Type of the link to be created - View or Edit</param>
         /// <param name="expireTime">Date time for link expiration - will be converted to ISO 8601 format automatically</param>
         /// <returns>Anonymous URL to the file as string</returns>
-        /// <see cref="https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.web.createanonymouslinkwithexpiration.aspx"/>
         public static string CreateAnonymousLinkWithExpirationForDocument(this Web web, string urlToDocument, ExternalSharingDocumentOption shareOption, DateTime expireTime)
         {
             // If null given as expiration, there will not be automatic expiration time
@@ -225,7 +225,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="useSimplifiedPolicies"></param>
         /// <returns></returns>
         public static ObjectSharingSettings GetObjectSharingSettingsForSite(this Web web, bool useSimplifiedPolicies = true)
-        { 
+        {
             // Ensure that URL exists
             if (!web.IsObjectPropertyInstantiated("Url"))
             {
@@ -253,8 +253,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
         /// <returns></returns>
-        public static SharingResult ShareSite(this Web web, string email, 
-                                                ExternalSharingSiteOption shareOption, bool sendEmail = true, 
+        public static SharingResult ShareSite(this Web web, string email,
+                                                ExternalSharingSiteOption shareOption, bool sendEmail = true,
                                                 string emailBody = "Site shared for you.")
         {
             // Solve people picker value for email address
@@ -273,7 +273,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
         /// <returns></returns>
-        public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput, 
+        public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput,
                                                                     ExternalSharingSiteOption shareOption,
                                                                     bool sendEmail = true, string emailBody = "Site shared for you.")
         {
