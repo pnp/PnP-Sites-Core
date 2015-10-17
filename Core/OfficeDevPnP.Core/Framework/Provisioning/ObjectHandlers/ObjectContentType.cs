@@ -44,10 +44,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (existingCT == null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
-                        if (newCT != null)
+                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields, scope);
+                        if (newCT != null && newCT.IsPropertyAvailable("Id"))
                         {
                             existingCTs.Add(newCT);
+                        }
+                        else
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
                         }
                     }
                     else
@@ -58,10 +62,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
-                            if (newCT != null)
+                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields, scope);
+                            if (newCT != null && newCT.IsPropertyAvailable("Id"))
                             {
                                 existingCTs.Add(newCT);
+                            }
+                            else
+                            {
+                                scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
                             }
                         }
                         else
@@ -137,9 +145,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
-                    var field = web.Fields.GetById(fieldId);
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+
+                    var field = web.GetFieldById<Microsoft.SharePoint.Client.Field>(fieldId);
+                    if (field != null)
+                    {
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
+                        web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    }
+                    else
+                    {
+                        scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
+                    }
                 }
             }
 
@@ -191,7 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector,
-            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null)
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null, PnPMonitoredScope scope = null)
         {
             var name = parser.ParseString(templateContentType.Name);
             var description = parser.ParseString(templateContentType.Description);
@@ -201,8 +217,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var createdCT = web.CreateContentType(name, description, id, group);
             foreach (var fieldRef in templateContentType.FieldRefs)
             {
-                var field = web.Fields.GetById(fieldRef.Id);
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                var field = web.GetFieldById<Microsoft.SharePoint.Client.Field>(fieldRef.Id);
+                if (field != null)
+                {
+                    web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                }
+                else
+                {
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldRef.Id);
+                }
             }
 
             createdCT.ReadOnly = templateContentType.ReadOnly;
@@ -343,6 +366,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         EditFormUrl = ct.EditFormUrl,
                         NewFormUrl = ct.NewFormUrl,
                     };
+
+                    // check the FieldRefs against the existing fields from this web
+                    // so we have no not existing fields in our template ct 
+                    var fieldRefsToRemove = new List<FieldRef>();
+                    foreach (var fieldRef in newCT.FieldRefs)
+                    {
+                        if (!web.FieldExistsById(fieldRef.Id))
+                        {
+                            fieldRefsToRemove.Add(fieldRef);
+                        }
+                    }
+                    foreach (var fieldref in fieldRefsToRemove)
+                    {
+                        newCT.FieldRefs.Remove(fieldref);
+                    }
 
                     // If the Content Type is a DocumentSet
                     if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||
