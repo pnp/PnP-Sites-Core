@@ -59,33 +59,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (fieldElement.Attribute("List") != null)
                 {
                     var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
-                    var listIdentifier = fieldElement.Attribute("List").Value;
-                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : "None";
+                    var listIdentifier = parser.ParseString(fieldElement.Attribute("List").Value);
+                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : string.Empty;
                     var webId = string.Empty;
 
                     var field = rootWeb.Fields.GetById(fieldId);
                     rootWeb.Context.Load(field, f => f.SchemaXml);
                     rootWeb.Context.ExecuteQueryRetry();
 
+                    List sourceList = FindSourceList(listIdentifier, web, rootWeb);
 
-                    Guid listGuid;
-                    if (!Guid.TryParse(parser.ParseString(listIdentifier), out listGuid))
+                    if (sourceList != null)
                     {
-                        var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
-                        var sourceList = rootWeb.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
-                        if (sourceList != null)
-                        {
-                            listGuid = sourceList.Id;
+                        rootWeb.Context.Load(sourceList.ParentWeb);
+                        rootWeb.Context.ExecuteQueryRetry();
 
-                            rootWeb.Context.Load(sourceList.ParentWeb);
-                            rootWeb.Context.ExecuteQueryRetry();
+                        webId = sourceList.ParentWeb.Id.ToString();
 
-                            webId = sourceList.ParentWeb.Id.ToString();
-                        }
-                    }
-                    if (listGuid != Guid.Empty)
-                    {
-                        ProcessField(field, listGuid, webId, relationshipDeleteBehavior);
+                        ProcessField(field, sourceList.Id, webId, relationshipDeleteBehavior);
                     }
                 }
             }
@@ -101,8 +92,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (fieldElement.Attribute("List") == null) continue;
 
                     var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
-                    var listIdentifier = fieldElement.Attribute("List").Value;
-                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : "None";
+                    var listIdentifier = parser.ParseString(fieldElement.Attribute("List").Value);
+                    var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : string.Empty;
                     var webId = string.Empty;
 
                     var listUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listInstance.Url));
@@ -114,30 +105,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(field, f => f.SchemaXml);
                         web.Context.ExecuteQueryRetry();
 
-                        Guid listGuid;
-                        if (!Guid.TryParse(parser.ParseString(listIdentifier), out listGuid))
-                        {
-                            var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, parser.ParseString(listIdentifier));
-                            var sourceList = web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
-                            if (sourceList != null)
-                            {
-                                listGuid = sourceList.Id;
+                        List sourceList = FindSourceList(listIdentifier, web, rootWeb);
 
-                                web.Context.Load(sourceList.ParentWeb);
-                                web.Context.ExecuteQueryRetry();
-
-                                webId = sourceList.ParentWeb.Id.ToString();
-                            }
-                        }
-                        if (listGuid != Guid.Empty)
+                        if (sourceList != null)
                         {
-                            ProcessField(field, listGuid, webId, relationshipDeleteBehavior);
+                            web.Context.Load(sourceList.ParentWeb);
+                            web.Context.ExecuteQueryRetry();
+
+                            webId = sourceList.ParentWeb.Id.ToString();
+                            ProcessField(field, sourceList.Id, webId, relationshipDeleteBehavior);
                         }
                     }
                 }
             }
 
             return parser;
+        }
+
+        private static List FindSourceList(string listIdentifier, Web web, Web rootWeb)
+        {
+            Guid listGuid = Guid.Empty;
+
+            if (!Guid.TryParse(listIdentifier, out listGuid))
+            {
+                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier);
+                return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+                return rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
         }
 
         private static void ProcessField(Field field, Guid listGuid, string webId, string relationshipDeleteBehavior)
@@ -152,7 +147,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", webId, isDirty);
 
-            isDirty = UpdateFieldAttribute(existingFieldElement, "RelationshipDeleteBehavior", relationshipDeleteBehavior, isDirty);
+            if (!string.IsNullOrEmpty(relationshipDeleteBehavior))
+                isDirty = UpdateFieldAttribute(existingFieldElement, "RelationshipDeleteBehavior", relationshipDeleteBehavior, isDirty);
 
             if (isDirty)
             {
