@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -355,5 +358,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+        /// <summary>
+        /// Serializes a template to XML
+        /// </summary>
+        /// <param name="formatter"></param>
+        /// <returns></returns>
+        public string ToXML(ITemplateFormatter formatter = null)
+        {
+            formatter = formatter ?? new XMLPnPSchemaFormatter();
+            using (var stream = formatter.ToFormattedTemplate(this))
+            {
+                return System.Text.Encoding.UTF8.GetString((stream as MemoryStream).ToArray());
+            }
+
+        }
     }
 }
