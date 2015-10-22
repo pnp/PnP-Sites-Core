@@ -103,8 +103,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template.ComposedLook.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 template.ComposedLook.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
 #else
-            template.ComposedLook.AlternateCSS = null;
-            template.ComposedLook.SiteLogo = null;
+                template.ComposedLook.AlternateCSS = null;
+                template.ComposedLook.SiteLogo = null;
 #endif
                 scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look);
                 var theme = web.GetCurrentComposedLook();
@@ -147,8 +147,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
 
                             // Download the theme/branding specific files
+#if !CLIENTSDKV15
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+#endif
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
