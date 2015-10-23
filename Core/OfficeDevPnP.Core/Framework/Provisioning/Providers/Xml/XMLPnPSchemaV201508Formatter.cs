@@ -1818,8 +1818,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     )) : null,
                     term.CustomProperties != null ? term.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
                     term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
-                    term.IsReused,
-                    !string.IsNullOrEmpty(term.SourceTermId) ? Guid.Parse(term.SourceTermId) : Guid.Empty
+                    isDeprecated: term.IsDeprecated,
+                    isReused: term.IsReused,
+                    isSourceTerm: term.IsSourceTerm,
+                    sourceTermId: !string.IsNullOrEmpty(term.SourceTermId) ? Guid.Parse(term.SourceTermId) : Guid.Empty
                     )
                 {
                     CustomSortOrder = term.CustomSortOrder,

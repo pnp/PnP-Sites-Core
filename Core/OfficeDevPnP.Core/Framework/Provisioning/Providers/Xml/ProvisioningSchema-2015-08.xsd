@@ -3449,6 +3449,20 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="IsSourceTerm" type="xsd:boolean" use="optional" default="true">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              If the IsReused property is set to false, the current Term is not reused and this property will always be true. If the current Term is reused (IsReused returns true), then this property should be set to true if it is the source Term.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="IsDeprecated" type="xsd:boolean" use="optional" default="false">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              Declares if this term is deprecated, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
         <xsd:attribute name="SourceTermId" type="pnp:GUID" use="optional">
           <xsd:annotation>
             <xsd:documentation xml:lang="en">

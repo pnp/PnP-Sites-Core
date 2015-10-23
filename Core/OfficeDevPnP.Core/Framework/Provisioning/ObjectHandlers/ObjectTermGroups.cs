@@ -10,7 +10,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectTermGroups : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "Term Groups"; }
@@ -194,10 +193,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
             Term term = null;
-            bool termCreatedFromResuedTerm = false;
 
             // If term is resued, attempt to create resued term
-            if (modelTerm.IsReused && modelTerm.SourceTermId != Guid.Empty)
+            if (modelTerm.IsReused && modelTerm.SourceTermId != Guid.Empty )
             {
                 Term sourceTerm = null;
                 TermCollection sourceTerms = termStore.GetTermsById(new Guid[] { modelTerm.SourceTermId });
@@ -213,7 +211,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (parent is Term)
                     {
                         term = ((Term)parent).ReuseTerm(sourceTerm, false);
-                        termCreatedFromResuedTerm = true;
                         termStore.CommitAll();
                         web.Context.Load(term);
                         web.Context.ExecuteQueryRetry();
@@ -222,7 +219,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     else
                     {
                         term = ((TermSet)parent).ReuseTerm(sourceTerm, false);
-                        termCreatedFromResuedTerm = true;
                         termStore.CommitAll();
                         web.Context.Load(term);
                         web.Context.ExecuteQueryRetry();
@@ -230,7 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            // If term is not resued, or source term did not exist, create term
+            // If term is not resued, is the source term, or the source term doesn't exist yet, create term
             if (term == null)
             {
                 if (modelTerm.Id == Guid.Empty)
@@ -247,7 +243,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
                 }
 
-
                 if (!String.IsNullOrEmpty(modelTerm.Description))
                 {
                     term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
@@ -260,7 +255,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             term.IsAvailableForTagging = modelTerm.IsAvailableForTagging;
 
-            if (!termCreatedFromResuedTerm && (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any()))
+            if ((!modelTerm.IsReused || modelTerm.IsSourceTerm) && (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any()))
             {
                 if (modelTerm.Labels.Any())
                 {
@@ -293,10 +288,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-            termStore.CommitAll();
 
+            if(modelTerm.IsDeprecated)
+            {
+                term.Deprecate(true);
+            }
+
+            termStore.CommitAll();
             web.Context.Load(term);
             web.Context.ExecuteQueryRetry();
+
+            // Now that everythign is created, ensure that the correct source term is defined.
+            if((modelTerm.IsReused && modelTerm.IsSourceTerm) && (term.IsReused && !term.IsSourceTerm))
+            {
+                term.SourceTerm.ReassignSourceTerm(term);
+                termStore.CommitAll();
+                web.Context.Load(term);
+                web.Context.ExecuteQueryRetry();
+            }
 
             if (modelTerm.Terms.Any())
             {
@@ -476,7 +485,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     modelTerm.SourceTermId = Guid.Empty;
                 }
-
+                modelTerm.IsDeprecated = term.IsDeprecated;
+                modelTerm.IsSourceTerm = term.IsSourceTerm;
 
                 if (term.Labels.Any())
                 {

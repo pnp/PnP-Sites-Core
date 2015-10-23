@@ -500,11 +500,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         
         private bool isReusedField;
         
+        private bool isSourceTermField;
+        
+        private bool isDeprecatedField;
+        
         private string sourceTermIdField;
         
         public Term() {
             this.customSortOrderField = 0;
             this.isReusedField = false;
+            this.isSourceTermField = true;
+            this.isDeprecatedField = false;
         }
         
         /// <remarks/>
@@ -593,6 +599,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.isReusedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool IsSourceTerm {
+            get {
+                return this.isSourceTermField;
+            }
+            set {
+                this.isSourceTermField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsDeprecated {
+            get {
+                return this.isDeprecatedField;
+            }
+            set {
+                this.isDeprecatedField = value;
             }
         }
         

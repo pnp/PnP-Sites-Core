@@ -123,16 +123,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             List<Term> terms = new List<Term>();
 
-            var term1 = new Term(Guid.NewGuid(), "TestProvisioningTerm 1", null, null, null, null, null, false, Guid.Empty);
+            var term1 = new Term(Guid.NewGuid(), "TestProvisioningTerm 1", null, null, null, null, null);
             term1.Properties.Add("TestProp1", "Test Value 1");
             term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
             term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
 
-            term1.Terms.Add(new Term(Guid.NewGuid(), "Sub Term 1", null, null, null, null, null, false, Guid.Empty));
+            term1.Terms.Add(new Term(Guid.NewGuid(), "Sub Term 1", null, null, null, null, null));
 
             terms.Add(term1);
 
-            terms.Add(new Term(Guid.NewGuid(), "TestProvisioningTerm 2", null, null, null, null, null, false, Guid.Empty));
+            terms.Add(new Term(Guid.NewGuid(), "TestProvisioningTerm 2", null, null, null, null, null));
 
             termSet.Terms.AddRange(terms);
 
@@ -195,7 +195,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             Guid reusedTermGuid = Guid.NewGuid();
 
-            var term1 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, true, reusedTermGuid);
+            var term1 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, isReused:true, sourceTermId:reusedTermGuid, isSourceTerm:true);
             term1.Properties.Add("TestProp1", "Test Value 1");
             term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
             term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
@@ -204,7 +204,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             termSet1.Terms.AddRange(terms1);
             termSets.Add(termSet1);
 
-            var term2 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, true, reusedTermGuid);
+            var term2 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, isReused: true, sourceTermId: reusedTermGuid, isSourceTerm: false);
             term1.Properties.Add("TestProp1", "Test Value 1");
             term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
             term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
