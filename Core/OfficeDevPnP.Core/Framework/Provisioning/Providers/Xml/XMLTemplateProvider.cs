@@ -105,7 +105,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Stream stream = this.Connector.GetFileStream(uri);
 
             //Resolve xml includes if any
-            stream = ResolveXIncludes(stream);
+            if (stream != null)
+            {
+                stream = ResolveXIncludes(stream);
+            }
 
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
