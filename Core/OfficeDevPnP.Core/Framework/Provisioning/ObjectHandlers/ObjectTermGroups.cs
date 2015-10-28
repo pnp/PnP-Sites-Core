@@ -411,33 +411,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var termGroup in termGroups)
                     {
-                        if (termGroup.Name != "People" && termGroup.Name != "Search Dictionaries" && termGroup.Name != "System")
+                        var modelTermGroup = new Model.TermGroup
                         {
-                            var modelTermGroup = new Model.TermGroup
-                            {
-                                Name = termGroup.Name,
-                                Id = termGroup.Id,
-                                Description = termGroup.Description
-                            };
+                            Name = termGroup.Name,
+                            Id = termGroup.Id,
+                            Description = termGroup.Description
+                        };
 
-                            foreach (var termSet in termGroup.TermSets)
+                        foreach (var termSet in termGroup.TermSets)
+                        {
+                            var modelTermSet = new Model.TermSet();
+                            modelTermSet.Name = termSet.Name;
+                            modelTermSet.Id = termSet.Id;
+                            modelTermSet.IsAvailableForTagging = termSet.IsAvailableForTagging;
+                            modelTermSet.IsOpenForTermCreation = termSet.IsOpenForTermCreation;
+                            modelTermSet.Description = termSet.Description;
+                            modelTermSet.Terms.AddRange(GetTerms<TermSet>(web.Context, termSet, termStore.DefaultLanguage));
+                            foreach (var property in termSet.CustomProperties)
                             {
-                                var modelTermSet = new Model.TermSet();
-                                modelTermSet.Name = termSet.Name;
-                                modelTermSet.Id = termSet.Id;
-                                modelTermSet.IsAvailableForTagging = termSet.IsAvailableForTagging;
-                                modelTermSet.IsOpenForTermCreation = termSet.IsOpenForTermCreation;
-                                modelTermSet.Description = termSet.Description;
-                                modelTermSet.Terms.AddRange(GetTerms<TermSet>(web.Context, termSet, termStore.DefaultLanguage));
-                                foreach (var property in termSet.CustomProperties)
-                                {
-                                    modelTermSet.Properties.Add(property.Key, property.Value);
-                                }
-                                modelTermGroup.TermSets.Add(modelTermSet);
+                                modelTermSet.Properties.Add(property.Key, property.Value);
                             }
-
-                            template.TermGroups.Add(modelTermGroup);
+                            modelTermGroup.TermSets.Add(modelTermSet);
                         }
+
+                        template.TermGroups.Add(modelTermGroup);
                     }
                 }
             }
