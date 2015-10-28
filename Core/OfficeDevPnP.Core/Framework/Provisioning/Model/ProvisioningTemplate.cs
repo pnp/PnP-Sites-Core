@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.IO;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -368,9 +369,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             formatter = formatter ?? new XMLPnPSchemaFormatter();
             using (var stream = formatter.ToFormattedTemplate(this))
             {
-                return System.Text.Encoding.UTF8.GetString((stream as MemoryStream).ToArray());
+                return XElement.Load(stream).ToString();
             }
-
         }
     }
 }
