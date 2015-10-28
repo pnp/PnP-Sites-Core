@@ -1767,7 +1767,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
                     IsReused = term.IsReused,
+                    IsSourceTerm = term.IsSourceTerm,
                     SourceTermId = (term.SourceTermId != Guid.Empty) ? term.SourceTermId.ToString() : null,
+                    IsDeprecated = term.IsDeprecated,
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new V201508.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201508() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
