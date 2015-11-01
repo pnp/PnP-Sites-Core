@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using System;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -25,6 +26,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 ctx.ExecuteQueryRetry();
 
+                var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
+
 
                 ProvisioningTemplate template = new ProvisioningTemplate();
                 template.Parameters.Add("test", "test");
@@ -45,6 +48,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var associatedOwnerGroup = parser.ParseString("{associatedownergroup}");
                 var associatedVisitorGroup = parser.ParseString("{associatedvisitorgroup}");
                 var associatedMemberGroup = parser.ParseString("{associatedmembergroup}");
+                var currentUserId = parser.ParseString("{currentuserid}");
+                var currentUserLoginName = parser.ParseString("{currentuserloginname}");
+                var currentUserFullName = parser.ParseString("{currentuserfullname}");
+                var guid = parser.ParseString("{guid}");
 
                 Assert.IsTrue(site1 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
                 Assert.IsTrue(site2 == string.Format("{0}/test", ctx.Web.ServerRelativeUrl));
@@ -61,6 +68,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(associatedMemberGroup == ctx.Web.AssociatedMemberGroup.Title);
                 Assert.IsTrue(siteName == ctx.Web.Title);
                 Assert.IsTrue(siteId == ctx.Web.Id.ToString());
+                Assert.IsTrue(currentUserId == currentUser.Id.ToString());
+                Assert.IsTrue(currentUserFullName == currentUser.Title);
+                Assert.IsTrue(currentUserLoginName == currentUser.LoginName);
+                Guid outGuid;
+                Assert.IsTrue(Guid.TryParse(guid, out outGuid));
             }
         }
     }

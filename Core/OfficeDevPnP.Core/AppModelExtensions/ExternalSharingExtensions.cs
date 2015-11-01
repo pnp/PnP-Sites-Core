@@ -47,7 +47,7 @@ namespace Microsoft.SharePoint.Client
 
             // Resolve people picker value based on email
             var ret = ClientPeoplePickerWebServiceInterface.ClientPeoplePickerResolveUser(web.Context, param);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             // Return people picker return value in right format
             return string.Format("[{0}]", ret.Value);
@@ -75,7 +75,7 @@ namespace Microsoft.SharePoint.Client
                     break;
             }
             ClientResult<string> result = Microsoft.SharePoint.Client.Web.CreateAnonymousLink(web.Context, urlToDocument, isEditLink);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             // return anonymous link to caller
             return result.Value;
@@ -116,7 +116,7 @@ namespace Microsoft.SharePoint.Client
             ClientResult<string> result =
                             Microsoft.SharePoint.Client.Web.CreateAnonymousLinkWithExpiration(
                                 web.Context, urlToDocument, isEditLink, expirationTimeAsString);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             // Return anonymous link to caller
             return result.Value;
@@ -179,7 +179,7 @@ namespace Microsoft.SharePoint.Client
                                                         emailBody);
 
             web.Context.Load(result);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
             return result;
         }
 
@@ -192,7 +192,7 @@ namespace Microsoft.SharePoint.Client
         {
             SharingResult result = Microsoft.SharePoint.Client.Web.UnshareObject(web.Context, urlToDocument);
             web.Context.Load(result);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             // Return the results
             return result;
@@ -213,7 +213,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(info);
             web.Context.Load(info.ObjectSharingInformation);
             web.Context.Load(info.ObjectSharingInformation.SharedWithUsersCollection);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             return info;
         }
@@ -230,7 +230,7 @@ namespace Microsoft.SharePoint.Client
             if (!web.IsObjectPropertyInstantiated("Url"))
             {
                 web.Context.Load(web, w => w.Url);
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
             }
 
             ObjectSharingSettings info =
@@ -238,7 +238,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(info);
             web.Context.Load(info.ObjectSharingInformation);
             web.Context.Load(info.ObjectSharingInformation.SharedWithUsersCollection);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
 
             return info;
         }
@@ -285,7 +285,7 @@ namespace Microsoft.SharePoint.Client
             if (!web.IsObjectPropertyInstantiated("Url"))
             {
                 web.Context.Load(web, w => w.Url);
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
             }
 
             // Set default settings for site sharing
@@ -297,7 +297,7 @@ namespace Microsoft.SharePoint.Client
                                                         sendEmail, includedAnonymousLinkInEmail, null,
                                                         emailBody);
             web.Context.Load(result);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
             return result;
         }
 
@@ -327,7 +327,7 @@ namespace Microsoft.SharePoint.Client
             }
             // Load right group
             web.Context.Load(group);
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
             // Return group ID
             return group.Id;
         }

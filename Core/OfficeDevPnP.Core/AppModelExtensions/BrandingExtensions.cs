@@ -874,9 +874,7 @@ namespace Microsoft.SharePoint.Client
                         }
 
                         // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                        if ((masterPageUrl == null || theme.MasterPage == null || theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase)) &&
-                            (fontUrl == null || theme.Font == null || theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase)) &&
-                            (themeUrl == null || theme.Theme == null || theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase)))
+                        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                         {
                             theme.Name = name;
                             theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
@@ -969,6 +967,75 @@ namespace Microsoft.SharePoint.Client
             }
 
             return theme;
+        }
+
+        /// <summary>
+        /// Compares master page URL, theme URL and font URL values to current theme entity to check if they are the same.
+        /// Handles also possible null values. Point is to figure out which theme is the one that is currently
+        /// being selected as "Current"
+        /// </summary>
+        /// <param name="theme">Current theme entity to compare values to</param>
+        /// <param name="masterPageUrl">Master page URL</param>
+        /// <param name="themeUrl">Theme URL</param>
+        /// <param name="fontUrl">Font URL</param>
+        /// <returns></returns>
+        private static bool IsMatchingTheme(ThemeEntity theme, string masterPageUrl, string themeUrl, string fontUrl)
+        {
+            bool themeUrlHasValue = false, fontUrlHasValue = false;
+
+            // Is theme URL meaningful for compare?
+            if (!string.IsNullOrEmpty(theme.Theme))
+            {
+                themeUrlHasValue = true;
+            }
+
+            // Is font URL meaningful for compare?
+            if (!string.IsNullOrEmpty(theme.Font))
+            {
+                fontUrlHasValue = true;
+            }
+
+            // Should we compare all of the values?
+            if (themeUrlHasValue && fontUrlHasValue)
+            {
+                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we compare only master page and theme URL?
+            if (themeUrlHasValue && !fontUrlHasValue)
+            {
+                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we compare only master page and font value?
+            if (!themeUrlHasValue && fontUrlHasValue)
+            {
+                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we only compare master page
+            if (!themeUrlHasValue && !fontUrlHasValue)
+            {
+                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool IsUsingOfficeTheme(this Web web)

@@ -5,6 +5,22 @@
     xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+  <!--
+  ****  WARNING ****
+
+  If you want to change this schema, please target the proper repository, which is the PnP-Provisioning-Schema one that is
+  available at the following URL:
+  
+  https://github.com/OfficeDev/PnP-Provisioning-Schema/
+  
+  Submit your Pull Requests against the experimental branch of the PnP-Provisioning-Schema repository and we will validate them.
+  We plan to update the master schema (the one used here) once every 2/3 months or more, depending on the number of changes and 
+  on the PnP Provisioning Engine roadmap.
+  
+  Thanks for your cooperation.
+  
+  -->
+  
   <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
