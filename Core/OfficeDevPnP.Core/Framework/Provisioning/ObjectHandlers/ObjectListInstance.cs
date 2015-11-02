@@ -1013,6 +1013,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     xslLinkElement.Remove();
                 }
 
+                //Content Type ID with value "0x" is not supported, because Schema states 
+                //that Content Type must have characters after "0x"
+                var contentTypeId = schemaElement.Attribute("ContentTypeID");
+                if (contentTypeId != null && string.Equals(contentTypeId.Value, "0x", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    contentTypeId.Remove();
+                }
+
                 list.Views.Add(new View { SchemaXml = schemaElement.ToString() });
             }
 
@@ -1028,13 +1036,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(ct, c => c.Parent);
                 web.Context.ExecuteQueryRetry();
 
-                if (ct.Parent != null)
+                //Parent can only be used if it is not the "System"-parent, because CT definition does
+                //not allow value "0x".
+                if (ct.Parent != null && !string.Equals(ct.Parent.StringId,"0x"))
                 {
                     // Removed this - so that we are getting full list of content types and if it's oob content type,
                     // We are taking parent - VesaJ.
                     //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
                     //{
-                        list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+                    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
                     //}
                 }
                 else
