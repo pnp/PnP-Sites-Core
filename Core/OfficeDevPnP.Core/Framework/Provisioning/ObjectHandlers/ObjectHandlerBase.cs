@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -67,9 +68,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Uri r;
                     if (Uri.TryCreate(webUrl, UriKind.Absolute, out r))
                     {
-                        if (url.IndexOf(r.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                        var webUrlPathAndQuery = HttpUtility.UrlDecode(r.PathAndQuery);
+                        if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
                         {
-                            return url.Replace(r.PathAndQuery, "{site}");
+                            return url.Replace(webUrlPathAndQuery, "{site}");
                         }
                     }
                 }
