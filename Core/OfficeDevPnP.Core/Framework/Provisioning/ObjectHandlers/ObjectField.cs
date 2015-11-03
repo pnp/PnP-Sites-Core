@@ -117,7 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         existingFieldElement.Attributes("Version").Remove();
                     }
-                    existingField.SchemaXml = parser.ParseString(existingFieldElement.ToString());
+                    existingField.SchemaXml = parser.ParseString(existingFieldElement.ToString(), "~sitecollection", "~site");
                     existingField.UpdateAndPushChanges(true);
                     web.Context.ExecuteQueryRetry();
                 }
@@ -151,7 +151,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 templateFieldElement.Attribute("List").Remove();
             }
 
-            var fieldXml = parser.ParseString(templateFieldElement.ToString());
+            var fieldXml = parser.ParseString(templateFieldElement.ToString(), "~sitecollection", "~site");
 
             web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
             web.Context.ExecuteQueryRetry();
