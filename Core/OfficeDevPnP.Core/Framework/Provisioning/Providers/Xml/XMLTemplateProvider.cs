@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Text;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -104,7 +105,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Stream stream = this.Connector.GetFileStream(uri);
 
             //Resolve xml includes if any
-            stream = ResolveXIncludes(stream);
+            if (stream != null)
+            {
+                stream = ResolveXIncludes(stream);
+            }
 
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
@@ -205,10 +209,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     if (!String.IsNullOrEmpty(href))
                     {
                         Stream incStream = this.Connector.GetFileStream(href);
-
                         // And if the referenced file can be loaded/resolved
+                        if(incStream == null)
+                        {
+                            //check if include has fallback
+                            XName xiFallback = XName.Get("{http://www.w3.org/2001/XInclude}fallback");
+                            var fallback = xi.Elements(xiFallback).FirstOrDefault();
+                            if ((fallback != null)&&
+                                ((fallback.Elements().Count() > 0)||!string.IsNullOrEmpty(fallback.Value)))
+                            {
+                                var innerXml = fallback.ToXmlElement().InnerXml;
+                                incStream = new MemoryStream(Encoding.UTF8.GetBytes(innerXml));
+                            }
+                        }
+
                         if (null != incStream)
                         {
+                            //resolve include recursive
+                            incStream = ResolveXIncludes(incStream);
                             // Replace the xi:include element with the target XML element
                             var resolved = XElement.Load(incStream);
                             xi.ReplaceWith(resolved);
