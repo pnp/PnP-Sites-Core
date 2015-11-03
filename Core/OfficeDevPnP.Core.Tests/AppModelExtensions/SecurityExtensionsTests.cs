@@ -363,6 +363,25 @@ namespace Microsoft.SharePoint.Client.Tests
                 web.RemovePermissionLevelFromUser(_userLogin, "Approve");
             }
         }
+
+		[TestMethod]
+		public void AddSamePermissionLevelTwiceToGroupTest()
+		{
+			using (ClientContext clientContext = TestCommon.CreateClientContext())
+			{
+				// Test
+				clientContext.Web.AddPermissionLevelToGroup(_testGroupName, RoleType.Contributor, true);
+				clientContext.Web.AddPermissionLevelToGroup(_testGroupName, RoleType.Contributor, false);
+
+				//Get Group
+				Group group = clientContext.Web.SiteGroups.GetByName(_testGroupName);
+				clientContext.ExecuteQueryRetry();
+
+				//Assert
+				Assert.IsTrue(CheckPermissionOnPrinciple(clientContext.Web, group, RoleType.Contributor));
+			}
+		}
+
         #endregion
 
         #region Reader access tests
