@@ -41,18 +41,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQuery();
 
                     // Retrieve the workflow definitions (including unpublished ones)
-                    Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition[] definitions = null;
-
-                    try
-                    {
-                        definitions = web.GetWorkflowDefinitions(false);
-                    }
-                    catch (ServerException)
-                    {
-                        // If there is no workflow service present in the farm this method will throw an error. 
-                        // Swallow the exception
-                    }
-
+                    var definitions = web.GetWorkflowDefinitions(false);
+                    
                     if (definitions != null)
                     {
                         template.Workflows.WorkflowDefinitions.AddRange(
@@ -77,18 +67,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Retrieve the workflow subscriptions
-                    Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription[] subscriptions = null;
-
-                    try
-                    {
-                        subscriptions = web.GetWorkflowSubscriptions();
-                    }
-                    catch (ServerException)
-                    {
-                        // If there is no workflow service present in the farm this method will throw an error. 
-                        // Swallow the exception
-                    }
-
+                    var subscriptions = web.GetWorkflowSubscriptions();
+                    
                     if (subscriptions != null)
                     {
 #if CLIENTSDKV15

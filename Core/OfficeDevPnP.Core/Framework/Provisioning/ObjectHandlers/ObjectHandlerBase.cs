@@ -69,6 +69,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (url.IndexOf(r.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
                         {
+                            if (r.PathAndQuery == "/" && url.StartsWith(r.PathAndQuery))
+                            {
+                                return "{site}" + url;
+                            }
                             return url.Replace(r.PathAndQuery, "{site}");
                         }
                     }
