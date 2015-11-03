@@ -104,11 +104,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Get the XML document from a File Stream
             Stream stream = this.Connector.GetFileStream(uri);
 
-            //Resolve xml includes if any
-            if (stream != null)
+            if (stream == null)
             {
-                stream = ResolveXIncludes(stream);
+                throw new ApplicationException(string.Format(CoreResources.Provisioning_Formatter_Invalid_Template_URI, uri));
             }
+
+            //Resolve xml includes if any
+            stream = ResolveXIncludes(stream);
 
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
