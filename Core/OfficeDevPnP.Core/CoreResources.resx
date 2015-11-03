@@ -876,4 +876,7 @@
   <data name="Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound" xml:space="preserve">
     <value>Site policy '{0}' not found</value>
   </data>
+  <data name="Provisioning_Formatter_Invalid_Template_URI" xml:space="preserve">
+    <value>The Provisioning Template URI {0} is not valid.</value>
+  </data>
 </root>
