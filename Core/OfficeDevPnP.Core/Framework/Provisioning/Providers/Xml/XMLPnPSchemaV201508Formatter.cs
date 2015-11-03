@@ -782,7 +782,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Composed Looks
 
             // Translate ComposedLook, if any
-            if (template.ComposedLook != null)
+            if (template.ComposedLook != null && !template.ComposedLook.Equals(Model.ComposedLook.Empty))
             {
                 result.ComposedLook = new V201508.ComposedLook
                 {
