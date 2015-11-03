@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Published = d.Published,
                                 RequiresAssociationForm = d.RequiresAssociationForm,
                                 RequiresInitiationForm = d.RequiresInitiationForm,
-                                RestrictToScope = (!String.IsNullOrEmpty(d.RestrictToScope) && Guid.Parse(d.RestrictToScope) != web.Id) ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(d.RestrictToScope)).Title) : null,
+                                RestrictToScope = (!String.IsNullOrEmpty(d.RestrictToScope) && Guid.Parse(d.RestrictToScope) != web.Id) ? WorkflowExtension.TokenizeListIdProperty(d.RestrictToScope, lists) : null,
                                 RestrictToType = !String.IsNullOrEmpty(d.RestrictToType) ? d.RestrictToType : "Universal",
                                 XamlPath = d.Xaml.SaveXamlToFile(d.Id, creationInfo.FileConnector),
                             }
@@ -113,11 +113,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 DefinitionId = s.DefinitionId,
                                 Enabled = s.Enabled,
-                                EventSourceId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+                                EventSourceId = s.EventSourceId != web.Id ? WorkflowExtension.TokenizeListIdProperty(s.EventSourceId.ToString(), lists) : null,
                                 EventTypes = s.EventTypes.ToList(),
                                 ManualStartBypassesActivationLimit = s.ManualStartBypassesActivationLimit,
                                 Name = s.Name,
-                                ListId = s.EventSourceId != web.Id ? String.Format("{{listid:{0}}}", lists.First(l => l.Id == s.EventSourceId).Title) : null,
+                                ListId = s.EventSourceId != web.Id ? WorkflowExtension.TokenizeListIdProperty(s.EventSourceId.ToString(), lists) : null,
                                 ParentContentTypeId = s.ParentContentTypeId,
                                 StatusFieldName = s.StatusFieldName,
                             }
@@ -258,7 +258,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return (template.Workflows != null && 
+            return (template.Workflows != null &&
                 (template.Workflows.WorkflowDefinitions.Count > 0 ||
                 template.Workflows.WorkflowSubscriptions.Count > 0));
         }
@@ -294,7 +294,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     case "TaskListId":
                         if (!String.IsNullOrEmpty(p.Value))
                         {
-                            result.Add(p.Key, String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(p.Value)).Title));
+                            var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
+                            if (list != null)
+                            {
+                                result.Add(p.Key, String.Format("{{listid:{0}}}", list.Title));
+                            }
                         }
                         break;
                     //case "SubscriptionId":
@@ -309,6 +313,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (result);
         }
 
+        public static string TokenizeListIdProperty(string listId, ListCollection lists)
+        {
+            var returnValue = listId;
+            var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(listId));
+            if (list != null)
+            {
+                returnValue = String.Format("{{listid:{0}}}", list.Title);
+            }
+
+            return returnValue;
+        }
+
         public static Dictionary<String, String> TokenizeWorkflowSubscriptionProperties(this IDictionary<String, String> properties, ListCollection lists)
         {
             Dictionary<String, String> result = new Dictionary<String, String>();
@@ -320,7 +336,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     case "HistoryListId":
                         if (!String.IsNullOrEmpty(p.Value))
                         {
-                            result.Add(p.Key, String.Format("{{listid:{0}}}", lists.First(l => l.Id == Guid.Parse(p.Value)).Title));
+                            var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
+                            if (list != null)
+                            {
+                                result.Add(p.Key, String.Format("{{listid:{0}}}", list.Title));
+                            }
                         }
                         break;
                     //case "Microsoft.SharePoint.ActivationProperties.ListId":

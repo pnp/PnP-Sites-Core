@@ -29,8 +29,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return parser;
                 }
 
-                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks, 
-                                                                                         c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));                
+                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks,
+                                                                                         c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));
                 web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
 
                 web.Context.ExecuteQueryRetry();
@@ -121,6 +121,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
+            if (templateContentType.DisplayFormUrl != null && existingContentType.DisplayFormUrl != parser.ParseString(templateContentType.DisplayFormUrl))
+            {
+                scope.LogPropertyUpdate("DisplayFormUrl");
+                existingContentType.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
+                isDirty = true;
+            }
+            if (templateContentType.EditFormUrl != null && existingContentType.EditFormUrl != parser.ParseString(templateContentType.EditFormUrl))
+            {
+                scope.LogPropertyUpdate("EditFormUrl");
+                existingContentType.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
+                isDirty = true;
+            }
+            if (templateContentType.NewFormUrl != null && existingContentType.NewFormUrl != parser.ParseString(templateContentType.NewFormUrl))
+            {
+                scope.LogPropertyUpdate("NewFormUrl");
+                existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
+                isDirty = true;
+            }
+
             if (isDirty)
             {
                 existingContentType.Update(true);
@@ -352,10 +371,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, ct);
 
                         // Retrieve the Document Set
-                        web.Context.Load(documentSetTemplate, 
-                            t => t.AllowedContentTypes, 
-                            t => t.DefaultDocuments, 
-                            t => t.SharedFields, 
+                        web.Context.Load(documentSetTemplate,
+                            t => t.AllowedContentTypes,
+                            t => t.DefaultDocuments,
+                            t => t.SharedFields,
                             t => t.WelcomePageFields);
                         web.Context.ExecuteQueryRetry();
 

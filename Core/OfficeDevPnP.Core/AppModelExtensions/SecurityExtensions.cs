@@ -752,51 +752,45 @@ namespace Microsoft.SharePoint.Client
 
         private static void AddPermissionLevelImplementation(this SecurableObject securableObject, Principal principal, RoleDefinition roleDefinition, bool removeExistingPermissionLevels = false)
         {
-            if (principal != null)
+            if (principal == null)
             {
-                bool processed = false;
+                return;
+            }
+            
+            var roleAssignments = securableObject.RoleAssignments;
+            securableObject.Context.Load(roleAssignments);
+            securableObject.Context.ExecuteQueryRetry();
 
-                RoleAssignmentCollection rac = securableObject.RoleAssignments;
-                securableObject.Context.Load(rac);
+            var roleAssignment = roleAssignments.FirstOrDefault(ra => ra.PrincipalId.Equals(principal.Id));
+
+            //current principal doesn't have any roles assigned for this securableObject
+            if (roleAssignment == null)
+            {
+                var rdc = new RoleDefinitionBindingCollection(securableObject.Context);
+                rdc.Add(roleDefinition);
+                securableObject.RoleAssignments.Add(principal, rdc);
+                securableObject.Context.ExecuteQueryRetry();
+            }
+            else //current principal has roles assigned for this securableObject, then add new role definition for the role assignment
+            {
+                var roleDefinitionBindings = roleAssignment.RoleDefinitionBindings;
+                securableObject.Context.Load(roleDefinitionBindings);
                 securableObject.Context.ExecuteQueryRetry();
 
-                //Find the roles assigned to the principal
-                foreach (RoleAssignment ra in rac)
+                // Load the role definition to add (e.g. contribute)
+                if (removeExistingPermissionLevels)
                 {
-                    // correct role assignment found
-                    if (ra.PrincipalId == principal.Id)
-                    {
-                        // load the role definitions for this role assignment
-                        RoleDefinitionBindingCollection rdc = ra.RoleDefinitionBindings;
-                        securableObject.Context.Load(rdc);
-                        securableObject.Context.ExecuteQueryRetry();
-
-                        // Load the role definition to add (e.g. contribute)
-                        if (removeExistingPermissionLevels)
-                        {
-                            // Remove current role definitions by removing all current role definitions
-                            rdc.RemoveAll();
-                        }
-                        // Add the selected role definition
-                        rdc.Add(roleDefinition);
-
-                        //update                        
-                        ra.ImportRoleDefinitionBindings(rdc);
-                        ra.Update();
-                        securableObject.Context.ExecuteQueryRetry();
-
-                        // Leave the for each loop
-                        processed = true;
-                        break;
-                    }
+                    // Remove current role definitions by removing all current role definitions
+                    roleDefinitionBindings.RemoveAll();
                 }
-
-                // For a principal without role definitions set we follow a different code path
-                if (!processed)
+                // Add the selected role definition
+                if (!roleDefinitionBindings.Any(r => r.Name.Equals(roleDefinition.EnsureProperty(rd => rd.Name))))
                 {
-                    RoleDefinitionBindingCollection rdc = new RoleDefinitionBindingCollection(securableObject.Context);
-                    rdc.Add(roleDefinition);
-                    securableObject.RoleAssignments.Add(principal, rdc);
+                    roleDefinitionBindings.Add(roleDefinition);
+
+                    //update                        
+                    roleAssignment.ImportRoleDefinitionBindings(roleDefinitionBindings);
+                    roleAssignment.Update();
                     securableObject.Context.ExecuteQueryRetry();
                 }
             }
@@ -926,43 +920,39 @@ namespace Microsoft.SharePoint.Client
 
         private static void RemovePermissionLevelImplementation(this SecurableObject securableObject, Principal principal, RoleDefinition roleDefinition, bool removeAllPermissionLevels = false)
         {
-            if (principal != null)
+            if (principal == null)
             {
-                RoleAssignmentCollection rac = securableObject.RoleAssignments;
-                securableObject.Context.Load(rac);
+                return;
+            }
+            
+            var roleAssignments = securableObject.RoleAssignments;
+            securableObject.Context.Load(roleAssignments);
+            securableObject.Context.ExecuteQueryRetry();
+
+            var roleAssignment = roleAssignments.FirstOrDefault(ra => ra.PrincipalId.Equals(principal.Id));
+
+            if (roleAssignment != null)
+            {
+                // load the role definitions for this role assignment
+                var rdc = roleAssignment.RoleDefinitionBindings;
+                securableObject.Context.Load(rdc);
                 securableObject.Context.ExecuteQueryRetry();
 
-                //Find the roles assigned to the principal
-                foreach (RoleAssignment ra in rac)
+                if (removeAllPermissionLevels)
                 {
-                    // correct role assignment found
-                    if (ra.PrincipalId == principal.Id)
-                    {
-                        // load the role definitions for this role assignment
-                        RoleDefinitionBindingCollection rdc = ra.RoleDefinitionBindings;
-                        securableObject.Context.Load(rdc);
-                        securableObject.Context.ExecuteQueryRetry();
-
-                        if (removeAllPermissionLevels)
-                        {
-                            // Remove current role definitions by removing all current role definitions
-                            rdc.RemoveAll();
-                        }
-                        else
-                        {
-                            // Load the role definition to remove (e.g. contribute)
-                            rdc.Remove(roleDefinition);
-                        }
-
-                        //update                      
-                        ra.ImportRoleDefinitionBindings(rdc);
-                        ra.Update();
-                        securableObject.Context.ExecuteQueryRetry();
-
-                        // Leave the for each loop
-                        break;
-                    }
+                    // Remove current role definitions by removing all current role definitions
+                    rdc.RemoveAll();
                 }
+                else
+                {
+                    // Load the role definition to remove (e.g. contribute)
+                    rdc.Remove(roleDefinition);
+                }
+
+                //update                      
+                roleAssignment.ImportRoleDefinitionBindings(rdc);
+                roleAssignment.Update();
+                securableObject.Context.ExecuteQueryRetry();
             }
         }
 

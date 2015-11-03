@@ -1357,6 +1357,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Site policy &apos;{0}&apos; applied to site.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_SitePolicy_PolicyAdded {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_SitePolicy_PolicyAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Site policy &apos;{0}&apos; not found.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Add users failed for group &apos;{0}&apos;: {1} : {2}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_ {
