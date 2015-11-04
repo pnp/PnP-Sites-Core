@@ -472,13 +472,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser)
         {
-            var listIdentifier = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
-
-            if (listIdentifier != null)
-            {
-                // Temporary remove list attribute from fieldElement
-                fieldElement.Attribute("List").Remove();
-            }
+            fieldElement = PrepareField(fieldElement);
 
             var fieldXml = parser.ParseString(fieldElement.ToString(), "~sitecollection", "~site");
             listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
@@ -500,15 +494,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Is existing field of the same type?
                 if (existingFieldElement.Attribute("Type").Value == templateFieldElement.Attribute("Type").Value)
                 {
-                    var listIdentifier = templateFieldElement.Attribute("List") != null
-                        ? templateFieldElement.Attribute("List").Value
-                        : null;
-
-                    if (listIdentifier != null)
-                    {
-                        // Temporary remove list attribute from list
-                        templateFieldElement.Attribute("List").Remove();
-                    }
+                    templateFieldElement = PrepareField(templateFieldElement);
 
                     foreach (var attribute in templateFieldElement.Attributes())
                     {
@@ -545,6 +531,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_, fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id), ProvisioningMessageType.Warning);
                 }
             }
+        }
+
+        private static XElement PrepareField(XElement fieldElement)
+        {
+            var listIdentifier = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
+
+            if (listIdentifier != null)
+            {
+                // Temporary remove list attribute from fieldElement
+                fieldElement.Attribute("List").Remove();
+
+                if (fieldElement.Attribute("RelationshipDeleteBehavior") != null)
+                {
+                    if (fieldElement.Attribute("RelationshipDeleteBehavior").Value.Equals("Restrict") ||
+                        fieldElement.Attribute("RelationshipDeleteBehavior").Value.Equals("Cascade"))
+                    {
+                        // If RelationshipDeleteBehavior is either 'Restrict' or 'Cascade',
+                        // make sure that Indexed is set to TRUE
+                        if (fieldElement.Attribute("Indexed") != null)
+                            fieldElement.Attribute("Indexed").Value = "TRUE";
+                        else
+                            fieldElement.Add(new XAttribute("Indexed", "TRUE"));
+                    }
+
+                    fieldElement.Attribute("RelationshipDeleteBehavior").Remove();
+                }
+            }
+
+            return fieldElement;
         }
 
         private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope)
@@ -1149,7 +1164,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     var schemaXml = ParseFieldSchema(field.SchemaXml, lists);
-                    list.Fields.Add((new Model.Field { SchemaXml = schemaXml }));
+                    var fieldElement = XElement.Parse(field.SchemaXml);
+                    var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
+
+                    if (listId == null)
+                        list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
+                    else
+                    {
+                        var listIdValue = Guid.Empty;
+                        if (Guid.TryParse(listId, out listIdValue))
+                        {
+                            var sourceList = lists.AsEnumerable().Where(l => l.Id == listIdValue).FirstOrDefault();
+                            if (sourceList != null)
+                                fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
+                        }
+
+                        list.Fields.Add(new Model.Field { SchemaXml = fieldElement.ToString() });
+                    }
+
                     if (field.TypeAsString.StartsWith("TaxonomyField"))
                     {
                         // find the corresponding taxonomy field and include it anyway
@@ -1163,6 +1195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         noteSchemaXml.Attribute("SourceID").Remove();
                         list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), lists) });
                     }
+
                 }
             }
             return list;
@@ -1202,4 +1235,3 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
-
