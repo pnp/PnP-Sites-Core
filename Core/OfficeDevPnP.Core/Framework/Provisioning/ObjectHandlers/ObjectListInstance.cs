@@ -842,7 +842,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ContentTypeBinding defaultCtBinding = null;
             foreach (var ctBinding in list.ContentTypeBindings)
             {
-                var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId);
+                var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId, searchInSiteHierarchy: true);
                 if (tempCT != null)
                 {
                     // Check if CT is already available
