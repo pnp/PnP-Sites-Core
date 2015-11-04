@@ -660,7 +660,7 @@ namespace Microsoft.SharePoint.Client
                     targetAction.RegistrationId = customAction.RegistrationId;
                 }
 
-                if (customAction.CommandUIExtension != null)
+                if (!string.IsNullOrEmpty(customAction.CommandUIExtension))
                 {
                     targetAction.CommandUIExtension = customAction.CommandUIExtension;
                 }
