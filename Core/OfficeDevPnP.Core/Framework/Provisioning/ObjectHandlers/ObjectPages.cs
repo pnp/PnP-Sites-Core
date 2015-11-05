@@ -87,6 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WelcomePage)
                     {
+                        web.RootFolder.EnsureProperty(p => p.ServerRelativeUrl);
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
