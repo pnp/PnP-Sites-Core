@@ -127,11 +127,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
                 web.Context.ExecuteQueryRetry();
 
-                if (targetFile.CheckOutType == CheckOutType.None)
+                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue && !targetFile.ListItemAllFields.ServerObjectIsNull.Value)
                 {
-                    targetFile.CheckOut();
+                    if (targetFile.CheckOutType == CheckOutType.None)
+                    {
+                        targetFile.CheckOut();
+                    }
+                    checkedOut = true;
                 }
-                checkedOut = true;
             }
             catch (ServerException ex)
             {
