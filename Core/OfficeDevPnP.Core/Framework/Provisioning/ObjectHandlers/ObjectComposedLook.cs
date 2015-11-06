@@ -109,6 +109,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look);
                 var theme = web.GetCurrentComposedLook();
 
+                // TH061115: I have moved this outside of IsCustomComposedLook due to the fact the connector will be required
+                // for the SiteLogo - Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
+                Site site = (web.Context as ClientContext).Site;
+                if (!site.IsObjectPropertyInstantiated("Url"))
+                {
+                    web.Context.Load(site);
+                    web.Context.ExecuteQueryRetry();
+                }
+
+                // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
+                SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
+
+                // to get files from theme catalog we need a connector linked to the root site
+                SharePointConnector spConnectorRoot;
+                if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
+                }
+                else
+                {
+                    spConnectorRoot = spConnector;
+                }
+
+                // TH061115: Just because a site is using a OOTB composed look doesnt mean the site logo shouldnt be copied across
+                // check to see if there is a file connector and then download the file if there is.
+                if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
+                {
+                    if (creationInfo != null && creationInfo.FileConnector != null)
+                    {
+#if !CLIENTSDKV15
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+#endif
+                    }
+                    template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
+                }
 
                 if (theme != null)
                 {
@@ -124,32 +159,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
                         {
-                            Site site = (web.Context as ClientContext).Site;
-                            if (!site.IsObjectPropertyInstantiated("Url"))
-                            {
-                                web.Context.Load(site);
-                                web.Context.ExecuteQueryRetry();
-                            }
-
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
-                            // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
-                            SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
-
-                            // to get files from theme catalog we need a connector linked to the root site
-                            SharePointConnector spConnectorRoot;
-                            if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
-                            }
-                            else
-                            {
-                                spConnectorRoot = spConnector;
-                            }
 
                             // Download the theme/branding specific files
 #if !CLIENTSDKV15
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
 #endif
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
