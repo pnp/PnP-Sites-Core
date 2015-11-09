@@ -10,6 +10,7 @@ using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -32,22 +33,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingFields = web.Fields;
 
-                web.Context.Load(existingFields, fs => fs.Include(f => f.Id));
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.TitleResource, f => f.DescriptionResource));
                 web.Context.ExecuteQueryRetry();
                 var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
                 var fields = template.SiteFields;
+
+                var cultureNames = new List<string>();
+
+                foreach (var supportedUILanguage in template.SupportedUILanguages)
+                {
+                    var ci = new CultureInfo(supportedUILanguage.LCID);
+                    cultureNames.Add(ci.Name);
+                }
 
                 foreach (var field in fields)
                 {
                     XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
+                    SPField provisionedField = null;
 
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
-                            CreateField(web, templateFieldElement, scope, parser);
+                            provisionedField = CreateField(web, templateFieldElement, scope, parser);
                         }
                         catch (Exception ex)
                         {
@@ -59,19 +69,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
-                            UpdateField(web, fieldId, templateFieldElement, scope, parser);
+                            provisionedField = UpdateField(web, fieldId, templateFieldElement, scope, parser);
                         }
                         catch (Exception ex)
                         {
                             scope.LogError(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_, fieldId, ex.Message, ex.StackTrace);
                             throw;
                         }
+
+                    // Localizations
+                    if (provisionedField != null)
+                    {
+                        foreach (var localization in template.SiteFieldsLocalizations.Where(l => l.Id.Equals(Guid.Parse(fieldId)) && cultureNames.Contains(l.CultureName, StringComparer.InvariantCultureIgnoreCase)))
+                        {
+                            provisionedField.SetLocalizationForField(localization.CultureName, localization.TitleResource, localization.DescriptionResource);
+                        }
+                    }
                 }
             }
             return parser;
         }
 
-        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
+        private SPField UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
         {
             var existingField = web.Fields.GetById(Guid.Parse(fieldId));
             web.Context.Load(existingField, f => f.SchemaXml);
@@ -126,9 +145,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
                     WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId);
-
                 }
             }
+
+            return existingField;
         }
 
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
@@ -141,7 +161,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
+        private static SPField CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
         {
             var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
 
@@ -153,11 +173,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var fieldXml = parser.ParseString(templateFieldElement.ToString(), "~sitecollection", "~site");
 
-            web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
+            var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
             web.Context.ExecuteQueryRetry();
 
+            return field;
         }
-
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
@@ -171,12 +191,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var existingFields = web.Fields;
-                web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString));
+                web.Context.Load(web, w => w.ServerRelativeUrl, w => w.IsMultilingual, w => w.SupportedUILanguageIds);
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString, f => f.TitleResource, f => f.DescriptionResource));
                 web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title));
                 web.Context.ExecuteQueryRetry();
 
                 var taxTextFieldsToMoveUp = new List<Guid>();
+                var cultureNames = new List<string>();
+
+                if (web.IsMultilingual)
+                {
+                    foreach (var supportedlanguageId in web.SupportedUILanguageIds)
+                    {
+                        var ci = new CultureInfo(supportedlanguageId);
+                        cultureNames.Add(ci.Name);
+                    }
+                }
 
                 foreach (var field in existingFields)
                 {
@@ -195,16 +225,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //if (Guid.TryParse(listIdentifier, out listGuid))
                             //{
                             //    fieldXml = ParseListSchema(fieldXml, web.Lists);
-                                //if (newfieldXml == fieldXml)
-                                //{
-                                //    var list = web.Lists.GetById(listGuid);
-                                //    web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
-                                //    web.Context.ExecuteQueryRetry();
+                            //if (newfieldXml == fieldXml)
+                            //{
+                            //    var list = web.Lists.GetById(listGuid);
+                            //    web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
+                            //    web.Context.ExecuteQueryRetry();
 
-                                //    var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
-                                //    element.Attribute("List").SetValue(listUrl);
-                                //    fieldXml = element.ToString();
-                                //}
+                            //    var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
+                            //    element.Attribute("List").SetValue(listUrl);
+                            //    fieldXml = element.ToString();
+                            //}
                             //}
                         }
                         // Check if the field is of type TaxonomyField
@@ -222,6 +252,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             fieldXml = element.ToString();
                         }
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
+
+                        // Localizations
+                        // Don't extract localization for Site Columns in the base template
+
+                        if (creationInfo.BaseTemplate != null && !creationInfo.BaseTemplate.SiteFields.Any(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(field.Id)))
+                        {
+                            foreach (var cultureName in cultureNames)
+                            {
+                                var titleResource = field.TitleResource.GetValueForUICulture(cultureName);
+                                var descriptionResource = field.DescriptionResource.GetValueForUICulture(cultureName);
+                                field.Context.ExecuteQueryRetry();
+
+                                if (!string.IsNullOrEmpty(titleResource.Value) || !string.IsNullOrEmpty(descriptionResource.Value))
+                                {
+                                    template.SiteFieldsLocalizations.Add(new Localization(cultureName)
+                                    {
+                                        Id = field.Id,
+                                        TitleResource = titleResource.Value,
+                                        DescriptionResource = descriptionResource.Value
+                                    });
+                                }
+                            }
+                        }
                     }
                 }
                 // move hidden taxonomy text fields to the top of the list

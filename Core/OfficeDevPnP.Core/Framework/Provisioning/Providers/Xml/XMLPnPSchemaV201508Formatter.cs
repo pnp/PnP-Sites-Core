@@ -367,6 +367,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Site Columns Localization
+
+            result.SiteFieldsLocalizations = template.SiteFieldsLocalizations != null && template.SiteFieldsLocalizations.Count > 0 ?
+                (from siteFieldLocalization in template.SiteFieldsLocalizations
+                 select new V201508.LocalizationField
+                 {
+                     ID = siteFieldLocalization.Id.ToString(),
+                     CultureName = siteFieldLocalization.CultureName,
+                     TitleResource = siteFieldLocalization.TitleResource,
+                     DescriptionResource = siteFieldLocalization.DescriptionResource,
+                 }).ToArray() : null;
+            #endregion
+
             #region Content Types
 
             // Translate ContentTypes, if any
@@ -423,6 +436,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          DisplayFormUrl = ct.DisplayFormUrl,
                          EditFormUrl = ct.EditFormUrl,
                          NewFormUrl = ct.NewFormUrl,
+                         Localizations = ct.Localizations != null && ct.Localizations.Count > 0 ?
+                            (from localizations in ct.Localizations
+                             select new V201508.LocalizationBase
+                             {
+                                 CultureName = localizations.CultureName,
+                                 TitleResource = localizations.TitleResource,
+                                 DescriptionResource = localizations.DescriptionResource,
+                             }).ToArray() : null
                      }).ToArray();
             }
             else
@@ -507,6 +528,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Security = dr.Security.FromTemplateToSchemaObjectSecurityV201508()
                              }).ToArray() : null,
                          Security = list.Security.FromTemplateToSchemaObjectSecurityV201508(),
+                         Localizations = list.ListLocalizations.Count > 0 ?
+                            (from listLocalization in list.ListLocalizations
+                             select new V201508.LocalizationBase
+                             {
+                                 CultureName = listLocalization.CultureName,
+                                 TitleResource = listLocalization.TitleResource,
+                                 DescriptionResource = listLocalization.DescriptionResource,
+                             }).ToArray() : null,
+                         FieldLocalizations = list.FieldsLocalizations.Count > 0 ?
+                            (from fieldLocalization in list.FieldsLocalizations
+                             select new V201508.LocalizationField
+                             {
+                                 ID = fieldLocalization.Id.ToString(),
+                                 CultureName = fieldLocalization.CultureName,
+                                 TitleResource = fieldLocalization.TitleResource,
+                                 DescriptionResource = fieldLocalization.DescriptionResource,
+                             }).ToArray() : null,
                      }).ToArray();
             }
             else
@@ -1267,6 +1305,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Site Column Localization
+            if ((source.SiteFieldsLocalizations != null) && (source.SiteFieldsLocalizations.Count() >= 0))
+            {
+                result.SiteFieldsLocalizations.AddRange(
+                    from localization in source.SiteFieldsLocalizations
+                    select new Localization(localization.CultureName)
+                    {
+                        Id = Guid.Parse(localization.ID),
+                        TitleResource = localization.TitleResource,
+                        DescriptionResource = localization.DescriptionResource
+                    });
+            }
+            #endregion
+
             #region Content Types
 
             // Translate ContentTypes, if any
@@ -1292,6 +1344,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Id = Guid.Parse(fieldRef.ID),
                                  Hidden = fieldRef.Hidden,
                                  Required = fieldRef.Required
+                             }) : null),
+                        (contentType.Localizations != null ?
+                            (from localization in contentType.Localizations
+                             select new Model.Localization(localization.CultureName)
+                             {
+                                 TitleResource = localization.TitleResource,
+                                 DescriptionResource = localization.DescriptionResource
                              }) : null)
                         )
                     {
@@ -1371,7 +1430,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         (list.FieldDefaults != null ?
                             (from fd in list.FieldDefaults
                              select fd).ToDictionary(k => k.FieldName, v => v.Value) : null),
-                        list.Security.FromSchemaToTemplateObjectSecurityV201508()
+                        list.Security.FromSchemaToTemplateObjectSecurityV201508(),
+                        (list.Localizations != null ?
+                            (from localization in list.Localizations
+                             select new Model.Localization(localization.CultureName)
+                             {
+                                 TitleResource = localization.TitleResource,
+                                 DescriptionResource = localization.DescriptionResource
+                             }).ToList() : null),
+                        (list.FieldLocalizations != null ?
+                            (from localization in list.FieldLocalizations
+                             select new Model.Localization(localization.CultureName)
+                             {
+                                 Id = Guid.Parse(localization.ID),
+                                 TitleResource = localization.TitleResource,
+                                 DescriptionResource = localization.DescriptionResource
+                             }).ToList() : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,

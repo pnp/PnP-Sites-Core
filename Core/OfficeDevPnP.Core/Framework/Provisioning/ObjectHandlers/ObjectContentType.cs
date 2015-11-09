@@ -5,9 +5,11 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
+using SPContentType = Microsoft.SharePoint.Client.ContentType;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -37,14 +39,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingCTs = web.ContentTypes.ToList();
                 var existingFields = web.Fields.ToList();
+                var cultureNames = new List<string>();
+
+                foreach (var supportedUILanguage in template.SupportedUILanguages)
+                {
+                    var ci = new CultureInfo(supportedUILanguage.LCID);
+                    cultureNames.Add(ci.Name);
+                }
 
                 foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
+                    SPContentType newCT = null;
                     var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                     if (existingCT == null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                        newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
                         if (newCT != null)
                         {
                             existingCTs.Add(newCT);
@@ -58,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                            newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -68,6 +78,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
                             UpdateContentType(web, existingCT, ct, parser, scope);
+                        }
+                    }
+
+                    if (newCT != null)
+                    {
+                        foreach (var localization in ct.Localizations.Where(l => cultureNames.Contains(l.CultureName, StringComparer.InvariantCultureIgnoreCase)))
+                        {
+                            newCT.SetLocalizationForContentType(localization.CultureName, localization.TitleResource, localization.DescriptionResource);
                         }
                     }
                 }
@@ -316,7 +334,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return template;
                 }
 
-                template.ContentTypes.AddRange(GetEntities(web, scope));
+                template.ContentTypes.AddRange(GetEntities(web, creationInfo.BaseTemplate, scope));
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
@@ -327,10 +345,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope)
+        private IEnumerable<ContentType> GetEntities(Web web, ProvisioningTemplate baseTemplate, PnPMonitoredScope scope)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks));
+            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.NameResource, ct => ct.DescriptionResource));
+            web.Context.Load(web, w => w.IsMultilingual, w => w.SupportedUILanguageIds);
             web.Context.ExecuteQueryRetry();
 
             List<ContentType> ctsToReturn = new List<ContentType>();
@@ -355,13 +374,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  Id = fieldLink.Id,
                                  Hidden = fieldLink.Hidden,
                                  Required = fieldLink.Required,
-                             })
+                             }),
+                            null
                         )
                     {
                         DisplayFormUrl = ct.DisplayFormUrl,
                         EditFormUrl = ct.EditFormUrl,
                         NewFormUrl = ct.NewFormUrl,
                     };
+
+                    // Don't extract localization for ContentTypes in the base template
+                    // TODO: Is this correct? Maybe people want these localizations exported, but for now they are excluded to get better performance.
+                    if (baseTemplate != null && !baseTemplate.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.StringId.ToUpperInvariant()))
+                        newCT = ExtractLocalizations(web, ct, newCT);
 
                     // If the Content Type is a DocumentSet
                     if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||
@@ -400,6 +425,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return ctsToReturn;
+        }
+
+        private static ContentType ExtractLocalizations(Web web, SPContentType spCT, ContentType ct)
+        {
+            if (web.IsMultilingual)
+            {
+                foreach (var supportedlanguageId in web.SupportedUILanguageIds)
+                {
+                    var ci = new CultureInfo(supportedlanguageId);
+
+                    var nameResource = spCT.NameResource.GetValueForUICulture(ci.Name);
+                    var descriptionResource = spCT.DescriptionResource.GetValueForUICulture(ci.Name);
+                    spCT.Context.ExecuteQueryRetry();
+
+                    if (!string.IsNullOrEmpty(nameResource.Value) || !string.IsNullOrEmpty(descriptionResource.Value))
+                    {
+                        ct.Localizations.Add(new Localization(ci.Name)
+                        {
+                            TitleResource = nameResource.Value,
+                            DescriptionResource = descriptionResource.Value
+                        });
+                    }
+                }
+            }
+
+            return ct;
         }
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, PnPMonitoredScope scope)

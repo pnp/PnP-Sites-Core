@@ -5,22 +5,6 @@
     xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-  <!--
-  ****  WARNING ****
-
-  If you want to change this schema, please target the proper repository, which is the PnP-Provisioning-Schema one that is
-  available at the following URL:
-  
-  https://github.com/OfficeDev/PnP-Provisioning-Schema/
-  
-  Submit your Pull Requests against the experimental branch of the PnP-Provisioning-Schema repository and we will validate them.
-  We plan to update the master schema (the one used here) once every 2/3 months or more, depending on the number of changes and 
-  on the PnP Provisioning Engine roadmap.
-  
-  Thanks for your cooperation.
-  
-  -->
-  
   <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
@@ -247,6 +231,20 @@
           <xsd:sequence>
             <xsd:any minOccurs="1" maxOccurs="unbounded"
                       processContents="lax" namespace="##any" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="SiteFieldsLocalizations" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Site Column localizations, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Localization" type="pnp:LocalizationField"
+                                      minOccurs="0" maxOccurs="unbounded" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -1256,6 +1254,32 @@
     </xsd:annotation>
 
     <xsd:all>
+      <xsd:element name="Localizations" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The Localizations entries of the List Instance, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Localization" type="pnp:LocalizationBase"
+                         minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="FieldLocalizations" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The Localizations entries of the List Fields, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Localization" type="pnp:LocalizationField"
+                         minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="ContentTypeBindings" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -1609,6 +1633,19 @@
         </xsd:annotation>
       </xsd:element>
 
+      <xsd:element name="Localizations" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The Localizations entries of the ContentType, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Localization" type="pnp:LocalizationBase"
+                         minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:all>
 
     <xsd:attribute name="ID" type="pnp:ContentTypeId" use="required">
@@ -1877,6 +1914,44 @@
       </xsd:annotation>
     </xsd:attribute>
 
+  </xsd:complexType>
+
+  <xsd:complexType name="LocalizationBase">
+    <xsd:attribute name="CultureName" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          CultureName eg. en-us or da-dk
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="TitleResource" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Title for the specified Culture
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="DescriptionResource" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Description for the specified Culture
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="LocalizationField">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:LocalizationBase">
+        <xsd:attribute name="ID" type="pnp:GUID" use="required">
+          <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+              The value of the field ID to bind, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="FieldRefBase">
@@ -2821,6 +2896,21 @@
                 </xsd:attribute>
               </xsd:complexType>
             </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
+      <xsd:element name="SiteFieldLocalizations" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Defines the Title and Description translations for site columns
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SiteFieldLocalization" type="pnp:LocalizationField"
+                         minOccurs="1" maxOccurs="unbounded" />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>

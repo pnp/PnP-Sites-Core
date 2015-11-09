@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<Provider> _providers = new List<Provider>();
         private List<Page> _pages = new List<Page>();
         private List<TermGroup> _termGroups = new List<TermGroup>();
+        private List<Localization> _siteFieldsLocalization = new List<Localization>();
         private FileConnectorBase connector;
         private string _id;
 
@@ -104,6 +105,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._siteFields; }
             private set { this._siteFields = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of Localizations for Site fields
+        /// </summary>
+        public List<Localization> SiteFieldsLocalizations
+        {
+            get { return this._siteFieldsLocalization; }
+            private set { this._siteFieldsLocalization = value; }
         }
 
         /// <summary>
@@ -329,9 +339,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (
                 this.ComposedLook.Equals(other.ComposedLook) &&
-                this.ContentTypes.DeepEquals(other.ContentTypes) && 
+                this.ContentTypes.DeepEquals(other.ContentTypes) &&
                 this.CustomActions.SiteCustomActions.DeepEquals(other.CustomActions.SiteCustomActions) &&
-                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) && 
+                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) &&
                 this.Features.SiteFeatures.DeepEquals(other.Features.SiteFeatures) &&
                 this.Features.WebFeatures.DeepEquals(other.Features.WebFeatures) &&
                 this.Files.DeepEquals(other.Files) &&
@@ -351,7 +361,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true) &&
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing
