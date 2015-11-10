@@ -33,12 +33,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingFields = web.Fields;
 
+                web.Context.Load(web, w => w.RegionalSettings.LocaleId);
                 web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.TitleResource, f => f.DescriptionResource));
                 web.Context.ExecuteQueryRetry();
                 var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
                 var fields = template.SiteFields;
 
                 var cultureNames = new List<string>();
+                var webCultureInfo = new CultureInfo((int)web.RegionalSettings.LocaleId);
 
                 foreach (var supportedUILanguage in template.SupportedUILanguages)
                 {
@@ -80,6 +82,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Localizations
                     if (provisionedField != null)
                     {
+                        provisionedField.EnsureProperties(f => f.Title, f => f.Description);
+
+                        // IMPORTANT! Title or Description corresponding to the culture of the web, must be set first, otherwise localizations doesn't work.
+                        var primaryLocalization = template.SiteFieldsLocalizations.FirstOrDefault(l => l.Id.Equals(Guid.Parse(fieldId)) && webCultureInfo.Name.Equals(l.CultureName, StringComparison.InvariantCultureIgnoreCase));
+                        if (primaryLocalization != null && (provisionedField.Title != primaryLocalization.TitleResource || provisionedField.Description != primaryLocalization.DescriptionResource))
+                        {
+                            provisionedField.Title = primaryLocalization.TitleResource;
+                            provisionedField.Description = primaryLocalization.DescriptionResource;
+                        }
+
                         foreach (var localization in template.SiteFieldsLocalizations.Where(l => l.Id.Equals(Guid.Parse(fieldId)) && cultureNames.Contains(l.CultureName, StringComparer.InvariantCultureIgnoreCase)))
                         {
                             provisionedField.SetLocalizationForField(localization.CultureName, localization.TitleResource, localization.DescriptionResource);
