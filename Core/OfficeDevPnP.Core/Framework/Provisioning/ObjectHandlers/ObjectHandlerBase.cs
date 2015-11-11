@@ -55,27 +55,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
-                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
+                Uri uri;
+                if(Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
-                    return url.Replace(webUrl, "{site}");
-                }
-                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
-                {
-                    return url.Substring(url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase)).Replace(webUrl, "{site}");
-                }
-                else
-                {
-                    Uri r;
-                    if (Uri.TryCreate(webUrl, UriKind.Absolute, out r))
+                    if (uri.PathAndQuery != "/")
                     {
-                        var webUrlPathAndQuery = HttpUtility.UrlDecode(r.PathAndQuery);
+                        var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
                         if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
                         {
                             return url.Replace(webUrlPathAndQuery, "{site}");
                         }
                     }
                 }
-
+               
                 // nothing to tokenize...
                 return url;
             }
