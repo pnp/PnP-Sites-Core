@@ -132,7 +132,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
             }
             else
-                return rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+            {
+                List retVal = rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+
+                if(retVal == null)
+                {
+                    retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+                }
+
+                if(retVal == null)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
+                }
+                return retVal;
+            }
         }
 
         private static void ProcessField(Field field, Guid listGuid, string webId, string relationshipDeleteBehavior)
