@@ -998,7 +998,7 @@ namespace Microsoft.SharePoint.Client
             // Should we compare all of the values?
             if (themeUrlHasValue && fontUrlHasValue)
             {
-                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -1009,7 +1009,7 @@ namespace Microsoft.SharePoint.Client
             // Should we compare only master page and theme URL?
             if (themeUrlHasValue && !fontUrlHasValue)
             {
-                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
@@ -1019,7 +1019,7 @@ namespace Microsoft.SharePoint.Client
             // Should we compare only master page and font value?
             if (!themeUrlHasValue && fontUrlHasValue)
             {
-                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
                     theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
@@ -1029,7 +1029,7 @@ namespace Microsoft.SharePoint.Client
             // Should we only compare master page
             if (!themeUrlHasValue && !fontUrlHasValue)
             {
-                if (theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase))
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
                 }

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -80,7 +81,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         web.CreateComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
                         web.SetComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
+
+                        var composedLookJson = JsonConvert.SerializeObject(template.ComposedLook);
+
+                        web.SetPropertyBagValue("_PnP_ProvisioningTemplateComposedLookInfo", composedLookJson);
                     }
+
+                    // Persist composed look info in property bag
+
                 }
             }
             return parser;
@@ -107,59 +115,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template.ComposedLook.SiteLogo = null;
 #endif
                 scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look);
-                var theme = web.GetCurrentComposedLook();
 
-
-                if (theme != null)
+                Site site = (web.Context as ClientContext).Site;
+                if (!site.IsObjectPropertyInstantiated("Url"))
                 {
-                    if (creationInfo != null)
-                    {
-                        // Don't exclude the DesignPreviewThemedCssFolderUrl property bag, if any
-                        creationInfo.PropertyBagPropertiesToPreserve.Add("DesignPreviewThemedCssFolderUrl");
-                    }
+                    web.Context.Load(site);
+                    web.Context.ExecuteQueryRetry();
+                }
 
-                    template.ComposedLook.Name = theme.Name;
+                SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
 
-                    if (theme.IsCustomComposedLook)
+                // to get files from theme catalog we need a connector linked to the root site
+                SharePointConnector spConnectorRoot;
+                if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
+                }
+                else
+                {
+                    spConnectorRoot = spConnector;
+                }
+
+                // Check if we have composed look info in the property bag, if so, use that, otherwise try to detect the current composed look
+
+                if (web.PropertyBagContainsKey("_PnP_ProvisioningTemplateComposedLookInfo"))
+                {
+                    scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag);
+
+                    try
                     {
+                        var composedLook = JsonConvert.DeserializeObject<ComposedLook>(web.GetPropertyBagValueString("_PnP_ProvisioningTemplateComposedLookInfo", ""));
+                        if (composedLook.Name == null || composedLook.BackgroundFile == null || composedLook.FontFile == null || composedLook.MasterPage == null || composedLook.SiteLogo == null)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize);
+                            throw new JsonSerializationException();
+                        }
+
+                        template.ComposedLook = composedLook;
                         if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
                         {
-                            Site site = (web.Context as ClientContext).Site;
-                            if (!site.IsObjectPropertyInstantiated("Url"))
-                            {
-                                web.Context.Load(site);
-                                web.Context.ExecuteQueryRetry();
-                            }
-
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
                             // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
-                            SharePointConnector spConnector = new SharePointConnector(web.Context, web.Url, "dummy");
-
-                            // to get files from theme catalog we need a connector linked to the root site
-                            SharePointConnector spConnectorRoot;
-                            if (!site.Url.Equals(web.Url, StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                spConnectorRoot = new SharePointConnector(web.Context.Clone(site.Url), site.Url, "dummy");
-                            }
-                            else
-                            {
-                                spConnectorRoot = spConnector;
-                            }
 
                             // Download the theme/branding specific files
 #if !CLIENTSDKV15
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
 #endif
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
-                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
+                            TokenParser parser = new TokenParser(web, template);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.BackgroundFile), scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.ColorFile), scope);
+                            DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.FontFile), scope);
+
                         }
-
-                        template.ComposedLook.BackgroundFile = FixFileUrl(Tokenize(theme.BackgroundImage, web.Url));
-                        template.ComposedLook.ColorFile = FixFileUrl(Tokenize(theme.Theme, web.Url));
-                        template.ComposedLook.FontFile = FixFileUrl(Tokenize(theme.Font, web.Url));
-
                         // Create file entries for the custom theme files  
                         if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                         {
@@ -179,22 +187,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
                         }
 
-                        // If a base template is specified then use that one to "cleanup" the generated template model
-                        if (creationInfo != null && creationInfo.BaseTemplate != null)
-                        {
-                            template = CleanupEntities(template, creationInfo.BaseTemplate);
-                        }
+
                     }
-                    else
+                    catch (JsonSerializationException)
                     {
-                        template.ComposedLook.BackgroundFile = "";
-                        template.ComposedLook.ColorFile = "";
-                        template.ComposedLook.FontFile = "";
+                        // cannot deserialize the object, fall back to composed look detection
+                        template = DetectComposedLook(web, template, creationInfo, scope, spConnector, spConnectorRoot);
                     }
+
                 }
                 else
                 {
-                    template.ComposedLook = null;
+                    template = DetectComposedLook(web, template, creationInfo, scope, spConnector, spConnectorRoot);
                 }
 
                 if (creationInfo != null && creationInfo.BaseTemplate != null)
@@ -202,6 +206,85 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
+            return template;
+        }
+
+        private ProvisioningTemplate DetectComposedLook(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, SharePointConnector spConnector, SharePointConnector spConnectorRoot)
+        {
+
+            var theme = web.GetCurrentComposedLook();
+
+            if (theme != null)
+            {
+                if (creationInfo != null)
+                {
+                    // Don't exclude the DesignPreviewThemedCssFolderUrl property bag, if any
+                    creationInfo.PropertyBagPropertiesToPreserve.Add("DesignPreviewThemedCssFolderUrl");
+                }
+
+                template.ComposedLook.Name = theme.Name;
+
+                if (theme.IsCustomComposedLook)
+                {
+                    if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
+                    {
+
+
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
+                        // Let's create a SharePoint connector since our files anyhow are in SharePoint at this moment
+
+
+                        // Download the theme/branding specific files
+#if !CLIENTSDKV15
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.AlternateCssUrl, scope);
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+#endif
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
+                        DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
+                    }
+
+                    template.ComposedLook.BackgroundFile = FixFileUrl(Tokenize(theme.BackgroundImage, web.Url));
+                    template.ComposedLook.ColorFile = FixFileUrl(Tokenize(theme.Theme, web.Url));
+                    template.ComposedLook.FontFile = FixFileUrl(Tokenize(theme.Font, web.Url));
+
+                    // Create file entries for the custom theme files  
+                    if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
+                    {
+                        template.Files.Add(GetComposedLookFile(template.ComposedLook.BackgroundFile));
+                    }
+                    if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
+                    {
+                        template.Files.Add(GetComposedLookFile(template.ComposedLook.ColorFile));
+                    }
+                    if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
+                    {
+
+                        template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
+                    }
+                    if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
+                    {
+                        template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
+                    }
+
+                    // If a base template is specified then use that one to "cleanup" the generated template model
+                    if (creationInfo != null && creationInfo.BaseTemplate != null)
+                    {
+                        template = CleanupEntities(template, creationInfo.BaseTemplate);
+                    }
+                }
+                else
+                {
+                    template.ComposedLook.BackgroundFile = "";
+                    template.ComposedLook.ColorFile = "";
+                    template.ComposedLook.FontFile = "";
+                }
+            }
+            else
+            {
+                template.ComposedLook = null;
+            }
+
             return template;
         }
 

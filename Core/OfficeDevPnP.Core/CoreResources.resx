@@ -879,4 +879,10 @@
   <data name="Provisioning_Formatter_Invalid_Template_URI" xml:space="preserve">
     <value>The Provisioning Template URI {0} is not valid.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize" xml:space="preserve">
+    <value>Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag" xml:space="preserve">
+    <value>Using Composed Look Information from Property Bag</value>
+  </data>
 </root>
