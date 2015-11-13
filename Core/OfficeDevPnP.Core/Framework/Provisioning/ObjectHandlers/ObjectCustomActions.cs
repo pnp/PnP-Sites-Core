@@ -173,6 +173,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection");
                             isDirty = true;
                         }
+                        if (existingCustomAction.Sequence != customAction.Sequence)
+                        {
+                            scope.LogPropertyUpdate("Sequence");
+                            existingCustomAction.Sequence = customAction.Sequence;
+                            isDirty = true;
+                        }
                         if (existingCustomAction.Title != parser.ParseString(customAction.Title))
                         {
                             scope.LogPropertyUpdate("Title");
