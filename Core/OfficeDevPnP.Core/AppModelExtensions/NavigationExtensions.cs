@@ -641,6 +641,7 @@ namespace Microsoft.SharePoint.Client
             targetAction.Name = customAction.Name;
             targetAction.Description = customAction.Description;
             targetAction.Location = customAction.Location;
+            targetAction.Sequence = customAction.Sequence;
 
             if (customAction.Location == JavaScriptExtensions.SCRIPT_LOCATION)
             {
@@ -649,7 +650,6 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                targetAction.Sequence = customAction.Sequence;
                 targetAction.Url = customAction.Url;
                 targetAction.Group = customAction.Group;
                 targetAction.Title = customAction.Title;
