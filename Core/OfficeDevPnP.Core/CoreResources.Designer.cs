@@ -777,6 +777,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedTo" +
+                        "Deserialize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating SharePointConnector.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector {
@@ -793,6 +803,16 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_compo" +
                         "sed_look", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Using Composed Look Information from Property Bag.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFr" +
+                        "omPropertyBag", resourceCulture);
             }
         }
         
