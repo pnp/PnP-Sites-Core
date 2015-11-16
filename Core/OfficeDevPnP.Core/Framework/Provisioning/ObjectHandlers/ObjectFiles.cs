@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -21,16 +22,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl);
-
                 foreach (var file in template.Files)
                 {
+                    web = context.Web;
+
+                    web.EnsureProperties(w => w.ServerRelativeUrl);
 
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
                         folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                    }
+
+                    // Added this section in case the there is a subsite that requires its own composed look files,
+                    // basically, they will be provisioned at site collection level
+                    if (folderName.ToLower().IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1 && web.IsSubSite())
+                    {
+                        folderName = folderName.Substring(folderName.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase));
+                        using (var rootContext = web.Context.GetSiteCollectionContext())
+                        {
+                            web = rootContext.Web;
+                        }
                     }
 
 
