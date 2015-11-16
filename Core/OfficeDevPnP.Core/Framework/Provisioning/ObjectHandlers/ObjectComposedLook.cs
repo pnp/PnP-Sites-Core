@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // TH061115: Just because a site is using a OOTB composed look doesnt mean the site logo shouldnt be copied across
                 // check to see if there is a file connector and then download the file if there is.
-                if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
+                if (CopySiteLogo(template.ComposedLook.SiteLogo))
                 {
                     if (creationInfo != null && creationInfo.FileConnector != null)
                     {
@@ -187,10 +187,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
 
                             template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
-                        }
-                        if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
-                        {
-                            template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
                         }
 
                         // If a base template is specified then use that one to "cleanup" the generated template model
@@ -307,6 +303,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
             return template;
+        }
+
+        private bool CopySiteLogo(string siteLogo)
+        {
+            if (string.IsNullOrEmpty(siteLogo) || siteLogo.ToLower().Contains("_layouts"))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
