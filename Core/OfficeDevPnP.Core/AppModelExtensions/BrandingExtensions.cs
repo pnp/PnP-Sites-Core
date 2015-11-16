@@ -893,44 +893,46 @@ namespace Microsoft.SharePoint.Client
                     }
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
-                    if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(theme.Name))
                     {
-                        if (!web.IsUsingOfficeTheme())
+                        if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0;)
+                            if (!web.IsUsingOfficeTheme())
                             {
-                                var themeItem = themes[i];
-                                if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
+                                // Assume the the last added custom theme is what the site is using
+                                for (int i = themes.Count; i-- > 0;)
                                 {
-                                    if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
+                                    var themeItem = themes[i];
+                                    if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
                                     {
-                                        theme.Theme = (themeItem["ThemeUrl"] as FieldUrlValue).Url;
-                                    }
-                                    if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
-                                    {
-                                        theme.MasterPage = (themeItem["MasterPageUrl"] as FieldUrlValue).Url;
-                                    }
-                                    if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
-                                    {
-                                        theme.Font = (themeItem["FontSchemeUrl"] as FieldUrlValue).Url;
-                                    }
-                                    if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
-                                    {
-                                        theme.BackgroundImage = (themeItem["ImageUrl"] as FieldUrlValue).Url;
-                                    }
-                                    if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
-                                    {
-                                        theme.Name = themeItem["Name"] as String;
-                                    }
+                                        if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
+                                        {
+                                            theme.Theme = (themeItem["ThemeUrl"] as FieldUrlValue).Url;
+                                        }
+                                        if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
+                                        {
+                                            theme.MasterPage = (themeItem["MasterPageUrl"] as FieldUrlValue).Url;
+                                        }
+                                        if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
+                                        {
+                                            theme.Font = (themeItem["FontSchemeUrl"] as FieldUrlValue).Url;
+                                        }
+                                        if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
+                                        {
+                                            theme.BackgroundImage = (themeItem["ImageUrl"] as FieldUrlValue).Url;
+                                        }
+                                        if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
+                                        {
+                                            theme.Name = themeItem["Name"] as String;
+                                        }
 
-                                    theme.IsCustomComposedLook = true;
-                                    break;
+                                        theme.IsCustomComposedLook = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
                     }
-
                 }
             }
 
@@ -944,10 +946,13 @@ namespace Microsoft.SharePoint.Client
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
-            if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
-                && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
+            if (!string.IsNullOrEmpty(theme.Name))
             {
-                return null;
+                if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
+                && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
+                {
+                    return null;
+                }
             }
 
             // Clean up the fully qualified urls
