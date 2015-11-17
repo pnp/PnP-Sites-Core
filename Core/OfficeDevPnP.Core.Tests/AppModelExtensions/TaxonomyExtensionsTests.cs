@@ -40,21 +40,50 @@ namespace Microsoft.SharePoint.Client.Tests
                     _termGroupName = "Test_Group_" + DateTime.Now.ToFileTime();
                     _termSetName = "Test_Termset_" + DateTime.Now.ToFileTime();
                     _termName = "Test_Term_" + DateTime.Now.ToFileTime();
-                    // Termgroup
+                    
                     var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
                     var termStore = taxSession.GetDefaultSiteCollectionTermStore();
-                    var termGroup = termStore.CreateGroup(_termGroupName, _termGroupId);
-                    clientContext.Load(termGroup);
+
+                    // Termgroup
+                    // Does the termgroup exist?
+                    var termGroup = termStore.GetGroup(_termGroupId);
+                    clientContext.Load(termGroup, g => g.Id);
                     clientContext.ExecuteQueryRetry();
+
+                    // Create if non existant
+                    if (termGroup.ServerObjectIsNull.Value)
+                    {
+                        termGroup = termStore.CreateGroup(_termGroupName, _termGroupId);
+                        clientContext.Load(termGroup);
+                        clientContext.ExecuteQueryRetry();
+                    }
 
                     // Termset
-                    var termSet = termGroup.CreateTermSet(_termSetName, _termSetId, 1033);
-                    clientContext.Load(termSet);
+                    // Does the termset exist?
+                    var termSet = termStore.GetTermSet(_termSetId);
+                    clientContext.Load(termSet, ts => ts.Id);
                     clientContext.ExecuteQueryRetry();
 
+                    // Create if non existant
+                    if (termSet.ServerObjectIsNull.Value)
+                    {
+                        termSet = termGroup.CreateTermSet(_termSetName, _termSetId, 1033);
+                        clientContext.Load(termSet);
+                        clientContext.ExecuteQueryRetry();
+                    }
+
                     // Term
-                    termSet.CreateTerm(_termName, 1033, _termId);
+                    // Does the term exist?
+                    var term = termStore.GetTerm(_termId);
+                    clientContext.Load(term, t => t.Id);
                     clientContext.ExecuteQueryRetry();
+
+                    // Create if non existant
+                    if (term.ServerObjectIsNull.Value)
+                    {
+                        term = termSet.CreateTerm(_termName, 1033, _termId);
+                        clientContext.ExecuteQueryRetry();
+                    }
 
                     // List
                     ListCreationInformation listCI = new ListCreationInformation();

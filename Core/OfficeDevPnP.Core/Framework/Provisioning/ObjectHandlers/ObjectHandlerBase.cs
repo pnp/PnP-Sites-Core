@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -54,26 +55,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
-                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
+                Uri uri;
+                if(Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
-                    return url.Replace(webUrl, "{site}");
-                }
-                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
-                {
-                    return url.Substring(url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase)).Replace(webUrl, "{site}");
-                }
-                else
-                {
-                    Uri r;
-                    if (Uri.TryCreate(webUrl, UriKind.Absolute, out r))
+                    if (uri.PathAndQuery != "/")
                     {
-                        if (url.IndexOf(r.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                        var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
+                        if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
                         {
-                            return url.Replace(r.PathAndQuery, "{site}");
+                            return url.Replace(webUrlPathAndQuery, "{site}");
                         }
                     }
                 }
-
+               
                 // nothing to tokenize...
                 return url;
             }

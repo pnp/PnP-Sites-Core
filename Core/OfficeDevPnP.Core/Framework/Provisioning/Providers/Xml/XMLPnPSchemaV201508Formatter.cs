@@ -782,7 +782,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Composed Looks
 
             // Translate ComposedLook, if any
-            if (template.ComposedLook != null)
+            if (template.ComposedLook != null && !template.ComposedLook.Equals(Model.ComposedLook.Empty))
             {
                 result.ComposedLook = new V201508.ComposedLook
                 {
@@ -2120,7 +2120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public static V201508.ObjectSecurity FromTemplateToSchemaObjectSecurityV201508(this Model.ObjectSecurity objectSecurity)
         {
-            return ((objectSecurity != null) ?
+            return ((objectSecurity != null && (objectSecurity.ClearSubscopes == true || objectSecurity.CopyRoleAssignments == true || objectSecurity.RoleAssignments.Count > 0)) ?
                 new V201508.ObjectSecurity
                 {
                     BreakRoleInheritance = new V201508.ObjectSecurityBreakRoleInheritance

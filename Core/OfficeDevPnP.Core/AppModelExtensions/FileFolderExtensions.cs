@@ -945,6 +945,12 @@ namespace Microsoft.SharePoint.Client
                             }
                         case "CONTENTTYPEID":
                             {
+                                if(currentValue != propertyValue)
+                                {
+                                    changedProperties[propertyName] = propertyValue;
+                                    changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
+                                }
+                                /*
                                 var currentBase = currentValue.Substring(0, currentValue.Length - 34);
                                 var sameValue = (currentBase == propertyValue);
                                 if (!sameValue && propertyValue.Length >= 32 + 6 && propertyValue.Substring(propertyValue.Length - 34, 2) == "00")
@@ -958,6 +964,7 @@ namespace Microsoft.SharePoint.Client
                                     changedProperties[propertyName] = propertyValue;
                                     changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
                                 }
+                                */
                                 break;
                             }
                         case "PUBLISHINGASSOCIATEDCONTENTTYPE":

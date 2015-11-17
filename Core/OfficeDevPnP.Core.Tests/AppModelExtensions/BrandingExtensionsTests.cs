@@ -287,6 +287,21 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             var web = pageLayoutTestWeb;
             web.Context.Load(web);
+
+            // First delete the published file (if any) to avoid running into to many minor versions error with automated testing
+            List masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+            Folder rootFolder = masterPageGallery.RootFolder;
+            web.Context.Load(masterPageGallery);
+            web.Context.Load(rootFolder);
+            web.Context.ExecuteQueryRetry();
+
+            Microsoft.SharePoint.Client.File htmlPublishLayout = rootFolder.GetFile(String.Format("{0}.html", htmlPublishingPageWithoutExtension));
+            if (htmlPublishLayout != null)
+            {
+                htmlPublishLayout.DeleteObject();
+                web.Context.ExecuteQueryRetry();
+            }
+            
             web.DeployHtmlPageLayout(htmlPublishingPagePath, pageLayoutTitle, "", welcomePageContentTypeId);
             web.Context.Load(web, w => w.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
