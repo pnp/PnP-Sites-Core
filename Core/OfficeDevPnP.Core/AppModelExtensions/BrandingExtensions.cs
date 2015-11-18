@@ -715,7 +715,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             
             // if it does not exist then fallback to CurrentLookName 
-            if (currentTheme["Name"] != null && string.IsNullOrEmpty(currentTheme["Name"].ToString())) 
+            if (currentTheme["Name"] != null && !string.IsNullOrEmpty(currentTheme["Name"].ToString())) 
                 themeName = currentTheme["Name"].ToString();
 
             return GetComposedLook(web, themeName);
