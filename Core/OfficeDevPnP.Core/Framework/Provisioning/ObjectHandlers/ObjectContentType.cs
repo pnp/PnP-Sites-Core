@@ -146,6 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
             // Delta handling
+            existingContentType.EnsureProperty(c=>c.FieldLinks);
             List<Guid> targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
             List<Guid> sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
