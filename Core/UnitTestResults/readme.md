@@ -4,6 +4,9 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineCred](PnPUnitTestResults-20151120-OnlineCred-635836595481564157.md) | Friday, November 20, 2015 | 10:39 PM | dev | debug | 273 | 0 | 4
+ [OnPremAppOnly](PnPUnitTestResults-20151120-OnPremAppOnly-635836584078351712.md) | Friday, November 20, 2015 | 10:20 PM | dev | debug15 | 221 | 0 | 48
+ [OnPremCred](PnPUnitTestResults-20151120-OnPremCred-635836572198816882.md) | Friday, November 20, 2015 | 10:00 PM | dev | debug15 | 251 | 0 | 18
  [OnlineAppOnly](PnPUnitTestResults-20151120-OnlineAppOnly-635836138092152741.md) | Friday, November 20, 2015 | 9:56 AM | dev | debug | 241 | 0 | 36
  [OnlineCred](PnPUnitTestResults-20151120-OnlineCred-635836109103859937.md) | Friday, November 20, 2015 | 9:08 AM | dev | debug | 272 | 1 | 4
  [OnPremAppOnly](PnPUnitTestResults-20151120-OnPremAppOnly-635836097566205486.md) | Friday, November 20, 2015 | 8:49 AM | dev | debug15 | 221 | 0 | 48
@@ -101,6 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnlineAppOnly](PnPUnitTestResults-20151019-OnlineAppOnly-635808099852199358.md) | Monday, October 19, 2015 | 10:06 PM | dev | debug | 234 | 8 | 34
  [OnlineCred](PnPUnitTestResults-20151018-OnlineCred-635808083030145146.md) | Sunday, October 18, 2015 | 9:38 PM | dev | debug | 243 | 29 | 4
  [OnPremAppOnly](PnPUnitTestResults-20151018-OnPremAppOnly-635808071994403557.md) | Sunday, October 18, 2015 | 9:19 PM | dev | debug15 | 220 | 0 | 48
- [OnPremCred](PnPUnitTestResults-20151018-OnPremCred-635808060205900802.md) | Sunday, October 18, 2015 | 9:00 PM | dev | debug15 | 250 | 0 | 18
- [OnlineAppOnly](PnPUnitTestResults-20151018-OnlineAppOnly-635807239737652779.md) | Sunday, October 18, 2015 | 10:12 PM | dev | debug | 238 | 3 | 35
- [OnlineCred](PnPUnitTestResults-20151017-OnlineCred-635807220172821163.md) | Saturday, October 17, 2015 | 9:40 PM | dev | debug | 242 | 30 | 4
