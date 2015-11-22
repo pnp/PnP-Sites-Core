@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -134,15 +135,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // TH061115: Just because a site is using a OOTB composed look doesnt mean the site logo shouldnt be copied across
                 // check to see if there is a file connector and then download the file if there is.
-                if (CopySiteLogo(template.ComposedLook.SiteLogo))
+                if (string.IsNullOrEmpty(template.ComposedLook.SiteLogo) && creationInfo != null)
                 {
-                    if (creationInfo != null && creationInfo.FileConnector != null)
+                    if (creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null && !template.ComposedLook.SiteLogo.ToLower().Contains("_layouts"))
                     {
 #if !CLIENTSDKV15
                         DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, web.SiteLogoUrl, scope);
+                        template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
 #endif
                     }
-                    template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
                 }
 
                 if (theme != null)
@@ -232,9 +233,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Strip the /sites/root part from /sites/root/lib/folder structure
             Uri u = new Uri(webUrl);
-            if (f.Folder.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+            // TH221115 - Similar issue as with ObjectHandlerBase (PR127) where the Uri is encoded so any spaces
+            // have the %20 which means comparison fails, lots of my clients use spaces in the Url so definitely
+            // be great to patch this as well.
+            var webUrlPathAndQuery = HttpUtility.UrlDecode(u.PathAndQuery);
+            if (f.Folder.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
             {
-                f.Folder = f.Folder.Replace(u.PathAndQuery, "");
+                f.Folder = f.Folder.Replace(webUrlPathAndQuery, "");
             }
 
             // in case of a theme catalog we need to use the root site reader as that list only exists on root site level
@@ -303,16 +308,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
             return template;
-        }
-
-        private bool CopySiteLogo(string siteLogo)
-        {
-            if (string.IsNullOrEmpty(siteLogo) || siteLogo.ToLower().Contains("_layouts"))
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
