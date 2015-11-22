@@ -24,15 +24,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var file in template.Files)
                 {
-                    web = context.Web;
+                    var workingWeb = web;
 
-                    web.EnsureProperties(w => w.ServerRelativeUrl);
+                    workingWeb.EnsureProperties(w => w.ServerRelativeUrl);
 
                     var folderName = parser.ParseString(file.Folder);
 
-                    if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+                    if (folderName.ToLower().StartsWith((workingWeb.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = folderName.Substring(workingWeb.ServerRelativeUrl.Length);
                     }
 
                     // Added this section in case the there is a subsite that requires its own composed look files,
@@ -40,14 +40,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (folderName.ToLower().IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1 && web.IsSubSite())
                     {
                         folderName = folderName.Substring(folderName.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase));
-                        using (var rootContext = web.Context.GetSiteCollectionContext())
+                        using (var rootContext = workingWeb.Context.GetSiteCollectionContext())
                         {
-                            web = rootContext.Web;
+                            workingWeb = rootContext.Web;
                         }
                     }
 
 
-                    var folder = web.EnsureFolderPath(folderName);
+                    var folder = workingWeb.EnsureFolderPath(folderName);
 
                     File targetFile = null;
 
@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Overwrite)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_, file.Src);
-                            checkedOut = CheckOutIfNeeded(web, targetFile);
+                            checkedOut = CheckOutIfNeeded(workingWeb, targetFile);
 
                             using (var stream = template.Connector.GetFileStream(file.Src))
                             {
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            checkedOut = CheckOutIfNeeded(web, targetFile);
+                            checkedOut = CheckOutIfNeeded(workingWeb, targetFile);
                         }
                     }
                     else
@@ -80,7 +80,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
                         }
 
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                        checkedOut = CheckOutIfNeeded(workingWeb, targetFile);
                     }
 
                     if (targetFile != null)
@@ -94,8 +94,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.WebParts != null && file.WebParts.Any())
                         {
                             targetFile.EnsureProperties(f => f.ServerRelativeUrl);
-                            
-                            var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
+
+                            var existingWebParts = workingWeb.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
@@ -108,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     wpEntity.WebPartZone = webpart.Zone;
                                     wpEntity.WebPartIndex = (int)webpart.Order;
 
-                                    web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+                                    workingWeb.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
                                 }
                             }
                         }
@@ -116,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (checkedOut)
                         {
                             targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            workingWeb.Context.ExecuteQueryRetry();
                         }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
