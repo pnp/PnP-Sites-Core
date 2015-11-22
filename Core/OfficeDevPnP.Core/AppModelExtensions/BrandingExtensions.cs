@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 using Utility = OfficeDevPnP.Core.Utilities.Utility;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Web;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -212,7 +213,7 @@ namespace Microsoft.SharePoint.Client
                     var lookMasterUrl = item["MasterPageUrl"] as FieldUrlValue;
                     if (lookMasterUrl != null)
                     {
-                        masterUrl = new Uri(lookMasterUrl.Url).AbsolutePath;
+                        masterUrl = HttpUtility.UrlDecode(new Uri(lookMasterUrl.Url).AbsolutePath);
                     }
                 }
                 else
