@@ -135,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // TH061115: Just because a site is using a OOTB composed look doesnt mean the site logo shouldnt be copied across
                 // check to see if there is a file connector and then download the file if there is.
-                if (string.IsNullOrEmpty(template.ComposedLook.SiteLogo) && creationInfo != null)
+                if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo) && creationInfo != null)
                 {
                     if (creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null && !template.ComposedLook.SiteLogo.ToLower().Contains("_layouts"))
                     {
