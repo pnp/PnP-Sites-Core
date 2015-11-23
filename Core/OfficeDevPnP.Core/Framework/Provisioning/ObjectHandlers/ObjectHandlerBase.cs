@@ -55,16 +55,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
+                
                 Uri uri;
-                if(Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
+                if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
-                    if (uri.PathAndQuery != "/")
-                    {
-                        var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
-                        if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
-                        {
-                            return url.Replace(webUrlPathAndQuery, "{site}");
-                        }
+                    var webUrlPathAndQuery = System.Web.HttpUtility.UrlDecode(uri.PathAndQuery);
+                    if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    { 
+                        return (uri.PathAndQuery.Equals("/") && url.StartsWith(uri.PathAndQuery))
+                                    ? "{site}" + url // we need this for DocumentTemplate attribute of pnp:ListInstance also on a root site ("/") without managed path
+                                    : url.Replace(webUrlPathAndQuery, "{site}");
                     }
                 }
                
