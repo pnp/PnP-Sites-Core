@@ -710,20 +710,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to check</param>
         /// <returns>Entity with attributes of current composed look, or null if none</returns>
         public static ThemeEntity GetCurrentComposedLook(this Web web)
-        {   
-            var themeName = CurrentLookName;
-            // get the catalog
-            var designCatalog = web.GetCatalog((int)ListTemplateType.DesignCatalog);
-            // get the first item, as it is always the "Current", and we dont get naming issues, as in finnish site it is "Nykyinen"
-            var currentTheme = designCatalog.GetItemById(1);
-             // return the name of the Theme
-            web.Context.Load(currentTheme, theme => theme["Name"]);
+        {
+            web.EnsureProperties(w => w.Language);
+            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
             web.Context.ExecuteQueryRetry();
-            
-            // if it does not exist then fallback to CurrentLookName 
-            if (currentTheme.FieldValues.ContainsKey("Name") && !string.IsNullOrEmpty(currentTheme["Name"].ToString())) 
-                themeName = currentTheme["Name"].ToString();
-
+            var themeName = currentTranslated.Value;
             return GetComposedLook(web, themeName);
         }
 
