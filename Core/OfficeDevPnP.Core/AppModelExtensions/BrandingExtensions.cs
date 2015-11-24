@@ -239,6 +239,12 @@ namespace Microsoft.SharePoint.Client
                 masterUrl = masterServerRelativeUrl;
             }
 
+            //URL decode retrieved url's
+            paletteUrl = System.Net.WebUtility.UrlDecode(paletteUrl);
+            fontUrl = System.Net.WebUtility.UrlDecode(fontUrl);
+            backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
+            masterUrl = System.Net.WebUtility.UrlDecode(masterUrl);
+
             web.SetMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
             web.SetCustomMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
             web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
@@ -854,19 +860,19 @@ namespace Microsoft.SharePoint.Client
 
                         if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
                         {
-                            masterPageUrl = (themeItem["MasterPageUrl"] as FieldUrlValue).Url;
+                            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
                         {
-                            imageUrl = (themeItem["ImageUrl"] as FieldUrlValue).Url;
+                            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
                         {
-                            fontUrl = (themeItem["FontSchemeUrl"] as FieldUrlValue).Url;
+                            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
                         {
-                            themeUrl = (themeItem["ThemeUrl"] as FieldUrlValue).Url;
+                            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
                         {
