@@ -870,8 +870,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Effectively remove existing content types, if any
             foreach (var ct in contentTypesToRemove)
             {
-                ct.DeleteObject();
-                web.Context.ExecuteQueryRetry();
+                var shouldDelete = true;
+                shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00")); 
+
+                if (shouldDelete)
+                {
+                    ct.DeleteObject();
+                    web.Context.ExecuteQueryRetry();
+                }
             }
 
             if (list.Security != null)
