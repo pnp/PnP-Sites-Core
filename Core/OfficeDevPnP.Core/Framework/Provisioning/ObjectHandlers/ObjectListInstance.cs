@@ -587,9 +587,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var isDirty = false;
                 if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
+                    var oldTitle = existingList.Title;
                     existingList.Title = parser.ParseString(templateList.Title);
-                    parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id));
-                    parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                    if (! oldTitle.Equals(existingList.Title, StringComparison.OrdinalIgnoreCase))
+                    { 
+                        parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id));
+                        parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                    }
                     isDirty = true;
                 }
                 if (!string.IsNullOrEmpty(templateList.DocumentTemplate))
