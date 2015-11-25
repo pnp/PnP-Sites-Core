@@ -87,5 +87,46 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(template.Lists.Any());
             }
         }
+
+        [TestMethod]
+        public void UpdatedListTitleShouldBeAvailableAsToken()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var updatedListTitle = listName + "_edit";
+                var mockProviderType = typeof(MockProviderForListInstanceTests);
+                var configData = "{listid:" + updatedListTitle + "}+{listurl:" + updatedListTitle + "}";
+                var listUrl = string.Format("lists/{0}", listName);
+
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = listUrl;
+                listInstance.Title = updatedListTitle;
+                listInstance.TemplateType = (int)ListTemplateType.GenericList;
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+                template.Providers.Add(new Provider() { Assembly = mockProviderType.Assembly.FullName, Type = mockProviderType.FullName, Enabled = true, Configuration = configData });
+
+                // Create a list and then let the provisioning engine change it's title
+                var list = ctx.Web.Lists.Add(new ListCreationInformation() { Title = listName, TemplateType = (int)ListTemplateType.GenericList, Url = listUrl });
+                list.EnsureProperty(l => l.Id);
+                ctx.ExecuteQueryRetry();
+                var listId = list.Id.ToString();
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var expectedConfig = string.Format("{0}+{1}", listId, listInstance.Url).ToLower();
+                Assert.AreEqual(expectedConfig, MockProviderForListInstanceTests.ConfigurationData.ToLower(), "Updated list title is not available as a token.");
+            }           
+        }
+
+        class MockProviderForListInstanceTests : OfficeDevPnP.Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
+        {
+            public static string ConfigurationData { get; private set; }
+            public void ProcessRequest(ClientContext ctx, ProvisioningTemplate template, string configurationData)
+            {
+                ConfigurationData = configurationData;
+            }
+        }
     }
+
+
 }
