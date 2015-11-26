@@ -151,7 +151,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             throw new JsonSerializationException();
                         }
 
+                        composedLook.AlternateCSS = Tokenize(composedLook.AlternateCSS, web.Url);
+                        composedLook.BackgroundFile = Tokenize(composedLook.BackgroundFile, web.Url);
+                        composedLook.MasterPage = Tokenize(composedLook.MasterPage, web.Url);
+                        composedLook.SiteLogo = Tokenize(composedLook.SiteLogo, web.Url);
+                        composedLook.FontFile = Tokenize(composedLook.FontFile, web.Url);
+                        composedLook.ColorFile = Tokenize(composedLook.ColorFile, web.Url);
+
+
                         template.ComposedLook = composedLook;
+
                         if (creationInfo != null && creationInfo.PersistComposedLookFiles && creationInfo.FileConnector != null)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector);
@@ -171,20 +180,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Create file entries for the custom theme files  
                         if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                         {
-                            template.Files.Add(GetComposedLookFile(template.ComposedLook.BackgroundFile));
+                            var f = GetComposedLookFile(template.ComposedLook.BackgroundFile);
+                            f.Folder = Tokenize(f.Folder, web.Url);
+                            template.Files.Add(f);
                         }
                         if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
                         {
-                            template.Files.Add(GetComposedLookFile(template.ComposedLook.ColorFile));
+                            var f = GetComposedLookFile(template.ComposedLook.ColorFile);
+                            f.Folder = Tokenize(f.Folder, web.Url);
+                            template.Files.Add(f);
                         }
                         if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
                         {
-
-                            template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
+                            var f = GetComposedLookFile(template.ComposedLook.FontFile);
+                            f.Folder = Tokenize(f.Folder, web.Url);
+                            template.Files.Add(f);
                         }
                         if (!string.IsNullOrEmpty(template.ComposedLook.SiteLogo))
                         {
-                            template.Files.Add(GetComposedLookFile(template.ComposedLook.SiteLogo));
+                            var f = GetComposedLookFile(template.ComposedLook.SiteLogo);
+                            f.Folder = Tokenize(f.Folder, web.Url);
+                            template.Files.Add(f);
                         }
 
 
