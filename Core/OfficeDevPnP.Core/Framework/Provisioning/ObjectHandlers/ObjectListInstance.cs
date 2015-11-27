@@ -14,6 +14,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -40,6 +41,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var serverRelativeUrl = web.ServerRelativeUrl;
 
                     var processedLists = new List<ListInfo>();
+                    var cultureNames = new List<string>();
+
+                    foreach (var supportedUILanguage in template.SupportedUILanguages)
+                    {
+                        var ci = new CultureInfo(supportedUILanguage.LCID);
+                        cultureNames.Add(ci.Name);
+                    }
 
                     #region Lists
 
@@ -104,6 +112,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
                                 throw;
                             }
+                        }
+                    }
+
+                    #endregion
+
+                    #region List Localization
+                    foreach (var listInfo in processedLists)
+                    {
+                        foreach (var localization in listInfo.TemplateList.ListLocalizations.Where(l => cultureNames.Contains(l.CultureName, StringComparer.InvariantCultureIgnoreCase)))
+                        {
+                            listInfo.SiteList.SetLocalizationLabelsForList(localization.CultureName, localization.TitleResource, localization.DescriptionResource);
                         }
                     }
 
@@ -199,6 +218,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
+                    #endregion
+
+                    #region Field Localizations
+                    foreach (var listInfo in processedLists)
+                    {
+                        if (listInfo.TemplateList.FieldsLocalizations.Any())
+                        {
+                            foreach (var fieldLocalization in listInfo.TemplateList.FieldsLocalizations.Where(l => cultureNames.Contains(l.CultureName, StringComparer.InvariantCultureIgnoreCase)))
+                            {
+                                var field = listInfo.SiteList.Fields.GetById(fieldLocalization.Id);
+                                field.SetLocalizationForField(fieldLocalization.CultureName, fieldLocalization.TitleResource, fieldLocalization.DescriptionResource);
+                            }
+                        }
+                    }
                     #endregion
 
                     #region Default Field Values
@@ -894,7 +927,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.IsMultilingual, w => w.SupportedUILanguageIds);
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
@@ -908,12 +941,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
+                        l => l.TitleResource,
+                        l => l.DescriptionResource,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
                             f => f.Hidden,
                             f => f.InternalName,
-                            f => f.Required)));
+                            f => f.Required,
+                            f => f.TitleResource,
+                            f => f.DescriptionResource)));
 
                 web.Context.ExecuteQueryRetry();
 
@@ -974,6 +1011,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     list = ExtractViews(siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, lists);
+
+                    list = ExtractLocalizations(web, siteList, list);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1053,7 +1092,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // We are taking parent - VesaJ.
                     //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
                     //{
-                        list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+                    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
                     //}
                 }
                 else
@@ -1081,6 +1120,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var siteColumns = web.Fields;
             web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id));
             web.Context.ExecuteQueryRetry();
+
+            var cultureNames = new List<string>();
+
+            if (web.IsMultilingual)
+            {
+                foreach (var supportedlanguageId in web.SupportedUILanguageIds)
+                {
+                    var ci = new CultureInfo(supportedlanguageId);
+                    cultureNames.Add(ci.Name);
+                }
+            }
 
             foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
             {
@@ -1196,8 +1246,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), lists) });
                     }
 
+                    // Localization
+                    foreach (var cultureName in cultureNames)
+                    {
+                        var titleResource = field.TitleResource.GetValueForUICulture(cultureName);
+                        var descriptionResource = field.DescriptionResource.GetValueForUICulture(cultureName);
+                        field.Context.ExecuteQueryRetry();
+
+                        if (!string.IsNullOrEmpty(titleResource.Value) || !string.IsNullOrEmpty(descriptionResource.Value))
+                        {
+                            list.FieldsLocalizations.Add(new Localization(cultureName)
+                            {
+                                Id = field.Id,
+                                TitleResource = titleResource.Value,
+                                DescriptionResource = descriptionResource.Value
+                            });
+                        }
+                    }
                 }
             }
+
+            return list;
+        }
+
+        private static ListInstance ExtractLocalizations(Web web, List siteList, ListInstance list)
+        {
+            if (web.IsMultilingual)
+            {
+                foreach (var supportedlanguageId in web.SupportedUILanguageIds)
+                {
+                    var ci = new CultureInfo(supportedlanguageId);
+
+                    var titleResource = siteList.TitleResource.GetValueForUICulture(ci.Name);
+                    var descriptionResource = siteList.DescriptionResource.GetValueForUICulture(ci.Name);
+                    siteList.Context.ExecuteQueryRetry();
+
+                    if (!string.IsNullOrEmpty(titleResource.Value) || !string.IsNullOrEmpty(descriptionResource.Value))
+                    {
+                        list.ListLocalizations.Add(new Localization(ci.Name)
+                        {
+                            TitleResource = titleResource.Value,
+                            DescriptionResource = descriptionResource.Value
+                        });
+                    }
+                }
+            }
+
             return list;
         }
 
