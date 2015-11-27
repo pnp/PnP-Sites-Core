@@ -845,6 +845,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (list.RemoveExistingContentTypes && list.ContentTypeBindings.Count > 0)
             {
                 contentTypesToRemove.AddRange(createdList.ContentTypes);
+                contentTypesToRemove.ForEach(ctToRemove => ctToRemove.EnsureProperty(ct => ct.Name));
             }
 
             ContentTypeBinding defaultCtBinding = null;
@@ -859,6 +860,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                     }
+                    contentTypesToRemove.RemoveAll(ctToRemove => ctToRemove.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                     if (ctBinding.Default)
                     {
                         defaultCtBinding = ctBinding;

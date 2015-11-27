@@ -25,6 +25,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var list = ctx.Web.GetListByUrl(string.Format("lists/{0}",listName));
+                if (list == null)
+                    list = ctx.Web.GetListByUrl(listName);
                 if (list != null)
                 {
                     list.DeleteObject();
@@ -86,6 +88,38 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsTrue(template.Lists.Any());
             }
+        }
+
+        [TestMethod]
+        public void ContentTypesAreAssignedToTheProvisionedDocumentLibrary()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var expectedContentTypes = new List<ContentTypeBinding>();
+                expectedContentTypes.Add(new ContentTypeBinding { ContentTypeId = BuiltInContentTypeId.Document, Default = false });
+                expectedContentTypes.Add(new ContentTypeBinding { ContentTypeId = BuiltInContentTypeId.DublinCoreName, Default = true });
+
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.RemoveExistingContentTypes = true;
+                listInstance.ContentTypeBindings.AddRange(expectedContentTypes);
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listName);
+                list.EnsureProperties(l => l.ContentTypes, l => l.RootFolder, l => l.RootFolder.UniqueContentTypeOrder);
+                var contentTypes = list.EnsureProperty(l => l.ContentTypes);
+                Assert.IsTrue(list.RootFolder.UniqueContentTypeOrder.First().StringValue.StartsWith(expectedContentTypes.First(ct => ct.Default).ContentTypeId + "00"), "Default content type is not set correctly.");
+                foreach (var expectedCt in expectedContentTypes)
+                    Assert.IsNotNull(list.ContentTypes.FirstOrDefault(ct => ct.StringId.StartsWith(expectedCt.ContentTypeId + "00")), string.Format("Expected content type ('{0}') is missing from the library.", expectedCt.ContentTypeId));
+                
+            }
+
         }
     }
 }
