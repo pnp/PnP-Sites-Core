@@ -14,8 +14,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
     {
         public static void SetSecurity(this SecurableObject securable, TokenParser parser, ObjectSecurity security)
         {
-            //using (var scope = new PnPMonitoredScope("Set Security"))
-            //{
+            // If there's no role assignments we're returning
+            if (security.RoleAssignments.Count == 0) return;
 
             var context = securable.Context as ClientContext;
 
@@ -45,7 +45,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
             }
             context.ExecuteQueryRetry();
-            //}
         }
 
         public static ObjectSecurity GetSecurity(this SecurableObject securable)
