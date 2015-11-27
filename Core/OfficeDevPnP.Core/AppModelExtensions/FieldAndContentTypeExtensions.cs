@@ -624,11 +624,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="contentTypeID">Complete ID for the content type</param>
         /// <param name="defaultContent">If set true, content type is updated to be default content type for the list</param>
         /// <param name="searchContentTypeInSiteHierarchy">search for content type in site hierarchy</param>
-        public static void AddContentTypeToListById(this List list, string contentTypeID, bool defaultContent = false, bool searchContentTypeInSiteHierarchy = false)
+        public static bool AddContentTypeToListById(this List list, string contentTypeID, bool defaultContent = false, bool searchContentTypeInSiteHierarchy = false)
         {
             var web = list.ParentWeb;
             var contentType = GetContentTypeById(web, contentTypeID, searchContentTypeInSiteHierarchy);
-            AddContentTypeToList(list, contentType, defaultContent);
+            return AddContentTypeToList(list, contentType, defaultContent);
         }
 
         /// <summary>
@@ -638,11 +638,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="contentTypeName">Name of the content type</param>
         /// <param name="defaultContent">If set true, content type is updated to be default content type for the list</param>
         /// <param name="searchContentTypeInSiteHierarchy">search for content type in site hierarchy</param>
-        public static void AddContentTypeToListByName(this List list, string contentTypeName, bool defaultContent = false, bool searchContentTypeInSiteHierarchy = false)
+        public static bool AddContentTypeToListByName(this List list, string contentTypeName, bool defaultContent = false, bool searchContentTypeInSiteHierarchy = false)
         {
             var web = list.ParentWeb;
             var contentType = GetContentTypeByName(web, contentTypeName, searchContentTypeInSiteHierarchy);
-            AddContentTypeToList(list, contentType, defaultContent);
+            return AddContentTypeToList(list, contentType, defaultContent);
         }
 
         /// <summary>
@@ -651,7 +651,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">List to add content type to</param>
         /// <param name="contentType">Content type to add to the list</param>
         /// <param name="defaultContent">If set true, content type is updated to be default content type for the list</param>
-        public static void AddContentTypeToList(this List list, ContentType contentType, bool defaultContent = false)
+        public static bool AddContentTypeToList(this List list, ContentType contentType, bool defaultContent = false)
         {
             if (contentType == null)
             {
@@ -660,7 +660,7 @@ namespace Microsoft.SharePoint.Client
 
             if (list.ContentTypeExistsById(contentType.Id.StringValue))
             {
-                return;
+                return false;
             }
 
             list.EnsureProperty(l => l.ContentTypesEnabled);
@@ -680,6 +680,7 @@ namespace Microsoft.SharePoint.Client
             {
                 SetDefaultContentTypeToList(list, contentType);
             }
+            return true;
         }
 
         /// <summary>
@@ -769,7 +770,7 @@ namespace Microsoft.SharePoint.Client
             flink.EnsureProperties(f => f.Required, f => f.Hidden);
 
             if ((required != flink.Required) || (hidden != flink.Hidden))
-			{
+            {
                 // Update FieldLink
                 flink.Required = required;
                 flink.Hidden = hidden;
