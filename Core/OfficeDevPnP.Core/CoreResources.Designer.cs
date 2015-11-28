@@ -1292,6 +1292,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unable to find lookup list with Id: {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0 {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_ {

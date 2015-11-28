@@ -54,10 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 }
             }
 
-            if (security != null)
-            {
-                this.Security = security;
-            }
+            this.Security = security;
         }
 
         #endregion

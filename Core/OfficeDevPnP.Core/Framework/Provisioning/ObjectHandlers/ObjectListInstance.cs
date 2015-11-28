@@ -650,7 +650,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
 #endif
-                    if (existingList.BaseTemplate == (int)ListTemplateType.DocumentLibrary)
+                    if (existingList.BaseType == BaseType.DocumentLibrary)
                     {
                         // Only supported on Document Libraries
                         if (templateList.EnableMinorVersions != existingList.EnableMinorVersions)
@@ -711,16 +711,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
                     var defaultCtBinding = templateList.ContentTypeBindings.FirstOrDefault(ctb => ctb.Default == true);
+
+                    var bindingAddedToList = false;
                     foreach (var ctb in bindingsToAdd)
                     {
-                        existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                        // Added a check so that if no bindings were actually added then the SetDefaultContentTypeToList method will not be executed
+                        // This is to address a specific scenario when OOTB PWA lists can not be updated as they are centrally managed
+                        var addedToList = existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                        if (addedToList)
+                        {
+                            bindingAddedToList = true;
+                        }
                     }
 
                     // default ContentTypeBinding should be set last because 
                     // list extension .SetDefaultContentTypeToList() re-sets 
                     // the list.RootFolder UniqueContentTypeOrder property
                     // which may cause missing CTs from the "New Button"
-                    if (defaultCtBinding != null)
+                    if (defaultCtBinding != null && bindingAddedToList)
                     {
                         existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
                     }
@@ -870,8 +878,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Effectively remove existing content types, if any
             foreach (var ct in contentTypesToRemove)
             {
-                ct.DeleteObject();
-                web.Context.ExecuteQueryRetry();
+                var shouldDelete = true;
+                shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00")); 
+
+                if (shouldDelete)
+                {
+                    ct.DeleteObject();
+                    web.Context.ExecuteQueryRetry();
+                }
             }
 
             if (list.Security != null)

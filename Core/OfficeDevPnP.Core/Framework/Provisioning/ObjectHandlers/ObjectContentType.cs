@@ -146,6 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
             // Delta handling
+            existingContentType.EnsureProperty(c=>c.FieldLinks);
             List<Guid> targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
             List<Guid> sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
@@ -223,6 +224,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var field = web.Fields.GetById(fieldRef.Id);
                 web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
             }
+
+            //Reorder the elements so that the new created Content Type has the same order as defined in the
+            //template. The order can be different if the new Content Type inherits from another Content Type.
+            //In this case the new Content Type has all field of the original Content Type and missing fields 
+            //will be added at the end. To fix this issue we ordering the fields once more.
+            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => fld.Name).ToArray());
+            createdCT.Update(true);
+            web.Context.ExecuteQueryRetry();
 
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
