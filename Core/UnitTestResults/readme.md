@@ -4,6 +4,9 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineCred](PnPUnitTestResults-20151128-OnlineCred-635843509138029759.md) | Saturday, November 28, 2015 | 10:41 PM | dev | debug | 272 | 2 | 4
+ [OnPremAppOnly](PnPUnitTestResults-20151128-OnPremAppOnly-635843496246466932.md) | Saturday, November 28, 2015 | 10:20 PM | dev | debug15 | 222 | 0 | 48
+ [OnPremCred](PnPUnitTestResults-20151128-OnPremCred-635843484181705831.md) | Saturday, November 28, 2015 | 10:00 PM | dev | debug15 | 252 | 0 | 18
  [OnlineAppOnly](PnPUnitTestResults-20151128-OnlineAppOnly-635842670965384471.md) | Saturday, November 28, 2015 | 11:24 PM | dev | debug | 241 | 1 | 36
  [OnlineCred](PnPUnitTestResults-20151127-OnlineCred-635842643997202272.md) | Friday, November 27, 2015 | 10:39 PM | dev | debug | 271 | 3 | 4
  [OnPremAppOnly](PnPUnitTestResults-20151127-OnPremAppOnly-635842632652047066.md) | Friday, November 27, 2015 | 10:21 PM | dev | debug15 | 222 | 0 | 48
@@ -101,6 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnPremCred](PnPUnitTestResults-20151028-OnPremCred-635816700334766606.md) | Wednesday, October 28, 2015 | 10:00 PM | dev | debug15 | 250 | 0 | 18
  [OnPremAppOnly](PnPUnitTestResults-20151026-OnPremAppOnly-635814984405805796.md) | Monday, October 26, 2015 | 10:20 PM | dev | debug15 | 220 | 0 | 48
  [OnPremCred](PnPUnitTestResults-20151026-OnPremCred-635814972289659212.md) | Monday, October 26, 2015 | 10:00 PM | dev | debug15 | 250 | 0 | 18
- [OnlineAppOnly](PnPUnitTestResults-20151026-OnlineAppOnly-635814147851396501.md) | Monday, October 26, 2015 | 11:06 PM | dev | debug | 236 | 5 | 35
- [OnlineCred](PnPUnitTestResults-20151025-OnlineCred-635814131587610758.md) | Sunday, October 25, 2015 | 10:39 PM | dev | debug | 242 | 30 | 4
- [OnPremAppOnly](PnPUnitTestResults-20151025-OnPremAppOnly-635814120237568423.md) | Sunday, October 25, 2015 | 10:20 PM | dev | debug15 | 220 | 0 | 48
