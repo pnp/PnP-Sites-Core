@@ -8,6 +8,7 @@ using Microsoft.SharePoint.Client;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using System.Configuration;
 using OfficeDevPnP.Core.Entities;
+using System.Threading;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
@@ -235,6 +236,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
+                tenantContext.RequestTimeout = Timeout.Infinite;
+
                 var tenant = new Tenant(tenantContext);
                 string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
