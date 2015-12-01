@@ -20,7 +20,7 @@ namespace Microsoft.SharePoint.Client
         View
     }
 
-    static partial class ExternalSharingExtensions
+    public static partial class ExternalSharingExtensions
     {
         /// <summary>
         /// Can be used to get needed people picker search result value for given email account. 
