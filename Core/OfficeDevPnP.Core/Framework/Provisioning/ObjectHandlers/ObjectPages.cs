@@ -107,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    if (page.Security != null)
+                    if (page.Security != null && page.Security.RoleAssignments.Count != 0)
                     {
                         file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file.ListItemAllFields);
