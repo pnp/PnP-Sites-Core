@@ -53,10 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WebParts.AddRange(webParts);
             }
 
-            if (security != null)
-            {
-                this.Security = security;
-            }
+            this.Security = security;
         }
 
 
