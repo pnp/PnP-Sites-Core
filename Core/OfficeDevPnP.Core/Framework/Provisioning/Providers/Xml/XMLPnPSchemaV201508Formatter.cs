@@ -815,7 +815,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
                              DraftVersion = wd.DraftVersion,
-                             FormField = wd.FormField.ToXmlElement(),
+                             FormField = (wd.FormField != null) ? wd.FormField.ToXmlElement() : null,
                              Id = wd.Id.ToString(),
                              InitiationUrl = wd.InitiationUrl,
                              Properties = (wd.Properties != null && wd.Properties.Count > 0) ?
