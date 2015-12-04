@@ -234,7 +234,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Assert.IsNotNull(testFolder);
 
             clientContext.Load(testFolder);
-            Utility.EnsureWeb(clientContext.Web.Context, clientContext.Web, "ServerRelativeUrl");
+            clientContext.Web.EnsureProperty(w => w.ServerRelativeUrl);
+
             clientContext.ExecuteQueryRetry();
             Assert.AreEqual(testFolder.ServerRelativeUrl, String.Format("{0}/{1}/{2}",clientContext.Web.ServerRelativeUrl, DocumentLibraryName, folderName));
         }
