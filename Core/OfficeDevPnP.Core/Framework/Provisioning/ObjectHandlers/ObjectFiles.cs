@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -21,18 +22,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 foreach (var file in template.Files)
                 {
-
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = Tokenize(folderName.Substring(web.ServerRelativeUrl.Length), web.Url);
                     }
-
 
                     var folder = web.EnsureFolderPath(folderName);
 
@@ -81,7 +80,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.WebParts != null && file.WebParts.Any())
                         {
                             targetFile.EnsureProperties(f => f.ServerRelativeUrl);
-                            
+
                             var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {
@@ -149,6 +148,62 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Extract the Home PAge
+                web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
+
+                var welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, web.RootFolder.WelcomePage);
+
+                var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
+                try
+                {
+                    var listItem = file.EnsureProperty(f => f.ListItemAllFields);
+
+                    if (listItem != null)
+                    {
+                        if (listItem.FieldValues.ContainsKey("WikiField"))
+                        {
+                            // Wiki page
+                            var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
+
+                            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+                            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+                            var webParts = web.GetWebParts(welcomePageUrl);
+
+                            template.Pages.Add(new Page()
+                            {
+                                Layout = WikiPageLayout.OneColumn,
+                                Overwrite = true,
+                                Url = Tokenize(fullUri.PathAndQuery, web.Url),
+                                WelcomePage = true,
+                            });
+                        }
+                    }
+                }
+                catch (ServerException ex)
+                {
+                    if (ex.ServerErrorCode != -2146232832)
+                    {
+                        throw;
+                    } else
+                    {
+                        // Page does not belong to a list, extract the file as is
+                        var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
+
+                        var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+                        var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+                        var webParts = web.GetWebParts(welcomePageUrl);
+
+                        template.Files.Add(new Model.File()
+                        {
+                            Folder = Tokenize(folderPath, web.Url),
+                            Src = fileName,
+                            Overwrite = true,
+                        });
+                    }
+                }
+
                 // Impossible to return all files in the site currently
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
@@ -179,7 +234,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = true;
             }
             return _willExtract.Value;
         }
