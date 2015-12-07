@@ -5,6 +5,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -57,7 +59,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             template.Connector = connector;
 
-            template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = folder });
+            template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = folder});
 
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -70,6 +72,44 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var file = ctx.Web.GetFileByServerRelativeUrl(
                     UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
                         UrlUtility.Combine(folder, fileName)));
+                ctx.Load(file, f => f.Exists);
+                ctx.ExecuteQueryRetry();
+                Assert.IsTrue(file.Exists);
+            }
+        }
+
+
+        [TestMethod]
+        public void CanProvisionObjectsRequiredField()
+        {
+
+            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
+            var template = provider.GetTemplate(resourceFolder + "/" + fileName);
+            FileSystemConnector connector = new FileSystemConnector(resourceFolder, "");
+
+            template.Connector = connector;
+            // replace whatever files is in the template with a file we control
+            template.Files.Clear();
+            template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = "Lists/ProjectDocuments" });
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser,
+                    new ProvisioningTemplateApplyingInformation());
+                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser,
+                    new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser,
+                    new ProvisioningTemplateApplyingInformation());
+
+                new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
+
+                var file = ctx.Web.GetFileByServerRelativeUrl(
+                    UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
+                        UrlUtility.Combine("Lists/ProjectDocuments", fileName)));
                 ctx.Load(file, f => f.Exists);
                 ctx.ExecuteQueryRetry();
                 Assert.IsTrue(file.Exists);
