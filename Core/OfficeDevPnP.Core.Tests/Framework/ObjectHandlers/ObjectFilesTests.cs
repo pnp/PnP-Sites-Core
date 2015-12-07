@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
@@ -32,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
-                
+
                 var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "test/" + fileName));
                 ctx.Load(file, f => f.Exists);
                 ctx.ExecuteQueryRetry();
@@ -59,7 +60,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             template.Connector = connector;
 
-            template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = folder});
+            template.Files.Add(new Core.Framework.Provisioning.Model.File() { Overwrite = true, Src = fileName, Folder = folder });
 
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -68,7 +69,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
 
                 ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
-                
+
                 var file = ctx.Web.GetFileByServerRelativeUrl(
                     UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
                         UrlUtility.Combine(folder, fileName)));
@@ -113,7 +114,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(file, f => f.Exists);
                 ctx.ExecuteQueryRetry();
                 Assert.IsTrue(file.Exists);
+
+                // cleanup for artifacts specific to this test
+                foreach (var list in template.Lists)
+                {
+                    ctx.Web.GetListByUrl(list.Url).DeleteObject();
+                    
+                }
+            
+                foreach (var ct in template.ContentTypes)
+                {
+                    ctx.Web.GetContentTypeById(ct.Id).DeleteObject();
+                }
+           
+                var idsToDelete = new List<Guid>();
+                foreach (var field in ctx.Web.Fields)
+                {
+                    if (field.Group == "My Columns")
+                    {
+                        idsToDelete.Add(field.Id);
+                    }
+                }
+                foreach (var guid in idsToDelete)
+                {
+                    ctx.Web.GetFieldById<Microsoft.SharePoint.Client.Field>(guid).DeleteObject();
+                }
+                ctx.ExecuteQueryRetry();
             }
+
+
+
         }
 
         [TestMethod]
