@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.WebParts;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
+using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -17,6 +19,37 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private string resourceFolder;
         private const string fileName = "ProvisioningTemplate-2015-03-Sample-01.xml";
         private string folder;
+        private string webpartcontents = @"<webParts><webPart xmlns=""http://schemas.microsoft.com/WebPart/v3""><metaData><type name=""Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c"" /><importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+    </metaData>
+    <data>
+      <properties>
+        <property name=""ExportMode"" type=""exportmode"">All</property>
+        <property name=""HelpUrl"" type=""string"" />
+        <property name=""Hidden"" type=""bool"">False</property>
+        <property name=""Description"" type=""string"">Allows authors to insert HTML snippets or scripts.</property>
+        <property name=""Content"" type=""string"">&lt;script type=""text/javascript""&gt;
+alert(""Hello!"");
+&lt;/script&gt;</property>
+        <property name=""CatalogIconImageUrl"" type=""string"" />
+        <property name=""Title"" type=""string"">Script Editor</property>
+        <property name=""AllowHide"" type=""bool"">True</property>
+        <property name=""AllowMinimize"" type=""bool"">True</property>
+        <property name=""AllowZoneChange"" type=""bool"">True</property>
+        <property name=""TitleUrl"" type=""string"" />
+        <property name=""ChromeType"" type=""chrometype"">None</property>
+        <property name=""AllowConnect"" type=""bool"">True</property>
+        <property name=""Width"" type=""unit"" />
+        <property name=""Height"" type=""unit"" />
+        <property name=""HelpMode"" type=""helpmode"">Navigate</property>
+        <property name=""AllowEdit"" type=""bool"">True</property>
+        <property name=""TitleIconImageUrl"" type=""string"" />
+        <property name=""Direction"" type=""direction"">NotSet</property>
+        <property name=""AllowClose"" type=""bool"">True</property>
+        <property name=""ChromeState"" type=""chromestate"">Normal</property>
+      </properties>
+    </data>
+  </webPart>
+</webParts>";
 
         [TestInitialize]
         public void Initialize()
@@ -79,6 +112,69 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
+        [TestMethod]
+        public void CanAddWebPartsToForms()
+        {
+            var template = new ProvisioningTemplate();
+
+            FileSystemConnector connector = new FileSystemConnector(resourceFolder + @"\..", "");
+
+            template.Connector = connector;
+            var webPart = new WebPart
+            {
+                Column = 1,
+                Row = 1,
+                Contents = webpartcontents,
+                Title = "Script Editor",
+                Order = 0,
+                Zone = "Main"
+            };
+
+            var myfile = new Core.Framework.Provisioning.Model.File()
+            {
+                Overwrite = false,
+                Src = "EditForm.aspx",
+                Folder = "SitePages/Forms"
+            };
+            myfile.WebParts.Add(webPart);
+            template.Files.Add(myfile);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
+
+                var file = ctx.Web.GetFileByServerRelativeUrl(
+                    UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
+                        UrlUtility.Combine("SitePages/Forms", "EditForm.aspx")));
+                ctx.Load(file, f => f.Exists);
+                ctx.ExecuteQueryRetry();
+
+                // first of all do we even find the form ?
+                Assert.IsTrue(file.Exists);
+                var webParts = file.GetLimitedWebPartManager(PersonalizationScope.Shared).WebParts;
+                ctx.Load(webParts, wp => wp.IncludeWithDefaultProperties(w=>w.Id, w=>w.WebPart, w=>w.WebPart.Title));
+                ctx.ExecuteQueryRetry();
+
+                var webPartsArray = webParts.ToArray();
+                var webPartExists = false;
+                foreach (var webPartDefinition in webPartsArray)
+                {
+                    if (webPartDefinition.WebPart.Title == "Script Editor")
+                    {
+                        webPartExists = true;
+                        // cleanup after ourselves if we can find the webpart... 
+                        webPartDefinition.DeleteWebPart();
+                    }
+                   
+                }
+                ctx.ExecuteQueryRetry();
+                Assert.IsTrue(webPartExists);
+            }
+        }
+
 
         [TestMethod]
         public void CanProvisionObjectsRequiredField()
@@ -119,14 +215,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 foreach (var list in template.Lists)
                 {
                     ctx.Web.GetListByUrl(list.Url).DeleteObject();
-                    
+
                 }
-            
+
                 foreach (var ct in template.ContentTypes)
                 {
                     ctx.Web.GetContentTypeById(ct.Id).DeleteObject();
                 }
-           
+
                 var idsToDelete = new List<Guid>();
                 foreach (var field in ctx.Web.Fields)
                 {

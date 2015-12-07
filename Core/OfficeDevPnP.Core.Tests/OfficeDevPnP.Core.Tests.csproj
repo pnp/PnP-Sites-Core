@@ -299,6 +299,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Resources\EditForm.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
