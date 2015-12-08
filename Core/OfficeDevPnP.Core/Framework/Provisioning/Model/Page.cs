@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private List<WebPart> _webParts = new List<WebPart>();
-        private ObjectSecurity _security = new ObjectSecurity();
+        private ObjectSecurity _security = null;
 
         #endregion
 
@@ -53,7 +53,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WebParts.AddRange(webParts);
             }
 
-            this.Security = security;
+            if (security != null)
+            {
+                this.Security = security;
+            }
         }
 
 
