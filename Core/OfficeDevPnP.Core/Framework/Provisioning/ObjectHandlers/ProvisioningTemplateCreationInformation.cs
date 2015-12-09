@@ -20,6 +20,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
 
+        private Handlers handlersToProcess = Handlers.All;
+
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
@@ -114,6 +116,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.includeSearchConfiguration = value;
+            }
+        }
+
+        public Handlers HandlersToProcess
+        {
+            get
+            {
+                return handlersToProcess;
+            }
+            set
+            {
+                handlersToProcess = value;
             }
         }
     }
