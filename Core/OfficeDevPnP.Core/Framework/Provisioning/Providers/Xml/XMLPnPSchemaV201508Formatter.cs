@@ -594,6 +594,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              SequenceSpecified = true,
                              Title = customAction.Title,
                              Url = customAction.Url,
+                             RegistrationId = customAction.RegistrationId,
+                             RegistrationType = customAction.RegistrationType.FromTemplateToSchemaRegistrationTypeV201508(),
+                             RegistrationTypeSpecified = true,
                          }).ToArray();
                 }
                 else
@@ -626,6 +629,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              SequenceSpecified = true,
                              Title = customAction.Title,
                              Url = customAction.Url,
+                             RegistrationId = customAction.RegistrationId,
+                             RegistrationType = customAction.RegistrationType.FromTemplateToSchemaRegistrationTypeV201508(),
+                             RegistrationTypeSpecified = true,
                          }).ToArray();
                 }
                 else
@@ -1452,6 +1458,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
                             Title = customAction.Title,
                             Url = customAction.Url,
+                            RegistrationId = customAction.RegistrationId,
+                            RegistrationType = customAction.RegistrationTypeSpecified ? customAction.RegistrationType.FromSchemaToTemplateRegistrationTypeV201508() : default(Microsoft.SharePoint.Client.UserCustomActionRegistrationType),
                         });
                 }
                 if (result.CustomActions.WebCustomActions != null && source.CustomActions.WebCustomActions != null)
@@ -1474,6 +1482,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
                             Title = customAction.Title,
                             Url = customAction.Url,
+                            RegistrationId = customAction.RegistrationId,
+                            RegistrationType = customAction.RegistrationTypeSpecified ? customAction.RegistrationType.FromSchemaToTemplateRegistrationTypeV201508() : default(Microsoft.SharePoint.Client.UserCustomActionRegistrationType),
                         });
                 }
             }
@@ -2128,6 +2138,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              }).ToArray() : null,
                     }
                 } : null);
+        }
+
+        public static V201508.RegistrationType FromTemplateToSchemaRegistrationTypeV201508(this Microsoft.SharePoint.Client.UserCustomActionRegistrationType registrationType)
+        {
+            switch (registrationType)
+            {
+                case Microsoft.SharePoint.Client.UserCustomActionRegistrationType.None:
+                    return V201508.RegistrationType.None;
+                case Microsoft.SharePoint.Client.UserCustomActionRegistrationType.List:
+                    return V201508.RegistrationType.List;
+                case Microsoft.SharePoint.Client.UserCustomActionRegistrationType.ContentType:
+                    return V201508.RegistrationType.ContentType;
+                case Microsoft.SharePoint.Client.UserCustomActionRegistrationType.ProgId:
+                    return V201508.RegistrationType.ProgId;
+                case Microsoft.SharePoint.Client.UserCustomActionRegistrationType.FileType:
+                    return V201508.RegistrationType.FileType;
+                default:
+                    return V201508.RegistrationType.None;
+            }
+        }
+
+        public static Microsoft.SharePoint.Client.UserCustomActionRegistrationType FromSchemaToTemplateRegistrationTypeV201508(this V201508.RegistrationType registrationType)
+        {
+            switch (registrationType)
+            {
+                case V201508.RegistrationType.None:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.None;
+                case V201508.RegistrationType.List:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.List;
+                case V201508.RegistrationType.ContentType:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.ContentType;
+                case V201508.RegistrationType.ProgId:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.ProgId;
+                case V201508.RegistrationType.FileType:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.FileType;
+                default:
+                    return Microsoft.SharePoint.Client.UserCustomActionRegistrationType.None;
+            }
         }
     }
 }
