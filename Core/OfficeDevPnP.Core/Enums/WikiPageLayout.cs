@@ -12,6 +12,7 @@
         TwoColumnsHeaderFooter = 4,
         ThreeColumns = 5,
         ThreeColumnsHeader = 6,
-        ThreeColumnsHeaderFooter = 7
+        ThreeColumnsHeaderFooter = 7,
+        Custom = 8,
     }
 }
