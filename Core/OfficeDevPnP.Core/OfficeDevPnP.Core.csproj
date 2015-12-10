@@ -362,6 +362,8 @@
     <Compile Include="Framework\Provisioning\Model\Features.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldRef.cs" />
     <Compile Include="Framework\Provisioning\Model\Field.cs" />
+    <Compile Include="Framework\Provisioning\Model\Folder.cs" />
+    <Compile Include="Framework\Provisioning\Model\Localization.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
@@ -387,6 +389,7 @@
     <Compile Include="Framework\Provisioning\Model\SiteSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\User.cs" />
     <Compile Include="Framework\Provisioning\Model\View.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowDefinition.cs" />
     <Compile Include="Framework\Provisioning\Model\Workflows.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />

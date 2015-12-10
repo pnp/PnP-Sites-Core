@@ -117,6 +117,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Localizations
+
+            wrappedResult.Localizations =
+                (from l in template.Localizations
+                 select new LocalizationsLocalization
+                 {
+                     LCID = l.LCID,
+                     Name = l.Name,
+                     ResourceFile = l.ResourceFile,
+                 }).ToArray();
+
+            #endregion
+
             #region Property Bag
 
             // Translate PropertyBagEntries, if any
@@ -134,6 +147,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             else
             {
                 result.PropertyBagEntries = null;
+            }
+
+            #endregion
+
+            #region Web Settings
+
+            if (template.WebSettings != null)
+            {
+                result.WebSettings = new V201512.WebSettings
+                {
+                    NoCrawl = template.WebSettings.NoCrawl,
+                    NoCrawlSpecified = true,
+                    RequestAccessEmail = template.WebSettings.RequestAccessEmail,
+                };
             }
 
             #endregion
@@ -507,6 +534,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Security = dr.Security.FromTemplateToSchemaObjectSecurityV201512()
                              }).ToArray() : null,
                          Security = list.Security.FromTemplateToSchemaObjectSecurityV201512(),
+                         Folders = list.Folders.Count > 0 ?
+                         (from folder in list.Folders
+                          select folder.FromTemplateToSchemaFolderV201512()).ToArray() : null,
                      }).ToArray();
             }
             else
@@ -728,6 +758,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          }).ToArray() : null;
 
                     schemaPage.Url = page.Url;
+
+                    schemaPage.Fields = (page.Fields != null && page.Fields.Count > 0) ?
+                                (from f in page.Fields
+                                 select new V201512.BaseFieldValue
+                                 {
+                                     FieldName = f.Key,
+                                     Value = f.Value,
+                                 }).ToArray() : null;
 
                     pages.Add(schemaPage);
                 }
@@ -1025,6 +1063,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                 }
 
+                // Handle Localizations
+                if (wrappedResult.Localizations != null)
+                {
+                    result.Localizations.AddRange(
+                        from l in wrappedResult.Localizations
+                        select new Localization
+                        {
+                            LCID = l.LCID,
+                            Name = l.Name,
+                            ResourceFile = l.ResourceFile,
+                        });
+                }
+
                 foreach (var templates in wrappedResult.Templates)
                 {
                     // Let's see if we have an in-place template with the provided ID or if we don't have a provided ID at all
@@ -1105,6 +1156,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         Value = bag.Value,
                         Indexed = bag.Indexed
                     });
+            }
+
+            #endregion
+
+            #region Web Settings
+
+            if (source.WebSettings != null)
+            {
+                result.WebSettings = new Model.WebSettings
+                {
+                    NoCrawl = source.WebSettings.NoCrawlSpecified ? source.WebSettings.NoCrawl : false,
+                    RequestAccessEmail = source.WebSettings.RequestAccessEmail,
+                };
             }
 
             #endregion
@@ -1371,7 +1435,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         (list.FieldDefaults != null ?
                             (from fd in list.FieldDefaults
                              select fd).ToDictionary(k => k.FieldName, v => v.Value) : null),
-                        list.Security.FromSchemaToTemplateObjectSecurityV201512()
+                        list.Security.FromSchemaToTemplateObjectSecurityV201512(),
+                        (list.Folders != null ?
+                            (new List<Model.Folder>(from folder in list.Folders
+                             select folder.FromSchemaToTemplateFolderV201512())) : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,
@@ -1556,7 +1623,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                              }).ToList() : null),
                         source.Pages.WelcomePage == page.Url,
-                        page.Security.FromSchemaToTemplateObjectSecurityV201512()));
+                        page.Security.FromSchemaToTemplateObjectSecurityV201512(),
+                        (page.Fields != null && page.Fields.Length > 0) ?
+                             (from f in page.Fields
+                              select f).ToDictionary(i => i.FieldName, i => i.Value) : null
+                        ));
                 }
             }
 
@@ -2128,6 +2199,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              }).ToArray() : null,
                     }
                 } : null);
+        }
+
+        public static Model.Folder FromSchemaToTemplateFolderV201512(this V201512.Folder folder)
+        {
+            Model.Folder result = new Model.Folder(folder.Name, null, folder.Security.FromSchemaToTemplateObjectSecurityV201512());
+            result.Folders.AddRange(from child in folder.Folder1 select child.FromSchemaToTemplateFolderV201512());
+            return (result);
+        }
+
+        public static V201512.Folder FromTemplateToSchemaFolderV201512(this Model.Folder folder)
+        {
+            V201512.Folder result = new V201512.Folder();
+            result.Name = folder.Name;
+            result.Security = folder.Security.FromTemplateToSchemaObjectSecurityV201512();
+            result.Folder1 = folder.Folders != null ? (from child in folder.Folders select child.FromTemplateToSchemaFolderV201512()).ToArray() : null;
+            return (result);
         }
     }
 }

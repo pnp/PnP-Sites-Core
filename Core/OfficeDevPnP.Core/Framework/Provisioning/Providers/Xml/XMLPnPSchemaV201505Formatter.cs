@@ -1020,7 +1020,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Row = (uint)wp.Row,
                                  Contents = wp.Contents
 
-                             }).ToList() : null), page.WelcomePage));
+                             }).ToList() : null), page.WelcomePage, null));
 
                 }
             }
