@@ -1687,7 +1687,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             if (source.Workflows != null)
             {
                 result.Workflows = new Model.Workflows(
-                    source.Workflows.WorkflowDefinitions.Length > 0 ?
+                    (source.Workflows.WorkflowDefinitions != null &&
+                    source.Workflows.WorkflowDefinitions.Length > 0) ?
                         (from wd in source.Workflows.WorkflowDefinitions
                          select new Model.WorkflowDefinition(
                              (wd.Properties != null && wd.Properties.Length > 0) ?
@@ -1698,7 +1699,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
                              DraftVersion = wd.DraftVersion,
-                             FormField = wd.FormField.OuterXml,
+                             FormField = wd.FormField != null ? wd.FormField.OuterXml : null,
                              Id = Guid.Parse(wd.Id),
                              InitiationUrl = wd.InitiationUrl,
                              Published = wd.PublishedSpecified ? wd.Published : false,
@@ -1708,7 +1709,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              RestrictToType = wd.RestrictToType.ToString(),
                              XamlPath = wd.XamlPath,
                          }) : null,
-                    source.Workflows.WorkflowSubscriptions.Length > 0 ?
+                    (source.Workflows.WorkflowSubscriptions != null &&
+                    source.Workflows.WorkflowSubscriptions.Length > 0) ?
                         (from ws in source.Workflows.WorkflowSubscriptions
                          select new Model.WorkflowSubscription(
                              (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Length > 0) ?
@@ -2204,7 +2206,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static Model.Folder FromSchemaToTemplateFolderV201512(this V201512.Folder folder)
         {
             Model.Folder result = new Model.Folder(folder.Name, null, folder.Security.FromSchemaToTemplateObjectSecurityV201512());
-            result.Folders.AddRange(from child in folder.Folder1 select child.FromSchemaToTemplateFolderV201512());
+            if (folder.Folder1 != null && folder.Folder1.Length > 0)
+            {
+                result.Folders.AddRange(from child in folder.Folder1 select child.FromSchemaToTemplateFolderV201512());
+            }
             return (result);
         }
 
