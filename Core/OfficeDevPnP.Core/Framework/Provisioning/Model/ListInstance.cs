@@ -16,12 +16,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
-                this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null)
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null, null)
         {
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security)
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security) :
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, null)
+        {
+        }
+
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders)
         {
             if (contentTypeBindings != null)
             {
@@ -54,6 +60,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this._security = security;
             }
+            if (folders != null)
+            {
+                this._folders = folders;
+            }
         }
 
         #endregion
@@ -66,6 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private List<DataRow> _dataRows = new List<DataRow>();
         private Dictionary<String, String> _fieldDefaults = new Dictionary<String, String>();
         private ObjectSecurity _security = null;
+        private List<Folder> _folders = new List<Folder>();
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         #endregion
@@ -225,13 +236,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             set { this._security = value; }
         }
 
+        /// <summary>
+        /// Defines a collection of folders (eventually nested) that 
+        /// will be provisioned into the target list/library
+        /// </summary>
+        public List<Folder> Folders
+        {
+            get { return this._folders; }
+            set { this._folders = value; }
+        }
+
         #endregion
 
         #region Comparison code
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -253,7 +274,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ContentTypeBindings.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Views.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Fields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.Security.GetHashCode(),
+                this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -289,7 +313,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ContentTypeBindings.DeepEquals(other.ContentTypeBindings) &&
                 this.Views.DeepEquals(other.Views) &&
                 this.Fields.DeepEquals(other.Fields) &&
-                this.FieldRefs.DeepEquals(other.FieldRefs));
+                this.FieldRefs.DeepEquals(other.FieldRefs) &&
+                this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
+                this.Security.Equals(other.Security) &&
+                this.Folders.DeepEquals(other.Folders)
+                );
         }
 
         #endregion
