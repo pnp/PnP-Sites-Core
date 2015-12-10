@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201508Formatter());
+                return (new XMLPnPSchemaV201512Formatter());
             }
         }
 
@@ -140,7 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 return (XMLPnPSchemaFormatter.LatestFormatter);
             }
         }
-        
+
         #endregion
     }
 }
