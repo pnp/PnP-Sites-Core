@@ -18,6 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
+        private List<Localization> _localizations = new List<Localization>();
         private List<Field> _siteFields = new List<Field>();
         private List<ContentType> _contentTypes = new List<ContentType>();
         private List<PropertyBagEntry> _propertyBags = new List<PropertyBagEntry>();
@@ -34,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private string _id;
 
         private RegionalSettings _regionalSettings = null;
+        private WebSettings _webSettings = null;
         private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
         private AuditSettings _auditSettings = null;
         private Workflows _workflows = null;
@@ -67,6 +69,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _parameters; }
             private set { _parameters = value; }
         }
+
+        public List<Localization> Localizations
+        {
+            get { return this._localizations; }
+            private set { this._localizations = value; }
+        }
+        
         /// <summary>
         /// Gets or sets the ID of the Provisioning Template
         /// </summary>
@@ -185,6 +194,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// The Web Settings of the Provisioning Template
+        /// </summary>
+        public WebSettings WebSettings
+        {
+            get { return this._webSettings; }
+            set { this._webSettings = value; }
+        }
+
+        /// <summary>
         /// The Regional Settings of the Provisioning Template
         /// </summary>
         public RegionalSettings RegionalSettings
@@ -285,7 +303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -312,7 +330,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Workflows.WorkflowDefinitions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Workflows.WorkflowSubscriptions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.AddIns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                (this.Publishing != null ? this.Publishing.GetHashCode() : 0)
+                (this.Publishing != null ? this.Publishing.GetHashCode() : 0),
+                this.Localizations.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.WebSettings.GetHashCode()
             ).GetHashCode());
         }
 
@@ -354,7 +374,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
-                this.Publishing == other.Publishing
+                this.Publishing == other.Publishing &&
+                this.Localizations.DeepEquals(other.Localizations) &&
+                this.WebSettings.Equals(other.WebSettings)
             );
         }
 

@@ -87,6 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WelcomePage)
                     {
+                        web.RootFolder.EnsureProperty(p => p.ServerRelativeUrl);
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
@@ -106,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    if (page.Security != null)
+                    if (page.Security != null && page.Security.RoleAssignments.Count != 0)
                     {
                         file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file.ListItemAllFields);

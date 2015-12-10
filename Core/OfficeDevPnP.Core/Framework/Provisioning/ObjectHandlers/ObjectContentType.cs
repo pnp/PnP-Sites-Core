@@ -225,6 +225,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
             }
 
+            //Reorder the elements so that the new created Content Type has the same order as defined in the
+            //template. The order can be different if the new Content Type inherits from another Content Type.
+            //In this case the new Content Type has all field of the original Content Type and missing fields 
+            //will be added at the end. To fix this issue we ordering the fields once more.
+            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => fld.Name).ToArray());
+            createdCT.Update(true);
+            web.Context.ExecuteQueryRetry();
+
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;

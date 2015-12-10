@@ -916,10 +916,24 @@ namespace Microsoft.SharePoint.Client
 
             if (properties != null && properties.Count > 0)
             {
-                // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                // Get a reference to the target list, if any
+                // and load file item properties
+                var parentList = file.ListItemAllFields.ParentList;
+                context.Load(parentList, l => l.ForceCheckout);
                 context.Load(file.ListItemAllFields);
                 context.Load(file.ListItemAllFields.FieldValuesAsText);
-                context.ExecuteQueryRetry();
+                try
+                {
+                    context.ExecuteQueryRetry();
+                }
+                catch (ServerException ex)
+                {
+                    // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                    if (ex.Message != "The object specified does not belong to a list.")
+                    {
+                        throw;
+                    }
+                }
 
                 // Loop through and detect changes first, then, check out if required and apply
                 foreach (var kvp in properties)
@@ -939,13 +953,26 @@ namespace Microsoft.SharePoint.Client
                     {
                         case "CONTENTTYPE":
                             {
-                                // TODO: Add support for named ContentType (need to lookup ID and check if it needs changing)
-                                throw new NotSupportedException("ContentType property not yet supported; use ContentTypeId instead.");
-                                //break;
+                                if (!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase) && parentList != null)
+                                {
+                                    ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
+                                    context.ExecuteQueryRetry();
+
+                                    if (targetCT != null)
+                                    {
+                                        changedProperties["ContentTypeId"] = targetCT.StringId;
+                                        changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
+                                    }
+                                    else
+                                    {
+                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
+                                    }
+                                }
+                                break;
                             }
                         case "CONTENTTYPEID":
                             {
-                                if(currentValue != propertyValue)
+                                if(!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     changedProperties[propertyName] = propertyValue;
                                     changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
@@ -995,19 +1022,9 @@ namespace Microsoft.SharePoint.Client
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_UpdateFile0Properties1, file.Name, changedPropertiesString);
                     var checkOutRequired = false;
 
-                    var parentList = file.ListItemAllFields.ParentList;
-                    context.Load(parentList, l => l.ForceCheckout);
-                    try
+                    if(parentList != null)
                     {
-                        context.ExecuteQueryRetry();
                         checkOutRequired = parentList.ForceCheckout;
-                    }
-                    catch (ServerException ex)
-                    {
-                        if (ex.Message != "The object specified does not belong to a list.")
-                        {
-                            throw;
-                        }
                     }
 
                     if (checkoutIfRequired && checkOutRequired && file.CheckOutType == CheckOutType.None)

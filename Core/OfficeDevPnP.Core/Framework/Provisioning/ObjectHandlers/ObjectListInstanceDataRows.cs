@@ -136,8 +136,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem.Update();
                                     }
                                     web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
-
-                                    if (dataRow.Security != null)
+                                    
+                                    if (dataRow.Security != null && dataRow.Security.RoleAssignments.Count != 0)
                                     {
                                         listitem.SetSecurity(parser, dataRow.Security);
                                     }

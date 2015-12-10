@@ -885,4 +885,7 @@
   <data name="Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag" xml:space="preserve">
     <value>Using Composed Look Information from Property Bag</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0" xml:space="preserve">
+    <value>Unable to find lookup list with Id: {0}</value>
+  </data>
 </root>

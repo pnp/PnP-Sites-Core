@@ -25,6 +25,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var list = ctx.Web.GetListByUrl(string.Format("lists/{0}",listName));
+                if (list == null)
+                    list = ctx.Web.GetListByUrl(listName);
                 if (list != null)
                 {
                     list.DeleteObject();
@@ -86,6 +88,30 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsTrue(template.Lists.Any());
             }
+        }
+
+        [TestMethod]
+        public void FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.RemoveExistingContentTypes = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = BuiltInContentTypeId.DublinCoreName, Default = true });
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+                
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listName);
+                var contentTypes = list.EnsureProperty(l => l.ContentTypes);
+                Assert.IsTrue(contentTypes.Any(ct => ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00")), "Folder content type should not be removed from a document library.");
+            }
+
         }
     }
 }
