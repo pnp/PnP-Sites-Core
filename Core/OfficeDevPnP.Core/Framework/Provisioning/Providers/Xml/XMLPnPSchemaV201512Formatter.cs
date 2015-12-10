@@ -742,6 +742,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         case WikiPageLayout.ThreeColumnsHeaderFooter:
                             pageLayout = V201512.WikiPageLayout.ThreeColumnsHeaderFooter;
                             break;
+                        case WikiPageLayout.Custom:
+                            pageLayout = V201512.WikiPageLayout.Custom;
+                            break;
                     }
                     schemaPage.Layout = pageLayout;
                     schemaPage.Overwrite = page.Overwrite;
@@ -1608,6 +1611,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             break;
                         case V201512.WikiPageLayout.ThreeColumnsHeaderFooter:
                             pageLayout = WikiPageLayout.ThreeColumnsHeaderFooter;
+                            break;
+                        case V201512.WikiPageLayout.Custom:
+                            pageLayout = WikiPageLayout.Custom;
                             break;
                     }
 
