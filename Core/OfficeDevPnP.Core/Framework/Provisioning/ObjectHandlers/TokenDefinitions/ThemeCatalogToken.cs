@@ -23,5 +23,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             }
             return CacheValue;
         }
+
+        public override bool IsRootWebToken
+        {
+            get { return true; }
+        }
     }
 }

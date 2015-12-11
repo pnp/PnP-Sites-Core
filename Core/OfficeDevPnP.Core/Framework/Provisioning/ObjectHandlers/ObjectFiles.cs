@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
@@ -22,20 +23,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var context = web.Context as ClientContext;
 
                 web.EnsureProperties(w => w.ServerRelativeUrl);
+                var rootWeb = context.Site.RootWeb;
+                rootWeb.EnsureProperties(w => w.ServerRelativeUrl);
 
                 foreach (var file in template.Files)
                 {
 
                     var folderName = parser.ParseString(file.Folder);
-
-                    if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+                    var isRootWebFolder = parser.ContainsRootWebToken(file.Folder);
+                    var targetWeb = isRootWebFolder ? rootWeb : web;
+                    if (folderName.ToLower().StartsWith((targetWeb.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = folderName.Substring(targetWeb.ServerRelativeUrl.Length);
                     }
 
-
-                    var folder = web.EnsureFolderPath(folderName);
-
+                    var folder = targetWeb.EnsureFolderPath(folderName);
+                    
                     File targetFile = null;
 
                     var checkedOut = false;
@@ -56,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            checkedOut = CheckOutIfNeeded(web, targetFile);
+                            checkedOut = CheckOutIfNeeded(targetWeb, targetFile);
                         }
                     }
                     else
@@ -67,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
                         }
 
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                        checkedOut = CheckOutIfNeeded(targetWeb, targetFile);
                     }
 
                     if (targetFile != null)
@@ -95,7 +98,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     wpEntity.WebPartZone = webpart.Zone;
                                     wpEntity.WebPartIndex = (int)webpart.Order;
 
-                                    web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+                                    targetWeb.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
                                 }
                             }
                         }
@@ -103,7 +106,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (checkedOut)
                         {
                             targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            targetWeb.Context.ExecuteQueryRetry();
                         }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
