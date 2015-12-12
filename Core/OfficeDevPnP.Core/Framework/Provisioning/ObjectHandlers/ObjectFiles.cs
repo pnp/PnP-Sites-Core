@@ -231,6 +231,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 
                         }
+                        else
+                        {
+                            // Not a wikipage
+                            template = GetFileContents(web, template, welcomePageUrl);
+                        }
                     }
                 }
                 catch (ServerException ex)
@@ -242,23 +247,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     else
                     {
                         // Page does not belong to a list, extract the file as is
-                        var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
-
-                        var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
-                        var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
-
-                        var webParts = web.GetWebParts(welcomePageUrl);
-
-                        template.Files.Add(new Model.File()
-                        {
-                            Folder = Tokenize(folderPath, web.Url),
-                            Src = fileName,
-                            Overwrite = true,
-                        });
+                        template = GetFileContents(web, template, welcomePageUrl);
                     }
                 }
-
-                // Impossible to return all files in the site currently
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
@@ -266,6 +257,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
+            return template;
+        }
+
+        private ProvisioningTemplate GetFileContents(Web web, ProvisioningTemplate template, string welcomePageUrl)
+        {
+            var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
+
+            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+            var webParts = web.GetWebParts(welcomePageUrl);
+
+            var homeFile = new Model.File()
+            {
+                Folder = Tokenize(folderPath, web.Url),
+                Src = fileName,
+                Overwrite = true,
+            };
+
+            foreach (var webPart in webParts)
+            {
+                var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
+
+                homeFile.WebParts.Add(new Model.WebPart()
+                {
+                    Title = webPart.WebPart.Title,
+                    Row = (uint)webPart.WebPart.ZoneIndex,
+                    Zone = webPart.ZoneId,
+                    Contents = webPartxml
+                });
+            }
+            template.Files.Add(homeFile);
+
             return template;
         }
 
