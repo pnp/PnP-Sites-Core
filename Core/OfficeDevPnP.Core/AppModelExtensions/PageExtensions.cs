@@ -230,8 +230,7 @@ namespace Microsoft.SharePoint.Client
                 return;
             }
 
-            web.Context.Load(webPartPage);
-            web.Context.Load(webPartPage.ListItemAllFields);
+            web.Context.Load(webPartPage, wp => wp.ListItemAllFields);
             web.Context.ExecuteQueryRetry();
 
             string wikiField = (string)webPartPage.ListItemAllFields["WikiField"];
@@ -407,8 +406,8 @@ namespace Microsoft.SharePoint.Client
             }
 
             return webPartXml;
-
         }
+        
 #endif
         /// <summary>
         /// Applies a layout to a wiki page

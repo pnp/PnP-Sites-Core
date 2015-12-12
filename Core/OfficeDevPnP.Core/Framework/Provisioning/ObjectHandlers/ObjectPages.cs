@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -23,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var context = web.Context as ClientContext;
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder.WelcomePage);
-                
+
                 foreach (var page in template.Pages)
                 {
                     var url = parser.ParseString(page.Url);
@@ -62,7 +63,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 file.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
                                 web.AddWikiPageByUrl(url);
-                                web.AddLayoutToWikiPage(page.Layout, url);
+                                if (page.Layout == WikiPageLayout.Custom)
+                                {
+                                    web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
+                                }
+                                else {
+                                    web.AddLayoutToWikiPage(page.Layout, url);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -102,14 +109,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 WebPartEntity wpEntity = new WebPartEntity();
                                 wpEntity.WebPartTitle = webpart.Title;
-                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
+                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
                                 web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
                             }
                         }
+                        var allWebParts = web.GetWebParts(url);
+                        foreach (var webpart in allWebParts)
+                        {
+                            parser.AddToken(new WebPartIdToken(web, webpart.WebPart.Title, webpart.Id));
+                        }
+                    }
+
+                    file = web.GetFileByServerRelativeUrl(url);
+                    file.EnsureProperty(f => f.ListItemAllFields);
+
+                    if (page.Fields.Any())
+                    {
+                        var item = file.ListItemAllFields;
+                        foreach (var fieldValue in page.Fields)
+                        {
+                            item[fieldValue.Key] = parser.ParseString(fieldValue.Value);
+                        }
+                        item.Update();
+                        web.Context.ExecuteQueryRetry();
                     }
                     if (page.Security != null && page.Security.RoleAssignments.Count != 0)
                     {
-                        file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file.ListItemAllFields);
                         web.Context.ExecuteQuery();
                         file.ListItemAllFields.SetSecurity(parser, page.Security);
