@@ -468,6 +468,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.cs">
       <DependentUpon>ProvisioningSchema-2015-12.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
