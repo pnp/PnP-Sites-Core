@@ -43,9 +43,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             switch (version)
             {
                 case XMLPnPSchemaVersion.V201503:
+#pragma warning disable CS0618 // Type or member is obsolete
                     return (new XMLPnPSchemaV201503Formatter());
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201505:
+#pragma warning disable CS0618 // Type or member is obsolete
                     return (new XMLPnPSchemaV201505Formatter());
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201508:
                     return (new XMLPnPSchemaV201508Formatter());
                 case XMLPnPSchemaVersion.V201512:
@@ -64,10 +68,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             switch (namespaceUri)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03:
                     return (new XMLPnPSchemaV201503Formatter());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05:
                     return (new XMLPnPSchemaV201505Formatter());
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08:
                     return (new XMLPnPSchemaV201508Formatter());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12:
@@ -140,7 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 return (XMLPnPSchemaFormatter.LatestFormatter);
             }
         }
-        
+
         #endregion
     }
 }
