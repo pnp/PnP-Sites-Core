@@ -226,7 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
 
-                            page.Fields.Add("WikiField", string.Format("<![CDATA[{0}]]>", pageContents));
+                            page.Fields.Add("WikiField", pageContents);
                             template.Pages.Add(page);
 
 
