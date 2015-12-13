@@ -295,7 +295,7 @@ namespace Microsoft.SharePoint.Client
             SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, web.Url, peoplePickerInput,
                                                         roleValue, 0, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, null,
-                                                        emailBody,true);
+                                                        emailBody, true);
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
             return result;
