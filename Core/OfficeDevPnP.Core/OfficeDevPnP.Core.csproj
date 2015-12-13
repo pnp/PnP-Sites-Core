@@ -396,7 +396,7 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContents.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishing.cs" />

@@ -18,7 +18,7 @@ using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal class ObjectContents : ObjectHandlerBase
+    internal class ObjectPageContents : ObjectHandlerBase
     {
         public override string Name
         {
