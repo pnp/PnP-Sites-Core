@@ -176,7 +176,7 @@ namespace Microsoft.SharePoint.Client
             SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, urlToDocument,
                                                         peoplePickerInput, roleValue, groupId, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, emailSubject,
-                                                        emailBody);
+                                                        emailBody, true);
 
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
@@ -295,7 +295,7 @@ namespace Microsoft.SharePoint.Client
             SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, web.Url, peoplePickerInput,
                                                         roleValue, 0, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, null,
-                                                        emailBody);
+                                                        emailBody, true);
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
             return result;
