@@ -28,6 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         SiteSecurity = 65536,
         ContentTypes = 131072,
         PropertyBagEntries = 262144,
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries
+        Contents = 524288,
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | Contents
     }
 }

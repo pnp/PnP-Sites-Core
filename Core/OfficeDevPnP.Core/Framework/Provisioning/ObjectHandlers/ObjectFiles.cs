@@ -156,140 +156,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(this.Name))
-            {
-                // Extract the Home PAge
-                web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
-
-                var welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, web.RootFolder.WelcomePage);
-
-                var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
-                try
-                {
-                    var listItem = file.EnsureProperty(f => f.ListItemAllFields);
-                    if (listItem != null)
-                    {
-                        if (listItem.FieldValues.ContainsKey("WikiField"))
-                        {
-                            // Wiki page
-                            var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
-
-                            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
-                            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
-
-                            var homeFile = web.GetFileByServerRelativeUrl(welcomePageUrl);
-
-                            LimitedWebPartManager limitedWPManager =
-                                homeFile.GetLimitedWebPartManager(PersonalizationScope.Shared);
-
-                            web.Context.Load(limitedWPManager);
-
-                            var webParts = web.GetWebParts(welcomePageUrl);
-
-                            var page = new Page()
-                            {
-                                Layout = WikiPageLayout.Custom,
-                                Overwrite = true,
-                                Url = Tokenize(fullUri.PathAndQuery, web.Url),
-                                WelcomePage = true
-                            };
-                            var pageContents = listItem.FieldValues["WikiField"].ToString();
-
-                            Regex regexClientIds = new Regex(@"id=\""div_(?<ControlId>(\w|\-)+)");
-                            if (regexClientIds.IsMatch(pageContents))
-                            {
-                                foreach (Match webPartMatch in regexClientIds.Matches(pageContents))
-                                {
-                                    String serverSideControlId = webPartMatch.Groups["ControlId"].Value;
-
-                                    WebPartDefinition webPart = limitedWPManager.WebParts.GetByControlId(String.Format("g_{0}",
-                                        serverSideControlId.Replace("-", "_")));
-                                    web.Context.Load(webPart,
-                                        wp => wp.Id,
-                                        wp => wp.WebPart.Title,
-                                        wp => wp.WebPart.ZoneIndex
-                                        );
-                                    web.Context.ExecuteQueryRetry();
-
-                                    var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
-
-                                    page.WebParts.Add(new Model.WebPart()
-                                    {
-                                        Title = webPart.WebPart.Title,
-                                        Contents = webPartxml,
-                                        Order = (uint)webPart.WebPart.ZoneIndex,
-                                        Row = 1, // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
-                                        Column = 1 // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
-                                    });
-
-                                    pageContents = Regex.Replace(pageContents, serverSideControlId, string.Format("{{webpartid:{0}}}", webPart.WebPart.Title), RegexOptions.IgnoreCase);
-                                }
-                            }
-
-                            page.Fields.Add("WikiField", pageContents);
-                            template.Pages.Add(page);
-
-
-                        }
-                        else
-                        {
-                            // Not a wikipage
-                            template = GetFileContents(web, template, welcomePageUrl);
-                        }
-                    }
-                }
-                catch (ServerException ex)
-                {
-                    if (ex.ServerErrorCode != -2146232832)
-                    {
-                        throw;
-                    }
-                    else
-                    {
-                        // Page does not belong to a list, extract the file as is
-                        template = GetFileContents(web, template, welcomePageUrl);
-                    }
-                }
-
-                // If a base template is specified then use that one to "cleanup" the generated template model
-                if (creationInfo.BaseTemplate != null)
-                {
-                    template = CleanupEntities(template, creationInfo.BaseTemplate);
-                }
-            }
-            return template;
-        }
-
-        private ProvisioningTemplate GetFileContents(Web web, ProvisioningTemplate template, string welcomePageUrl)
-        {
-            var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
-
-            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
-            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
-
-            var webParts = web.GetWebParts(welcomePageUrl);
-
-            var homeFile = new Model.File()
-            {
-                Folder = Tokenize(folderPath, web.Url),
-                Src = fileName,
-                Overwrite = true,
-            };
-
-            foreach (var webPart in webParts)
-            {
-                var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
-
-                homeFile.WebParts.Add(new Model.WebPart()
-                {
-                    Title = webPart.WebPart.Title,
-                    Row = (uint)webPart.WebPart.ZoneIndex,
-                    Zone = webPart.ZoneId,
-                    Contents = webPartxml
-                });
-            }
-            template.Files.Add(homeFile);
-
+            
             return template;
         }
 
@@ -329,7 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = true;
+                _willExtract = false;
             }
             return _willExtract.Value;
         }
