@@ -119,7 +119,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Localizations
 
-            wrappedResult.Localizations =
+            if (template.Localizations != null && template.Localizations.Count > 0)
+            {
+                wrappedResult.Localizations =
                 (from l in template.Localizations
                  select new LocalizationsLocalization
                  {
@@ -127,6 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      Name = l.Name,
                      ResourceFile = l.ResourceFile,
                  }).ToArray();
+            }
 
             #endregion
 
