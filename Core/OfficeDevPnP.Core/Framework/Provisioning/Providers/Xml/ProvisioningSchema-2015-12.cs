@@ -3855,7 +3855,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class DataValue : BaseFieldValue {
     }
     
@@ -3866,7 +3866,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class BaseFieldValue {
         
         private string fieldNameField;
@@ -3901,7 +3901,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class FieldDefault : BaseFieldValue {
     }
     

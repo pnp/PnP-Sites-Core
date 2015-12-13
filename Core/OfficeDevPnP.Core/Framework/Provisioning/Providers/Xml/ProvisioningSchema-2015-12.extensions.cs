@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
@@ -65,6 +66,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
             writer.WriteCData(this.Contents);
             writer.WriteEndElement();
+        }
+    }
+
+    [XmlSchemaProviderAttribute("GetSchema")]
+    public partial class BaseFieldValue : IXmlSerializable
+    {
+        public static XmlQualifiedName GetSchema(XmlSchemaSet schemaSet)
+        {
+            String baseFieldValueSchemaString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "elementFormDefault=\"qualified\" " +
+                "xmlns=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+                    "<xsd:complexType name=\"BaseFieldValue\">" +
+                        "<xsd:simpleContent>" +
+                            "<xsd:extension base=\"xsd:string\">" +
+                                "<xsd:attribute name=\"FieldName\" use=\"required\" type=\"xsd:string\"/>" +
+                            "</xsd:extension>" +
+                        "</xsd:simpleContent>" +
+                    "</xsd:complexType>" +
+                "</xsd:schema>";
+
+            XmlSchema baseFieldValueSchema = XmlSchema.Read(new StringReader(baseFieldValueSchemaString), null);
+            schemaSet.XmlResolver = new XmlUrlResolver();
+            schemaSet.Add(baseFieldValueSchema);
+
+            return (new XmlQualifiedName("BaseFieldValue", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+        }
+
+        XmlSchema IXmlSerializable.GetSchema()
+        {
+            throw new NotImplementedException("This method should never be called. We implemented the static GetSchema method for XmlSchemaProviderAttribute.");
+        }
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+
+            XElement baseFieldValueXml = (XElement)XElement.ReadFrom(reader);
+            this.FieldName = baseFieldValueXml.Attribute("FieldName").Value;
+            this.Value = baseFieldValueXml.Value;
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            Regex regExHTML = new Regex(@"<(\w|-|_)+>(.)*<\/(\w)+>");
+
+            writer.WriteAttributeString("FieldName", this.FieldName);
+
+            // If the content is HTML-like, use a CDATA section
+            if (regExHTML.IsMatch(this.Value))
+            {
+                writer.WriteCData(this.Value);
+            }
+            else
+            {
+                writer.WriteString(this.Value);
+            }
         }
     }
 }
