@@ -16,13 +16,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
     public class DomainModelTests
     {
         private string _provisioningTemplatePath1 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath1NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath6 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath6NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath7 = string.Empty;
         private string _provisioningTemplatePath8 = string.Empty;
         private string _provisioningTemplatePath8NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
