@@ -32,12 +32,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+#if !CLIENTSDKV15
+            Version minimumRequiredServerVersion = new Version("16.0.4724.1200");
+#else
+            Version minimumRequiredServerVersion = new Version("15.0.4787.1000");
+#endif
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Extract the Home PAge
                 web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
 
-                var welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, web.RootFolder.WelcomePage);
+                var homepageUrl = web.RootFolder.WelcomePage;
+                if (string.IsNullOrEmpty(homepageUrl))
+                {
+                    homepageUrl = "Default.aspx";
+                }
+                var welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, homepageUrl);
 
                 var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
                 try
@@ -109,8 +119,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            // Not a wikipage
-                            template = GetFileContents(web, template, welcomePageUrl);
+                            if (web.Context.ServerLibraryVersion.CompareTo(minimumRequiredServerVersion) >= 0)
+                            {
+                                // Not a wikipage
+                                template = GetFileContents(web, template, welcomePageUrl);
+                            }
+                            else
+                            {
+                                WriteWarning(string.Format("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, minimumRequiredServerVersion), ProvisioningMessageType.Warning);
+                                scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, minimumRequiredServerVersion);
+                            }
                         }
                     }
                 }
@@ -122,8 +140,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        // Page does not belong to a list, extract the file as is
-                        template = GetFileContents(web, template, welcomePageUrl);
+                        if (web.Context.ServerLibraryVersion.CompareTo(minimumRequiredServerVersion) >= 0)
+                        {
+                            // Page does not belong to a list, extract the file as is
+                            template = GetFileContents(web, template, welcomePageUrl);
+                        }
+                        else
+                        {
+                            WriteWarning(string.Format("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, minimumRequiredServerVersion), ProvisioningMessageType.Warning);
+                            scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, minimumRequiredServerVersion);
+                        }
                     }
                 }
 
