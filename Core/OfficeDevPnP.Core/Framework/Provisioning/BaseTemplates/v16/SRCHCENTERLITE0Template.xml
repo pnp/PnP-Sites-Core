@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/08/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=1.7.1015.1, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.0.1601.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCENTERLITE0template">
     <pnp:ProvisioningTemplate ID="SRCHCENTERLITE0template" Version="1">
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
@@ -14,12 +14,12 @@
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="02a0e433-d8e3-408a-be9a-88513c444e9e" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="a6798dc7-893a-4d82-a444-aec0076ffd97" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="7" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="7;6;5" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="6" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4524" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4719" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="2371ca8974d744548103112427be1bb1|2015-06-01T14:24:54.52Z" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="5;6;7" />
         <pnp:PropertyBagEntry Key="NoCrawl" Value="true" />
@@ -38,9 +38,9 @@
         </pnp:Permissions>
       </pnp:Security>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{55ce0831-1fcf-41ad-9068-b70fbc3adbc9}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{64f2947c-e4ef-46e1-9411-0dd355670a01}" />
         <Field ID="{1F30D200-0D4E-4C8A-A7EB-2E49815BF2BE}" DisplayName="Instance Id" Name="WF4InstanceId" Type="Text" Group="_Hidden" Hidden="TRUE" Sealed="TRUE" Indexed="TRUE" />
-        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="55ce0831-1fcf-41ad-9068-b70fbc3adbc9" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{55ce0831-1fcf-41ad-9068-b70fbc3adbc9}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
+        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="64f2947c-e4ef-46e1-9411-0dd355670a01" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{64f2947c-e4ef-46e1-9411-0dd355670a01}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
           <Customization>
             <ArrayOfProperty>
               <Property>
@@ -110,6 +110,7 @@
         <Field ID="{BAB0A619-D1EC-40D7-847B-3E4408080C17}" Name="CompatibleManagedProperties" StaticName="CompatibleManagedProperties" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Display Template Columns" DisplayName="Compatible Managed Properties" Description="Enter the names of the managed properties that you would like to use this Filter Display Template with. The managed properties with names that start with the values you enter will be able to use this Display Template. " Type="Note" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE" RichText="FALSE" />
         <Field ID="{467E811F-0C12-4A93-BB04-42FF0C1C597B}" DisplayName="Template Id" Type="Text" ShowInEditForm="FALSE" Required="TRUE" Name="TemplateId" RowOrdinal="0" Group="_Hidden" />
         <Field ID="{467E811F-0C12-4A93-BB04-42FF0C1C597C}" DisplayName="Form Relative Url" Type="Text" ShowInEditForm="FALSE" Required="TRUE" Name="FormRelativeUrl" RowOrdinal="0" Group="_Hidden" />
+        <Field ID="{E2A3861F-C216-47D7-820F-7CB638862AB2}" Name="_ShortcutWebId" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ShortcutWebId" DisplayName="Shortcut Web Id" Group="_Hidden" Hidden="TRUE" Type="Guid" />
         <Field ID="{A0DD6C22-0988-453E-B3E2-77479DC9F014}" Name="ManagedPropertyMapping" StaticName="ManagedPropertyMapping" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Display Template Columns" DisplayName="Managed Property Mappings" Description="Enter the slots and the managed properties that map to the slots. This field will be used to determine which managed properties are retrieved from SharePoint Search when you are using this Display Template. Use the format &quot;slot name&quot;:&quot;property name&quot;, separated by commas." Type="Note" UnlimitedLengthInDocumentLibrary="TRUE" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE" RichText="FALSE" />
         <Field ID="{A261B12A-8CA2-47FA-A117-05861D637C7E}" Name="SMTotalFileCount" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="SMTotalFileCount" Group="_Hidden" ColName="DocCount" RowOrdinal="0" ReadOnly="TRUE" Type="Lookup" List="Docs" ListInternal="StorageMetrics" ShowField="SMTotalFileCount" JoinColName="Id" DisplayName="Total File Count" />
         <Field ID="{321A8C3C-0EC7-473B-BCC6-67F3C2DAE20D}" DisplayName="WSPublishError" Name="WSPublishError" Type="Note" Sealed="TRUE" Group="_Hidden" />
@@ -118,6 +119,7 @@
         <Field ID="{1FFF255C-6C88-4a76-957B-AE24BF07B78C}" DisplayName="Form Description" Type="Text" Required="FALSE" Name="FormDescription" RowOrdinal="0" Group="_Hidden" />
         <Field ID="{A569E161-E19E-4360-9AE1-20DFDA097CB3}" DisplayName="WSEnabled" Name="WSEnabled" Type="Boolean" Sealed="TRUE" />
         <Field ID="{D8225D68-5DDB-4e66-8069-2694E8F628FB}" DisplayName="WSEventSource" Name="WSEventSource" Type="Text" Sealed="TRUE" Group="_Hidden" />
+        <Field ID="{47B1B86F-9F8A-4DBE-A75E-CA5D9B0F566C}" Name="_ShortcutUrl" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ShortcutUrl" DisplayName="Shortcut URL" Group="_Hidden" Hidden="TRUE" Type="URL" />
         <Field ReadOnly="TRUE" Type="Computed" ID="{1A03FA74-8C63-40CC-BD06-73B580BD8743}" Name="LinkTemplateName" DisplayName="Form Name" Group="_Hidden" DisplayNameSrcField="FormName" Filterable="FALSE" AuthoringInfo="(linked to form template name)">
           <FieldRefs>
             <FieldRef Name="FormName" />
@@ -146,6 +148,7 @@
           </DisplayPattern>
         </Field>
         <Field ID="{1A03FA74-8C63-40CC-BD06-73B580BD8744}" DisplayName="Form ID" Type="Text" Required="FALSE" Name="FormId" RowOrdinal="0" Group="_Hidden" />
+        <Field ID="{2662AD77-2410-4938-B01C-E5E43321BAD4}" Name="_ShortcutSiteId" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ShortcutSiteId" DisplayName="Shortcut Site Id" Group="_Hidden" Hidden="TRUE" Type="Guid" />
         <Field ID="{94AD6F7C-09A1-42CA-974F-D24E080160C2}" DisplayName="Form Version" Type="Text" Required="FALSE" Name="FormVersion" RowOrdinal="0" ShowInEditForm="FALSE" Group="_Hidden" />
         <Field ID="{6391DC7E-E7F3-4FAF-9890-550FD5D3022F}" DisplayName="WSGUID" Name="WSGUID" Type="Guid" Sealed="TRUE" Group="_Hidden" />
         <Field ID="{FA181E85-8465-42fd-BD81-4AFEA427D3FE}" Name="DisplayTemplateLevel" StaticName="DisplayTemplateLevel" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Display Template Columns" DisplayName="Template Level" Description="Select the level of data that this display template expects and is designed to display.  This determines where this template will appear as a selectable option in configuration UIs." Type="Choice" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE">
@@ -170,6 +173,7 @@
             <CHOICE>Custom</CHOICE>
           </CHOICES>
         </Field>
+        <Field ID="{E8FEA999-553D-4F45-BE52-D941627E9FE5}" Name="_ShortcutUniqueId" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ShortcutUniqueId" DisplayName="Shortcut Unique Id" Group="_Hidden" Hidden="TRUE" Type="Guid" />
         <Field ID="{96C27C9D-33F5-4f8e-893E-684014BC7090}" DisplayName="Form Locale" Type="Text" Required="FALSE" Name="FormLocale" RowOrdinal="0" Group="_Hidden" />
         <Field ID="{40270DA4-0A34-4c14-8C30-59E065A28A4D}" DisplayName="WSPublishState" Name="WSPublishState" Type="Integer" Sealed="TRUE" />
         <Field ID="{4EF69CA4-4179-4d27-9E6C-F9544D45DFDC}" DisplayName="Show in Catalog" Type="Boolean" Required="FALSE" Name="ShowInCatalog" RowOrdinal="0" Group="_Hidden">
@@ -190,9 +194,9 @@
         <Field ID="{4CA54AB8-9667-427E-B1EC-B1FB4A9F3E19}" DisplayName="WSEventContextKeys" Name="WSEventContextKeys" Type="Note" Sealed="TRUE" Group="_Hidden" />
         <Field ID="{B4BA57C8-AB73-49fa-B6AF-A4F824D84C14}" DisplayName="WSEventType" Name="WSEventType" Type="Text" Sealed="TRUE" Group="_Hidden" />
         <Field ID="{66B691CF-07A3-4CA6-AC6D-27FA969C8569}" DisplayName="Form Name" Type="Text" Required="FALSE" Name="FormName" RowOrdinal="0" Group="_Hidden" />
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="55ce0831-1fcf-41ad-9068-b70fbc3adbc9" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{55ce0831-1fcf-41ad-9068-b70fbc3adbc9}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="64f2947c-e4ef-46e1-9411-0dd355670a01" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{64f2947c-e4ef-46e1-9411-0dd355670a01}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{0A9EC8F0-0340-4E24-9B35-CA86A6DED5AB}" Name="TemplateHidden" StaticName="TemplateHidden" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Display Template Columns" DisplayName="Hidden Template" Description="Hide this Display Template where people select from an available list of search Display Templates." Type="Boolean" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE" />
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="55ce0831-1fcf-41ad-9068-b70fbc3adbc9" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{55ce0831-1fcf-41ad-9068-b70fbc3adbc9}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="64f2947c-e4ef-46e1-9411-0dd355670a01" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{64f2947c-e4ef-46e1-9411-0dd355670a01}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
       </pnp:SiteFields>
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01002A2479FF33DD4BC3B1533A012B653717" Name="WorkflowServiceDefinition" Description="WorkflowServiceDefinition" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
@@ -348,7 +352,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{4E71EF91-F3E2-4A83-9209-E6633737DFFB}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCENTERLITE0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{59FBE1C8-3061-4CCA-A318-CB4D5F1BC637}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatea34a84bd-7dc6-4eb6-88b5-8c3ea6ee4f4aSRCHCENTERLITE0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=41">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -363,7 +367,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{08853142-44A3-480E-8871-B1F3DCF0AA76}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateSRCHCENTERLITE0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{76C49DE3-E979-47E6-98AA-213344B82F02}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templatea34a84bd-7dc6-4eb6-88b5-8c3ea6ee4f4aSRCHCENTERLITE0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=41">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -401,8 +405,12 @@
           </pnp:FieldRefs>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{2E8CAF0E-E833-478A-9EE2-3E9A8D08A7C3}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCENTERLITE0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{14209CCB-DA5A-4769-BD68-A7B75ABC432D}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatea34a84bd-7dc6-4eb6-88b5-8c3ea6ee4f4aSRCHCENTERLITE0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=41">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -423,8 +431,11 @@
           </pnp:FieldRefs>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Pages" Description="Use this list to store the tabs displayed in the default blank search pages." DocumentTemplate="" TemplateType="301" Url="SearchCenter" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x" Default="true" />
+          </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{900DF531-BF0D-4A5F-B085-3DCDE9193B12}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCENTERLITE0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            <View Name="{AB11AAE2-EDAD-4E92-AE05-E75D2053D8F2}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templatea34a84bd-7dc6-4eb6-88b5-8c3ea6ee4f4aSRCHCENTERLITE0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Order" Ascending="TRUE" />
@@ -441,9 +452,9 @@
             </View>
           </pnp:Views>
           <pnp:Fields>
-            <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Pages}}" />
-            <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Pages}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{9c7f71b2-7599-4a8d-9e19-38d0c428ae91}" StaticName="Comments" SourceID="{{listid:Tabs in Search Pages}}" />
+            <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{6C315D2F-718D-4CCA-A8B3-5BB6F0C3FB5A}" />
+            <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{6C315D2F-718D-4CCA-A8B3-5BB6F0C3FB5A}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{37b63022-d5b5-40d5-9c0a-dbbb33e33d24}" StaticName="Comments" SourceID="{6C315D2F-718D-4CCA-A8B3-5BB6F0C3FB5A}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
@@ -506,8 +517,11 @@
           </pnp:Fields>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Results" Description="Use this list to store the tabs displayed in search results." DocumentTemplate="" TemplateType="301" Url="SearchResults" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x" Default="true" />
+          </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{E37C1E09-2C66-4E72-B3B2-332C078C41C1}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCENTERLITE0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            <View Name="{BEFBDB21-0F9C-419D-AC1A-09DE95168421}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templatea34a84bd-7dc6-4eb6-88b5-8c3ea6ee4f4aSRCHCENTERLITE0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Order" Ascending="TRUE" />
@@ -524,9 +538,9 @@
             </View>
           </pnp:Views>
           <pnp:Fields>
-            <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Results}}" />
-            <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Results}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{f9806dc3-e1e9-4e0f-811e-9144d4419c7e}" StaticName="Comments" SourceID="{{listid:Tabs in Search Results}}" />
+            <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{E4BBD612-0145-4A24-87E6-CB3343F6001E}" />
+            <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{E4BBD612-0145-4A24-87E6-CB3343F6001E}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{b6a80ca9-f3e6-4a49-9a17-b3d2b0795c66}" StaticName="Comments" SourceID="{E4BBD612-0145-4A24-87E6-CB3343F6001E}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
