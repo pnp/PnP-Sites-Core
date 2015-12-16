@@ -113,7 +113,7 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
-        /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth/rtFa cookies.
+        /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core
                     if (siteUri.Host.Equals(args.Url.Host))
                     {
                         var cookieString = CookieReader.GetCookie(siteUrl).Replace("; ", ",").Replace(";", ",");
-                        if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase) && Regex.IsMatch(cookieString, "rtFa", RegexOptions.IgnoreCase))
+                        if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase))
                         {
                             var _cookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
                             cookies.SetCookies(siteUri, string.Join(",", _cookies));
