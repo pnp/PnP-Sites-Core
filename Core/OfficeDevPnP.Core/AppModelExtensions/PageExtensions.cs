@@ -8,6 +8,10 @@ using Microsoft.SharePoint.Client.Utilities;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
+using System.Linq;
+using System.Net;
+using System.IO;
+using System.Text;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -71,8 +75,15 @@ namespace Microsoft.SharePoint.Client
             File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
             LimitedWebPartManager limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
-            var query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
-
+            IEnumerable<WebPartDefinition> query = null;
+            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
+            {
+                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.ZoneId, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            }
+            else
+            {
+                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            }
             web.Context.ExecuteQueryRetry();
 
             return query;
@@ -226,8 +237,7 @@ namespace Microsoft.SharePoint.Client
                 return;
             }
 
-            web.Context.Load(webPartPage);
-            web.Context.Load(webPartPage.ListItemAllFields);
+            web.Context.Load(webPartPage, wp => wp.ListItemAllFields);
             web.Context.ExecuteQueryRetry();
 
             string wikiField = (string)webPartPage.ListItemAllFields["WikiField"];
@@ -285,7 +295,7 @@ namespace Microsoft.SharePoint.Client
             //</div>
 
             // Close all BR tags
-            Regex brRegex = new Regex("<br>",RegexOptions.IgnoreCase);
+            Regex brRegex = new Regex("<br>", RegexOptions.IgnoreCase);
 
             wikiField = brRegex.Replace(wikiField, "<br/>");
 
@@ -349,6 +359,63 @@ namespace Microsoft.SharePoint.Client
 
         }
 
+#if !CLIENTSDKV15
+        public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
+        {
+
+            string webPartXml = null;
+
+            Guid id = Guid.Empty;
+
+            var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
+            if (wp != null)
+            {
+                id = wp.Id;
+            }
+            else
+            {
+                return null;
+            }
+
+
+            if (id != Guid.Empty)
+            {
+                var uri = new Uri(web.Context.Url);
+                var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
+                var hostUri = uri.Host;
+                var webUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativeUrl);
+                var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
+                var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
+
+
+                var credentials = web.Context.Credentials as SharePointOnlineCredentials;
+
+                var authCookieValue = credentials.GetAuthenticationCookie(uri);
+
+                Cookie fedAuth = new Cookie()
+                {
+                    Name = "SPOIDCRL",
+                    Value = authCookieValue.TrimStart("SPOIDCRL=".ToCharArray()),
+                    Path = "/",
+                    Secure = true,
+                    HttpOnly = true,
+                    Domain = uri.Host
+                };
+                request.CookieContainer = new CookieContainer();
+                request.CookieContainer.Add(fedAuth);
+
+                var response = request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                    webPartXml = reader.ReadToEnd();
+                }
+            }
+
+            return webPartXml;
+        }
+
+#endif
         /// <summary>
         /// Applies a layout to a wiki page
         /// </summary>

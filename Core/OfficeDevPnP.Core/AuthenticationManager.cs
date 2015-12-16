@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core
 {
@@ -65,6 +66,18 @@ namespace OfficeDevPnP.Core
             ctx.Credentials = sharepointOnlineCredentials;
 
             return ctx;
+        }
+
+        /// <summary>
+        /// Returns an app only ClientContext object
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="appId">Application ID which is requesting the ClientContext object</param>
+        /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string appId, string appSecret)
+        {
+            return GetAppOnlyAuthenticatedContext(siteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(siteUrl)), appId, appSecret);
         }
 
         /// <summary>

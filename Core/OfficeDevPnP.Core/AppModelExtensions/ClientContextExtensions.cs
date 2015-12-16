@@ -108,7 +108,7 @@ namespace Microsoft.SharePoint.Client
                 clonedClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
 
                 // In case of app only or SAML
-                clonedClientContext.ExecutingWebRequest += delegate(object oSender, WebRequestEventArgs webRequestEventArgs)
+                clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
                 {
                     // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
                     // the new delegate method
@@ -155,5 +155,20 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Checks the server library version of the context for a minimally required version
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <param name="minimallyRequiredVersion"></param>
+        /// <returns></returns>
+        public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, string minimallyRequiredVersion)
+        {
+            return HasMinimalServerLibraryVersion(clientContext, new Version(minimallyRequiredVersion));
+        }
+
+        public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, Version minimallyRequiredVersion)
+        {
+            return clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
+        }
     }
 }

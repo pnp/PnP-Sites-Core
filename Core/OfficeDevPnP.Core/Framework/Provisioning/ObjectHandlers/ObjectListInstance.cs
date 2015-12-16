@@ -574,7 +574,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.EnableFolderCreation,
                 l => l.EnableMinorVersions,
                 l => l.DraftVersionVisibility,
-                l => l.Views
+                l => l.Views,
+                l => l.RootFolder
 #if !CLIENTSDKV15
 , l => l.MajorWithMinorVersionsLimit
 #endif
@@ -586,7 +587,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var isDirty = false;
                 if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
+                    var oldTitle = existingList.Title;
                     existingList.Title = parser.ParseString(templateList.Title);
+                    if (! oldTitle.Equals(existingList.Title, StringComparison.OrdinalIgnoreCase))
+                    { 
+                        parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id));
+                        parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                    }
                     isDirty = true;
                 }
                 if (!string.IsNullOrEmpty(templateList.DocumentTemplate))

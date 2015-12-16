@@ -14,7 +14,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ContentType : IEquatable<ContentType>
     {
-
         #region Private Members
         private string _id;
         private List<FieldRef> _fieldRefs = new List<FieldRef>();

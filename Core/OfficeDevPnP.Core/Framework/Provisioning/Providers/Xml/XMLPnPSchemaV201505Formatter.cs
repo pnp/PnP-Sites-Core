@@ -17,6 +17,7 @@ using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
+    [Obsolete("The PnP Provisioning Schema v201505 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
     internal class XMLPnPSchemaV201505Formatter :
         IXMLSchemaFormatter, ITemplateFormatter
     {
@@ -1019,7 +1020,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Row = (uint)wp.Row,
                                  Contents = wp.Contents
 
-                             }).ToList() : null), page.WelcomePage));
+                             }).ToList() : null), page.WelcomePage, null));
 
                 }
             }

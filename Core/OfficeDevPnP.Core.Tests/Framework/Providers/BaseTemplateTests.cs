@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         }
 
         [TestMethod]
-        [Ignore]
+        //[Ignore]
         public void DumpSingleTemplate()
         {
             using (ClientContext ctx = TestCommon.CreateClientContext())
