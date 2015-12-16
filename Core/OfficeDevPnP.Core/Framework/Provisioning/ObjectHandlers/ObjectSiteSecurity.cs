@@ -360,7 +360,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     web.Context.ExecuteQueryRetry();
 
-                    foreach (var group in web.SiteGroups.Where(o => !associatedGroupIds.Contains(o.Id)))
+                    foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
                         scope.LogDebug("Processing group {0}", group.Title);
                         var siteGroup = new SiteGroup()
@@ -556,8 +556,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Security.AdditionalAdministrators.Any() || template.Security.AdditionalMembers.Any() || template.Security.AdditionalOwners.Any() || template.Security.AdditionalVisitors.Any() || template.Security.SiteGroups.Any();
+                _willProvision = (template.Security.AdditionalAdministrators.Any() ||
+                    template.Security.AdditionalMembers.Any() ||
+                    template.Security.AdditionalOwners.Any() ||
+                    template.Security.AdditionalVisitors.Any() ||
+                    template.Security.SiteGroups.Any()) &&
+                    !web.IsSubSite();
             }
+
             return _willProvision.Value;
 
         }
@@ -566,7 +572,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = true;
+                _willExtract = !web.IsSubSite();
             }
             return _willExtract.Value;
         }

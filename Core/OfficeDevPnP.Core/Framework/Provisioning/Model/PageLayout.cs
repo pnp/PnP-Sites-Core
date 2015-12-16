@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                this.Path.GetHashCode(),
+                (this.Path != null ? this.Path.GetHashCode() : 0),
                 this.IsDefault.GetHashCode()
             ).GetHashCode());
         }

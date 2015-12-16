@@ -420,6 +420,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                           ID = wpf.ToString(),
                                       }).ToArray() : null,
                              } : null,
+                         DisplayFormUrl = ct.DisplayFormUrl,
+                         EditFormUrl = ct.EditFormUrl,
+                         NewFormUrl = ct.NewFormUrl,
                      }).ToArray();
             }
             else
@@ -712,7 +715,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                     schemaPage.Layout = pageLayout;
                     schemaPage.Overwrite = page.Overwrite;
-                    schemaPage.Security = page.Security.FromTemplateToSchemaObjectSecurityV201508();
+                    schemaPage.Security = (page.Security != null) ? page.Security.FromTemplateToSchemaObjectSecurityV201508() : null;
 
                     schemaPage.WebParts = page.WebParts.Count > 0 ?
                         (from wp in page.WebParts
@@ -779,7 +782,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Composed Looks
 
             // Translate ComposedLook, if any
-            if (template.ComposedLook != null)
+            if (template.ComposedLook != null && !template.ComposedLook.Equals(Model.ComposedLook.Empty))
             {
                 result.ComposedLook = new V201508.ComposedLook
                 {
@@ -812,7 +815,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              Description = wd.Description,
                              DisplayName = wd.DisplayName,
                              DraftVersion = wd.DraftVersion,
-                             FormField = wd.FormField.ToXmlElement(),
+                             FormField = (wd.FormField != null) ? wd.FormField.ToXmlElement() : null,
                              Id = wd.Id.ToString(),
                              InitiationUrl = wd.InitiationUrl,
                              Properties = (wd.Properties != null && wd.Properties.Count > 0) ?
@@ -1290,7 +1293,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Hidden = fieldRef.Hidden,
                                  Required = fieldRef.Required
                              }) : null)
-
                         )
                     {
                         DocumentSetTemplate = contentType.DocumentSetTemplate != null ?
@@ -1314,6 +1316,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
                                      select Guid.Parse(wpf.ID)) : null
                                 ) : null,
+                        DisplayFormUrl = contentType.DisplayFormUrl,
+                        EditFormUrl = contentType.EditFormUrl,
+                        NewFormUrl = contentType.NewFormUrl,
                     }
                 );
             }
@@ -1661,7 +1666,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (source.SearchSettings != null)
             {
-                result.SearchSettings = source.SearchSettings.ToString();
+                result.SearchSettings = source.SearchSettings.OuterXml;
             }
 
             #endregion
@@ -1688,7 +1693,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               LanguageCode = awt.LanguageCodeSpecified ? awt.LanguageCode : 1033,
                               TemplateName = awt.TemplateName,
                           }) : null,
-                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
+                    source.Publishing.PageLayouts != null && source.Publishing.PageLayouts.PageLayout != null && source.Publishing.PageLayouts.PageLayout.Length > 0 ?
                         (from pl in source.Publishing.PageLayouts.PageLayout
                          select new Model.PageLayout
                          {
@@ -2107,7 +2112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public static V201508.ObjectSecurity FromTemplateToSchemaObjectSecurityV201508(this Model.ObjectSecurity objectSecurity)
         {
-            return ((objectSecurity != null) ?
+            return ((objectSecurity != null && (objectSecurity.ClearSubscopes == true || objectSecurity.CopyRoleAssignments == true || objectSecurity.RoleAssignments.Count > 0)) ?
                 new V201508.ObjectSecurity
                 {
                     BreakRoleInheritance = new V201508.ObjectSecurityBreakRoleInheritance

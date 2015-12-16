@@ -45,11 +45,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|",
-                this.DesignPackagePath.GetHashCode(),
+                (this.DesignPackagePath != null ? this.DesignPackagePath.GetHashCode() : 0),
                 this.MajorVersion.GetHashCode(),
                 this.MinorVersion.GetHashCode(),
-                this.PackageGuid.GetHashCode(),
-                this.PackageName.GetHashCode()
+                (this.PackageGuid != null ? this.PackageGuid.GetHashCode() : 0),
+                (this.PackageName != null ? this.PackageName.GetHashCode() : 0)
             ).GetHashCode());
         }
 

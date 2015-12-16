@@ -25,6 +25,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var list = ctx.Web.GetListByUrl(string.Format("lists/{0}",listName));
+                if (list == null)
+                    list = ctx.Web.GetListByUrl(listName);
                 if (list != null)
                 {
                     list.DeleteObject();
@@ -87,5 +89,77 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(template.Lists.Any());
             }
         }
+
+        [TestMethod]
+        public void FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.RemoveExistingContentTypes = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = BuiltInContentTypeId.DublinCoreName, Default = true });
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+                
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listName);
+                var contentTypes = list.EnsureProperty(l => l.ContentTypes);
+                Assert.IsTrue(contentTypes.Any(ct => ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00")), "Folder content type should not be removed from a document library.");
+            }
+
+        }
+
+        [TestMethod]
+        public void UpdatedListTitleShouldBeAvailableAsToken()
+        {
+            var listUrl = string.Format("lists/{0}", listName);
+            var listId = "";
+
+            // Create the initial list
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var list = ctx.Web.Lists.Add(new ListCreationInformation() { Title = listName, TemplateType = (int)ListTemplateType.GenericList, Url = listUrl });
+                list.EnsureProperty(l => l.Id);
+                ctx.ExecuteQueryRetry();
+                listId = list.Id.ToString();
+            }
+
+            // Update list Title using a provisioning template 
+            // - Using a clean clientcontext to catch all possible "property not loaded" problems
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var updatedListTitle = listName + "_edit";
+                var template = new ProvisioningTemplate();
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = listUrl;
+                listInstance.Title = updatedListTitle;
+                listInstance.TemplateType = (int)ListTemplateType.GenericList;
+                template.Lists.Add(listInstance);
+                var mockProviderType = typeof(MockProviderForListInstanceTests);
+                var providerConfig = "{listid:" + updatedListTitle + "}+{listurl:" + updatedListTitle + "}";
+                template.Providers.Add(new Provider() { Assembly = mockProviderType.Assembly.FullName, Type = mockProviderType.FullName, Enabled = true, Configuration = providerConfig });
+                ctx.Web.ApplyProvisioningTemplate(template);
+            }
+
+            // Verify that tokens have been replaced
+            var expectedConfig = string.Format("{0}+{1}", listId, listUrl).ToLower();
+            Assert.AreEqual(expectedConfig, MockProviderForListInstanceTests.ConfigurationData.ToLower(), "Updated list title is not available as a token.");
     }
+
+        class MockProviderForListInstanceTests : OfficeDevPnP.Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
+        {
+            public static string ConfigurationData { get; private set; }
+            public void ProcessRequest(ClientContext ctx, ProvisioningTemplate template, string configurationData)
+            {
+                ConfigurationData = configurationData;
+            }
+        }
+    }
+
+
 }

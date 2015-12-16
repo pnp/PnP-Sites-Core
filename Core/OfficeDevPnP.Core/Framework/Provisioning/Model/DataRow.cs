@@ -32,6 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _objectSecurity; }
             private set { _objectSecurity = value; }
         }
+
         #endregion
 
         #region constructors
@@ -54,10 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 }
             }
 
-            if (security != null)
-            {
-                this.Security = security;
-            }
+            this.Security = security;
         }
 
         #endregion

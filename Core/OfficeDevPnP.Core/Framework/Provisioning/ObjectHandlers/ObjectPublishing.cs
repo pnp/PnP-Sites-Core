@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
                 {
+                    web.EnsureProperty(w => w.Language);
                     var webTemplates = web.GetAvailableWebTemplates(web.Language, false);
                     web.Context.Load(webTemplates, wts => wts.Include(wt => wt.Name, wt => wt.Lcid));
                     web.Context.ExecuteQueryRetry();
@@ -50,7 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var defaultLayoutXml = web.GetPropertyBagValueString(DEFAULTPAGELAYOUT, null);
 
             var defaultPageLayoutUrl = string.Empty;
-            if (defaultLayoutXml != null)
+            if (defaultLayoutXml != null && defaultLayoutXml != "__inherit")
             {
                 defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value;
             }

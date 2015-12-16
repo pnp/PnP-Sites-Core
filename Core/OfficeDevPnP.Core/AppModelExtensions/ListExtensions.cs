@@ -173,6 +173,7 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
 
             props[key] = value;
+            list.RootFolder.Update();
             list.Update();
             list.Context.ExecuteQueryRetry();
         }
@@ -426,7 +427,10 @@ namespace Microsoft.SharePoint.Client
             if (enableVersioning)
             {
                 newList.EnableVersioning = true;
-                newList.EnableMinorVersions = true;
+                if (templateType == (int)ListTemplateType.DocumentLibrary)
+                {
+                    newList.EnableMinorVersions = true;
+                }
             }
             if (enableContentTypes)
             {
@@ -681,10 +685,10 @@ namespace Microsoft.SharePoint.Client
                   ? new ArgumentNullException("listTitle")
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
             }
-            ListCollection lists = web.Lists;
-            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Where(list => list.Title == listTitle));
+
+            var lists = web.Context.LoadQuery(web.Lists).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
             web.Context.ExecuteQueryRetry();
-            return results.FirstOrDefault();
+            return lists.FirstOrDefault();
         }
 
         /// <summary>
@@ -1057,7 +1061,7 @@ namespace Microsoft.SharePoint.Client
                                 foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
                                 {
                                     term.EnsureProperties(t => t.Id, t => t.Name);
-                                    
+
                                     var wssId = list.ParentWeb.GetWssIdForTerm(term);
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }
@@ -1262,5 +1266,20 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Queues a list for a full crawl the next incremental crawl
+        /// </summary>
+        /// <param name="list"></param>
+        public static void ReIndexList(this List list)
+        {
+            const string reIndexKey = "vti_searchversion";
+            var searchversion = 0;
+
+            if (list.PropertyBagContainsKey(reIndexKey))
+            {
+                searchversion = (int)list.GetPropertyBagValueInt(reIndexKey, 0);
+            }
+            list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+        }
     }
 }

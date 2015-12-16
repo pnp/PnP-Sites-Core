@@ -11,6 +11,7 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Reflection;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -244,27 +245,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True is sub site, false otherwise</returns>
         public static bool IsSubSite(this Web web)
         {
-            bool executeQueryNeeded = false;
             Site site = (web.Context as ClientContext).Site;
 
-            if (!web.IsObjectPropertyInstantiated("Url"))
-            {
-                web.Context.Load(web);
-                executeQueryNeeded = true;
-            }
+            var webUrl = web.EnsureProperty(s => s.Url);
+            var siteUrl = site.EnsureProperty(s => s.Url);
 
-            if (!site.IsObjectPropertyInstantiated("Url"))
-            {
-                web.Context.Load(site);
-                executeQueryNeeded = true;
-            }
-
-            if (executeQueryNeeded)
-            {
-                web.Context.ExecuteQueryRetry();
-            }
-
-            if (web.Url.Equals(site.Url, StringComparison.InvariantCultureIgnoreCase))
+            if (webUrl.Equals(siteUrl, StringComparison.InvariantCultureIgnoreCase))
             {
                 return false;
             }
@@ -648,6 +634,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="value">Value for the property bag entry</param>
         private static void SetPropertyBagValueInternal(Web web, string key, object value)
         {
+            web.AllProperties.ClearObjectData();
+
             var props = web.AllProperties;
 
             // Get the value, if the web properties are already loaded
@@ -746,6 +734,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Value of the property bag entry</returns>
         private static object GetPropertyBagValueInternal(Web web, string key)
         {
+            web.AllProperties.ClearObjectData();
+
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();
@@ -768,6 +758,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the entry exists, false otherwise</returns>
         public static bool PropertyBagContainsKey(this Web web, string key)
         {
+            web.AllProperties.ClearObjectData();
+            
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();
@@ -917,13 +909,13 @@ namespace Microsoft.SharePoint.Client
                    in web.EventReceivers
                         where receiver.ReceiverName == name
                         select receiver;
-            web.Context.LoadQuery(query);
+            var receivers = web.Context.LoadQuery(query);
             web.Context.ExecuteQueryRetry();
 
-            var receiverExists = query.Any();
+            var receiverExists = receivers.Any();
             if (receiverExists && force)
             {
-                var receiver = query.FirstOrDefault();
+                var receiver = receivers.FirstOrDefault();
                 receiver.DeleteObject();
                 web.Context.ExecuteQueryRetry();
                 receiverExists = false;

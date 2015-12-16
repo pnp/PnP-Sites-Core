@@ -8,6 +8,7 @@ using Microsoft.SharePoint.Client;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using System.Configuration;
 using OfficeDevPnP.Core.Entities;
+using System.Threading;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
@@ -18,6 +19,46 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         private string sitecollectionName = "TestPnPSC_123456789_";
 
         #region Test initialize and cleanup
+        [ClassInitialize()]
+        public static void ClassInit(TestContext context)
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                CleanupAllTestSiteCollections(tenantContext);
+            }
+        }
+
+        [ClassCleanup()]
+        public static void ClassCleanup()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                CleanupAllTestSiteCollections(tenantContext);
+            }
+        }
+
+        private static void CleanupAllTestSiteCollections(ClientContext tenantContext)
+        {
+            var tenant = new Tenant(tenantContext);
+            for (int i = 0; i <= 9; i++)
+            {
+                try
+                {
+                    string site = string.Format("TestPnPSC_123456789_{0}", i);
+                    site = GetTestSiteCollectionName(ConfigurationManager.AppSettings["SPODevSiteUrl"], site);
+                    // ensure the site collection in unlocked state before deleting
+                    tenant.SetSiteLockState(site, SiteLockState.Unlock);
+                    // delete the site collection, do not use the recyle bin
+                    tenant.DeleteSiteCollection(site, false);
+                }
+                catch (Exception ex)
+                {
+                    // eat all exceptions
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+        }
+
         [TestInitialize()]
         public void Initialize()
         {
@@ -25,16 +66,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
                 //Ensure nothing was left behind before we run our tests
-                CleanupCreatedTestSiteCollections(tenantContext);
-            }
-        }
-
-        [TestCleanup()]
-        public void CleanUp()
-        {
-            using (var tenantContext = TestCommon.CreateTenantClientContext())
-            {
-                //Cleanup after test run
                 CleanupCreatedTestSiteCollections(tenantContext);
             }
         }
@@ -205,6 +236,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
+                tenantContext.RequestTimeout = Timeout.Infinite;
+
                 var tenant = new Tenant(tenantContext);
                 string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
@@ -239,7 +272,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         #endregion
 
         #region Private helper methods
-        private string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
+        private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {
             Uri u = new Uri(devSiteUrl);
             string host = String.Format("{0}://{1}:{2}", u.Scheme, u.DnsSafeHost, u.Port);

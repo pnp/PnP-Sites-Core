@@ -16,14 +16,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
     public class DomainModelTests
     {
         private string _provisioningTemplatePath1 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath1NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath6 = string.Empty;
+#pragma warning disable CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath6NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05;
+#pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath7 = string.Empty;
+        private string _provisioningTemplatePath8 = string.Empty;
+        private string _provisioningTemplatePath8NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
 
         private const string TEST_CATEGORY = "Framework Provisioning Domain Model";
 
@@ -35,6 +45,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             this._provisioningTemplatePath5 = string.Format(@"{0}\..\..\Resources\Templates\{1}", AppDomain.CurrentDomain.BaseDirectory, "ProvisioningSchema-2015-05-FullSample-01.xml");
             this._provisioningTemplatePath6 = string.Format(@"{0}\..\..\Resources\Templates\{1}", AppDomain.CurrentDomain.BaseDirectory, "ProvisioningSchema-2015-05-ReferenceSample-01.xml");
             this._provisioningTemplatePath7 = string.Format(@"{0}\..\..\Resources\Templates\{1}", AppDomain.CurrentDomain.BaseDirectory, "ProvisioningSchema-2015-05-ReferenceSample-01.json");
+            this._provisioningTemplatePath8 = string.Format(@"{0}\..\..\Resources\Templates\{1}", AppDomain.CurrentDomain.BaseDirectory, "ProvisioningSchema-2015-12-FullSample-02.xml");
         }
 
         #region Formatter Tests
@@ -438,6 +449,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
                 var _formattedTemplateBack = formatter.ToFormattedTemplate(_pt);
 
                 Assert.IsNotNull(_formattedTemplateBack);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void CanDeserializeXMLToDomainObjectFrom201512Full()
+        {
+            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
+                var _pt = formatter.ToProvisioningTemplate(_formattedTemplate);
+                Assert.IsNotNull(_pt);
+            }
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void CanSerializeDomainObjectToXML201512Full()
+        {
+            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
+                var _pt = formatter.ToProvisioningTemplate(_formattedTemplate);
+
+                var _formattedTemplateBack = formatter.ToFormattedTemplate(_pt);
+
+                Assert.IsTrue(formatter.IsValid(_formattedTemplateBack));
             }
         }
 

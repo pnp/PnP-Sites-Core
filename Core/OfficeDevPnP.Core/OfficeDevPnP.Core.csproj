@@ -262,6 +262,7 @@
     <Compile Include="AppModelExtensions\Deprecated\VariationExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\WebExtensions.deprecated.cs" />
     <Compile Include="AppModelExtensions\Deprecated\WorkflowExtensions.deprecated.cs" />
+    <Compile Include="AppModelExtensions\ExternalSharingExtensions.cs" />
     <Compile Include="AppModelExtensions\FieldAndContentTypeExtensions.cs" />
     <Compile Include="AppModelExtensions\FileFolderExtensions.cs" />
     <Compile Include="AppModelExtensions\InformationManagementExtensions.cs" />
@@ -361,6 +362,9 @@
     <Compile Include="Framework\Provisioning\Model\Features.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldRef.cs" />
     <Compile Include="Framework\Provisioning\Model\Field.cs" />
+    <Compile Include="Framework\Provisioning\Model\Folder.cs" />
+    <Compile Include="Framework\Provisioning\Model\Localization.cs" />
+    <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
@@ -386,11 +390,13 @@
     <Compile Include="Framework\Provisioning\Model\SiteSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\User.cs" />
     <Compile Include="Framework\Provisioning\Model\View.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowDefinition.cs" />
     <Compile Include="Framework\Provisioning\Model\Workflows.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishing.cs" />
@@ -421,10 +427,15 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateApplyingInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateCreationInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\SiteToTemplateConversion.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserFullNameToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupId.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GuidToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermSetIdToken.cs" />
@@ -455,12 +466,17 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.cs">
       <DependentUpon>ProvisioningSchema-2015-08.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.cs">
+      <DependentUpon>ProvisioningSchema-2015-12.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLFileSystemTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201503Formatter.cs" />
@@ -538,6 +554,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

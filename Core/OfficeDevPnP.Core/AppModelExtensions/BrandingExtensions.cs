@@ -239,6 +239,12 @@ namespace Microsoft.SharePoint.Client
                 masterUrl = masterServerRelativeUrl;
             }
 
+            //URL decode retrieved url's
+            paletteUrl = System.Net.WebUtility.UrlDecode(paletteUrl);
+            fontUrl = System.Net.WebUtility.UrlDecode(fontUrl);
+            backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
+            masterUrl = System.Net.WebUtility.UrlDecode(masterUrl);
+
             web.SetMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
             web.SetCustomMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
             web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
@@ -705,7 +711,11 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Entity with attributes of current composed look, or null if none</returns>
         public static ThemeEntity GetCurrentComposedLook(this Web web)
         {
-            return GetComposedLook(web, CurrentLookName);
+            web.EnsureProperties(w => w.Language);
+            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
+            web.Context.ExecuteQueryRetry();
+            var themeName = currentTranslated.Value;
+            return GetComposedLook(web, themeName);
         }
 
         /// <summary>
@@ -854,19 +864,19 @@ namespace Microsoft.SharePoint.Client
 
                         if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
                         {
-                            masterPageUrl = (themeItem["MasterPageUrl"] as FieldUrlValue).Url;
+                            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
                         {
-                            imageUrl = (themeItem["ImageUrl"] as FieldUrlValue).Url;
+                            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
                         {
-                            fontUrl = (themeItem["FontSchemeUrl"] as FieldUrlValue).Url;
+                            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
                         {
-                            themeUrl = (themeItem["ThemeUrl"] as FieldUrlValue).Url;
+                            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
                         }
                         if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
                         {
@@ -874,9 +884,7 @@ namespace Microsoft.SharePoint.Client
                         }
 
                         // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                        if ((masterPageUrl == null || theme.MasterPage == null || theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase)) &&
-                            (fontUrl == null || theme.Font == null || theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase)) &&
-                            (themeUrl == null || theme.Theme == null || theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase)))
+                        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                         {
                             theme.Name = name;
                             theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
@@ -893,12 +901,12 @@ namespace Microsoft.SharePoint.Client
                     }
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
-                    if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (!web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0;)
+                            for (int i = themes.Count; i-- > 0; )
                             {
                                 var themeItem = themes[i];
                                 if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
@@ -944,7 +952,7 @@ namespace Microsoft.SharePoint.Client
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
-            if (theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
+            if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
                 && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
             {
                 return null;
@@ -969,6 +977,78 @@ namespace Microsoft.SharePoint.Client
             }
 
             return theme;
+        }
+
+        /// <summary>
+        /// Compares master page URL, theme URL and font URL values to current theme entity to check if they are the same.
+        /// Handles also possible null values. Point is to figure out which theme is the one that is currently
+        /// being selected as "Current"
+        /// </summary>
+        /// <param name="theme">Current theme entity to compare values to</param>
+        /// <param name="masterPageUrl">Master page URL</param>
+        /// <param name="themeUrl">Theme URL</param>
+        /// <param name="fontUrl">Font URL</param>
+        /// <returns></returns>
+        private static bool IsMatchingTheme(ThemeEntity theme, string masterPageUrl, string themeUrl, string fontUrl)
+        {
+            bool themeUrlHasValue = false, fontUrlHasValue = false;
+
+            //Is Masterpage Url meaningful for compare?
+            var masterPageUrlHasValue = !string.IsNullOrEmpty(theme.MasterPage);
+
+            // Is theme URL meaningful for compare?
+            if (!string.IsNullOrEmpty(theme.Theme))
+            {
+                themeUrlHasValue = true;
+            }
+
+            // Is font URL meaningful for compare?
+            if (!string.IsNullOrEmpty(theme.Font))
+            {
+                fontUrlHasValue = true;
+            }
+
+            // Should we compare all of the values?
+            if (masterPageUrlHasValue && themeUrlHasValue && fontUrlHasValue)
+            {
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we compare only master page and theme URL?
+            if (masterPageUrlHasValue && themeUrlHasValue && !fontUrlHasValue)
+            {
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Theme.Equals(themeUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we compare only master page and font value?
+            if (masterPageUrlHasValue && !themeUrlHasValue && fontUrlHasValue)
+            {
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase) &&
+                    theme.Font.Equals(fontUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            // Should we only compare master page
+            if (masterPageUrlHasValue && !themeUrlHasValue && !fontUrlHasValue)
+            {
+                if (!string.IsNullOrEmpty(theme.MasterPage) && theme.MasterPage.Equals(masterPageUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static bool IsUsingOfficeTheme(this Web web)
