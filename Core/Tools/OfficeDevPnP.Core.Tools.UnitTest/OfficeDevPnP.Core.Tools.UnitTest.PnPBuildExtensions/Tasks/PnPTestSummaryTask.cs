@@ -1,14 +1,15 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
 {
-    public class PnPTestSummaryTask: Task
+    public class PnPTestSummary: Task
     {
         [Required]
         public String TestResultsPath
@@ -26,7 +27,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                 Dictionary<string, string> parameters = new Dictionary<string, string>();
                 parameters.Add("MDPath", TestResultsPath);
 
-                PnPTestManager testManager = new PnPTestManager(parameters);
+                TestManager testManager = new TestManager(parameters);
                 testManager.GenerateMDSummaryReport();
 
                 return true;

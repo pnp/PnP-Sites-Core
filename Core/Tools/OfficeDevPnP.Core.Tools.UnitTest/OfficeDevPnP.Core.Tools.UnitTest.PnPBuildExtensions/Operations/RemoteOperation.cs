@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations
 {
     /// <summary>
     /// Used to differentiate the authentication scheme details during execution

@@ -14,9 +14,9 @@ using System.Xml;
 using System.Xml.Serialization;
 using System.Xml.XPath;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD
 {
-    public class PnPTestManager
+    public class TestManager
     {
         #region constants
         private static string TestDate = "%testdate%";
@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Constructor
-        public PnPTestManager(Dictionary<string, string> parameters)
+        public TestManager(Dictionary<string, string> parameters)
         {
             loggerParameters = parameters;
             testResults = new List<TestResult>();
@@ -86,16 +86,16 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             this.elapsedTimeInRunningTests = elapsedTime;
 
             // All tests are done, so generate the report
-            PnPTestSummary summary = GenerateMDTestReport();
+            TestSummary summary = GenerateMDTestReport();
 
             // Add this test run to the other test runs in our XML database
-            UpdateXMLTestResultFile(Path.Combine(GetParameter(PnPTestManager.ParameterMDPath), "PnPTestResultsSummary.xml"), summary);
+            UpdateXMLTestResultFile(Path.Combine(GetParameter(TestManager.ParameterMDPath), "PnPTestResultsSummary.xml"), summary);
         }
 
         public void GenerateMDSummaryReport()
         {
             int maxItemsInReport = 100;
-            string testResultFile = Path.Combine(GetParameter(PnPTestManager.ParameterMDPath), "PnPTestResultsSummary.xml");
+            string testResultFile = Path.Combine(GetParameter(TestManager.ParameterMDPath), "PnPTestResultsSummary.xml");
 
             XmlDocument xDoc = new XmlDocument();
             if (File.Exists(testResultFile))
@@ -104,7 +104,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 
                 // Grab the template from the resource
                 string mdTemplate = "";
-                using (Stream stream = typeof(PnPTestManager).Assembly.GetManifestResourceStream(String.Format("{0}.MDTestSummaryTemplate.md", typeof(PnPTestManager).Namespace)))
+                using (Stream stream = typeof(TestManager).Assembly.GetManifestResourceStream(String.Format("{0}.MDTestSummaryTemplate.md", typeof(TestManager).Namespace)))
                 {
                     StreamReader reader = new StreamReader(stream);
                     mdTemplate = reader.ReadToEnd();
@@ -139,10 +139,10 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                     }
                 }
 
-                mdTemplate = mdTemplate.Replace(PnPTestManager.TestSummary, lines.ToString());
+                mdTemplate = mdTemplate.Replace(TestManager.TestSummary, lines.ToString());
 
                 // Persist the MD file
-                File.WriteAllText(Path.Combine(GetParameter(PnPTestManager.ParameterMDPath), "readme.md"), mdTemplate);
+                File.WriteAllText(Path.Combine(GetParameter(TestManager.ParameterMDPath), "readme.md"), mdTemplate);
 
                 // Persist the updated XML again
                 xDoc.Save(testResultFile);
@@ -157,39 +157,39 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
         #endregion
 
         #region Private methods
-        private PnPTestSummary GenerateMDTestReport()
+        private TestSummary GenerateMDTestReport()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-US");
 
-            PnPTestSummary summary = new PnPTestSummary();
+            TestSummary summary = new TestSummary();
 
             // Grab the template from the resource
             string mdTemplate = "";
-            using (Stream stream = typeof(PnPTestManager).Assembly.GetManifestResourceStream(String.Format("{0}.MDTestResultTemplate.md", typeof(PnPTestManager).Namespace)))
+            using (Stream stream = typeof(TestManager).Assembly.GetManifestResourceStream(String.Format("{0}.MDTestResultTemplate.md", typeof(TestManager).Namespace)))
             {
                 StreamReader reader = new StreamReader(stream);
                 mdTemplate = reader.ReadToEnd();
             }
 
             // replace header strings
-            mdTemplate = mdTemplate.Replace(PnPTestManager.Configuration, GetParameter(PnPTestManager.ParameterPnPConfigurationToTest));
-            mdTemplate = mdTemplate.Replace(PnPTestManager.TestDate, testDate.ToLongDateString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.TestTime, testStart.UtcDateTime.ToShortTimeString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.PnPBranch, GetParameter(PnPTestManager.ParameterPnPBranch));
-            mdTemplate = mdTemplate.Replace(PnPTestManager.VSBuildConfiguration, GetParameter(PnPTestManager.ParameterPnPBuildConfiguration));
-            mdTemplate = mdTemplate.Replace(PnPTestManager.NumberOfTests, testRunStatistics.ExecutedTests.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.ElapsedTime, elapsedTimeInRunningTests.ToString("h'h 'm'm 's's'"));
-            mdTemplate = mdTemplate.Replace(PnPTestManager.TestWasCanceled, isCanceled.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.TestWasAborted, isAborted.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.TestError, null != error ? error.ToString() : "");
+            mdTemplate = mdTemplate.Replace(TestManager.Configuration, GetParameter(TestManager.ParameterPnPConfigurationToTest));
+            mdTemplate = mdTemplate.Replace(TestManager.TestDate, testDate.ToLongDateString());
+            mdTemplate = mdTemplate.Replace(TestManager.TestTime, testStart.UtcDateTime.ToShortTimeString());
+            mdTemplate = mdTemplate.Replace(TestManager.PnPBranch, GetParameter(TestManager.ParameterPnPBranch));
+            mdTemplate = mdTemplate.Replace(TestManager.VSBuildConfiguration, GetParameter(TestManager.ParameterPnPBuildConfiguration));
+            mdTemplate = mdTemplate.Replace(TestManager.NumberOfTests, testRunStatistics.ExecutedTests.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.ElapsedTime, elapsedTimeInRunningTests.ToString("h'h 'm'm 's's'"));
+            mdTemplate = mdTemplate.Replace(TestManager.TestWasCanceled, isCanceled.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.TestWasAborted, isAborted.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.TestError, null != error ? error.ToString() : "");
 
             // fill summary class
-            summary.PnPConfigurationToTest = GetParameter(PnPTestManager.ParameterPnPConfigurationToTest);
+            summary.PnPConfigurationToTest = GetParameter(TestManager.ParameterPnPConfigurationToTest);
             summary.TestDate = testDate.ToLongDateString();
             summary.TestTime = testStart.UtcDateTime.ToShortTimeString();
-            summary.PnPBranch = GetParameter(PnPTestManager.ParameterPnPBranch);
-            summary.VSBuildConfiguration = GetParameter(PnPTestManager.ParameterPnPBuildConfiguration);
+            summary.PnPBranch = GetParameter(TestManager.ParameterPnPBranch);
+            summary.VSBuildConfiguration = GetParameter(TestManager.ParameterPnPBuildConfiguration);
             summary.NumberOfTests = testRunStatistics.ExecutedTests;
             summary.ElapsedTime = elapsedTimeInRunningTests.ToString("h'h 'm'm 's's'");
 
@@ -221,12 +221,12 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
                     passed.AppendLine(String.Format("<tr><td>{0}</td><td>{1}</td><td>{2}</td></tr>", testCaseName, test.Outcome, test.Duration.ToString("h'h 'm'm 's's'")));
                 }
             }
-            mdTemplate = mdTemplate.Replace(PnPTestManager.FailedTestDetails, failed.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.SkippedTestDetails, skipped.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.PassedTestDetails, passed.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.FailedTests, failedTests.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.SkippedTests, skippedTests.ToString());
-            mdTemplate = mdTemplate.Replace(PnPTestManager.PassedTests, passedTests.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.FailedTestDetails, failed.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.SkippedTestDetails, skipped.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.PassedTestDetails, passed.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.FailedTests, failedTests.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.SkippedTests, skippedTests.ToString());
+            mdTemplate = mdTemplate.Replace(TestManager.PassedTests, passedTests.ToString());
 
             // fill summary class
             summary.FailedTests = failedTests;
@@ -234,16 +234,16 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
             summary.PassedTests = passedTests;
 
             // save the MD file
-            string fileName = string.Format("PnPUnitTestResults-{0}-{1}-{2}.md", testDate.ToString("yyyyMMdd"), GetParameter(PnPTestManager.ParameterPnPConfigurationToTest), testStart.Ticks);
-            Directory.CreateDirectory(GetParameter(PnPTestManager.ParameterMDPath));
-            File.WriteAllText(Path.Combine(GetParameter(PnPTestManager.ParameterMDPath), fileName), mdTemplate);
+            string fileName = string.Format("PnPUnitTestResults-{0}-{1}-{2}.md", testDate.ToString("yyyyMMdd"), GetParameter(TestManager.ParameterPnPConfigurationToTest), testStart.Ticks);
+            Directory.CreateDirectory(GetParameter(TestManager.ParameterMDPath));
+            File.WriteAllText(Path.Combine(GetParameter(TestManager.ParameterMDPath), fileName), mdTemplate);
 
-            summary.MDResultFile = Path.Combine(GetParameter(PnPTestManager.ParameterMDPath), fileName);
+            summary.MDResultFile = Path.Combine(GetParameter(TestManager.ParameterMDPath), fileName);
 
             return summary;
         }
 
-        private void UpdateXMLTestResultFile(string testResultFile, PnPTestSummary summary)
+        private void UpdateXMLTestResultFile(string testResultFile, TestSummary summary)
         {
             XmlElement rootNode;
 

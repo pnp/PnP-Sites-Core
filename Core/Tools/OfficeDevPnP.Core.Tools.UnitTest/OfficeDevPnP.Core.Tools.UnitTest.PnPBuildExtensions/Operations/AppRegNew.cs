@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations
 {
     /// <summary>
     /// Register an app using appregnew.aspx

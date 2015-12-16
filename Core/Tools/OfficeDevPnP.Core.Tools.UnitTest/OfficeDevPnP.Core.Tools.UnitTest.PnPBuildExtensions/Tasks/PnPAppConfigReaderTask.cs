@@ -1,11 +1,12 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
 {
     public class PnPAppConfigReaderTask : Task
     {

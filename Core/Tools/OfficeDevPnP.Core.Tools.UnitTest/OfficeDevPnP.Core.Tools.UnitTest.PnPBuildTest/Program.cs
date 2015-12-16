@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations;
 using System;
 using System.Collections.Generic;
 using System.Linq;

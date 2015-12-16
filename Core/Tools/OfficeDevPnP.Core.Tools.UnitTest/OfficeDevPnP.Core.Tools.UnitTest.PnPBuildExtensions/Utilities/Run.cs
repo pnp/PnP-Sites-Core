@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities
     public class Run
     {
         /// <summary>
-        /// Method to onvoke ps1 files from c#
+        /// Method to invoke ps1 files from c#
         /// </summary>
         /// <param name="powershellpath">path of ps1 to be execute</param>
         /// <param name="Parameters">collection of paramets/arguments in the ps1 script file</param>
@@ -52,6 +52,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 throw;
             }
 

@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD
 {
     [ExtensionUri("logger://MDLogger/v1")] /// Uri used to uniquely identify the MD logger. 
     [FriendlyName("MDLogger")] /// Alternate user friendly string to uniquely identify the logger.
-    public class VSTestMDLogger : ITestLoggerWithParameters
+    public class VSTestLogger : ITestLoggerWithParameters
     {
-        private PnPTestManager testManager;
+        private TestManager testManager;
 
         public void Initialize(TestLoggerEvents events, string testRunDirectory)
         {
@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
 
         public void Initialize(TestLoggerEvents events, Dictionary<string, string> parameters)
         {
-            testManager = new PnPTestManager(parameters);
+            testManager = new TestManager(parameters);
 
             foreach (var param in parameters)
             {

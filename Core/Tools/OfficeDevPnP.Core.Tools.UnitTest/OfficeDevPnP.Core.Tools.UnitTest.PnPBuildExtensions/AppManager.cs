@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Resources;
+﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Resources;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
 using System;
 using System.Collections;

@@ -60,27 +60,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppInv.cs" />
+    <Compile Include="Operations\AppInv.cs" />
     <Compile Include="AppManager.cs" />
-    <Compile Include="AppRegNew.cs" />
-    <Compile Include="PnPAppConfigGeneratorTask.cs" />
-    <Compile Include="PnPAppConfigManager.cs" />
-    <Compile Include="PnPAppConfigReaderTask.cs" />
-    <Compile Include="PnPTestManager.cs" />
-    <Compile Include="PnPTestSummary.cs" />
-    <Compile Include="PnPTestSummaryTask.cs" />
+    <Compile Include="Operations\AppRegNew.cs" />
+    <Compile Include="Tasks\PnPAppConfigGeneratorTask.cs" />
+    <Compile Include="MD\PnPAppConfigManager.cs" />
+    <Compile Include="Tasks\PnPAppConfigReaderTask.cs" />
+    <Compile Include="MD\TestManager.cs" />
+    <Compile Include="MD\TestSummary.cs" />
+    <Compile Include="Tasks\PnPTestSummaryTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RemoteOperation.cs" />
+    <Compile Include="Operations\RemoteOperation.cs" />
     <Compile Include="Resources\PublishingTypes.cs" />
     <Compile Include="Resources\ResourceManager.cs" />
+    <Compile Include="SQL\TestManager.cs" />
     <Compile Include="Tasks\RegisterNewApp.cs" />
     <Compile Include="Utilities\RemoteOperationUtilities.cs" />
     <Compile Include="Utilities\CredentialManager.cs" />
     <Compile Include="Utilities\Run.cs" />
-    <Compile Include="VSTestMDLogger.cs" />
+    <Compile Include="MD\VSTestLogger.cs" />
+    <Compile Include="SQL\VSTestLogger.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mastertestconfiguration sample.xml">
+    <Content Include="MD\mastertestconfiguration sample.xml">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="nuget.exe">
@@ -89,10 +91,10 @@
     <EmbeddedResource Include="Resources\pubxml.office365.providerhosted.azurewebsite.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MDTestResultTemplate.md" />
+    <EmbeddedResource Include="MD\MDTestResultTemplate.md" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MDTestSummaryTemplate.md">
+    <EmbeddedResource Include="MD\MDTestSummaryTemplate.md">
       <SubType>Component</SubType>
     </EmbeddedResource>
   </ItemGroup>
