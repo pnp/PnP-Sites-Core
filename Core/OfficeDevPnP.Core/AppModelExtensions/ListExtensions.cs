@@ -928,6 +928,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="rowLimit"></param>
         /// <param name="setAsDefault"></param>
         /// <param name="query"></param>
+        /// <param name="paged"></param>        
         /// <param name="personal"></param>
         public static View CreateView(this List list,
                                       string viewName,
@@ -936,6 +937,7 @@ namespace Microsoft.SharePoint.Client
                                       uint rowLimit,
                                       bool setAsDefault,
                                       string query = null,
+                                      bool paged = false,
                                       bool personal = false)
         {
             if (string.IsNullOrEmpty(viewName))
@@ -947,6 +949,7 @@ namespace Microsoft.SharePoint.Client
             viewCreationInformation.RowLimit = rowLimit;
             viewCreationInformation.ViewFields = viewFields;
             viewCreationInformation.PersonalView = personal;
+            viewCreationInformation.Paged = paged;
             viewCreationInformation.SetAsDefaultView = setAsDefault;
             if (!string.IsNullOrEmpty(query))
             {
