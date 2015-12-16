@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
 #if !CLIENTSDKV15
-            Version minimumRequiredServerVersion = new Version("16.0.4724.1200");
+            Version minimumRequiredServerVersion = new Version("16.0.4803.1200");
 #else
             Version minimumRequiredServerVersion = new Version("15.0.4787.1000");
 #endif
@@ -119,7 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            if (web.Context.ServerLibraryVersion.CompareTo(minimumRequiredServerVersion) >= 0)
+                            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                             {
                                 // Not a wikipage
                                 template = GetFileContents(web, template, welcomePageUrl);
@@ -140,7 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        if (web.Context.ServerLibraryVersion.CompareTo(minimumRequiredServerVersion) >= 0)
+                        if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                         {
                             // Page does not belong to a list, extract the file as is
                             template = GetFileContents(web, template, welcomePageUrl);

@@ -75,8 +75,15 @@ namespace Microsoft.SharePoint.Client
             File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
             LimitedWebPartManager limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
-            var query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
-
+            IEnumerable<WebPartDefinition> query = null;
+            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
+            {
+                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.ZoneId, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            }
+            else
+            {
+                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            }
             web.Context.ExecuteQueryRetry();
 
             return query;
@@ -407,7 +414,7 @@ namespace Microsoft.SharePoint.Client
 
             return webPartXml;
         }
-        
+
 #endif
         /// <summary>
         /// Applies a layout to a wiki page
