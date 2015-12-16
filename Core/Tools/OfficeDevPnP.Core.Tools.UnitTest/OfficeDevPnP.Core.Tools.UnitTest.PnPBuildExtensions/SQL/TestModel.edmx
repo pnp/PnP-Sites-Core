@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl" Namespace="TestModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005">
+        <EntityContainer Name="TestModelTargetContainer" >
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema xmlns="http://schemas.microsoft.com/ado/2009/11/edm" xmlns:cg="http://schemas.microsoft.com/ado/2006/04/codegeneration" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" Namespace="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" annotation:UseStrongSpatialTypes="false">
+        <EntityContainer Name="TestModelContainer" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="TestRunSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" />
+          <EntitySet Name="TestResultSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" />
+          <EntitySet Name="TestResultMessageSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultMessage" />
+          <AssociationSet Name="TestResultTestResultMessage" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultTestResultMessage">
+            <End Role="TestResult" EntitySet="TestResultSet" />
+            <End Role="TestResultMessage" EntitySet="TestResultMessageSet" />
+          </AssociationSet>
+          <AssociationSet Name="TestRunTestResult" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult">
+            <End Role="TestRun" EntitySet="TestRunSet" />
+            <End Role="TestResult" EntitySet="TestResultSet" />
+          </AssociationSet>
+          <EntitySet Name="TestConfigurationSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" />
+          <AssociationSet Name="TestConfigurationTestRun" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun">
+            <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
+            <End Role="TestRun" EntitySet="TestRunSet" />
+          </AssociationSet>
+          <EntitySet Name="TestAuthenticationSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" />
+          <EntitySet Name="TestConfigurationPropertySet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" />
+          <AssociationSet Name="TestConfigurationTestAuthentication" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication">
+            <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
+            <End Role="TestAuthentication" EntitySet="TestAuthenticationSet" />
+          </AssociationSet>
+          <AssociationSet Name="TestConfigurationTestConfigurationProperty" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty">
+            <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
+            <End Role="TestConfigurationProperty" EntitySet="TestConfigurationPropertySet" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="TestRun">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="TestResults" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult" FromRole="TestRun" ToRole="TestResult" />
+          <NavigationProperty Name="TestConfiguration" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" FromRole="TestRun" ToRole="TestConfiguration" />
+          <Property Name="TestConfigurationId" Type="Int32" Nullable="false" />
+          <Property Name="TestDate" Type="DateTime" Nullable="false" />
+          <Property Name="TestTime" Type="Time" Nullable="false" />
+          <Property Name="TestWasAborted" Type="Boolean" Nullable="false" />
+          <Property Name="TestWasCancelled" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="TestResult">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TestCaseName" Type="String" Nullable="false" />
+          <Property Name="Outcome" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Outcome" Nullable="false" />
+          <Property Name="Duration" Type="Time" Nullable="false" />
+          <Property Name="ErrorMessage" Type="String" Nullable="true" />
+          <Property Name="ErrorStackTrace" Type="String" Nullable="true" />
+          <Property Name="StartTime" Type="DateTimeOffset" Nullable="false" />
+          <Property Name="EndTime" Type="DateTimeOffset" Nullable="false" />
+          <Property Name="ComputerName" Type="String" Nullable="true" />
+          <NavigationProperty Name="TestResultMessages" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultTestResultMessage" FromRole="TestResult" ToRole="TestResultMessage" />
+          <NavigationProperty Name="TestRun" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult" FromRole="TestResult" ToRole="TestRun" />
+          <Property Name="TestRunId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EnumType Name="Outcome" IsFlags="false">
+          <Member Name="Passed" Value="0" />
+          <Member Name="Skipped" Value="1" />
+          <Member Name="Failed" Value="2" />
+        </EnumType>
+        <EntityType Name="TestResultMessage">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Category" Type="String" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" />
+          <NavigationProperty Name="TestResult" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultTestResultMessage" FromRole="TestResultMessage" ToRole="TestResult" />
+          <Property Name="TestResultId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="TestResultTestResultMessage">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Role="TestResult" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultMessage" Role="TestResultMessage" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestResult">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TestResultMessage">
+              <PropertyRef Name="TestResultId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="TestRunTestResult">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Role="TestRun" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Role="TestResult" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestRun">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TestResult">
+              <PropertyRef Name="TestRunId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="TestConfiguration">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <NavigationProperty Name="TestRuns" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" FromRole="TestConfiguration" ToRole="TestRun" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="true" />
+          <Property Name="VSBuildConfiguration" Type="String" Nullable="false" />
+          <Property Name="Branch" Type="String" Nullable="false" />
+          <Property Name="Type" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationType" Nullable="false" />
+          <Property Name="Build" Type="String" Nullable="false" />
+          <Property Name="TenantUrl" Type="String" Nullable="true" />
+          <Property Name="TestSiteUrl" Type="String" Nullable="false" />
+          <NavigationProperty Name="TestAuthentication" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" FromRole="TestConfiguration" ToRole="TestAuthentication" />
+          <NavigationProperty Name="TestConfigurationProperties" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" FromRole="TestConfiguration" ToRole="TestConfigurationProperty" />
+        </EntityType>
+        <Association Name="TestConfigurationTestRun">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Role="TestRun" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestConfiguration">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TestRun">
+              <PropertyRef Name="TestConfigurationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EnumType Name="TestConfigurationType" IsFlags="false">
+          <Member Name="Online" Value="0" />
+          <Member Name="SharePoint2013" Value="1" />
+          <Member Name="SharePoint2016" Value="2" />
+        </EnumType>
+        <EntityType Name="TestAuthentication">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AppOnly" Type="Boolean" Nullable="false" />
+          <Property Name="AppId" Type="String" Nullable="true" />
+          <Property Name="AppSecret" Type="String" Nullable="true" />
+          <Property Name="User" Type="String" Nullable="true" />
+          <Property Name="Domain" Type="String" Nullable="true" />
+          <Property Name="Password" Type="String" Nullable="true" />
+          <Property Name="CredentialManagerLabel" Type="String" />
+          <NavigationProperty Name="TestConfigurations" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" FromRole="TestAuthentication" ToRole="TestConfiguration" />
+        </EntityType>
+        <EntityType Name="TestConfigurationProperty">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="Value" Type="String" Nullable="false" />
+          <NavigationProperty Name="TestConfiguration" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" FromRole="TestConfigurationProperty" ToRole="TestConfiguration" />
+          <Property Name="TestConfigurationId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="TestConfigurationTestAuthentication">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="*" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Role="TestAuthentication" Multiplicity="1" />
+        </Association>
+        <Association Name="TestConfigurationTestConfigurationProperty">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Role="TestConfigurationProperty" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TestConfiguration">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="TestConfigurationProperty">
+              <PropertyRef Name="TestConfigurationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs" Space="C-S">
+        <Alias Key="Model" Value="TestModel" />
+        <Alias Key="Target" Value="TestModel.Store" />
+        <EntityContainerMapping CdmEntityContainer="TestModelContainer" StorageEntityContainer="TestModelTargetContainer">
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <edmx:Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </edmx:Connection>
+    <edmx:Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </edmx:Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
