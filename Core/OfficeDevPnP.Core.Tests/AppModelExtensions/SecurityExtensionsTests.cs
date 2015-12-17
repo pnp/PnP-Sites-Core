@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
@@ -438,6 +439,25 @@ namespace Microsoft.SharePoint.Client.Tests
                 }
             }
         }
+        #endregion
+
+        #region Get all unique role assignments tests
+
+        [TestMethod]
+        public void GetAllUniqueRoleAssignmentsTest()
+        {
+            using (ClientContext clientContext = TestCommon.CreateClientContext())
+            {
+                var assignments = clientContext.Web.GetAllUniqueRoleAssignments();
+                Assert.AreNotEqual(null, assignments);
+                Assert.AreNotEqual(0, assignments.Count());
+                foreach (var item in assignments)
+                {
+                    Trace.WriteLine(item);
+                }                
+            }
+        }
+
         #endregion
 
         #region helper methods

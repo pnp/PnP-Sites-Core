@@ -296,6 +296,7 @@
     <Compile Include="Entities\SiteEntity.cs" />
     <Compile Include="Entities\SitePolicyEntity.cs" />
     <Compile Include="Entities\ThemeEntity.cs" />
+    <Compile Include="Entities\RoleAssignmentEntity.cs" />
     <Compile Include="Entities\UserEntity.cs" />
     <Compile Include="Entities\VariationInformation.cs" />
     <Compile Include="Entities\VariationLabelEntity.cs" />
@@ -542,7 +543,6 @@
   <ItemGroup>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
