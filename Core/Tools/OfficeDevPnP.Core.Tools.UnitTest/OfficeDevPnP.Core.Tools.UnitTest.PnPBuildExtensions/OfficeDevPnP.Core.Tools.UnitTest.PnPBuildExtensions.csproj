@@ -143,6 +143,7 @@
       <LastGenOutput>TestModel.Context.cs</LastGenOutput>
       <DependentUpon>TestModel.edmx</DependentUpon>
     </Content>
+    <Content Include="SQL\TestModel.edmx.sql" />
     <Content Include="SQL\TestModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestModel.cs</LastGenOutput>
@@ -184,6 +185,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
