@@ -119,6 +119,7 @@
     <Compile Include="SQL\TestRun.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Tasks\PnPBase64EncoderTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigGeneratorTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigReaderTask.cs" />
     <Compile Include="Tasks\PnPXmlAppConfigGeneratorTask.cs" />
@@ -169,7 +170,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="msbuildrun.bat">
+    <None Include="MD\msbuildrun.bat">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />

@@ -241,6 +241,8 @@
           <Member Name="Passed" Value="0" />
           <Member Name="Skipped" Value="1" />
           <Member Name="Failed" Value="2" />
+          <Member Name="NotFound" Value="3" />
+          <Member Name="None" Value="4" />
         </EnumType>
         <EntityType Name="TestResultMessage">
           <Key>

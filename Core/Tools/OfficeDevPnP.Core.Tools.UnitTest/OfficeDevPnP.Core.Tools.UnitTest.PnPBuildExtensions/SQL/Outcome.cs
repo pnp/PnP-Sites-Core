@@ -15,6 +15,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
     {
         Passed = 0,
         Skipped = 1,
-        Failed = 2
+        Failed = 2,
+        NotFound = 3,
+        None = 4
     }
 }
