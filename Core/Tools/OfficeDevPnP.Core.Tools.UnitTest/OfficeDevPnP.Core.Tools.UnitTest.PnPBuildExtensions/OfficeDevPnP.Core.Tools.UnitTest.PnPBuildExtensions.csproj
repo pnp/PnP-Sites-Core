@@ -74,10 +74,15 @@
     <Compile Include="Operations\AppInv.cs" />
     <Compile Include="AppManager.cs" />
     <Compile Include="Operations\AppRegNew.cs" />
+    <Compile Include="SQL\DataManager.cs" />
     <Compile Include="SQL\Outcome.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQL\PnPAppConfigManager.cs" />
     <Compile Include="SQL\TestAuthentication.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SQL\TestAuthenticationType.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
     <Compile Include="SQL\TestConfiguration.cs">
@@ -104,6 +109,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>TestModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="SQL\TestModelContainer.cs" />
     <Compile Include="SQL\TestResult.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
@@ -113,9 +119,11 @@
     <Compile Include="SQL\TestRun.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Tasks\PnPAppConfigGeneratorTask.cs" />
+    <Compile Include="Tasks\PnPSQLAppConfigGeneratorTask.cs" />
+    <Compile Include="Tasks\PnPSQLAppConfigReaderTask.cs" />
+    <Compile Include="Tasks\PnPXmlAppConfigGeneratorTask.cs" />
     <Compile Include="MD\PnPAppConfigManager.cs" />
-    <Compile Include="Tasks\PnPAppConfigReaderTask.cs" />
+    <Compile Include="Tasks\PnPXmlAppConfigReaderTask.cs" />
     <Compile Include="MD\TestManager.cs" />
     <Compile Include="MD\TestSummary.cs" />
     <Compile Include="Tasks\PnPTestSummaryTask.cs" />

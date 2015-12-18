@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 12/17/2015 09:01:43
+-- Date Created: 12/18/2015 12:40:26
 -- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -66,6 +66,7 @@ CREATE TABLE [dbo].[TestRunSet] (
     [TestConfigurationId] int  NOT NULL,
     [TestDate] datetime  NOT NULL,
     [TestTime] time  NOT NULL,
+    [Build] nvarchar(max)  NOT NULL,
     [TestWasAborted] bit  NOT NULL,
     [TestWasCancelled] bit  NOT NULL
 );
@@ -103,7 +104,6 @@ CREATE TABLE [dbo].[TestConfigurationSet] (
     [VSBuildConfiguration] nvarchar(max)  NOT NULL,
     [Branch] nvarchar(max)  NOT NULL,
     [Type] int  NOT NULL,
-    [Build] nvarchar(max)  NOT NULL,
     [TenantUrl] nvarchar(max)  NULL,
     [TestSiteUrl] nvarchar(max)  NOT NULL,
     [TestAuthentication_Id] int  NOT NULL
@@ -113,6 +113,9 @@ GO
 -- Creating table 'TestAuthenticationSet'
 CREATE TABLE [dbo].[TestAuthenticationSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
+    [Name] nvarchar(max)  NOT NULL,
+    [Description] nvarchar(max)  NULL,
+    [Type] int  NOT NULL,
     [AppOnly] bit  NOT NULL,
     [AppId] nvarchar(max)  NULL,
     [AppSecret] nvarchar(max)  NULL,
@@ -182,7 +185,7 @@ ADD CONSTRAINT [FK_TestResultTestResultMessage]
     FOREIGN KEY ([TestResultId])
     REFERENCES [dbo].[TestResultSet]
         ([Id])
-    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    ON DELETE CASCADE ON UPDATE NO ACTION;
 GO
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_TestResultTestResultMessage'
@@ -197,7 +200,7 @@ ADD CONSTRAINT [FK_TestRunTestResult]
     FOREIGN KEY ([TestRunId])
     REFERENCES [dbo].[TestRunSet]
         ([Id])
-    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    ON DELETE CASCADE ON UPDATE NO ACTION;
 GO
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_TestRunTestResult'
@@ -242,7 +245,7 @@ ADD CONSTRAINT [FK_TestConfigurationTestConfigurationProperty]
     FOREIGN KEY ([TestConfigurationId])
     REFERENCES [dbo].[TestConfigurationSet]
         ([Id])
-    ON DELETE NO ACTION ON UPDATE NO ACTION;
+    ON DELETE CASCADE ON UPDATE NO ACTION;
 GO
 
 -- Creating non-clustered index for FOREIGN KEY 'FK_TestConfigurationTestConfigurationProperty'

@@ -41,6 +41,7 @@
     <Property Name="TestConfigurationId" Type="int" Nullable="false" />
     <Property Name="TestDate" Type="datetime" Nullable="false" />
     <Property Name="TestTime" Type="time" Nullable="false" />
+    <Property Name="Build" Type="nvarchar(max)" Nullable="false" />
     <Property Name="TestWasAborted" Type="bit" Nullable="false" />
     <Property Name="TestWasCancelled" Type="bit" Nullable="false" />
   </EntityType>
@@ -78,7 +79,6 @@
     <Property Name="VSBuildConfiguration" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Branch" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Type" Type="int" Nullable="false" />
-    <Property Name="Build" Type="nvarchar(max)" Nullable="false" />
     <Property Name="TenantUrl" Type="nvarchar(max)" Nullable="true" />
     <Property Name="TestSiteUrl" Type="nvarchar(max)" Nullable="false" />
     <Property Name="TestAuthentication_Id" Type="int" Nullable="false" />
@@ -88,6 +88,9 @@
       <PropertyRef Name="Id" />
     </Key>
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Description" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="Type" Type="int" Nullable="false" />
     <Property Name="AppOnly" Type="bit" Nullable="false" />
     <Property Name="AppId" Type="nvarchar(max)" Nullable="true" />
     <Property Name="AppSecret" Type="nvarchar(max)" Nullable="true" />
@@ -106,7 +109,9 @@
     <Property Name="TestConfigurationId" Type="int" Nullable="false" />
   </EntityType>
   <Association Name="TestResultTestResultMessage">
-    <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1" />
+    <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="TestResultMessage" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultMessageSet" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="TestResult">
@@ -118,7 +123,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="TestRunTestResult">
-    <End Role="TestRun" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestRunSet" Multiplicity="1" />
+    <End Role="TestRun" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestRunSet" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="TestRun">
@@ -154,7 +161,9 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="TestConfigurationTestConfigurationProperty">
-    <End Role="TestConfiguration" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationSet" Multiplicity="1" />
+    <End Role="TestConfiguration" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationSet" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="TestConfigurationProperty" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationPropertySet" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="TestConfiguration">
@@ -207,6 +216,7 @@
           <Property Name="TestConfigurationId" Type="Int32" Nullable="false" />
           <Property Name="TestDate" Type="DateTime" Nullable="false" />
           <Property Name="TestTime" Type="Time" Nullable="false" />
+          <Property Name="Build" Type="String" Nullable="false" />
           <Property Name="TestWasAborted" Type="Boolean" Nullable="false" />
           <Property Name="TestWasCancelled" Type="Boolean" Nullable="false" />
         </EntityType>
@@ -243,7 +253,9 @@
           <Property Name="TestResultId" Type="Int32" Nullable="false" />
         </EntityType>
         <Association Name="TestResultTestResultMessage">
-          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Role="TestResult" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Role="TestResult" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultMessage" Role="TestResultMessage" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TestResult">
@@ -255,7 +267,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="TestRunTestResult">
-          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Role="TestRun" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Role="TestRun" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Role="TestResult" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TestRun">
@@ -277,14 +291,14 @@
           <Property Name="VSBuildConfiguration" Type="String" Nullable="false" />
           <Property Name="Branch" Type="String" Nullable="false" />
           <Property Name="Type" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationType" Nullable="false" />
-          <Property Name="Build" Type="String" Nullable="false" />
           <Property Name="TenantUrl" Type="String" Nullable="true" />
           <Property Name="TestSiteUrl" Type="String" Nullable="false" />
           <NavigationProperty Name="TestAuthentication" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" FromRole="TestConfiguration" ToRole="TestAuthentication" />
           <NavigationProperty Name="TestConfigurationProperties" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" FromRole="TestConfiguration" ToRole="TestConfigurationProperty" />
         </EntityType>
         <Association Name="TestConfigurationTestRun">
-          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" >
+          </End>
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Role="TestRun" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TestConfiguration">
@@ -305,6 +319,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="true" />
+          <Property Name="Type" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthenticationType" Nullable="false" />
           <Property Name="AppOnly" Type="Boolean" Nullable="false" />
           <Property Name="AppId" Type="String" Nullable="true" />
           <Property Name="AppSecret" Type="String" Nullable="true" />
@@ -329,7 +346,9 @@
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Role="TestAuthentication" Multiplicity="1" />
         </Association>
         <Association Name="TestConfigurationTestConfigurationProperty">
-          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" >
+            <OnDelete Action="Cascade" />
+          </End>
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Role="TestConfigurationProperty" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="TestConfiguration">
@@ -340,6 +359,10 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EnumType Name="TestAuthenticationType">
+          <Member Name="Online" Value="0" />
+          <Member Name="OnPremises" Value="1" />
+        </EnumType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -353,6 +376,7 @@
           <ScalarProperty Name="TestConfigurationId" ColumnName="TestConfigurationId" />
           <ScalarProperty Name="TestDate" ColumnName="TestDate" />
           <ScalarProperty Name="TestTime" ColumnName="TestTime" />
+          <ScalarProperty Name="Build" ColumnName="Build" />
           <ScalarProperty Name="TestWasAborted" ColumnName="TestWasAborted" />
           <ScalarProperty Name="TestWasCancelled" ColumnName="TestWasCancelled" />
         </MappingFragment>
@@ -393,7 +417,6 @@
           <ScalarProperty Name="VSBuildConfiguration" ColumnName="VSBuildConfiguration" />
           <ScalarProperty Name="Branch" ColumnName="Branch" />
           <ScalarProperty Name="Type" ColumnName="Type" />
-          <ScalarProperty Name="Build" ColumnName="Build" />
           <ScalarProperty Name="TenantUrl" ColumnName="TenantUrl" />
           <ScalarProperty Name="TestSiteUrl" ColumnName="TestSiteUrl" />
         </MappingFragment>
@@ -403,6 +426,9 @@
       <EntityTypeMapping TypeName="IsTypeOf(OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication)">
         <MappingFragment StoreEntitySet="TestAuthenticationSet">
           <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="Description" ColumnName="Description" />
+          <ScalarProperty Name="Type" ColumnName="Type" />
           <ScalarProperty Name="AppOnly" ColumnName="AppOnly" />
           <ScalarProperty Name="AppId" ColumnName="AppId" />
           <ScalarProperty Name="AppSecret" ColumnName="AppSecret" />

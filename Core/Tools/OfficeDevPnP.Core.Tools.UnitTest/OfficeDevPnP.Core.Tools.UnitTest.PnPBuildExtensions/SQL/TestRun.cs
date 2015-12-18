@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public int TestConfigurationId { get; set; }
         public System.DateTime TestDate { get; set; }
         public System.TimeSpan TestTime { get; set; }
+        public string Build { get; set; }
         public bool TestWasAborted { get; set; }
         public bool TestWasCancelled { get; set; }
     

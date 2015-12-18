@@ -27,7 +27,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public string VSBuildConfiguration { get; set; }
         public string Branch { get; set; }
         public TestConfigurationType Type { get; set; }
-        public string Build { get; set; }
         public string TenantUrl { get; set; }
         public string TestSiteUrl { get; set; }
     

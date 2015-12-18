@@ -21,6 +21,9 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         }
     
         public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public TestAuthenticationType Type { get; set; }
         public bool AppOnly { get; set; }
         public string AppId { get; set; }
         public string AppSecret { get; set; }

@@ -1,17 +1,18 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
 {
-    public class PnPAppConfigReaderTask : Task
+    public class PnPSQLAppConfigReaderTask : Task
     {
         [Required]
-        public String ConfigurationFile
+        public string SQLConnectionString
         {
             get;
             set;
@@ -42,13 +43,13 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
         {
             try
             {
-                Log.LogMessageFromText(String.Format("PnPAppConfigReaderTask: Reading information from {0} for configuration {1}", ConfigurationFile, Configuration), MessageImportance.Normal);
-                PnPAppConfigManager appConfigManager = new PnPAppConfigManager(ConfigurationFile);
-                PnPBuildConfiguration = appConfigManager.GetConfigurationElement(Configuration, "PnPBuild");
-                PnPBranch = appConfigManager.GetConfigurationElement(Configuration, "PnPBranch");
+                Log.LogMessageFromText(String.Format("PnPAppConfigReaderTask: Reading information for configuration {0}", Configuration), MessageImportance.Normal);
+                PnPAppConfigManager appConfigManager = new PnPAppConfigManager(SQLConnectionString.Replace("&quot;", "\""), Configuration);
+                PnPBuildConfiguration = appConfigManager.GetConfigurationElement("PnPBuild");
+                PnPBranch = appConfigManager.GetConfigurationElement("PnPBranch");
                 return true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.LogErrorFromException(ex);
                 return false;
