@@ -56,14 +56,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
                 Uri uri;
-                if(Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
+                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    if (uri.PathAndQuery != "/")
+                    return url.Substring(url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase)).Replace(webUrl, "{site}");
+                }
+                else
+                {
+                    if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                     {
-                        var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
-                        if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                        if (uri.PathAndQuery != "/")
                         {
-                            return url.Replace(webUrlPathAndQuery, "{site}");
+                            var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
+                            if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                            {
+                                return url.Replace(webUrlPathAndQuery, "{site}");
+                            }
                         }
                     }
                 }
