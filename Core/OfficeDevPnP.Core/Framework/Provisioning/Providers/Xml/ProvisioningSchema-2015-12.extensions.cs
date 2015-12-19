@@ -127,4 +127,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             }
         }
     }
+
+    [XmlSchemaProviderAttribute("GetSchema")]
+    public partial class WebPartPageWebPart : IXmlSerializable
+    {
+        public static XmlQualifiedName GetSchema(XmlSchemaSet schemaSet)
+        {
+            String wikiPageWebPartSchemaString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "elementFormDefault=\"qualified\" " +
+                "xmlns=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
+                    "<xsd:complexType name=\"WebPartPageWebPart\">" +
+                        "<xsd:all>" +
+                            "<xsd:element name=\"Contents\" type=\"xsd:string\" minOccurs=\"1\" maxOccurs=\"1\" />" +
+                        "</xsd:all>" +
+                        "<xsd:attribute name=\"Title\" type=\"xsd:string\" use=\"required\" />" +
+                        "<xsd:attribute name=\"Zone\" type=\"xsd:string\" use=\"required\" />" +
+                        "<xsd:attribute name=\"Order\" type=\"xsd:int\" use=\"required\" />" +
+                    "</xsd:complexType>" +
+                "</xsd:schema>";
+
+            XmlSchema webPartSchema = XmlSchema.Read(new StringReader(wikiPageWebPartSchemaString), null);
+            schemaSet.XmlResolver = new XmlUrlResolver();
+            schemaSet.Add(webPartSchema);
+
+            return (new XmlQualifiedName("WebPartPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+        }
+
+        XmlSchema IXmlSerializable.GetSchema()
+        {
+            throw new NotImplementedException("This method should never be called. We implemented the static GetSchema method for XmlSchemaProviderAttribute.");
+        }
+
+        void IXmlSerializable.ReadXml(XmlReader reader)
+        {
+            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+
+            XElement webPartXml = (XElement)XElement.ReadFrom(reader);
+            this.Title = webPartXml.Attribute("Title").Value;
+            this.Zone = webPartXml.Attribute("Zone").Value;
+            this.Order = Int32.Parse(webPartXml.Attribute("Order").Value);
+
+            XElement webPartContents = webPartXml.Element(ns + "Contents");
+            this.Contents = webPartContents.Value;
+        }
+
+        void IXmlSerializable.WriteXml(XmlWriter writer)
+        {
+            writer.WriteAttributeString("Title", this.Title);
+            writer.WriteAttributeString("Zone", this.Zone);
+            writer.WriteAttributeString("Order", this.Order.ToString());
+            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
+            writer.WriteCData(this.Contents);
+            writer.WriteEndElement();
+        }
+    }
 }

@@ -8,6 +8,7 @@ using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -114,6 +115,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogPropertyUpdate("Name");
                 existingContentType.Name = parser.ParseString(templateContentType.Name);
                 isDirty = true;
+                // CT is being renamed, add an extra token to the tokenparser
+                parser.AddToken(new ContentTypeIdToken(web, existingContentType.Name, existingContentType.StringId));
             }
             if (templateContentType.Group != null && existingContentType.Group != parser.ParseString(templateContentType.Group))
             {
@@ -146,7 +149,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
             // Delta handling
-            existingContentType.EnsureProperty(c=>c.FieldLinks);
+            existingContentType.EnsureProperty(c => c.FieldLinks);
             List<Guid> targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
             List<Guid> sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
@@ -224,6 +227,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var field = web.Fields.GetById(fieldRef.Id);
                 web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
             }
+            // Add new CTs
+            parser.AddToken(new ContentTypeIdToken(web, name, id));
 
             //Reorder the elements so that the new created Content Type has the same order as defined in the
             //template. The order can be different if the new Content Type inherits from another Content Type.
