@@ -1,4 +1,6 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
+﻿using Microsoft.SharePoint.Client;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,10 +15,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
     {
         #region Private variables
         private Dictionary<string, string> loggerParameters;
-        private DateTimeOffset testStart = DateTimeOffset.MinValue;
-        private DateTime testDate;
         private TestModelContainer context;
-        private bool firstResult = true;
         private TestConfiguration testConfiguration;
         private TestRun testRun;
         #endregion
@@ -27,42 +26,35 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             //System.Diagnostics.Debugger.Launch();
             loggerParameters = parameters;
             context = new TestModelContainer(Base64Decode(GetParameter("PnPSQLConnectionString")).Replace("&quot;", "\""));
+
+            // find the used configuration
+            string configurationToTest = GetParameter("PnPConfigurationToTest");
+            testConfiguration = context.TestConfigurationSet.Where(s => s.Name.Equals(configurationToTest, StringComparison.InvariantCultureIgnoreCase)).First();
+            if (testConfiguration == null)
+            {
+                throw new Exception(String.Format("Test configuration with name {0} was not found", configurationToTest));
+            }
+
+            // Grab the build of the environment we're testing
+            string build = GetBuildNumber();
+
+            testRun = new TestRun()
+            {
+                TestDate = DateTime.Now,
+                TestTime = new TimeSpan(0, 0, 0),
+                Build = build,
+                TestWasAborted = false,
+                TestWasCancelled = false,
+                TestConfiguration = testConfiguration,
+            };
+            context.TestRunSet.Add(testRun);
+            SaveChanges();
         }
         #endregion
 
         #region public methods
         public void AddTestResult(Microsoft.VisualStudio.TestPlatform.ObjectModel.TestResult test)
         {
-            // Log the start time of the first test
-            if (testStart == DateTimeOffset.MinValue)
-            {
-                testStart = test.StartTime;
-                testDate = DateTime.Now;
-            }
-
-            // create the TestRun record
-            if (firstResult)
-            {
-                // find the used configuration
-                string configurationToTest = GetParameter("PnPConfigurationToTest");
-                testConfiguration = context.TestConfigurationSet.Where(s => s.Name.Equals(configurationToTest, StringComparison.InvariantCultureIgnoreCase)).First();
-                if (testConfiguration == null)
-                {
-                    throw new Exception(String.Format("Test configuration with name {0} was not found", configurationToTest));
-                }
-
-                testRun = new TestRun()
-                {
-                    TestDate = DateTime.Now,
-                    TestTime = new TimeSpan(0,0,0),
-                    Build = "unknown",
-                    TestWasAborted = false,
-                    TestWasCancelled = false,
-                    TestConfiguration = testConfiguration,
-                };
-                context.TestRunSet.Add(testRun);
-                firstResult = false;
-            }
 
             TestResult tr = new TestResult()
             {
@@ -123,6 +115,59 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         #endregion
 
         #region private methods
+        private string GetBuildNumber()
+        {
+            string build;
+            AuthenticationManager am = new AuthenticationManager();
+            if (testConfiguration.TestAuthentication.AppOnly)
+            {
+                string realm = TokenHelper.GetRealmFromTargetUrl(new Uri(testConfiguration.TestSiteUrl));
+                using (ClientContext ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret))
+                {
+                    ctx.Load(ctx.Web, w => w.Title);
+                    ctx.ExecuteQueryRetry();
+                    build = ctx.ServerLibraryVersion.ToString();
+                }
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(testConfiguration.TestAuthentication.CredentialManagerLabel))
+                {
+                    var credentials = CredentialManager.GetSharePointOnlineCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
+                    using (ClientContext ctx = new ClientContext(testConfiguration.TestSiteUrl))
+                    {
+                        ctx.Credentials = credentials;
+                        ctx.Load(ctx.Web, w => w.Title);
+                        ctx.ExecuteQueryRetry();
+                        build = ctx.ServerLibraryVersion.ToString();
+                    }
+                }
+                else
+                {
+                    if (testConfiguration.TestAuthentication.Type == TestAuthenticationType.Online)
+                    {
+                        using (ClientContext ctx = am.GetSharePointOnlineAuthenticatedContextTenant(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password))
+                        {
+                            ctx.Load(ctx.Web, w => w.Title);
+                            ctx.ExecuteQueryRetry();
+                            build = ctx.ServerLibraryVersion.ToString();
+                        }
+                    }
+                    else
+                    {
+                        using (ClientContext ctx = am.GetNetworkCredentialAuthenticatedContext(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password, testConfiguration.TestAuthentication.Domain))
+                        {
+                            ctx.Load(ctx.Web, w => w.Title);
+                            ctx.ExecuteQueryRetry();
+                            build = ctx.ServerLibraryVersion.ToString();
+                        }
+                    }
+                }
+            }
+
+            return build;
+        }
+
         private void SaveChanges()
         {
             try

@@ -89,7 +89,7 @@
     <PnPBase64EncoderTask Input="$(PnPSQLConnectionString)">
       <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
     </PnPBase64EncoderTask>
-    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
+    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
 
   </Target>
 
