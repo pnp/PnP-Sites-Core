@@ -1,6 +1,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildAndUnitTestPnP">
 
-  <!-- Input passing via command line...if nothing is supplied let's default to below value-->
+  <!-- Input passing via command line...if nothing is supplied let's use default value specified below-->
   <PropertyGroup Label="CommandLine">
     <PnPConfigurationToTest></PnPConfigurationToTest>
     <PnPSQLConnectionString></PnPSQLConnectionString>
@@ -30,10 +30,12 @@
   </PropertyGroup>
 
   <!-- Custom tasks registration -->
+  <!-- Reads configuration data from SQL...-->
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigReaderTask" />
+  <!-- Reads configuration data from SQL and generates the app.config file...-->
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigGeneratorTask" />
+  <!-- Base64 encodes a string...-->
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPBase64EncoderTask" />
-  <!--<UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPTestSummaryTask" />-->
 
   <Target Name="BuildAndUnitTestPnP">
 
@@ -41,6 +43,7 @@
     <Message Text="=================================================================================" />
     <Message Text="PnPSQLConnectionString: $(PnPSQLConnectionString)" />
     <Message Text="PnPConfigurationToTest: $(PnPConfigurationToTest)" />
+    <!--Grab the PnP github branch and Visual Studio configuration from the SQL test automation database-->
     <PnPSQLAppConfigReaderTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)">
       <Output PropertyName="PnPBuildConfiguration" TaskParameter="PnPBuildConfiguration" />
       <Output PropertyName="PnPBranch" TaskParameter="PnPBranch" />
@@ -49,24 +52,18 @@
     <Message Text="PnP Git branch that will be used: $(PnPBranch)" />
     <Message Text="=================================================================================" />
 
-    <!-- Clone the PnP repo in case it's not yet available-->
+    <!-- Drop the previously cloned directory-->
     <Message Text="=================================================================================" />
-    <Message Text="Working with the $(PnPRepoUrl) repository in folder $(PnPRepo)" Condition="Exists($(PnPRepo))" />
-    <Message Text="Cloning the $(PnPRepoUrl) repository to $(PnPRepo)" Condition="!Exists($(PnPRepo))" />
+    <Message Text="Deleting the $(PnPRepo) folder to allow for a fresh copy" />
     <Message Text="=================================================================================" />
-    <Exec Command="$(GitExe) clone $(PnPRepoUrl) $(PnPRepo)" Condition="!Exists($(PnPRepo))" />
+    <RemoveDir Directories="$(PnPRepo)" />
 
-    <!-- Clean and refresh the PnP repo -->
+    <!-- Clone the PnP repo again-->
     <Message Text="=================================================================================" />
-    <Message Text="Cleaning the git repository" />
+    <Message Text="Working with the $(PnPRepoUrl) repository in folder $(PnPRepo)" />
+    <Message Text="Cloning the $(PnPRepoUrl) repository to $(PnPRepo)" />
     <Message Text="=================================================================================" />
-    <Exec Command="$(Git) checkout $(PnPBranch)" />
-    <Exec Command="$(Git) reset" />
-    <Exec Command="$(Git) checkout ." />
-    <Exec Command="$(Git) clean -fdx" />
-    <Exec Command="$(Git) fetch origin" />
-    <Exec Command="$(Git) branch --set-upstream-to=origin/$(PnPBranch) $(PnPBranch)" />
-    <Exec Command="$(Git) pull" />
+    <Exec Command="$(GitExe) clone $(PnPRepoUrl) $(PnPRepo)" />
     
     <!-- Create app.config with the specific test information -->
     <Message Text="=================================================================================" />
@@ -78,7 +75,9 @@
     <Message Text="=================================================================================" />
     <Message Text="Build the PnP solution using configuration $(PnPBuildConfiguration)" />
     <Message Text="=================================================================================" />
+    <!-- Trigger the download of the needed nuget packages -->
     <Exec Command="$(ConfigurationPath)\nuget.exe restore $(PnPRepo)\Core\OfficeDevPnP.Core.sln" />
+    <!-- Build the project -->
     <MSBuild Projects="$(PnPRepo)\Core\OfficeDevPnP.Core.sln" Properties="Configuration=$(PnPBuildConfiguration)"/>
 
     <!-- Run unit tests -->
@@ -89,7 +88,7 @@
     <PnPBase64EncoderTask Input="$(PnPSQLConnectionString)">
       <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
     </PnPBase64EncoderTask>
-    <!-- Optionally scope the tests /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,CanSerializeDomainObjectWithJsonFormatter -->
+    <!-- Run the unit tests. Optionally scope the tests via /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,CanSerializeDomainObjectWithJsonFormatter -->
     <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
 
   </Target>
