@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 12/18/2015 12:40:26
+-- Date Created: 12/21/2015 08:51:33
 -- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -65,10 +65,15 @@ CREATE TABLE [dbo].[TestRunSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [TestConfigurationId] int  NOT NULL,
     [TestDate] datetime  NOT NULL,
-    [TestTime] time  NOT NULL,
+    [TestTime] time  NULL,
     [Build] nvarchar(max)  NOT NULL,
+    [Status] int  NOT NULL,
     [TestWasAborted] bit  NOT NULL,
-    [TestWasCancelled] bit  NOT NULL
+    [TestWasCancelled] bit  NOT NULL,
+    [TestsPassed] int  NULL,
+    [TestsSkipped] int  NULL,
+    [TestsFailed] int  NULL,
+    [TestsNotFound] int  NULL
 );
 GO
 

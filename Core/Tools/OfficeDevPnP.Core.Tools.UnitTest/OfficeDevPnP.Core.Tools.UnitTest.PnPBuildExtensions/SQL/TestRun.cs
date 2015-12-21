@@ -23,10 +23,15 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public int Id { get; set; }
         public int TestConfigurationId { get; set; }
         public System.DateTime TestDate { get; set; }
-        public System.TimeSpan TestTime { get; set; }
+        public Nullable<System.TimeSpan> TestTime { get; set; }
         public string Build { get; set; }
+        public RunStatus Status { get; set; }
         public bool TestWasAborted { get; set; }
         public bool TestWasCancelled { get; set; }
+        public Nullable<int> TestsPassed { get; set; }
+        public Nullable<int> TestsSkipped { get; set; }
+        public Nullable<int> TestsFailed { get; set; }
+        public Nullable<int> TestsNotFound { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TestResult> TestResults { get; set; }

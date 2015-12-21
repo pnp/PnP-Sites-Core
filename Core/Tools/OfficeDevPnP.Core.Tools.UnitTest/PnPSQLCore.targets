@@ -85,10 +85,11 @@
     <Message Text="=================================================================================" />
     <Message Text="Run the PnP unit tests" />
     <Message Text="=================================================================================" />
-    <!-- /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,CanSerializeDomainObjectWithJsonFormatter -->
+    <!-- Convert the connection string into a base64 encoded string to make it easier to pass along as parameter to the custom VSTestLogger-->
     <PnPBase64EncoderTask Input="$(PnPSQLConnectionString)">
       <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
     </PnPBase64EncoderTask>
+    <!-- Optionally scope the tests /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,CanSerializeDomainObjectWithJsonFormatter -->
     <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
 
   </Target>

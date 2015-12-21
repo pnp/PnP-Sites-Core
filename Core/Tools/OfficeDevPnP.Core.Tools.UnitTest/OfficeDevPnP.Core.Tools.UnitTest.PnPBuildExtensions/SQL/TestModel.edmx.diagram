@@ -12,7 +12,7 @@
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult" />
         <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Width="2.125" PointX="0.625" PointY="4.875" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Width="2.25" PointX="4.125" PointY="4.75" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Width="2.25" PointX="7.375" PointY="5.25" />
         <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Width="2.25" PointX="3.25" PointY="8.875" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" />

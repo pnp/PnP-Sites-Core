@@ -18,13 +18,19 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         private TestModelContainer context;
         private TestConfiguration testConfiguration;
         private TestRun testRun;
+        private bool firstTest = true;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="parameters">Dictionary with parameter values</param>
         public TestManager(Dictionary<string, string> parameters)
         {
             //System.Diagnostics.Debugger.Launch();
             loggerParameters = parameters;
+            // we pass the connection string as base64 encoded + replaced "=" with &quot; to avoid problems with the default implementation of the VSTestLogger interface
             context = new TestModelContainer(Base64Decode(GetParameter("PnPSQLConnectionString")).Replace("&quot;", "\""));
 
             // find the used configuration
@@ -38,24 +44,38 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             // Grab the build of the environment we're testing
             string build = GetBuildNumber();
 
+            // Log a record to indicate we're starting up the testing
             testRun = new TestRun()
             {
                 TestDate = DateTime.Now,
-                TestTime = new TimeSpan(0, 0, 0),
                 Build = build,
+                Status = RunStatus.Initializing,
                 TestWasAborted = false,
                 TestWasCancelled = false,
                 TestConfiguration = testConfiguration,
             };
             context.TestRunSet.Add(testRun);
+            
+            // persist to the database
             SaveChanges();
         }
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Adds a test result to the database
+        /// </summary>
+        /// <param name="test">Test result</param>
         public void AddTestResult(Microsoft.VisualStudio.TestPlatform.ObjectModel.TestResult test)
         {
+            if (firstTest)
+            {
+                firstTest = false;
+                // Bring status to "running"
+                testRun.Status = RunStatus.Running;
+            }
 
+            // Store the test result
             TestResult tr = new TestResult()
             {
                 ComputerName = test.ComputerName,
@@ -105,16 +125,42 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             SaveChanges();
         }
 
+        /// <summary>
+        /// VSTestLogger method being called when testing is done
+        /// </summary>
+        /// <param name="stats">Test statistocs</param>
+        /// <param name="isCanceled">Was the test cancelled</param>
+        /// <param name="isAborted">Was the test aborted</param>
+        /// <param name="error">Was there an error</param>
+        /// <param name="attachmentSets">Test attachements</param>
+        /// <param name="elapsedTime">How long did the test run</param>
         public void TestAreDone(ITestRunStatistics stats, bool isCanceled, bool isAborted, Exception error, Collection<Microsoft.VisualStudio.TestPlatform.ObjectModel.AttachmentSet> attachmentSets, TimeSpan elapsedTime)
         {
             testRun.TestWasCancelled = isCanceled;
             testRun.TestWasAborted = isAborted;
             testRun.TestTime = elapsedTime;
+            testRun.Status = RunStatus.Done;
+
+            // count tests and store summary in the TestRun row
+            var passedTests = testRun.TestResults.Where(r => r.Outcome == Outcome.Passed).ToList().Count();
+            var failedTests = testRun.TestResults.Where(r => r.Outcome == Outcome.Failed).ToList().Count();
+            var skippedTests = testRun.TestResults.Where(r => r.Outcome == Outcome.Skipped).ToList().Count();
+            var notFoundTests = testRun.TestResults.Where(r => r.Outcome == Outcome.NotFound).ToList().Count();
+
+            testRun.TestsPassed = passedTests;
+            testRun.TestsFailed = failedTests;
+            testRun.TestsSkipped = skippedTests;
+            testRun.TestsNotFound = notFoundTests;
+
             SaveChanges();
         }
         #endregion
 
         #region private methods
+        /// <summary>
+        /// Grabs the build number of the environment that we're testing
+        /// </summary>
+        /// <returns>Build number of the environment that's being tested</returns>
         private string GetBuildNumber()
         {
             string build;
@@ -168,6 +214,9 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             return build;
         }
 
+        /// <summary>
+        /// Persists changes using the entity framework. Puts detailed DbEntityValidationException errors in console
+        /// </summary>
         private void SaveChanges()
         {
             try
@@ -190,6 +239,11 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             }
         }
 
+        /// <summary>
+        /// Grabs a parameter from the parameter collection
+        /// </summary>
+        /// <param name="parameter">Name of the parameter to fetch</param>
+        /// <returns>Value of the parameter</returns>
         private string GetParameter(string parameter)
         {
             if (loggerParameters.ContainsKey(parameter))
@@ -202,6 +256,11 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             }
         }
 
+        /// <summary>
+        /// Decodes a base64 encoded string
+        /// </summary>
+        /// <param name="base64EncodedData">base64 encoded string with special "=" being replaced by "&equal;"</param>
+        /// <returns>Decoded string</returns>
         public static string Base64Decode(string base64EncodedData)
         {
             var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData.Replace("&equal", "="));

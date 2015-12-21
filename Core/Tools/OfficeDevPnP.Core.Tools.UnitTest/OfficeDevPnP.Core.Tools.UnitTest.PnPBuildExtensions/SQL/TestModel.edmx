@@ -40,10 +40,15 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="TestConfigurationId" Type="int" Nullable="false" />
     <Property Name="TestDate" Type="datetime" Nullable="false" />
-    <Property Name="TestTime" Type="time" Nullable="false" />
+    <Property Name="TestTime" Type="time" Nullable="true" />
     <Property Name="Build" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Status" Type="int" Nullable="false" />
     <Property Name="TestWasAborted" Type="bit" Nullable="false" />
     <Property Name="TestWasCancelled" Type="bit" Nullable="false" />
+    <Property Name="TestsPassed" Type="int" Nullable="true" />
+    <Property Name="TestsSkipped" Type="int" Nullable="true" />
+    <Property Name="TestsFailed" Type="int" Nullable="true" />
+    <Property Name="TestsNotFound" Type="int" Nullable="true" />
   </EntityType>
   <EntityType Name="TestResultSet">
     <Key>
@@ -215,10 +220,15 @@
           <NavigationProperty Name="TestConfiguration" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" FromRole="TestRun" ToRole="TestConfiguration" />
           <Property Name="TestConfigurationId" Type="Int32" Nullable="false" />
           <Property Name="TestDate" Type="DateTime" Nullable="false" />
-          <Property Name="TestTime" Type="Time" Nullable="false" />
+          <Property Name="TestTime" Type="Time" Nullable="true" />
           <Property Name="Build" Type="String" Nullable="false" />
+          <Property Name="Status" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.RunStatus" Nullable="false" />
           <Property Name="TestWasAborted" Type="Boolean" Nullable="false" />
           <Property Name="TestWasCancelled" Type="Boolean" Nullable="false" />
+          <Property Name="TestsPassed" Type="Int32" Nullable="true" />
+          <Property Name="TestsSkipped" Type="Int32" Nullable="true" />
+          <Property Name="TestsFailed" Type="Int32" Nullable="true" />
+          <Property Name="TestsNotFound" Type="Int32" Nullable="true" />
         </EntityType>
         <EntityType Name="TestResult">
           <Key>
@@ -365,6 +375,12 @@
           <Member Name="Online" Value="0" />
           <Member Name="OnPremises" Value="1" />
         </EnumType>
+        <EnumType Name="RunStatus">
+          <Member Name="Initializing" Value="0" />
+          <Member Name="Running" Value="1" />
+          <Member Name="Done" Value="2" />
+          <Member Name="Stuck" Value="3" />
+        </EnumType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -379,8 +395,13 @@
           <ScalarProperty Name="TestDate" ColumnName="TestDate" />
           <ScalarProperty Name="TestTime" ColumnName="TestTime" />
           <ScalarProperty Name="Build" ColumnName="Build" />
+          <ScalarProperty Name="Status" ColumnName="Status" />
           <ScalarProperty Name="TestWasAborted" ColumnName="TestWasAborted" />
           <ScalarProperty Name="TestWasCancelled" ColumnName="TestWasCancelled" />
+          <ScalarProperty Name="TestsPassed" ColumnName="TestsPassed" />
+          <ScalarProperty Name="TestsSkipped" ColumnName="TestsSkipped" />
+          <ScalarProperty Name="TestsFailed" ColumnName="TestsFailed" />
+          <ScalarProperty Name="TestsNotFound" ColumnName="TestsNotFound" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

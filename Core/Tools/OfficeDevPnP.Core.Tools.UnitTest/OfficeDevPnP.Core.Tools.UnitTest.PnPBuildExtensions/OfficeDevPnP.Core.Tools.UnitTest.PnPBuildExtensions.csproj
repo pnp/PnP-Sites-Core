@@ -151,6 +151,9 @@
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
     <Compile Include="SQL\PnPAppConfigManager.cs" />
+    <Compile Include="SQL\RunStatus.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQL\TestAuthentication.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
