@@ -20,8 +20,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
-                this.Key.GetHashCode(),
-                this.Value.GetHashCode(),
+                (this.Key != null ? this.Key.GetHashCode() : 0),
+                (this.Value != null ? this.Value.GetHashCode() : 0),
                 this.Indexed.GetHashCode(),
                 this.Overwrite.GetHashCode()
             ).GetHashCode());

@@ -101,10 +101,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
-                this.AllowedContentTypes.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.DefaultDocuments.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.SharedFields.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.WelcomePageFields.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                this.AllowedContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.DefaultDocuments.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.SharedFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.WelcomePageFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 

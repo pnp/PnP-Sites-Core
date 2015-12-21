@@ -30,8 +30,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                this.Principal.GetHashCode(),
-                this.RoleDefinition.GetHashCode()
+                (this.Principal != null ? this.Principal.GetHashCode() : 0),
+                (this.RoleDefinition != null ? this.RoleDefinition.GetHashCode() : 0)
             ).GetHashCode());
         }
 

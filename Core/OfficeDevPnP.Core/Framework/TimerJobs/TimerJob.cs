@@ -11,6 +11,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.TimerJobs.Enums;
 using OfficeDevPnP.Core.Framework.TimerJobs.Utilities;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OfficeDevPnP.Core.Framework.TimerJobs
 {
@@ -47,8 +48,10 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string clientId;
         private string clientSecret;
         private string azureTenant;
+        private X509Certificate2 certificate;
         private string certificatePath;
         private SecureString certificatePassword;
+
 
         private int sharePointVersion = 16;
         private string enumerationUser;
@@ -819,7 +822,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             UseAzureADAppOnlyAuthentication(clientId, azureTenant, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword));
         }
 
-
         /// <summary>
         /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
         /// to AuthenticationType.AzureADAppOnly
@@ -856,7 +858,38 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             this.certificatePassword = certificatePassword;
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AzureADAppOnly, clientId, certificatePath);
+        }
 
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
+        /// to AuthenticationType.AzureADAppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="azureTenant">The Azure tenant name, like contoso.com</param>
+        /// <param name="certificate">The X.509 Certificate to use for AppOnly Authentication</param>
+        public void UseAzureADAppOnlyAuthentication(string clientId, string azureTenant, X509Certificate2 certificate)
+        {
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException("clientId");
+            }
+
+            if (String.IsNullOrEmpty(azureTenant))
+            {
+                throw new ArgumentNullException("azureTenant");
+            }
+
+            if (certificate == null)
+            {
+                throw new ArgumentNullException("certificate");
+            }
+
+            this.authenticationType = AuthenticationType.AzureADAppOnly;
+            this.clientId = clientId;
+            this.azureTenant = azureTenant;
+            this.certificate = certificate;
+
+            Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AzureADAppOnly, clientId, certificate.SubjectName);
         }
 #endif
 
@@ -1377,7 +1410,14 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 #if !CLIENTSDKV15
                 else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
                 {
-                    return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                    if (this.certificate != null)
+                    {
+                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificate);
+                    }
+                    else
+                    {
+                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                    }
                 }
 #endif
             }

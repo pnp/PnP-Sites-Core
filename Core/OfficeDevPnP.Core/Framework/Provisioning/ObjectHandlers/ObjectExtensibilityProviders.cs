@@ -29,13 +29,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (provider.Enabled)
                     {
-                        var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, provider, template);
-                        if (_providedTokens != null)
-                        { 
-                            foreach (var token in _providedTokens)
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(provider.Configuration))
                             {
-                                parser.AddToken(token);
+                                provider.Configuration = parser.ParseString(provider.Configuration);
                             }
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_, provider.Assembly);
+                            var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, provider, template);
+                            if (_providedTokens != null)
+                            {
+                                foreach (var token in _providedTokens)
+                                {
+                                    parser.AddToken(token);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_, ex.Message, ex.StackTrace);
+                            throw;
                         }
                     }
                 }
@@ -54,12 +67,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
+                            if (!string.IsNullOrEmpty(provider.Configuration))
+                            {
+                                //replace tokens in configuration data
+                                provider.Configuration = parser.ParseString(provider.Configuration);
+                            }
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_, provider.Assembly);
                             _extManager.ExecuteExtensibilityCallOut(context, provider, template);
                         }
                         catch (Exception ex)
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_, ex.Message, ex.StackTrace);
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_, ex.Message, ex.StackTrace);
+                            throw;
                         }
                     }
                 }
@@ -103,6 +122,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return _willExtract.Value;
         }
-
     }
 }

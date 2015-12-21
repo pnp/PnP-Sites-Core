@@ -35,9 +35,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Name.GetHashCode(),
-                this.ContentTypeId.GetHashCode(),
-                this.FileSourcePath.GetHashCode()
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.ContentTypeId != null ? this.ContentTypeId.GetHashCode() : 0),
+                (this.FileSourcePath != null ? this.FileSourcePath.GetHashCode() : 0)
             ).GetHashCode());
         }
 

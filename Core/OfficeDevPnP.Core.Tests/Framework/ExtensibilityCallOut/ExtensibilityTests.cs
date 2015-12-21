@@ -111,17 +111,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
         [TestCategory(TEST_CATEGORY)]
         public void TokenProviderReceivesExpectedParameters()
         {
+            var givenConfiguration = "START {parameter:MOCKPARAM} END";
+            var expectedConfiguration = "START MOCKPARAMVALUE END";
+
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var _mockProvider = new Provider
                 {
                     Assembly = "OfficeDevPnP.Core.Tests",
                     Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockTokenProvider",
-                    Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA,
+                    Configuration = givenConfiguration,
                     Enabled = true
                 };
 
                 var _mockTemplate = new ProvisioningTemplate();
+                _mockTemplate.Parameters.Add("MOCKPARAM", "MOCKPARAMVALUE");
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
                 _mockTemplate.Providers.Add(_mockProvider);
 
@@ -131,7 +135,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 
                 Assert.AreSame(ctx, ExtensibilityMockTokenProvider.ReceivedCtx, "Wrong clientContext passed to the provider.");
                 Assert.AreSame(_mockTemplate, ExtensibilityMockTokenProvider.ReceivedProvisioningTemplate, "Wrong template passed to the provider.");
-                Assert.AreEqual(ExtensibilityTestConstants.PROVIDER_MOCK_DATA, ExtensibilityMockTokenProvider.ReceivedConfigurationData, "Wrong configuration data passed to the provider.");
+                Assert.AreEqual(expectedConfiguration, ExtensibilityMockTokenProvider.ReceivedConfigurationData, "Wrong configuration data passed to the provider.");
             }
         }
 
@@ -185,7 +189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                 extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
 
                 var parsedValue = parser.ParseString(MockToken.MockTokenKey);
-                Assert.AreEqual(MockToken.MockTokenKey, MockToken.MockTokenKey);
+                Assert.AreEqual(MockToken.MockTokenKey, parsedValue, "Disabled tokenprovider should not have provided tokens!");
             }
         }
 

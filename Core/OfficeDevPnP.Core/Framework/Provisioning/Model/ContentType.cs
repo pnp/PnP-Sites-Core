@@ -14,7 +14,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ContentType : IEquatable<ContentType>
     {
-
         #region Private Members
         private string _id;
         private List<FieldRef> _fieldRefs = new List<FieldRef>();
@@ -125,17 +124,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|",
-                this.Id.GetHashCode(),
-                this.Name.GetHashCode(),
-                this.Description.GetHashCode(),
-                this.Group.GetHashCode(),
+                (this.Id != null ? this.Id.GetHashCode() : 0),
+                (this.Name != null ? this.Name.GetHashCode() : 0),
+                (this.Description != null ? this.Description.GetHashCode() : 0),
+                (this.Group != null ? this.Group.GetHashCode() : 0),
                 this.Hidden.GetHashCode(),
                 this.ReadOnly.GetHashCode(),
                 this.Overwrite.GetHashCode(),
                 this.Sealed.GetHashCode(),
-                this.DocumentTemplate.GetHashCode(),
-                this.DocumentSetTemplate.GetHashCode(),
-                this.FieldRefs.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
+                (this.DocumentSetTemplate != null ? this.DocumentSetTemplate.GetHashCode() : 0),
+                this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
