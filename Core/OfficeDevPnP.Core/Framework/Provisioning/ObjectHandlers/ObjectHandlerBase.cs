@@ -51,34 +51,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     return url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
                 }
+
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
+
+                Uri uri;
+                if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
+                {
+                    if (uri.PathAndQuery != "/")
+                    {
+                        webUrl = HttpUtility.UrlDecode(uri.PathAndQuery);
+                    }
+                }
+
                 if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     return url.Replace(webUrl, "{site}");
                 }
-                if (url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
-                {
-                    return url.Substring(url.IndexOf(webUrl, StringComparison.InvariantCultureIgnoreCase)).Replace(webUrl, "{site}");
-                }
-                else
-                {
-                    Uri uri;
-                    if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
-                    {
-                        if (uri.PathAndQuery != "/")
-                        {
-                            var webUrlPathAndQuery = HttpUtility.UrlDecode(uri.PathAndQuery);
-                            if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
-                            {
-                                return url.Replace(webUrlPathAndQuery, "{site}");
-                            }
-                        }
-                    }
-                }
-               
+
                 // nothing to tokenize...
                 return url;
             }
