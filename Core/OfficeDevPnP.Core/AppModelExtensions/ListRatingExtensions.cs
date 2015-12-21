@@ -165,12 +165,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId"></param>
         private static void RemoveField(List list, Guid fieldId)
         {
-            FieldCollection fields = list.Fields;
-
             try
             {
-                FieldCollection availableFields = list.ParentWeb.AvailableFields;
-                Field field = availableFields.GetById(fieldId);
+                FieldCollection listFields = list.Fields;
+                Field field = listFields.GetById(fieldId);
                 field.DeleteObject();
                 _library.Context.ExecuteQueryRetry();
             }
