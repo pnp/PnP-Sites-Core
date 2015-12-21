@@ -11,7 +11,6 @@ namespace Microsoft.SharePoint.Client
     {
         /// TODO: Replace Logging throughout 
 
-
         #region Rating Field
 
         private static readonly Guid RatingsFieldGuid_AverageRating = new Guid("5a14d1ab-1513-48c7-97b3-657a5ba6c742");
@@ -50,13 +49,57 @@ namespace Microsoft.SharePoint.Client
             }
 
             //  Add to property Root Folder of Pages Library
-            AddProperty(experience);
+            SetProperty(experience);
 
-            AddListFields();
+            if (experience == VotingExperience.None)
+            {
+                RemoveListFields();
 
-            AddViewFields(experience);
+                RemoveViewFields();
+            }
+            else
+            {
+                AddListFields();
+
+                AddViewFields(experience);
+            }
 
             //_logger.WriteSuccess(string.Format("Enabled {0} on list/library {1}", experience, _library.Title));
+        }
+
+        /// <summary>
+        /// Removes the view fields associated with any rating type
+        /// </summary>
+        private static void RemoveViewFields()
+        {
+            _library.Context.Load(_library.DefaultView, p => p.ViewFields);
+            _library.Context.ExecuteQueryRetry();
+
+            var defaultView = _library.DefaultView;
+
+            if (defaultView.ViewFields.Contains("LikesCount"))
+                defaultView.ViewFields.Remove("LikesCount");
+            if (defaultView.ViewFields.Contains("AverageRating"))
+                defaultView.ViewFields.Remove("AverageRating");
+
+            defaultView.Update();
+            _library.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Removes the list fields associated with any ratings type
+        /// </summary>
+        private static void RemoveListFields()
+        {
+            RemoveField(_library, RatingsFieldGuid_RatingCount);
+            RemoveField(_library, RatingsFieldGuid_RatedBy);
+            RemoveField(_library, RatingsFieldGuid_Ratings);
+            RemoveField(_library, RatingsFieldGuid_AverageRating);
+            RemoveField(_library, LikeFieldGuid_LikedBy);
+            RemoveField(_library, LikeFieldGuid_LikeCount);
+
+            _library.Update();
+            _library.Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -116,6 +159,28 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Removes a field from a list
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="fieldId"></param>
+        private static void RemoveField(List list, Guid fieldId)
+        {
+            FieldCollection fields = list.Fields;
+
+            try
+            {
+                FieldCollection availableFields = list.ParentWeb.AvailableFields;
+                Field field = availableFields.GetById(fieldId);
+                field.DeleteObject();
+                _library.Context.ExecuteQueryRetry();
+            }
+            catch (ArgumentException)
+            {
+                // Field does not exist
+            }
+        }
+
+        /// <summary>
         /// Check for Ratings/Likes field and add to ListField if doesn't exists.
         /// </summary>
         /// <param name="list">List</param>
@@ -142,7 +207,7 @@ namespace Microsoft.SharePoint.Client
         /// Add required key/value settings on List Root-Folder
         /// </summary>
         /// <param name="experience"></param>
-        private static void AddProperty(VotingExperience experience)
+        private static void SetProperty(VotingExperience experience)
         {
             _library.Context.Load(_library.RootFolder, p => p.Properties);
             _library.Context.ExecuteQueryRetry();
@@ -152,8 +217,5 @@ namespace Microsoft.SharePoint.Client
             _library.Context.ExecuteQueryRetry();
             //_logger.WriteSuccess(string.Format("Ensured {0} Property.", experience));
         }
-
-        
     }
-
 }
