@@ -223,6 +223,10 @@
     <Content Include="nuget.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SQL\scripts\createdpnprole.sql" />
+    <Content Include="SQL\scripts\createuserandlogin.sql" />
+    <Content Include="SQL\scripts\listgrants.sql" />
+    <Content Include="SQL\scripts\listrolesandmembers.sql" />
     <Content Include="SQL\TestModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>TestModel.Context.cs</LastGenOutput>
