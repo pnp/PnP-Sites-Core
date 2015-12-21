@@ -1,6 +1,32 @@
 <PnPUnitTestResults>
   <PnPTestSummary>
     <PnPConfigurationToTest>OnlineAppOnly</PnPConfigurationToTest>
+    <TestDate>Monday, December 21, 2015</TestDate>
+    <TestTime>11:09 PM</TestTime>
+    <PnPBranch>dev</PnPBranch>
+    <VSBuildConfiguration>debug</VSBuildConfiguration>
+    <NumberOfTests>281</NumberOfTests>
+    <ElapsedTime>0h 58m 7s</ElapsedTime>
+    <FailedTests>6</FailedTests>
+    <SkippedTests>35</SkippedTests>
+    <PassedTests>240</PassedTests>
+    <MDResultFile>c:\pnpbuildtemp\PnPUnitTestResults-20151221-OnlineAppOnly-635862533416956278.md</MDResultFile>
+  </PnPTestSummary>
+  <PnPTestSummary>
+    <PnPConfigurationToTest>OnlineCred</PnPConfigurationToTest>
+    <TestDate>Sunday, December 20, 2015</TestDate>
+    <TestTime>10:00 PM</TestTime>
+    <PnPBranch>dev</PnPBranch>
+    <VSBuildConfiguration>debug</VSBuildConfiguration>
+    <NumberOfTests>281</NumberOfTests>
+    <ElapsedTime>1h 8m 1s</ElapsedTime>
+    <FailedTests>6</FailedTests>
+    <SkippedTests>3</SkippedTests>
+    <PassedTests>272</PassedTests>
+    <MDResultFile>c:\pnpbuildtemp\PnPUnitTestResults-20151220-OnlineCred-635862492426995000.md</MDResultFile>
+  </PnPTestSummary>
+  <PnPTestSummary>
+    <PnPConfigurationToTest>OnlineAppOnly</PnPConfigurationToTest>
     <TestDate>Sunday, December 20, 2015</TestDate>
     <TestTime>11:08 PM</TestTime>
     <PnPBranch>dev</PnPBranch>
@@ -1272,31 +1298,5 @@
     <SkippedTests>4</SkippedTests>
     <PassedTests>273</PassedTests>
     <MDResultFile>c:\pnpbuildtemp\PnPUnitTestResults-20151120-OnlineCred-635836595481564157.md</MDResultFile>
-  </PnPTestSummary>
-  <PnPTestSummary>
-    <PnPConfigurationToTest>OnPremAppOnly</PnPConfigurationToTest>
-    <TestDate>Friday, November 20, 2015</TestDate>
-    <TestTime>10:20 PM</TestTime>
-    <PnPBranch>dev</PnPBranch>
-    <VSBuildConfiguration>debug15</VSBuildConfiguration>
-    <NumberOfTests>269</NumberOfTests>
-    <ElapsedTime>0h 18m 43s</ElapsedTime>
-    <FailedTests>0</FailedTests>
-    <SkippedTests>48</SkippedTests>
-    <PassedTests>221</PassedTests>
-    <MDResultFile>c:\pnpbuildtemp\PnPUnitTestResults-20151120-OnPremAppOnly-635836584078351712.md</MDResultFile>
-  </PnPTestSummary>
-  <PnPTestSummary>
-    <PnPConfigurationToTest>OnPremCred</PnPConfigurationToTest>
-    <TestDate>Friday, November 20, 2015</TestDate>
-    <TestTime>10:00 PM</TestTime>
-    <PnPBranch>dev</PnPBranch>
-    <VSBuildConfiguration>debug15</VSBuildConfiguration>
-    <NumberOfTests>269</NumberOfTests>
-    <ElapsedTime>0h 19m 29s</ElapsedTime>
-    <FailedTests>0</FailedTests>
-    <SkippedTests>18</SkippedTests>
-    <PassedTests>251</PassedTests>
-    <MDResultFile>c:\pnpbuildtemp\PnPUnitTestResults-20151120-OnPremCred-635836572198816882.md</MDResultFile>
   </PnPTestSummary>
 </PnPUnitTestResults>
