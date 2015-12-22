@@ -7,6 +7,8 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using System.Data.SqlClient;
+using System.Data;
 
 namespace OfficeDevPnP.Core.Tests {
     static class TestCommon
@@ -75,6 +77,13 @@ namespace OfficeDevPnP.Core.Tests {
                 return ConfigurationManager.AppSettings["AzureStorageKey"];
             }
         }
+        public static String TestAutomationDatabaseConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["TestAutomationDatabaseConnectionString"];
+            }
+        }
         #endregion
 
         #region Methods
@@ -103,6 +112,29 @@ namespace OfficeDevPnP.Core.Tests {
             {
                 return false;
             }
+        }
+
+        public static bool TestAutomationSQLDatabaseAvailable()
+        {
+            string connectionString = TestAutomationDatabaseConnectionString;
+            if (!String.IsNullOrEmpty(connectionString))
+            {
+                try
+                {
+                    var con = new SqlConnectionStringBuilder(connectionString);
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        return (conn.State == ConnectionState.Open);
+                    }
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         private static ClientContext CreateContext(string contextUrl, ICredentials credentials)

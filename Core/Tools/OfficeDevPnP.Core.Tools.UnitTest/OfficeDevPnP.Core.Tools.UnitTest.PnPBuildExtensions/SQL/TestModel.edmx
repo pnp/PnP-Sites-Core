@@ -12,6 +12,7 @@
     <EntitySet Name="TestConfigurationSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="TestAuthenticationSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestAuthenticationSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="TestConfigurationPropertySet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationPropertySet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.FileTrackingSet" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="TestResultTestResultMessage" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultTestResultMessage">
       <End Role="TestResult" EntitySet="TestResultSet" />
       <End Role="TestResultMessage" EntitySet="TestResultMessageSet" />
@@ -113,6 +114,21 @@
     <Property Name="Value" Type="nvarchar(max)" Nullable="false" />
     <Property Name="TestConfigurationId" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="FileTrackingSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="TestDate" Type="datetime" Nullable="false" />
+    <Property Name="Build" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="FileName" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="FileHash" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="FileChanged" Type="bit" Nullable="false" />
+    <Property Name="TestSiteUrl" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="TestUser" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="TestAppId" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="TestComputerName" Type="nvarchar(max)" Nullable="true" />
+  </EntityType>
   <Association Name="TestResultTestResultMessage">
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
       <OnDelete Action="Cascade" />
@@ -210,6 +226,7 @@
             <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
             <End Role="TestConfigurationProperty" EntitySet="TestConfigurationPropertySet" />
           </AssociationSet>
+          <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" />
         </EntityContainer>
         <EntityType Name="TestRun">
           <Key>
@@ -381,6 +398,21 @@
           <Member Name="Done" Value="2" />
           <Member Name="Stuck" Value="3" />
         </EnumType>
+        <EntityType Name="FileTracking">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TestDate" Type="DateTime" Nullable="false" />
+          <Property Name="Build" Type="String" Nullable="false" />
+          <Property Name="FileName" Type="String" Nullable="false" />
+          <Property Name="FileHash" Type="String" Nullable="false" />
+          <Property Name="FileChanged" Type="Boolean" Nullable="false" />
+          <Property Name="TestSiteUrl" Type="String" Nullable="false" />
+          <Property Name="TestUser" Type="String" Nullable="true" />
+          <Property Name="TestAppId" Type="String" Nullable="true" />
+          <Property Name="TestComputerName" Type="String" Nullable="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -469,6 +501,22 @@
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="Value" ColumnName="Value" />
           <ScalarProperty Name="TestConfigurationId" ColumnName="TestConfigurationId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="FileTrackingSet">
+      <EntityTypeMapping TypeName="IsTypeOf(OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking)">
+        <MappingFragment StoreEntitySet="FileTrackingSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="TestDate" ColumnName="TestDate" />
+          <ScalarProperty Name="Build" ColumnName="Build" />
+          <ScalarProperty Name="FileName" ColumnName="FileName" />
+          <ScalarProperty Name="FileHash" ColumnName="FileHash" />
+          <ScalarProperty Name="FileChanged" ColumnName="FileChanged" />
+          <ScalarProperty Name="TestSiteUrl" ColumnName="TestSiteUrl" />
+          <ScalarProperty Name="TestUser" ColumnName="TestUser" />
+          <ScalarProperty Name="TestAppId" ColumnName="TestAppId" />
+          <ScalarProperty Name="TestComputerName" ColumnName="TestComputerName" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

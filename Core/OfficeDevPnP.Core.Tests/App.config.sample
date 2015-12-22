@@ -59,6 +59,8 @@
 
     <!-- Support for Azure based testing -->
     <add key="AzureStorageKey" value="" />
+    <!-- Support for storing file change tracking information into a database-->
+    <add key="TestAutomationDatabaseConnectionString" value="" />
 
   </appSettings>
   <system.diagnostics>

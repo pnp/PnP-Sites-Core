@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 12/21/2015 08:51:33
+-- Date Created: 12/22/2015 12:28:40
 -- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -54,6 +54,9 @@ IF OBJECT_ID(N'[dbo].[TestAuthenticationSet]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[TestConfigurationPropertySet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[TestConfigurationPropertySet];
+GO
+IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[FileTrackingSet];
 GO
 
 -- --------------------------------------------------
@@ -140,6 +143,21 @@ CREATE TABLE [dbo].[TestConfigurationPropertySet] (
 );
 GO
 
+-- Creating table 'FileTrackingSet'
+CREATE TABLE [dbo].[FileTrackingSet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [TestDate] datetime  NOT NULL,
+    [Build] nvarchar(max)  NOT NULL,
+    [FileName] nvarchar(max)  NOT NULL,
+    [FileHash] nvarchar(max)  NOT NULL,
+    [FileChanged] bit  NOT NULL,
+    [TestSiteUrl] nvarchar(max)  NOT NULL,
+    [TestUser] nvarchar(max)  NULL,
+    [TestAppId] nvarchar(max)  NULL,
+    [TestComputerName] nvarchar(max)  NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -177,6 +195,12 @@ GO
 -- Creating primary key on [Id] in table 'TestConfigurationPropertySet'
 ALTER TABLE [dbo].[TestConfigurationPropertySet]
 ADD CONSTRAINT [PK_TestConfigurationPropertySet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'FileTrackingSet'
+ALTER TABLE [dbo].[FileTrackingSet]
+ADD CONSTRAINT [PK_FileTrackingSet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 

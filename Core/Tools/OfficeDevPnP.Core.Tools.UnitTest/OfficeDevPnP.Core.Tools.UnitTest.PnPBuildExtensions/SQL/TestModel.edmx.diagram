@@ -16,6 +16,7 @@
         <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Width="2.25" PointX="3.25" PointY="8.875" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" Width="2" PointX="13.375" PointY="4" FillColor="Maroon" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
