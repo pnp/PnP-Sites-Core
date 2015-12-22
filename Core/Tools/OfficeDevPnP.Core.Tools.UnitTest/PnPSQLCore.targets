@@ -41,7 +41,7 @@
 
     <!-- Read the needed variables from the master configuration file-->
     <Message Text="=================================================================================" />
-    <Message Text="PnPSQLConnectionString: $(PnPSQLConnectionString)" />
+    <!--<Message Text="PnPSQLConnectionString: $(PnPSQLConnectionString)" />-->
     <Message Text="PnPConfigurationToTest: $(PnPConfigurationToTest)" />
     <!--Grab the PnP github branch and Visual Studio configuration from the SQL test automation database-->
     <PnPSQLAppConfigReaderTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)">
@@ -92,6 +92,12 @@
     </PnPBase64EncoderTask>
     <!-- Run the unit tests. Optionally scope the tests via /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest -->
     <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
+
+      <!-- Drop the cloned directory-->
+    <Message Text="=================================================================================" />
+    <Message Text="Deleting the $(PnPRepo) folder to remove traces from test run" />
+    <Message Text="=================================================================================" />
+    <RemoveDir Directories="$(PnPRepo)" />
 
   </Target>
 

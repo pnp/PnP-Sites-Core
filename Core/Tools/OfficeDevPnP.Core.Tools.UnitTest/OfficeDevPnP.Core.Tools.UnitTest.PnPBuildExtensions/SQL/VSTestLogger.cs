@@ -16,15 +16,15 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
 
         public void Initialize(TestLoggerEvents events, string testRunDirectory)
         {
-            Console.WriteLine("In Initialize");
+            //Console.WriteLine("In Initialize");
         }
 
         public void Initialize(TestLoggerEvents events, Dictionary<string, string> parameters)
         {
-            foreach (var param in parameters)
-            {
-                Console.WriteLine("Property: {0}   Value:{1}", param.Key, param.Value);
-            }
+            //foreach (var param in parameters)
+            //{
+            //    Console.WriteLine("Property: {0}   Value:{1}", param.Key, param.Value);
+            //}
 
             testManager = new TestManager(parameters);
 

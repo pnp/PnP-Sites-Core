@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
         {
             try
             {
-                Log.LogMessageFromText(String.Format("Base64 encode string {0}", Input), MessageImportance.Normal);
+                //Log.LogMessageFromText(String.Format("Base64 encode string {0}", Input), MessageImportance.Normal);
                 Output = Base64Encode(Input).Replace("=", "&equal");
                 return true;
             }
