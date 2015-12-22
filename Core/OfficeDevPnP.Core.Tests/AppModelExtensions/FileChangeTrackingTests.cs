@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -75,7 +76,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 using (SqlConnection connection = new SqlConnection(TestCommon.TestAutomationDatabaseConnectionString))
                 {
                     string appId = ConfigurationManager.AppSettings["AppId"];
-                    string user = ConfigurationManager.AppSettings["SPOUserName"];
+                    string user;
+                    if (ConfigurationManager.AppSettings["SPOCredentialManagerLabel"] != null)
+                    {
+                        user = CredentialManager.GetSharePointOnlineCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]).UserName;
+                    }
+                    else
+                    {
+                        user = ConfigurationManager.AppSettings["SPOUserName"];
+                    }
 
                     // prep insert command
                     using (SqlCommand command = new SqlCommand("INSERT INTO [dbo].[FileTrackingSet] VALUES (@TestDate, @Build, @FileName, @FileHash, @FileChanged, @TestSiteUrl, @TestUser, @TestAppId, @TestComputerName)", connection))
