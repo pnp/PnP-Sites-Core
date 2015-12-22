@@ -147,6 +147,9 @@
     <Compile Include="Operations\AppRegNew.cs" />
     <Compile Include="SharePointContext.cs" />
     <Compile Include="SQL\DataManager.cs" />
+    <Compile Include="SQL\FileTracking.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQL\Outcome.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
@@ -223,6 +226,7 @@
     <Content Include="nuget.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SQL\scripts\addfiletrackingtable.sql" />
     <Content Include="SQL\scripts\createdpnprole.sql" />
     <Content Include="SQL\scripts\createuserandlogin.sql" />
     <Content Include="SQL\scripts\listgrants.sql" />

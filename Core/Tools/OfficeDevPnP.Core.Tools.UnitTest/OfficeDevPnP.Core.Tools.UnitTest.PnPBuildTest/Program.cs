@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -75,6 +76,16 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
             //t.GenerateMDSummaryReport();
             #endregion
 
+            string c1 = @"metadata=res://*/SQL.TestModel.csdl|res://*/SQL.TestModel.ssdl|res://*/SQL.TestModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=(localdb)\MSSQLLocalDB;initial catalog=PnPTestAutomation;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework&quot;";
+
+            Console.WriteLine(GetConnectionString(c1));
+
+        }
+
+        private static string GetConnectionString(string c)
+        {
+            var c2 = c.Substring(c.IndexOf("&quot;") + 6);
+            return c2.Substring(0, c2.IndexOf("&quot;"));
         }
 
     }

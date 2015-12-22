@@ -64,6 +64,8 @@
     <Message Text="Cloning the $(PnPRepoUrl) repository to $(PnPRepo)" />
     <Message Text="=================================================================================" />
     <Exec Command="$(GitExe) clone $(PnPRepoUrl) $(PnPRepo)" />
+    <Exec Command="$(Git) checkout $(PnPBranch)" />
+    <Exec Command="$(Git) pull" />
     
     <!-- Create app.config with the specific test information -->
     <Message Text="=================================================================================" />
@@ -88,8 +90,8 @@
     <PnPBase64EncoderTask Input="$(PnPSQLConnectionString)">
       <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
     </PnPBase64EncoderTask>
-    <!-- Run the unit tests. Optionally scope the tests via /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,CanSerializeDomainObjectWithJsonFormatter -->
-    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
+    <!-- Run the unit tests. Optionally scope the tests via /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest -->
+    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
 
   </Target>
 

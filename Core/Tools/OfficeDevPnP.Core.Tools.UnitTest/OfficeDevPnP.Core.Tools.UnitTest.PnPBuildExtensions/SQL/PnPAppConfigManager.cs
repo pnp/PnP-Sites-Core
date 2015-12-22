@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -94,7 +95,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                         }
                         else // App-Only
                         {
-                            WriteProperty(writer, "Realm", "");
                             WriteProperty(writer, "AppId", testConfig.TestAuthentication.AppId);
                             WriteProperty(writer, "AppSecret", testConfig.TestAuthentication.AppSecret);
                         }
@@ -109,7 +109,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                         }
                         else // App-Only
                         {
-                            WriteProperty(writer, "Realm", "");
                             WriteProperty(writer, "AppId", testConfig.TestAuthentication.AppId);
                             WriteProperty(writer, "AppSecret", testConfig.TestAuthentication.AppSecret);
                         }
@@ -119,6 +118,10 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                         {
                             WriteProperty(writer, testConfigurationProperty.Name, testConfigurationProperty.Value);
                         }
+
+                        // dump "special" additional properties
+                        WriteProperty(writer, "TestAutomationDatabaseConnectionString", GetConnectionString(sqlConnectionString));
+
                     }
                     writer.WriteEndElement(); //appSettings
 
@@ -161,6 +164,12 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             writer.WriteAttributeString("key", propertyName);
             writer.WriteAttributeString("value", propertyValue);
             writer.WriteEndElement();
+        }
+
+        private static string GetConnectionString(string c)
+        {
+            var c2 = c.Substring(c.IndexOf("\"") + 1);
+            return c2.Substring(0, c2.IndexOf("\""));
         }
     }
 }
