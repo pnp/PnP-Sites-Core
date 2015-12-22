@@ -45,11 +45,9 @@ namespace OfficeDevPnP.Core.Tests {
                     Password = GetSecureString(ConfigurationManager.AppSettings["OnPremPassword"]);
                     Credentials = new NetworkCredential(ConfigurationManager.AppSettings["OnPremUserName"], Password, ConfigurationManager.AppSettings["OnPremDomain"]);
                 }
-                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["Realm"]) &&
-                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
+                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
                          !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppSecret"]))
                 {
-                    Realm = ConfigurationManager.AppSettings["Realm"];
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     AppSecret = ConfigurationManager.AppSettings["AppSecret"];
                 }
@@ -67,7 +65,6 @@ namespace OfficeDevPnP.Core.Tests {
         static string UserName { get; set; }
         static SecureString Password { get; set; }
         public static ICredentials Credentials { get; set; }
-        static string Realm { get; set; }
         static string AppId { get; set; }
         static string AppSecret { get; set; }
 
@@ -91,8 +88,7 @@ namespace OfficeDevPnP.Core.Tests {
 
         public static bool AppOnlyTesting()
         {
-            if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["Realm"]) &&
-                !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
+            if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
                 !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppSecret"]) &&
                 String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]) &&
                 String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]) &&
@@ -112,10 +108,10 @@ namespace OfficeDevPnP.Core.Tests {
         private static ClientContext CreateContext(string contextUrl, ICredentials credentials)
         {
             ClientContext context;
-            if (!String.IsNullOrEmpty(Realm) && !String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
+            if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                context = am.GetAppOnlyAuthenticatedContext(contextUrl, Realm, AppId, AppSecret); 
+                context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret); 
             }
             else
             {
