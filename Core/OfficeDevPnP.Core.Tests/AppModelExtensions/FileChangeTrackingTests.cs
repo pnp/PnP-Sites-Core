@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 {
                     string appId = ConfigurationManager.AppSettings["AppId"];
                     string user;
-                    if (ConfigurationManager.AppSettings["SPOCredentialManagerLabel"] != null)
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
                     {
                         user = CredentialManager.GetSharePointOnlineCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]).UserName;
                     }
