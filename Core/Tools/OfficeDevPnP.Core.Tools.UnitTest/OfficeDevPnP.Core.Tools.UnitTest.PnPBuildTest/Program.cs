@@ -75,22 +75,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
             //t.GenerateMDSummaryReport();
             #endregion
 
-            #region Data manager testing
-            //System.Convert.ToBase64String()
-            string b = "bWV0YWRhdGE9cmVzOi8vKi9TUUwuVGVzdE1vZGVsLmNzZGx8cmVzOi8vKi9TUUwuVGVzdE1vZGVsLnNzZGx8cmVzOi8vKi9TUUwuVGVzdE1vZGVsLm1zbDtwcm92aWRlcj1TeXN0ZW0uRGF0YS5TcWxDbGllbnQ7cHJvdmlkZXIgY29ubmVjdGlvbiBzdHJpbmc9JnF1b3Q7ZGF0YSBzb3VyY2U9KGxvY2FsZGIpXE1TU1FMTG9jYWxEQjtpbml0aWFsIGNhdGFsb2c9UG5QVGVzdEF1dG9tYXRpb247aW50ZWdyYXRlZCBzZWN1cml0eT1UcnVlO011bHRpcGxlQWN0aXZlUmVzdWx0U2V0cz1UcnVlO0FwcD1FbnRpdHlGcmFtZXdvcmsmcXVvdDs=";
-
-            Console.WriteLine(Base64Decode(b));
-
-            
-
-            #endregion
-
         }
 
-        public static string Base64Decode(string base64EncodedData)
-        {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        }
     }
 }

@@ -267,6 +267,7 @@
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>TestModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
+    <None Include="SQL\mssqlbuild.cmd" />
     <None Include="SQL\TestModel.edmx.diagram">
       <DependentUpon>TestModel.edmx</DependentUpon>
     </None>
