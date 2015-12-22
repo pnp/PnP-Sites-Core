@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.MD
 {
     [Serializable]
-    public class PnPTestSummary
+    public class TestSummary
     {
         public String PnPConfigurationToTest { get; set; }
         public String TestDate { get; set; }

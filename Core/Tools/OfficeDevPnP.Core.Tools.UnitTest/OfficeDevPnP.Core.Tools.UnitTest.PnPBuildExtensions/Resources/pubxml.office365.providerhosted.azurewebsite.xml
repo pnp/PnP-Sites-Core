@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <WebPublishMethod>MSDeploy</WebPublishMethod>
+    <ADUsesOwinOrOpenIdConnect>False</ADUsesOwinOrOpenIdConnect>
+    <LastUsedBuildConfiguration>%BuildConfiguration%</LastUsedBuildConfiguration>
+    <LastUsedPlatform>Any CPU</LastUsedPlatform>
+    <SiteUrlToLaunchAfterPublish>%SiteUrlToLaunchAfterPublish%</SiteUrlToLaunchAfterPublish>
+    <LaunchSiteAfterPublish>False</LaunchSiteAfterPublish>
+    <ExcludeApp_Data>False</ExcludeApp_Data>
+    <MSDeployServiceURL>%ServiceURL%</MSDeployServiceURL>
+    <DeployIisAppPath>%IisAppPath%</DeployIisAppPath>
+    <RemoteSitePhysicalPath />
+    <SkipExtraFilesOnServer>True</SkipExtraFilesOnServer>
+    <MSDeployPublishMethod>WMSVC</MSDeployPublishMethod>
+    <EnableMSDeployBackup>True</EnableMSDeployBackup>
+    <UserName>%UserName%</UserName>
+    <_SavePWD>True</_SavePWD>
+    <_DestinationType>AzureWebSite</_DestinationType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <MsDeployDeclareParameters Include="ClientId">
+      <Kind>XmlFile</Kind>
+      <Scope>web.config$</Scope>
+      <Match>/configuration/appSettings/add[@key='ClientId']/@value</Match>
+      <Description>Value for ClientId here.</Description>
+      <DefaultValue>%ClientId%</DefaultValue>
+      <Value>%ClientId%</Value>
+      <Tags>applicationSettings</Tags>
+    </MsDeployDeclareParameters>
+    <MsDeployDeclareParameters Include="ClientSecret">
+      <Kind>XmlFile</Kind>
+      <Scope>web.config$</Scope>
+      <Match>/configuration/appSettings/add[@key='ClientSecret']/@value</Match>
+      <Description>Value for ClientSecret here.</Description>
+      <DefaultValue>%ClientSecret%</DefaultValue>
+      <Value>%ClientSecret%</Value>
+      <Tags>applicationSettings</Tags>
+    </MsDeployDeclareParameters>
+  </ItemGroup>
+
+</Project> 
