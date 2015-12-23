@@ -8,18 +8,19 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Generic collection of items stored in the ProvisioningTemplate graph
+    /// Generic keyed collection of items stored in the ProvisioningTemplate graph
     /// </summary>
-    /// <typeparam name="T">The type of Item for the collection</typeparam>
-    public abstract class ProvisioningTemplateList<T> : Collection<T>, IProvisioningTemplateDescendant
-        where T : BaseModel
+    /// <typeparam name="TKey">The type of the Key for the keyed collection</typeparam>
+    /// <typeparam name="TItem">The type of the Item for the keyed collection</typeparam>
+    public abstract class ProvisioningTemplateDictionary<TKey, TItem> : KeyedCollection<TKey, TItem>, IProvisioningTemplateDescendant
+        where TItem : BaseModel
     {
         /// <summary>
         /// Custom constructor to manage the ParentTemplate for the collection 
         /// and all the children of the collection
         /// </summary>
         /// <param name="parentTemplate"></param>
-        public ProvisioningTemplateList(ProvisioningTemplate parentTemplate)
+        public ProvisioningTemplateDictionary(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;
         }
@@ -41,9 +42,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        protected override void InsertItem(int index, T item)
+        protected override void InsertItem(int index, TItem item)
         {
             base.InsertItem(index, item);
+        }
+
+        protected override void SetItem(int index, TItem item)
+        {
+            base.SetItem(index, item);
             item.ParentTemplate = this.ParentTemplate;
         }
 
@@ -53,12 +59,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             base.RemoveItem(index);
         }
 
-        protected override void SetItem(int index, T item)
-        {
-            base.SetItem(index, item);
-            item.ParentTemplate = this.ParentTemplate;
-        }
-
         protected override void ClearItems()
         {
             foreach (var item in this.Items)
@@ -66,14 +66,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 item.ParentTemplate = null;
             }
             base.ClearItems();
-        }
-
-        public virtual void AddRange(IEnumerable<T> collection)
-        {
-            foreach (var item in collection)
-            {
-                this.Add(item);
-            }
         }
     }
 }
