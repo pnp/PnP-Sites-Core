@@ -177,13 +177,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
 
-                homeFile.WebParts.Add(new Model.WebPart()
+                Model.WebPart newWp = new Model.WebPart()
                 {
                     Title = webPart.WebPart.Title,
                     Row = (uint)webPart.WebPart.ZoneIndex,
-                    Zone = webPart.ZoneId,
                     Contents = webPartxml
-                });
+                };
+#if !CLIENTSDKV15
+                // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
+                if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
+                {
+                    newWp.Zone = webPart.ZoneId;
+                }
+#endif
+                homeFile.WebParts.Add(newWp);
             }
             template.Files.Add(homeFile);
 
