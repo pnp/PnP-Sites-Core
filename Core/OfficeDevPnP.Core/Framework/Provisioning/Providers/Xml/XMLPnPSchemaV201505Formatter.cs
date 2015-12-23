@@ -82,9 +82,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 Generator = this.GetType().Assembly.FullName
             };
-            wrappedResult.Templates = new V201505.Templates[] { 
-                new V201505.Templates 
-                { 
+            wrappedResult.Templates = new V201505.Templates[] {
+                new V201505.Templates
+                {
                     ID = String.Format("CONTAINER-{0}", template.Id),
                     ProvisioningTemplate = new V201505.ProvisioningTemplate[]
                     {
@@ -207,12 +207,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.ContentTypes = (from ct in template.ContentTypes
                                        select new V201505.ContentType
-            {
-                ID = ct.Id,
-                Description = ct.Description,
-                Group = ct.Group,
-                Name = ct.Name,
-                FieldRefs = ct.FieldRefs.Count > 0 ?
+                                       {
+                                           ID = ct.Id,
+                                           Description = ct.Description,
+                                           Group = ct.Group,
+                                           Name = ct.Name,
+                                           FieldRefs = ct.FieldRefs.Count > 0 ?
                     (from fieldRef in ct.FieldRefs
                      select new V201505.ContentTypeFieldRef
                      {
@@ -221,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Hidden = fieldRef.Hidden,
                          Required = fieldRef.Required
                      }).ToArray() : null,
-            }).ToArray();
+                                       }).ToArray();
 
             }
             else
@@ -362,7 +362,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         (from customAction in template.CustomActions.SiteCustomActions
                          select new V201505.CustomAction
                          {
-                             CommandUIExtension = new CustomActionCommandUIExtension {
+                             CommandUIExtension = new CustomActionCommandUIExtension
+                             {
                                  Any = customAction.CommandUIExtension != null ?
                                     (from x in customAction.CommandUIExtension.Elements() select x.ToXmlElement()).ToArray() : null,
                              },
@@ -962,12 +963,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         file.WebParts != null ?
                             (from wp in file.WebParts
                              select new Model.WebPart
-                                 {
-                                     Order = (uint)wp.Order,
-                                     Zone = wp.Zone,
-                                     Title = wp.Title,
-                                     Contents = wp.Contents
-                                 }) : null,
+                             {
+                                 Order = (uint)wp.Order,
+                                 Zone = wp.Zone,
+                                 Title = wp.Title,
+                                 Contents = wp.Contents
+                             }) : null,
                         file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null
                         )
                     );
@@ -1049,9 +1050,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 Description = termSet.Description,
                             })
                         )
-                        {
-                            Description = termGroup.Description,
-                        });
+                    {
+                        Description = termGroup.Description,
+                    });
             }
             #endregion
 
@@ -1101,7 +1102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class TaxonomyTermExtensions
     {
-        public static V201505.Term[] FromModelTermsToSchemaTermsV201505(this List<Model.Term> terms)
+        public static V201505.Term[] FromModelTermsToSchemaTermsV201505(this TermCollection terms)
         {
             V201505.Term[] result = terms.Count > 0 ? (
                 from term in terms
@@ -1165,11 +1166,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     term.CustomProperties != null ? term.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null,
                     term.LocalCustomProperties != null ? term.LocalCustomProperties.ToDictionary(k => k.Key, v => v.Value) : null
                     )
-                    {
-                        CustomSortOrder = term.CustomSortOrder,
-                        IsAvailableForTagging = term.IsAvailableForTagging,
-                        Owner = term.Owner,
-                    }
+                {
+                    CustomSortOrder = term.CustomSortOrder,
+                    IsAvailableForTagging = term.IsAvailableForTagging,
+                    Owner = term.Owner,
+                }
                 );
 
             return (result);

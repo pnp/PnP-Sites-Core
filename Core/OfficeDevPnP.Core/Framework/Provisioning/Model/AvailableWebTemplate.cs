@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines an available Web Template for the current Publishing site
     /// </summary>
-    public class AvailableWebTemplate : IEquatable<AvailableWebTemplate>
+    public partial class AvailableWebTemplate : BaseModel, IEquatable<AvailableWebTemplate>
     {
         #region Public Members
 

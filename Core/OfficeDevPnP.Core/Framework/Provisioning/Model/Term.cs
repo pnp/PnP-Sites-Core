@@ -8,11 +8,11 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class Term : IEquatable<Term>
+    public partial class Term : BaseModel, IEquatable<Term>
     {
         #region Private Members
-        private List<Term> _terms = new List<Term>();
-        private List<TermLabel> _labels = new List<TermLabel>();
+        private TermCollection _terms;
+        private TermLabelCollection _labels;
         private Dictionary<string, string> _properties = new Dictionary<string, string>();
         private Dictionary<string, string> _localProperties = new Dictionary<string, string>();
         private Guid _id;
@@ -27,13 +27,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public int? Language { get; set; }
         public int CustomSortOrder { get; set; }
 
-        public List<Term> Terms
+        public TermCollection Terms
         {
             get { return _terms; }
             private set { _terms = value; }
         }
 
-        public List<TermLabel> Labels
+        public TermLabelCollection Labels
         {
             get { return _labels; }
             private set { _labels = value; }
@@ -56,6 +56,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public Term()
         {
+            _terms = new TermCollection(this.ParentTemplate);
+            _labels = new TermLabelCollection(this.ParentTemplate);
         }
 
         public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties)

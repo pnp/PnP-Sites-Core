@@ -5,7 +5,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class TermSet : IEquatable<TermSet>
+    public partial class TermSet : BaseModel, IEquatable<TermSet>
     {
         #region Private Members
         private List<Term> _terms = new List<Term>();

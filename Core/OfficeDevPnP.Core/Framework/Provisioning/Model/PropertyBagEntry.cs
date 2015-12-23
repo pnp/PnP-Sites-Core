@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class PropertyBagEntry : IEquatable<PropertyBagEntry>
+    public partial class PropertyBagEntry : BaseModel, IEquatable<PropertyBagEntry>
     {
         #region Properties
 

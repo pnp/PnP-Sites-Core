@@ -3,12 +3,12 @@ using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class File : IEquatable<File>
+    public partial class File : BaseModel, IEquatable<File>
     {
         #region Private Members
 
         private List<WebPart> _webParts = new List<WebPart>();
-        private Dictionary<string, string> _properties = new Dictionary<string,string>();
+        private Dictionary<string, string> _properties = new Dictionary<string, string>();
         private ObjectSecurity _security = new ObjectSecurity();
 
         #endregion
@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Constructors
         public File() { }
 
-        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string,string> properties, ObjectSecurity security = null)
+        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string, string> properties, ObjectSecurity security = null)
         {
             this.Src = src;
             this.Overwrite = overwrite;
@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 foreach (var property in properties)
                 {
-                    this.Properties.Add(property.Key,property.Value);
+                    this.Properties.Add(property.Key, property.Value);
                 }
             }
             if (security != null)

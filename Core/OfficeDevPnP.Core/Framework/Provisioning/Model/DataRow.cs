@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class DataRow
+    public partial class DataRow : BaseModel
     {
         #region Private members
         private Dictionary<string, string> _values = new Dictionary<string, string>();
