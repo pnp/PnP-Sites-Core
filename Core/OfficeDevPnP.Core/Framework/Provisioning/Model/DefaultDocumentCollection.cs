@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class ContentTypeBindingCollection : ProvisioningTemplateCollection<ContentTypeBinding>
+    public partial class DefaultDocumentCollection : ProvisioningTemplateCollection<DefaultDocument>
     {
-        public ContentTypeBindingCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
+        public DefaultDocumentCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 
         }

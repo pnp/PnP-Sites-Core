@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A default document for a Document Set
     /// </summary>
-    public class DefaultDocument : IEquatable<DefaultDocument>
+    public partial class DefaultDocument : BaseModel, IEquatable<DefaultDocument>
     {
         #region Public Members
 
@@ -53,8 +53,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public bool Equals(DefaultDocument other)
         {
             return (this.Name == other.Name &&
-                    this.ContentTypeId  == other.ContentTypeId &&
-                    this.FileSourcePath== other.FileSourcePath
+                    this.ContentTypeId == other.ContentTypeId &&
+                    this.FileSourcePath == other.FileSourcePath
                 );
 
         }

@@ -12,7 +12,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Constructors
 
-        public ListInstance() { }
+        public ListInstance()
+        {
+            _ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
+            _views = new ViewCollection(this.ParentTemplate);
+            _fields = new FieldCollection(this.ParentTemplate);
+            _fieldRefs = new FieldRefCollection(this.ParentTemplate);
+            _dataRows = new DataRowCollection(this.ParentTemplate);
+            _folders = new FolderCollection(this.ParentTemplate);
+        }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
@@ -27,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders)
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : this()
         {
             if (contentTypeBindings != null)
             {
@@ -62,21 +70,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             if (folders != null)
             {
-                this._folders = folders;
+                this._folders.AddRange(folders);
             }
         }
 
         #endregion
 
         #region Private Members
-        private List<ContentTypeBinding> _ctBindings = new List<ContentTypeBinding>();
-        private List<View> _views = new List<View>();
-        private List<Field> _fields = new List<Field>();
-        private List<FieldRef> _fieldRefs = new List<FieldRef>();
-        private List<DataRow> _dataRows = new List<DataRow>();
+        private ContentTypeBindingCollection _ctBindings;
+        private ViewCollection _views;
+        private FieldCollection _fields;
+        private FieldRefCollection _fieldRefs;
+        private DataRowCollection _dataRows;
         private Dictionary<String, String> _fieldDefaults = new Dictionary<String, String>();
         private ObjectSecurity _security = null;
-        private List<Folder> _folders = new List<Folder>();
+        private FolderCollection _folders;
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         #endregion
@@ -183,7 +191,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the content types to associate to the list
         /// </summary>
-        public List<ContentTypeBinding> ContentTypeBindings
+        public ContentTypeBindingCollection ContentTypeBindings
         {
             get { return this._ctBindings; }
             private set { this._ctBindings = value; }
@@ -192,19 +200,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the content types to associate to the list
         /// </summary>
-        public List<View> Views
+        public ViewCollection Views
         {
             get { return this._views; }
             private set { this._views = value; }
         }
 
-        public List<Field> Fields
+        public FieldCollection Fields
         {
             get { return this._fields; }
             private set { this._fields = value; }
         }
 
-        public List<FieldRef> FieldRefs
+        public FieldRefCollection FieldRefs
         {
             get { return this._fieldRefs; }
             private set { this._fieldRefs = value; }
@@ -212,7 +220,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public Guid TemplateFeatureID { get; set; }
 
-        public List<DataRow> DataRows
+        public DataRowCollection DataRows
         {
             get { return this._dataRows; }
             private set { this._dataRows = value; }
@@ -240,7 +248,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines a collection of folders (eventually nested) that 
         /// will be provisioned into the target list/library
         /// </summary>
-        public List<Folder> Folders
+        public FolderCollection Folders
         {
             get { return this._folders; }
             set { this._folders = value; }
