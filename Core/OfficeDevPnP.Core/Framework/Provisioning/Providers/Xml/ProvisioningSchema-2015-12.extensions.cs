@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             this.Column = Int32.Parse(webPartXml.Attribute("Column").Value);
 
             XElement webPartContents = webPartXml.Element(ns + "Contents");
-            this.Contents = webPartContents.Value;
+            this.Contents = webPartContents.ToXmlElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
@@ -64,7 +64,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteAttributeString("Row", this.Row.ToString());
             writer.WriteAttributeString("Column", this.Column.ToString());
             writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
-            writer.WriteCData(this.Contents);
+
+            using (XmlReader xr = new XmlNodeReader(this.Contents))
+            {
+                writer.WriteNode(xr, false);
+            }
+
             writer.WriteEndElement();
         }
     }

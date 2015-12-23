@@ -1191,7 +1191,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private File[] filesField;
         
-        private Pages pagesField;
+        private Page[] pagesField;
         
         private TermGroup[] termGroupsField;
         
@@ -1366,7 +1366,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         }
         
         /// <remarks/>
-        public Pages Pages {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Page[] Pages {
             get {
                 return this.pagesField;
             }
@@ -1529,6 +1530,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private bool noCrawlFieldSpecified;
         
+        private string welcomePageField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string RequestAccessEmail {
@@ -1559,6 +1562,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.noCrawlFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string WelcomePage {
+            get {
+                return this.welcomePageField;
+            }
+            set {
+                this.welcomePageField = value;
             }
         }
     }
@@ -3855,7 +3869,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class DataValue : BaseFieldValue {
     }
     
@@ -3866,7 +3880,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class BaseFieldValue {
         
         private string fieldNameField;
@@ -3901,7 +3915,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class FieldDefault : BaseFieldValue {
     }
     
@@ -4531,41 +4545,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
-    public partial class Pages {
-        
-        private Page[] pageField;
-        
-        private string welcomePageField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Page")]
-        public Page[] Page {
-            get {
-                return this.pageField;
-            }
-            set {
-                this.pageField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string WelcomePage {
-            get {
-                return this.welcomePageField;
-            }
-            set {
-                this.welcomePageField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class Page {
         
         private WikiPageWebPart[] webPartsField;
@@ -4656,10 +4635,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    //[System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class WikiPageWebPart {
         
-        private string contentsField;
+        private System.Xml.XmlElement contentsField;
         
         private string titleField;
         
@@ -4668,7 +4647,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         private int columnField;
         
         /// <remarks/>
-        public string Contents {
+        public System.Xml.XmlElement Contents {
             get {
                 return this.contentsField;
             }

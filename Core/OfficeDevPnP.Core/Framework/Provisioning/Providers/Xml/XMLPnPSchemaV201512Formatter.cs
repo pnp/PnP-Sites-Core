@@ -759,7 +759,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          {
                              Column = (int)wp.Column,
                              Row = (int)wp.Row,
-                             Contents = wp.Contents,
+                             Contents = XElement.Parse(wp.Contents).ToXmlElement(),
                              Title = wp.Title,
                          }).ToArray() : null;
 
@@ -776,12 +776,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     pages.Add(schemaPage);
                 }
 
-                result.Pages = new V201512.Pages()
-                {
-                    Page = pages.ToArray(),
-                    WelcomePage = template.Pages.Any(p => p.WelcomePage = true) ?
-                        template.Pages.Last(p => p.WelcomePage = true).Url : null,
-                };
+                result.Pages = pages.ToArray();
             }
 
             #endregion
@@ -1585,7 +1580,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Pages, if any
             if (source.Pages != null)
             {
-                foreach (var page in source.Pages.Page)
+                foreach (var page in source.Pages)
                 {
 
                     var pageLayout = WikiPageLayout.OneColumn;
@@ -1628,10 +1623,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Title = wp.Title,
                                  Column = (uint)wp.Column,
                                  Row = (uint)wp.Row,
-                                 Contents = wp.Contents
+                                 Contents = wp.Contents.InnerXml
 
                              }).ToList() : null),
-                        source.Pages.WelcomePage == page.Url,
                         page.Security.FromSchemaToTemplateObjectSecurityV201512(),
                         (page.Fields != null && page.Fields.Length > 0) ?
                              (from f in page.Fields

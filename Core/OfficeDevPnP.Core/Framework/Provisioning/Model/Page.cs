@@ -5,7 +5,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class Page : IEquatable<Page>
+    public partial class Page : IEquatable<Page>
     {
         #region Private Members
 
@@ -22,7 +22,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public WikiPageLayout Layout { get; set; }
 
         public bool Overwrite { get; set; }
-        public bool WelcomePage { get; set; }
 
         public List<WebPart> WebParts
         {
@@ -53,17 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Constructors
         public Page() { }
 
-        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false, ObjectSecurity security = null):
-            this(url, overwrite, layout, webParts, welcomePage, security, null)
-        {
-        }
-
-        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false, ObjectSecurity security = null, Dictionary<String, String> fields = null)
+        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null)
         {
             this.Url = url;
             this.Overwrite = overwrite;
             this.Layout = layout;
-            this.WelcomePage = welcomePage;
 
             if (webParts != null)
             {
