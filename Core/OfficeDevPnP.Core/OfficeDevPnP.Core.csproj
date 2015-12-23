@@ -517,10 +517,10 @@
     <Compile Include="Framework\Provisioning\Model\WebPartCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowDefinition.cs" />
-    <Compile Include="Framework\Provisioning\Model\WorkflowDefinitions.cs" />
+    <Compile Include="Framework\Provisioning\Model\WorkflowDefinitionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Workflows.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />
-    <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptions.cs" />
+    <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />

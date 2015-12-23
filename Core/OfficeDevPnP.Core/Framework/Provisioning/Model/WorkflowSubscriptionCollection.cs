@@ -9,9 +9,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a collection of objects of type WorkflowSubscription
     /// </summary>
-    public partial class WorkflowSubscriptionsCollection : ProvisioningTemplateList<WorkflowSubscription>
+    public partial class WorkflowSubscriptionCollection : ProvisioningTemplateCollection<WorkflowSubscription>
     {
-        public WorkflowSubscriptionsCollection(ProvisioningTemplate parentTemplate):
+        public WorkflowSubscriptionCollection(ProvisioningTemplate parentTemplate):
             base(parentTemplate)
         {
 
