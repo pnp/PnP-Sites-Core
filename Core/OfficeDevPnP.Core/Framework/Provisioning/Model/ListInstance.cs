@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that specifies the properties of the new list.
     /// </summary>
-    public partial class ListInstance : IEquatable<ListInstance>
+    public partial class ListInstance : BaseModel, IEquatable<ListInstance>
     {
         #region Constructors
 

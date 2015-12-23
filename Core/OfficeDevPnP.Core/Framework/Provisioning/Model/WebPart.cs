@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class WebPart : IEquatable<WebPart>
+    public partial class WebPart : BaseModel, IEquatable<WebPart>
     {
         #region Properties
         public uint Row { get; set; }

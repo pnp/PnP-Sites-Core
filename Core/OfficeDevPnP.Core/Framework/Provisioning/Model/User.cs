@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that defines a User or group in the provisioning template
     /// </summary>
-    public partial class User : IEquatable<User>
+    public partial class User : BaseModel, IEquatable<User>
     {
         #region Public Members
 

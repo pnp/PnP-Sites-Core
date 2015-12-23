@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// Generic collection of items stored in the ProvisioningTemplate graph
     /// </summary>
     /// <typeparam name="T">The type of Item for the collection</typeparam>
-    public abstract class ProvisioningTemplateList<T> : Collection<T>, IProvisioningTemplateDescendant
+    public abstract class ProvisioningTemplateCollection<T> : Collection<T>, IProvisioningTemplateDescendant
         where T : BaseModel
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// and all the children of the collection
         /// </summary>
         /// <param name="parentTemplate"></param>
-        public ProvisioningTemplateList(ProvisioningTemplate parentTemplate)
+        public ProvisioningTemplateCollection(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;
         }

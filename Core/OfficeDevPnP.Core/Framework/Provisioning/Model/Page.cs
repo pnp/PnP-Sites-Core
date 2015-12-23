@@ -5,7 +5,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class Page : IEquatable<Page>
+    public partial class Page : BaseModel, IEquatable<Page>
     {
         #region Private Members
 

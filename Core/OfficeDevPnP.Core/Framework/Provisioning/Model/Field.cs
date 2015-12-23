@@ -6,7 +6,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Represents a Field XML Markup that is used to define information about a field
     /// </summary>
-    public class Field : IEquatable<Field>
+    public partial class Field : BaseModel, IEquatable<Field>
     {
         #region Private Members
         private string _schemaXml = string.Empty;

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Role Assignment for a target Principal
     /// </summary>
-    public class RoleAssignment : IEquatable<RoleAssignment>
+    public partial class RoleAssignment : BaseModel, IEquatable<RoleAssignment>
     {
         #region Public Members
 

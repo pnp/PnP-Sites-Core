@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a folder that will be provisioned into the target list/library
     /// </summary>
-    public partial class Folder : IEquatable<Folder>
+    public partial class Folder : BaseModel, IEquatable<Folder>
     {
         #region Private members
 

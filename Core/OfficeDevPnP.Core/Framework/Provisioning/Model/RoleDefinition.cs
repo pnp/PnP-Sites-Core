@@ -7,7 +7,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class RoleDefinition : IEquatable<RoleDefinition>
+    public partial class RoleDefinition : BaseModel, IEquatable<RoleDefinition>
     {
         #region Private Members
 

@@ -1828,7 +1828,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class V201512Extensions
     {
-        public static V201512.Term[] FromModelTermsToSchemaTermsV201512(this List<Model.Term> terms)
+        public static V201512.Term[] FromModelTermsToSchemaTermsV201512(this TermCollection terms)
         {
             V201512.Term[] result = terms.Count > 0 ? (
                 from term in terms
