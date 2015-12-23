@@ -29,8 +29,8 @@
   </PropertyGroup>
   
   <!-- Custom tasks registration -->
-  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPAppConfigReaderTask" />
-  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPAppConfigGeneratorTask" />
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPXmlAppConfigReaderTask" />
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPXmlAppConfigGeneratorTask" />
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPTestSummaryTask" />
   
   <Target Name="BuildAndUnitTestPnP">
