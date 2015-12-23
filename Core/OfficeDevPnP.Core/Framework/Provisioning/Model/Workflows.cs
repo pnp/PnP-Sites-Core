@@ -13,8 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private WorkflowDefinitions _workflowDefinitions;
-        private WorkflowSubscriptions _workflowSubscriptions;
+        private WorkflowDefinitionsCollection _workflowDefinitions;
+        private WorkflowSubscriptionsCollection _workflowSubscriptions;
 
         #endregion
 
@@ -22,8 +22,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public Workflows()
         {
-            this._workflowDefinitions = new Model.WorkflowDefinitions(this.ParentTemplate);
-            this._workflowSubscriptions = new Model.WorkflowSubscriptions(this.ParentTemplate);
+            this._workflowDefinitions = new Model.WorkflowDefinitionsCollection(this.ParentTemplate);
+            this._workflowSubscriptions = new Model.WorkflowSubscriptionsCollection(this.ParentTemplate);
         }
 
         public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null) : this()
@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Definitions to provision
         /// </summary>
-        public WorkflowDefinitions WorkflowDefinitions
+        public WorkflowDefinitionsCollection WorkflowDefinitions
         {
             get { return this._workflowDefinitions; }
             private set { this._workflowDefinitions = value; }
@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Subscriptions to provision
         /// </summary>
-        public WorkflowSubscriptions WorkflowSubscriptions
+        public WorkflowSubscriptionsCollection WorkflowSubscriptions
         {
             get { return this._workflowSubscriptions; }
             private set { this._workflowSubscriptions = value; }

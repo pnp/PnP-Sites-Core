@@ -9,9 +9,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a collection of objects of type WorkflowDefinition
     /// </summary>
-    public partial class WorkflowDefinitions : ProvisioningTemplateList<WorkflowDefinition>
+    public partial class WorkflowDefinitionsCollection : ProvisioningTemplateList<WorkflowDefinition>
     {
-        public WorkflowDefinitions(ProvisioningTemplate parentTemplate):
+        public WorkflowDefinitionsCollection(ProvisioningTemplate parentTemplate):
             base(parentTemplate)
         {
         }
