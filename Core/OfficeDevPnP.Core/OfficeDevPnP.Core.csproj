@@ -356,6 +356,7 @@
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
     <Compile Include="Framework\Provisioning\Model\AuditSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\AvailableWebTemplate.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseModel.cs" />
     <Compile Include="Framework\Provisioning\Model\ComposedLook.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentType.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentTypeBinding.cs" />
@@ -369,10 +370,12 @@
     <Compile Include="Framework\Provisioning\Model\FieldRef.cs" />
     <Compile Include="Framework\Provisioning\Model\Field.cs" />
     <Compile Include="Framework\Provisioning\Model\Folder.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningTemplateDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\Localization.cs" />
     <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateList.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleDefinition.cs" />
