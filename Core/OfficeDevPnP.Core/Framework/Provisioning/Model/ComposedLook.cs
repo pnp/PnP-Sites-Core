@@ -47,16 +47,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string MasterPage { get; set; }
 
         /// <summary>
-        /// Gets or sets the Site Logo
-        /// </summary>
-        public string SiteLogo { get; set; }
-
-        /// <summary>
-        /// Gets or sets the AlternateCSS
-        /// </summary>
-        public string AlternateCSS { get; set; }
-
-        /// <summary>
         /// Gets or sets the Version of the ComposedLook.
         /// </summary>
         public int Version { get; set; }

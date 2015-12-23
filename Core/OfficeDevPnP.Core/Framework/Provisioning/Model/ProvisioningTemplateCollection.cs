@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// Generic collection of items stored in the ProvisioningTemplate graph
     /// </summary>
     /// <typeparam name="T">The type of Item for the collection</typeparam>
-    public abstract class ProvisioningTemplateList<T> : Collection<T>, IProvisioningTemplateDescendant
+    public abstract class ProvisioningTemplateCollection<T> : Collection<T>, IProvisioningTemplateDescendant
         where T : BaseModel
     {
         /// <summary>
@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// and all the children of the collection
         /// </summary>
         /// <param name="parentTemplate"></param>
-        public ProvisioningTemplateList(ProvisioningTemplate parentTemplate)
+        public ProvisioningTemplateCollection(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;
         }
@@ -70,10 +70,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public virtual void AddRange(IEnumerable<T> collection)
         {
-            foreach (var item in collection)
+            if (collection != null)
             {
-                this.Add(item);
+                foreach (var item in collection)
+                {
+                    this.Add(item);
+                }
             }
+        }
+
+        /// <summary>
+        /// Finds an item matching a search predicate
+        /// </summary>
+        /// <param name="match">The matching predicate to use for finding any target item</param>
+        /// <returns>The target item matching the find predicate</returns>
+        /// <remarks>We implemented this to adhere to the generic List of T behavior</remarks>
+        public T Find(Predicate<T> match)
+        {
+            return (this.FirstOrDefault(item => match(item)));
+        }
+        public Int32 FindIndex(Predicate<T> match)
+        {
+            return (this.FindIndex(0, this.Count, match));
+        }
+
+        public int FindIndex(int startIndex, Predicate<T> match)
+        {
+            return (this.FindIndex(startIndex, this.Count - startIndex, match));
+        }
+
+        public int FindIndex(int startIndex, int count, Predicate<T> match)
+        {
+            if (startIndex > this.Count)
+            {
+                throw new ArgumentOutOfRangeException("startIndex");
+            }
+            if ((count < 0) || (startIndex > (this.Count - count)))
+            {
+                throw new ArgumentOutOfRangeException("count");
+            }
+            if (match == null)
+            {
+                throw new ArgumentNullException("match");
+            }
+
+            int num = startIndex + count;
+            for (int i = startIndex; i < num; i++)
+            {
+                if (match(this.Items[i]))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void ProvisionCustomActionImplementation(object parent, List<CustomAction> customActions, TokenParser parser, PnPMonitoredScope scope)
+        private void ProvisionCustomActionImplementation(object parent, CustomActionCollection customActions, TokenParser parser, PnPMonitoredScope scope)
         {
             Web web = null;
             Site site = null;

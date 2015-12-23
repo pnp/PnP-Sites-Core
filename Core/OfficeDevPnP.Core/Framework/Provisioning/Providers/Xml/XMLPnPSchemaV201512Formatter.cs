@@ -163,6 +163,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     NoCrawl = template.WebSettings.NoCrawl,
                     NoCrawlSpecified = true,
                     RequestAccessEmail = template.WebSettings.RequestAccessEmail,
+                    Title = template.WebSettings.Title,
+                    Description = template.WebSettings.Description,
+                    SiteLogo = template.WebSettings.SiteLogo,
+                    AlternateCSS = template.WebSettings.AlternateCSS,
                 };
             }
 
@@ -825,13 +829,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.ComposedLook = new V201512.ComposedLook
                 {
-                    AlternateCSS = template.ComposedLook.AlternateCSS,
                     BackgroundFile = template.ComposedLook.BackgroundFile,
                     ColorFile = template.ComposedLook.ColorFile,
                     FontFile = template.ComposedLook.FontFile,
                     MasterPage = template.ComposedLook.MasterPage,
                     Name = template.ComposedLook.Name,
-                    SiteLogo = template.ComposedLook.SiteLogo,
                     Version = template.ComposedLook.Version,
                     VersionSpecified = true,
                 };
@@ -1169,6 +1171,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     NoCrawl = source.WebSettings.NoCrawlSpecified ? source.WebSettings.NoCrawl : false,
                     RequestAccessEmail = source.WebSettings.RequestAccessEmail,
+                    WelcomePage = source.WebSettings.WelcomePage,
+                    Title = source.WebSettings.Title,
+                    Description = source.WebSettings.Description,
+                    SiteLogo = source.WebSettings.SiteLogo,
+                    AlternateCSS = source.WebSettings.AlternateCSS,
                 };
             }
 
@@ -1672,13 +1679,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate ComposedLook, if any
             if (source.ComposedLook != null)
             {
-                result.ComposedLook.AlternateCSS = source.ComposedLook.AlternateCSS;
                 result.ComposedLook.BackgroundFile = source.ComposedLook.BackgroundFile;
                 result.ComposedLook.ColorFile = source.ComposedLook.ColorFile;
                 result.ComposedLook.FontFile = source.ComposedLook.FontFile;
                 result.ComposedLook.MasterPage = source.ComposedLook.MasterPage;
                 result.ComposedLook.Name = source.ComposedLook.Name;
-                result.ComposedLook.SiteLogo = source.ComposedLook.SiteLogo;
                 result.ComposedLook.Version = source.ComposedLook.Version;
             }
 
@@ -1828,7 +1833,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class V201512Extensions
     {
-        public static V201512.Term[] FromModelTermsToSchemaTermsV201512(this List<Model.Term> terms)
+        public static V201512.Term[] FromModelTermsToSchemaTermsV201512(this TermCollection terms)
         {
             V201512.Term[] result = terms.Count > 0 ? (
                 from term in terms

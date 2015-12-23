@@ -1532,6 +1532,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private string welcomePageField;
         
+        private string titleField;
+        
+        private string descriptionField;
+        
+        private string siteLogoField;
+        
+        private string alternateCSSField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string RequestAccessEmail {
@@ -1573,6 +1581,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.welcomePageField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Title {
+            get {
+                return this.titleField;
+            }
+            set {
+                this.titleField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Description {
+            get {
+                return this.descriptionField;
+            }
+            set {
+                this.descriptionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SiteLogo {
+            get {
+                return this.siteLogoField;
+            }
+            set {
+                this.siteLogoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string AlternateCSS {
+            get {
+                return this.alternateCSSField;
+            }
+            set {
+                this.alternateCSSField = value;
             }
         }
     }
@@ -4742,10 +4794,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private string masterPageField;
         
-        private string siteLogoField;
-        
-        private string alternateCSSField;
-        
         private int versionField;
         
         private bool versionFieldSpecified;
@@ -4802,28 +4850,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.masterPageField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string SiteLogo {
-            get {
-                return this.siteLogoField;
-            }
-            set {
-                this.siteLogoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string AlternateCSS {
-            get {
-                return this.alternateCSSField;
-            }
-            set {
-                this.alternateCSSField = value;
             }
         }
         

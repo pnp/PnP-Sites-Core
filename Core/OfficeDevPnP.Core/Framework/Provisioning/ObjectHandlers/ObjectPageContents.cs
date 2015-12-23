@@ -15,6 +15,7 @@ using System.Text;
 using System.Web;
 using System.IO;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -34,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // Extract the Home PAge
+                // Extract the Home Page
                 web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
 
                 var homepageUrl = web.RootFolder.WelcomePage;
@@ -92,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         );
                                     web.Context.ExecuteQueryRetry();
 
-                                    var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
+                                    var webPartxml = TokenizeWebPartXml(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
 
                                     page.WebParts.Add(new Model.WebPart()
                                     {
@@ -117,7 +118,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                             {
                                 // Not a wikipage
-                                template = GetFileContents(web, template, welcomePageUrl);
+                                template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
                             }
                             else
                             {
@@ -138,7 +139,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                         {
                             // Page does not belong to a list, extract the file as is
-                            template = GetFileContents(web, template, welcomePageUrl);
+                            template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
                         }
                         else
                         {
@@ -157,7 +158,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private ProvisioningTemplate GetFileContents(Web web, ProvisioningTemplate template, string welcomePageUrl)
+        private ProvisioningTemplate GetFileContents(Web web, ProvisioningTemplate template, string welcomePageUrl, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
         {
             var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
 
@@ -166,6 +167,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var webParts = web.GetWebParts(welcomePageUrl);
 
+            var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
+
             var homeFile = new Model.File()
             {
                 Folder = Tokenize(folderPath, web.Url),
@@ -173,9 +176,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Overwrite = true,
             };
 
+            // Add field values to file
+
+            RetrieveFieldValues(web, file, homeFile);
+
+            // Add WebParts to file
             foreach (var webPart in webParts)
             {
-                var webPartxml = Tokenize(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
+                var webPartxml = TokenizeWebPartXml(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
 
                 Model.WebPart newWp = new Model.WebPart()
                 {
@@ -194,10 +202,130 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             template.Files.Add(homeFile);
 
+            // Persist file using connector
+            PersistFile(web, creationInfo, scope, folderPath, fileName);
+
             return template;
         }
 
-        private string Tokenize(Web web, string xml)
+        private Model.File RetrieveFieldValues(Web web, File file, Model.File homeFile)
+        {
+            var listItem = file.EnsureProperty(f => f.ListItemAllFields);
+
+            var list = listItem.ParentList;
+
+            var fields = list.Fields;
+            web.Context.Load(fields, fs => fs.IncludeWithDefaultProperties(f => f.TypeAsString, f => f.InternalName, f => f.Title));
+            web.Context.ExecuteQueryRetry();
+
+            var fieldValues = listItem.FieldValues;
+
+            var fieldValuesAsText = listItem.EnsureProperty(li => li.FieldValuesAsText).FieldValues;
+
+            var fieldstoExclude = new[] {
+                "ID",
+                "GUID",
+                "Author",
+                "Editor",
+                "FileLeafRef",
+                "FileRef",
+                "File_x0020_Type",
+                "Modified_x0020_By",
+                "Created_x0020_By",
+                "Created",
+                "Modified",
+                "FileDirRef",
+                "Last_x0020_Modified",
+                "Created_x0020_Date",
+                "File_x0020_Size",
+                "FSObjType",
+                "IsCheckedoutToLocal",
+                "ScopeId",
+                "UniqueId",
+                "VirusStatus",
+                "_Level",
+                "_IsCurrentVersion",
+                "ItemChildCount",
+                "FolderChildCount",
+                "SMLastModifiedDate",
+                "owshiddenversion",
+                "_UIVersion",
+                "_UIVersionString",
+                "Order",
+                "WorkflowVersion",
+                "DocConcurrencyNumber",
+                "ParentUniqueId",
+                "CheckedOutUserId",
+                "SyncClientId",
+                "CheckedOutTitle",
+                "SMTotalSize",
+                "SMTotalFileStreamSize",
+                "SMTotalFileCount",
+                "ParentVersionString",
+                "ParentLeafName",
+                "SortBehavior",
+                "_ModerationStatus"
+            };
+
+            foreach (var fieldValue in fieldValues.Where(f => !fieldstoExclude.Contains(f.Key)))
+            {
+                if (fieldValue.Value != null && !string.IsNullOrEmpty(fieldValue.Value.ToString()))
+                {
+                    var field = fields.FirstOrDefault(fs => fs.InternalName == fieldValue.Key);
+
+                    string value = string.Empty;
+                    if (field.TypeAsString == "URL")
+                    {
+                        value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url);
+                    }
+                    else {
+                        value = Tokenize(fieldValue.Value.ToString(), web.Url);
+                    }
+
+                    if (fieldValue.Key == "ContentTypeId")
+                    {
+                        // Replace the content typeid with a token
+                        var ct = list.GetContentTypeById(value);
+                        if (ct != null)
+                        {
+                            value = string.Format("{{contenttypeid:{0}}}", ct.Name);
+                        }
+                    }
+                    homeFile.Properties.Add(fieldValue.Key, value);
+                }
+            }
+
+            return homeFile;
+        }
+
+        private void PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string folderPath, string fileName)
+        {
+            if (creationInfo.FileConnector != null)
+            {
+                SharePointConnector connector = new SharePointConnector(web.Context, web.Url, "dummy");
+
+                Uri u = new Uri(web.Url);
+                if (folderPath.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                {
+                    folderPath = folderPath.Replace(u.PathAndQuery, "");
+                }
+
+                using (Stream s = connector.GetFileStream(fileName, folderPath))
+                {
+                    if (s != null)
+                    {
+                        creationInfo.FileConnector.SaveFileStream(fileName, s);
+                    }
+                }
+            }
+            else
+            {
+                WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                scope.LogError("No connector present to persist homepage");
+            }
+        }
+
+        private string TokenizeWebPartXml(Web web, string xml)
         {
             var lists = web.Lists;
             web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id);
@@ -210,7 +338,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, web.ServerRelativeUrl, "{site}", RegexOptions.IgnoreCase);
-
+            xml = xml.Replace("<![CDATA[", "{cdatastart}");
+            xml = xml.Replace("]]>", "{cdataend}");
             return xml;
         }
 

@@ -271,7 +271,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void CreateView(Web web, View view, ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope)
+        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope)
         {
             try
             {

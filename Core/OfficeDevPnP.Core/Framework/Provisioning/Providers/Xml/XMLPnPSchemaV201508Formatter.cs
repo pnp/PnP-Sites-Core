@@ -1753,7 +1753,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class V201508Extensions
     {
-        public static V201508.Term[] FromModelTermsToSchemaTermsV201508(this List<Model.Term> terms)
+        public static V201508.Term[] FromModelTermsToSchemaTermsV201508(this TermCollection terms)
         {
             V201508.Term[] result = terms.Count > 0 ? (
                 from term in terms

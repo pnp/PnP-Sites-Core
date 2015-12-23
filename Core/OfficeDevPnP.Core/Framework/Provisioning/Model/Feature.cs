@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that represents an Feature.
     /// </summary>
-    public partial class Feature : IEquatable<Feature>
+    public partial class Feature : BaseModel, IEquatable<Feature>
     {
         #region Private Members
 

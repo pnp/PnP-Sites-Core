@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class AddIns : ProvisioningTemplateList<AddIn>
+    public partial class SiteGroupCollection : ProvisioningTemplateCollection<SiteGroup>
     {
-        public AddIns(ProvisioningTemplate parentTemplate) :
-            base(parentTemplate)
+        public SiteGroupCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
+
         }
     }
 }
