@@ -25,7 +25,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                     "<xsd:complexType name=\"WikiPageWebPart\">" +
                         "<xsd:all>" +
-                            "<xsd:element name=\"Contents\" type=\"xsd:string\" minOccurs=\"1\" maxOccurs=\"1\" />" +
+                            "<xsd:element name=\"Contents\" minOccurs=\"1\" maxOccurs=\"1\">" +
+                                "<xsd:complexType>" +
+                                    "<xsd:sequence>" +
+                                        "<xsd:any processContents=\"lax\" namespace=\"##any\" minOccurs=\"0\" />" +
+                                    "</xsd:sequence>" +
+                                "</xsd:complexType>" +
+                            "</xsd:element>" +
                         "</xsd:all>" +
                         "<xsd:attribute name=\"Title\" type=\"xsd:string\" use=\"required\" />" +
                         "<xsd:attribute name=\"Row\" type=\"xsd:int\" use=\"required\" />" +
@@ -146,7 +152,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                     "<xsd:complexType name=\"WebPartPageWebPart\">" +
                         "<xsd:all>" +
-                            "<xsd:element name=\"Contents\" type=\"xsd:string\" minOccurs=\"1\" maxOccurs=\"1\" />" +
+                            "<xsd:element name=\"Contents\" minOccurs=\"1\" maxOccurs=\"1\">" +
+                                "<xsd:complexType>" +
+                                    "<xsd:sequence>" +
+                                        "<xsd:any processContents=\"lax\" namespace=\"##any\" minOccurs=\"0\" />" +
+                                    "</xsd:sequence>" +
+                                "</xsd:complexType>" +
+                            "</xsd:element>" +
                         "</xsd:all>" +
                         "<xsd:attribute name=\"Title\" type=\"xsd:string\" use=\"required\" />" +
                         "<xsd:attribute name=\"Zone\" type=\"xsd:string\" use=\"required\" />" +
@@ -176,7 +188,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             this.Order = Int32.Parse(webPartXml.Attribute("Order").Value);
 
             XElement webPartContents = webPartXml.Element(ns + "Contents");
-            this.Contents = webPartContents.Value;
+            this.Contents = webPartContents.ToXmlElement();
         }
 
         void IXmlSerializable.WriteXml(XmlWriter writer)
@@ -185,7 +197,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteAttributeString("Zone", this.Zone);
             writer.WriteAttributeString("Order", this.Order.ToString());
             writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
-            writer.WriteCData(this.Contents);
+
+            using (XmlReader xr = new XmlNodeReader(this.Contents))
+            {
+                writer.WriteNode(xr, false);
+            }
+
             writer.WriteEndElement();
         }
     }

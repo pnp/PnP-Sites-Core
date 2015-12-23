@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines an Add-in to provision
     /// </summary>
-    public class AddIn : IEquatable<AddIn>
+    public partial class AddIn : BaseModel, IEquatable<AddIn>
     {
         #region Public Members
 
