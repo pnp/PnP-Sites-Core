@@ -376,6 +376,7 @@
     <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateList.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
