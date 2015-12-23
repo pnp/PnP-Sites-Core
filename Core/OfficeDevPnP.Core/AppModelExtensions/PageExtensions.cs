@@ -76,6 +76,11 @@ namespace Microsoft.SharePoint.Client
             LimitedWebPartManager limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
             IEnumerable<WebPartDefinition> query = null;
+
+#if CLIENTSDKV15
+            // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
+            query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+#else
             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
             {
                 query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.ZoneId, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
@@ -84,6 +89,7 @@ namespace Microsoft.SharePoint.Client
             {
                 query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
             }
+#endif
             web.Context.ExecuteQueryRetry();
 
             return query;
@@ -359,7 +365,6 @@ namespace Microsoft.SharePoint.Client
 
         }
 
-#if !CLIENTSDKV15
         public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
         {
 
@@ -387,9 +392,10 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
                 var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
 
-
+#if CLIENTSDKV15
+                request.Credentials = web.Context.Credentials; 
+#else
                 var credentials = web.Context.Credentials as SharePointOnlineCredentials;
-
                 var authCookieValue = credentials.GetAuthenticationCookie(uri);
 
                 Cookie fedAuth = new Cookie()
@@ -410,20 +416,20 @@ namespace Microsoft.SharePoint.Client
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     webPartXml = reader.ReadToEnd();
                 }
+#endif
             }
 
             return webPartXml;
         }
 
-#endif
-        /// <summary>
-        /// Applies a layout to a wiki page
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="layout">Wiki page layout to be applied</param>
-        /// <param name="serverRelativePageUrl"></param>
-        /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
-        /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
+                /// <summary>
+                /// Applies a layout to a wiki page
+                /// </summary>
+                /// <param name="web">Site to be processed - can be root web or sub site</param>
+                /// <param name="layout">Wiki page layout to be applied</param>
+                /// <param name="serverRelativePageUrl"></param>
+                /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
+                /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
         public static void AddLayoutToWikiPage(this Web web, WikiPageLayout layout, string serverRelativePageUrl)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))

@@ -44,8 +44,7 @@
     <add key="OnPremDomain" value="domain" />
     <add key="OnPremPassword" value="" />
 
-    <!-- Priority 3: For app only testing provide a realm, app id and app secret -->
-    <add key="Realm" value="a6623c9e-30c7-493b-87bc-d907df44a26e" />
+    <!-- Priority 3: For app only testing provide an app id and app secret -->
     <add key="AppId" value="b5bdf20c-2917-5178-3309-5deb57ee6c89" />
     <add key="AppSecret" value="" />
 
@@ -60,6 +59,8 @@
 
     <!-- Support for Azure based testing -->
     <add key="AzureStorageKey" value="" />
+    <!-- Support for storing file change tracking information into a database-->
+    <add key="TestAutomationDatabaseConnectionString" value="" />
 
   </appSettings>
   <system.diagnostics>
