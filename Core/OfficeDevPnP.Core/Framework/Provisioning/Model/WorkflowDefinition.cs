@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Workflow Definition to provision
     /// </summary>
-    public class WorkflowDefinition: IEquatable<WorkflowDefinition>
+    public class WorkflowDefinition: BaseModel, IEquatable<WorkflowDefinition>
     {
         #region Private Members
 

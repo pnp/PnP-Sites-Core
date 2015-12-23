@@ -9,20 +9,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Workflows to provision
     /// </summary>
-    public class Workflows
+    public partial class Workflows: BaseModel
     {
         #region Private Members
 
-        private List<WorkflowDefinition> _workflowDefinitions = new List<WorkflowDefinition>();
-        private List<WorkflowSubscription> _workflowSubscriptions = new List<WorkflowSubscription>();
+        private WorkflowDefinitions _workflowDefinitions;
+        private WorkflowSubscriptions _workflowSubscriptions;
 
         #endregion
 
         #region Constructors
 
-        public Workflows() { }
+        public Workflows()
+        {
+            this._workflowDefinitions = new Model.WorkflowDefinitions(this.ParentTemplate);
+            this._workflowSubscriptions = new Model.WorkflowSubscriptions(this.ParentTemplate);
+        }
 
-        public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null)
+        public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null) : this()
         {
             if (workflowDefinitions != null)
             {
@@ -41,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Definitions to provision
         /// </summary>
-        public List<WorkflowDefinition> WorkflowDefinitions
+        public WorkflowDefinitions WorkflowDefinitions
         {
             get { return this._workflowDefinitions; }
             private set { this._workflowDefinitions = value; }
@@ -50,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Subscriptions to provision
         /// </summary>
-        public List<WorkflowSubscription> WorkflowSubscriptions
+        public WorkflowSubscriptions WorkflowSubscriptions
         {
             get { return this._workflowSubscriptions; }
             private set { this._workflowSubscriptions = value; }
