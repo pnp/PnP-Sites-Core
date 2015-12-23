@@ -98,6 +98,15 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                             WriteProperty(writer, "AppId", testConfig.TestAuthentication.AppId);
                             WriteProperty(writer, "AppSecret", testConfig.TestAuthentication.AppSecret);
                         }
+
+                        // dump additional properties
+                        foreach (var testConfigurationProperty in testConfig.TestConfigurationProperties)
+                        {
+                            WriteProperty(writer, testConfigurationProperty.Name, testConfigurationProperty.Value);
+                        }
+
+                        // dump "special" additional properties
+                        WriteProperty(writer, "TestAutomationDatabaseConnectionString", GetConnectionString(sqlConnectionString));
                     }
                     else // Online
                     {
