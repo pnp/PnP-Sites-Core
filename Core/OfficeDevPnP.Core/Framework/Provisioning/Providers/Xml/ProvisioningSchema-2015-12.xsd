@@ -523,6 +523,15 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="WelcomePage" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied, optional attribute.
+          The page does not necessarily need to be in the current template, can be an already existing one.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="RegionalSettings">
@@ -946,14 +955,6 @@
       <xsd:element name="Page" type="pnp:Page"
                     minOccurs="1" maxOccurs="unbounded" />
     </xsd:sequence>
-
-    <xsd:attribute name="WelcomePage" type="xsd:string" use="optional">
-      <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-          Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
 
   </xsd:complexType>
 
@@ -1425,7 +1426,7 @@
             <xsd:element name="Folder" type="pnp:Folder" minOccurs="1" maxOccurs="unbounded" />
           </xsd:sequence>
         </xsd:complexType>
-        
+
       </xsd:element>
       <xsd:element name="FieldDefaults" maxOccurs="1" minOccurs="0">
 
@@ -1637,7 +1638,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="BaseFieldValue">
@@ -2356,12 +2357,17 @@
     </xsd:annotation>
 
     <xsd:all>
-      <xsd:element name="Contents" type="xsd:string" minOccurs="1" maxOccurs="1">
+      <xsd:element name="Contents" minOccurs="1" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Defines the WebPart XML, required element.
           </xsd:documentation>
         </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="lax" namespace="##any" minOccurs="0" />
+          </xsd:sequence>
+        </xsd:complexType>
       </xsd:element>
     </xsd:all>
     <xsd:attribute name="Title" type="xsd:string" use="required">
@@ -2807,7 +2813,7 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      
+
     </xsd:sequence>
 
   </xsd:complexType>

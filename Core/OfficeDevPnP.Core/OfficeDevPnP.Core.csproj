@@ -339,6 +339,7 @@
     <Compile Include="Framework\Provisioning\Deprecated\Model\Feature.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\FieldRef.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ListInstance.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\Model\Page.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ProvisioningTemplate.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ProvisioningTemplateInfo.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\Term.deprecated.cs" />

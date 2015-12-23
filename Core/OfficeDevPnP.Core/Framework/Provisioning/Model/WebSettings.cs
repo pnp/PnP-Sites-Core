@@ -23,16 +23,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String RequestAccessEmail { get; set; }
 
+        /// <summary>
+        /// Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied.
+        /// </summary>
+        public String WelcomePage { get; set; }
+
         #endregion
 
         #region Constructors
 
         public WebSettings() { }
 
-        public WebSettings(Boolean noCrawl, String requestAccessEmail)
+        public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage)
         {
             this.NoCrawl = noCrawl;
             this.RequestAccessEmail = requestAccessEmail;
+            this.WelcomePage = welcomePage;
         }
 
         #endregion
@@ -43,7 +49,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|",
                 (this.NoCrawl.GetHashCode()),
-                (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0)
+                (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
+                (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0)
             ).GetHashCode());
         }
 
@@ -59,7 +66,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public bool Equals(WebSettings other)
         {
             return (this.NoCrawl == other.NoCrawl &&
-                    this.RequestAccessEmail == other.RequestAccessEmail
+                    this.RequestAccessEmail == other.RequestAccessEmail &&
+                    this.WelcomePage == other.WelcomePage
                 );
         }
 
