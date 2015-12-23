@@ -4484,10 +4484,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
     public partial class WebPartPageWebPart {
         
-        private string contentsField;
+        private System.Xml.XmlElement contentsField;
         
         private string titleField;
         
@@ -4496,7 +4496,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         private int orderField;
         
         /// <remarks/>
-        public string Contents {
+        public System.Xml.XmlElement Contents {
             get {
                 return this.contentsField;
             }

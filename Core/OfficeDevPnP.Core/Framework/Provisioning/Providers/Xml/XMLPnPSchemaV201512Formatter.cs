@@ -687,7 +687,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              {
                                  Zone = wp.Zone,
                                  Order = (int)wp.Order,
-                                 Contents = wp.Contents,
+                                 Contents = XElement.Parse(wp.Contents).ToXmlElement(),
                                  Title = wp.Title,
                              }).ToArray() : null,
                          Properties = file.Properties != null && file.Properties.Count > 0 ?
@@ -1565,7 +1565,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Order = (uint)wp.Order,
                                  Zone = wp.Zone,
                                  Title = wp.Title,
-                                 Contents = wp.Contents
+                                 Contents = wp.Contents.InnerXml
                              }) : null,
                         file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
                         file.Security.FromSchemaToTemplateObjectSecurityV201512()
@@ -1624,7 +1624,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Column = (uint)wp.Column,
                                  Row = (uint)wp.Row,
                                  Contents = wp.Contents.InnerXml
-
                              }).ToList() : null),
                         page.Security.FromSchemaToTemplateObjectSecurityV201512(),
                         (page.Fields != null && page.Fields.Length > 0) ?
