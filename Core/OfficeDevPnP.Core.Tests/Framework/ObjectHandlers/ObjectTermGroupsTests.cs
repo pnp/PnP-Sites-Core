@@ -18,6 +18,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
         private Guid _termSetGuid;
         private Guid _termGroupGuid;
+        private Guid _termSetReusable1Guid;
+        private Guid _termSetReusable2Guid;
+        private Guid _termGroupReusableGuid;
 
         [TestInitialize]
         public void Initialize()
@@ -26,6 +29,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 _termSetGuid = Guid.NewGuid();
                 _termGroupGuid = Guid.NewGuid();
+                _termSetReusable1Guid = Guid.NewGuid();
+                _termSetReusable2Guid = Guid.NewGuid();
+                _termGroupReusableGuid = Guid.NewGuid();
             }
             else
             {
@@ -167,6 +173,75 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsTrue(template.TermGroups.Any());
                 Assert.IsInstanceOfType(template.TermGroups, typeof(List<TermGroup>));
+            }
+
+
+        }
+
+        [TestMethod]
+        public void CanProvisionResuableTerms()
+        {
+            var template = new ProvisioningTemplate();
+
+            TermGroup termGroup = new TermGroup(_termGroupReusableGuid, "TestProvisioningGroupReusable", null);
+
+            List<TermSet> termSets = new List<TermSet>();
+
+            TermSet termSet1 = new TermSet(_termSetReusable1Guid, "TestProvisioningTermSetReusable1", null, true, false, null, null);
+            TermSet termSet2 = new TermSet(_termSetReusable2Guid, "TestProvisioningTermSetReusable2", null, true, false, null, null);
+
+            List<Term> terms1 = new List<Term>();
+            List<Term> terms2 = new List<Term>();
+
+            Guid reusedTermGuid = Guid.NewGuid();
+
+            var term1 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, isReused:true, sourceTermId:reusedTermGuid, isSourceTerm:true);
+            term1.Properties.Add("TestProp1", "Test Value 1");
+            term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
+            term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
+
+            terms1.Add(term1);
+            termSet1.Terms.AddRange(terms1);
+            termSets.Add(termSet1);
+
+            var term2 = new Term(reusedTermGuid, "TestProvisioningReusedTerm 1", null, null, null, null, null, isReused: true, sourceTermId: reusedTermGuid, isSourceTerm: false);
+            term1.Properties.Add("TestProp1", "Test Value 1");
+            term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
+            term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
+
+            terms2.Add(term1);
+            termSet2.Terms.AddRange(terms2);
+            termSets.Add(termSet2);
+
+            termGroup.TermSets.AddRange(termSets);
+            template.TermGroups.Add(termGroup);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+
+                var parser = new TokenParser(ctx.Web, template);
+
+                new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+
+                var store = session.GetDefaultSiteCollectionTermStore();
+
+                var group = store.GetGroup(_termGroupReusableGuid);
+                var set1 = store.GetTermSet(_termSetReusable1Guid);
+                var set2 = store.GetTermSet(_termSetReusable2Guid);
+
+                ctx.Load(group);
+                ctx.Load(set1, ts => ts.Terms);
+                ctx.Load(set2, ts => ts.Terms);
+
+                ctx.ExecuteQueryRetry();
+
+                Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
+                Assert.IsInstanceOfType(set1, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
+                Assert.IsTrue(set1.Terms.Count == 1);
+                Assert.IsInstanceOfType(set2, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
+                Assert.IsTrue(set2.Terms.Count == 1);
             }
 
 

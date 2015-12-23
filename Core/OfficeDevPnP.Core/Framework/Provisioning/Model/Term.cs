@@ -24,6 +24,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Description { get; set; }
         public String Owner { get; set; }
         public Boolean IsAvailableForTagging { get; set; }
+        public Boolean IsReused { get; set; }
+        public Boolean IsDeprecated { get; set; }
+        public Boolean IsSourceTerm { get; set; }
+        public Guid SourceTermId { get; set; }
         public int? Language { get; set; }
         public int CustomSortOrder { get; set; }
 
@@ -60,10 +64,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             _labels = new TermLabelCollection(this.ParentTemplate);
         }
 
-        public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties)
+        public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties, Boolean isReused = false, Guid sourceTermId = default(Guid), Boolean isSourceTerm = true, Boolean isDeprecated = false)
         {
             this.Id = id;
             this.Name = name;
+            this.IsReused = isReused;
+            this.IsSourceTerm = isSourceTerm;
+            this.IsDeprecated = isDeprecated;
+            this.SourceTermId = sourceTermId;
             if (language.HasValue)
             {
                 this.Language = language;
@@ -100,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}",
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 (this.Name != null ? this.Name.GetHashCode() : 0),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
@@ -111,7 +119,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Labels.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Terms.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.LocalProperties.Aggregate(0, (acc, next) => acc += next.GetHashCode())
+                this.LocalProperties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.IsReused.GetHashCode(),
+                this.SourceTermId.GetHashCode(),
+                this.IsSourceTerm.GetHashCode(),
+                this.IsDeprecated.GetHashCode()
             ).GetHashCode());
         }
 
@@ -136,7 +148,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Labels.DeepEquals(other.Labels) &&
                 this.Terms.DeepEquals(other.Terms) &&
                 this.Properties.DeepEquals(other.Properties) &&
-                this.LocalProperties.DeepEquals(other.LocalProperties));
+                this.LocalProperties.DeepEquals(other.LocalProperties) &&
+                this.IsReused == other.IsReused &&
+                this.SourceTermId  == other.SourceTermId &&
+                this.IsDeprecated == other.IsDeprecated &&
+                this.IsSourceTerm == other.IsSourceTerm);
         }
 
         #endregion

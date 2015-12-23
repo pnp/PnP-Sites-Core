@@ -10,7 +10,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectTermGroups : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "Term Groups"; }
@@ -117,9 +116,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                         }
 
-                        web.Context.Load(set, s => s.Terms.Include(t => t.Id, t => t.Name));
+                        web.Context.Load(set, s => s.Terms.Include(t => t.Id, t => t.Name, t=>t.IsReused));
                         web.Context.ExecuteQueryRetry();
                         var terms = set.Terms;
+                        foreach (var term in terms)
+                        {
+                            if (term.IsReused)
+                            {
+                                web.Context.Load(term.SourceTerm);
+                                web.Context.ExecuteQueryRetry();
+                            }
+                        }
 
                         foreach (var modelTerm in modelTermSet.Terms)
                         {
@@ -185,34 +192,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
-            Term term;
-            if (modelTerm.Id == Guid.Empty)
+            Term term = null;
+
+            // If term is resued, attempt to create resued term
+            if (modelTerm.IsReused && modelTerm.SourceTermId != Guid.Empty )
             {
-                modelTerm.Id = Guid.NewGuid();
+                Term sourceTerm = null;
+                TermCollection sourceTerms = termStore.GetTermsById(new Guid[] { modelTerm.SourceTermId });
+                web.Context.Load(sourceTerms);
+                web.Context.ExecuteQueryRetry();
+                if(sourceTerms.Count > 0)
+                {
+                    sourceTerm = sourceTerms[0];
+                }
+
+                if (sourceTerm != null)
+                {
+                    if (parent is Term)
+                    {
+                        term = ((Term)parent).ReuseTerm(sourceTerm, false);
+                        termStore.CommitAll();
+                        web.Context.Load(term);
+                        web.Context.ExecuteQueryRetry();
+
+                    }
+                    else
+                    {
+                        term = ((TermSet)parent).ReuseTerm(sourceTerm, false);
+                        termStore.CommitAll();
+                        web.Context.Load(term);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
             }
 
-            if (parent is Term)
+            // If term is not resued, is the source term, or the source term doesn't exist yet, create term
+            if (term == null)
             {
-                var languages = termStore.DefaultLanguage;
-                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                if (modelTerm.Id == Guid.Empty)
+                {
+                    modelTerm.Id = Guid.NewGuid();
+                }
 
-            }
-            else
-            {
-                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
-            }
-            if (!String.IsNullOrEmpty(modelTerm.Description))
-            {
-                term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
-            }
-            if (!String.IsNullOrEmpty(modelTerm.Owner))
-            {
-                term.Owner = modelTerm.Owner;
+                if (parent is Term)
+                {
+                    term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                }
+                else
+                {
+                    term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                }
+
+                if (!String.IsNullOrEmpty(modelTerm.Description))
+                {
+                    term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
+                }
+                if (!String.IsNullOrEmpty(modelTerm.Owner))
+                {
+                    term.Owner = modelTerm.Owner;
+                }
             }
 
             term.IsAvailableForTagging = modelTerm.IsAvailableForTagging;
 
-            if (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any())
+            if ((!modelTerm.IsReused || modelTerm.IsSourceTerm) && (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any()))
             {
                 if (modelTerm.Labels.Any())
                 {
@@ -245,10 +288,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-            termStore.CommitAll();
 
+            if(modelTerm.IsDeprecated)
+            {
+                term.Deprecate(true);
+            }
+
+            termStore.CommitAll();
             web.Context.Load(term);
             web.Context.ExecuteQueryRetry();
+
+            // Now that everythign is created, ensure that the correct source term is defined.
+            if((modelTerm.IsReused && modelTerm.IsSourceTerm) && (term.IsReused && !term.IsSourceTerm))
+            {
+                term.SourceTerm.ReassignSourceTerm(term);
+                termStore.CommitAll();
+                web.Context.Load(term);
+                web.Context.ExecuteQueryRetry();
+            }
 
             if (modelTerm.Terms.Any())
             {
@@ -399,7 +456,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 terms = ((Term)parent).Terms;
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
-            context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder));
+            context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder, t => t.SourceTerm));
             context.ExecuteQueryRetry();
 
             foreach (var term in terms)
@@ -408,7 +465,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.Id = term.Id;
                 modelTerm.Name = term.Name;
                 modelTerm.IsAvailableForTagging = term.IsAvailableForTagging;
-
+                modelTerm.IsReused = term.IsReused;
+                modelTerm.IsDeprecated = term.IsDeprecated;
+                modelTerm.IsSourceTerm = term.IsSourceTerm;
+                if (term.IsReused)
+                {
+                    modelTerm.SourceTermId = term.SourceTerm.Id;
+                }
+                else
+                {
+                    modelTerm.SourceTermId = Guid.Empty;
+                }
 
                 if (term.Labels.Any())
                 {
@@ -425,18 +492,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                //else
-                //{
-                //    foreach (var label in term.Labels)
-                //    {
-                //        var modelLabel = new Model.TermLabel();
-                //        modelLabel.IsDefaultForLanguage = label.IsDefaultForLanguage;
-                //        modelLabel.Value = label.Value;
-                //        modelLabel.Language = label.Language;
-
-                //        modelTerm.Labels.Add(modelLabel);
-                //    }
-                //}
 
                 foreach (var localProperty in term.LocalCustomProperties)
                 {
