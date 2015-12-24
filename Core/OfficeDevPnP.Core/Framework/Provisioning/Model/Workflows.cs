@@ -29,14 +29,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null) : 
             this()
         {
-            if (workflowDefinitions != null)
-            {
-                this._workflowDefinitions.AddRange(workflowDefinitions);
-            }
-            if (workflowSubscriptions != null)
-            {
-                this._workflowSubscriptions.AddRange(workflowSubscriptions);
-            }
+            this.WorkflowDefinitions.AddRange(workflowDefinitions);
+            this.WorkflowSubscriptions.AddRange(workflowSubscriptions);
         }
 
         #endregion

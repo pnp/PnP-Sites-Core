@@ -5,12 +5,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that defines a Composed Look in the Provision Template
     /// </summary>
-    public partial class ComposedLook : IEquatable<ComposedLook>
+    public partial class ComposedLook : BaseModel, IEquatable<ComposedLook>
     {
+        #region Constructors
+
         static ComposedLook()
         {
             Empty = new ComposedLook();
         }
+
+        public ComposedLook()
+        {
+        }
+
+        #endregion 
 
         private static ComposedLook _empty;
 

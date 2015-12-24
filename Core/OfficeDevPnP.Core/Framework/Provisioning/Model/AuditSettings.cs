@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// The Audit Settings for the Provisioning Template
     /// </summary>
-    public class AuditSettings : IEquatable<AuditSettings>
+    public partial class AuditSettings : BaseModel, IEquatable<AuditSettings>
     {
         #region Public Members
 

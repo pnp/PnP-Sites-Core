@@ -14,12 +14,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public ListInstance()
         {
-            _ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
-            _views = new ViewCollection(this.ParentTemplate);
-            _fields = new FieldCollection(this.ParentTemplate);
-            _fieldRefs = new FieldRefCollection(this.ParentTemplate);
-            _dataRows = new DataRowCollection(this.ParentTemplate);
-            _folders = new FolderCollection(this.ParentTemplate);
+            this._ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
+            this._views = new ViewCollection(this.ParentTemplate);
+            this._fields = new FieldCollection(this.ParentTemplate);
+            this._fieldRefs = new FieldRefCollection(this.ParentTemplate);
+            this._dataRows = new DataRowCollection(this.ParentTemplate);
+            this._folders = new FolderCollection(this.ParentTemplate);
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
@@ -35,43 +35,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : this()
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : 
+            this()
         {
-            if (contentTypeBindings != null)
-            {
-                this.ContentTypeBindings.AddRange(contentTypeBindings);
-            }
-
-            if (views != null)
-            {
-                this.Views.AddRange(views);
-            }
-
-            if (fields != null)
-            {
-                this.Fields.AddRange(fields);
-            }
-
-            if (fieldRefs != null)
-            {
-                this._fieldRefs.AddRange(fieldRefs);
-            }
-            if (dataRows != null)
-            {
-                this._dataRows.AddRange(dataRows);
-            }
+            this.ContentTypeBindings.AddRange(contentTypeBindings);
+            this.Views.AddRange(views);
+            this.Fields.AddRange(fields);
+            this.FieldRefs.AddRange(fieldRefs);
+            this.DataRows.AddRange(dataRows);
             if (fieldDefaults != null)
             {
                 this._fieldDefaults = fieldDefaults;
             }
             if (security != null)
             {
-                this._security = security;
+                this.Security = security;
             }
-            if (folders != null)
-            {
-                this._folders.AddRange(folders);
-            }
+            this.Folders.AddRange(folders);
         }
 
         #endregion
@@ -241,7 +221,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ObjectSecurity Security
         {
             get { return this._security; }
-            set { this._security = value; }
+            set
+            {
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = null;
+                }
+                this._security = value;
+                this._security.ParentTemplate = this.ParentTemplate;
+            }
         }
 
         /// <summary>
@@ -251,7 +239,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public FolderCollection Folders
         {
             get { return this._folders; }
-            set { this._folders = value; }
+            private set { this._folders = value; }
         }
 
         #endregion

@@ -5,17 +5,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that is used in the site template
     /// </summary>
-    public partial class SiteSecurity
+    public partial class SiteSecurity : BaseModel
     {
         #region Private Members
 
-        private List<User> _additionalAdministrators = new List<User>();
-        private List<User> _additionalOwners = new List<User>();
-        private List<User> _additionalMembers = new List<User>();
-        private List<User> _additionalVisitors = new List<User>();
-        private List<SiteGroup> _siteGroups = new List<SiteGroup>();
+        private UserCollection _additionalAdministrators;
+        private UserCollection _additionalOwners;
+        private UserCollection _additionalMembers;
+        private UserCollection _additionalVisitors;
+        private SiteGroupCollection _siteGroups;
         private SiteSecurityPermissions _permissions = new SiteSecurityPermissions();
-        
+
+        #endregion
+
+        #region Constructor
+
+        public SiteSecurity()
+        {
+            this._additionalAdministrators = new UserCollection(this.ParentTemplate);
+            this._additionalOwners = new UserCollection(this.ParentTemplate);
+            this._additionalMembers = new UserCollection(this.ParentTemplate);
+            this._additionalVisitors = new UserCollection(this.ParentTemplate);
+            this._siteGroups = new SiteGroupCollection(this.ParentTemplate);
+        }
+
         #endregion
 
         #region Public Members
@@ -23,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of users that are associated as site collection adminsitrators
         /// </summary>
-        public List<User> AdditionalAdministrators
+        public UserCollection AdditionalAdministrators
         {
             get { return _additionalAdministrators; }
             private set { _additionalAdministrators = value; }
@@ -32,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of users that are associated to the sites owners group
         /// </summary>
-        public List<User> AdditionalOwners
+        public UserCollection AdditionalOwners
         {
             get { return _additionalOwners; }
             private set { _additionalOwners = value; }
@@ -41,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of users that are associated to the sites members group
         /// </summary>
-        public List<User> AdditionalMembers
+        public UserCollection AdditionalMembers
         {
             get { return _additionalMembers; }
             private set { _additionalMembers = value; }
@@ -50,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of users taht are associated to the sites visitors group
         /// </summary>
-        public List<User> AdditionalVisitors
+        public UserCollection AdditionalVisitors
         {
             get { return _additionalVisitors; }
             private set { _additionalVisitors = value; }
@@ -59,7 +72,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// List of additional Groups for the Site
         /// </summary>
-        public List<SiteGroup> SiteGroups
+        public SiteGroupCollection SiteGroups
         {
             get { return _siteGroups; }
             private set { _siteGroups = value; }
@@ -71,7 +84,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SiteSecurityPermissions SiteSecurityPermissions
         {
             get { return _permissions; }
-            private set { _permissions = value; }
+            private set
+            {
+                if (this._permissions != null)
+                {
+                    this._permissions.ParentTemplate = null;
+                }
+                this._permissions = value;
+                this._permissions.ParentTemplate = this.ParentTemplate;
+            }
         }
 
         #endregion

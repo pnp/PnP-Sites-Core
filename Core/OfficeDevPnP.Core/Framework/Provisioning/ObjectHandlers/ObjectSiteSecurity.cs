@@ -240,7 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private static void AddUserToGroup(Web web, Group group, List<User> members, PnPMonitoredScope scope)
+        private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope)
         {
             if (members.Any())
             {

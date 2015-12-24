@@ -56,11 +56,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public Term()
         {
-            _terms = new TermCollection(this.ParentTemplate);
-            _labels = new TermLabelCollection(this.ParentTemplate);
+            this._terms = new TermCollection(this.ParentTemplate);
+            this._labels = new TermLabelCollection(this.ParentTemplate);
         }
 
-        public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties)
+        public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties):
+            this()
         {
             this.Id = id;
             this.Name = name;
@@ -69,15 +70,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Language = language;
             }
 
-            if (terms != null)
-            {
-                this.Terms.AddRange(terms);
-            }
+            this.Terms.AddRange(terms);
+            this.Labels.AddRange(labels);
 
-            if (labels != null)
-            {
-                this.Labels.AddRange(labels);
-            }
             if (properties != null)
             {
                 foreach (var property in properties)

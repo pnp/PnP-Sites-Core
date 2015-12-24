@@ -124,5 +124,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             return -1;
         }
+
+        public int RemoveAll(Predicate<T> match)
+        {
+            if (match == null)
+            {
+                throw new ArgumentNullException("match");
+            }
+
+            List<Int32> matches = new List<Int32>();
+
+            for (Int32 index = 0; index < this.Items.Count; index++)
+            {
+                if (match(this.Items[index]))
+                    matches.Add(index);
+            }
+
+            foreach (var index in matches.OrderByDescending(i => i))
+            {
+                this.Items.RemoveAt(index);
+            }
+
+            return (matches.Count());
+        }
     }
 }

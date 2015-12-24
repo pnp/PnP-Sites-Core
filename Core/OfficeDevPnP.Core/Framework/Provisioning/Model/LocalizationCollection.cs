@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Collection of RoleDefinition objects
+    /// Collection of Localization objects
     /// </summary>
-    public partial class RoleDefinitionCollection : ProvisioningTemplateCollection<RoleDefinition>
+    public partial class LocalizationCollection: ProvisioningTemplateCollection<Localization>
     {
-        public RoleDefinitionCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
+        public LocalizationCollection(ProvisioningTemplate parentTemplate): 
+            base(parentTemplate)
         {
-
         }
     }
 }

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object used in the Provisioning template that defines a Localization item
     /// </summary>
-    public partial class Localization : IEquatable<Localization>
+    public partial class Localization : BaseModel, IEquatable<Localization>
     {
         #region Properties
 

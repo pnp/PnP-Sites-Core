@@ -5,16 +5,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that is used in the Site Template for OOB Features
     /// </summary>
-    public partial class Features
+    public partial class Features: BaseModel
     {
-        private List<Feature> _siteFeatures = new List<Feature>();
-        private List<Feature> _webFeatures = new List<Feature>();
+        private FeatureCollection _siteFeatures;
+        private FeatureCollection _webFeatures;
+
+        #region Constructors
+        public Features()
+        {
+            this._siteFeatures = new FeatureCollection(this.ParentTemplate);
+            this._webFeatures = new FeatureCollection(this.ParentTemplate);
+        }
+        #endregion
 
         #region Properties
         /// <summary>
         /// A Collection of Features at the Site level
         /// </summary>
-        public List<Feature> SiteFeatures
+        public FeatureCollection SiteFeatures
         {
             get{ return this._siteFeatures; }
             private set { this._siteFeatures = value; }
@@ -23,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of Features at the Web level
         /// </summary>
-        public List<Feature> WebFeatures
+        public FeatureCollection WebFeatures
         {
             get { return this._webFeatures; }
             private set { this._webFeatures = value; }

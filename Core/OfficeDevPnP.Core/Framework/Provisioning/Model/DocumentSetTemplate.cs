@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a DocumentSet Template for creating multiple DocumentSet instances
     /// </summary>
-    public class DocumentSetTemplate : BaseModel, IEquatable<DocumentSetTemplate>
+    public partial class DocumentSetTemplate : BaseModel, IEquatable<DocumentSetTemplate>
     {
         #region Private Members
 
@@ -28,7 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
         }
 
-        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : this()
+        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+            this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
             {
@@ -38,10 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this._allowedContentTypes.AddRange(allowedContentTypes);
             }
-            if (defaultDocuments != null)
-            {
-                this._defaultDocuments.AddRange(defaultDocuments);
-            }
+            this.DefaultDocuments.AddRange(defaultDocuments);
             if (sharedFields != null)
             {
                 this._sharedFields.AddRange(sharedFields);
