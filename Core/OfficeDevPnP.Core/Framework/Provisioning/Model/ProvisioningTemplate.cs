@@ -131,7 +131,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._siteSecurity.ParentTemplate = null;
                 }
                 this._siteSecurity = value;
-                this._siteSecurity.ParentTemplate = this;
+                if (this._siteSecurity != null)
+                {
+                    this._siteSecurity.ParentTemplate = this;
+                }
             }
         }
 
@@ -172,7 +175,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._features.ParentTemplate = null;
                 }
                 this._features = value;
-                this._features.ParentTemplate = this;
+                if (this._features != null)
+                {
+                    this._features.ParentTemplate = this;
+                }
             }
         }
 
@@ -189,7 +195,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._customActions.ParentTemplate = null;
                 }
                 this._customActions = value;
-                this._customActions.ParentTemplate = this;
+                if (this._customActions != null)
+                {
+                    this._customActions.ParentTemplate = this;
+                }
             }
         }
 
@@ -215,7 +224,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._composedLook.ParentTemplate = null;
                 }
                 this._composedLook = value;
-                this._composedLook.ParentTemplate = this;
+                if (this._composedLook != null)
+                {
+                    this._composedLook.ParentTemplate = this;
+                }
             }
         }
 
@@ -259,7 +271,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._webSettings.ParentTemplate = null;
                 }
                 this._webSettings = value;
-                this._webSettings.ParentTemplate = this;
+                if (this._webSettings != null)
+                {
+                    this._webSettings.ParentTemplate = this;
+                }
             }
         }
 
@@ -276,7 +291,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._regionalSettings.ParentTemplate = null;
                 }
                 this._regionalSettings = value;
-                this._regionalSettings.ParentTemplate = this;
+                if (this._regionalSettings != null)
+                {
+                    this._regionalSettings.ParentTemplate = this;
+                }
             }
         }
 
@@ -308,8 +326,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 }
                 // Set the new AuditSettings instance
                 this._auditSettings = value;
-                // Make this template as the parent template of the new AuditSettings instance
-                this._auditSettings.ParentTemplate = this;
+                if (this._auditSettings != null)
+                {
+                    // Make this template as the parent template of the new AuditSettings instance
+                    this._auditSettings.ParentTemplate = this;
+                }
             }
         }
 
@@ -326,7 +347,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._workflows.ParentTemplate = null;
                 }
                 this._workflows = value;
-                this._workflows.ParentTemplate = this;
+                if (this._workflows != null)
+                {
+                    this._workflows.ParentTemplate = this;
+                }
             }
         }
 
@@ -357,7 +381,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._publishing.ParentTemplate = null;
                 }
                 this._publishing = value;
-                this._publishing.ParentTemplate = this;
+                if (this._publishing != null)
+                {
+                    this._publishing.ParentTemplate = this;
+                }
             }
         }
 
