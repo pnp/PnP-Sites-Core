@@ -7,7 +7,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class ObjectSecurity : BaseModel, IEquatable<ObjectSecurity>
+    public partial class ObjectSecurity : BaseModel, IEquatable<ObjectSecurity>
     {
         #region Private Members
 

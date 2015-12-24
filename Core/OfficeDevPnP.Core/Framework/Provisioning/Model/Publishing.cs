@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Publishing configuration to provision
     /// </summary>
-    public class Publishing : BaseModel, IEquatable<Publishing>
+    public partial class Publishing : BaseModel, IEquatable<Publishing>
     {
         #region Private Members
 

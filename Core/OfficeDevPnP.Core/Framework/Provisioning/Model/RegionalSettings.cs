@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Regional Settings for a site
     /// </summary>
-    public class RegionalSettings : BaseModel, IEquatable<RegionalSettings>
+    public partial class RegionalSettings : BaseModel, IEquatable<RegionalSettings>
     {
 
         public RegionalSettings()

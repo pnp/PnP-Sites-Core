@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Permission settings for the target Site
     /// </summary>
-    public class SiteSecurityPermissions : BaseModel
+    public partial class SiteSecurityPermissions : BaseModel
     {
         #region Private Members
 

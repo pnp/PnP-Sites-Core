@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Design Package to import into the current Publishing site
     /// </summary>
-    public class DesignPackage : BaseModel, IEquatable<DesignPackage>
+    public partial class DesignPackage : BaseModel, IEquatable<DesignPackage>
     {
         #region Public Members
 
