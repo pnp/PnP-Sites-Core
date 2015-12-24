@@ -32,6 +32,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public Nullable<int> TestsSkipped { get; set; }
         public Nullable<int> TestsFailed { get; set; }
         public Nullable<int> TestsNotFound { get; set; }
+        public string MSBuildLog { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TestResult> TestResults { get; set; }

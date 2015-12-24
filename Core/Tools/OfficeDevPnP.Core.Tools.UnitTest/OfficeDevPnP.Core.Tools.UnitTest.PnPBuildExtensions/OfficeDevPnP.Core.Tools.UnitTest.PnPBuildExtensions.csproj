@@ -200,6 +200,7 @@
     <Compile Include="Tasks\PnPBase64EncoderTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigGeneratorTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigReaderTask.cs" />
+    <Compile Include="Tasks\PnPSQLStartTestTask.cs" />
     <Compile Include="Tasks\PnPXmlAppConfigGeneratorTask.cs" />
     <Compile Include="MD\PnPAppConfigManager.cs" />
     <Compile Include="Tasks\PnPXmlAppConfigReaderTask.cs" />

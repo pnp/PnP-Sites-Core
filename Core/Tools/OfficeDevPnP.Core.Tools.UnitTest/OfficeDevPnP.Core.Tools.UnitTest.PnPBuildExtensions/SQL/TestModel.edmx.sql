@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 12/22/2015 12:28:40
+-- Date Created: 12/24/2015 18:54:09
 -- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -17,37 +17,28 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_TestResultTestResultMessage]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestResultMessageSet] DROP CONSTRAINT [FK_TestResultTestResultMessage];
-GO
-IF OBJECT_ID(N'[dbo].[FK_TestRunTestResult]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestResultSet] DROP CONSTRAINT [FK_TestRunTestResult];
-GO
-IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestRun]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestRunSet] DROP CONSTRAINT [FK_TestConfigurationTestRun];
-GO
 IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestAuthentication]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[TestConfigurationSet] DROP CONSTRAINT [FK_TestConfigurationTestAuthentication];
 GO
 IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestConfigurationProperty]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[TestConfigurationPropertySet] DROP CONSTRAINT [FK_TestConfigurationTestConfigurationProperty];
 GO
+IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestRun]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestRunSet] DROP CONSTRAINT [FK_TestConfigurationTestRun];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TestResultTestResultMessage]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestResultMessageSet] DROP CONSTRAINT [FK_TestResultTestResultMessage];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TestRunTestResult]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestResultSet] DROP CONSTRAINT [FK_TestRunTestResult];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[TestRunSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestRunSet];
-GO
-IF OBJECT_ID(N'[dbo].[TestResultSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestResultSet];
-GO
-IF OBJECT_ID(N'[dbo].[TestResultMessageSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestResultMessageSet];
-GO
-IF OBJECT_ID(N'[dbo].[TestConfigurationSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestConfigurationSet];
+IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[FileTrackingSet];
 GO
 IF OBJECT_ID(N'[dbo].[TestAuthenticationSet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[TestAuthenticationSet];
@@ -55,8 +46,17 @@ GO
 IF OBJECT_ID(N'[dbo].[TestConfigurationPropertySet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[TestConfigurationPropertySet];
 GO
-IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[FileTrackingSet];
+IF OBJECT_ID(N'[dbo].[TestConfigurationSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestConfigurationSet];
+GO
+IF OBJECT_ID(N'[dbo].[TestResultMessageSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestResultMessageSet];
+GO
+IF OBJECT_ID(N'[dbo].[TestResultSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestResultSet];
+GO
+IF OBJECT_ID(N'[dbo].[TestRunSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestRunSet];
 GO
 
 -- --------------------------------------------------
@@ -76,7 +76,8 @@ CREATE TABLE [dbo].[TestRunSet] (
     [TestsPassed] int  NULL,
     [TestsSkipped] int  NULL,
     [TestsFailed] int  NULL,
-    [TestsNotFound] int  NULL
+    [TestsNotFound] int  NULL,
+    [MSBuildLog] nvarchar(max)  NULL
 );
 GO
 

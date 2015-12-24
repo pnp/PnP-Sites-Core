@@ -34,11 +34,22 @@
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigReaderTask" />
   <!-- Reads configuration data from SQL and generates the app.config file...-->
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigGeneratorTask" />
+  <!-- Creates the TestSet record in the database to start the testing...-->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLStartTestTask" />
   <!-- Base64 encodes a string...-->
   <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPBase64EncoderTask" />
 
   <Target Name="BuildAndUnitTestPnP">
 
+    <!-- Initialize the test run by creating the TestRunSet record-->
+    <Message Text="=================================================================================" />
+    <PnPSQLStartTestTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)">
+      <Output PropertyName="PnPTestRunId" TaskParameter="PnPTestRunId" />
+    </PnPSQLStartTestTask>
+    <!-- Output the test record id as this will be picked up by the PnP runner to associate the log file with the run -->
+    <Message Text="[PnPTestRunID:$(PnPTestRunId)]" />
+    <Message Text="=================================================================================" />
+    
     <!-- Read the needed variables from the master configuration file-->
     <Message Text="=================================================================================" />
     <!--<Message Text="PnPSQLConnectionString: $(PnPSQLConnectionString)" />-->
@@ -91,7 +102,7 @@
       <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
     </PnPBase64EncoderTask>
     <!-- Run the unit tests. Optionally scope the tests via /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest -->
-    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest /Logger:SQLLogger;PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
+    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\Core\OfficeDevPnP.Core.Tests\bin\$(PnPBuildConfiguration)\OfficeDevPnP.Core.Tests.dll&quot; /Tests:DeserializeListIsNotFixedSizeTest,DeserializeListTest,OOBMasterPagesHaveChangedTest /Logger:SQLLogger;PnPTestRunId=$(PnPTestRunId);PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
 
       <!-- Drop the cloned directory-->
     <Message Text="=================================================================================" />

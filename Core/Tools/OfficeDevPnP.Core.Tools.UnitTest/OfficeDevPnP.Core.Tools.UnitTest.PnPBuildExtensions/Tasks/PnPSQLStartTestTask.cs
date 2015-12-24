@@ -9,7 +9,7 @@ using System.Text;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
 {
-    public class PnPSQLAppConfigReaderTask : Task
+    public class PnPSQLStartTestTask: Task
     {
         [Required]
         public string SQLConnectionString
@@ -26,14 +26,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
         }
 
         [Output]
-        public string PnPBuildConfiguration
-        {
-            get;
-            set;
-        }
-
-        [Output]
-        public string PnPBranch
+        public int PnPTestRunId
         {
             get;
             set;
@@ -43,10 +36,14 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
         {
             try
             {
-                //Log.LogMessageFromText(String.Format("PnPAppConfigReaderTask: Reading information for configuration {0}", Configuration), MessageImportance.Normal);
-                PnPAppConfigManager appConfigManager = new PnPAppConfigManager(SQLConnectionString.Replace("&quot;", "\""), Configuration);
-                PnPBuildConfiguration = appConfigManager.GetConfigurationElement("PnPBuild");
-                PnPBranch = appConfigManager.GetConfigurationElement("PnPBranch");
+                //System.Diagnostics.Debugger.Launch();
+
+                Dictionary<string, string> parameters = new Dictionary<string, string>();
+                parameters.Add("PnPSQLConnectionString", PnPBase64EncoderTask.Base64Encode(SQLConnectionString).Replace("=", "&equal"));
+                parameters.Add("PnPConfigurationToTest", Configuration);
+
+                TestManager testManager = new TestManager(parameters);
+                PnPTestRunId = testManager.AddTestSetRecord();
                 return true;
             }
             catch (Exception ex)
@@ -55,6 +52,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
                 return false;
             }
         }
+
+
 
     }
 }

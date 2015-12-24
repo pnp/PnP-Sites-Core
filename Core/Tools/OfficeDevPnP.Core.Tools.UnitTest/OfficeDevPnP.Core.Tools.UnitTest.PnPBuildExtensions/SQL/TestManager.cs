@@ -30,6 +30,13 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         {
             //System.Diagnostics.Debugger.Launch();
             loggerParameters = parameters;
+
+            // validate is we've the needed params
+            if (String.IsNullOrEmpty(GetParameter("PnPSQLConnectionString")) || String.IsNullOrEmpty(GetParameter("PnPConfigurationToTest")))
+            {
+                throw new ArgumentException("Requested parameters (PnPSQLConnectionString and PnPConfigurationToTest) are not defined");
+            }
+
             // we pass the connection string as base64 encoded + replaced "=" with &quot; to avoid problems with the default implementation of the VSTestLogger interface
             context = new TestModelContainer(Base64Decode(GetParameter("PnPSQLConnectionString")).Replace("&quot;", "\""));
 
@@ -40,7 +47,12 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             {
                 throw new Exception(String.Format("Test configuration with name {0} was not found", configurationToTest));
             }
+        }
+        #endregion
 
+        #region public methods
+        public int AddTestSetRecord()
+        {
             // Grab the build of the environment we're testing
             string build = GetBuildNumber();
 
@@ -55,13 +67,13 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                 TestConfiguration = testConfiguration,
             };
             context.TestRunSet.Add(testRun);
-            
+
             // persist to the database
             SaveChanges();
-        }
-        #endregion
 
-        #region public methods
+            return testRun.Id;
+        }
+
         /// <summary>
         /// Adds a test result to the database
         /// </summary>
@@ -71,6 +83,17 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             if (firstTest)
             {
                 firstTest = false;
+                // If the testRun record was already created then grab it else create a new one
+                int testRunId;
+                if (!String.IsNullOrEmpty(GetParameter("PnPTestRunId")) && Int32.TryParse(GetParameter("PnPTestRunId"), out testRunId))
+                {
+                    testRun = context.TestRunSet.Find(testRunId);
+                }
+                else
+                {
+                    AddTestSetRecord();
+                }
+
                 // Bring status to "running"
                 testRun.Status = RunStatus.Running;
             }
@@ -252,7 +275,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             }
             else
             {
-                throw new ArgumentException(String.Format("Requested parameter {0} is not defined", parameter));
+                return null;
             }
         }
 
