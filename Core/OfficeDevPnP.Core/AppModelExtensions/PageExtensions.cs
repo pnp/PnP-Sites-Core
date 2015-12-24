@@ -393,7 +393,7 @@ namespace Microsoft.SharePoint.Client
                 var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
 
 #if CLIENTSDKV15
-                request.Credentials = web.Context.Credentials; 
+                request.Credentials = web.Context.Credentials;
 #else
                 var credentials = web.Context.Credentials as SharePointOnlineCredentials;
                 var authCookieValue = credentials.GetAuthenticationCookie(uri);
@@ -409,6 +409,7 @@ namespace Microsoft.SharePoint.Client
                 };
                 request.CookieContainer = new CookieContainer();
                 request.CookieContainer.Add(fedAuth);
+#endif
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
@@ -416,7 +417,6 @@ namespace Microsoft.SharePoint.Client
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     webPartXml = reader.ReadToEnd();
                 }
-#endif
             }
 
             return webPartXml;
