@@ -39,7 +39,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._objectSecurity.ParentTemplate = null;
                 }
                 this._objectSecurity = value;
-                this._objectSecurity.ParentTemplate = this.ParentTemplate;
+                if (this._objectSecurity != null)
+                {
+                    this._objectSecurity.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 
@@ -62,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._folders = new FolderCollection(this.ParentTemplate);
         }
 
-        public Folder(String name, List<Folder> folders = null, ObjectSecurity security = null):
+        public Folder(String name, List<Folder> folders = null, ObjectSecurity security = null) :
             this()
         {
             this.Name = name;

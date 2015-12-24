@@ -228,7 +228,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._security.ParentTemplate = null;
                 }
                 this._security = value;
-                this._security.ParentTemplate = this.ParentTemplate;
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 

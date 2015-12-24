@@ -42,7 +42,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._security.ParentTemplate = null;
                 }
                 this._security = value;
-                this._security.ParentTemplate = this.ParentTemplate;
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 
@@ -63,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._webParts = new WebPartCollection(this.ParentTemplate);
         }
 
-        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null):
+        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null) :
             this()
         {
             this.Url = url;
