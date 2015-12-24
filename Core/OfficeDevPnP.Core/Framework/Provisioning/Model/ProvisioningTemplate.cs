@@ -57,6 +57,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._propertyBags = new PropertyBagEntryCollection(this);
             this._lists = new ListInstanceCollection(this);
 
+            this._siteSecurity = new SiteSecurity();
+            this._siteSecurity.ParentTemplate = this;
+
             this._composedLook = new ComposedLook();
             this._composedLook.ParentTemplate = this;
             this._features = new Features();
