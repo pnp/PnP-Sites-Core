@@ -48,6 +48,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String AlternateCSS { get; set; }
 
+        /// <summary>
+        /// The MasterPage Url of the Site, optional attribute.
+        /// </summary>
+        public String MasterPageUrl { get; set; }
+
+        /// <summary>
+        /// The Custom MasterPage Url of the Site, optional attribute.
+        /// </summary>
+        public String CustomMasterPageUrl { get; set; }
 
         #endregion
 

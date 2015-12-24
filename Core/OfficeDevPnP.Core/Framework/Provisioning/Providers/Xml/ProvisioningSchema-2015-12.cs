@@ -1540,6 +1540,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private string alternateCSSField;
         
+        private string masterPageUrlField;
+        
+        private string customMasterPageUrlField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string RequestAccessEmail {
@@ -1625,6 +1629,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.alternateCSSField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MasterPageUrl {
+            get {
+                return this.masterPageUrlField;
+            }
+            set {
+                this.masterPageUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string CustomMasterPageUrl {
+            get {
+                return this.customMasterPageUrlField;
+            }
+            set {
+                this.customMasterPageUrlField = value;
             }
         }
     }
@@ -4792,8 +4818,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private string backgroundFileField;
         
-        private string masterPageField;
-        
         private int versionField;
         
         private bool versionFieldSpecified;
@@ -4839,17 +4863,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.backgroundFileField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string MasterPage {
-            get {
-                return this.masterPageField;
-            }
-            set {
-                this.masterPageField = value;
             }
         }
         

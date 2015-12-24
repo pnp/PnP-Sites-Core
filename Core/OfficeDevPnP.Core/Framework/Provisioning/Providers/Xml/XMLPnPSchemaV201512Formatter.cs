@@ -167,6 +167,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Description = template.WebSettings.Description,
                     SiteLogo = template.WebSettings.SiteLogo,
                     AlternateCSS = template.WebSettings.AlternateCSS,
+                    MasterPageUrl = template.WebSettings.MasterPageUrl,
+                    CustomMasterPageUrl = template.WebSettings.CustomMasterPageUrl,
                 };
             }
 
@@ -832,7 +834,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     BackgroundFile = template.ComposedLook.BackgroundFile,
                     ColorFile = template.ComposedLook.ColorFile,
                     FontFile = template.ComposedLook.FontFile,
-                    MasterPage = template.ComposedLook.MasterPage,
                     Name = template.ComposedLook.Name,
                     Version = template.ComposedLook.Version,
                     VersionSpecified = true,
@@ -1176,6 +1177,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Description = source.WebSettings.Description,
                     SiteLogo = source.WebSettings.SiteLogo,
                     AlternateCSS = source.WebSettings.AlternateCSS,
+                    MasterPageUrl = source.WebSettings.MasterPageUrl,
+                    CustomMasterPageUrl = source.WebSettings.CustomMasterPageUrl,
                 };
             }
 
@@ -1682,7 +1685,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.ComposedLook.BackgroundFile = source.ComposedLook.BackgroundFile;
                 result.ComposedLook.ColorFile = source.ComposedLook.ColorFile;
                 result.ComposedLook.FontFile = source.ComposedLook.FontFile;
-                result.ComposedLook.MasterPage = source.ComposedLook.MasterPage;
                 result.ComposedLook.Name = source.ComposedLook.Name;
                 result.ComposedLook.Version = source.ComposedLook.Version;
             }

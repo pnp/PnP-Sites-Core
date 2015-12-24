@@ -50,11 +50,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string BackgroundFile { get; set; }
 
         /// <summary>
-        /// Gets or sets the MasterPage for the Composed Look
-        /// </summary>
-        public string MasterPage { get; set; }
-
-        /// <summary>
         /// Gets or sets the Version of the ComposedLook.
         /// </summary>
         public int Version { get; set; }

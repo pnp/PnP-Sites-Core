@@ -16,11 +16,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                return (this.ParentTemplate.WebSettings.SiteLogo);
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    return (this.ParentTemplate.WebSettings.SiteLogo);
+                }
+                else
+                {
+                    return (null);
+                }
             }
             set
             {
-                this.ParentTemplate.WebSettings.SiteLogo = value;
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    this.ParentTemplate.WebSettings.SiteLogo = value;
+                }
             }
         }
 
@@ -32,12 +42,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                return null;
-                // return (this.ParentTemplate.WebSettings.AlternateCSS);
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    return (this.ParentTemplate.WebSettings.AlternateCSS);
+                }
+                else
+                {
+                    return (null);
+                }
             }
             set
             {
-                // this.ParentTemplate.WebSettings.AlternateCSS = value;
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    this.ParentTemplate.WebSettings.AlternateCSS = value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the MasterPage for the Composed Look
+        /// </summary>
+        [Obsolete("Instead of this member, please use MasterPageUrl property of the WebSettings object.")]
+        public string MasterPage
+        {
+            get
+            {
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    return (this.ParentTemplate.WebSettings.MasterPageUrl);
+                }
+                else
+                {
+                    return (null);
+                }
+            }
+            set
+            {
+                if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
+                {
+                    this.ParentTemplate.WebSettings.MasterPageUrl = value;
+                }
             }
         }
     }
