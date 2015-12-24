@@ -69,10 +69,11 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-        private static int GetSharePointVersion()
+        private static string GetSharePointVersion()
         {
             Assembly asm = Assembly.GetAssembly(typeof(Site));
-            return asm.GetName().Version.Major;
+            AssemblyName name = asm.GetName();
+            return String.Format("{0}_{1}", name.Version.Major, name.Version.Minor);
         }
 
     }
