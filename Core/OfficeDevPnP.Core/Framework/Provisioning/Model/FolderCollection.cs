@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Collection of Folder objects
+    /// </summary>
     public partial class FolderCollection : ProvisioningTemplateCollection<Folder>
     {
         public FolderCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)

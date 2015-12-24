@@ -13,15 +13,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                // return (this.Url == this.ParentTemplate.WebSettings.WelcomePage);
-                return (false);
+                return (this.Url == this.ParentTemplate.WebSettings.WelcomePage);
             }
             set
             {
                 if (value)
                 {
-                    // this.ParentTemplate.WebSettings.WelcomePage = this.Url;
-                    return;
+                    this.ParentTemplate.WebSettings.WelcomePage = this.Url;
                 }
             }
         }

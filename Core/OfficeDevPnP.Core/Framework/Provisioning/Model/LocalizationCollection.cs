@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Collection of ListInstance objects
+    /// Collection of Localization objects
     /// </summary>
-    public partial class ListInstanceCollection : ProvisioningTemplateCollection<ListInstance>
+    public partial class LocalizationCollection: ProvisioningTemplateCollection<Localization>
     {
-        public ListInstanceCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
+        public LocalizationCollection(ProvisioningTemplate parentTemplate): 
+            base(parentTemplate)
         {
-
         }
     }
 }

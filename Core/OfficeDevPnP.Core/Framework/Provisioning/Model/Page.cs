@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private List<WebPart> _webParts = new List<WebPart>();
+        private WebPartCollection _webParts;
         private ObjectSecurity _security = null;
         private Dictionary<String, String> _fields = new Dictionary<String, String>();
 
@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Overwrite { get; set; }
 
-        public List<WebPart> WebParts
+        public WebPartCollection WebParts
         {
             get { return _webParts; }
             private set { _webParts = value; }
@@ -35,7 +35,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ObjectSecurity Security
         {
             get { return this._security; }
-            private set { this._security = value; }
+            private set
+            {
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = null;
+                }
+                this._security = value;
+                this._security.ParentTemplate = this.ParentTemplate;
+            }
         }
 
         /// <summary>
@@ -50,18 +58,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-        public Page() { }
+        public Page()
+        {
+            this._webParts = new WebPartCollection(this.ParentTemplate);
+        }
 
-        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null)
+        public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null):
+            this()
         {
             this.Url = url;
             this.Overwrite = overwrite;
             this.Layout = layout;
-
-            if (webParts != null)
-            {
-                this.WebParts.AddRange(webParts);
-            }
+            this.WebParts.AddRange(webParts);
 
             if (security != null)
             {

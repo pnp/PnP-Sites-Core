@@ -10,19 +10,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Publishing configuration to provision
     /// </summary>
-    public class Publishing : IEquatable<Publishing>
+    public class Publishing : BaseModel, IEquatable<Publishing>
     {
         #region Private Members
 
         private DesignPackage _designPackage = null;
-        private List<AvailableWebTemplate> _availableWebTemplates = new List<AvailableWebTemplate>();
-        private List<PageLayout> _pageLayouts = new List<PageLayout>();
+        private AvailableWebTemplateCollection _availableWebTemplates;
+        private PageLayoutCollection _pageLayouts;
 
         #endregion
 
         #region Constructors
 
-        public Publishing() { }
+        public Publishing()
+        {
+            this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
+            this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
+        }
 
         public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null)
         {
@@ -32,14 +36,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this.DesignPackage = designPackage;
             }
-            if (availableWebTemplates != null)
-            {
-                this._availableWebTemplates.AddRange(availableWebTemplates);
-            }
-            if (pageLayouts != null)
-            {
-                this._pageLayouts.AddRange(pageLayouts);
-            }
+            this.AvailableWebTemplates.AddRange(availableWebTemplates);
+            this.PageLayouts.AddRange(pageLayouts);
         }
 
         #endregion
@@ -52,13 +50,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public DesignPackage DesignPackage
         {
             get { return this._designPackage; }
-            set { this._designPackage = value; }
+            set
+            {
+                if (this._designPackage!= null)
+                {
+                    this._designPackage.ParentTemplate = null;
+                }
+                this._designPackage = value;
+                this._designPackage.ParentTemplate = this.ParentTemplate;
+            }
         }
 
         /// <summary>
         /// Defines the Available Web Templates for the current Publishing site
         /// </summary>
-        public List<AvailableWebTemplate> AvailableWebTemplates
+        public AvailableWebTemplateCollection AvailableWebTemplates
         {
             get { return this._availableWebTemplates; }
             private set { this._availableWebTemplates = value; }
@@ -67,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Available Page Layouts for the current Publishing site
         /// </summary>
-        public List<PageLayout> PageLayouts
+        public PageLayoutCollection PageLayouts
         {
             get { return this._pageLayouts; }
             private set { this._pageLayouts = value; }

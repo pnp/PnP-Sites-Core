@@ -473,6 +473,7 @@
     <Compile Include="Framework\Provisioning\Model\ListInstanceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Localization.cs" />
     <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
+    <Compile Include="Framework\Provisioning\Model\LocalizationCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayoutCollection.cs" />

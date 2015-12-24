@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class SupportedUILanguages : ProvisioningTemplateCollection<SupportedUILanguage>
+    /// <summary>
+    /// Collection of SupportedUILanguage objects
+    /// </summary>
+    public partial class SupportedUILanguageCollection : ProvisioningTemplateCollection<SupportedUILanguage>
     {
-        public SupportedUILanguages(ProvisioningTemplate parentTemplate) : base(parentTemplate)
+        public SupportedUILanguageCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 
         }

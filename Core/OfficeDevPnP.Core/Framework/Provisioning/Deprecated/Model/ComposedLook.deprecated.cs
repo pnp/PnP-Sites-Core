@@ -16,12 +16,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                return null;
-                // return (this.ParentTemplate.WebSettings.SiteLogo);
+                return (this.ParentTemplate.WebSettings.SiteLogo);
             }
             set
             {
-                // this.ParentTemplate.WebSettings.SiteLogo = value;
+                this.ParentTemplate.WebSettings.SiteLogo = value;
             }
         }
 

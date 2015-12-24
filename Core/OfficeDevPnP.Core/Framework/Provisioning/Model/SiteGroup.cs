@@ -14,19 +14,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private List<User> _members = new List<User>();
+        private UserCollection _members;
 
         #endregion
 
         #region Constructors
-        public SiteGroup() { }
 
-        public SiteGroup(IEnumerable<User> members)
+        public SiteGroup()
         {
-            if (members != null)
-            {
-                this._members.AddRange(members);
-            }
+            this._members = new UserCollection(this.ParentTemplate);
+        }
+
+        public SiteGroup(IEnumerable<User> members):
+            this()
+        {
+            this.Members.AddRange(members);
         }
 
         #endregion
@@ -36,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of members of the Site Group
         /// </summary>
-        public List<User> Members
+        public UserCollection Members
         {
             get { return this._members; }
             private set { this._members = value; }

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A default document for a Document Set
     /// </summary>
-    public class DefaultDocument : IEquatable<DefaultDocument>
+    public class DefaultDocument : BaseModel, IEquatable<DefaultDocument>
     {
         #region Public Members
 

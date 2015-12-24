@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Collection of SiteGroup objects
+    /// </summary>
     public partial class SiteGroupCollection : ProvisioningTemplateCollection<SiteGroup>
     {
         public SiteGroupCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
