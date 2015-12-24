@@ -52,12 +52,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return this._designPackage; }
             set
             {
-                if (this._designPackage!= null)
+                if (this._designPackage != null)
                 {
                     this._designPackage.ParentTemplate = null;
                 }
                 this._designPackage = value;
-                this._designPackage.ParentTemplate = this.ParentTemplate;
+                if (this._designPackage != null)
+                {
+                    this._designPackage.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 

@@ -37,7 +37,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._objectSecurity.ParentTemplate = null;
                 }
                 this._objectSecurity = value;
-                this._objectSecurity.ParentTemplate = this.ParentTemplate;
+                if (this._objectSecurity != null)
+                {
+                    this._objectSecurity.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 
@@ -49,11 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Security = new ObjectSecurity();
         }
 
-        public DataRow(Dictionary<string, string> values): this(values, null)
+        public DataRow(Dictionary<string, string> values) : this(values, null)
         {
         }
 
-        public DataRow(Dictionary<string, string> values, ObjectSecurity security):
+        public DataRow(Dictionary<string, string> values, ObjectSecurity security) :
             this()
         {
             if (values != null)

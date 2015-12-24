@@ -91,7 +91,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._permissions.ParentTemplate = null;
                 }
                 this._permissions = value;
-                this._permissions.ParentTemplate = this.ParentTemplate;
+                if (this._permissions != null)
+                {
+                    this._permissions.ParentTemplate = this.ParentTemplate;
+                }
             }
         }
 
