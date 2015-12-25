@@ -4,6 +4,8 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20151225-OnlineAppOnly-635866839224959208.md) | Friday, December 25, 2015 | 10:45 PM | dev | debug | 231 | 14 | 37
+ [OnlineCred](PnPUnitTestResults-20151225-OnlineCred-635866812426689300.md) | Friday, December 25, 2015 | 10:00 PM | dev | debug | 263 | 14 | 5
  [OnlineAppOnly](PnPUnitTestResults-20151225-OnlineAppOnly-635866011694661092.md) | Friday, December 25, 2015 | 11:46 PM | dev | debug | 232 | 13 | 37
  [OnlineCred](PnPUnitTestResults-20151224-OnlineCred-635865972023604255.md) | Thursday, December 24, 2015 | 10:40 PM | dev | debug | 262 | 15 | 5
  [OnPremAppOnly](PnPUnitTestResults-20151224-OnPremAppOnly-635865960621994086.md) | Thursday, December 24, 2015 | 10:21 PM | dev | debug15 | 212 | 13 | 49
@@ -102,5 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnlineAppOnly](PnPUnitTestResults-20151125-OnlineAppOnly-635840078843407906.md) | Wednesday, November 25, 2015 | 11:24 PM | dev | debug | 239 | 2 | 36
  [OnlineCred](PnPUnitTestResults-20151124-OnlineCred-635840051398155346.md) | Tuesday, November 24, 2015 | 10:38 PM | dev | debug | 271 | 2 | 4
  [OnPremAppOnly](PnPUnitTestResults-20151124-OnPremAppOnly-635840040281320110.md) | Tuesday, November 24, 2015 | 10:20 PM | dev | debug15 | 221 | 0 | 48
- [OnPremCred](PnPUnitTestResults-20151124-OnPremCred-635840028197159599.md) | Tuesday, November 24, 2015 | 10:00 PM | dev | debug15 | 251 | 0 | 18
- [OnlineAppOnly](PnPUnitTestResults-20151124-OnlineAppOnly-635839214443338706.md) | Tuesday, November 24, 2015 | 11:24 PM | dev | debug | 238 | 3 | 36
