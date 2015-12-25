@@ -380,6 +380,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         result.Security.Permissions.RoleDefinitions = null;
                     }
                 }
+                if (
+                    result.Security.AdditionalAdministrators == null &&
+                    result.Security.AdditionalMembers == null &&
+                    result.Security.AdditionalOwners == null &&
+                    result.Security.AdditionalVisitors == null &&
+                    result.Security.Permissions.RoleAssignments == null &&
+                    result.Security.Permissions.RoleDefinitions == null &&
+                    result.Security.SiteGroups == null)
+                {
+                    result.Security = null;
+                }
             }
 
             #endregion
@@ -596,6 +607,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 else
                 {
                     result.Features.WebFeatures = null;
+                }
+
+                if ((template.Features.WebFeatures == null && template.Features.SiteFeatures == null) || (template.Features.WebFeatures.Count == 0 && template.Features.SiteFeatures.Count == 0))
+                {
+                    result.Features = null;
                 }
             }
 
@@ -838,6 +854,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Version = template.ComposedLook.Version,
                     VersionSpecified = true,
                 };
+
+                if (
+                    template.ComposedLook.BackgroundFile == null &&
+                    template.ComposedLook.ColorFile == null &&
+                    template.ComposedLook.FontFile == null &&
+                    template.ComposedLook.Name == null &&
+                    template.ComposedLook.Version == 0)
+                {
+                    result.ComposedLook = null;
+                }
             }
 
             #endregion
@@ -1449,7 +1475,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         list.Security.FromSchemaToTemplateObjectSecurityV201512(),
                         (list.Folders != null ?
                             (new List<Model.Folder>(from folder in list.Folders
-                             select folder.FromSchemaToTemplateFolderV201512())) : null)
+                                                    select folder.FromSchemaToTemplateFolderV201512())) : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,
