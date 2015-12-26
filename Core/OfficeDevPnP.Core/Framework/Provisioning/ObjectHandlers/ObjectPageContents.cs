@@ -73,7 +73,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Layout = WikiPageLayout.Custom,
                                 Overwrite = true,
                                 Url = Tokenize(fullUri.PathAndQuery, web.Url),
-                                WelcomePage = true
                             };
                             var pageContents = listItem.FieldValues["WikiField"].ToString();
 
@@ -111,6 +110,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             page.Fields.Add("WikiField", pageContents);
                             template.Pages.Add(page);
 
+                            // Set the homepage
+                            if (template.WebSettings == null)
+                            {
+                                template.WebSettings = new WebSettings();
+                            }
+                            template.WebSettings.WelcomePage = homepageUrl;
+
 
                         }
                         else
@@ -119,6 +125,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 // Not a wikipage
                                 template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
+                                if (template.WebSettings == null)
+                                {
+                                    template.WebSettings = new WebSettings();
+                                }
+                                template.WebSettings.WelcomePage = homepageUrl;
                             }
                             else
                             {
@@ -140,6 +151,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             // Page does not belong to a list, extract the file as is
                             template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
+                            if (template.WebSettings == null)
+                            {
+                                template.WebSettings = new WebSettings();
+                            }
+                            template.WebSettings.WelcomePage = homepageUrl;
                         }
                         else
                         {

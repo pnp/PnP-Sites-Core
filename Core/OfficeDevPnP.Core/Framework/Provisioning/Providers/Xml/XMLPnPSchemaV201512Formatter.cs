@@ -169,6 +169,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     AlternateCSS = template.WebSettings.AlternateCSS,
                     MasterPageUrl = template.WebSettings.MasterPageUrl,
                     CustomMasterPageUrl = template.WebSettings.CustomMasterPageUrl,
+                    WelcomePage = template.WebSettings.WelcomePage
                 };
             }
 
