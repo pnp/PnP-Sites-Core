@@ -21,8 +21,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(
+#if !CLIENTSDKV15
                     w => w.NoCrawl,
                     w => w.RequestAccessEmail,
+#endif
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
@@ -30,8 +32,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.AlternateCssUrl);
 
                 var webSettings = new WebSettings();
+#if !CLIENTSDKV15
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
+#endif
                 webSettings.MasterPageUrl = web.MasterUrl;
                 webSettings.CustomMasterPageUrl = web.CustomMasterUrl;
                 webSettings.SiteLogo = web.SiteLogoUrl;
@@ -49,8 +53,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (template.WebSettings != null)
                 {
                     var webSettings = template.WebSettings;
+#if !CLIENTSDKV15
                     web.NoCrawl = webSettings.NoCrawl;
                     web.RequestAccessEmail = parser.ParseString(webSettings.RequestAccessEmail);
+#endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
                     {
