@@ -32,5 +32,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public virtual DbSet<TestAuthentication> TestAuthenticationSet { get; set; }
         public virtual DbSet<TestConfigurationProperty> TestConfigurationPropertySet { get; set; }
         public virtual DbSet<FileTracking> FileTrackingSet { get; set; }
+        public virtual DbSet<FileTrackingBaseline> FileTrackingBaselineSet { get; set; }
     }
 }

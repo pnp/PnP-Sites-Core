@@ -150,6 +150,9 @@
     <Compile Include="SQL\FileTracking.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQL\FileTrackingBaseline.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="SQL\Outcome.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
@@ -227,6 +230,7 @@
     <Content Include="nuget.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="SQL\scripts\addfiletrackingbaselinetable.sql" />
     <Content Include="SQL\scripts\addfiletrackingtable.sql" />
     <Content Include="SQL\scripts\createdpnprole.sql" />
     <Content Include="SQL\scripts\createuserandlogin.sql" />
