@@ -398,7 +398,7 @@
           <Member Name="Initializing" Value="0" />
           <Member Name="Running" Value="1" />
           <Member Name="Done" Value="2" />
-          <Member Name="Stuck" Value="3" />
+          <Member Name="Failed" Value="3" />
         </EnumType>
         <EntityType Name="FileTracking">
           <Key>

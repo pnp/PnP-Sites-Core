@@ -16,6 +16,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         Initializing = 0,
         Running = 1,
         Done = 2,
-        Stuck = 3
+        Failed = 3
     }
 }

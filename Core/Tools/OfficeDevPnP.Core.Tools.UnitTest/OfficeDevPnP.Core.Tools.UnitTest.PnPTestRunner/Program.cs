@@ -21,8 +21,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner
             //tm.Execute("BertMTFirstReleaseCredentials", 
             //           "data source=(localdb)\\MSSQLLocalDB;initial catalog=PnPTestAutomation;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework", 
             //           "C:\\GitHub\\BertPnPSitesCore\\Core\\Tools\\OfficeDevPnP.Core.Tools.UnitTest\\PnPSQLCore.targets");
-
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
 
