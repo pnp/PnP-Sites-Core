@@ -40,15 +40,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
                 string masterpageGalleryServerRelativeUrl = UrlUtility.Combine(UrlUtility.EnsureTrailingSlash(web.ServerRelativeUrl), "_catalogs/masterpage/");
                 // Test seattle.master
-                TestFile(context, UrlUtility.Combine(masterpageGalleryServerRelativeUrl, "seattle.master"), "56-44-23-D0-20-60-DC-52-87-26-42-E4-D6-0E-4B-01-6C-8A-D5-6A");
+                TestFile(context, UrlUtility.Combine(masterpageGalleryServerRelativeUrl, "seattle.master"));
                 // Test oslo.master
-                TestFile(context, UrlUtility.Combine(masterpageGalleryServerRelativeUrl, "oslo.master"), "42-43-6D-C0-88-C6-13-43-2B-01-4D-03-DE-AC-7B-23-80-B4-93-10");
+                TestFile(context, UrlUtility.Combine(masterpageGalleryServerRelativeUrl, "oslo.master"));
 
             }
         }
 
 
-        private void TestFile(ClientContext ctx, string serverRelativeFileUrl, string knownHash)
+        private void TestFile(ClientContext ctx, string serverRelativeFileUrl)
         {
             // grab file reference
             var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);
@@ -86,22 +86,80 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                         user = ConfigurationManager.AppSettings["SPOUserName"];
                     }
 
+
+                    string fileHashToCompareAgainst = "";
+                    using (SqlCommand command = new SqlCommand("SELECT TOP 1 [Id], [FileName], [Build], [FileHash], [ChangeDate] FROM [dbo].[FileTrackingBaselineSet] WHERE [FileName] = @FileName AND [Build] = @Build ORDER BY [ChangeDate] DESC", connection))
+                    {
+                        command.Parameters.AddWithValue("@FileName", serverRelativeFileUrl);
+                        command.Parameters.AddWithValue("@Build", ctx.ServerLibraryVersion.ToString());
+
+                        connection.Open();
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                fileHashToCompareAgainst = reader["FileHash"].ToString();
+                            }
+                        }
+                    }
+
+                    DateTime nowDate = DateTime.Now;
+
+                    // if there's no baseline record yet then add it
+                    if (String.IsNullOrEmpty(fileHashToCompareAgainst))
+                    {
+                        using (SqlCommand command = new SqlCommand("INSERT INTO [dbo].[FileTrackingBaselineSet] ([FileName], [Build], [FileHash], [ChangeDate], [FileContents]) VALUES (@FileName, @Build, @FileHash, @ChangeDate, @FileContents)", connection))
+                        {
+                            command.Parameters.AddWithValue("@ChangeDate", nowDate);
+                            command.Parameters.AddWithValue("@Build", ctx.ServerLibraryVersion.ToString());
+                            command.Parameters.AddWithValue("@FileName", serverRelativeFileUrl);
+                            command.Parameters.AddWithValue("@FileHash", hex);
+                            command.Parameters.AddWithValue("@FileContents", memStream.ToArray());
+
+                            // insert record
+                            command.ExecuteNonQuery();
+                        }
+                    }
+                    else
+                    {
+                        // add a new comparison record when there was a change detected
+                        if (!hex.Equals(fileHashToCompareAgainst, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            using (SqlCommand command = new SqlCommand("INSERT INTO [dbo].[FileTrackingBaselineSet] ([FileName], [Build], [FileHash], [ChangeDate], [FileContents]) VALUES (@FileName, @Build, @FileHash, @ChangeDate, @FileContents)", connection))
+                            {
+                                command.Parameters.AddWithValue("@ChangeDate", nowDate);
+                                command.Parameters.AddWithValue("@Build", ctx.ServerLibraryVersion.ToString());
+                                command.Parameters.AddWithValue("@FileName", serverRelativeFileUrl);
+                                command.Parameters.AddWithValue("@FileHash", hex);
+                                command.Parameters.AddWithValue("@FileContents", memStream.ToArray());
+
+                                // insert record
+                                command.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
                     // prep insert command
                     using (SqlCommand command = new SqlCommand("INSERT INTO [dbo].[FileTrackingSet] VALUES (@TestDate, @Build, @FileName, @FileHash, @FileChanged, @TestSiteUrl, @TestUser, @TestAppId, @TestComputerName)", connection))
                     {
-                        command.Parameters.AddWithValue("@TestDate", DateTime.Now);
+                        bool hasChanged = false;
+
+                        if (!String.IsNullOrEmpty(fileHashToCompareAgainst))
+                        {
+                            hasChanged = !hex.Equals(fileHashToCompareAgainst, StringComparison.InvariantCultureIgnoreCase);
+                        }
+                        
+                        command.Parameters.AddWithValue("@TestDate", nowDate);
                         command.Parameters.AddWithValue("@Build", ctx.ServerLibraryVersion.ToString());
                         command.Parameters.AddWithValue("@FileName", serverRelativeFileUrl);
                         command.Parameters.AddWithValue("@FileHash", hex);
-                        //command.Parameters.AddWithValue("@FileBytes", memStream.ToArray());
-                        command.Parameters.AddWithValue("@FileChanged", !hex.Equals(knownHash, StringComparison.InvariantCultureIgnoreCase));
+                        command.Parameters.AddWithValue("@FileChanged", hasChanged);
                         command.Parameters.AddWithValue("@TestSiteUrl", ConfigurationManager.AppSettings["SPODevSiteUrl"]);
                         command.Parameters.AddWithValue("@TestUser", user != null ? user : "");
                         command.Parameters.AddWithValue("@TestAppId", appId != null ? appId : "");
                         command.Parameters.AddWithValue("@TestComputerName", Environment.MachineName);
 
                         // insert record
-                        connection.Open();
                         command.ExecuteNonQuery();
                         connection.Close();
                     }
