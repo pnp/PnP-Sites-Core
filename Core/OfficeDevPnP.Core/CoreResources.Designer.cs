@@ -1200,6 +1200,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Folder &apos;{0}&apos; already exists in parent folder &apos;{1}&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ID for field is not a valid Guid: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_ {

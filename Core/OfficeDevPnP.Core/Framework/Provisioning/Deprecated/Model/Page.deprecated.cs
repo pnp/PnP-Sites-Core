@@ -24,6 +24,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             set
             {
+                // Initialize the WebSettings property if it is not already there
+                if (this.ParentTemplate.WebSettings == null)
+                {
+                    this.ParentTemplate.WebSettings = new WebSettings();
+                }
+
                 if (this.ParentTemplate != null && this.ParentTemplate.WebSettings != null)
                 {
                     this.ParentTemplate.WebSettings.WelcomePage = this.Url;

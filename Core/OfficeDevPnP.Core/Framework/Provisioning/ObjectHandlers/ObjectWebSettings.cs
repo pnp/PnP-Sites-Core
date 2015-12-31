@@ -55,7 +55,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var webSettings = template.WebSettings;
 #if !CLIENTSDKV15
                     web.NoCrawl = webSettings.NoCrawl;
-                    web.RequestAccessEmail = parser.ParseString(webSettings.RequestAccessEmail);
+
+                    String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
+                    if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
+                    {
+                        requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
+                    }
+                    if (!String.IsNullOrEmpty(requestAccessEmailValue))
+                    {
+                        web.RequestAccessEmail = requestAccessEmailValue;
+                    }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
