@@ -258,8 +258,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #region Folders
 
-                    // So far, folders are supported for document libraries only
-                    foreach (var list in processedLists.Where(l => l.SiteList.BaseType == BaseType.DocumentLibrary))
+                    // Folders are supported for document libraries and generic lists only
+                    foreach (var list in processedLists
+                        .Where(l => l.SiteList.BaseType == BaseType.DocumentLibrary |
+                                    l.SiteList.BaseType == BaseType.GenericList))
                     {
                         if (list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
                         {
