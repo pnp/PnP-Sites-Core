@@ -20,6 +20,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         }
 
+        public TokenParser AddExtendedTokens(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                var context = web.Context as ClientContext;
+                foreach (var provider in template.Providers)
+                {
+                    if (provider.Enabled)
+                    {
+                        try
+                        {
+                            if (!string.IsNullOrEmpty(provider.Configuration))
+                            {
+                                provider.Configuration = parser.ParseString(provider.Configuration);
+                            }
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_, provider.Assembly);
+                            var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, provider, template);
+                            if (_providedTokens != null)
+                            {
+                                foreach (var token in _providedTokens)
+                                {
+                                    parser.AddToken(token);
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogError(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_, ex.Message, ex.StackTrace);
+                            throw;
+                        }
+                    }
+                }
+                return parser;
+            }
+        }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -62,6 +98,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return template;
         }
+
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
         {
 

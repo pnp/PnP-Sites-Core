@@ -972,11 +972,31 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensib" +
+                        "ility_callout__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed__" +
+                        "_0_____1_", resourceCulture);
             }
         }
         
