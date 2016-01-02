@@ -888,6 +888,12 @@
   <data name="Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0" xml:space="preserve">
     <value>Unable to find lookup list with Id: {0}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_" xml:space="preserve">
+    <value>Calling extensibility tokenprovider callout {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_" xml:space="preserve">
+    <value>Extensibility tokenprovider callout failed: {0} : {1}</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists" xml:space="preserve">
     <value>Folder '{0}' already exists in parent folder '{1}'.</value>
   </data>
