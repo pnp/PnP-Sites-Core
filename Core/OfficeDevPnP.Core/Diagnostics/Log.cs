@@ -104,7 +104,7 @@ namespace OfficeDevPnP.Core.Diagnostics
             InitializeLogger();
             if (_logLevel == LogLevel.Error || _logLevel == LogLevel.Debug)
             {
-                _logger.Info(new LogEntry()
+                _logger.Error(new LogEntry()
                 {
                     Message = string.Format(message, args),
                     Source = source,
