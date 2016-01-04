@@ -167,7 +167,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(string source, string message, params object[] args)
         {
             InitializeLogger();
-            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Information)
+            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Debug)
             {
                 _logger.Warning(new LogEntry()
                 {
@@ -182,7 +182,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(string source, Exception ex, string message, params object[] args)
         {
             InitializeLogger();
-            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Information)
+            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Debug)
             {
                 _logger.Warning(new LogEntry()
                 {
@@ -196,7 +196,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         public static void Warning(LogEntry logEntry)
         {
             InitializeLogger();
-            if (_logLevel == LogLevel.Debug)
+            if (_logLevel == LogLevel.Warning || _logLevel == LogLevel.Debug)
             {
                 _logger.Warning(logEntry);
             }
