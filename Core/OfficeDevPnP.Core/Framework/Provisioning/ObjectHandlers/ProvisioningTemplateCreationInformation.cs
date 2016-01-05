@@ -18,7 +18,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
-        private bool persistHomePageFile = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
 
@@ -89,18 +88,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.persistBrandingFiles = value;
-            }
-        }
-
-        public bool PersistHomePageFile
-        {
-            get
-            {
-                return this.persistHomePageFile;
-            }
-            set
-            {
-                this.persistHomePageFile = value;
             }
         }
 
