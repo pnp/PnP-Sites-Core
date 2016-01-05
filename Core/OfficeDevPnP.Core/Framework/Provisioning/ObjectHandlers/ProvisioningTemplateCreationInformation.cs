@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ProvisioningTemplate baseTemplate;
         private FileConnectorBase fileConnector;
         private bool persistComposedLookFiles = false;
+        private bool persistBrandingFiles = false;
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
@@ -66,15 +67,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Do composed look files (theme files, site logo, alternate css) need to be persisted to storage when 
         /// we're "getting" a template
         /// </summary>
+        [Obsolete("Use PersistBrandingFiles instead")]
         public bool PersistComposedLookFiles
         {
             get
             {
-                return this.persistComposedLookFiles;
+                return this.persistBrandingFiles;
             }
             set
             {
-                this.persistComposedLookFiles = value;
+                this.persistBrandingFiles = value;
+            }
+        }
+
+        public bool PersistBrandingFiles
+        {
+            get
+            {
+                return this.persistBrandingFiles;
+            }
+            set
+            {
+                this.persistBrandingFiles = value;
             }
         }
 
