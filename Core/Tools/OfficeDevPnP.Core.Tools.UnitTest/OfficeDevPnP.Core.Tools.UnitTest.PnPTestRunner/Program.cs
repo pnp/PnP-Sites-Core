@@ -16,6 +16,10 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner
                 return;
             }
 
+            Console.WriteLine(String.Format("Argument 0 (Configuration): {0}", args[0]));
+            Console.WriteLine(String.Format("Argument 1 (Connection string): {0}", args[1]));
+            Console.WriteLine(String.Format("Argument 3 (MSBuild file): {0}", args[2]));
+
             TestManager tm = new TestManager();
             tm.Execute(args[0], args[1], args[2]);
             //tm.Execute("BertMTFirstReleaseCredentials", 

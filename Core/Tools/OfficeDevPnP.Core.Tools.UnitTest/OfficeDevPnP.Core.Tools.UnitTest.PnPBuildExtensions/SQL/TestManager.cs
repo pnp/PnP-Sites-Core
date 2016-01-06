@@ -187,25 +187,15 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         private string GetBuildNumber()
         {
             string build;
-            AuthenticationManager am = new AuthenticationManager();
-            if (testConfiguration.TestAuthentication.AppOnly)
+            try
             {
-                string realm = TokenHelper.GetRealmFromTargetUrl(new Uri(testConfiguration.TestSiteUrl));
-                using (ClientContext ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret))
+                AuthenticationManager am = new AuthenticationManager();
+                if (testConfiguration.TestAuthentication.AppOnly)
                 {
-                    ctx.Load(ctx.Web, w => w.Title);
-                    ctx.ExecuteQueryRetry();
-                    build = ctx.ServerLibraryVersion.ToString();
-                }
-            }
-            else
-            {
-                if (!String.IsNullOrEmpty(testConfiguration.TestAuthentication.CredentialManagerLabel))
-                {
-                    var credentials = CredentialManager.GetSharePointOnlineCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
-                    using (ClientContext ctx = new ClientContext(testConfiguration.TestSiteUrl))
+                    string realm = TokenHelper.GetRealmFromTargetUrl(new Uri(testConfiguration.TestSiteUrl));
+
+                    using (ClientContext ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret))
                     {
-                        ctx.Credentials = credentials;
                         ctx.Load(ctx.Web, w => w.Title);
                         ctx.ExecuteQueryRetry();
                         build = ctx.ServerLibraryVersion.ToString();
@@ -213,10 +203,12 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                 }
                 else
                 {
-                    if (testConfiguration.TestAuthentication.Type == TestAuthenticationType.Online)
+                    if (!String.IsNullOrEmpty(testConfiguration.TestAuthentication.CredentialManagerLabel))
                     {
-                        using (ClientContext ctx = am.GetSharePointOnlineAuthenticatedContextTenant(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password))
+                        var credentials = CredentialManager.GetSharePointOnlineCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
+                        using (ClientContext ctx = new ClientContext(testConfiguration.TestSiteUrl))
                         {
+                            ctx.Credentials = credentials;
                             ctx.Load(ctx.Web, w => w.Title);
                             ctx.ExecuteQueryRetry();
                             build = ctx.ServerLibraryVersion.ToString();
@@ -224,14 +216,32 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                     }
                     else
                     {
-                        using (ClientContext ctx = am.GetNetworkCredentialAuthenticatedContext(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password, testConfiguration.TestAuthentication.Domain))
+                        if (testConfiguration.TestAuthentication.Type == TestAuthenticationType.Online)
                         {
-                            ctx.Load(ctx.Web, w => w.Title);
-                            ctx.ExecuteQueryRetry();
-                            build = ctx.ServerLibraryVersion.ToString();
+                            using (ClientContext ctx = am.GetSharePointOnlineAuthenticatedContextTenant(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password))
+                            {
+                                ctx.Load(ctx.Web, w => w.Title);
+                                ctx.ExecuteQueryRetry();
+                                build = ctx.ServerLibraryVersion.ToString();
+                            }
+                        }
+                        else
+                        {
+                            using (ClientContext ctx = am.GetNetworkCredentialAuthenticatedContext(testConfiguration.TestSiteUrl, testConfiguration.TestAuthentication.User, testConfiguration.TestAuthentication.Password, testConfiguration.TestAuthentication.Domain))
+                            {
+                                ctx.Load(ctx.Web, w => w.Title);
+                                ctx.ExecuteQueryRetry();
+                                build = ctx.ServerLibraryVersion.ToString();
+                            }
                         }
                     }
                 }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("ERROR: Most likely something is wrong with the provided credentials (username+pwd, appid+secret, credential manager setting) causing the below error:");
+                Console.WriteLine(ex.ToString());
+                throw;
             }
 
             return build;

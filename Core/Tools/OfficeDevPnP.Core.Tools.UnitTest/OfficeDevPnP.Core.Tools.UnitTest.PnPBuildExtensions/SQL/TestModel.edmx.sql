@@ -2,13 +2,13 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 12/29/2015 20:23:57
+-- Date Created: 01/05/2016 19:27:42
 -- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
 GO
-USE [PnPTestAutomation];
+USE [PnP];
 GO
 IF SCHEMA_ID(N'dbo') IS NULL EXECUTE(N'CREATE SCHEMA [dbo]');
 GO
@@ -57,6 +57,9 @@ IF OBJECT_ID(N'[dbo].[TestConfigurationPropertySet]', 'U') IS NOT NULL
 GO
 IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[FileTrackingSet];
+GO
+IF OBJECT_ID(N'[dbo].[FileTrackingBaselineSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[FileTrackingBaselineSet];
 GO
 
 -- --------------------------------------------------
