@@ -259,11 +259,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     #region Folders
 
                     // Folders are supported for document libraries and generic lists only
-                    foreach (var list in processedLists
-                        .Where(l => l.SiteList.BaseType == BaseType.DocumentLibrary |
-                                    l.SiteList.BaseType == BaseType.GenericList))
+                    foreach (var list in processedLists)
                     {
-                        if (list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
+                        list.SiteList.EnsureProperties(l => l.BaseType);
+                        if ((list.SiteList.BaseType == BaseType.DocumentLibrary |
+                            list.SiteList.BaseType == BaseType.GenericList) &&
+                            list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
                         {
                             list.SiteList.EnableFolderCreation = true;
                             list.SiteList.Update();
@@ -858,7 +859,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableFolderCreation = list.EnableFolderCreation;
             }
             createdList.Hidden = list.Hidden;
-            createdList.ContentTypesEnabled = list.ContentTypesEnabled;
+
+            if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
+            {
+                createdList.ContentTypesEnabled = list.ContentTypesEnabled;
+            }
 
             createdList.Update();
 
@@ -868,51 +873,55 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList.ContentTypes);
             web.Context.ExecuteQueryRetry();
 
-            // Remove existing content types only if there are custom content type bindings
-            var contentTypesToRemove = new List<ContentType>();
-            if (list.RemoveExistingContentTypes && list.ContentTypeBindings.Count > 0)
-            {
-                contentTypesToRemove.AddRange(createdList.ContentTypes);
-            }
 
-            ContentTypeBinding defaultCtBinding = null;
-            foreach (var ctBinding in list.ContentTypeBindings)
+            if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
             {
-                var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId, searchInSiteHierarchy: true);
-                if (tempCT != null)
+                // Remove existing content types only if there are custom content type bindings
+                var contentTypesToRemove = new List<ContentType>();
+                if (list.RemoveExistingContentTypes && list.ContentTypeBindings.Count > 0)
                 {
-                    // Check if CT is already available
-                    var name = tempCT.EnsureProperty(ct => ct.Name);
-                    if (!createdList.ContentTypeExistsByName(name))
+                    contentTypesToRemove.AddRange(createdList.ContentTypes);
+                }
+
+                ContentTypeBinding defaultCtBinding = null;
+                foreach (var ctBinding in list.ContentTypeBindings)
+                {
+                    var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId, searchInSiteHierarchy: true);
+                    if (tempCT != null)
                     {
-                        createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
-                    }
-                    if (ctBinding.Default)
-                    {
-                        defaultCtBinding = ctBinding;
+                        // Check if CT is already available
+                        var name = tempCT.EnsureProperty(ct => ct.Name);
+                        if (!createdList.ContentTypeExistsByName(name))
+                        {
+                            createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                        }
+                        if (ctBinding.Default)
+                        {
+                            defaultCtBinding = ctBinding;
+                        }
                     }
                 }
-            }
 
-            // default ContentTypeBinding should be set last because 
-            // list extension .SetDefaultContentTypeToList() re-sets 
-            // the list.RootFolder UniqueContentTypeOrder property
-            // which may cause missing CTs from the "New Button"
-            if (defaultCtBinding != null)
-            {
-                createdList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
-            }
-
-            // Effectively remove existing content types, if any
-            foreach (var ct in contentTypesToRemove)
-            {
-                var shouldDelete = true;
-                shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
-
-                if (shouldDelete)
+                // default ContentTypeBinding should be set last because 
+                // list extension .SetDefaultContentTypeToList() re-sets 
+                // the list.RootFolder UniqueContentTypeOrder property
+                // which may cause missing CTs from the "New Button"
+                if (defaultCtBinding != null)
                 {
-                    ct.DeleteObject();
-                    web.Context.ExecuteQueryRetry();
+                    createdList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
+                }
+
+                // Effectively remove existing content types, if any
+                foreach (var ct in contentTypesToRemove)
+                {
+                    var shouldDelete = true;
+                    shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
+
+                    if (shouldDelete)
+                    {
+                        ct.DeleteObject();
+                        web.Context.ExecuteQueryRetry();
+                    }
                 }
             }
 
@@ -1131,7 +1140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // We are taking parent - VesaJ.
                     //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
                     //{
-                        list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+                    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
                     //}
                 }
                 else

@@ -95,7 +95,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Src != null ? this.Src.GetHashCode() : 0),
                 this.WebParts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.GetHashCode()
+                (this.Security != null ? this.Security.GetHashCode() : 0)
             ).GetHashCode());
         }
 
