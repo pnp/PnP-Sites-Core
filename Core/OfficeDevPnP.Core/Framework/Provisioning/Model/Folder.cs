@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (String.Format("{0}|{1}|{2}|",
                 (this.Name.GetHashCode()),
                 (this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))),
-                this.Security.GetHashCode()
+                (this.Security != null ? this.Security.GetHashCode() : 0)
             ).GetHashCode());
         }
 

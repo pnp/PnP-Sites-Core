@@ -275,7 +275,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Fields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.Security.GetHashCode(),
+                (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
