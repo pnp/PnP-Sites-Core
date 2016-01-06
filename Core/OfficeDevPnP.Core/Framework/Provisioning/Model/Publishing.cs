@@ -28,7 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
         }
 
-        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null)
+        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null) 
+            : this()
         {
             this.AutoCheckRequirements = autoCheckRequirements;
 
