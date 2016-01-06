@@ -219,8 +219,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             template.Files.Add(homeFile);
 
             // Persist file using connector
-            PersistFile(web, creationInfo, scope, folderPath, fileName);
-
+            if (creationInfo.PersistBrandingFiles)
+            {
+                PersistFile(web, creationInfo, scope, folderPath, fileName);
+            }
             return template;
         }
 
@@ -316,6 +318,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string folderPath, string fileName)
         {
+
             if (creationInfo.FileConnector != null)
             {
                 SharePointConnector connector = new SharePointConnector(web.Context, web.Url, "dummy");
@@ -339,6 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
                 scope.LogError("No connector present to persist homepage");
             }
+
         }
 
         private string TokenizeWebPartXml(Web web, string xml)
