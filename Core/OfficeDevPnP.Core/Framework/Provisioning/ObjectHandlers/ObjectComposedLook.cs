@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 
                         string masterUrl = null;
-                        if (!string.IsNullOrEmpty(template.WebSettings.MasterPageUrl))
+                        if (template.WebSettings != null && !string.IsNullOrEmpty(template.WebSettings.MasterPageUrl))
                         {
                             masterUrl = parser.ParseString(template.WebSettings.MasterPageUrl);
                         }
