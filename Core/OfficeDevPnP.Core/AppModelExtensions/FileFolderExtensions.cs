@@ -183,7 +183,12 @@ namespace Microsoft.SharePoint.Client
 
         private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
         {
-            ClientContext context = parentFolder.Context as ClientContext;
+            ClientContext context = null;
+            if (parentFolder != null)
+            {
+                context = parentFolder.Context as ClientContext;
+            }
+
             List parentList = null;
 
             if (parentFolder != null)
@@ -195,7 +200,7 @@ namespace Microsoft.SharePoint.Client
                     {
                         Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
                         parentList = context.Web.Lists.GetById(parentListId);
-                        context.Load(parentList, l => l.BaseType);
+                        context.Load(parentList, l => l.BaseType, l => l.Title);
                         context.ExecuteQueryRetry();
                     }
                 }
@@ -224,6 +229,9 @@ namespace Microsoft.SharePoint.Client
 
                 // Get the newly created folder
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
+                // Ensure all properties are loaded (to be compatible with the previous implementation)
+                context.Load(newFolder);
+                context.ExecuteQuery();
                 return (newFolder);
             }
         }

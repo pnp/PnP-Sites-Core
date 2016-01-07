@@ -30,8 +30,28 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             clientContext = TestCommon.CreateClientContext();
 
-            documentLibrary = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, DocumentLibraryName, false);
-            folder = documentLibrary.RootFolder.CreateFolder(FolderName);
+            documentLibrary = clientContext.Web.GetListByTitle(DocumentLibraryName);
+
+            if (documentLibrary == null)
+            {
+                documentLibrary = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, DocumentLibraryName, false);
+            }
+
+            clientContext.Load(documentLibrary.RootFolder.Folders);
+            clientContext.ExecuteQueryRetry();
+            foreach (Folder existingFolder in documentLibrary.RootFolder.Folders)
+            {
+                if (string.Equals(existingFolder.Name, FolderName, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    folder = existingFolder;
+                    break;
+                }
+            }
+
+            if (folder == null)
+            {
+                folder = documentLibrary.RootFolder.CreateFolder(FolderName);
+            }
 
             var fci = new FileCreationInformation();
             fci.Content = System.IO.File.ReadAllBytes(TestFilePath1);
@@ -202,11 +222,11 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             string folderName = "test_1";
 
-            clientContext.Load(documentLibrary.RootFolder);
+            clientContext.Load(documentLibrary, d => d.RootFolder, d => d.RootFolder.Folders);
             clientContext.ExecuteQueryRetry();
             documentLibrary.RootFolder.EnsureFolder(folderName);
 
-            clientContext.Load(documentLibrary.RootFolder);
+            clientContext.Load(documentLibrary, d => d.RootFolder, d => d.RootFolder.Folders);
             clientContext.ExecuteQueryRetry();
             ensureLibraryFolderTest = null;
             foreach (Folder existingFolder in documentLibrary.RootFolder.Folders)
