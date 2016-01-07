@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template = new ObjectField().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.SiteFields.Any());
-                Assert.IsInstanceOfType(template.SiteFields, typeof(List<Core.Framework.Provisioning.Model.Field>));
+                Assert.IsInstanceOfType(template.SiteFields, typeof(Core.Framework.Provisioning.Model.FieldCollection));
             }
         }
     }

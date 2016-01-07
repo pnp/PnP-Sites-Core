@@ -115,7 +115,7 @@ alert(""Hello!"");
                 var template = new ProvisioningTemplate();
                 template = new ObjectPages().ExtractObjects(ctx.Web, template, creationInfo);
 
-                Assert.IsInstanceOfType(template.Pages, typeof(List<Core.Framework.Provisioning.Model.Page>));
+                Assert.IsInstanceOfType(template.Pages, typeof(PageCollection));
             }
         }
     }

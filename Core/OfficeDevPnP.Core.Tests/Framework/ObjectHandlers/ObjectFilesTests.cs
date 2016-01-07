@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var template = new ProvisioningTemplate();
                 template = new ObjectFiles().ExtractObjects(ctx.Web, template, creationInfo);
 
-                Assert.IsInstanceOfType(template.Files, typeof(List<Core.Framework.Provisioning.Model.File>));
+                Assert.IsInstanceOfType(template.Files, typeof(Core.Framework.Provisioning.Model.FileCollection));
             }
         }
     }
