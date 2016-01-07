@@ -76,7 +76,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._addins = new AddInCollection(this);
         }
 
-        public ProvisioningTemplate(FileConnectorBase connector)
+        public ProvisioningTemplate(FileConnectorBase connector) :
+            this()
         {
             this.connector = connector;
         }
