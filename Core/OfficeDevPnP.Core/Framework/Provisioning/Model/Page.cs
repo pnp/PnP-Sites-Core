@@ -119,7 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Layout == other.Layout &&
                 this.WelcomePage == other.WelcomePage &&
                 this.WebParts.DeepEquals(other.WebParts) &&
-                this.Security.Equals(other.Security) &&
+                this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true &&
                 this.Fields.DeepEquals(other.Fields)
                 );
         }
