@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// References the parent ProvisioningTemplate for the current provisioning artifact
         /// </summary>
+        [JsonIgnore]
         public ProvisioningTemplate ParentTemplate
         {
             get
