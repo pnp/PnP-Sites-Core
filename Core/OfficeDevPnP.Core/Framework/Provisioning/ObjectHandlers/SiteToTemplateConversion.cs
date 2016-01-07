@@ -52,6 +52,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         scope.LogDebug(CoreResources.SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true);
                     }
                 }
+                else
+                {
+                    // When no provisioning info was passed then we want to execute all handlers
+                    creationInfo = new ProvisioningTemplateCreationInformation(web);
+                    creationInfo.HandlersToProcess = Handlers.All;
+                }
 
                 // Create empty object
                 ProvisioningTemplate template = new ProvisioningTemplate();
@@ -135,6 +141,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }
+                }
+                else
+                {
+                    // When no provisioning info was passed then we want to execute all handlers
+                    provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                    provisioningInfo.HandlersToProcess = Handlers.All;
                 }
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
