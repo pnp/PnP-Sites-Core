@@ -102,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (this.Name == other.Name &&
                     this.Folders.DeepEquals(other.Folders) &&
-                    this.Security.Equals(other.Security)
+                    this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true
                 );
         }
 
