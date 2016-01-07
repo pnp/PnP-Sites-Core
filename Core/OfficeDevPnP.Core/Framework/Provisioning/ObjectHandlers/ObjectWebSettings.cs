@@ -31,18 +31,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
                     w => w.RootFolder,
-                    w => w.AlternateCssUrl);
+                    w => w.AlternateCssUrl,
+                    w => w.Url);
 
                 var webSettings = new WebSettings();
 #if !CLIENTSDKV15
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 #endif
-                webSettings.MasterPageUrl = web.MasterUrl;
-                webSettings.CustomMasterPageUrl = web.CustomMasterUrl;
-                webSettings.SiteLogo = web.SiteLogoUrl;
-                webSettings.WelcomePage = web.RootFolder.WelcomePage;
-                webSettings.AlternateCSS = web.AlternateCssUrl;
+                webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
+                webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
+                webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
+                webSettings.WelcomePage = Tokenize(web.RootFolder.WelcomePage, web.Url);
+                webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 template.WebSettings = webSettings;
 
                 if (creationInfo.PersistBrandingFiles)
@@ -53,7 +54,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (!masterUrl.EndsWith("default.master") && !masterUrl.EndsWith("custom.master") && !masterUrl.EndsWith("v4.master") && !masterUrl.EndsWith("seattle.master") && !masterUrl.EndsWith("oslo.master"))
                         {
 
-                            PersistFile(web, creationInfo, scope, web.MasterUrl);
+                            if (PersistFile(web, creationInfo, scope, web.MasterUrl))
+                            {
+                                template.Files.Add(GetTemplateFile(web, web.MasterUrl));
+                            }
                         }
                     }
                     if (!string.IsNullOrEmpty(web.CustomMasterUrl))
@@ -61,26 +65,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var customMasterUrl = web.CustomMasterUrl.ToLower();
                         if (!customMasterUrl.EndsWith("default.master") && !customMasterUrl.EndsWith("custom.master") && !customMasterUrl.EndsWith("v4.master") && !customMasterUrl.EndsWith("seattle.master") && !customMasterUrl.EndsWith("oslo.master"))
                         {
-
-                            PersistFile(web, creationInfo, scope, web.CustomMasterUrl);
+                            if (PersistFile(web, creationInfo, scope, web.CustomMasterUrl))
+                            {
+                                template.Files.Add(GetTemplateFile(web, web.CustomMasterUrl));
+                            }
                         }
                     }
                     if (!string.IsNullOrEmpty(web.SiteLogoUrl))
                     {
-                        PersistFile(web, creationInfo, scope, web.SiteLogoUrl);
+                        if (PersistFile(web, creationInfo, scope, web.SiteLogoUrl))
+                        {
+                            template.Files.Add(GetTemplateFile(web, web.SiteLogoUrl));
+                        }
                     }
                     if (!string.IsNullOrEmpty(web.AlternateCssUrl))
                     {
-                        PersistFile(web, creationInfo, scope, web.AlternateCssUrl);
+                        if (PersistFile(web, creationInfo, scope, web.AlternateCssUrl))
+                        {
+                            template.Files.Add(GetTemplateFile(web, web.AlternateCssUrl));
+                        }
                     }
-
                 }
+
+                var files = template.Files.Distinct().ToList();
+                template.Files.Clear();
+                template.Files.AddRange(files);
             }
             return template;
         }
 
-        private void PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string serverRelativeUrl)
+        private Model.File GetTemplateFile(Web web, string serverRelativeUrl)
         {
+            var webServerUrl = web.EnsureProperty(w => w.Url);
+            var fullUri = new Uri(System.UrlUtility.Combine(webServerUrl, serverRelativeUrl));
+
+            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+            var templateFile = new Model.File()
+            {
+                Folder = Tokenize(folderPath, web.Url),
+                Src = fileName,
+                Overwrite = true,
+            };
+
+            return templateFile;
+        }
+
+        private bool PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string serverRelativeUrl)
+        {
+            var success = false;
             if (creationInfo.FileConnector != null)
             {
                 try
@@ -106,6 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         memStream.Position = 0;
                         creationInfo.FileConnector.SaveFileStream(fileName, memStream);
                     }
+                    success = true;
                 }
                 catch (ServerException ex1)
                 {
@@ -126,6 +161,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogError("No connector present to persist homepage");
             }
 
+            return success;
         }
 
         private void CopyStream(Stream source, Stream destination)
