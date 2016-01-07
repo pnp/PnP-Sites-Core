@@ -61,13 +61,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
-                (this.AlternateCSS != null ? this.AlternateCSS.GetHashCode() : 0),
                 (this.BackgroundFile != null ? this.BackgroundFile.GetHashCode() : 0),
                 (this.ColorFile != null ? this.ColorFile.GetHashCode() : 0),
                 (this.FontFile != null ? this.FontFile.GetHashCode() : 0),
-                (this.MasterPage != null ? this.MasterPage.GetHashCode() : 0),
                 (this.Name != null ? this.Name.GetHashCode() : 0),
-                (this.SiteLogo != null ? this.SiteLogo.GetHashCode() : 0),
                 this.Version.GetHashCode()
             ).GetHashCode());
         }
@@ -83,13 +80,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ComposedLook other)
         {
-            return(this.AlternateCSS == other.AlternateCSS &&
-                this.BackgroundFile == other.BackgroundFile &&
+            return(this.BackgroundFile == other.BackgroundFile &&
                 this.ColorFile == other.ColorFile &&
                 this.FontFile == other.FontFile &&
-                this.MasterPage == other.MasterPage &&
                 this.Name == other.Name &&
-                this.SiteLogo == other.SiteLogo &&
                 this.Version == other.Version);
         }
 

@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = Tokenize(folderName.Substring(web.ServerRelativeUrl.Length), web.Url);
+                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
                     }
 
                     var folder = web.EnsureFolderPath(folderName);
