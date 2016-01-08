@@ -21,7 +21,7 @@
 
   <pnp:Templates ID="SAMPLE-TEMPLATES">
 
-    <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
+    <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
 
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1.0"
       ImagePreviewUrl="https://preview.png"
