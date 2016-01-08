@@ -128,6 +128,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(RegionalSettings other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.AdjustHijriDays == other.AdjustHijriDays &&
                 this.AlternateCalendarType == other.AlternateCalendarType &&
                 this.CalendarType == other.CalendarType &&

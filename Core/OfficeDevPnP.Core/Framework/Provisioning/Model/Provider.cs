@@ -54,6 +54,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Provider other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Assembly == other.Assembly &&
                 this.Configuration == other.Configuration &&
                 this.Enabled == other.Enabled &&

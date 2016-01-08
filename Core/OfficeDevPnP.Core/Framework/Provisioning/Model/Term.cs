@@ -121,6 +121,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Term other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Id == other.Id &&
                 this.Name == other.Name &&
                 this.Description == other.Description &&

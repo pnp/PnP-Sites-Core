@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(AvailableWebTemplate other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.LanguageCode == other.LanguageCode &&
                 this.TemplateName == other.TemplateName

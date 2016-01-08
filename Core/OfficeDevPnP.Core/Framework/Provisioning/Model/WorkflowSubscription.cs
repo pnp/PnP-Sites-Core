@@ -131,6 +131,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WorkflowSubscription other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.PropertyDefinitions.DeepEquals(other.PropertyDefinitions) &&
                 this.DefinitionId == other.DefinitionId &&

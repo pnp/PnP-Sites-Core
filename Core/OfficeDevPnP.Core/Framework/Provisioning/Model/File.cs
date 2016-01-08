@@ -110,12 +110,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(File other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Folder == other.Folder &&
                 this.Overwrite == other.Overwrite &&
                 this.Src == other.Src &&
                 this.WebParts.DeepEquals(other.WebParts) &&
                 this.Properties.DeepEquals(other.Properties) &&
-                this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true
+                (this.Security != null ? this.Security.Equals(other.Security) : true)
             );
         }
 

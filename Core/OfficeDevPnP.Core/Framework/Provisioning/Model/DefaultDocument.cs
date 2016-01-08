@@ -52,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(DefaultDocument other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Name == other.Name &&
                     this.ContentTypeId == other.ContentTypeId &&
                     this.FileSourcePath == other.FileSourcePath

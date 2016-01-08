@@ -65,6 +65,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Localization other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.LCID == other.LCID &&
                     this.Name == other.Name &&
                     this.ResourceFile == other.ResourceFile 

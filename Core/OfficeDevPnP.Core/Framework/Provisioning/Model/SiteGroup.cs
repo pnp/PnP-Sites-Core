@@ -114,6 +114,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(SiteGroup other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.AllowMembersEditMembership == other.AllowMembersEditMembership &&
                 this.AllowRequestToJoinLeave == other.AllowRequestToJoinLeave &&

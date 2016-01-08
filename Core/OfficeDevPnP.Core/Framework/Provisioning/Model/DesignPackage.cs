@@ -64,6 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(DesignPackage other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.DesignPackagePath == other.DesignPackagePath &&
                 this.MajorVersion == other.MajorVersion &&

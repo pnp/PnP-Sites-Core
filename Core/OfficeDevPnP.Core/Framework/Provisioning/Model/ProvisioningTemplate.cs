@@ -478,6 +478,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ProvisioningTemplate other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.ComposedLook.Equals(other.ComposedLook) &&
                 this.ContentTypes.DeepEquals(other.ContentTypes) && 
