@@ -1,4 +1,4 @@
-# PnP Core Component # 
+# PnP Core Component #
 This is the Community Source Code location for PnP Core component. This is a "sub" repository for the PnP repository at [https://github.com/OfficeDev/PnP](https://github.com/OfficeDev/PnP) which will contain PnP core component and related resources. 
 
 ![Office 365 Developer Patterns and Practices](https://camo.githubusercontent.com/a732087ed949b0f2f84f5f02b8c79f1a9dd96f65/687474703a2f2f692e696d6775722e636f6d2f6c3031686876452e706e67)
