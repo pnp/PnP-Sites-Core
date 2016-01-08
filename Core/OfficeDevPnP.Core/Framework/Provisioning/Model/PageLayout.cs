@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(PageLayout other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.Path == other.Path &&
                 this.IsDefault == other.IsDefault

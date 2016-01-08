@@ -109,6 +109,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WebSettings other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.NoCrawl == other.NoCrawl &&
                     this.RequestAccessEmail == other.RequestAccessEmail &&
                     this.WelcomePage == other.WelcomePage &&

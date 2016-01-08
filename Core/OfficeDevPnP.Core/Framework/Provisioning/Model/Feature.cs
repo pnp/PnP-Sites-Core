@@ -48,6 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Feature other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Deactivate == other.Deactivate &&
                 this.Id == other.Id);
         }

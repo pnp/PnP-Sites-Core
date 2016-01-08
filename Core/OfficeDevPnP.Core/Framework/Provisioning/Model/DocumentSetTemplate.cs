@@ -120,6 +120,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(DocumentSetTemplate other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.AllowedContentTypes.DeepEquals(other.AllowedContentTypes) &&
                     this.DefaultDocuments.DeepEquals(other.DefaultDocuments) &&
                     this.SharedFields.DeepEquals(other.SharedFields) &&

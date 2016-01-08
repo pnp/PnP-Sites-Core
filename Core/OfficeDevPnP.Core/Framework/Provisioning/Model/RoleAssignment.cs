@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(RoleAssignment other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Principal == other.Principal &&
                 this.RoleDefinition == other.RoleDefinition);
         }

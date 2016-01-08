@@ -37,6 +37,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(SupportedUILanguage other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.LCID == other.LCID);
         }
 

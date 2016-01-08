@@ -142,6 +142,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(CustomAction other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XNodeEqualityComparer xnec = new XNodeEqualityComparer();
 
             return (

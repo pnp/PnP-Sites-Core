@@ -142,6 +142,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WorkflowDefinition other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.Properties.DeepEquals(other.Properties) &&
                 this.FormField == other.FormField &&

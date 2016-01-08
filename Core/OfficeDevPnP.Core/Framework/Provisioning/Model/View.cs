@@ -41,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(View other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XElement currentXml = PrepareViewForCompare(this.SchemaXml);
             XElement otherXml = PrepareViewForCompare(other.SchemaXml);
             return (XNode.DeepEquals(currentXml, otherXml));

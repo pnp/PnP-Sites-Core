@@ -80,6 +80,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(FieldRef other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Id == other.Id &&
                 this.Required == other.Required &&
                 this.Hidden == other.Hidden);

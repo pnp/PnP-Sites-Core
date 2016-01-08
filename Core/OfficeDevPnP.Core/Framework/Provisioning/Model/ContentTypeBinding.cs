@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ContentTypeBinding other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.ContentTypeId == other.ContentTypeId &&
                 this.Default == other.Default);
         }

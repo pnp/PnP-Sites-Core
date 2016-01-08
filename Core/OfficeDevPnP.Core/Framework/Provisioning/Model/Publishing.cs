@@ -113,6 +113,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Publishing other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.AutoCheckRequirements == other.AutoCheckRequirements &&
                 this.AvailableWebTemplates.DeepEquals(other.AvailableWebTemplates) &&
