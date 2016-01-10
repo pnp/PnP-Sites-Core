@@ -10,23 +10,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// The base type for a Site Group
     /// </summary>
-    public class SiteGroup : IEquatable<SiteGroup>
+    public partial class SiteGroup : BaseModel, IEquatable<SiteGroup>
     {
         #region Private Members
 
-        private List<User> _members = new List<User>();
+        private UserCollection _members;
 
         #endregion
 
         #region Constructors
-        public SiteGroup() { }
 
-        public SiteGroup(IEnumerable<User> members)
+        public SiteGroup()
         {
-            if (members != null)
-            {
-                this._members.AddRange(members);
-            }
+            this._members = new UserCollection(this.ParentTemplate);
+        }
+
+        public SiteGroup(IEnumerable<User> members):
+            this()
+        {
+            this.Members.AddRange(members);
         }
 
         #endregion
@@ -36,8 +38,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of members of the Site Group
         /// </summary>
-        public List<User> Members {
-            get { return this._members;  }
+        public UserCollection Members
+        {
+            get { return this._members; }
             private set { this._members = value; }
         }
 
@@ -111,11 +114,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(SiteGroup other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.AllowMembersEditMembership == other.AllowMembersEditMembership &&
                 this.AllowRequestToJoinLeave == other.AllowRequestToJoinLeave &&
-                this.AutoAcceptRequestToJoinLeave ==  other.AutoAcceptRequestToJoinLeave &&
-                this.Description ==  other.Description &&
+                this.AutoAcceptRequestToJoinLeave == other.AutoAcceptRequestToJoinLeave &&
+                this.Description == other.Description &&
                 this.Members.DeepEquals(other.Members) &&
                 this.OnlyAllowMembersViewMembership == other.OnlyAllowMembersViewMembership &&
                 this.Owner == other.Owner &&

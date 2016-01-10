@@ -52,7 +52,7 @@ namespace Microsoft.SharePoint.Client
             }
             web.Context.ExecuteQueryRetry();
 
-            if(scope.TestResult.Value)
+            if (scope.TestResult.Value)
             {
                 file.CheckIn(comment, checkinType);
                 web.Context.ExecuteQueryRetry();
@@ -177,17 +177,63 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-            var folder = CreateFolderImplementation(folderCollection, folderName);
+            var folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
             return folder;
         }
 
-        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName)
+        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
         {
-            var newFolder = folderCollection.Add(folderName);
-            folderCollection.Context.Load(newFolder);
-            folderCollection.Context.ExecuteQueryRetry();
+            ClientContext context = null;
+            if (parentFolder != null)
+            {
+                context = parentFolder.Context as ClientContext;
+            }
 
-            return newFolder;
+            List parentList = null;
+
+            if (parentFolder != null)
+            {
+                parentFolder.EnsureProperty(p => p.Properties);
+                if (parentFolder.Properties.FieldValues.ContainsKey("vti_listname"))
+                {
+                    if (context != null)
+                    {
+                        Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
+                        parentList = context.Web.Lists.GetById(parentListId);
+                        context.Load(parentList, l => l.BaseType, l => l.Title);
+                        context.ExecuteQueryRetry();
+                    }
+                }
+            }
+
+            if (parentList == null)
+            {
+                // Create folder for library or common URL path
+                var newFolder = folderCollection.Add(folderName);
+                folderCollection.Context.Load(newFolder);
+                folderCollection.Context.ExecuteQueryRetry();
+                return newFolder;
+            }
+            else
+            {
+                // Create folder for generic list
+                ListItemCreationInformation newFolderInfo = new ListItemCreationInformation();
+                newFolderInfo.UnderlyingObjectType = FileSystemObjectType.Folder;
+                newFolderInfo.LeafName = folderName;
+                parentFolder.EnsureProperty(f => f.ServerRelativeUrl);
+                newFolderInfo.FolderUrl = parentFolder.ServerRelativeUrl;
+                ListItem newFolderItem = parentList.AddItem(newFolderInfo);
+                newFolderItem["Title"] = folderName;
+                newFolderItem.Update();
+                context.ExecuteQueryRetry();
+
+                // Get the newly created folder
+                var newFolder = parentFolder.Folders.GetByUrl(folderName);
+                // Ensure all properties are loaded (to be compatible with the previous implementation)
+                context.Load(newFolder);
+                context.ExecuteQuery();
+                return (newFolder);
+            }
         }
 
         /// <summary>
@@ -276,11 +322,11 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-            var folder = EnsureFolderImplementation(folderCollection, folderName);
+            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder);
             return folder;
         }
 
-        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName)
+        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
         {
             Folder folder = null;
 
@@ -297,7 +343,7 @@ namespace Microsoft.SharePoint.Client
 
             if (folder == null)
             {
-                folder = CreateFolderImplementation(folderCollection, folderName);
+                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
             }
 
             return folder;
@@ -796,7 +842,7 @@ namespace Microsoft.SharePoint.Client
             try
             {
                 folder.EnsureProperties(f => f.ServerRelativeUrl);
-                
+
                 var fileServerRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
                 var context = folder.Context as ClientContext;
 
@@ -916,10 +962,24 @@ namespace Microsoft.SharePoint.Client
 
             if (properties != null && properties.Count > 0)
             {
-                // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                // Get a reference to the target list, if any
+                // and load file item properties
+                var parentList = file.ListItemAllFields.ParentList;
+                context.Load(parentList, l => l.ForceCheckout);
                 context.Load(file.ListItemAllFields);
                 context.Load(file.ListItemAllFields.FieldValuesAsText);
-                context.ExecuteQueryRetry();
+                try
+                {
+                    context.ExecuteQueryRetry();
+                }
+                catch (ServerException ex)
+                {
+                    // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                    if (ex.Message != "The object specified does not belong to a list.")
+                    {
+                        throw;
+                    }
+                }
 
                 // Loop through and detect changes first, then, check out if required and apply
                 foreach (var kvp in properties)
@@ -939,13 +999,26 @@ namespace Microsoft.SharePoint.Client
                     {
                         case "CONTENTTYPE":
                             {
-                                // TODO: Add support for named ContentType (need to lookup ID and check if it needs changing)
-                                throw new NotSupportedException("ContentType property not yet supported; use ContentTypeId instead.");
-                                //break;
+                                if (!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase) && parentList != null)
+                                {
+                                    ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
+                                    context.ExecuteQueryRetry();
+
+                                    if (targetCT != null)
+                                    {
+                                        changedProperties["ContentTypeId"] = targetCT.StringId;
+                                        changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
+                                    }
+                                    else
+                                    {
+                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
+                                    }
+                                }
+                                break;
                             }
                         case "CONTENTTYPEID":
                             {
-                                if(currentValue != propertyValue)
+                                if (!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     changedProperties[propertyName] = propertyValue;
                                     changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
@@ -995,19 +1068,9 @@ namespace Microsoft.SharePoint.Client
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_UpdateFile0Properties1, file.Name, changedPropertiesString);
                     var checkOutRequired = false;
 
-                    var parentList = file.ListItemAllFields.ParentList;
-                    context.Load(parentList, l => l.ForceCheckout);
-                    try
+                    if (parentList != null)
                     {
-                        context.ExecuteQueryRetry();
                         checkOutRequired = parentList.ForceCheckout;
-                    }
-                    catch (ServerException ex)
-                    {
-                        if (ex.Message != "The object specified does not belong to a list.")
-                        {
-                            throw;
-                        }
                     }
 
                     if (checkoutIfRequired && checkOutRequired && file.CheckOutType == CheckOutType.None)

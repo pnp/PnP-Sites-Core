@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class View : IEquatable<View>
+    public partial class View : BaseModel, IEquatable<View>
     {
         #region Private Members
         private string _schemaXml = string.Empty;
@@ -41,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(View other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XElement currentXml = PrepareViewForCompare(this.SchemaXml);
             XElement otherXml = PrepareViewForCompare(other.SchemaXml);
             return (XNode.DeepEquals(currentXml, otherXml));

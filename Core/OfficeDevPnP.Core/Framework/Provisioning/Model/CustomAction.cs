@@ -7,14 +7,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for custom actions  associated with a SharePoint list, Web site, or subsite.
     /// </summary>
-    public partial class CustomAction : IEquatable<CustomAction>
+    public partial class CustomAction : BaseModel, IEquatable<CustomAction>
     {
         #region Private Members
         private int _rightsValue = 0;
         #endregion
 
         #region Properties
-        
+
         public System.Xml.Linq.XElement CommandUIExtension { get; set; }
 
         /// <summary>
@@ -59,16 +59,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         ///     <cref>https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.permissionkind.aspx</cref>
         /// </seealso>
         /// </summary>
-        public int RightsValue {
+        public int RightsValue
+        {
             get
             {
                 return this._rightsValue;
             }
-            set 
+            set
             {
                 this._rightsValue = value;
                 BasePermissions _bp = new BasePermissions();
-                if(Enum.IsDefined(typeof(PermissionKind), value))
+                if (Enum.IsDefined(typeof(PermissionKind), value))
                 {
                     var _pk = (PermissionKind)value;
                     _bp.Set(_pk);
@@ -89,17 +90,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string Url { get; set; }
 
         public bool Enabled { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.
         /// </summary>
         public string ScriptBlock { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the URL of the image associated with the custom action.
         /// </summary>
         public string ImageUrl { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
         /// </summary>
@@ -140,7 +141,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         public bool Equals(CustomAction other)
-        { 
+        {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XNodeEqualityComparer xnec = new XNodeEqualityComparer();
 
             return (

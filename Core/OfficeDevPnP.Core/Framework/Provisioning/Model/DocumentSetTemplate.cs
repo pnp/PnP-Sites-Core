@@ -10,12 +10,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a DocumentSet Template for creating multiple DocumentSet instances
     /// </summary>
-    public class DocumentSetTemplate : IEquatable<DocumentSetTemplate>
+    public partial class DocumentSetTemplate : BaseModel, IEquatable<DocumentSetTemplate>
     {
         #region Private Members
 
         private List<String> _allowedContentTypes = new List<String>();
-        private List<DefaultDocument> _defaultDocuments = new List<DefaultDocument>();
+        private DefaultDocumentCollection _defaultDocuments;
         private List<Guid> _sharedFields = new List<Guid>();
         private List<Guid> _welcomePageFields = new List<Guid>();
 
@@ -23,9 +23,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Constructors
 
-        public DocumentSetTemplate() { }
+        public DocumentSetTemplate()
+        {
+            _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
+        }
 
-        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null)
+        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+            this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
             {
@@ -35,10 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this._allowedContentTypes.AddRange(allowedContentTypes);
             }
-            if (defaultDocuments != null)
-            {
-                this._defaultDocuments.AddRange(defaultDocuments);
-            }
+            this.DefaultDocuments.AddRange(defaultDocuments);
             if (sharedFields != null)
             {
                 this._sharedFields.AddRange(sharedFields);
@@ -65,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of default Documents for the Document Set
         /// </summary>
-        public List<DefaultDocument> DefaultDocuments
+        public DefaultDocumentCollection DefaultDocuments
         {
             get { return this._defaultDocuments; }
             private set { this._defaultDocuments = value; }
@@ -119,6 +120,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(DocumentSetTemplate other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.AllowedContentTypes.DeepEquals(other.AllowedContentTypes) &&
                     this.DefaultDocuments.DeepEquals(other.DefaultDocuments) &&
                     this.SharedFields.DeepEquals(other.SharedFields) &&

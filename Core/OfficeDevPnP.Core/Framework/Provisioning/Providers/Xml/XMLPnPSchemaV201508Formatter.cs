@@ -715,7 +715,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                     schemaPage.Layout = pageLayout;
                     schemaPage.Overwrite = page.Overwrite;
-                    schemaPage.Security = page.Security.FromTemplateToSchemaObjectSecurityV201508();
+                    schemaPage.Security = (page.Security != null) ? page.Security.FromTemplateToSchemaObjectSecurityV201508() : null;
 
                     schemaPage.WebParts = page.WebParts.Count > 0 ?
                         (from wp in page.WebParts
@@ -1160,7 +1160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     AuditLogTrimmingRetention = source.AuditSettings.AuditLogTrimmingRetentionSpecified ? source.AuditSettings.AuditLogTrimmingRetention : 0,
                     TrimAuditLog = source.AuditSettings.TrimAuditLogSpecified ? source.AuditSettings.TrimAuditLog : false,
-                    AuditFlags = source.AuditSettings.Audit.Aggregate(Microsoft.SharePoint.Client.AuditMaskType.None, (acc, next) => acc &= (Microsoft.SharePoint.Client.AuditMaskType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AuditMaskType), next.AuditFlag.ToString())),
+                    AuditFlags = source.AuditSettings.Audit.Aggregate(Microsoft.SharePoint.Client.AuditMaskType.None, (acc, next) => acc |= (Microsoft.SharePoint.Client.AuditMaskType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AuditMaskType), next.AuditFlag.ToString())),
                 };
             }
 
@@ -1753,7 +1753,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
     internal static class V201508Extensions
     {
-        public static V201508.Term[] FromModelTermsToSchemaTermsV201508(this List<Model.Term> terms)
+        public static V201508.Term[] FromModelTermsToSchemaTermsV201508(this TermCollection terms)
         {
             V201508.Term[] result = terms.Count > 0 ? (
                 from term in terms

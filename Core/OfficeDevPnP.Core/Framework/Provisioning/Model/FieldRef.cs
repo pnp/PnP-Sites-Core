@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Represents a Field XML Markup that is used to define information about a field
     /// </summary>
-    public partial class FieldRef : IEquatable<FieldRef>
+    public partial class FieldRef : BaseModel, IEquatable<FieldRef>
     {
         #region Private Members
 
@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets the name of the field link. This will not change the internal name of the field.
         /// </summary>
         public string Name { get; private set; }
-        
+
         /// <summary>
         /// Gets or sets the Display Name of the field. Only applicable to fields associated with lists.
         /// </summary>
@@ -80,6 +80,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(FieldRef other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Id == other.Id &&
                 this.Required == other.Required &&
                 this.Hidden == other.Hidden);

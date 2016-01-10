@@ -9,12 +9,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Permission settings for the target Site
     /// </summary>
-    public class SiteSecurityPermissions
+    public partial class SiteSecurityPermissions : BaseModel
     {
         #region Private Members
 
-        private List<RoleDefinition> _roleDefinitions = new List<RoleDefinition>();
-        private List<RoleAssignment> _roleAssignments = new List<RoleAssignment>();
+        private RoleDefinitionCollection _roleDefinitions;
+        private RoleAssignmentCollection _roleAssignments;
+
+        #endregion
+
+        #region Constructor
+
+        public SiteSecurityPermissions()
+        {
+            this._roleDefinitions = new RoleDefinitionCollection(this.ParentTemplate);
+            this._roleAssignments = new RoleAssignmentCollection(this.ParentTemplate);
+        }
 
         #endregion
 
@@ -23,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// List of Role Definitions for the Site
         /// </summary>
-        public List<RoleDefinition> RoleDefinitions
+        public RoleDefinitionCollection RoleDefinitions
         {
             get { return this._roleDefinitions; }
             private set { this._roleDefinitions = value; }
@@ -32,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// List of Role Assignments for the Site
         /// </summary>
-        public List<RoleAssignment> RoleAssignments
+        public RoleAssignmentCollection RoleAssignments
         {
             get { return this._roleAssignments; }
             private set { this._roleAssignments = value; }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class TermLabel : IEquatable<TermLabel>
+    public partial class TermLabel : BaseModel, IEquatable<TermLabel>
     {
-      
+
         #region Public Members
         public int Language { get; set; }
         public bool IsDefaultForLanguage { get; set; }
@@ -41,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(TermLabel other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Language == other.Language &&
                 this.Value == other.Value);
         }

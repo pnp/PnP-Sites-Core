@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class PropertyBagEntry : IEquatable<PropertyBagEntry>
+    public partial class PropertyBagEntry : BaseModel, IEquatable<PropertyBagEntry>
     {
         #region Properties
 
@@ -38,6 +38,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(PropertyBagEntry other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Key == other.Key &&
                 this.Value == other.Value &&
                 this.Indexed == other.Indexed &&

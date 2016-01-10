@@ -7,7 +7,7 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class RoleDefinition : IEquatable<RoleDefinition>
+    public partial class RoleDefinition : BaseModel, IEquatable<RoleDefinition>
     {
         #region Private Members
 
@@ -21,10 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public RoleDefinition(IEnumerable<Microsoft.SharePoint.Client.PermissionKind> permissions)
         {
-            if (permissions != null)
-            {
-                this._permissions.AddRange(permissions);
-            }
+            this.Permissions.AddRange(permissions);
         }
 
         #endregion
@@ -74,6 +71,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(RoleDefinition other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Name == other.Name &&
                 this.Description == other.Description &&
                 this.Permissions.DeepEquals(other.Permissions));

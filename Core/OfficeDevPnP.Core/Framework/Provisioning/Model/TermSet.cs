@@ -5,10 +5,10 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class TermSet : IEquatable<TermSet>
+    public partial class TermSet : BaseModel, IEquatable<TermSet>
     {
         #region Private Members
-        private List<Term> _terms = new List<Term>();
+        private TermCollection _terms;
         private Guid _id;
         private Dictionary<string, string> _properties = new Dictionary<string, string>();
         #endregion
@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public string Owner { get; set; }
 
-        public List<Term> Terms
+        public TermCollection Terms
         {
             get { return _terms; }
             private set { _terms = value; }
@@ -49,19 +49,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public TermSet()
         {
+            this._terms = new TermCollection(this.ParentTemplate);
         }
 
-        public TermSet(Guid id, string name, int? language, bool isAvailableForTagging, bool isOpenForTermCreation, List<Term> terms, Dictionary<string, string> properties)
+        public TermSet(Guid id, string name, int? language, bool isAvailableForTagging, bool isOpenForTermCreation, List<Term> terms, Dictionary<string, string> properties): 
+            this()
         {
             this.Id = id;
             this.Name = name;
             this.Language = language;
             this.IsAvailableForTagging = isAvailableForTagging;
             this.IsOpenForTermCreation = isOpenForTermCreation;
-            if (terms != null)
-            {
-                this.Terms.AddRange(terms);
-            }
+            this.Terms.AddRange(terms);
             if (properties != null)
             {
                 foreach (var property in properties)
@@ -101,6 +100,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(TermSet other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Id == other.Id &&
                     this.Name == other.Name &&
                     this.Description == other.Description &&

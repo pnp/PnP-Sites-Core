@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a single Supported UI Language for a site
     /// </summary>
-    public class SupportedUILanguage : IEquatable<SupportedUILanguage>
+    public partial class SupportedUILanguage : BaseModel, IEquatable<SupportedUILanguage>
     {
         /// <summary>
         /// The Locale ID of a Supported UI Language
@@ -37,6 +37,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(SupportedUILanguage other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.LCID == other.LCID);
         }
 

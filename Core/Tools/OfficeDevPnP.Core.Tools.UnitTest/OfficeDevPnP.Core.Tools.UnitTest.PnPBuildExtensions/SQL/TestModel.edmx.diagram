@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e61e6a1a5f1840e6aecc636cfcc89136" Name="TestDiagram" >
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRun" Width="1.5" PointX="3.25" PointY="1.625" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResult" Width="1.75" PointX="5.5" PointY="0.875" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultMessage" Width="1.5" PointX="7.75" PointY="2" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultTestResultMessage" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Width="2.125" PointX="0.625" PointY="4.875" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Width="2.25" PointX="7.375" PointY="5.25" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Width="2.25" PointX="3.25" PointY="8.875" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" Width="2" PointX="12.875" PointY="2.375" FillColor="Maroon" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTrackingBaseline" Width="1.5" PointX="15.875" PointY="2.375" FillColor="Maroon" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

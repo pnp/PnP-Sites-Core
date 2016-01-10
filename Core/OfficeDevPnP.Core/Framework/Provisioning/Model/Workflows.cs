@@ -9,29 +9,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Workflows to provision
     /// </summary>
-    public class Workflows
+    public partial class Workflows: BaseModel
     {
         #region Private Members
 
-        private List<WorkflowDefinition> _workflowDefinitions = new List<WorkflowDefinition>();
-        private List<WorkflowSubscription> _workflowSubscriptions = new List<WorkflowSubscription>();
+        private WorkflowDefinitionCollection _workflowDefinitions;
+        private WorkflowSubscriptionCollection _workflowSubscriptions;
 
         #endregion
 
         #region Constructors
 
-        public Workflows() { }
-
-        public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null)
+        public Workflows()
         {
-            if (workflowDefinitions != null)
-            {
-                this._workflowDefinitions.AddRange(workflowDefinitions);
-            }
-            if (workflowSubscriptions != null)
-            {
-                this._workflowSubscriptions.AddRange(workflowSubscriptions);
-            }
+            this._workflowDefinitions = new Model.WorkflowDefinitionCollection(this.ParentTemplate);
+            this._workflowSubscriptions = new Model.WorkflowSubscriptionCollection(this.ParentTemplate);
+        }
+
+        public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null) : 
+            this()
+        {
+            this.WorkflowDefinitions.AddRange(workflowDefinitions);
+            this.WorkflowSubscriptions.AddRange(workflowSubscriptions);
         }
 
         #endregion
@@ -41,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Definitions to provision
         /// </summary>
-        public List<WorkflowDefinition> WorkflowDefinitions
+        public WorkflowDefinitionCollection WorkflowDefinitions
         {
             get { return this._workflowDefinitions; }
             private set { this._workflowDefinitions = value; }
@@ -50,7 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Workflows Subscriptions to provision
         /// </summary>
-        public List<WorkflowSubscription> WorkflowSubscriptions
+        public WorkflowSubscriptionCollection WorkflowSubscriptions
         {
             get { return this._workflowSubscriptions; }
             private set { this._workflowSubscriptions = value; }

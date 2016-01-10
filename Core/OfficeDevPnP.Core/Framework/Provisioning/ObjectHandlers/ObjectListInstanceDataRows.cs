@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.Load(list);
 
                             // Retrieve the fields' types from the list
-                            FieldCollection fields = list.Fields;
+                            Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
                             web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind));
                             web.Context.ExecuteQueryRetry();
 

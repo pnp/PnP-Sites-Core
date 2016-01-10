@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions", "OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.csproj", "{EC40FD8A-EC1A-4FF7-BC6F-45F88E15E731}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Builds", "Builds", "{8F1A85BC-4CAF-436A-8504-165DF634EBFB}"
 	ProjectSection(SolutionItems) = preProject
+		ALM.targets = ALM.targets
 		PnPCore.targets = PnPCore.targets
+		PnPSQLCore.targets = PnPSQLCore.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest", "OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest.csproj", "{6D889057-AB57-4EC8-A301-0F5470FB467C}"
@@ -16,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	ProjectSection(SolutionItems) = preProject
 		readme.md = readme.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner", "OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner\OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner.csproj", "{79A4C4A2-9A29-49D9-96AE-546CE64446A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +35,10 @@ Global
 		{6D889057-AB57-4EC8-A301-0F5470FB467C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D889057-AB57-4EC8-A301-0F5470FB467C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D889057-AB57-4EC8-A301-0F5470FB467C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79A4C4A2-9A29-49D9-96AE-546CE64446A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79A4C4A2-9A29-49D9-96AE-546CE64446A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79A4C4A2-9A29-49D9-96AE-546CE64446A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79A4C4A2-9A29-49D9-96AE-546CE64446A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

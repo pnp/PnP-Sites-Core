@@ -145,14 +145,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
-                var store = session.GetDefaultSiteCollectionTermStore();
-
+                var store = session.GetDefaultKeywordsTermStore(); 
                 var group = store.GetGroup(_termGroupGuid);
                 var set = store.GetTermSet(_termSetGuid);
 
                 ctx.Load(group);
-                ctx.Load(set, ts => ts.Terms);
-
+                ctx.Load(set, s => s.Terms);
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
@@ -166,7 +164,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template2 = new ObjectTermGroups().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.TermGroups.Any());
-                Assert.IsInstanceOfType(template.TermGroups, typeof(List<TermGroup>));
+                Assert.IsInstanceOfType(template.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
             }
 
 

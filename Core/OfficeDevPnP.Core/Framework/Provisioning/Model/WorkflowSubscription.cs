@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Workflow Subscription to provision
     /// </summary>
-    public class WorkflowSubscription : IEquatable<WorkflowSubscription>
+    public partial class WorkflowSubscription : BaseModel, IEquatable<WorkflowSubscription>
     {
         #region Private Members
 
@@ -131,6 +131,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WorkflowSubscription other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.PropertyDefinitions.DeepEquals(other.PropertyDefinitions) &&
                 this.DefinitionId == other.DefinitionId &&

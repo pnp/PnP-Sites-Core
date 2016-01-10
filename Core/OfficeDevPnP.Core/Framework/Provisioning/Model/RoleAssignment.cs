@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Role Assignment for a target Principal
     /// </summary>
-    public class RoleAssignment : IEquatable<RoleAssignment>
+    public partial class RoleAssignment : BaseModel, IEquatable<RoleAssignment>
     {
         #region Public Members
 
@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(RoleAssignment other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Principal == other.Principal &&
                 this.RoleDefinition == other.RoleDefinition);
         }

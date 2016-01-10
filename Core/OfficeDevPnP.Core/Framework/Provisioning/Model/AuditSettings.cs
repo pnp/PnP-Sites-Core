@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// The Audit Settings for the Provisioning Template
     /// </summary>
-    public class AuditSettings : IEquatable<AuditSettings>
+    public partial class AuditSettings : BaseModel, IEquatable<AuditSettings>
     {
         #region Public Members
 
@@ -52,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(AuditSettings other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.AuditFlags == other.AuditFlags  &&
                 this.AuditLogTrimmingRetention == other.AuditLogTrimmingRetention &&
                 this.TrimAuditLog == other.TrimAuditLog

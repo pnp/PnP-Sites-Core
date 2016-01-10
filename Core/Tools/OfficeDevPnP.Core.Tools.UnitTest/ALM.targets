@@ -1,0 +1,27 @@
+﻿<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="AppTest">
+  <!-- test information-->
+  <PropertyGroup Label="Test information">
+    <ConfigurationPath>C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions</ConfigurationPath>
+    <PnPExtensionsAssembly>$(ConfigurationPath)\bin\Debug\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.dll</PnPExtensionsAssembly>
+    <SharePointSite>https://bertonline.sharepoint.com/sites/dev</SharePointSite>
+  </PropertyGroup>
+
+  <!-- Custom tasks registration -->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="RegisterNewApp" />
+  
+  <Target Name="AppTest">
+    <Message Text="=============================================================================" />
+    <RegisterNewApp CredentialManagerLabel="bertonline" SharePointSiteUrl="$(SharePointSite)" Title="test app" AppDomain="www.test.com" RedirectUri="https://www.test.com" >
+      <Output PropertyName="ClientId" TaskParameter="ClientId" />
+      <Output PropertyName="ClientSecret" TaskParameter="ClientSecret" />
+      <Output PropertyName="Title" TaskParameter="Title" />
+      <Output PropertyName="AppDomain" TaskParameter="AppDomain" />
+      <Output PropertyName="RedirectUri" TaskParameter="RedirectUri" />
+    </RegisterNewApp>
+
+    <Message Text="Following client id will be used: $(ClientId)" />
+    <Message Text="Following client secret will be used: $(ClientSecret)" />
+    <Message Text="=============================================================================" />
+    
+  </Target>
+</Project>

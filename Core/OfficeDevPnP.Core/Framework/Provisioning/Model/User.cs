@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that defines a User or group in the provisioning template
     /// </summary>
-    public partial class User : IEquatable<User>
+    public partial class User : BaseModel, IEquatable<User>
     {
         #region Public Members
 
@@ -36,6 +36,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(User other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Name == other.Name);
         }
 

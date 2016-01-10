@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that represents an Feature.
     /// </summary>
-    public partial class Feature : IEquatable<Feature>
+    public partial class Feature : BaseModel, IEquatable<Feature>
     {
         #region Private Members
 
@@ -48,6 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Feature other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Deactivate == other.Deactivate &&
                 this.Id == other.Id);
         }

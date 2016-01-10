@@ -18,26 +18,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
-        private List<Field> _siteFields = new List<Field>();
-        private List<ContentType> _contentTypes = new List<ContentType>();
-        private List<PropertyBagEntry> _propertyBags = new List<PropertyBagEntry>();
-        private List<ListInstance> _lists = new List<ListInstance>();
-        private ComposedLook _composedLook = new ComposedLook();
-        private Features _features = new Features();
-        private SiteSecurity _siteSecurity = new SiteSecurity();
-        private CustomActions _customActions = new CustomActions();
-        private List<File> _files = new List<File>();
-        private List<Provider> _providers = new List<Provider>();
-        private List<Page> _pages = new List<Page>();
-        private List<TermGroup> _termGroups = new List<TermGroup>();
+        private LocalizationCollection _localizations;
+        private FieldCollection _siteFields;
+        private ContentTypeCollection _contentTypes;
+        private PropertyBagEntryCollection _propertyBags;
+        private ListInstanceCollection _lists;
+        private ComposedLook _composedLook;
+        private Features _features;
+        private SiteSecurity _siteSecurity;
+        private CustomActions _customActions;
+        private FileCollection _files;
+        private ProviderCollection _providers;
+        private PageCollection _pages;
+        private TermGroupCollection _termGroups;
         private FileConnectorBase connector;
         private string _id;
 
         private RegionalSettings _regionalSettings = null;
-        private List<SupportedUILanguage> _supportedUILanguages = new List<SupportedUILanguage>();
+        private WebSettings _webSettings = null;
+        private SupportedUILanguageCollection _supportedUILanguages;
         private AuditSettings _auditSettings = null;
         private Workflows _workflows = null;
-        private List<AddIn> _addins = new List<AddIn>();
+        private AddInCollection _addins;
         private Publishing _publishing = null;
         private Dictionary<String, String> _properties = new Dictionary<string, string>();
 
@@ -48,9 +50,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ProvisioningTemplate()
         {
             this.connector = new FileSystemConnector(".", "");
+
+            this._localizations = new LocalizationCollection(this);
+            this._siteFields = new FieldCollection(this);
+            this._contentTypes = new ContentTypeCollection(this);
+            this._propertyBags = new PropertyBagEntryCollection(this);
+            this._lists = new ListInstanceCollection(this);
+
+            this._siteSecurity = new SiteSecurity();
+            this._siteSecurity.ParentTemplate = this;
+
+            this._composedLook = new ComposedLook();
+            this._composedLook.ParentTemplate = this;
+            this._features = new Features();
+            this._features.ParentTemplate = this;
+            this._customActions = new CustomActions();
+            this._customActions.ParentTemplate = this;
+
+            this._files = new FileCollection(this);
+            this._providers = new ProviderCollection(this);
+            this._pages = new PageCollection(this);
+            this._termGroups = new TermGroupCollection(this);
+
+            this._supportedUILanguages = new SupportedUILanguageCollection(this);
+            this._addins = new AddInCollection(this);
         }
 
-        public ProvisioningTemplate(FileConnectorBase connector)
+        public ProvisioningTemplate(FileConnectorBase connector) :
+            this()
         {
             this.connector = connector;
         }
@@ -67,6 +94,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _parameters; }
             private set { _parameters = value; }
         }
+
+        public LocalizationCollection Localizations
+        {
+            get { return this._localizations; }
+            private set { this._localizations = value; }
+        }
+        
         /// <summary>
         /// Gets or sets the ID of the Provisioning Template
         /// </summary>
@@ -82,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string SitePolicy { get; set; }
 
-        public List<PropertyBagEntry> PropertyBagEntries
+        public PropertyBagEntryCollection PropertyBagEntries
         {
             get { return this._propertyBags; }
             private set { this._propertyBags = value; }
@@ -94,13 +128,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SiteSecurity Security
         {
             get { return this._siteSecurity; }
-            set { this._siteSecurity = value; }
+            set
+            {
+                if (this._siteSecurity != null)
+                {
+                    this._siteSecurity.ParentTemplate = null;
+                }
+                this._siteSecurity = value;
+                if (this._siteSecurity != null)
+                {
+                    this._siteSecurity.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
         /// Gets a collection of fields 
         /// </summary>
-        public List<Field> SiteFields
+        public FieldCollection SiteFields
         {
             get { return this._siteFields; }
             private set { this._siteFields = value; }
@@ -109,13 +154,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets a collection of Content Types to create
         /// </summary>
-        public List<ContentType> ContentTypes
+        public ContentTypeCollection ContentTypes
         {
             get { return this._contentTypes; }
             private set { this._contentTypes = value; }
         }
 
-        public List<ListInstance> Lists
+        public ListInstanceCollection Lists
         {
             get { return this._lists; }
             private set { this._lists = value; }
@@ -127,7 +172,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Features Features
         {
             get { return this._features; }
-            set { this._features = value; }
+            set
+            {
+                if (this._features != null)
+                {
+                    this._features.ParentTemplate = null;
+                }
+                this._features = value;
+                if (this._features != null)
+                {
+                    this._features.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -136,13 +192,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public CustomActions CustomActions
         {
             get { return this._customActions; }
-            set { this._customActions = value; }
+            set
+            {
+                if (this._customActions != null)
+                {
+                    this._customActions.ParentTemplate = null;
+                }
+                this._customActions = value;
+                if (this._customActions != null)
+                {
+                    this._customActions.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
         /// Gets a collection of files for the template
         /// </summary>
-        public List<File> Files
+        public FileCollection Files
         {
             get { return this._files; }
             private set { this._files = value; }
@@ -154,13 +221,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ComposedLook ComposedLook
         {
             get { return this._composedLook; }
-            set { this._composedLook = value; }
+            set
+            {
+                if (this._composedLook != null)
+                {
+                    this._composedLook.ParentTemplate = null;
+                }
+                this._composedLook = value;
+                if (this._composedLook != null)
+                {
+                    this._composedLook.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
         /// Gets a collection of Providers that are used during the extensibility pipeline
         /// </summary>
-        public List<Provider> Providers
+        public ProviderCollection Providers
         {
             get { return this._providers; }
             private set { this._providers = value; }
@@ -169,7 +247,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets a collection of Wiki Pages for the template
         /// </summary>
-        public List<Page> Pages
+        public PageCollection Pages
         {
             get { return this._pages; }
             private set { this._pages = value; }
@@ -178,10 +256,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets a collection of termgroups to deploy to the site
         /// </summary>
-        public List<TermGroup> TermGroups
+        public TermGroupCollection TermGroups
         {
             get { return this._termGroups; }
             private set { this._termGroups = value; }
+        }
+
+        /// <summary>
+        /// The Web Settings of the Provisioning Template
+        /// </summary>
+        public WebSettings WebSettings
+        {
+            get { return this._webSettings; }
+            set
+            {
+                if (this._webSettings != null)
+                {
+                    this._webSettings.ParentTemplate = null;
+                }
+                this._webSettings = value;
+                if (this._webSettings != null)
+                {
+                    this._webSettings.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -190,13 +288,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public RegionalSettings RegionalSettings
         {
             get { return this._regionalSettings; }
-            set { this._regionalSettings = value; }
+            set
+            {
+                if (this._regionalSettings != null)
+                {
+                    this._regionalSettings.ParentTemplate = null;
+                }
+                this._regionalSettings = value;
+                if (this._regionalSettings != null)
+                {
+                    this._regionalSettings.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
         /// The Supported UI Languages for the Provisioning Template
         /// </summary>
-        public List<SupportedUILanguage> SupportedUILanguages
+        public SupportedUILanguageCollection SupportedUILanguages
         {
             get { return this._supportedUILanguages; }
             private set { this._supportedUILanguages = value; }
@@ -207,8 +316,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public AuditSettings AuditSettings
         {
-            get { return this._auditSettings; }
-            set { this._auditSettings = value; }
+            get
+            {
+                return this._auditSettings;
+            }
+            set
+            {
+                // If we already have an AuditSettings bounded
+                if (this._auditSettings != null)
+                {
+                    // Clear its parent template
+                    this._auditSettings.ParentTemplate = null;
+                }
+                // Set the new AuditSettings instance
+                this._auditSettings = value;
+                if (this._auditSettings != null)
+                {
+                    // Make this template as the parent template of the new AuditSettings instance
+                    this._auditSettings.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -217,7 +344,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Workflows Workflows
         {
             get { return this._workflows; }
-            set { this._workflows = value; }
+            set
+            {
+                if (this._workflows != null)
+                {
+                    this._workflows.ParentTemplate = null;
+                }
+                this._workflows = value;
+                if (this._workflows != null)
+                {
+                    this._workflows.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -228,7 +366,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the SharePoint Add-ins to provision
         /// </summary>
-        public List<AddIn> AddIns
+        public AddInCollection AddIns
         {
             get { return this._addins; }
             private set { this._addins = value; }
@@ -240,7 +378,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Publishing Publishing
         {
             get { return this._publishing; }
-            set { this._publishing = value; }
+            set
+            {
+                if (this._publishing != null)
+                {
+                    this._publishing.ParentTemplate = null;
+                }
+                this._publishing = value;
+                if (this._publishing != null)
+                {
+                    this._publishing.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -285,7 +434,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -312,7 +461,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Workflows.WorkflowDefinitions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Workflows.WorkflowSubscriptions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.AddIns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                (this.Publishing != null ? this.Publishing.GetHashCode() : 0)
+                (this.Publishing != null ? this.Publishing.GetHashCode() : 0),
+                this.Localizations.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.WebSettings.GetHashCode()
             ).GetHashCode());
         }
 
@@ -327,6 +478,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ProvisioningTemplate other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.ComposedLook.Equals(other.ComposedLook) &&
                 this.ContentTypes.DeepEquals(other.ContentTypes) && 
@@ -354,7 +510,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
-                this.Publishing == other.Publishing
+                this.Publishing == other.Publishing &&
+                this.Localizations.DeepEquals(other.Localizations) &&
+                this.WebSettings.Equals(other.WebSettings)
             );
         }
 

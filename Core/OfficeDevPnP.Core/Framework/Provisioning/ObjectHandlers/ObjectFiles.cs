@@ -6,6 +6,15 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
+using System.Text.RegularExpressions;
+using Microsoft.SharePoint.Client.WebParts;
+using System.Xml.Linq;
+using System.Net;
+using System.Text;
+using System.Web;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -21,18 +30,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 foreach (var file in template.Files)
                 {
-
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
                         folderName = folderName.Substring(web.ServerRelativeUrl.Length);
                     }
-
 
                     var folder = web.EnsureFolderPath(folderName);
 
@@ -81,7 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.WebParts != null && file.WebParts.Any())
                         {
                             targetFile.EnsureProperties(f => f.ServerRelativeUrl);
-                            
+
                             var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
                             foreach (var webpart in file.WebParts)
                             {
@@ -94,7 +101,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
                                     wpEntity.WebPartZone = webpart.Zone;
                                     wpEntity.WebPartIndex = (int)webpart.Order;
-
                                     web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
                                 }
                             }
@@ -151,17 +157,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(this.Name))
-            {
-                // Impossible to return all files in the site currently
-
-                // If a base template is specified then use that one to "cleanup" the generated template model
-                if (creationInfo.BaseTemplate != null)
-                {
-                    template = CleanupEntities(template, creationInfo.BaseTemplate);
-                }
-            }
+            
             return template;
+        }
+
+        private string Tokenize(Web web, string xml)
+        {
+            var lists = web.Lists;
+            web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id);
+            web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title));
+            web.Context.ExecuteQueryRetry();
+
+            foreach (var list in lists)
+            {
+                xml = Regex.Replace(xml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
+            }
+            xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
+            xml = Regex.Replace(xml, web.ServerRelativeUrl, "{site}", RegexOptions.IgnoreCase);
+
+            return xml;
         }
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
@@ -187,5 +201,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return _willExtract.Value;
         }
+
     }
 }

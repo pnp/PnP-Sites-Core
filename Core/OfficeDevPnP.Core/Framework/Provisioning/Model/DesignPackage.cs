@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Design Package to import into the current Publishing site
     /// </summary>
-    public class DesignPackage : IEquatable<DesignPackage>
+    public partial class DesignPackage : BaseModel, IEquatable<DesignPackage>
     {
         #region Public Members
 
@@ -64,6 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(DesignPackage other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.DesignPackagePath == other.DesignPackagePath &&
                 this.MajorVersion == other.MajorVersion &&

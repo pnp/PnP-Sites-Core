@@ -131,13 +131,17 @@ namespace Microsoft.SharePoint.Client
         /// <param name="shareOption">View or Edit option</param>
         /// <param name="sendEmail">Send email or not</param>
         /// <param name="emailBody">Text attached to the email sent for the person to whom the document is shared</param>
-        /// <see cref="ShareDocument(Web, string, string, ExternalSharingDocumentOption, bool, string)"/>
-        public static SharingResult ShareDocument(this Web web, string urlToDocument, string targetEmailToShare, ExternalSharingDocumentOption shareOption, bool sendEmail = true, string emailBody = "Document shared")
+        /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
+        /// <see cref="ShareDocument(Web, string, string, ExternalSharingDocumentOption, bool, string, bool)"/>
+        public static SharingResult ShareDocument(this Web web, string urlToDocument, 
+                                                string targetEmailToShare, ExternalSharingDocumentOption shareOption, 
+                                                bool sendEmail = true, string emailBody = "Document shared",
+                                                bool useSimplifiedRoles = true)
         {
             // Resolve people picker value for given email
             string peoplePickerInput = ResolvePeoplePickerValueForEmail(web, targetEmailToShare);
             // Share document for user
-            return ShareDocumentWithPeoplePickerValue(web, urlToDocument, peoplePickerInput, shareOption, sendEmail, emailBody);
+            return ShareDocumentWithPeoplePickerValue(web, urlToDocument, peoplePickerInput, shareOption, sendEmail, emailBody, useSimplifiedRoles);
         }
 
         /// <summary>
@@ -149,9 +153,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="shareOption">View or Edit option</param>
         /// <param name="sendEmail">Send email or not</param>
         /// <param name="emailBody">Text attached to the email sent for the person to whom the document is shared</param>
+        /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
         public static SharingResult ShareDocumentWithPeoplePickerValue(this Web web, string urlToDocument, string peoplePickerInput,
                                         ExternalSharingDocumentOption shareOption, bool sendEmail = true,
-                                        string emailBody = "Document shared for you.")
+                                        string emailBody = "Document shared for you.", bool useSimplifiedRoles = true)
         {
 
             int groupId = 0;            // Set groupId to 0 for external share
@@ -176,7 +181,7 @@ namespace Microsoft.SharePoint.Client
             SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, urlToDocument,
                                                         peoplePickerInput, roleValue, groupId, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, emailSubject,
-                                                        emailBody);
+                                                        emailBody, useSimplifiedRoles);
 
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
@@ -252,16 +257,17 @@ namespace Microsoft.SharePoint.Client
         /// <param name="shareOption">Sharing style - View, Edit, Owner</param>
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
+        /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
         /// <returns></returns>
         public static SharingResult ShareSite(this Web web, string email,
                                                 ExternalSharingSiteOption shareOption, bool sendEmail = true,
-                                                string emailBody = "Site shared for you.")
+                                                string emailBody = "Site shared for you.", bool useSimplifiedRoles = true)
         {
             // Solve people picker value for email address
             string peoplePickerValue = ResolvePeoplePickerValueForEmail(web, email);
 
             // Share with the people picker value
-            return ShareSiteWithPeoplePickerValue(web, peoplePickerValue, shareOption, sendEmail, emailBody);
+            return ShareSiteWithPeoplePickerValue(web, peoplePickerValue, shareOption, sendEmail, emailBody, useSimplifiedRoles);
         }
 
         /// <summary>
@@ -272,10 +278,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="shareOption">Sharing style - View, Edit, Owner</param>
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
+        /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
         /// <returns></returns>
         public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput,
                                                                     ExternalSharingSiteOption shareOption,
-                                                                    bool sendEmail = true, string emailBody = "Site shared for you.")
+                                                                    bool sendEmail = true, string emailBody = "Site shared for you.",
+                                                                    bool useSimplifiedRoles = true)
         {
             // Solve the group id for the shared option based on default groups
             int groupId = SolveGroupIdToShare(web, shareOption);
@@ -295,7 +303,7 @@ namespace Microsoft.SharePoint.Client
             SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, web.Url, peoplePickerInput,
                                                         roleValue, 0, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, null,
-                                                        emailBody);
+                                                        emailBody, useSimplifiedRoles);
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
             return result;

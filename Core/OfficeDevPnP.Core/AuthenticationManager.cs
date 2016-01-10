@@ -4,12 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core
 {
@@ -71,6 +74,18 @@ namespace OfficeDevPnP.Core
         /// Returns an app only ClientContext object
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="appId">Application ID which is requesting the ClientContext object</param>
+        /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string appId, string appSecret)
+        {
+            return GetAppOnlyAuthenticatedContext(siteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(siteUrl)), appId, appSecret);
+        }
+
+        /// <summary>
+        /// Returns an app only ClientContext object
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
@@ -95,6 +110,67 @@ namespace OfficeDevPnP.Core
             ClientContext clientContext = new ClientContext(siteUrl);
             clientContext.Credentials = new NetworkCredential(user, password, domain);
             return clientContext;
+        }
+
+        /// <summary>
+        /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetWebLoginClientContext(string siteUrl)
+        {
+            var cookies = new CookieContainer();
+            var siteUri = new Uri(siteUrl);
+
+            var thread = new Thread(() =>
+            {
+                var form = new System.Windows.Forms.Form();
+                var browser = new System.Windows.Forms.WebBrowser();
+
+                browser.ScriptErrorsSuppressed = true;
+                browser.Dock = DockStyle.Fill;
+
+                form.SuspendLayout();
+                form.Width = 900;
+                form.Height = 500;
+                form.Text = string.Format("Log in to {0}", siteUrl);
+                form.Controls.Add(browser);
+                form.ResumeLayout(false);
+
+                browser.Navigate(siteUri);
+
+                browser.Navigated += (sender, args) =>
+                {
+                    if (siteUri.Host.Equals(args.Url.Host))
+                    {
+                        var cookieString = CookieReader.GetCookie(siteUrl).Replace("; ", ",").Replace(";", ",");
+                        if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase))
+                        {
+                            var _cookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
+                            cookies.SetCookies(siteUri, string.Join(",", _cookies));
+                            form.Close();
+                        }
+                    }
+                };
+
+                form.Focus();
+                form.ShowDialog();
+                browser.Dispose();
+            });
+
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start();
+            thread.Join();
+
+            if (cookies.Count > 0)
+            {
+                var ctx = new ClientContext(siteUrl);
+                ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = cookies;
+                return ctx;
+
+            }
+
+            return null;
         }
 
 #if !CLIENTSDKV15

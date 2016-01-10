@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Workflow Definition to provision
     /// </summary>
-    public class WorkflowDefinition: IEquatable<WorkflowDefinition>
+    public partial class WorkflowDefinition : BaseModel, IEquatable<WorkflowDefinition>
     {
         #region Private Members
 
@@ -142,6 +142,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WorkflowDefinition other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.Properties.DeepEquals(other.Properties) &&
                 this.FormField == other.FormField &&

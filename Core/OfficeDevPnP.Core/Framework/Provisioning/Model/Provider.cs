@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for Extensiblity Call out
     /// </summary>
-    public class Provider : IEquatable<Provider>
+    public partial class Provider : BaseModel, IEquatable<Provider>
     {
         #region Properties
 
@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get;
             set;
         }
-        
+
         public string Configuration { get; set; }
 
         #endregion
@@ -54,6 +54,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Provider other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Assembly == other.Assembly &&
                 this.Configuration == other.Configuration &&
                 this.Enabled == other.Enabled &&

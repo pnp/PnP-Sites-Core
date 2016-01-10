@@ -7,24 +7,25 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class ObjectSecurity : IEquatable<ObjectSecurity>
+    public partial class ObjectSecurity : BaseModel, IEquatable<ObjectSecurity>
     {
         #region Private Members
 
-        private List<RoleAssignment> _roleAssignments = new List<RoleAssignment>();
+        private RoleAssignmentCollection _roleAssignments;
 
         #endregion
 
         #region Constructors
 
-        public ObjectSecurity() { }
-
-        public ObjectSecurity(IEnumerable<RoleAssignment> roleAssignments)
+        public ObjectSecurity()
         {
-            if (roleAssignments != null)
-            {
-                this._roleAssignments.AddRange(roleAssignments);
-            }
+            this._roleAssignments = new RoleAssignmentCollection(this.ParentTemplate);
+        }
+
+        public ObjectSecurity(IEnumerable<RoleAssignment> roleAssignments):
+            this()
+        {
+            this.RoleAssignments.AddRange(roleAssignments);
         }
 
         #endregion
@@ -34,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Role Assignments for a target Principal
         /// </summary>
-        public List<RoleAssignment> RoleAssignments
+        public RoleAssignmentCollection RoleAssignments
         {
             get { return this._roleAssignments; }
             private set { this._roleAssignments = value; }
@@ -74,6 +75,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ObjectSecurity other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.RoleAssignments.DeepEquals(other.RoleAssignments) &&
                 this.CopyRoleAssignments == other.CopyRoleAssignments &&

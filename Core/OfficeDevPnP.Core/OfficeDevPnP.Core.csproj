@@ -24,6 +24,7 @@
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug15|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +49,7 @@
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug15\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release15|AnyCPU'">
     <DebugType>pdbonly</DebugType>
@@ -57,67 +60,155 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release15\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug16|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug16\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;TRACE;DEBUG;CODE_ANALYSIS;CLIENTSDKV15</DefineConstants>
+    <DocumentationFile>bin\Debug16\OfficeDevPnP.Core.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release16|AnyCPU'">
+    <OutputPath>bin\Release16\</OutputPath>
+    <DefineConstants>TRACE;CLIENTSDKV15</DefineConstants>
+    <DocumentationFile>bin\Release16\OfficeDevPnP.Core.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(Configuration)' == 'debug' Or '$(Configuration)' == 'release' ">
       <ItemGroup>
+        <Reference Include="Microsoft.Office.Client.Policy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.Policy.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)' == 'debug16' Or '$(Configuration)' == 'release16' ">
+      <ItemGroup>
         <Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.Office.Client.Policy.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.Policy.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.TranslationServices.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.Search.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
           <Private>True</Private>
         </Reference>
         <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -234,6 +325,7 @@
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -333,11 +425,13 @@
     <Compile Include="Framework\Provisioning\Connectors\FileConnectorBase.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileSystemConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\SharePointConnector.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\Model\ComposedLook.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ContentType.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ContentTypeBinding.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\Feature.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\FieldRef.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ListInstance.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\Model\Page.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ProvisioningTemplate.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ProvisioningTemplateInfo.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\Term.deprecated.cs" />
@@ -346,35 +440,71 @@
     <Compile Include="Framework\Provisioning\Deprecated\ObjectHandlers\ProvisioningTemplateApplyingInformation.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\ExtensibilityManager.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\ExtensiblityPipelineException.cs" />
+    <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityTokenProvider.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityProvider.cs" />
+    <Compile Include="Framework\Provisioning\Model\DefaultDocumentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FeatureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
+    <Compile Include="Framework\Provisioning\Model\AddInCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AuditSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\AvailableWebTemplate.cs" />
+    <Compile Include="Framework\Provisioning\Model\AvailableWebTemplateCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseModel.cs" />
     <Compile Include="Framework\Provisioning\Model\ComposedLook.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentType.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentTypeBinding.cs" />
+    <Compile Include="Framework\Provisioning\Model\ContentTypeBindingCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ContentTypeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CustomAction.cs" />
+    <Compile Include="Framework\Provisioning\Model\CustomActionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CustomActions.cs" />
     <Compile Include="Framework\Provisioning\Model\DataRow.cs" />
+    <Compile Include="Framework\Provisioning\Model\DataRowCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\DefaultDocument.cs" />
     <Compile Include="Framework\Provisioning\Model\DesignPackage.cs" />
     <Compile Include="Framework\Provisioning\Model\DocumentSetTemplate.cs" />
     <Compile Include="Framework\Provisioning\Model\Features.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldRef.cs" />
     <Compile Include="Framework\Provisioning\Model\Field.cs" />
+    <Compile Include="Framework\Provisioning\Model\FieldRefCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FieldCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FileCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Folder.cs" />
+    <Compile Include="Framework\Provisioning\Model\FolderCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningTemplateDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\ListInstanceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Localization.cs" />
+    <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
+    <Compile Include="Framework\Provisioning\Model\LocalizationCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
+    <Compile Include="Framework\Provisioning\Model\PageLayoutCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\PageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\PropertyBagEntryCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProviderCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
+    <Compile Include="Framework\Provisioning\Model\RoleAssignmentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleDefinition.cs" />
+    <Compile Include="Framework\Provisioning\Model\RoleDefinitionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteGroupCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteSecurityPermissions.cs" />
     <Compile Include="Framework\Provisioning\Model\RegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteGroup.cs" />
     <Compile Include="Framework\Provisioning\Model\SupportedUILanguage.cs" />
+    <Compile Include="Framework\Provisioning\Model\SupportedUILanguageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TermCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TermGroupCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TermLabel.cs" />
     <Compile Include="Framework\Provisioning\Model\Term.cs" />
+    <Compile Include="Framework\Provisioning\Model\TermLabelCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TermSet.cs" />
     <Compile Include="Framework\Provisioning\Model\TermGroup.cs" />
+    <Compile Include="Framework\Provisioning\Model\TermSetCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\UserCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ViewCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebPart.cs" />
     <Compile Include="Framework\Provisioning\Model\Page.cs" />
     <Compile Include="Framework\Provisioning\Model\File.cs" />
@@ -387,11 +517,17 @@
     <Compile Include="Framework\Provisioning\Model\SiteSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\User.cs" />
     <Compile Include="Framework\Provisioning\Model\View.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebPartCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowDefinition.cs" />
+    <Compile Include="Framework\Provisioning\Model\WorkflowDefinitionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Workflows.cs" />
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscription.cs" />
+    <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishing.cs" />
@@ -422,9 +558,13 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateApplyingInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateCreationInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\SiteToTemplateConversion.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CDATAEndToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CDATAStartToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserFullNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupId.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupToken.cs" />
@@ -460,12 +600,17 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.cs">
       <DependentUpon>ProvisioningSchema-2015-08.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.cs">
+      <DependentUpon>ProvisioningSchema-2015-12.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLFileSystemTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201503Formatter.cs" />
@@ -475,6 +620,7 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
+    <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
     <Compile Include="Framework\TimerJobs\Utilities\SiteEnumeration.cs" />
@@ -545,6 +691,9 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -607,50 +756,59 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITY0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\EHS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\EHS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\COMMUNITY0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\STS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\CMSPUBLISHING0Template.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

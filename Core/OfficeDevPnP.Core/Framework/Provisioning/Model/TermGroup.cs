@@ -5,10 +5,10 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class TermGroup : IEquatable<TermGroup>
+    public partial class TermGroup : BaseModel, IEquatable<TermGroup>
     {
         #region Private Members
-        private List<TermSet> _termSets = new List<TermSet>();
+        private TermSetCollection _termSets;
         private Guid _id;
         #endregion
 
@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string Name { get; set; }
         public string Description { get; set; }
 
-        public List<TermSet> TermSets
+        public TermSetCollection TermSets
         {
             get { return _termSets; }
             private set { _termSets = value; }
@@ -29,17 +29,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public TermGroup()
         {
-
+            this._termSets = new TermSetCollection(this.ParentTemplate);
         }
 
-        public TermGroup(Guid id, string name, List<TermSet> termSets)
+        public TermGroup(Guid id, string name, List<TermSet> termSets):
+            this()
         {
             this.Id = id;
             this.Name = name;
-            if (termSets != null)
-            {
-                this.TermSets.AddRange(termSets);
-            }
+            this.TermSets.AddRange(termSets);
         }
         #endregion
 
@@ -66,6 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(TermGroup other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Id == other.Id &&
                 this.Name == other.Name &&
                 this.Description == other.Description &&

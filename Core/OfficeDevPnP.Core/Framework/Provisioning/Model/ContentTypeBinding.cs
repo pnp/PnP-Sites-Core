@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for Content Type Binding in the Provisioning Template 
     /// </summary>
-    public partial class ContentTypeBinding : IEquatable<ContentTypeBinding>
+    public partial class ContentTypeBinding : BaseModel, IEquatable<ContentTypeBinding>
     {
         #region Private Members
 
@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ContentTypeBinding other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.ContentTypeId == other.ContentTypeId &&
                 this.Default == other.Default);
         }

@@ -6,7 +6,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Represents a Field XML Markup that is used to define information about a field
     /// </summary>
-    public class Field : IEquatable<Field>
+    public partial class Field : BaseModel, IEquatable<Field>
     {
         #region Private Members
         private string _schemaXml = string.Empty;
@@ -47,6 +47,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Field other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XElement currentXml = PrepareFieldForCompare(this.SchemaXml);
             XElement otherXml = PrepareFieldForCompare(other.SchemaXml);
             return (XNode.DeepEquals(currentXml, otherXml));

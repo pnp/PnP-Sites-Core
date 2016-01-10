@@ -4,12 +4,12 @@ using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal abstract class TokenDefinition
+    public abstract class TokenDefinition
     {
         protected string CacheValue;
         private readonly string[] _tokens;
 
-        protected TokenDefinition(Web web, params string[] token)
+        public TokenDefinition(Web web, params string[] token)
         {
             this._tokens = token;
             this.Web = web;

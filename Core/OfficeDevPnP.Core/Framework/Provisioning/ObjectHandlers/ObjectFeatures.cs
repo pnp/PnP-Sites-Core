@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private static void ProvisionFeaturesImplementation<T>(T parent, List<Feature> features, PnPMonitoredScope scope)
+        private static void ProvisionFeaturesImplementation<T>(T parent, IEnumerable<Feature> features, PnPMonitoredScope scope)
         {
             var activeFeatures = new List<Microsoft.SharePoint.Client.Feature>();
             Web web = null;

@@ -5,18 +5,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object that represents a Collections of Custom Actions
     /// </summary>
-    public class CustomActions
+    public partial class CustomActions : BaseModel
     {
         #region Private Members
-        private List<CustomAction> _siteCustomActions = new List<CustomAction>();
-        private List<CustomAction> _webCustomActions = new List<CustomAction>();
+        private CustomActionCollection _siteCustomActions;
+        private CustomActionCollection _webCustomActions;
+        #endregion
+
+        #region Constructor
+        public CustomActions()
+        {
+            _siteCustomActions = new CustomActionCollection(this.ParentTemplate);
+            _webCustomActions = new CustomActionCollection(this.ParentTemplate);
+        }
         #endregion
 
         #region Properties
         /// <summary>
         /// A Collection of CustomActions at the Site level
         /// </summary>
-        public List<CustomAction> SiteCustomActions
+        public CustomActionCollection SiteCustomActions
         {
             get { return this._siteCustomActions; }
             private set { this._siteCustomActions = value; }
@@ -25,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// A Collection of CustomActions at the Web level
         /// </summary>
-        public List<CustomAction> WebCustomActions
+        public CustomActionCollection WebCustomActions
         {
             get { return this._webCustomActions; }
             private set { this._webCustomActions = value; }

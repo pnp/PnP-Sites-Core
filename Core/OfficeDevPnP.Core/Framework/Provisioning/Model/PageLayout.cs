@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines an available Page Layout for the current Publishing site
     /// </summary>
-    public class PageLayout : IEquatable<PageLayout>
+    public partial class PageLayout : BaseModel, IEquatable<PageLayout>
     {
         #region Public Members
 
@@ -46,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(PageLayout other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.Path == other.Path &&
                 this.IsDefault == other.IsDefault

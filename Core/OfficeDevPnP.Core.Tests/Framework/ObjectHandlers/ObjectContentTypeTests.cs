@@ -81,7 +81,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template = new ObjectContentType().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.ContentTypes.Any());
-                Assert.IsInstanceOfType(template.ContentTypes, typeof(List<ContentType>));
+                Assert.IsInstanceOfType(template.ContentTypes, typeof(Core.Framework.Provisioning.Model.ContentTypeCollection));
             }
         }
     }
