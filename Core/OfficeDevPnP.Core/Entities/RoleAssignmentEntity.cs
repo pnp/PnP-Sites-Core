@@ -3,30 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 namespace OfficeDevPnP.Core.Entities
 {
-    //[Table("RoleAssignments")]
     public class RoleAssignmentEntity
     {
-        //[Key]
-        //public int Id
-        //{
-        //    get;
-        //    set;
-        //}
-
         public string Path
         {
             get;
             set;
         }
 
-        //[NotMapped]
         public UserEntity User
         {
             get;
             set;
         }
 
-        //[StringLength(256)]
         public string UserTitle
         {
             get
@@ -38,7 +28,6 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
-        //[StringLength(256)]
         public string UserLoginName
         {
             get
@@ -50,7 +39,6 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
-        //[StringLength(256)]
         public string UserEmail
         {
             get
@@ -62,21 +50,18 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
-        //[StringLength(256)]
         public string Role
         {
             get;
             set;
         }
 
-        //[NotMapped]
         public ICollection<String> RoleDefinitionBindings
         {
             get;
             set;
         }
 
-        //[StringLength(256)]
         public string Permissions
         {
             get
@@ -88,14 +73,12 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
-        //[StringLength(256)]
         public string Tag
         {
             get;
             set;
         }
 
-        //[Column(TypeName = "datetime2")]
         public DateTime CreatedDate
         {
             get;
