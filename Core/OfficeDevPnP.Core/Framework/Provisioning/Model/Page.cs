@@ -114,12 +114,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Page other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Url == other.Url &&
                 this.Overwrite == other.Overwrite &&
                 this.Layout == other.Layout &&
                 this.WelcomePage == other.WelcomePage &&
                 this.WebParts.DeepEquals(other.WebParts) &&
-                this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true &&
+                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Fields.DeepEquals(other.Fields)
                 );
         }

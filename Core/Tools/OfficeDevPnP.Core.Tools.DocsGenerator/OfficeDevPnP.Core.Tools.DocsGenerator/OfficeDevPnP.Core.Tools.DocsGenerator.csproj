@@ -53,13 +53,18 @@
       <Link>ProvisioningSchema-2015-05.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd">
+      <Link>ProvisioningSchema-2015-08.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd">
+      <Link>ProvisioningSchema-2015-12.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\..\ProvisioningSchema-2015-05.md">
       <Link>ProvisioningSchema-2015-05.md</Link>
     </None>
     <None Include="ProvisioningSchema-2015-08.md" />
-    <None Include="ProvisioningSchema-2015-08.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="XSD2MD.xslt">

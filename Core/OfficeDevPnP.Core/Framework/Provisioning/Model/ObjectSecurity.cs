@@ -75,6 +75,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ObjectSecurity other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (
                 this.RoleAssignments.DeepEquals(other.RoleAssignments) &&
                 this.CopyRoleAssignments == other.CopyRoleAssignments &&

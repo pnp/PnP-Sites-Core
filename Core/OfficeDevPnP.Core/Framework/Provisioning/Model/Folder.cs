@@ -100,9 +100,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Folder other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Name == other.Name &&
                     this.Folders.DeepEquals(other.Folders) &&
-                    this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true
+                    (this.Security != null ? this.Security.Equals(other.Security) : true)
                 );
         }
 

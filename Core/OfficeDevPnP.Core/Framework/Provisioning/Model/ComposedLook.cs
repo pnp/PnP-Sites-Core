@@ -80,7 +80,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ComposedLook other)
         {
-            return(this.BackgroundFile == other.BackgroundFile &&
+            if (other == null)
+            {
+                return (false);
+            }
+
+            return (this.BackgroundFile == other.BackgroundFile &&
                 this.ColorFile == other.ColorFile &&
                 this.FontFile == other.FontFile &&
                 this.Name == other.Name &&

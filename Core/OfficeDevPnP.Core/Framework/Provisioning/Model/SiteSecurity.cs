@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Linq;
+using System.Collections.Generic;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
     /// Domain Object that is used in the site template
     /// </summary>
-    public partial class SiteSecurity : BaseModel
+    public partial class SiteSecurity : BaseModel, IEquatable<SiteSecurity>
     {
         #region Private Members
 
@@ -96,6 +99,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this._permissions.ParentTemplate = this.ParentTemplate;
                 }
             }
+        }
+
+        #endregion
+
+        #region Comparison code
+
+        public override int GetHashCode()
+        {
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+                this.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.AdditionalOwners.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.AdditionalMembers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.AdditionalVisitors.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.SiteGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleAssignments.Aggregate(0, (acc, next) => acc += next.GetHashCode()) : 0),
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()) : 0)
+            ).GetHashCode());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is SiteSecurity))
+            {
+                return (false);
+            }
+            return (Equals((SiteSecurity)obj));
+        }
+
+        public bool Equals(SiteSecurity other)
+        {
+            if (other == null)
+            {
+                return (false);
+            }
+
+            return (
+                this.AdditionalAdministrators.DeepEquals(other.AdditionalAdministrators) &&
+                this.AdditionalOwners.DeepEquals(other.AdditionalOwners) &&
+                this.AdditionalMembers.DeepEquals(other.AdditionalMembers) &&
+                this.AdditionalVisitors.DeepEquals(other.AdditionalVisitors) &&
+                this.SiteGroups.DeepEquals(other.SiteGroups) &&
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleAssignments.DeepEquals(other.SiteSecurityPermissions.RoleAssignments) : true) &&
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.DeepEquals(other.SiteSecurityPermissions.RoleDefinitions) : true)
+                );
         }
 
         #endregion

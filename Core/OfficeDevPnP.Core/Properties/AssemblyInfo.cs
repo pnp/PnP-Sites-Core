@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2015")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 // Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar, 3=Apr, 4=May, 6=Jun, 7=Jul, 8=Aug, 9=Sept,...
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.0.1601.0")]
-[assembly: AssemblyFileVersion("2.0.1601.0")]
+[assembly: AssemblyVersion("2.1.1602.0")]
+[assembly: AssemblyFileVersion("2.1.1602.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

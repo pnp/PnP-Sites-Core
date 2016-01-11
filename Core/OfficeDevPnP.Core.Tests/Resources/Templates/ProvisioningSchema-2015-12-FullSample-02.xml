@@ -21,7 +21,7 @@
 
   <pnp:Templates ID="SAMPLE-TEMPLATES">
 
-    <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
+    <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
 
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1.0"
       ImagePreviewUrl="https://preview.png"
@@ -35,9 +35,16 @@
 
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
 
-      <pnp:WebSettings 
-        RequestAccessEmail="someone@company.com" 
+      <pnp:WebSettings
+        RequestAccessEmail="someone@company.com"
         NoCrawl="false"
+        WelcomePage="/Pages/Home.aspx"
+        Title="Site Title"
+        Description="Site Description"
+        SiteLogo="{sitecollection}/SiteAssets/Logo.png"
+        AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css"
+        MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master"
+        CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master"
         />
 
       <pnp:RegionalSettings
@@ -308,7 +315,7 @@
           <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
         </pnp:SiteCustomActions>
         <pnp:WebCustomActions>
-          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true" />
         </pnp:WebCustomActions>
       </pnp:CustomActions>
 
@@ -329,7 +336,7 @@
         <pnp:File Src="ProjectHomePage.aspx" Folder="_cts/ProjectDocumentSet/" Overwrite="true" />
       </pnp:Files>
 
-      <pnp:Pages WelcomePage="/Pages/Home.aspx">
+      <pnp:Pages>
         <pnp:Page Layout="TwoColumns" Overwrite="true" Url="{site}/SitePages/DemoWikiPage.aspx"></pnp:Page>
         <pnp:Page Layout="OneColumn" Overwrite="true" Url="{site}/SitePages/OneColumnPage.aspx">
           <pnp:Security>
@@ -350,39 +357,44 @@
           <pnp:WebParts>
             <pnp:WebPart Column="1" Row="1" Title="Script Editor">
               <pnp:Contents>
-                <![CDATA[
-            <webParts><webPart xmlns="http://schemas.microsoft.com/WebPart/v3"><metaData><type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" /><importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-    </metaData>
-    <data>
-      <properties>
-        <property name="ExportMode" type="exportmode">All</property>
-        <property name="HelpUrl" type="string" />
-        <property name="Hidden" type="bool">False</property>
-        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
-        <property name="Content" type="string">&lt;script type="text/javascript"&gt;
-function showAlert(){alert("Hello!")};
-&lt;/script&gt;&lt;input type="button" onclick="showAlert();" value="Click me"&gt;</property>
-        <property name="CatalogIconImageUrl" type="string" />
-        <property name="Title" type="string">Script Editor</property>
-        <property name="AllowHide" type="bool">True</property>
-        <property name="AllowMinimize" type="bool">True</property>
-        <property name="AllowZoneChange" type="bool">True</property>
-        <property name="TitleUrl" type="string" />
-        <property name="ChromeType" type="chrometype">None</property>
-        <property name="AllowConnect" type="bool">True</property>
-        <property name="Width" type="unit" />
-        <property name="Height" type="unit" />
-        <property name="HelpMode" type="helpmode">Navigate</property>
-        <property name="AllowEdit" type="bool">True</property>
-        <property name="TitleIconImageUrl" type="string" />
-        <property name="Direction" type="direction">NotSet</property>
-        <property name="AllowClose" type="bool">True</property>
-        <property name="ChromeState" type="chromestate">Normal</property>
-      </properties>
-    </data>
-  </webPart>
-</webParts>
-            ]]>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">
+                          <![CDATA[
+                          <script type="text/javascript">
+                          function showAlert(){alert("Hello!")};
+                          </script><input type="button" onclick="showAlert();" value="Click me">]]>
+                        </property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Script Editor</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">None</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
           </pnp:WebParts>
@@ -438,50 +450,63 @@ function showAlert(){alert("Hello!")};
 
       <pnp:ComposedLook Name="Custom Look" Version="1"
         BackgroundFile="{sitecollection}/Resources/Themes/Contoso/contosobg.jpg"
-        AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css"
-        MasterPage="{sitecollection}/_catalogs/MasterPage/CustomMaster.master"
         ColorFile="{sitecollection}/_catalogs/Theme/15/Custom.spcolor"
-        FontFile="{sitecollection}/_catalogs/Theme/15/Custom.spfont"
-        SiteLogo="{sitecollection}/SiteAssets/Logo.png" />
-<!--
+        FontFile="{sitecollection}/_catalogs/Theme/15/Custom.spfont"/>
+
       <pnp:Workflows>
         <pnp:WorkflowDefinitions>
-          <pnp:WorkflowDefinition Id="{72756D8D-2F0C-4DA0-83BB-4E496E60F443}"
-              DisplayName="Sample-Workflow-Definition"
-              Description="This is a sample Workflow Definition"
-              DraftVersion="1"
-              InitiationUrl=""
-              AssociationUrl=""
-              Published="true"
-              RequiresInitiationForm="false"
-              RequiresAssociationForm="false"
-              RestrictToType="List"
-              RestrictToScope="{8486EF59-377B-43BB-AD48-93A9BA6182C8}"
-              XamlPath="SampleWorkflow.xaml">
-            <pnp:FormField />
+          <pnp:WorkflowDefinition Id="07fb8ece-44f9-4e8c-a4e9-4538abf94b7b" Description="" DisplayName="Simple Offers Workflow" InitiationUrl="" Published="true" RequiresAssociationForm="false" RequiresInitiationForm="false" RestrictToScope="{listid:Offers}" RestrictToType="List" XamlPath="07fb8ece-44f9-4e8c-a4e9-4538abf94b7b.xaml">
+            <pnp:Properties>
+              <pnp:Property Key="WSPublishState" Value="3" />
+              <pnp:Property Key="RestrictToScope" Value="{listid:Offers}" />
+              <pnp:Property Key="SPDConfig.StartOnCreate" Value="true" />
+              <pnp:Property Key="HistoryListId" Value="{listid:Workflow History}" />
+              <pnp:Property Key="ContentTypeId" Value="0x01002A2479FF33DD4BC3B1533A012B6537170024A5852D215CA24D974B56E57339B673" />
+              <pnp:Property Key="Definition.Description" Value="" />
+              <pnp:Property Key="vti_parserversion" Value="16.0.0.4608" />
+              <pnp:Property Key="SubscriptionId" Value="{562D589E-B76A-4AFD-A4AF-26F12215DB6D}" />
+              <pnp:Property Key="FormField" Value="&lt;Fields/&gt;&#xD;&#xA;" />
+              <pnp:Property Key="InitiationUrl" Value="" />
+              <pnp:Property Key="Definition.DisplayName" Value="Simple Offers Workflow" />
+              <pnp:Property Key="IsProjectMode" Value="false" />
+              <pnp:Property Key="SubscriptionName" Value="Simple Offers Workflow" />
+              <pnp:Property Key="SPDConfig.LastEditMode" Value="TextBased" />
+              <pnp:Property Key="isReusable" Value="false" />
+              <pnp:Property Key="AutosetStatusToStageName" Value="true" />
+              <pnp:Property Key="SPDConfig.StartOnChange" Value="false" />
+              <pnp:Property Key="vti_folderitemcount" Value="0" />
+              <pnp:Property Key="SPDConfig.StartManually" Value="true" />
+              <pnp:Property Key="Definition.Id" Value="07fb8ece-44f9-4e8c-a4e9-4538abf94b7b" />
+              <pnp:Property Key="RequiresInitiationForm" Value="false" />
+              <pnp:Property Key="RestrictToType" Value="List" />
+              <pnp:Property Key="TaskListId" Value="{listid:Workflow Tasks}" />
+              <pnp:Property Key="Definition.Name" Value="workflow.xaml" />
+              <pnp:Property Key="Definition.ListItemId" Value="2" />
+              <pnp:Property Key="ContentType" Value="WorkflowServiceDefinition" />
+              <pnp:Property Key="GUID" Value="{91F60EEE-1612-4618-BDFD-C731D5A6B9F4}" />
+            </pnp:Properties>
+            <pnp:FormField>
+              <Fields />
+            </pnp:FormField>
           </pnp:WorkflowDefinition>
-
         </pnp:WorkflowDefinitions>
-
         <pnp:WorkflowSubscriptions>
-          <pnp:WorkflowSubscription
-            DefinitionId="{72756D8D-2F0C-4DA0-83BB-4E496E60F443}"
-            ListId="{listid:General Documents}"
-            Enabled="true"
-            EventSourceId="{listid:General Documents}"
-            ItemAddedEvent="true" ItemUpdatedEvent="false" WorkflowStartEvent="true"
-            ManualStartBypassesActivationLimit="false"
-            Name="Sample Workflow" StatusFieldName="SampleWorkflowStatus" ParentContentTypeId="">
+          <pnp:WorkflowSubscription DefinitionId="07fb8ece-44f9-4e8c-a4e9-4538abf94b7b" ListId="{listid:Offers}" Enabled="true" EventSourceId="{listid:Offers}" WorkflowStartEvent="true" ItemAddedEvent="true" ItemUpdatedEvent="false" ManualStartBypassesActivationLimit="false" Name="Simple Offers Workflow" ParentContentTypeId="" StatusFieldName="Simple_x0020_Offers_x0020_Workflow">
             <pnp:PropertyDefinitions>
-              <pnp:PropertyDefinition Key="StatusColumnCreated" Value="0" />
-              <pnp:PropertyDefinition Key="WSPublishState" Value="1" />
-              <pnp:PropertyDefinition Key="StatusFieldName" Value="SampleWorkflowStatus" />
+              <pnp:PropertyDefinition Key="StatusColumnCreated" Value="1" />
+              <pnp:PropertyDefinition Key="Microsoft.SharePoint.ActivationProperties.ListId" Value="a00658fe-6214-4229-bcbf-107505e6c2e7" />
+              <pnp:PropertyDefinition Key="WSPublishState" Value="3" />
+              <pnp:PropertyDefinition Key="CreatedBySPD" Value="1" />
+              <pnp:PropertyDefinition Key="vti_parserversion" Value="16.0.0.4608" />
+              <pnp:PropertyDefinition Key="WSEnabled" Value="true" />
+              <pnp:PropertyDefinition Key="ProgId" Value="" />
+              <pnp:PropertyDefinition Key="ScopeId" Value="{4116F741-910B-46FE-AE51-5D57BFBF3274}" />
+              <pnp:PropertyDefinition Key="VirusStatus" Value="3;#0" />
             </pnp:PropertyDefinitions>
           </pnp:WorkflowSubscription>
         </pnp:WorkflowSubscriptions>
-        
       </pnp:Workflows>
--->
+
       <pnp:SearchSettings>
         <SearchConfigurationSettings xmlns:i="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.datacontract.org/2004/07/Microsoft.Office.Server.Search.Portability">
           <SearchQueryConfigurationSettings>

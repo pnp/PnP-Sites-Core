@@ -381,6 +381,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -395,6 +396,7 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

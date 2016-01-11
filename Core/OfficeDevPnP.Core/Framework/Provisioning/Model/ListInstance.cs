@@ -291,6 +291,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(ListInstance other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.ContentTypesEnabled == other.ContentTypesEnabled &&
                 this.Description == other.Description &&
                 this.DocumentTemplate == other.DocumentTemplate &&
@@ -314,7 +319,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Fields.DeepEquals(other.Fields) &&
                 this.FieldRefs.DeepEquals(other.FieldRefs) &&
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
-                this.Security != null && other.Security == null ? this.Security.Equals(other.Security) : true &&
+                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders)
                 );
         }

@@ -1535,6 +1535,33 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
+        /// </summary>
+        internal static string SecurityExtensions_Error_VisitingSecurableObject {
+            get {
+                return ResourceManager.GetString("SecurityExtensions_Error_VisitingSecurableObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Visiting securable object: {0}.
+        /// </summary>
+        internal static string SecurityExtensions_Info_VisitingSecurableObject {
+            get {
+                return ResourceManager.GetString("SecurityExtensions_Info_VisitingSecurableObject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
+        /// </summary>
+        internal static string SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects {
+            get {
+                return ResourceManager.GetString("SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
         /// </summary>
         internal static string Service_RegistrationFailed {

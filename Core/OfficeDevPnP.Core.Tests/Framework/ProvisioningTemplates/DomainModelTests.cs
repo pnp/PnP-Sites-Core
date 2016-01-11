@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         public void CanDeserializeXMLToDomainObject1()
         {
             this.GetProvisioningTemplate();
-            
+
             using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath1, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath1NamespaceURI);
@@ -158,7 +158,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             Assert.AreEqual(_pb2KEY, _pb2.Key);
             Assert.AreEqual(_pb2Value, _pb2.Value);
         }
-     
+
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void CanGetOwners()
@@ -178,7 +178,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             Assert.AreEqual(_expectedUser1, _u1);
             Assert.AreEqual(_expectedUser2, _u2);
         }
-        
+
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void CanGetAdministrators()
@@ -252,7 +252,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             Assert.AreEqual(_expectedSiteFeaturesCount, _pt.Features.SiteFeatures.Count);
             Assert.AreEqual(_expectedWebFeaturesCount, _pt.Features.WebFeatures.Count);
 
-            foreach(var _f in _sfs)
+            foreach (var _f in _sfs)
             {
                 Assert.IsTrue(_f.Id != Guid.Empty);
             }
@@ -260,7 +260,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             var f = new OfficeDevPnP.Core.Framework.Provisioning.Model.Feature();
             _pt.Features.SiteFeatures.Add(f);
 
-            
+
         }
 
         [TestMethod]
@@ -271,13 +271,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             var _csa = _pt.CustomActions.SiteCustomActions.FirstOrDefault();
             Assert.IsNotNull(_csa.Rights);
         }
-     
+
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void CanSerializeToJSon()
         {
-           var _pt = this.GetProvisioningTemplate();
-           var _json = JsonUtility.Serialize<ProvisioningTemplate>(_pt);
+            var _pt = this.GetProvisioningTemplate();
+            var _json = Newtonsoft.Json.JsonConvert.SerializeObject(_pt);
         }
 
         [TestMethod]
@@ -402,9 +402,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         [TestCategory(TEST_CATEGORY)]
         public void CanSerializeDomainObjectWithJsonFormatter()
         {
-            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath5, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath5NamespaceURI);
+                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
 
                 XMLTemplateProvider xmlProvider =
                     new XMLFileSystemTemplateProvider(
@@ -421,9 +421,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
                         AppDomain.CurrentDomain.BaseDirectory),
                         "Templates");
 
-                jsonProvider.SaveAs(_pt, @"c:\temp\ProvisioningSchema-2015-05-ReferenceSample-01.json");
+                jsonProvider.SaveAs(_pt, @"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
 
-                var _ptBack = jsonProvider.GetTemplate(@"c:\temp\ProvisioningSchema-2015-05-ReferenceSample-01.json");
+                var _ptBack = jsonProvider.GetTemplate(@"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
 
                 Assert.IsTrue(_pt.Equals(_ptBack));
             }
@@ -500,7 +500,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             {
                 ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath1NamespaceURI);
                 _pt2 = formatter.ToProvisioningTemplate(_formattedTemplate);
-            } 
+            }
 
             Assert.IsFalse(_pt1.Equals(_pt2));
             Assert.IsTrue(_pt1.Equals(_pt1));
@@ -515,9 +515,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         /// <returns></returns>
         protected ProvisioningTemplate GetProvisioningTemplate()
         {
-            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath1, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath1NamespaceURI);
+                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
                 return (formatter.ToProvisioningTemplate(_formattedTemplate));
             }
         }

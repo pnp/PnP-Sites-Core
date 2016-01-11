@@ -382,6 +382,7 @@
     <Compile Include="Entities\DefaultColumnTermPathValue.cs" />
     <Compile Include="Entities\DefaultColumnTermValue.cs" />
     <Compile Include="Entities\ExternalUserEntity.cs" />
+    <Compile Include="Entities\RoleAssignmentEntity.cs" />
     <Compile Include="Entities\StructuralNavigationEntity.cs" />
     <Compile Include="Entities\TaxonomyFieldCreationInformation.cs" />
     <Compile Include="Entities\FieldCreationInformation.cs" />
@@ -801,8 +802,14 @@
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Framework\Provisioning\BaseTemplates\v16_0\" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

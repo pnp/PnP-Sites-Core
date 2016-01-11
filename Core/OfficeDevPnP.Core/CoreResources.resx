@@ -897,4 +897,13 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists" xml:space="preserve">
     <value>Folder '{0}' already exists in parent folder '{1}'.</value>
   </data>
+  <data name="SecurityExtensions_Error_VisitingSecurableObject" xml:space="preserve">
+    <value>Something wrong happened while visiting securable object: {0}, details: {1}</value>
+  </data>
+  <data name="SecurityExtensions_Info_VisitingSecurableObject" xml:space="preserve">
+    <value>Visiting securable object: {0}</value>
+  </data>
+  <data name="SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects" xml:space="preserve">
+    <value>Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}</value>
+  </data>
 </root>

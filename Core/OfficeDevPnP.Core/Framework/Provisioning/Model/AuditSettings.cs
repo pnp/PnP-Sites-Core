@@ -52,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(AuditSettings other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.AuditFlags == other.AuditFlags  &&
                 this.AuditLogTrimmingRetention == other.AuditLogTrimmingRetention &&
                 this.TrimAuditLog == other.TrimAuditLog

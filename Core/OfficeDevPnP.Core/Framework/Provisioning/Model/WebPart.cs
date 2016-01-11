@@ -40,6 +40,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(WebPart other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             return (this.Row == other.Row &&
                 this.Column == other.Column &&
                 this.Contents == other.Contents);

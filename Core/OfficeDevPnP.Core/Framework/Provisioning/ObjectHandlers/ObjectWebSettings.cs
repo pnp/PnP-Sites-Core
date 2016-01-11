@@ -94,10 +94,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
+        //TODO: Candidate for cleanup
         private Model.File GetTemplateFile(Web web, string serverRelativeUrl)
         {
+
             var webServerUrl = web.EnsureProperty(w => w.Url);
-            var fullUri = new Uri(System.UrlUtility.Combine(webServerUrl, serverRelativeUrl));
+            var serverUri = new Uri(webServerUrl);
+            var serverUrl = string.Format("{0}://{1}", serverUri.Scheme, serverUri.Authority);
+            var fullUri = new Uri(System.UrlUtility.Combine(serverUrl, serverRelativeUrl));
 
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
             var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
@@ -115,52 +119,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string serverRelativeUrl)
         {
             var success = false;
-            if (creationInfo.FileConnector != null)
+            if (creationInfo.PersistBrandingFiles)
             {
-                try
+                if (creationInfo.FileConnector != null)
                 {
-                    var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-                    string fileName = string.Empty;
-                    if (serverRelativeUrl.IndexOf("/") > -1)
-                    {
-                        fileName = serverRelativeUrl.Substring(serverRelativeUrl.LastIndexOf("/") + 1);
-                    }
-                    else
-                    {
-                        fileName = serverRelativeUrl;
-                    }
-                    web.Context.Load(file);
-                    web.Context.ExecuteQueryRetry();
-                    ClientResult<Stream> stream = file.OpenBinaryStream();
-                    web.Context.ExecuteQueryRetry();
 
-                    using (Stream memStream = new MemoryStream())
+                    try
                     {
-                        CopyStream(stream.Value, memStream);
-                        memStream.Position = 0;
-                        creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                        var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+                        string fileName = string.Empty;
+                        if (serverRelativeUrl.IndexOf("/") > -1)
+                        {
+                            fileName = serverRelativeUrl.Substring(serverRelativeUrl.LastIndexOf("/") + 1);
+                        }
+                        else
+                        {
+                            fileName = serverRelativeUrl;
+                        }
+                        web.Context.Load(file);
+                        web.Context.ExecuteQueryRetry();
+                        ClientResult<Stream> stream = file.OpenBinaryStream();
+                        web.Context.ExecuteQueryRetry();
+
+                        using (Stream memStream = new MemoryStream())
+                        {
+                            CopyStream(stream.Value, memStream);
+                            memStream.Position = 0;
+                            creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                        }
+                        success = true;
                     }
-                    success = true;
+                    catch (ServerException ex1)
+                    {
+                        // If we are referring a file from a location outside of the current web or at a location where we cannot retrieve the file an exception is thrown. We swallow this exception.
+                        if (ex1.ServerErrorCode != -2147024809)
+                        {
+                            throw;
+                        }
+                        else
+                        {
+                            scope.LogWarning("File is not necessarily located in the current web. Not retrieving {0}", serverRelativeUrl);
+                        }
+                    }
                 }
-                catch (ServerException ex1)
+                else
                 {
-                    // If we are referring a file from a location outside of the current web or at a location where we cannot retrieve the file an exception is thrown. We swallow this exception.
-                    if (ex1.ServerErrorCode != -2147024809)
-                    {
-                        throw;
-                    }
-                    else
-                    {
-                        scope.LogWarning("File is not necessarily located in the current web. Not retrieving {0}", serverRelativeUrl);
-                    }
+                    WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                    scope.LogError("No connector present to persist homepage");
                 }
             }
             else
             {
-                WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
-                scope.LogError("No connector present to persist homepage");
+                success = true;
             }
-
             return success;
         }
 

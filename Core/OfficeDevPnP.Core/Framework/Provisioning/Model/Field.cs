@@ -47,6 +47,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public bool Equals(Field other)
         {
+            if (other == null)
+            {
+                return (false);
+            }
+
             XElement currentXml = PrepareFieldForCompare(this.SchemaXml);
             XElement otherXml = PrepareFieldForCompare(other.SchemaXml);
             return (XNode.DeepEquals(currentXml, otherXml));

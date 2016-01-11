@@ -3612,7 +3612,7 @@
           A Content Type ID
         </xsd:documentation>
       </xsd:annotation>
-      <xsd:pattern value='0x[a-zA-Z0-9]+'/>
+      <xsd:pattern value='0x[a-zA-Z0-9]*'/>
     </xsd:restriction>
   </xsd:simpleType>
 
