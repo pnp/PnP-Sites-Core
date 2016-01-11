@@ -28,6 +28,7 @@ namespace Microsoft.SharePoint.Client
         /// Enable Social Settings Likes/Ratings on list. 
         /// Note: 1. Requires Publishing feature enabled on the web.
         ///       2. Defaults enable Ratings Experience on the List
+        ///       3. When experience set to None, fields are not removed from the list since CSOM does not support removing hidden fields
         /// </summary>
         /// <param name="list">Current List</param>
         /// <param name="experience">Likes/Ratings</param>
@@ -53,8 +54,6 @@ namespace Microsoft.SharePoint.Client
 
             if (experience == VotingExperience.None)
             {
-                RemoveListFields();
-
                 RemoveViewFields();
             }
             else
@@ -83,22 +82,6 @@ namespace Microsoft.SharePoint.Client
                 defaultView.ViewFields.Remove("AverageRating");
 
             defaultView.Update();
-            _library.Context.ExecuteQueryRetry();
-        }
-
-        /// <summary>
-        /// Removes the list fields associated with any ratings type
-        /// </summary>
-        private static void RemoveListFields()
-        {
-            RemoveField(_library, RatingsFieldGuid_RatingCount);
-            RemoveField(_library, RatingsFieldGuid_RatedBy);
-            RemoveField(_library, RatingsFieldGuid_Ratings);
-            RemoveField(_library, RatingsFieldGuid_AverageRating);
-            RemoveField(_library, LikeFieldGuid_LikedBy);
-            RemoveField(_library, LikeFieldGuid_LikeCount);
-
-            _library.Update();
             _library.Context.ExecuteQueryRetry();
         }
 
@@ -210,7 +193,14 @@ namespace Microsoft.SharePoint.Client
             _library.Context.Load(_library.RootFolder, p => p.Properties);
             _library.Context.ExecuteQueryRetry();
 
-            _library.RootFolder.Properties["Ratings_VotingExperience"] = experience.ToString();
+            if (experience != VotingExperience.None)
+            { 
+                _library.RootFolder.Properties["Ratings_VotingExperience"] = experience.ToString();
+            }
+            else
+            {
+                _library.RootFolder.Properties["Ratings_VotingExperience"] = string.Empty;
+            }
             _library.RootFolder.Update();
             _library.Context.ExecuteQueryRetry();
             //_logger.WriteSuccess(string.Format("Ensured {0} Property.", experience));
