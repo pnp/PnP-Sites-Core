@@ -1220,30 +1220,37 @@ namespace Microsoft.SharePoint.Client
             if (obj is Web)
             {
                 var web = obj as Web;
-                context.Load(web.RoleAssignments);
-                context.Load(web.RoleAssignments.Groups);
-                context.Load(web, w => w.Url);
-                var lists = context.LoadQuery(web.Lists.Where(l => l.HasUniqueRoleAssignments && (l.BaseType == BaseType.DocumentLibrary)));
-                var webs = context.LoadQuery(web.Webs.Where(w => w.HasUniqueRoleAssignments));
+                context.Load(web, w => w.Url, w => w.HasUniqueRoleAssignments);
+                context.ExecuteQueryRetry();
+                if (web.HasUniqueRoleAssignments)
+                {
+                    context.Load(web.RoleAssignments);
+                    context.Load(web.RoleAssignments.Groups);
+                    context.ExecuteQueryRetry();
+                }
+                var lists = context.LoadQuery(web.Lists.Where(l => l.BaseType == BaseType.DocumentLibrary));
+                var webs = context.LoadQuery(web.Webs);
                 context.ExecuteQueryRetry();
                 subObjects = lists.Select(l => l as SecurableObject).Union(webs.Select(w => w as SecurableObject));
             }
             else if (obj is List)
             {
                 var list = obj as List;
-                context.Load(list, l => l.ItemCount, l => l.DefaultViewUrl);
+                context.Load(list, l => l.ItemCount, l => l.DefaultViewUrl, l => l.HasUniqueRoleAssignments);
                 context.ExecuteQueryRetry();
                 if (list.ItemCount <= 0 || Constants.SkipPathes.Any(p => list.DefaultViewUrl.IndexOf(p) != -1))
                     return null;
-                context.Load(list.RoleAssignments);
-                context.Load(list.RoleAssignments.Groups);
-                context.ExecuteQueryRetry();
-
+                if (list.HasUniqueRoleAssignments)
+                {
+                    context.Load(list.RoleAssignments);
+                    context.Load(list.RoleAssignments.Groups);
+                    context.ExecuteQueryRetry();
+                }
                 if (leafBreadthLimit > 0 && list.ItemCount > 0)
                 {
                     var query = new CamlQuery();
                     query.ViewXml = String.Format(Constants.AllItemCamlQuery, Constants.ListItemDirField, Constants.ListItemFileNameField);
-                    var items = context.LoadQuery(list.GetItems(query).Where(item => item.HasUniqueRoleAssignments));
+                    var items = context.LoadQuery(list.GetItems(query));
                     context.ExecuteQueryRetry();
                     if (items.Count() <= leafBreadthLimit)
                     {
@@ -1258,9 +1265,14 @@ namespace Microsoft.SharePoint.Client
             else if (obj is ListItem)
             {
                 var item = obj as ListItem;
-                context.Load(item.RoleAssignments);
-                context.Load(item.RoleAssignments.Groups);
+                context.Load(item, i => i.HasUniqueRoleAssignments);
                 context.ExecuteQueryRetry();
+                if (item.HasUniqueRoleAssignments)
+                {
+                    context.Load(item.RoleAssignments);
+                    context.Load(item.RoleAssignments.Groups);
+                    context.ExecuteQueryRetry();
+                }
             }
             return subObjects;
         }
@@ -1373,6 +1385,10 @@ namespace Microsoft.SharePoint.Client
             var result = new List<RoleAssignmentEntity>();
             web.Visit(leafBreadthLimit, (obj, path) =>
             {
+                if (!obj.HasUniqueRoleAssignments)
+                {
+                    return;
+                }
                 foreach (var assignment in obj.RoleAssignments)
                 {
                     var bindings = web.Context.LoadQuery(assignment.RoleDefinitionBindings.Where(b => b.Name != "Limited Access"));
