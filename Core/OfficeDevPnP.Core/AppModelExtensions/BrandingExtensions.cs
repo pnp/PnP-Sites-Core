@@ -1089,7 +1089,7 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Gets a page layout from the master page catalog
+        /// Gets a page layout from the master page catalog. Can be called with paramter as "pagelayout.aspx" or as full path like "_catalog/masterpage/pagelayout.aspx"
         /// </summary>
         /// <param name="web">root web</param>
         /// <param name="pageLayoutName">name of the page layout to retrieve</param>
@@ -1101,15 +1101,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("pageLayoutName");
             }
 
-            // The pagelayout needs to specified without aspx extension...strip the extension to be sure
-            string path = "";
-            if (pageLayoutName.LastIndexOf("/") > -1)
-            {
-                path = pageLayoutName.Substring(0, pageLayoutName.LastIndexOf("/") + 1);
-            }
-
-            pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
-
+            var pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             web.Context.Load(masterPageGallery, x => x.RootFolder.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
