@@ -505,7 +505,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="uiVersion"></param>
         /// <param name="defaultCSSFile"></param>
         /// <param name="folderPath"></param>
-        public static void DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
+        public static File DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
                 throw new ArgumentNullException("sourceFilePath");
@@ -569,6 +569,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(listItem);
             web.Context.ExecuteQueryRetry();
 
+            return uploadFile;
         }
 
         /// <summary>
@@ -906,7 +907,7 @@ namespace Microsoft.SharePoint.Client
                         if (!web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0; )
+                            for (int i = themes.Count; i-- > 0;)
                             {
                                 var themeItem = themes[i];
                                 if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
