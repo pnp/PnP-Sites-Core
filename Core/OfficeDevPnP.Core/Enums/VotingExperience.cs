@@ -5,6 +5,7 @@
     /// </summary>
     public enum VotingExperience
     {
+        None,
         Ratings,
         Likes
     }
