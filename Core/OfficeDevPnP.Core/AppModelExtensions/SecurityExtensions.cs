@@ -1250,7 +1250,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     var query = new CamlQuery();
                     query.ViewXml = String.Format(Constants.AllItemCamlQuery, Constants.ListItemDirField, Constants.ListItemFileNameField);
-                    var items = context.LoadQuery(list.GetItems(query));
+                    var items = context.LoadQuery(list.GetItems(query).Where(i => i.HasUniqueRoleAssignments));
                     context.ExecuteQueryRetry();
                     if (items.Count() <= leafBreadthLimit)
                     {
@@ -1265,14 +1265,9 @@ namespace Microsoft.SharePoint.Client
             else if (obj is ListItem)
             {
                 var item = obj as ListItem;
-                context.Load(item, i => i.HasUniqueRoleAssignments);
+                context.Load(item.RoleAssignments);
+                context.Load(item.RoleAssignments.Groups);
                 context.ExecuteQueryRetry();
-                if (item.HasUniqueRoleAssignments)
-                {
-                    context.Load(item.RoleAssignments);
-                    context.Load(item.RoleAssignments.Groups);
-                    context.ExecuteQueryRetry();
-                }
             }
             return subObjects;
         }
