@@ -505,7 +505,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="uiVersion"></param>
         /// <param name="defaultCSSFile"></param>
         /// <param name="folderPath"></param>
-        public static void DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
+        public static File DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
                 throw new ArgumentNullException("sourceFilePath");
@@ -569,6 +569,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(listItem);
             web.Context.ExecuteQueryRetry();
 
+            return uploadFile;
         }
 
         /// <summary>
@@ -906,7 +907,7 @@ namespace Microsoft.SharePoint.Client
                         if (!web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0; )
+                            for (int i = themes.Count; i-- > 0;)
                             {
                                 var themeItem = themes[i];
                                 if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
@@ -1088,7 +1089,7 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Gets a page layout from the master page catalog
+        /// Gets a page layout from the master page catalog. Can be called with paramter as "pagelayout.aspx" or as full path like "_catalog/masterpage/pagelayout.aspx"
         /// </summary>
         /// <param name="web">root web</param>
         /// <param name="pageLayoutName">name of the page layout to retrieve</param>
@@ -1100,20 +1101,12 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("pageLayoutName");
             }
 
-            // The pagelayout needs to specified without aspx extension...strip the extension to be sure
-            string path = "";
-            if (pageLayoutName.LastIndexOf("/") > -1)
-            {
-                path = pageLayoutName.Substring(0, pageLayoutName.LastIndexOf("/") + 1);
-            }
-
-            pageLayoutName = path + System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
-
+            var pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             web.Context.Load(masterPageGallery, x => x.RootFolder.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
 
-            var fileRefValue = string.Format("{0}/{1}{2}", masterPageGallery.RootFolder.ServerRelativeUrl, pageLayoutName, ".aspx");
+            var fileRefValue = string.Format("{0}/{1}{2}", masterPageGallery.RootFolder.ServerRelativeUrl, pageLayoutNameWithoutPath, ".aspx");
             var query = new CamlQuery();
             // Use query Scope='RecursiveAll' to iterate through sub folders of Master page library because we might have file in folder hierarchy
             query.ViewXml = string.Format("<View Scope='RecursiveAll'><Query><Where><Eq><FieldRef Name='FileRef'/><Value Type='Text'>{0}</Value></Eq></Where></Query></View>", fileRefValue);

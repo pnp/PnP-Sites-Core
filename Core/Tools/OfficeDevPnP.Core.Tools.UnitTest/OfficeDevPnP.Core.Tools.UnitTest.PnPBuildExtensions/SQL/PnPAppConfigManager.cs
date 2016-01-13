@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                         WriteProperty(writer, "SPOCredentialManagerLabel", testConfig.TestAuthentication.CredentialManagerLabel);
                         if(!testConfig.TestAuthentication.AppOnly)
                         {
-                            System.Diagnostics.Debugger.Launch();
+                            // System.Diagnostics.Debugger.Launch();
                             // Always output the username since some tests depend on this
                             if (!String.IsNullOrEmpty(testConfig.TestAuthentication.CredentialManagerLabel))
                             {
