@@ -1156,6 +1156,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+        #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
@@ -1173,6 +1174,7 @@ namespace Microsoft.SharePoint.Client
             return returnGuid;
 
         }
+        #endregion
 
         #region SecurableObject traversal
 
