@@ -2446,6 +2446,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
+        /// </summary>
+        internal static string WebExtensions_RequestAccessEmailLimitExceeded {
+            get {
+                return ResourceManager.GetString("WebExtensions_RequestAccessEmailLimitExceeded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Site search error. Error = {0}.
         /// </summary>
         internal static string WebExtensions_SiteSearchUnhandledException {
