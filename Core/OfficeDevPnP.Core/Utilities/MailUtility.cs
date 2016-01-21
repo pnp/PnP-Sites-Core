@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Utilities
                 secureString.AppendChar(c);
             }
 
-            SendEmail(servername, fromAddress, fromUserPassword, to, cc, subject, body, sendAsync, asyncUserToken);
+            SendEmail(servername, fromAddress, secureString, to, cc, subject, body, sendAsync, asyncUserToken);
         }
 
         /// <summary>
