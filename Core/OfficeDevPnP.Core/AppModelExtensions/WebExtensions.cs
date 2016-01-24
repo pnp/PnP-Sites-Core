@@ -1087,5 +1087,89 @@ namespace Microsoft.SharePoint.Client
         }
 
         #endregion
+
+        #region Request Access
+
+        /// <summary>
+        /// Disables the request access on the web.
+        /// </summary>
+        /// <param name="web">The web to disable request access.</param>
+        public static void DisableRequestAccess(this Web web)
+        {
+            web.RequestAccessEmail = string.Empty;
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail addresses.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, params string[] emails)
+        {
+            web.EnableRequestAccess(emails.AsEnumerable());
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail addresses.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, IEnumerable<string> emails)
+        {
+            // keep them unique, but keep order
+            var uniqueEmails = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+            var sb = new StringBuilder();
+            var skippedEmails = new List<string>();
+
+            foreach (string email in emails)
+            {
+                if (uniqueEmails.Contains(email) || string.IsNullOrWhiteSpace(email))
+                    continue;
+
+                var value = (sb.Length > 0 ? ";" : "") + email;
+
+                // max 255 chars
+                if (sb.Length + value.Length <= byte.MaxValue)
+                {
+                    sb.Append(value);
+                    uniqueEmails.Add(email);
+                }
+                else
+                {
+                    skippedEmails.Add(email);
+                }
+            }
+
+            if (skippedEmails.Count > 0)
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_RequestAccessEmailLimitExceeded, string.Join(", ", skippedEmails));
+
+            web.RequestAccessEmail = sb.ToString();
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Gets the request access e-mail addresses of the web.
+        /// </summary>
+        /// <param name="web">The web to get the request access e-mail addresses from.</param>
+        /// <returns>The request access e-mail addresses of the web.</returns>
+        public static IEnumerable<string> GetRequestAccessEmails(this Web web)
+        {
+            var emails = new List<string>();
+
+            web.EnsureProperty(w => w.RequestAccessEmail);
+
+            if (!string.IsNullOrWhiteSpace(web.RequestAccessEmail))
+            {
+                foreach (string email in web.RequestAccessEmail.Split(';'))
+                    emails.Add(email.Trim());
+            }
+
+            return emails;
+        }
+
+        #endregion
     }
 }

@@ -906,4 +906,7 @@
   <data name="SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects" xml:space="preserve">
     <value>Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}</value>
   </data>
+  <data name="WebExtensions_RequestAccessEmailLimitExceeded" xml:space="preserve">
+    <value>Request access email addresses exceed 255 characters. Skipping: {0}</value>
+  </data>
 </root>
