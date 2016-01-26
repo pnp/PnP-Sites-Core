@@ -45,7 +45,8 @@ namespace Microsoft.SharePoint.Client
             //  only process publishing web
             if (!list.ParentWeb.IsPublishingWeb())
             {
-                throw new Exception("Not publishing web");
+                // Should not throw an Exception in O365
+                //throw new Exception("Not publishing web");
                 ////_logger.WriteWarning("Is publishing site : No");
             }
 
