@@ -83,27 +83,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     String serverSideControlId = webPartMatch.Groups["ControlId"].Value;
 
-                                    WebPartDefinition webPart = limitedWPManager.WebParts.GetByControlId(String.Format("g_{0}",
-                                        serverSideControlId.Replace("-", "_")));
-                                    web.Context.Load(webPart,
-                                        wp => wp.Id,
-                                        wp => wp.WebPart.Title,
-                                        wp => wp.WebPart.ZoneIndex
-                                        );
-                                    web.Context.ExecuteQueryRetry();
-
-                                    var webPartxml = TokenizeWebPartXml(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
-
-                                    page.WebParts.Add(new Model.WebPart()
+                                    try
                                     {
-                                        Title = webPart.WebPart.Title,
-                                        Contents = webPartxml,
-                                        Order = (uint)webPart.WebPart.ZoneIndex,
-                                        Row = 1, // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
-                                        Column = 1 // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
-                                    });
+                                        String serverSideControlIdToSearchFor = String.Format("g_{0}",
+                                            serverSideControlId.Replace("-", "_"));
 
-                                    pageContents = Regex.Replace(pageContents, serverSideControlId, string.Format("{{webpartid:{0}}}", webPart.WebPart.Title), RegexOptions.IgnoreCase);
+                                        WebPartDefinition webPart = limitedWPManager.WebParts.GetByControlId(serverSideControlIdToSearchFor);
+                                        web.Context.Load(webPart,
+                                            wp => wp.Id,
+                                            wp => wp.WebPart.Title,
+                                            wp => wp.WebPart.ZoneIndex
+                                            );
+                                        web.Context.ExecuteQueryRetry();
+
+                                        var webPartxml = TokenizeWebPartXml(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
+
+                                        page.WebParts.Add(new Model.WebPart()
+                                        {
+                                            Title = webPart.WebPart.Title,
+                                            Contents = webPartxml,
+                                            Order = (uint)webPart.WebPart.ZoneIndex,
+                                            Row = 1, // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
+                                            Column = 1 // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
+                                        });
+
+                                        pageContents = Regex.Replace(pageContents, serverSideControlId, string.Format("{{webpartid:{0}}}", webPart.WebPart.Title), RegexOptions.IgnoreCase);
+                                    }
+                                    catch (ServerException)
+                                    {
+                                        scope.LogWarning("Found a WebPart ID which is not available on the server-side. ID: {0}", serverSideControlId);
+                                    }
                                 }
                             }
 
