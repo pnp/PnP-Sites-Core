@@ -62,14 +62,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (activeFeatures.FirstOrDefault(f => f.DefinitionId == feature.Id) == null)
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_, site != null ? "site" :"web", feature.Id);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_, site != null ? "site" : "web", feature.Id);
                             if (site != null)
                             {
-                                site.ActivateFeature(feature.Id);
+                                try
+                                {
+                                    site.ActivateFeature(feature.Id);
+                                }
+                                catch (ServerException ex)
+                                {
+                                    scope.LogError("Error activating feature {0}: {1}", feature.Id, ex.Message);                                       
+                                }
                             }
                             else
                             {
-                                web.ActivateFeature(feature.Id);
+                                try
+                                {
+                                    web.ActivateFeature(feature.Id);
+                                }
+                                catch (ServerException ex)
+                                {
+                                    scope.LogError("Error activating feature {0}: {1}", feature.Id, ex.Message);
+                                }
                             }
                         }
 
@@ -81,11 +95,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_, site != null ? "site" : "web", feature.Id);
                             if (site != null)
                             {
-                                site.DeactivateFeature(feature.Id);
+                                try
+                                {
+                                    site.DeactivateFeature(feature.Id);
+                                }
+                                catch (ServerException ex)
+                                {
+                                    scope.LogError("Error deactivating feature {0}: {1}", feature.Id, ex.Message);
+                                }
                             }
                             else
                             {
-                                web.DeactivateFeature(feature.Id);
+                                try
+                                {
+                                    web.DeactivateFeature(feature.Id);
+                                }
+                                catch (ServerException ex)
+                                {
+                                    scope.LogError("Error deactivating feature {0}: {1}", feature.Id, ex.Message);
+                                }
                             }
                         }
                     }
