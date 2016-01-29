@@ -1040,8 +1040,6 @@ namespace Microsoft.SharePoint.Client
         public static ProvisioningTemplate GetProvisioningTemplate(this Web web)
         {
             ProvisioningTemplateCreationInformation creationInfo = new ProvisioningTemplateCreationInformation(web);
-            // Load the base template which will be used for the comparison work
-            creationInfo.BaseTemplate = web.GetBaseTemplate();
 
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
