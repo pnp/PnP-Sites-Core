@@ -132,7 +132,7 @@ namespace Microsoft.SharePoint.Client
             var enumerable = fields as Field[] ?? fields.ToArray();
             if (!enumerable.Any())
             {
-                throw new ArgumentException(string.Format("Could not find field with internalName {0}", id));
+                throw new ArgumentException(string.Format("Could not find field with id {0}", id));
             }
 
             enumerable.First().DeleteObject();
@@ -1124,7 +1124,7 @@ namespace Microsoft.SharePoint.Client
             // Return the content type object
             return myContentType;
         }
-
+        
         /// <summary>
         /// Return content type by name
         /// </summary>
