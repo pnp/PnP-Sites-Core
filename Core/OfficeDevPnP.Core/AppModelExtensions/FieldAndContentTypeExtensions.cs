@@ -117,6 +117,26 @@ namespace Microsoft.SharePoint.Client
 
             enumerable.First().DeleteObject();
         }
+        
+        /// <summary>
+        /// Removes a field by specifying its ID
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="id">The id of the field to remove</param>
+        public static void RemoveFieldById(this Web web, string fieldId)
+        {
+            Guid fieldGuid = new Guid(fieldId);
+            var fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == id));
+            web.Context.ExecuteQueryRetry();
+
+            var enumerable = fields as Field[] ?? fields.ToArray();
+            if (!enumerable.Any())
+            {
+                throw new ArgumentException(string.Format("Could not find field with internalName {0}", id));
+            }
+
+            enumerable.First().DeleteObject();
+        }
 
         /// <summary>
         /// Creates fields from feature element xml file schema. XML file can contain one or many field definitions created using classic feature framework structure.
