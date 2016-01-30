@@ -909,4 +909,10 @@
   <data name="WebExtensions_RequestAccessEmailLimitExceeded" xml:space="preserve">
     <value>Request access email addresses exceed 255 characters. Skipping: {0}</value>
   </data>
+  <data name="FieldAndContentTypeExtensions_BindingDocumentTemplate" xml:space="preserve">
+    <value>Binding document template {0} to content type {1}</value>
+  </data>
+  <data name="FieldAndContentTypeExtensions_DocumentTemplateAlreadyAttached" xml:space="preserve">
+    <value>Document template {0} is already attached to content type {1}</value>
+  </data>
 </root>

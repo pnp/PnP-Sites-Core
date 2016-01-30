@@ -1425,6 +1425,39 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
+        /// <summary>
+        /// Binds document template to content type.
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="contentTypeId">Id of the content type</param>
+        /// <param name="documentTemplateUrl">Url of the document template. Document template should pre-exists.</param>
+        public static void BindDocumentTemplate(this Web web, string contentTypeId, string documentTemplateUrl)
+        {
+            // Get the content type
+            ContentType contentTypeDocument = web.GetContentTypeById(contentTypeId, false);
+            if (contentTypeDocument != null)
+            {
+                if (!contentTypeDocument.IsObjectPropertyInstantiated("DocumentTemplate"))
+                {
+                    web.Context.Load(contentTypeDocument, c => c.DocumentTemplate);
+                    web.Context.ExecuteQueryRetry();
+                }
+
+                if (contentTypeDocument.DocumentTemplate != documentTemplateUrl)
+                {
+                    // Attach document template to content type, if not previously attached.
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_BindingDocumentTemplate, documentTemplateUrl, contentTypeId);
+                    contentTypeDocument.DocumentTemplate = documentTemplateUrl;
+                    contentTypeDocument.Update(true);
+                    web.Context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_DocumentTemplateAlreadyAttached, documentTemplateUrl, contentTypeId);
+                }
+            }
+        }
+
         #endregion
 
 #if !CLIENTSDKV15
