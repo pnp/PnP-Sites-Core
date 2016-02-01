@@ -2004,7 +2004,15 @@ namespace Microsoft.SharePoint.Client
 				clientContext.Load(defaultValTerm);
 				clientContext.ExecuteQueryRetry();
 
-				taxField.DefaultValue = string.Format("-1;#{0}{1}{2}", defaultValTerm.Name, TaxonomyGuidLabelDelimiter, defaultValTerm.Id);
+                TaxonomyFieldValue taxValue = new TaxonomyFieldValue();
+                taxValue.WssId = -1;
+                taxValue.TermGuid = defaultValTerm.Id.ToString();
+                taxValue.Label = defaultValTerm.Name;
+                //get validate string
+                var validateValue = taxField.GetValidatedString(taxValue);
+                field.Context.ExecuteQueryRetry();
+
+                taxField.DefaultValue = validateValue.Value;
 				taxField.Update();
 				clientContext.ExecuteQueryRetry();
 			}
