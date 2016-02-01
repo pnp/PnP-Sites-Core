@@ -4260,7 +4260,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private bool sequenceFieldSpecified;
         
-        private int rightsField;
+        private string rightsField;
         
         private bool rightsFieldSpecified;
         
@@ -4367,7 +4367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int Rights {
+        public string Rights {
             get {
                 return this.rightsField;
             }

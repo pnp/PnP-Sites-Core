@@ -52,13 +52,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets the value that specifies the permissions needed for the custom action.
         /// </summary>
         public BasePermissions Rights { get; set; }
-
+        
         /// <summary>
         /// Gets or sets the value that specifies the permissions needed for the custom action.
         /// <seealso>
         ///     <cref>https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.permissionkind.aspx</cref>
         /// </seealso>
         /// </summary>
+        [Obsolete("Use Rights")]
         public int RightsValue
         {
             get
@@ -68,13 +69,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             set
             {
                 this._rightsValue = value;
-                BasePermissions _bp = new BasePermissions();
-                if (Enum.IsDefined(typeof(PermissionKind), value))
-                {
-                    var _pk = (PermissionKind)value;
-                    _bp.Set(_pk);
-                    this.Rights = _bp;
-                }
             }
         }
 
