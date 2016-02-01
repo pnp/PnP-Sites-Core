@@ -1040,8 +1040,6 @@ namespace Microsoft.SharePoint.Client
         public static ProvisioningTemplate GetProvisioningTemplate(this Web web)
         {
             ProvisioningTemplateCreationInformation creationInfo = new ProvisioningTemplateCreationInformation(web);
-            // Load the base template which will be used for the comparison work
-            creationInfo.BaseTemplate = web.GetBaseTemplate();
 
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
@@ -1088,8 +1086,8 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-        #region Request Access
-
+#region Request Access
+#if !CLIENTSDKV15
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1169,7 +1167,7 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-
-        #endregion
+    #endif
+    #endregion
     }
 }
