@@ -4,6 +4,9 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20160201-OnlineAppOnly-635898828740951975.md) | Monday, February 1, 2016 | 11:21 PM | dev | debug | 252 | 3 | 37
+ [OnlineCred](PnPUnitTestResults-20160131-OnlineCred-635898792950273815.md) | Sunday, January 31, 2016 | 10:21 PM | dev | debug | 286 | 1 | 5
+ [OnPremAppOnly](PnPUnitTestResults-20160131-OnPremAppOnly-635898780343729688.md) | Sunday, January 31, 2016 | 10:00 PM | dev | debug15 | 233 | 2 | 49
  [OnlineAppOnly](PnPUnitTestResults-20160131-OnlineAppOnly-635897992796138808.md) | Sunday, January 31, 2016 | 12:07 AM | dev | debug | 252 | 3 | 37
  [OnlineCred](PnPUnitTestResults-20160130-OnlineCred-635897943916931013.md) | Saturday, January 30, 2016 | 10:46 PM | dev | debug | 286 | 1 | 5
  [OnPremAppOnly](PnPUnitTestResults-20160130-OnPremAppOnly-635897929323749733.md) | Saturday, January 30, 2016 | 10:22 PM | dev | debug15 | 233 | 2 | 49
@@ -101,6 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnlineAppOnly](PnPUnitTestResults-20160103-OnlineAppOnly-635873786350081156.md) | Sunday, January 3, 2016 | 11:43 PM | dev | debug | 229 | 24 | 36
  [OnlineCred](PnPUnitTestResults-20160102-OnlineCred-635873750729046067.md) | Saturday, January 2, 2016 | 10:44 PM | dev | debug | 259 | 25 | 5
  [OnPremAppOnly](PnPUnitTestResults-20160102-OnPremAppOnly-635873736951175044.md) | Saturday, January 2, 2016 | 10:21 PM | dev | debug15 | 209 | 24 | 48
- [OnPremCred](PnPUnitTestResults-20160102-OnPremCred-635873724282071055.md) | Saturday, January 2, 2016 | 10:00 PM | dev | debug15 | 237 | 25 | 19
- [OnlineAppOnly](PnPUnitTestResults-20160102-OnlineAppOnly-635872912756820600.md) | Saturday, January 2, 2016 | 11:27 PM | dev | debug | 222 | 24 | 36
- [OnlineCred](PnPUnitTestResults-20160101-OnlineCred-635872872204888071.md) | Friday, January 1, 2016 | 10:20 PM | dev | debug | 252 | 25 | 5
