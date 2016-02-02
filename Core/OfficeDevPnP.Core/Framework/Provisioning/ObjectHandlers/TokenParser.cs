@@ -10,7 +10,7 @@ using System.Collections;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal class TokenParser
+    public class TokenParser
     {
         public Web _web;
 
