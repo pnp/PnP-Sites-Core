@@ -13,8 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         private ProvisioningTemplate baseTemplate;
         private FileConnectorBase fileConnector;
-        private bool persistComposedLookFiles = false;
         private bool persistBrandingFiles = false;
+        private bool persistPublishingFiles = false;
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
@@ -88,6 +88,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.persistBrandingFiles = value;
+            }
+        }
+
+        /// <summary>
+        /// Defines whether to persiste publishing files (MasterPages and PageLayouts)
+        /// </summary>
+        public bool PersistPublishingFiles
+        {
+            get
+            {
+                return this.persistPublishingFiles;
+            }
+            set
+            {
+                this.persistPublishingFiles = value;
             }
         }
 
