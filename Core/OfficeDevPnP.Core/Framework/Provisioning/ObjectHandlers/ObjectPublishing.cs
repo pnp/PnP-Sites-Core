@@ -9,15 +9,21 @@ using OfficeDevPnP.Core.Diagnostics;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal class ObjectPublishing : ObjectHandlerBase
+    internal class ObjectPublishing : ObjectContentHandlerBase
     {
         private const string AVAILABLEPAGELAYOUTS = "__PageLayouts";
         private const string DEFAULTPAGELAYOUT = "__DefaultPageLayout";
         private readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
         private readonly Guid PUBLISHING_FEATURE_SITE = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
+        private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
+        private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
+        private const string URL_TOKEN_REGEX = @"^(?<siteCollectionUrl>(?<webApplicationUrl>http(s)?\:\/\/(\w|\-|\.)+\/)(\w|\-)*\/(?<siteCollection>(\w|\-)+))(\/(?<subSite>(\w|\-)+))*";
 
         public override string Name
         {
@@ -40,11 +46,144 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     publishing.DesignPackage = null;
                     publishing.PageLayouts.AddRange(GetAvailablePageLayouts(web));
                     template.Publishing = publishing;
+
+                    ExtractMasterPagesAndPageLayouts(web, template, scope, creationInfo);
                 }
             }
             return template;
         }
 
+        private void ExtractMasterPagesAndPageLayouts(Web web, ProvisioningTemplate template, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            String webApplicationUrl = GetWebApplicationUrl(web.Url);
+
+            if (!String.IsNullOrEmpty(webApplicationUrl))
+            {
+                // Get a reference to the root folder of the master page gallery
+                var gallery = web.GetCatalog(116);
+                web.Context.Load(gallery, g => g.RootFolder);
+                web.Context.ExecuteQueryRetry();
+
+                var masterPageGalleryFolder = gallery.RootFolder;
+
+                // Load the files in the master page gallery
+                web.Context.Load(masterPageGalleryFolder.Files);
+                web.Context.ExecuteQueryRetry();
+
+                foreach (var file in masterPageGalleryFolder.Files.Where(
+                    f => f.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ||
+                    f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    var listItem = file.EnsureProperty(f => f.ListItemAllFields);
+                    listItem.ContentType.EnsureProperties(ct => ct.Id, ct => ct.StringId);
+
+                    // Check if the content type is of type Master Page or Page Layout
+                    if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID) ||
+                        listItem.ContentType.StringId.StartsWith(PAGE_LAYOUT_CONTENT_TYPE_ID))
+                    {
+                        // If the file is a custom one, and not one native
+                        // and coming out from the publishing feature
+                        if (creationInfo.IncludeNativePublishingFiles || !IsPublishingFeatureNativeFile(file.Name))
+                        {
+                            var fullUri = new Uri(UrlUtility.Combine(webApplicationUrl, file.ServerRelativeUrl));
+
+                            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+                            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+                            var publishingFile = new Model.File()
+                            {
+                                Folder = Tokenize(folderPath, web.Url),
+                                Src = HttpUtility.UrlDecode(fileName),
+                                Overwrite = true,
+                            };
+
+                            // Add field values to file
+                            RetrieveFieldValues(web, file, publishingFile);
+
+                            // Add the file to the template
+                            template.Files.Add(publishingFile);
+
+                            // Persist file using connector, if needed
+                            if (creationInfo.PersistPublishingFiles)
+                            {
+                                PersistFile(web, creationInfo, scope, folderPath, fileName, true);
+                            }
+
+                            if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
+                            {
+                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/SOMETHING) you should try to avoid using custom MasterPages.");
+                            }
+                        }
+                        else
+                        {
+                            scope.LogWarning($"Skipping file \"{file.Name}\" because it is native in the publishing feature.");
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method checks if the filename (for master pages and page layouts) 
+        /// is native or custom for the publishing feature
+        /// </summary>
+        /// <param name="fileName">The filename to check</param>
+        /// <returns>Whether the file is native or not for the publishing feature</returns>
+        private Boolean IsPublishingFeatureNativeFile(String fileName)
+        {
+            Boolean result = false;
+
+            string nativeFilesTemplatePath = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.Common.Publishing-Feature-Native-Files.xml");
+            using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(nativeFilesTemplatePath))
+            {
+                // Figure out the formatter to use
+                XDocument xTemplate = XDocument.Load(stream);
+                var namespaceDeclarations = xTemplate.Root.Attributes().Where(a => a.IsNamespaceDeclaration).
+                        GroupBy(a => a.Name.Namespace == XNamespace.None ? String.Empty : a.Name.LocalName,
+                                a => XNamespace.Get(a.Value)).
+                        ToDictionary(g => g.Key,
+                                     g => g.First());
+                var pnpns = namespaceDeclarations["pnp"];
+
+                stream.Seek(0, SeekOrigin.Begin);
+
+                // Get the XML document from the stream
+                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(pnpns.NamespaceName);
+
+                // And convert it into a template
+                ProvisioningTemplate nativeFilesTemplate = formatter.ToProvisioningTemplate(stream);
+
+                if (nativeFilesTemplate != null 
+                    && nativeFilesTemplate.Files != null 
+                    && nativeFilesTemplate.Files.Count > 0)
+                {
+                    result = nativeFilesTemplate.Files.Any(f => f.Src == fileName);
+                }
+            }
+
+            return (result);
+        }
+
+        /// <summary>
+        /// This method retrieves the Web Application URL of the provided site
+        /// </summary>
+        /// <param name="webUrl">The target web site URL</param>
+        /// <returns>The Web Application URL</returns>
+        private String GetWebApplicationUrl(String webUrl)
+        {
+            String result = null;
+
+            System.Text.RegularExpressions.Regex regex =
+                new System.Text.RegularExpressions.Regex(URL_TOKEN_REGEX);
+
+            var match = regex.Match(webUrl);
+            if (match.Success)
+            {
+                result = match.Groups["webApplicationUrl"].Value;
+            }
+
+            return (result);
+        }
 
         private IEnumerable<PageLayout> GetAvailablePageLayouts(Web web)
         {
@@ -82,9 +221,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return layouts;
         }
-
-
-
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {

@@ -1,0 +1,274 @@
+﻿<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="PUBLISHING-NATIVE-FILES-CONTAINER">
+    <pnp:ProvisioningTemplate ID="PUBLISHING-NATIVE-FILES" Version="1">
+      <pnp:Files>
+        <pnp:File Src="RedirectPageLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a redirect control for automatically directing readers to any specified URL." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Redirect" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/RedirectPage.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/RedirectPage.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Redirect Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/RedirectPage.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/RedirectPage.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Redirect&#xD;&#xA;MasterPageDescription:SR|This page layout contains a redirect control for automatically directing readers to any specified URL.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\RedirectPageLayout.aspx&#xD;&#xA;PublishingAssociatedContentType:SR|;#Redirect Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="CatalogArticle.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The catalog item page with image on left contains an image field and a rich text field which are both populated by way of the content index and a remote catalog item." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Catalog Item Image on Left" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Catalog-Item Reuse;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900B46186789C3140cc85BE610336E86BBB;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_title:SR|Catalog Item Image on Left&#xD;&#xA;MasterPageDescription:SR|The catalog item page with image on left contains an image field and a rich text field which are both populated by way of the content index and a remote catalog item.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;PublishingAssociatedContentType:SR|;#Catalog-Item Reuse;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900B46186789C3140cc85BE610336E86BBB;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="BlankWebPartPage.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="Page layout for creating web part pages" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Blank Web Part page" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/BlankWebPartPage.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/BlankWebPartPage.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/BlankWebPartPage.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/BlankWebPartPage.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Blank Web Part page&#xD;&#xA;MasterPageDescription:SR|Page layout for creating web part pages&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\BlankWebPartPage.aspx&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_cachedzones:VR|Header TopLeftRow TopRightRow CenterLeftColumn CenterColumn CenterRightColumn Footer RightColumn&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="v4.master" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="HTML_x0020_File_x0020_Type" Value="SharePoint.WebPartPage.Document" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="ProgId" Value="SharePoint.WebPartPage.Document" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|global\\v4.master&#xD;&#xA;UIVersion:SR|4&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedcustomprops:VX|vti_title&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;vti_cachedtitle:SR|&lt;asp:ContentPlaceHolder id=&quot;PlaceHolderPageTitle&quot; runat=&quot;server&quot;/&gt;&#xD;&#xA;vti_metatags:VR|HTTP-EQUIV=X-UA-Compatible IE=8 GENERATOR Microsoft\\ SharePoint progid SharePoint.WebPartPage.Document HTTP-EQUIV=Content-Type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;vti_title:SR|&lt;asp:ContentPlaceHolder id=&quot;PlaceHolderPageTitle&quot; runat=&quot;server&quot;/&gt;&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body scroll=&quot;no&quot; onload=&quot;if (typeof(_spBodyOnLoadWrapper) != 'undefined') _spBodyOnLoadWrapper();&quot; class=&quot;v4master&quot;&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="WelcomeLinks.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The welcome page with summary links contains an image field on left, a rich text field, 2 summary links, and Web Part zones arranged in a header, a footer, and 2 columns." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Summary links" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/WelcomeLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeLinks.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/WelcomeLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeLinks.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Summary links&#xD;&#xA;MasterPageDescription:SR|The welcome page with summary links contains an image field on left, a rich text field, 2 summary links, and Web Part zones arranged in a header, a footer, and 2 columns.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_setuppath:SR|Features\\PublishingResources\\WelcomeLinks.aspx&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_cachedzones:VR|TopColumnZone LeftColumnZone RightColumnZone&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="NewsHomeLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains Web Part zones arranged in a right column, header, footer and 2 columns." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_setuppath:SR|Features\\PortalLayouts\\NewsHomeLayout.aspx&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedzones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone RightZone&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|News Home&#xD;&#xA;MasterPageDescription:SR|This page layout contains Web Part zones arranged in a right column, header, footer and 2 columns.&#xD;&#xA;vti_cachednoperszones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone RightZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingHidden:SR|TRUE&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ProjectPage.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="A basic page layout containing a single content area." />
+            <pnp:Property Key="Title" Value="Basic Project Page" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Project Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4d22B1CDC3DE08CFFB9C0055EF50AAFF2E4badA437E4BAE09A30F8;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_title:SR|Basic Project Page&#xD;&#xA;MasterPageDescription:SR|A basic page layout containing a single content area.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;PublishingAssociatedContentType:SR|;#Project Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4d22B1CDC3DE08CFFB9C0055EF50AAFF2E4badA437E4BAE09A30F8;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ErrorLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The error page is used for 404 HTTP errors." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Error" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Error Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;vti_title:SR|Error&#xD;&#xA;MasterPageDescription:SR|The error page is used for 404 HTTP errors.&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_metatags:VR|robots noindex&#xD;&#xA;PublishingAssociatedContentType:SW|;#Error Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="SearchMain.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a tab control, and search box Web Part. It has Web Part zones arranged in a header and footer." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/Preview Images/searchpage.png, /sites/PublishingTemplateSite{masterpagecatalog}/Preview Images/searchpage.png&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Search box&#xD;&#xA;MasterPageDescription:SR|This page layout contains a tab control, and search box Web Part. It has Web Part zones arranged in a header and footer.&#xD;&#xA;vti_cachednoperszones:VR|MainZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="PageLayoutTemplate.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="PublishingHidden" Value="True" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingResources\\PageLayoutTemplate.aspx&#xD;&#xA;PublishingHidden:SR|true&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="seattle.master" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="DefaultCssFile" Value="corev15app.css" />
+            <pnp:Property Key="MetaInfo" Value="DefaultCssFile:SW|corev15app.css&#xD;&#xA;HtmlDesignLockedFile:BW|TRUE&#xD;&#xA;vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|global\\seattle.master&#xD;&#xA;UIVersion:SW|15&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;vti_metatags:VR|GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="AdvancedSearchLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a tab control. It has Web Part zones arranged in a header, footer and 2 columns." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/Preview Images/advancedsearch.png, /sites/PublishingTemplateSite{masterpagecatalog}/Preview Images/advancedsearch.png&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Advanced search&#xD;&#xA;MasterPageDescription:SR|This page layout contains a tab control. It has Web Part zones arranged in a header, footer and 2 columns.&#xD;&#xA;vti_cachednoperszones:VR|MainZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="WelcomeSplash.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The welcome with splash contains an image field on the left side, Web Part zones in a header, and 2 columns. The left navigation pane is hidden." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Splash" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/WelcomeSplash.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeSplash.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/WelcomeSplash.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeSplash.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;vti_title:SR|Splash&#xD;&#xA;MasterPageDescription:SR|The welcome with splash contains an image field on the left side, Web Part zones in a header, and 2 columns. The left navigation pane is hidden.&#xD;&#xA;vti_cachednoperszones:VR|TopZone BottomLeftZone BottomRightZone&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\WelcomeSplash.aspx&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_cachedzones:VR|TopZone BottomLeftZone BottomRightZone&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="oslo.master" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="DefaultCssFile" Value="osloapp.css" />
+            <pnp:Property Key="MetaInfo" Value="DefaultCssFile:SW|osloapp.css&#xD;&#xA;HtmlDesignLockedFile:BW|TRUE&#xD;&#xA;vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|global\\oslo.master&#xD;&#xA;UIVersion:SW|15&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;vti_metatags:VR|GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="DefaultLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains an image field on left, a rich text field, and Web Part zones arranged in a right column, header, footer and 2 columns." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_setuppath:SR|Features\\PortalLayouts\\DefaultLayout.aspx&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedzones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone RightZone&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Web Part zones&#xD;&#xA;MasterPageDescription:SR|This page layout contains an image field on left, a rich text field, and Web Part zones arranged in a right column, header, footer and 2 columns.&#xD;&#xA;vti_cachednoperszones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone RightZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingHidden:SR|TRUE&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="minimal.master" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="HTML_x0020_File_x0020_Type" Value="SharePoint.WebPartPage.Document" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="ProgId" Value="SharePoint.WebPartPage.Document" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|global\\minimal.master&#xD;&#xA;UIVersion:SR|4&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedcustomprops:VX|vti_title&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;vti_cachedtitle:SR|&lt;asp:ContentPlaceHolder id=&quot;PlaceHolderPageTitle&quot; runat=&quot;server&quot;/&gt;&#xD;&#xA;vti_metatags:VR|GENERATOR Microsoft\\ SharePoint progid SharePoint.WebPartPage.Document HTTP-EQUIV=Content-Type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;vti_title:SR|&lt;asp:ContentPlaceHolder id=&quot;PlaceHolderPageTitle&quot; runat=&quot;server&quot;/&gt;&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body onload=&quot;javascript:if (typeof(_spBodyOnLoadWrapper) != 'undefined') _spBodyOnLoadWrapper();&quot;&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ArticleRight.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The article page with image on right contains an image field and a rich text field." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Image on right" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleRight.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleRight.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleRight.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleRight.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Image on right&#xD;&#xA;MasterPageDescription:SR|The article page with image on right contains an image field and a rich text field.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\ArticleRight.aspx&#xD;&#xA;PublishingAssociatedContentType:SR|;#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="TabViewPageLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a tab control. It has Web Part zones arranged in a header, footer, and 2 columns. " />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/Preview Images/sitedir_layout.gif, /sites/PublishingTemplateSite{masterpagecatalog}/Preview Images/sitedir_layout.gif&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_title:SR|Site directory home&#xD;&#xA;MasterPageDescription:SR|This page layout contains a tab control. It has Web Part zones arranged in a header, footer, and 2 columns. &#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="PageFromDocLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The article page with body only contains a rich text field." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Body only" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleBodyOnly.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleBodyOnly.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Body only&#xD;&#xA;MasterPageDescription:SR|The article page with body only contains a rich text field.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\PageFromDocLayout.aspx&#xD;&#xA;PublishingAssociatedContentType:SR|;#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ArticleLinks.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The article page with links contains an image field and summary links." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Summary links" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLinks.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLinks.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Summary links&#xD;&#xA;MasterPageDescription:SR|The article page with links contains an image field and summary links.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\ArticleLinks.aspx&#xD;&#xA;PublishingAssociatedContentType:SR|;#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="welcomelayout2.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_setuppath:SR|Features\\PortalLayouts\\welcomelayout2.aspx&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedzones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Welcome Page with Web Part Zones&#xD;&#xA;vti_cachednoperszones:VR|TopZone MiddleLeftZone MiddleRightZone BottomZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingHidden:SR|TRUE&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ArticleLeft.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="The article page with image on left contains an image field and a rich text field." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Image on left" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLeft.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview%20Images/ArticleLeft.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleLeft.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_title:SR|Image on left&#xD;&#xA;MasterPageDescription:SR|The article page with image on left contains an image field and a rich text field.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingLayouts\\PageLayouts\\ArticleLeft.aspx&#xD;&#xA;PublishingAssociatedContentType:SR|;#Article Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="EnterpriseWiki.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="A basic page layout containing a single content area." />
+            <pnp:Property Key="Title" Value="Basic Page" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Enterprise Wiki Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4d22B1CDC3DE08CFFB9C;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/ArticleBodyOnly.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_title:SR|Basic Page&#xD;&#xA;MasterPageDescription:SR|A basic page layout containing a single content area.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;PublishingAssociatedContentType:SR|;#Enterprise Wiki Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4d22B1CDC3DE08CFFB9C;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="SearchResults.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a tab control, and search Web Parts. It has Web Part zones arranged in a right column, header, footer, 2 columns and 2 rows." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/Preview Images/searchresults.png, /sites/PublishingTemplateSite{masterpagecatalog}/Preview Images/searchresults.png&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Search results&#xD;&#xA;MasterPageDescription:SR|This page layout contains a tab control, and search Web Parts. It has Web Part zones arranged in a right column, header, footer, 2 columns and 2 rows.&#xD;&#xA;vti_cachednoperszones:VR|NavigationZone MainZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="CatalogWelcome.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="MasterPageDescription" Value="A page layout for creating web part Welcome pages that contain a title and page content populated by way of the content index and a remote catalog item." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Blank Catalog Item" />
+            <pnp:Property Key="PublishingPreviewImage" Value="{masterpagecatalog}/en-US/Preview Images/WelcomeTOC.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeTOC.png" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Catalog-Item Reuse;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900B46186789C3140cc85BE610336E86BBB;#" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/en-US/Preview Images/WelcomeTOC.png, /sites/PublishingTemplateSite{masterpagecatalog}/en-US/Preview Images/WelcomeTOC.png&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_title:SR|Blank Catalog Item&#xD;&#xA;MasterPageDescription:SR|A page layout for creating web part Welcome pages that contain a title and page content populated by way of the content index and a remote catalog item.&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;PublishingAssociatedContentType:SR|;#Catalog-Item Reuse;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900B46186789C3140cc85BE610336E86BBB;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="PeopleSearchResults.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains a tab control.  It has Web Part zones arranged in a right column, header, footer, 2 columns and 2 rows." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/Preview Images/peoplesearchpage.png, /sites/PublishingTemplateSite{masterpagecatalog}/Preview Images/peoplesearchpage.png&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Search People&#xD;&#xA;MasterPageDescription:SR|This page layout contains a tab control.  It has Web Part zones arranged in a right column, header, footer, 2 columns and 2 rows.&#xD;&#xA;vti_cachednoperszones:VR|NavigationZone MainZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="VariationRootPageLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Page Layout}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="Title" Value="Variations Root Page" />
+            <pnp:Property Key="PublishingHidden" Value="True" />
+            <pnp:Property Key="PublishingAssociatedContentType" Value=";#Redirect Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799;#" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_author:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_setuppath:SR|Features\\PublishingResources\\VariationRootPageLayout.aspx&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|i:0#.f|membership|developer@altenitdevedison.onmicrosoft.com&#xD;&#xA;vti_title:SR|Variations Root Page&#xD;&#xA;ContentType:SR|Page Layout&#xD;&#xA;ContentTypeId:SW|0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811008E939FD1FF380E4DB79393084F98ED6E&#xD;&#xA;PublishingHidden:SR|true&#xD;&#xA;PublishingAssociatedContentType:SR|;#Redirect Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="ReportCenterLayout.aspx" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="MasterPageDescription" Value="This page layout contains Web Part zones arranged in a header, footer, 2 columns and 3 rows." />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4907&#xD;&#xA;vti_folderitemcount:IR|0&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;vti_setuppath:SR|Features\\PortalLayouts\\ReportCenterLayout.aspx&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedzones:VR|HeaderZone TopLeftZone MiddleLeftZone MiddleMiddleZone BottomLeftZone RightZone FooterZone&#xD;&#xA;vti_foldersubfolderitemcount:IR|0&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;ContentType:SW|Master Page&#xD;&#xA;vti_title:SR|Report Center Page&#xD;&#xA;MasterPageDescription:SR|This page layout contains Web Part zones arranged in a header, footer, 2 columns and 3 rows.&#xD;&#xA;vti_cachednoperszones:VR|HeaderZone TopLeftZone MiddleLeftZone MiddleMiddleZone BottomLeftZone RightZone FooterZone&#xD;&#xA;ContentTypeId:SW|0x01010500690770E97C600C48AD87C5D75806762F&#xD;&#xA;PublishingHidden:SR|TRUE&#xD;&#xA;PublishingAssociatedContentType:SR|;#Welcome Page;#0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4;#&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+      </pnp:Files>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

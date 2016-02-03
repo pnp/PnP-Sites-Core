@@ -528,6 +528,7 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
@@ -806,7 +807,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\Common\Publishing-Feature-Native-Files.xml" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
