@@ -10,6 +10,7 @@ using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -47,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site, fieldId);
-                            CreateField(web, templateFieldElement, scope, parser);
+                            CreateField(web, templateFieldElement, scope, parser, field.SchemaXml);
                         }
                         catch (Exception ex)
                         {
@@ -59,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site, fieldId);
-                            UpdateField(web, fieldId, templateFieldElement, scope, parser);
+                            UpdateField(web, fieldId, templateFieldElement, scope, parser, field.SchemaXml);
                         }
                         catch (Exception ex)
                         {
@@ -71,7 +72,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
+        private void UpdateField(Web web, string fieldId, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
             var existingField = web.Fields.GetById(Guid.Parse(fieldId));
             web.Context.Load(existingField, f => f.SchemaXml);
@@ -122,6 +123,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(existingField, f => f.TypeAsString, f => f.DefaultValue);
                     web.Context.ExecuteQueryRetry();
 
+                    bool isDirty = false;
+                    if (originalFieldXml.ContainsResourceToken())
+                    {
+                        var originalFieldElement = XElement.Parse(originalFieldXml);
+                        var nameAttributeValue = originalFieldElement.Attribute("Title") != null ? originalFieldElement.Attribute("Title").Value : "";
+                        if (nameAttributeValue.ContainsResourceToken())
+                        {
+                            existingField.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
+                            isDirty = true;
+                        }
+                        var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
+                        if (descriptionAttributeValue.ContainsResourceToken())
+                        {
+                            existingField.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser);
+                            isDirty = true;
+                        }
+                    }
+                    if (isDirty)
+                    {
+                        existingField.Update();
+                        web.Context.ExecuteQuery();
+                    }
                     if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(existingField.DefaultValue))
                     {
                         var taxField = web.Context.CastTo<TaxonomyField>(existingField);
@@ -148,7 +171,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser)
+        private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
             var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
 
@@ -163,6 +186,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
             web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue);
             web.Context.ExecuteQueryRetry();
+
+            bool isDirty = false;
+            if(originalFieldXml.ContainsResourceToken())
+            {
+                var originalFieldElement = XElement.Parse(originalFieldXml);
+                var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
+                if (nameAttributeValue.ContainsResourceToken())
+                {
+                    field.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
+                    isDirty = true;
+                }
+                var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
+                if(descriptionAttributeValue.ContainsResourceToken())
+                {
+                    field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser);
+                    isDirty = true;
+                }
+            }
+            if(isDirty)
+            {
+                field.Update();
+                web.Context.ExecuteQuery();
+            }
 
             if((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti")  && !string.IsNullOrEmpty(field.DefaultValue))
             {
