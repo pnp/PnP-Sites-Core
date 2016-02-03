@@ -9,10 +9,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class CustomAction : BaseModel, IEquatable<CustomAction>
     {
-        #region Private Members
-        private int _rightsValue = 0;
-        #endregion
-
         #region Properties
 
         public System.Xml.Linq.XElement CommandUIExtension { get; set; }
@@ -52,25 +48,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets the value that specifies the permissions needed for the custom action.
         /// </summary>
         public BasePermissions Rights { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the value that specifies the permissions needed for the custom action.
-        /// <seealso>
-        ///     <cref>https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.permissionkind.aspx</cref>
-        /// </seealso>
-        /// </summary>
-        [Obsolete("Use Rights")]
-        public int RightsValue
-        {
-            get
-            {
-                return this._rightsValue;
-            }
-            set
-            {
-                this._rightsValue = value;
-            }
-        }
 
         public string RegistrationId { get; set; }
 
@@ -116,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.RegistrationId != null ? this.RegistrationId.GetHashCode() : 0),
                 this.RegistrationType.GetHashCode(),
                 this.Remove.GetHashCode(),
-                this.RightsValue.GetHashCode(),
+                this.Rights.GetHashCode(),
                 (this.ScriptBlock != null ? this.ScriptBlock.GetHashCode() : 0),
                 (this.ScriptSrc != null ? this.ScriptSrc.GetHashCode() : 0),
                 this.Sequence.GetHashCode(),
@@ -154,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.RegistrationId == other.RegistrationId &&
                 this.RegistrationType == other.RegistrationType &&
                 this.Remove == other.Remove &&
-                this.RightsValue == other.RightsValue &&
+                this.Rights == other.Rights &&
                 this.ScriptBlock == other.ScriptBlock &&
                 this.ScriptSrc == other.ScriptSrc &&
                 this.Sequence == other.Sequence &&
