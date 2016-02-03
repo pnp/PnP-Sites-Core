@@ -2264,7 +2264,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             List<string> permissions = new List<string>();
             foreach (var pk in (PermissionKind[])Enum.GetValues(typeof(PermissionKind)))
             {
-                if (basePermissions.Has(pk))
+                if (basePermissions.Has(pk) && pk != PermissionKind.EmptyMask)
                 {
                     permissions.Add(pk.ToString());
                 }
