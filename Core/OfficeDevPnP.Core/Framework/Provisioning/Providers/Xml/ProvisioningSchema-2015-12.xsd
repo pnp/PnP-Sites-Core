@@ -2233,10 +2233,10 @@
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="Rights" type="xsd:int" use="optional">
+    <xsd:attribute name="Rights" type="xsd:string" use="optional">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
-          The Rights for the CustomAction, based on values from Microsoft.SharePoint.Client.BasePermissions, optional attribute.
+          The Rights for the CustomAction, based on values from Microsoft.SharePoint.Client.PermissionKind, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
