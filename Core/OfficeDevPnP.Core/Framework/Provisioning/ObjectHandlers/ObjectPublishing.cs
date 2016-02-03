@@ -83,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // If the file is a custom one, and not one native
                         // and coming out from the publishing feature
-                        if (!IsPublishingFeatureNativeFile(file.Name))
+                        if (creationInfo.IncludeNativePublishingFiles || !IsPublishingFeatureNativeFile(file.Name))
                         {
                             var fullUri = new Uri(UrlUtility.Combine(webApplicationUrl, file.ServerRelativeUrl));
 
@@ -133,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             Boolean result = false;
 
-            string nativeFilesTemplatePath = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.Others.Publishing-Feature-Native-Files.xml");
+            string nativeFilesTemplatePath = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.Common.Publishing-Feature-Native-Files.xml");
             using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(nativeFilesTemplatePath))
             {
                 // Figure out the formatter to use

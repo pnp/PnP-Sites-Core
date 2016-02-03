@@ -14,12 +14,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ProvisioningTemplate baseTemplate;
         private FileConnectorBase fileConnector;
         private bool persistBrandingFiles = false;
-        private bool persistPublishingFiles = false;
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
+        private bool persistPublishingFiles = false;
+        private bool includeNativePublishingFiles = false;
 
         private Handlers handlersToProcess = Handlers.All;
 
@@ -92,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
-        /// Defines whether to persiste publishing files (MasterPages and PageLayouts)
+        /// Defines whether to persist publishing files (MasterPages and PageLayouts)
         /// </summary>
         public bool PersistPublishingFiles
         {
@@ -106,6 +107,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Defines whether to extract native publishing files (MasterPages and PageLayouts)
+        /// </summary>
+        public bool IncludeNativePublishingFiles
+        {
+            get
+            {
+                return this.includeNativePublishingFiles;
+            }
+            set
+            {
+                this.includeNativePublishingFiles = value;
+            }
+        }
+        
         public bool IncludeAllTermGroups
         {
             get
