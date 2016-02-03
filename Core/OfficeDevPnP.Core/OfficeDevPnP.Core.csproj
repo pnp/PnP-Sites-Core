@@ -444,6 +444,7 @@
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityTokenProvider.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityProvider.cs" />
     <Compile Include="Framework\Provisioning\Model\DefaultDocumentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Deprecated\CustomAction.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Model\FeatureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
     <Compile Include="Framework\Provisioning\Model\AddInCollection.cs" />
@@ -528,6 +529,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />

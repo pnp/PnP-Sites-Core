@@ -24,5 +24,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             else { return ""; }
 
         }
+
+        public List<ResourceEntry> ResourceEntries
+        {
+            get { return _resourceEntries;  }
+        }
     }
 }

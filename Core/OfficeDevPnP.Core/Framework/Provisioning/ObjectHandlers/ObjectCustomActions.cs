@@ -88,7 +88,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         Title = customAction.Title,
                         Url = parser.ParseString(customAction.Url)
                     };
-
                     if (site != null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
