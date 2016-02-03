@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : 
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) :
             this()
         {
             this.ContentTypeBindings.AddRange(contentTypeBindings);
