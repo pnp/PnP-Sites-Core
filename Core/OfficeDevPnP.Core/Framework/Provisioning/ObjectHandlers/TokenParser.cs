@@ -7,6 +7,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Resources;
 using System.Collections;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -152,6 +153,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                select t;
 
             _tokens = sortedTokens.ToList();
+        }
+
+     
+
+        public List<Tuple<string,string>> GetResourceTokenResourceValues(string tokenValue)
+        {
+            List<Tuple<string, string>> resourceValues = new List<Tuple<string, string>>();
+            var resourceTokens = _tokens.Where(t => t is LocalizationToken && t.GetTokens().Contains(tokenValue));
+            foreach(LocalizationToken resourceToken in resourceTokens)
+            {
+                var entries = resourceToken.ResourceEntries;
+                foreach(var entry in entries)
+                {
+                    CultureInfo ci = new CultureInfo((int)entry.LCID);
+                    resourceValues.Add(new Tuple<string, string>(ci.Name, entry.Value));
+                }
+            }
+            return resourceValues;
         }
 
         public void Rebase(Web web)
