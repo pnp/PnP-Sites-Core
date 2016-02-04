@@ -88,15 +88,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         Title = customAction.Title,
                         Url = parser.ParseString(customAction.Url)
                     };
+
+
                     if (site != null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
+                        if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
+                        {
+                            var uca = site.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            SetCustomActionResourceValues(parser, customAction, uca);
+                        }
                     }
                     else
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
                         web.AddCustomAction(customActionEntity);
+                        if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
+                        {
+                            var uca = web.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            SetCustomActionResourceValues(parser, customAction, uca);
+                        }
                     }
                 }
                 else
@@ -129,6 +141,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogPropertyUpdate("Description");
                             existingCustomAction.Description = customAction.Description;
                             isDirty = true;
+                        }
+                        if (customAction.Description.ContainsResourceToken())
+                        {
+                            if (existingCustomAction.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
+                            {
+                                isDirty = true;
+                            }
                         }
                         if (existingCustomAction.Group != customAction.Group)
                         {
@@ -184,6 +203,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.Title = parser.ParseString(customAction.Title);
                             isDirty = true;
                         }
+                        if (customAction.Title.ContainsResourceToken())
+                        {
+                            if (existingCustomAction.TitleResource.SetUserResourceValue(customAction.Title, parser))
+                            {
+                                isDirty = true;
+                            }
+
+                        }
                         if (existingCustomAction.Url != parser.ParseString(customAction.Url))
                         {
                             scope.LogPropertyUpdate("Url");
@@ -196,6 +223,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.Context.ExecuteQueryRetry();
                         }
                     }
+                }
+            }
+        }
+
+        private static void SetCustomActionResourceValues(TokenParser parser, CustomAction customAction, UserCustomAction uca)
+        {
+            if (uca != null)
+            {
+                bool isDirty = false;
+                if (customAction.Title.ContainsResourceToken())
+                {
+                    if (uca.TitleResource.SetUserResourceValue(customAction.Title, parser))
+                    {
+                        isDirty = true;
+                    }
+                }
+                if (customAction.Description.ContainsResourceToken())
+                {
+                    if (uca.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
+                    {
+                        isDirty = true;
+                    }
+                }
+                if (isDirty)
+                {
+                    uca.Update();
+                    uca.Context.ExecuteQueryRetry();
                 }
             }
         }
