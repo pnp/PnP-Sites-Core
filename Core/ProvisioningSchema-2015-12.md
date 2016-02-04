@@ -1,7 +1,7 @@
 ﻿
 #PnP Provisioning Schema
 ----------
-*Topic automatically generated on 07/01/2016*
+*Topic automatically generated on 04/02/2016*
 
 ##Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1453,7 +1453,7 @@ Defines a Custom Action, which will be provisioned while applying the Provisioni
       Location="xsd:string"
       Title="xsd:string"
       Sequence="xsd:int"
-      Rights="xsd:int"
+      Rights="xsd:string"
       Url="xsd:string"
       Enabled="xsd:boolean"
       ScriptBlock="xsd:string"
@@ -1484,7 +1484,7 @@ Group|xsd:string|The Group of the CustomAction, optional attribute.
 Location|xsd:string|The Location of the CustomAction, required attribute.
 Title|xsd:string|The Title of the CustomAction, required attribute.
 Sequence|xsd:int|The Sequence of the CustomAction, optional attribute.
-Rights|xsd:int|The Rights for the CustomAction, based on values from Microsoft.SharePoint.Client.BasePermissions, optional attribute.
+Rights|xsd:string|The Rights for the CustomAction, based on values from Microsoft.SharePoint.Client.PermissionKind, optional attribute.
 Url|xsd:string|The URL of the CustomAction, optional attribute.
 Enabled|xsd:boolean|The Enabled flag for the CustomAction, optional attribute.
 ScriptBlock|xsd:string|The ScriptBlock of the CustomAction, optional attribute.

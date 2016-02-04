@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(parser, targetFile, transformedProperties, false);
+                            SetFileProperties(targetFile, transformedProperties, false);
                         }
 
                         if (file.WebParts != null && file.WebParts.Any())
@@ -164,7 +164,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public void SetFileProperties(TokenParser parser, File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
         {
             var context = file.Context;
             if (properties != null && properties.Count > 0)
@@ -197,7 +197,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
                     targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
 
-                    if (!targetField.ReadOnlyField)
+                    if (true)  // !targetField.ReadOnlyField)
                     {
                         switch (propertyName.ToUpperInvariant())
                         {
@@ -221,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     switch (targetField.TypeAsString)
                                     {
                                         case "User":
-                                            var user = parentList.ParentWeb.EnsureUser(parser.ParseString(propertyValue));
+                                            var user = parentList.ParentWeb.EnsureUser(propertyValue);
                                             context.Load(user);
                                             context.ExecuteQueryRetry();
 
@@ -235,9 +235,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             }
                                             break;
                                         case "URL":
-                                            var urlFieldValue = parser.ParseString(propertyValue);
-
-                                            var urlArray = urlFieldValue.Split(',');
+                                            var urlArray = propertyValue.Split(',');
                                             var linkValue = new FieldUrlValue();
                                             if (urlArray.Length == 2)
                                             {
@@ -252,19 +250,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             file.ListItemAllFields[propertyName] = linkValue;
                                             break;
                                         case "LookupMulti":
-                                            var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(parser.ParseString(propertyValue));
+                                            var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(propertyValue);
                                             file.ListItemAllFields[propertyName] = lookupMultiValue;
                                             break;
                                         case "TaxonomyFieldType":
-                                            var taxonomyValue = JsonUtility.Deserialize<TaxonomyFieldValue>(parser.ParseString(propertyValue));
+                                            var taxonomyValue = JsonUtility.Deserialize<TaxonomyFieldValue>(propertyValue);
                                             file.ListItemAllFields[propertyName] = taxonomyValue;
                                             break;
                                         case "TaxonomyFieldTypeMulti":
-                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(parser.ParseString(propertyValue));
+                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
                                             file.ListItemAllFields[propertyName] = taxonomyValueArray;
                                             break;
                                         default:
-                                            file.ListItemAllFields[propertyName] = parser.ParseString(propertyValue);
+                                            file.ListItemAllFields[propertyName] = propertyValue;
                                             break;
                                     }
                                     break;
