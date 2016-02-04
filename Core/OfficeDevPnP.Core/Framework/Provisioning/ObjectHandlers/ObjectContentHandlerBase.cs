@@ -101,7 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var internalFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
                             if (internalFieldValue != null)
                             {
-                                value = JsonUtility.Serialize(internalFieldValue);
+                                value = Tokenize(JsonUtility.Serialize(internalFieldValue), web.Url);
                             }
                             break;
                         case "ContentTypeIdFieldType":

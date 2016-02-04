@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
                             {
-                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/SOMETHING) you should try to avoid using custom MasterPages.");
+                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.");
                             }
                         }
                         else
