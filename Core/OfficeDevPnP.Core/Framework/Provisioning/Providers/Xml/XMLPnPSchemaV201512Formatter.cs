@@ -815,13 +815,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      select new V201512.TermGroup
                      {
                          Name = grp.Name,
-                         ID = grp.Id.ToString(),
+                         ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
                          TermSets = (
                             from termSet in grp.TermSets
                             select new V201512.TermSet
                             {
-                                ID = termSet.Id.ToString(),
+                                ID = termSet.Id != Guid.Empty ? termSet.Id.ToString() : null,
                                 Name = termSet.Name,
                                 IsAvailableForTagging = termSet.IsAvailableForTagging,
                                 IsOpenForTermCreation = termSet.IsOpenForTermCreation,
@@ -1869,7 +1869,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 from term in terms
                 select new V201512.Term
                 {
-                    ID = term.Id.ToString(),
+                    ID = term.Id != Guid.Empty ? term.Id.ToString() : null,
                     Name = term.Name,
                     Description = term.Description,
                     Owner = term.Owner,

@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -69,6 +70,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "ParentVersionString",
                 "ParentLeafName",
                 "SortBehavior",
+                "StreamHash",
+                "TaxCatchAll",
+                "TaxCatchAllLabel",
                 "_ModerationStatus",
                 "HtmlDesignAssociated",
                 "HtmlDesignStatusAndPreview",
@@ -81,13 +85,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = fields.FirstOrDefault(fs => fs.InternalName == fieldValue.Key);
 
                     string value = string.Empty;
-                    if (field.TypeAsString == "URL")
+
+                    switch (field.TypeAsString)
                     {
-                        value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url);
-                    }
-                    else
-                    {
-                        value = Tokenize(fieldValue.Value.ToString(), web.Url);
+                        case "URL":
+                            value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url);
+                            break;
+                        case "User":
+                            var fieldUserValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
+                            if (fieldUserValue != null)
+                            {
+                                value = fieldUserValue.Email;
+                            }
+                            break;
+                        case "LookupMulti":
+                        case "TaxonomyFieldType":
+                        case "TaxonomyFieldTypeMulti":
+                            var internalFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
+                            if (internalFieldValue != null)
+                            {
+                                value = Tokenize(JsonUtility.Serialize(internalFieldValue), web.Url);
+                            }
+                            break;
+                        case "ContentTypeIdFieldType":
+                        default:
+                            value = Tokenize(fieldValue.Value.ToString(), web.Url);
+                            break;
                     }
 
                     if (fieldValue.Key == "ContentTypeId")
@@ -99,7 +122,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             value = string.Format("{{contenttypeid:{0}}}", ct.Name);
                         }
                     }
-                    modelFile.Properties.Add(fieldValue.Key, value);
+
+                    // We process real values only
+                    if (value != null && !String.IsNullOrEmpty(value) &&  value != "[]")
+                    {
+                        modelFile.Properties.Add(fieldValue.Key, value);
+                    }
                 }
             }
 

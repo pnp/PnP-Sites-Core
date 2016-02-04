@@ -15,6 +15,8 @@ using System.Text;
 using System.Web;
 using System.IO;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -82,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            targetFile.SetFileProperties(transformedProperties, false); // if needed, the file is already checked out
+                            SetFileProperties(targetFile, transformedProperties, false);
                         }
 
                         if (file.WebParts != null && file.WebParts.Any())
@@ -132,8 +134,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
                 web.Context.ExecuteQueryRetry();
-                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue 
-                    && !targetFile.ListItemAllFields.ServerObjectIsNull.Value 
+                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
+                    && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
                     && targetFile.ListItemAllFields.ParentList.ForceCheckout)
                 {
                     if (targetFile.CheckOutType == CheckOutType.None)
@@ -157,8 +159,120 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            
+
             return template;
+        }
+
+
+        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        {
+            var context = file.Context;
+            if (properties != null && properties.Count > 0)
+            {
+                // Get a reference to the target list, if any
+                // and load file item properties
+                var parentList = file.ListItemAllFields.ParentList;
+                context.Load(parentList);
+                context.Load(file.ListItemAllFields);
+                try
+                {
+                    context.ExecuteQueryRetry();
+                }
+                catch (ServerException ex)
+                {
+                    // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                    if (ex.Message != "The object specified does not belong to a list.")
+                    {
+                        throw;
+                    }
+                }
+
+                // Loop through and detect changes first, then, check out if required and apply
+                foreach (var kvp in properties)
+                {
+                    var propertyName = kvp.Key;
+                    var propertyValue = kvp.Value;
+
+                    var fieldValues = file.ListItemAllFields.FieldValues;
+                    var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
+                    targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
+
+                    if (true)  // !targetField.ReadOnlyField)
+                    {
+                        switch (propertyName.ToUpperInvariant())
+                        {
+                            case "CONTENTTYPE":
+                                {
+                                    Microsoft.SharePoint.Client.ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
+                                    context.ExecuteQueryRetry();
+
+                                    if (targetCT != null)
+                                    {
+                                        file.ListItemAllFields["ContentTypeId"] = targetCT.StringId;
+                                    }
+                                    else
+                                    {
+                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
+                                    }
+                                    break;
+                                }
+                            default:
+                                {
+                                    switch (targetField.TypeAsString)
+                                    {
+                                        case "User":
+                                            var user = parentList.ParentWeb.EnsureUser(propertyValue);
+                                            context.Load(user);
+                                            context.ExecuteQueryRetry();
+
+                                            if (user != null)
+                                            {
+                                                var userValue = new FieldUserValue
+                                                {
+                                                    LookupId = user.Id,
+                                                };
+                                                file.ListItemAllFields[propertyName] = userValue;
+                                            }
+                                            break;
+                                        case "URL":
+                                            var urlArray = propertyValue.Split(',');
+                                            var linkValue = new FieldUrlValue();
+                                            if (urlArray.Length == 2)
+                                            {
+                                                linkValue.Url = urlArray[0];
+                                                linkValue.Description = urlArray[1];
+                                            }
+                                            else
+                                            {
+                                                linkValue.Url = urlArray[0];
+                                                linkValue.Description = urlArray[0];
+                                            }
+                                            file.ListItemAllFields[propertyName] = linkValue;
+                                            break;
+                                        case "LookupMulti":
+                                            var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(propertyValue);
+                                            file.ListItemAllFields[propertyName] = lookupMultiValue;
+                                            break;
+                                        case "TaxonomyFieldType":
+                                            var taxonomyValue = JsonUtility.Deserialize<TaxonomyFieldValue>(propertyValue);
+                                            file.ListItemAllFields[propertyName] = taxonomyValue;
+                                            break;
+                                        case "TaxonomyFieldTypeMulti":
+                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
+                                            file.ListItemAllFields[propertyName] = taxonomyValueArray;
+                                            break;
+                                        default:
+                                            file.ListItemAllFields[propertyName] = propertyValue;
+                                            break;
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                    file.ListItemAllFields.Update();
+                    context.ExecuteQueryRetry();
+                }
+            }
         }
 
         private string Tokenize(Web web, string xml)

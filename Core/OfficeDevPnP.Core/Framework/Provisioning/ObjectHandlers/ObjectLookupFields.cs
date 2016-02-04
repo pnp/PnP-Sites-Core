@@ -101,19 +101,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var createdList = web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(listUrl, StringComparison.OrdinalIgnoreCase));
                     if (createdList != null)
                     {
-                        var field = createdList.Fields.GetById(fieldId);
-                        web.Context.Load(field, f => f.SchemaXml);
-                        web.Context.ExecuteQueryRetry();
-
-                        List sourceList = FindSourceList(listIdentifier, web, rootWeb);
-
-                        if (sourceList != null)
+                        try
                         {
-                            web.Context.Load(sourceList.ParentWeb);
+                            var field = createdList.Fields.GetById(fieldId);
+                            web.Context.Load(field, f => f.SchemaXml);
                             web.Context.ExecuteQueryRetry();
 
-                            webId = sourceList.ParentWeb.Id.ToString();
-                            ProcessField(field, sourceList.Id, webId, relationshipDeleteBehavior);
+                            List sourceList = FindSourceList(listIdentifier, web, rootWeb);
+
+                            if (sourceList != null)
+                            {
+                                web.Context.Load(sourceList.ParentWeb);
+                                web.Context.ExecuteQueryRetry();
+
+                                webId = sourceList.ParentWeb.Id.ToString();
+                                ProcessField(field, sourceList.Id, webId, relationshipDeleteBehavior);
+                            }
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            // We skip and log any issues related to not existing lookup fields
+                            scope.LogError($"Exception searching for field! {ex.Message}");
                         }
                     }
                 }

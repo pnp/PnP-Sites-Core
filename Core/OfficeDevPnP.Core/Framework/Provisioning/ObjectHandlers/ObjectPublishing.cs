@@ -59,6 +59,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(webApplicationUrl))
             {
+                // Get the Publishing Feature reference template
+                ProvisioningTemplate publishingFeatureTemplate = GetPublishingFeatureBaseTemplate();
+
                 // Get a reference to the root folder of the master page gallery
                 var gallery = web.GetCatalog(116);
                 web.Context.Load(gallery, g => g.RootFolder);
@@ -83,7 +86,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // If the file is a custom one, and not one native
                         // and coming out from the publishing feature
-                        if (creationInfo.IncludeNativePublishingFiles || !IsPublishingFeatureNativeFile(file.Name))
+                        if (creationInfo.IncludeNativePublishingFiles || 
+                            !IsPublishingFeatureNativeFile(publishingFeatureTemplate, file.Name))
                         {
                             var fullUri = new Uri(UrlUtility.Combine(webApplicationUrl, file.ServerRelativeUrl));
 
@@ -111,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
                             {
-                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/SOMETHING) you should try to avoid using custom MasterPages.");
+                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.");
                             }
                         }
                         else
@@ -124,14 +128,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
-        /// This method checks if the filename (for master pages and page layouts) 
-        /// is native or custom for the publishing feature
+        /// This method returns the reference template for publishing feature
         /// </summary>
-        /// <param name="fileName">The filename to check</param>
-        /// <returns>Whether the file is native or not for the publishing feature</returns>
-        private Boolean IsPublishingFeatureNativeFile(String fileName)
+        /// <returns>The reference template for publishing feature</returns>
+        private ProvisioningTemplate GetPublishingFeatureBaseTemplate()
         {
-            Boolean result = false;
+            ProvisioningTemplate result = null;
 
             string nativeFilesTemplatePath = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.Common.Publishing-Feature-Native-Files.xml");
             using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(nativeFilesTemplatePath))
@@ -151,14 +153,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(pnpns.NamespaceName);
 
                 // And convert it into a template
-                ProvisioningTemplate nativeFilesTemplate = formatter.ToProvisioningTemplate(stream);
+                result = formatter.ToProvisioningTemplate(stream);
+            }
 
-                if (nativeFilesTemplate != null 
-                    && nativeFilesTemplate.Files != null 
-                    && nativeFilesTemplate.Files.Count > 0)
-                {
-                    result = nativeFilesTemplate.Files.Any(f => f.Src == fileName);
-                }
+            return (result);
+        }
+
+        /// <summary>
+        /// This method checks if the filename (for master pages and page layouts) 
+        /// is native or custom for the publishing feature
+        /// </summary>
+        /// <param name="nativeFilesTemplate">The reference template for publishing feature</param>
+        /// <param name="fileName">The filename to check</param>
+        /// <returns>Whether the file is native or not for the publishing feature</returns>
+        private Boolean IsPublishingFeatureNativeFile(ProvisioningTemplate nativeFilesTemplate, String fileName)
+        {
+            Boolean result = false;
+
+            if (nativeFilesTemplate != null 
+                && nativeFilesTemplate.Files != null 
+                && nativeFilesTemplate.Files.Count > 0)
+            {
+                result = nativeFilesTemplate.Files.Any(f => f.Src == fileName);
             }
 
             return (result);
