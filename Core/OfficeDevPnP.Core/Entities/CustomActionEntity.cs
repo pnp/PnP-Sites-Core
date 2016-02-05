@@ -48,7 +48,6 @@ namespace OfficeDevPnP.Core.Entities
             get;
             set;
         }
-
         /// <summary>
         /// Custom action location (A string that contains the location; for example, Microsoft.SharePoint.SiteSettings)
         /// </summary>

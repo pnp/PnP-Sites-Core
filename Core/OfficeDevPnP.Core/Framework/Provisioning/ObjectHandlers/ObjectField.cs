@@ -124,6 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQueryRetry();
 
                     bool isDirty = false;
+#if !CLIENTSDKV15
                     if (originalFieldXml.ContainsResourceToken())
                     {
                         var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -140,6 +141,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             isDirty = true;
                         }
                     }
+#endif
                     if (isDirty)
                     {
                         existingField.Update();
@@ -188,7 +190,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.ExecuteQueryRetry();
 
             bool isDirty = false;
-            if(originalFieldXml.ContainsResourceToken())
+#if !CLIENTSDKV15
+            if (originalFieldXml.ContainsResourceToken())
             {
                 var originalFieldElement = XElement.Parse(originalFieldXml);
                 var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
@@ -204,6 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
             }
+#endif
             if(isDirty)
             {
                 field.Update();
