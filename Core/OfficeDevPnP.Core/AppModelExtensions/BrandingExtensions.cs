@@ -22,8 +22,8 @@ namespace Microsoft.SharePoint.Client
         const string DefaultPageLayout = "__DefaultPageLayout";
         const string AvailableWebTemplates = "__WebTemplates";
         const string InheritWebTemplates = "__InheritWebTemplates";
-        const string InheritMaster = "__InheritMasterUrl";
-        const string InheritCustomMaster = "__InheritCustomMasterUrl";
+        const string InheritMaster = "__InheritsMasterUrl";
+        const string InheritCustomMaster = "__InheritsCustomMasterUrl";
         const string InheritTheme = "__InheritsThemedCssFolderUrl";
         const string Inherit = "__Inherit";
         const string CurrentLookName = "Current";
