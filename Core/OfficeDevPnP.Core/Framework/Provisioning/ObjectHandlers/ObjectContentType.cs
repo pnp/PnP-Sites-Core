@@ -142,6 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
                 isDirty = true;
             }
+#if !CLIENTSDKV15
             if (templateContentType.Name.ContainsResourceToken())
             {
                 existingContentType.NameResource.SetUserResourceValue(templateContentType.Name, parser);
@@ -152,7 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.DescriptionResource.SetUserResourceValue(templateContentType.Description, parser);
                 isDirty = true;
             }
-
+#endif
             if (isDirty)
             {
                 existingContentType.Update(true);
@@ -241,8 +242,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
+#if !CLIENTSDKV15
             // Set resources
-            if(templateContentType.Name.ContainsResourceToken())
+            if (templateContentType.Name.ContainsResourceToken())
             {
                 createdCT.NameResource.SetUserResourceValue(templateContentType.Name, parser);
             }
@@ -250,6 +252,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.DescriptionResource.SetUserResourceValue(templateContentType.Description, parser);
             }
+#endif
             //Reorder the elements so that the new created Content Type has the same order as defined in the
             //template. The order can be different if the new Content Type inherits from another Content Type.
             //In this case the new Content Type has all field of the original Content Type and missing fields 

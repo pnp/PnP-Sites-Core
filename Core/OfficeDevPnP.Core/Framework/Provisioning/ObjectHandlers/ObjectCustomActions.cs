@@ -94,21 +94,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
+#if !CLIENTSDKV15
                         if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
                         {
                             var uca = site.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
+#endif
                     }
                     else
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
                         web.AddCustomAction(customActionEntity);
+#if !CLIENTSDKV15
                         if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
                         {
                             var uca = web.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
+#endif
                     }
                 }
                 else
@@ -142,6 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.Description = customAction.Description;
                             isDirty = true;
                         }
+#if !CLIENTSDKV15
                         if (customAction.Description.ContainsResourceToken())
                         {
                             if (existingCustomAction.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
@@ -149,6 +154,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 isDirty = true;
                             }
                         }
+#endif
                         if (existingCustomAction.Group != customAction.Group)
                         {
                             scope.LogPropertyUpdate("Group");
@@ -203,6 +209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingCustomAction.Title = parser.ParseString(customAction.Title);
                             isDirty = true;
                         }
+#if !CLIENTSDKV15
                         if (customAction.Title.ContainsResourceToken())
                         {
                             if (existingCustomAction.TitleResource.SetUserResourceValue(customAction.Title, parser))
@@ -211,6 +218,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
 
                         }
+#endif
                         if (existingCustomAction.Url != parser.ParseString(customAction.Url))
                         {
                             scope.LogPropertyUpdate("Url");
@@ -232,6 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (uca != null)
             {
                 bool isDirty = false;
+#if !CLIENTSDKV15
                 if (customAction.Title.ContainsResourceToken())
                 {
                     if (uca.TitleResource.SetUserResourceValue(customAction.Title, parser))
@@ -246,6 +255,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
+#endif
                 if (isDirty)
                 {
                     uca.Update();

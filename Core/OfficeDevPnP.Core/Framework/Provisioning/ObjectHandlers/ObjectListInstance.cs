@@ -502,6 +502,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             listInfo.SiteList.Context.ExecuteQueryRetry();
 
             bool isDirty = false;
+#if !CLIENTSDKV15
             if (originalFieldXml.ContainsResourceToken())
             {
                 var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -522,6 +523,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+#endif
             if (isDirty)
             {
                 field.Update();
@@ -574,6 +576,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingField.UpdateAndPushChanges(true);
                     web.Context.ExecuteQueryRetry();
                     bool isDirty = false;
+#if !CLIENTSDKV15
                     if (originalFieldXml.ContainsResourceToken())
                     {
                         var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -594,6 +597,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
+#endif
                     if (isDirty)
                     {
                         existingField.Update();
@@ -721,6 +725,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
+#if !CLIENTSDFKV15
                 if(templateList.Title.ContainsResourceToken())
                 {
                     if(existingList.TitleResource.SetUserResourceValue(templateList.Title, parser))
@@ -728,6 +733,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
+#endif
                 if (templateList.EnableVersioning)
                 {
                     if (existingList.EnableVersioning != templateList.EnableVersioning)
@@ -858,6 +864,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList, l => l.BaseTemplate);
             web.Context.ExecuteQueryRetry();
 
+#if !CLIENTSDKV15
             if (list.Title.ContainsResourceToken())
             {
                 createdList.TitleResource.SetUserResourceValue(list.Title, parser);
@@ -866,6 +873,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdList.DescriptionResource.SetUserResourceValue(list.Description, parser);
             }
+#endif
             if (!String.IsNullOrEmpty(list.DocumentTemplate))
             {
                 createdList.DocumentTemplateUrl = parser.ParseString(list.DocumentTemplate);
