@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
+using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.AppModelExtensions;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
@@ -1154,6 +1156,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+        #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
@@ -1171,5 +1174,266 @@ namespace Microsoft.SharePoint.Client
             return returnGuid;
 
         }
+        #endregion
+
+        #region SecurableObject traversal
+
+        #region Helpers
+
+        /// <summary>
+        /// Get URL path of a securable object
+        /// </summary>
+        /// <param name="obj">A securable object which could be a web, a list, a list item, a document library or a document</param>
+        /// <returns>The URL of the securable object</returns>
+        internal static string GetPath(this SecurableObject obj)
+        {
+            var path = String.Empty;
+            if (obj is Web)
+            {
+                var web = obj as Web;
+                path = web.Url;
+            }
+            else if (obj is List)
+            {
+                var list = obj as List;
+                path = list.DefaultViewUrl;
+                var defaultPages = Constants.DefaultViewPages.Where(p => path.EndsWith(p));
+                if (defaultPages.Any())
+                    path = path.Substring(0, path.Length - defaultPages.First().Length);
+            }
+            else if (obj is ListItem)
+            {
+                var item = obj as ListItem;
+                path = string.Format("{0}/{1}", item.FieldValues[Constants.ListItemDirField], item.FieldValues[Constants.ListItemFileNameField]);
+            }
+            return path;
+        }
+
+        /// <summary>
+        /// Load properties of the current securable object and get child securable objects with unique role assignments if any.
+        /// </summary>
+        /// <param name="obj">The current securable object.</param>
+        /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit.</param>
+        /// <returns>The child securable objects.</returns>
+        internal static IEnumerable<SecurableObject> Preload(this SecurableObject obj, int leafBreadthLimit)
+        {
+            var context = obj.Context;
+            IEnumerable<SecurableObject> subObjects = new SecurableObject[] { };
+            if (obj is Web)
+            {
+                var web = obj as Web;
+                context.Load(web, w => w.Url, w => w.HasUniqueRoleAssignments);
+                context.ExecuteQueryRetry();
+                if (web.HasUniqueRoleAssignments)
+                {
+                    context.Load(web.RoleAssignments);
+                    context.Load(web.RoleAssignments.Groups);
+                    context.ExecuteQueryRetry();
+                }
+                var lists = context.LoadQuery(web.Lists.Where(l => l.BaseType == BaseType.DocumentLibrary));
+                var webs = context.LoadQuery(web.Webs);
+                context.ExecuteQueryRetry();
+                subObjects = lists.Select(l => l as SecurableObject).Union(webs.Select(w => w as SecurableObject));
+            }
+            else if (obj is List)
+            {
+                var list = obj as List;
+                context.Load(list, l => l.ItemCount, l => l.DefaultViewUrl, l => l.HasUniqueRoleAssignments);
+                context.ExecuteQueryRetry();
+                if (list.ItemCount <= 0 || Constants.SkipPathes.Any(p => list.DefaultViewUrl.IndexOf(p) != -1))
+                    return null;
+                if (list.HasUniqueRoleAssignments)
+                {
+                    context.Load(list.RoleAssignments);
+                    context.Load(list.RoleAssignments.Groups);
+                    context.ExecuteQueryRetry();
+                }
+                if (leafBreadthLimit > 0 && list.ItemCount > 0)
+                {
+                    var query = new CamlQuery();
+                    query.ViewXml = String.Format(Constants.AllItemCamlQuery, Constants.ListItemDirField, Constants.ListItemFileNameField);
+                    var items = context.LoadQuery(list.GetItems(query).Where(i => i.HasUniqueRoleAssignments));
+                    context.ExecuteQueryRetry();
+                    if (items.Count() <= leafBreadthLimit)
+                    {
+                        subObjects = items;
+                    }
+                    else
+                    {
+                        Trace.TraceWarning(CoreResources.SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects, obj.GetPath(), list.ItemCount, leafBreadthLimit);
+                    }
+                }
+            }
+            else if (obj is ListItem)
+            {
+                var item = obj as ListItem;
+                context.Load(item.RoleAssignments);
+                context.Load(item.RoleAssignments.Groups);
+                context.ExecuteQueryRetry();
+            }
+            return subObjects;
+        }
+
+        /// <summary>
+        /// Traverse each descendents of a securable object with a specified action.
+        /// </summary>
+        /// <param name="obj">The current securable object.</param>
+        /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit.</param>
+        /// <param name="action">The action to be executed for each securable object.</param>
+        internal static void Visit(this SecurableObject obj, int leafBreadthLimit, Action<SecurableObject, string> action)
+        {
+            if (obj == null)
+                throw new ArgumentNullException("obj");
+            if (action == null)
+                throw new ArgumentNullException("action");
+            string path = string.Empty;
+            var stack = new Stack<SecurableObject>();
+            stack.Push(obj);
+            while (stack.Count != 0)
+            {
+                try
+                {
+                    var currentObj = stack.Pop();
+                    var subObjects = currentObj.Preload(leafBreadthLimit);
+                    if (subObjects == null)
+                        continue;
+                    path = currentObj.GetPath();
+                    Trace.TraceInformation(CoreResources.SecurityExtensions_Info_VisitingSecurableObject, path);
+                    action(currentObj, path);
+                    foreach (var subObj in subObjects.Reverse())
+                    {
+                        stack.Push(subObj);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Trace.TraceError(CoreResources.SecurityExtensions_Error_VisitingSecurableObject, path, e);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Entity cache
+
+        /// <summary>
+        /// A dictionary to cache resolved user emails. key: user login name, value: user email.
+        /// *** 
+        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
+        /// </summary>
+        private static Dictionary<string, string> MockupUserEmailCache = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Get user email by user id.
+        /// </summary>
+        /// <param name="web">The current web object.</param>
+        /// <param name="userId">The user id</param>
+        /// <returns>The email property of the specified user.</returns>
+        private static string GetUserEmail(this Web web, int userId)
+        {
+            var user = web.GetUserById(userId);
+            web.Context.Load(user, u => u.Email);
+            web.Context.ExecuteQueryRetry();
+            return user.Email;
+        }
+
+        /// <summary>
+        /// A dictionary to cache all user entities of a given SharePoint group. key: group login name, value: an array of user entities belongs to the group.
+        /// *** 
+        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
+        /// </summary>
+        private static Dictionary<string, UserEntity[]> MockupGroupCache = new Dictionary<string, UserEntity[]>();
+        
+        /// <summary>
+        /// Ensure all users of a given SharePoint group has been cached.
+        /// </summary>
+        /// <param name="obj">The current securable object.</param>
+        /// <param name="groupLoginName">The group login name.</param>
+        private static void EnsureGroupCache(SecurableObject obj, string groupLoginName)
+        {
+            var context = obj.Context;
+            if (!MockupGroupCache.ContainsKey(groupLoginName))
+            {
+                var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName == groupLoginName).Users);
+                context.ExecuteQueryRetry();
+                MockupGroupCache[groupLoginName] = (from u in users select new UserEntity()
+                                              {
+                                                  Title = u.Title,
+                                                  Email = u.Email,
+                                                  LoginName = u.LoginName
+                                              }).ToArray();
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get all unique role assignments for a web object and all its descendents down to document or list item level.
+        /// </summary>
+        /// <param name="web">The current web object to be processed.</param>
+        /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit. When setting to 0, the process will stop at list / document library level.</param>
+        /// <returns></returns>
+        public static IEnumerable<RoleAssignmentEntity> GetAllUniqueRoleAssignments(this Web web, int leafBreadthLimit = int.MaxValue)
+        {
+            var result = new List<RoleAssignmentEntity>();
+            web.Visit(leafBreadthLimit, (obj, path) =>
+            {
+                if (!obj.HasUniqueRoleAssignments)
+                {
+                    return;
+                }
+                foreach (var assignment in obj.RoleAssignments)
+                {
+                    var bindings = web.Context.LoadQuery(assignment.RoleDefinitionBindings.Where(b => b.Name != "Limited Access"));
+                    web.Context.Load(assignment.Member, m => m.LoginName, m => m.Title, m => m.PrincipalType, m => m.Id);
+                    web.Context.ExecuteQueryRetry();
+                    var bindingList = (from b in bindings select b.Name).ToList();
+                    if (assignment.Member.PrincipalType == Microsoft.SharePoint.Client.Utilities.PrincipalType.SharePointGroup)
+                    {
+                        EnsureGroupCache(obj, assignment.Member.LoginName);
+                        foreach (var user in MockupGroupCache[assignment.Member.LoginName])
+                        {
+                            if (!MockupUserEmailCache.ContainsKey(user.LoginName))
+                            {
+                                MockupUserEmailCache[user.LoginName] = user.Email;
+                            }
+                            result.Add(new RoleAssignmentEntity()
+                            {
+                                Path = path,
+                                User = user,
+                                Role = assignment.Member.Title,
+                                RoleDefinitionBindings = bindingList,
+                            });
+                        }
+                    }
+                    else
+                    {
+                        if (!MockupUserEmailCache.ContainsKey(assignment.Member.LoginName))
+                        {
+                            MockupUserEmailCache[assignment.Member.LoginName] = web.GetUserEmail(assignment.Member.Id);
+                        }
+                        result.Add(new RoleAssignmentEntity()
+                        {
+                            Path = path,
+                            User = new UserEntity()
+                            {
+                                Title = assignment.Member.Title,
+                                Email = MockupUserEmailCache[assignment.Member.LoginName],
+                                LoginName = assignment.Member.LoginName
+                            },
+                            Role = "(Directly Assigned)",
+                            RoleDefinitionBindings = bindingList,
+                        });
+                    }
+                }
+            });
+            return result;
+        }
+
+        #endregion
     }
 }

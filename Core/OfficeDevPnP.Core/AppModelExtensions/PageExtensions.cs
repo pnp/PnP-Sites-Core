@@ -864,7 +864,14 @@ namespace Microsoft.SharePoint.Client
                 web.Context.Load(newpage);
                 web.Context.ExecuteQueryRetry();
 
-                wikiPageUrl = UrlUtility.Combine("sitepages", wikiPageName);
+                wikiPageUrl = newpage.ServerRelativeUrl;
+            }
+            else
+            {
+                web.Context.Load(currentPageFile, s => s.ServerRelativeUrl);
+                web.Context.ExecuteQueryRetry();
+
+                wikiPageUrl = currentPageFile.ServerRelativeUrl;
             }
 
             return wikiPageUrl;

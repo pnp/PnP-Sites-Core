@@ -30,7 +30,7 @@
     <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE"/>
   </pnp:Files>
   <pnp:SiteFields>
-    <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+    <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" Required="TRUE" />
     <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
     <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="My Columns"  MaxLength="255" AllowDeletion="TRUE" />
     <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="My Columns " MaxLength="255" AllowDeletion="TRUE" />
@@ -43,7 +43,7 @@
                  Inherits="true"
                  Version="0">
       <FieldRefs>
-        <FieldRef ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Name="ProjectID" DisplayName="Project ID" />
+        <FieldRef ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Name="ProjectID" DisplayName="Project ID" Required="TRUE"/>
         <FieldRef ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Name="ProjectName" DisplayName="Project Name" />
         <FieldRef ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Name="ProjectManager" DisplayName="Project Manager" />
         <FieldRef ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Name="DocumentDescription" DisplayName="Document Description" />

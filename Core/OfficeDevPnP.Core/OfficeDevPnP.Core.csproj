@@ -382,6 +382,7 @@
     <Compile Include="Entities\DefaultColumnTermPathValue.cs" />
     <Compile Include="Entities\DefaultColumnTermValue.cs" />
     <Compile Include="Entities\ExternalUserEntity.cs" />
+    <Compile Include="Entities\RoleAssignmentEntity.cs" />
     <Compile Include="Entities\StructuralNavigationEntity.cs" />
     <Compile Include="Entities\TaxonomyFieldCreationInformation.cs" />
     <Compile Include="Entities\FieldCreationInformation.cs" />
@@ -564,6 +565,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupId.cs" />
@@ -803,12 +806,12 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

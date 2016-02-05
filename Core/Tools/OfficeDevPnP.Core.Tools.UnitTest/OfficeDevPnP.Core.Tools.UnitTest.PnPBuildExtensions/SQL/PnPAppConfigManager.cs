@@ -1,8 +1,10 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -113,7 +115,17 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                         WriteProperty(writer, "SPOCredentialManagerLabel", testConfig.TestAuthentication.CredentialManagerLabel);
                         if(!testConfig.TestAuthentication.AppOnly)
                         {
-                            WriteProperty(writer, "SPOUserName", testConfig.TestAuthentication.User);
+                            // System.Diagnostics.Debugger.Launch();
+                            // Always output the username since some tests depend on this
+                            if (!String.IsNullOrEmpty(testConfig.TestAuthentication.CredentialManagerLabel))
+                            {
+                                NetworkCredential cred = CredentialManager.GetCredential(testConfig.TestAuthentication.CredentialManagerLabel);
+                                WriteProperty(writer, "SPOUserName", cred.UserName);
+                            }
+                            else
+                            {
+                                WriteProperty(writer, "SPOUserName", testConfig.TestAuthentication.User);
+                            }
                             WriteProperty(writer, "SPOPassword", testConfig.TestAuthentication.Password);
                         }
                         else // App-Only
