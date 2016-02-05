@@ -269,6 +269,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Binding document template {0} to content type {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_BindingDocumentTemplate {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_BindingDocumentTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content type &apos;{0}&apos; ({1}) already exists; no changes made..
         /// </summary>
         internal static string FieldAndContentTypeExtensions_ContentType01AlreadyExists {
@@ -310,6 +319,15 @@ namespace OfficeDevPnP.Core {
         internal static string FieldAndContentTypeExtensions_CreateFieldBase {
             get {
                 return ResourceManager.GetString("FieldAndContentTypeExtensions_CreateFieldBase", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Document template {0} is already attached to content type {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_DocumentTemplateAlreadyAttached {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_DocumentTemplateAlreadyAttached", resourceCulture);
             }
         }
         
