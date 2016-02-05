@@ -170,7 +170,11 @@ namespace OfficeDevPnP.Core.Utilities
             wp.Append("<webParts>");
             wp.Append("	<webPart xmlns='http://schemas.microsoft.com/WebPart/v3'>");
             wp.Append("		<metaData>");
+#if CLIENTSDKV15
+            wp.Append("			<type name='Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />");
+#else
             wp.Append("			<type name='Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />");
+#endif
             wp.Append("			<importErrorMessage>Cannot import this Web Part.</importErrorMessage>");
             wp.Append("		</metaData>");
             wp.Append("		<data>");
@@ -219,7 +223,11 @@ namespace OfficeDevPnP.Core.Utilities
             wp.Append("<webParts>");
             wp.Append("	<webPart xmlns='http://schemas.microsoft.com/WebPart/v3'>");
             wp.Append("		<metaData>");
+#if CLIENTSDKV15
+            wp.Append("			<type name='Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />");
+#else
             wp.Append("			<type name='Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />");
+#endif
             wp.Append("			<importErrorMessage>Cannot import this Web Part.</importErrorMessage>");
             wp.Append("		</metaData>");
             wp.Append("		<data>");
