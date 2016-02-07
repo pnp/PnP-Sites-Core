@@ -95,7 +95,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var fieldUserValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
                             if (fieldUserValue != null)
                             {
+#if !CLIENTSDKV15
                                 value = fieldUserValue.Email;
+#else
+                                value = fieldUserValue.LookupValue;
+#endif
                             }
                             break;
                         case "LookupMulti":

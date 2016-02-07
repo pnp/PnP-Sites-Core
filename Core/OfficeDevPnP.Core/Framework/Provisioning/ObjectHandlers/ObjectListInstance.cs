@@ -725,7 +725,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
-#if !CLIENTSDFKV15
+#if !CLIENTSDKV15
                 if(templateList.Title.ContainsResourceToken())
                 {
                     if(existingList.TitleResource.SetUserResourceValue(templateList.Title, parser))

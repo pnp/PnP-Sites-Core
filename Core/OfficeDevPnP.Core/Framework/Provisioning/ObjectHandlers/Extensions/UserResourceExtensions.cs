@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
+#if !CLIENTSDKV15
     internal static class UserResourceExtensions
     {
         public static bool SetUserResourceValue(this UserResource userResource, string tokenValue, TokenParser parser)
@@ -33,4 +34,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
            
         }
     }
+#endif
 }
