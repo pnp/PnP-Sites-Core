@@ -56,15 +56,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             { 
+                // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
                 }
+
+                // Try with master page catalog
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
-             
+
+                // Try with site URL
                 Uri uri;
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
@@ -75,6 +79,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ? "{site}" + url // we need this for DocumentTemplate attribute of pnp:ListInstance also on a root site ("/") without managed path
                             : url.Replace(webUrlPathAndQuery, "{site}");
                     }
+                }
+
+                // Default action
+                if (String.IsNullOrEmpty(result))
+                {
+                    result = url;
                 }
             }
 
