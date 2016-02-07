@@ -115,12 +115,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
                             {
-                                scope.LogWarning($"The file \"{file.Name}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.");
+                                scope.LogWarning(String.Format("The file \"{0}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.", file.Name));
                             }
                         }
                         else
                         {
-                            scope.LogWarning($"Skipping file \"{file.Name}\" because it is native in the publishing feature.");
+                            scope.LogWarning(String.Format("Skipping file \"{0}\" because it is native in the publishing feature.", file.Name));
                         }
                     }
                 }
