@@ -13,11 +13,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
         public static bool SetUserResourceValue(this UserResource userResource, string tokenValue, TokenParser parser)
         {
             bool isDirty = false;
-            var resourceValues = parser.GetResourceTokenResourceValues(tokenValue);
-            foreach (var resourceValue in resourceValues)
+
+            if (userResource != null && !String.IsNullOrEmpty(tokenValue))
             {
-                userResource.SetValueForUICulture(resourceValue.Item1, resourceValue.Item2);
-                isDirty = true;
+                var resourceValues = parser.GetResourceTokenResourceValues(tokenValue);
+                foreach (var resourceValue in resourceValues)
+                {
+                    userResource.SetValueForUICulture(resourceValue.Item1, resourceValue.Item2);
+                    isDirty = true;
+                }
             }
 
             return isDirty;
@@ -25,13 +29,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
         public static bool ContainsResourceToken(this string value)
         {
-            value = value.ToLower();
-            return value.IndexOf("{res:") > -1 ||
-                value.IndexOf("{loc:") > -1 ||
-                value.IndexOf("{resource:") > -1 ||
-                value.IndexOf("{localize:") > -1 ||
-                value.IndexOf("{localization:") > -1;
-           
+            if (value != null)
+            {
+                value = value.ToLower();
+                return value.IndexOf("{res:") > -1 ||
+                    value.IndexOf("{loc:") > -1 ||
+                    value.IndexOf("{resource:") > -1 ||
+                    value.IndexOf("{localize:") > -1 ||
+                    value.IndexOf("{localization:") > -1;
+            }
+            else
+            {
+                return (false);
+            }
         }
     }
 #endif
