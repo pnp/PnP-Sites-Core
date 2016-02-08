@@ -385,6 +385,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdView.Update();
                 }
 
+                // ContentTypeID
+                var contentTypeID = viewElement.Attribute("ContentTypeID") != null ? viewElement.Attribute("ContentTypeID").Value : null;
+                if (!string.IsNullOrEmpty(contentTypeID) && (contentTypeID != BuiltInContentTypeId.System))
+                {
+                    ContentTypeId childContentTypeId = null;
+                    if (contentTypeID == BuiltInContentTypeId.RootOfList)
+                    {
+                        var childContentType = web.GetContentTypeById(contentTypeID);
+                        childContentTypeId = childContentType != null ? childContentType.Id : null;
+                    }
+                    else
+                    {
+                        childContentTypeId = createdList.ContentTypes.BestMatch(contentTypeID);
+                    }
+                    if (childContentTypeId != null)
+                    {
+                        createdView.ContentTypeId = childContentTypeId;
+                        createdView.Update();
+                    }
+                }
+
+                // Default for content type
+                bool parsedDefaultViewForContentType;
+                var defaultViewForContentType = viewElement.Attribute("DefaultViewForContentType") != null ? viewElement.Attribute("DefaultViewForContentType").Value : null;
+                if (!string.IsNullOrEmpty(defaultViewForContentType) && bool.TryParse(defaultViewForContentType, out parsedDefaultViewForContentType))
+                {
+                    var contentType = web.GetContentTypeById(contentTypeID, searchInSiteHierarchy: true);
+                    createdView.DefaultViewForContentType = parsedDefaultViewForContentType;
+                    createdView.Update();
+                }
+
                 // Scope
                 var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
                 ViewScope parsedScope = ViewScope.DefaultValue;
