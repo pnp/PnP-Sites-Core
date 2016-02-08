@@ -168,7 +168,15 @@ namespace Microsoft.SharePoint.Client
 
         public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, Version minimallyRequiredVersion)
         {
-            return clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
+            bool hasMinimalVersion = false;
+            try
+            {
+                hasMinimalVersion = clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
+            } catch (PropertyOrFieldNotInitializedException)
+            {
+                // swallow the exception.
+            }
+            return hasMinimalVersion;
         }
     }
 }
