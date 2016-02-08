@@ -1,4 +1,4 @@
-# PnP Unit Test report for OnPremAppOnly on Tuesday, January 5, 2016 #
+# PnP Unit Test report for OnPremAppOnly on Sunday, February 7, 2016 #
 This page is showing the results of the PnP unit test run.
 
 ## Test configuration ##
@@ -7,21 +7,21 @@ This report contains the unit test results from the following run:
 Parameter | Value
 ----------|------
 PnP Unit Test configuration | OnPremAppOnly
-Test run date | Tuesday, January 5, 2016
+Test run date | Sunday, February 7, 2016
 Test run time | 10:21 PM
 PnP branch | dev
 Visual Studio build configuration | debug15
 
 ## Test summary ##
-During this test run 281 tests have been executed with following outcome:
+During this test run 284 tests have been executed with following outcome:
 
 Parameter | Value
 ----------|------
-Executed tests | 281
-Elapsed time | 0h 19m 18s
-Passed tests | 209
-Failed tests | **24**
-Skipped tests | 48
+Executed tests | 284
+Elapsed time | 0h 19m 54s
+Passed tests | 229
+Failed tests | **6**
+Skipped tests | 49
 Was canceled | False
 Was aborted | False
 Error | 
@@ -36,39 +36,15 @@ Error |
 <td><b>Duration</b></td>
 <td><b>Message</b></td>
 </tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckOutFileTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckInFileTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileWebDavTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.VerifyIfUploadRequiredTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.SetFilePropertiesTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.GetFileTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureSiteFolderTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
-<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderRecursiveTest</td><td>Failed</td><td>0h 0m 0s</td><td>Initialization method OfficeDevPnP.Core.Tests.AppModelExtensions.FileFolderExtensionsTests.Initialize threw exception. Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A list, survey, discussion board, or document library with the specified title already exists in this Web site.  Please choose another title..</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutWithPathTest</td><td>Failed</td><td>0h 0m 44s</td><td>Assert.AreNotEqual failed. Expected any value except:<(null)>. Actual:<(null)>. </td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectRegionalSettingsTests.CanExtractRegionalSettings</td><td>Failed</td><td>0h 0m 1s</td><td>Assert.IsNotNull failed. </td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanCreateEntities</td><td>Failed</td><td>0h 0m 0s</td><td>Assert.IsInstanceOfType failed.  Expected type:<System.Collections.Generic.List`1[OfficeDevPnP.Core.Framework.Provisioning.Model.Page]>. Actual type:<OfficeDevPnP.Core.Framework.Provisioning.Model.PageCollection>.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanProvisionObjects</td><td>Failed</td><td>0h 0m 1s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanProvisionObjects threw exception: 
-Microsoft.SharePoint.Client.PropertyOrFieldNotInitializedException: The property or field 'BaseType' has not been initialized. It has not been requested or the request has not been executed. It may need to be explicitly requested.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ObjectHandlers.ObjectListInstanceTests.FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries threw exception: 
-System.NullReferenceException: Object reference not set to an instance of an object.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.UpdatedListTitleShouldBeAvailableAsToken</td><td>Failed</td><td>0h 0m 1s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ObjectHandlers.ObjectListInstanceTests.UpdatedListTitleShouldBeAvailableAsToken threw exception: 
-System.NullReferenceException: Object reference not set to an instance of an object.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanCreateEntities</td><td>Failed</td><td>0h 0m 0s</td><td>Assert.IsInstanceOfType failed.  Expected type:<System.Collections.Generic.List`1[OfficeDevPnP.Core.Framework.Provisioning.Model.File]>. Actual type:<OfficeDevPnP.Core.Framework.Provisioning.Model.FileCollection>.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectFieldTests.CanCreateEntities</td><td>Failed</td><td>0h 0m 2s</td><td>Assert.IsInstanceOfType failed.  Expected type:<System.Collections.Generic.List`1[OfficeDevPnP.Core.Framework.Provisioning.Model.Field]>. Actual type:<OfficeDevPnP.Core.Framework.Provisioning.Model.FieldCollection>.</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectContentTypeTests.CanCreateEntities</td><td>Failed</td><td>0h 0m 2s</td><td>Assert.IsInstanceOfType failed.  Expected type:<System.Collections.Generic.List`1[OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType]>. Actual type:<OfficeDevPnP.Core.Framework.Provisioning.Model.ContentTypeCollection>.</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToJSon</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToJSon threw exception: 
-System.InvalidOperationException: A circular reference was detected while serializing an object of type 'OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate'.</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectWithJsonFormatter</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectWithJsonFormatter threw exception: 
-System.NullReferenceException: Object reference not set to an instance of an object.</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanHandleDomainObjectWithJsonFormatter</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanHandleDomainObjectWithJsonFormatter threw exception: 
-System.NullReferenceException: Object reference not set to an instance of an object.</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanDeserializeXMLToDomainObjectFrom201512Full</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanDeserializeXMLToDomainObjectFrom201512Full threw exception: 
-System.ApplicationException: The provided template is not valid!</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML201512Full</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML201512Full threw exception: 
-System.ApplicationException: The provided template is not valid!</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.AreTemplatesEqual</td><td>Failed</td><td>0h 0m 0s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.AreTemplatesEqual threw exception: 
-System.NullReferenceException: Object reference not set to an instance of an object.</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToXml</td><td>Failed</td><td>0h 0m 21s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToXml threw exception: 
+System.NotSupportedException: Specified method is not supported.</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectWithJsonFormatter</td><td>Failed</td><td>0h 0m 0s</td><td>Assert.IsTrue failed. </td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.GetRemoteTemplateTest</td><td>Failed</td><td>0h 0m 24s</td><td>Test method OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates.DomainModelTests.GetRemoteTemplateTest threw exception: 
+System.NotSupportedException: Specified method is not supported.</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetProvisioningTemplateTest</td><td>Failed</td><td>0h 0m 25s</td><td>Test method Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetProvisioningTemplateTest threw exception: 
+System.NotSupportedException: Specified method is not supported.</td></tr>
 
 </table>
 
@@ -109,6 +85,7 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportTermSetTest</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. Taxonomy tests are not supported when testing using app-only</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportTermSetFromTermstoreTest</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. Taxonomy tests are not supported when testing using app-only</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.TaxonomyExtensionsTests.ExportAllTermsTest</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. Taxonomy tests are not supported when testing using app-only</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileWebDavTest</td><td>Skipped</td><td>0h 0m 1s</td><td>Assert.Inconclusive failed. Tests involving webdav are not supported when testing using app-only</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorAzureTests.AzureConnectorGetFile1Test</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. No Azure Storage Key defined in App.Config, so can't test</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorAzureTests.AzureConnectorGetFile2Test</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. No Azure Storage Key defined in App.Config, so can't test</td></tr>
 <tr><td>Tests.Framework.Connectors.ConnectorAzureTests.AzureConnectorGetFiles1Test</td><td>Skipped</td><td>0h 0m 0s</td><td>Assert.Inconclusive failed. No Azure Storage Key defined in App.Config, so can't test</td></tr>
@@ -141,17 +118,16 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <td><b>Duration</b></td>
 </tr>
 <tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadHtmlPageLayoutAndConvertItToAspxVersionTest</td><td>Passed</td><td>0h 0m 47s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutTest</td><td>Passed</td><td>0h 0m 46s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutWithPathTest</td><td>Passed</td><td>0h 0m 44s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CanUploadPageLayoutTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
 <tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.AllowAllPageLayoutsTest</td><td>Passed</td><td>0h 0m 43s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.DeployThemeAndCreateComposedLookTest</td><td>Passed</td><td>0h 0m 43s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.ComposedLookExistsTest</td><td>Passed</td><td>0h 0m 44s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.GetCurrentComposedLookTest</td><td>Passed</td><td>0h 0m 53s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookShouldWorkTest</td><td>Passed</td><td>0h 0m 43s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.DeployThemeAndCreateComposedLookTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.ComposedLookExistsTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.GetCurrentComposedLookTest</td><td>Passed</td><td>0h 0m 54s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookShouldWorkTest</td><td>Passed</td><td>0h 0m 48s</td></tr>
 <tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.CreateComposedLookByNameShouldWorkTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookInheritsTest</td><td>Passed</td><td>0h 1m 4s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookResetInheritanceTest</td><td>Passed</td><td>0h 1m 21s</td></tr>
-<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SeattleMasterPageIsUnchangedTest</td><td>Passed</td><td>0h 0m 43s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookInheritsTest</td><td>Passed</td><td>0h 1m 0s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SetComposedLookResetInheritanceTest</td><td>Passed</td><td>0h 1m 20s</td></tr>
+<tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.SeattleMasterPageIsUnchangedTest</td><td>Passed</td><td>0h 0m 40s</td></tr>
 <tr><td>Tests.AppModelExtensions.BrandingExtensionsTests.IsSubsiteTest</td><td>Passed</td><td>0h 0m 42s</td></tr>
 <tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.NotLoadedPropertyExceptionTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsurePropertyTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -163,7 +139,7 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsurePropertiesIncludeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsurePropertyIncludeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsureComplexPropertyWithDependencyTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsureComplexPropertiesWithDependencyTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.AppModelExtensions.ClientObjectExtensionsTests.EnsureComplexPropertiesWithDependencyTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FeatureExtensionsTests.ActivateSiteFeatureTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FeatureExtensionsTests.ActivateWebFeatureTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FeatureExtensionsTests.DeactivateSiteFeatureTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -173,7 +149,7 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CreateFieldTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanAddContentTypeToListByName</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanRemoveContentTypeFromListByName</td><td>Passed</td><td>0h 0m 4s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanRemoveContentTypeFromListById</td><td>Passed</td><td>0h 0m 6s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CanRemoveContentTypeFromListById</td><td>Passed</td><td>0h 0m 5s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.CreateExistingFieldTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.GetContentTypeByIdTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.RemoveFieldByInternalNameThrowsOnNoMatchTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
@@ -181,9 +157,9 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameInSubWebTest</td><td>Passed</td><td>0h 0m 7s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdInSubWebTest</td><td>Passed</td><td>0h 0m 12s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdInSubWebTest</td><td>Passed</td><td>0h 0m 8s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByNameSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.ContentTypeExistsByIdSearchInSiteHierarchyTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.AddFieldToContentTypeTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.AddFieldToContentTypeMakeRequiredTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.FieldAndContentTypeExtensionsTests.SetDefaultContentTypeToListTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
@@ -214,10 +190,20 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddPermissionLevelToUserTestByRoleDefTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddSamePermissionLevelTwiceToGroupTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.AddReaderAccessToEveryoneTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.SecurityExtensionsTests.GetAllUniqueRoleAssignmentsTest</td><td>Passed</td><td>0h 0m 3s</td></tr>
 <tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.GetNavigationSettingsTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.UpdateNavigationSettingsTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Tests.AppModelExtensions.StructuralNavigationExtensionsTests.UpdateNavigationSettings2Test</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.AppModelExtensions.Tenant15ExtensionsTests.CreateDeleteSiteCollectionTest</td><td>Passed</td><td>0h 0m 27s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckOutFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.CheckInFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.UploadFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.VerifyIfUploadRequiredTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.SetFilePropertiesTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.GetFileTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureSiteFolderTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.FileFolderExtensionsTests.EnsureLibraryFolderRecursiveTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.AppModelExtensions.Tenant15ExtensionsTests.CreateDeleteSiteCollectionTest</td><td>Passed</td><td>0h 0m 26s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddTopNavigationNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddQuickLaunchNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.NavigationExtensionsTests.AddSearchNavigationNodeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -261,26 +247,35 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.TokenProviderAssemblyMissingThrowsAgrumentException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.TokenProviderTypeNameMissingThrowsAgrumentException</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ExtensibilityCallOut.ExtensibilityTests.TokenProviderClientCtxIsNullThrowsAgrumentNullException</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectAuditSettingsTests.CanExtractAuditSettings</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectAuditSettingsTests.CanExtractAuditSettings</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectAuditSettingsTests.CanProvisionAuditSettings</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectRegionalSettingsTests.CanProvisionRegionalSettings</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSupportedUILanguagesTests.CanExtractSupportedUILanguages</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSupportedUILanguagesTests.CanProvisionSupportedUILanguages</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectComposedLookTests.CanCreateComposedLooks</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectPagesTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanCreateEntities1</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectSiteSecurityTests.CanCreateEntities2</td><td>Passed</td><td>0h 0m 1s</td></tr>
-<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 6s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 7s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectPropertyBagEntryTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 3s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 18s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries</td><td>Passed</td><td>0h 0m 12s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectListInstanceTests.UpdatedListTitleShouldBeAvailableAsToken</td><td>Passed</td><td>0h 0m 6s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanAddWebPartsToForms</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanProvisionObjectsRequiredField</td><td>Passed</td><td>0h 0m 14s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectFilesTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFeaturesTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFeaturesTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectCustomActionsTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectCustomActionsTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectFieldTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectFieldTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.ObjectContentTypeTests.CanProvisionObjects</td><td>Passed</td><td>0h 0m 4s</td></tr>
+<tr><td>Tests.Framework.ObjectHandlers.ObjectContentTypeTests.CanCreateEntities</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Tests.Framework.ObjectHandlers.TokenParserTests.ParseTests</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.Framework.Providers.BaseTemplateTests.GetBaseTemplateForCurrentSiteTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.Providers.XMLProvidersTests.XMLFileSystemGetTemplatesTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
@@ -304,7 +299,7 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanGetVistors</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanGetFeatures</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanGetCustomActions</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToXml</td><td>Passed</td><td>0h 0m 24s</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeToJSon</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.ValidateFullProvisioningSchema5</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.ValidateSharePointProvisioningSchema6</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanDeserializeXMLToDomainObject5</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -312,7 +307,10 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML6</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML5ByIdentifier</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML5ByFileLink</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.GetRemoteTemplateTest</td><td>Passed</td><td>0h 0m 23s</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanHandleDomainObjectWithJsonFormatter</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanDeserializeXMLToDomainObjectFrom201512Full</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.CanSerializeDomainObjectToXML201512Full</td><td>Passed</td><td>0h 0m 0s</td></tr>
+<tr><td>Tests.Framework.ProvisioningTemplates.DomainModelTests.AreTemplatesEqual</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Utilities.Tests.JsonUtilityTests.SerializeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Utilities.Tests.JsonUtilityTests.DeserializeTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Utilities.Tests.JsonUtilityTests.DeserializeListTest</td><td>Passed</td><td>0h 0m 0s</td></tr>
@@ -327,18 +325,17 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.ContainsInvalidUrlCharsReturnsTrueForInvalidString</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.StripInvalidUrlCharsReturnsStrippedString</td><td>Passed</td><td>0h 0m 0s</td></tr>
 <tr><td>Tests.AppModelExtensions.UrlUtilityTests.ReplaceInvalidUrlCharsReturnsStrippedString</td><td>Passed</td><td>0h 0m 0s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 9s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 11s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 10s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueMultipleRunsTest</td><td>Passed</td><td>0h 0m 9s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemovePropertyBagValueTest</td><td>Passed</td><td>0h 0m 6s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.SetPropertyBagValueMultipleRunsTest</td><td>Passed</td><td>0h 0m 10s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemovePropertyBagValueTest</td><td>Passed</td><td>0h 0m 7s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueIntTest</td><td>Passed</td><td>0h 0m 6s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetPropertyBagValueStringTest</td><td>Passed</td><td>0h 0m 6s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.PropertyBagContainsKeyTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetIndexedPropertyBagKeysTest</td><td>Passed</td><td>0h 0m 10s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetIndexedPropertyBagKeysTest</td><td>Passed</td><td>0h 0m 11s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.AddIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 7s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 6s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetProvisioningTemplateTest</td><td>Passed</td><td>0h 0m 25s</td></tr>
-<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetAppInstancesTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveIndexedPropertyBagKeyTest</td><td>Passed</td><td>0h 0m 4s</td></tr>
+<tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.GetAppInstancesTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.RemoveAppInstanceByTitleTest</td><td>Passed</td><td>0h 0m 2s</td></tr>
 <tr><td>Microsoft.SharePoint.Client.Tests.WebExtensionsTests.IsSubWebTest</td><td>Passed</td><td>0h 0m 1s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanAddLayoutToWikiPageTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
@@ -346,9 +343,9 @@ System.NullReferenceException: Object reference not set to an instance of an obj
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.ProveThatWeCanAddHtmlToPageAfterChangingLayoutTest</td><td>Passed</td><td>0h 0m 5s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishingPageTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.PublishingPageWithInvalidCharsIsCorrectlyCreatedTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsEnabledTest</td><td>Passed</td><td>0h 0m 15s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsEnabledTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
 <tr><td>Tests.AppModelExtensions.PageExtensionsTests.CanCreatePublishedPublishingPageWhenModerationIsDisabledTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
-<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CreatedPublishingPagesSetsTitleCorrectlyTest</td><td>Passed</td><td>0h 0m 16s</td></tr>
+<tr><td>Tests.AppModelExtensions.PageExtensionsTests.CreatedPublishingPagesSetsTitleCorrectlyTest</td><td>Passed</td><td>0h 0m 14s</td></tr>
 
 </table>
 
