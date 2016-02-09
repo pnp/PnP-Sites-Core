@@ -1215,11 +1215,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (ct.Parent != null)
                 {
-                    // Removed this - so that we are getting full list of content types and if it's oob content type,
-                    // We are taking parent - VesaJ.
-                    //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
-                    //{
-                    list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+					// Removed this - so that we are getting full list of content types and if it's oob content type,
+					// We are taking parent - VesaJ.
+					//if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
+					//{
+					// Exclude System Content Type to prevent getting exception during import
+					if (!ct.Parent.StringId.Equals("0x"))
+					{
+						list.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = ct.Parent.StringId, Default = count == 0 });
+					}
                     //}
                 }
                 else
