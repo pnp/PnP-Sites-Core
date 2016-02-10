@@ -1,6 +1,7 @@
+using System;
 using System.Text.RegularExpressions;
 
-namespace System
+namespace OfficeDevPnP.Core.Utilities
 {
     /// <summary>
     /// Static methods to modify URL paths.
@@ -41,13 +42,13 @@ namespace System
         public static string Combine(string path, string relative) 
         {
             if(relative == null)
-                relative = String.Empty;
+                relative = string.Empty;
             
             if(path == null)
-                path = String.Empty;
+                path = string.Empty;
 
             if(relative.Length == 0 && path.Length == 0)
-                return String.Empty;
+                return string.Empty;
 
             if(relative.Length == 0)
                 return path;
