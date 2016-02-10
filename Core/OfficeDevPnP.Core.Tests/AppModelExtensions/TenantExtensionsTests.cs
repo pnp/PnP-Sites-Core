@@ -9,6 +9,7 @@ using Microsoft.Online.SharePoint.TenantAdministration;
 using System.Configuration;
 using OfficeDevPnP.Core.Entities;
 using System.Threading;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {

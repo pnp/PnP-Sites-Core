@@ -12,6 +12,7 @@ using System.Linq;
 using System.Net;
 using System.IO;
 using System.Text;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -1119,7 +1120,7 @@ namespace Microsoft.SharePoint.Client
             context.Load(web, l => l.Language);
             context.ExecuteQueryRetry();
 
-            ClientResult<string> pagesLibraryName = Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", (int)web.Language);
+            ClientResult<string> pagesLibraryName = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", (int)web.Language);
             context.ExecuteQueryRetry();
 
             List spList = web.Lists.GetByTitle(pagesLibraryName.Value);

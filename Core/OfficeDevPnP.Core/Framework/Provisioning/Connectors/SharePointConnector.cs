@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.SharePoint.Client;
 using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {

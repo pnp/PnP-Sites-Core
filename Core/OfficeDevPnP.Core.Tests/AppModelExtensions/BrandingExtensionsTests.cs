@@ -1,4 +1,4 @@
-﻿﻿using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using System.IO;
 using System.Configuration;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {

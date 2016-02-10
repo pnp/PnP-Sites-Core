@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Publishing;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
