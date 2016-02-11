@@ -197,14 +197,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !CLIENTSDKV15
                     web.NoCrawl = webSettings.NoCrawl;
 
-                    String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
+                    web.EnsureProperty(w => w.HasUniqueRoleAssignments);
+                    if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
-                        requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
-                    }
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue))
-                    {
-                        web.RequestAccessEmail = requestAccessEmailValue;
+                        String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
+                        {
+                            requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
+                        }
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue))
+                        {
+                            web.RequestAccessEmail = requestAccessEmailValue;
+                        }
                     }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
