@@ -1474,12 +1474,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="descriptionResource">Localized value for the Description property</param>
         public static void SetLocalizationForContentType(this ContentType contentType, string cultureName, string nameResource, string descriptionResource)
         {
-            if (contentType.IsObjectPropertyInstantiated("TitleResource"))
+            if (!contentType.IsObjectPropertyInstantiated("NameResource"))
             {
                 contentType.Context.Load(contentType);
                 contentType.Context.ExecuteQueryRetry();
             }
-
+            
             // Set translations for the culture
             contentType.NameResource.SetValueForUICulture(cultureName, nameResource);
             contentType.DescriptionResource.SetValueForUICulture(cultureName, descriptionResource);
