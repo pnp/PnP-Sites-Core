@@ -47,33 +47,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>tokenized url as String</returns>
         protected string Tokenize(string url, string webUrl)
         {
-            if (!string.IsNullOrEmpty(url))
+            String result = null;
+
+            if (string.IsNullOrEmpty(url))
             {
+                // nothing to tokenize...
+                result = String.Empty;
+            }
+            else
+            { 
+                // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    return url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
+                    result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
                 }
+
+                // Try with master page catalog
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    return url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
+                    result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                 }
-             
+
+                // Try with site URL
                 Uri uri;
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
                     string webUrlPathAndQuery = System.Web.HttpUtility.UrlDecode(uri.PathAndQuery);
                     if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
                     {
-                        return (uri.PathAndQuery.Equals("/") && url.StartsWith(uri.PathAndQuery))
+                        result = (uri.PathAndQuery.Equals("/") && url.StartsWith(uri.PathAndQuery))
                             ? "{site}" + url // we need this for DocumentTemplate attribute of pnp:ListInstance also on a root site ("/") without managed path
                             : url.Replace(webUrlPathAndQuery, "{site}");
                     }
                 }
+
+                // Default action
+                if (String.IsNullOrEmpty(result))
+                {
+                    result = url;
+                }
             }
 
-            // nothing to tokenize...
-            return url;
-        }
-        
+            return (result);
+        }        
     }
 }

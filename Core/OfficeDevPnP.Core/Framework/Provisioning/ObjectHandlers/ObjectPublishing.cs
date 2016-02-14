@@ -73,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(masterPageGalleryFolder.Files);
                 web.Context.ExecuteQueryRetry();
 
-                foreach (var file in masterPageGalleryFolder.Files.Where(
+                foreach (var file in masterPageGalleryFolder.Files.AsEnumerable().Where(
                     f => f.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ||
                     f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)))
                 {

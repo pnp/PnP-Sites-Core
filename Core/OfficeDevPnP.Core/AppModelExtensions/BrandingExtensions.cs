@@ -1101,7 +1101,21 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("pageLayoutName");
             }
 
-            var pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
+            string pageLayoutFolder = System.IO.Path.GetDirectoryName(pageLayoutName);
+            string pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
+
+            if (!String.IsNullOrEmpty(pageLayoutFolder))
+            {
+                // strip trailing /
+                pageLayoutFolder = pageLayoutFolder.Replace("\\", "/");
+                if (pageLayoutFolder.Substring(0, 1).Equals("/", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    pageLayoutFolder = pageLayoutFolder.Substring(1);
+                }
+
+                pageLayoutNameWithoutPath = String.Format("{0}/{1}", pageLayoutFolder, pageLayoutNameWithoutPath);
+            }
+
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             web.Context.Load(masterPageGallery, x => x.RootFolder.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();

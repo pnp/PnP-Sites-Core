@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.0.1601.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-ENTERWIKI0template">
     <pnp:ProvisioningTemplate ID="ENTERWIKI0template" Version="1">
-      <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
+      <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="98637cad-92fc-4795-891b-e14636d00895;" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
@@ -28,6 +29,7 @@
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser;#FastEndUser" />
         <pnp:PropertyBagEntry Key="__PagesListId" Value="44754229-51df-4e04-a7a6-de8b1f87b955" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="98637cad-92fc-4795-891b-e14636d00895;" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12;17;17" />
         <pnp:PropertyBagEntry Key="__DocumentsListId" Value="6453d6b4-5daa-4461-8b12-59477fc3a21d" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" />
@@ -35,6 +37,7 @@
         <pnp:PropertyBagEntry Key="SiteCollectionGroupIdf78f1331-712e-4cfc-a1b3-fa6a56b3b37b" Value="d52d89d7-86f8-47af-8612-7460b3fe2caf" />
         <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;74c2b8c6-da21-4615-a601-200c81860b5c&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;74c2b8c6-da21-4615-a601-200c81860b5c&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" />
         <pnp:PropertyBagEntry Key="showurlstructure" Value="1" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
         <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;c9127d87-b3a6-43e5-9e84-09cd079a0d25&quot; url=&quot;_catalogs/masterpage/EnterpriseWiki.aspx&quot; /&gt;" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" />
         <pnp:PropertyBagEntry Key="__AllowSpacesInNewPageName" Value="True" />
@@ -51,14 +54,15 @@
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="5e21db6a-2deb-4299-b0bb-ade22b2c7013" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="5e357833-6a62-4683-be79-68087bcb1d56" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
         <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1033" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="98637cad-92fc-4795-891b-e14636d00895;" />
+        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="False" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="98544d56-9f4f-4837-ad41-7831af85093d" />
         <pnp:PropertyBagEntry Key="__ImagesListId" Value="1a0eaac8-8d37-4e9a-b77c-773eb3d5945d" />
         <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="0" />
         <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" />
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" />
-        <pnp:PropertyBagEntry Key="vti_filenotfoundpage" Value="{site}/Pages/PageNotFoundError.aspx" />
+        <pnp:PropertyBagEntry Key="vti_filenotfoundpage" Value="/sites/TemplateENTERWIKI0/Pages/PageNotFoundError.aspx" />
         <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="6b68eec7-efc4-4a67-ba86-fe55c1e878f0" />
         <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="653d694c-0e29-4e12-9f13-eb8bac3335e2" />
@@ -3019,9 +3023,9 @@
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Owners" RoleDefinition="Full Control" />
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Visitors" RoleDefinition="Read" />
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Members" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
               <pnp:RoleAssignment Principal="Style Resource Readers" RoleDefinition="Restricted Read" />
               <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
               <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Read" />
@@ -3058,9 +3062,9 @@
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Owners" RoleDefinition="Full Control" />
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Visitors" RoleDefinition="Read" />
-              <pnp:RoleAssignment Principal="ENTERWIKI0 template Members" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
               <pnp:RoleAssignment Principal="Style Resource Readers" RoleDefinition="Restricted Read" />
               <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
               <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Restricted Read" />
@@ -3322,20 +3326,6 @@
           <pnp:Feature ID="a0e5a010-1329-49d4-9e09-f280cdbed37d" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:Files>
-        <pnp:File Src="Home.aspx" Folder="{site}/Pages" Overwrite="true">
-          <pnp:Properties>
-            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Enterprise Wiki Page}" />
-            <pnp:Property Key="Title" Value="Home" />
-            <pnp:Property Key="PublishingPageLayout" Value="{masterpagecatalog}/EnterpriseWiki.aspx, Basic Page" />
-            <pnp:Property Key="PublishingPageContent" Value="&lt;p&gt;Use the Enterprise Wiki to create a single, go-to place for knowledge sharing and project management across the enterprise. Enterprise Wikis are simple to use, flexible, and lightweight in features. They are quick and easy to create, and you can easily add links to other information systems, corporate directories, or applications.&lt;/p&gt;&lt;p&gt;By using an Enterprise Wiki, you can avoid email overload, provide structure to new and existing information, and encourage collaboration. This helps build consensus among team members. &lt;/p&gt;&lt;p&gt;Working with content - text, graphics or video - is as easy as working in any word processing application, such as Microsoft Word. Use the Rich Text Editor to enhance the formatting of content, apply styles to text, reorganize or spell check your content, insert and format tables, and embed graphics or video. You can do all these things without leaving the wiki page.&lt;/p&gt;&lt;p&gt;Other things you can do when working with Enterprise Wikis&amp;#58; &lt;/p&gt;&lt;ul&gt;&lt;li&gt;Collaborate on wiki pages with other users&lt;/li&gt;&lt;li&gt;Comment on a wiki page to enable discussion about the contents of the page&lt;/li&gt;&lt;li&gt;Rate a wiki page to share your opinion about its content&lt;/li&gt;&lt;li&gt;Categorize wiki pages to enable users to quickly find information and share it with others&lt;/li&gt;&lt;/ul&gt;" />
-            <pnp:Property Key="TaxCatchAll" Value="Microsoft.SharePoint.Client.FieldLookupValue[]" />
-            <pnp:Property Key="TaxCatchAllLabel" Value="Microsoft.SharePoint.Client.FieldLookupValue[]" />
-            <pnp:Property Key="Wiki_x0020_Page_x0020_Categories" Value="Microsoft.SharePoint.Client.Taxonomy.TaxonomyFieldValueCollection" />
-            <pnp:Property Key="MetaInfo" Value="{masterpagecatalog}/EnterpriseWiki.aspx, Basic Page&#xD;&#xA;" />
-          </pnp:Properties>
-        </pnp:File>
-      </pnp:Files>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
     </pnp:ProvisioningTemplate>
   </pnp:Templates>

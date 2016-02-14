@@ -1,26 +1,29 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.0.1601.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-STS0template">
     <pnp:ProvisioningTemplate ID="STS0template" Version="1">
-      <pnp:WebSettings NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
+      <pnp:WebSettings NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="6f35460b-20b5-46b1-be7f-b9d8834e1633" />
-        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
-        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
-        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
-        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="4;4" />
-        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" />
-        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
-        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser;#FastEndUser" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="6f35460b-20b5-46b1-be7f-b9d8834e1633" />
+        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
+        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
+        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
         <pnp:Permissions>
@@ -1881,195 +1884,6 @@
           <pnp:Feature ID="a0e5a010-1329-49d4-9e09-f280cdbed37d" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:Pages>
-        <pnp:Page Url="{site}/SitePages/Home.aspx" Overwrite="true" Layout="Custom">
-          <pnp:WebParts>
-            <pnp:WebPart Title="Get started with your site" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.WebPartPages.GettingStartedWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="HelpUrl" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="Description" type="string" />
-                        <property name="BaseViewID" type="string">2</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="Title" type="string">Get started with your site</property>
-                        <property name="TitleUrl" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="Height" type="string" />
-                        <property name="CatalogIconImageUrl" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="Site Feed" Row="1" Column="1">
-              <pnp:Contents>
-                <WebPart xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/WebPart/v2">
-                  <Title>Site Feed</Title>
-                  <FrameType>None</FrameType>
-                  <Description>Site Feed contains microblogging conversations on a group site.</Description>
-                  <IsIncluded>true</IsIncluded>
-                  <ZoneID>wpz</ZoneID>
-                  <PartOrder>1</PartOrder>
-                  <FrameState>Normal</FrameState>
-                  <Height />
-                  <Width />
-                  <AllowRemove>true</AllowRemove>
-                  <AllowZoneChange>true</AllowZoneChange>
-                  <AllowMinimize>true</AllowMinimize>
-                  <AllowConnect>true</AllowConnect>
-                  <AllowEdit>true</AllowEdit>
-                  <AllowHide>true</AllowHide>
-                  <IsVisible>true</IsVisible>
-                  <DetailLink />
-                  <HelpLink />
-                  <HelpMode>Modeless</HelpMode>
-                  <Dir>Default</Dir>
-                  <PartImageSmall />
-                  <MissingAssembly>Cannot import this Web Part.</MissingAssembly>
-                  <PartImageLarge />
-                  <IsIncludedFilter />
-                  <Assembly>Microsoft.SharePoint.Portal, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Assembly>
-                  <TypeName>Microsoft.SharePoint.Portal.WebControls.SiteFeedWebPart</TypeName>
-                </WebPart>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="Documents" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.WebPartPages.XsltListViewWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="ShowWithSampleData" type="bool">False</property>
-                        <property name="Default" type="string" />
-                        <property name="NoDefaultStyle" type="string" />
-                        <property name="CacheXslStorage" type="bool">True</property>
-                        <property name="ViewContentTypeId" type="string" />
-                        <property name="XmlDefinitionLink" type="string" />
-                        <property name="ManualRefresh" type="bool">False</property>
-                        <property name="ListUrl" type="string" null="true" />
-                        <property name="ListId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">{listid:Documents}</property>
-                        <property name="TitleUrl" type="string">{site}/Shared Documents</property>
-                        <property name="EnableOriginalValue" type="bool">False</property>
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="ServerRender" type="bool">False</property>
-                        <property name="ViewFlags" type="Microsoft.SharePoint.SPViewFlags, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">Html, TabularView, Hidden, Mobile</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="ListName" type="string">{{listid:Documents}}</property>
-                        <property name="ListDisplayName" type="string" null="true" />
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                        <property name="DisableSaveAsNewViewButton" type="bool">False</property>
-                        <property name="ViewFlag" type="string" />
-                        <property name="DataSourceID" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="AutoRefresh" type="bool">False</property>
-                        <property name="FireInitialRow" type="bool">True</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="Description" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="BaseXsltHashKey" type="string" null="true" />
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="CacheXslTimeOut" type="int">86400</property>
-                        <property name="ChromeType" type="chrometype">Default</property>
-                        <property name="Xsl" type="string" null="true" />
-                        <property name="JSLink" type="string" null="true" />
-                        <property name="CatalogIconImageUrl" type="string">/_layouts/15/images/itdl.png?rev=40</property>
-                        <property name="SampleData" type="string" null="true" />
-                        <property name="UseSQLDataSourcePaging" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="PageSize" type="int">-1</property>
-                        <property name="ShowTimelineIfAvailable" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="DataFields" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="Title" type="string" />
-                        <property name="PageType" type="Microsoft.SharePoint.PAGETYPE, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">PAGE_NORMALVIEW</property>
-                        <property name="DataSourcesString" type="string" />
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="InplaceSearchEnabled" type="bool">True</property>
-                        <property name="WebId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">{siteid}</property>
-                        <property name="Height" type="string" />
-                        <property name="GhostedXslLink" type="string">main.xsl</property>
-                        <property name="DisableViewSelectorMenu" type="bool">False</property>
-                        <property name="DisplayName" type="string" />
-                        <property name="IsClientRender" type="bool">False</property>
-                        <property name="XmlDefinition" type="string">&lt;View Name="{F705C135-52EE-4ED7-9F33-B0E0AD5DB06A}" MobileView="TRUE" Type="HTML" Hidden="TRUE" DisplayName="" Url="{site}/SitePages/Home.aspx" Level="1" BaseViewID="50" ContentTypeID="0x" &gt;&lt;Query&gt;&lt;OrderBy&gt;&lt;FieldRef Name="Modified" Ascending="FALSE"/&gt;&lt;/OrderBy&gt;&lt;/Query&gt;&lt;ViewFields&gt;&lt;FieldRef Name="DocIcon"/&gt;&lt;FieldRef Name="LinkFilename"/&gt;&lt;/ViewFields&gt;&lt;RowLimit Paged="TRUE"&gt;15&lt;/RowLimit&gt;&lt;JSLink&gt;clienttemplates.js&lt;/JSLink&gt;&lt;XslLink Default="TRUE"&gt;main.xsl&lt;/XslLink&gt;&lt;Toolbar Type="Standard"/&gt;&lt;/View&gt;</property>
-                        <property name="InitialAsyncDataFetch" type="bool">False</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="ParameterBindings" type="string">  &lt;ParameterBinding Name="dvt_sortdir" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_sortfield" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_startposition" Location="Postback" DefaultValue=""/&gt;
-            &lt;ParameterBinding Name="dvt_firstrow" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="OpenMenuKeyAccessible" Location="Resource(wss,OpenMenuKeyAccessible)" /&gt;
-            &lt;ParameterBinding Name="open_menu" Location="Resource(wss,open_menu)" /&gt;
-            &lt;ParameterBinding Name="select_deselect_all" Location="Resource(wss,select_deselect_all)" /&gt;
-            &lt;ParameterBinding Name="idPresEnabled" Location="Resource(wss,idPresEnabled)" /&gt;&lt;ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noitemsinview_doclibrary)" /&gt;&lt;ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(wss,noitemsinview_doclibrary_howto2)" /&gt;</property>
-                        <property name="DataSourceMode" type="Microsoft.SharePoint.WebControls.SPDataSourceMode, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">List</property>
-                        <property name="AutoRefreshInterval" type="int">60</property>
-                        <property name="AsyncRefresh" type="bool">False</property>
-                        <property name="HelpUrl" type="string" />
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="XslLink" type="string" null="true" />
-                        <property name="SelectParameters" type="string" />
-                        <property name="HasClientDataSource" type="bool">False</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-          </pnp:WebParts>
-          <pnp:Fields>
-            <pnp:Field FieldName="WikiField">&lt;div class="ExternalClassFB299F9BFE284773BC4129A28A206B73"&gt;
-            &lt;table id="layoutsTable" style="width&amp;#58;100%;"&gt;
-                &lt;tbody&gt;
-                    &lt;tr style="vertical-align&amp;#58;top;"&gt;
-            &lt;td colspan="2"&gt;&lt;div class="ms-rte-layoutszone-outer" style="width&amp;#58;100%;"&gt;&lt;div class="ms-rte-layoutszone-inner" style="word-wrap&amp;#58;break-word;margin&amp;#58;0px;border&amp;#58;0px;"&gt;&lt;div class="ms-rtestate-read ms-rte-wpbox"&gt;&lt;div class="ms-rtestate-read {webpartid:Get started with your site}" id="div_{webpartid:Get started with your site}"&gt;&lt;/div&gt;
-  &lt;div class="ms-rtestate-read" id="vid_{webpartid:Get started with your site}" style="display&amp;#58;none;"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;
-                    &lt;/tr&gt;
-                    &lt;tr style="vertical-align&amp;#58;top;"&gt;
-            &lt;td style="width&amp;#58;49.95%;"&gt;&lt;div class="ms-rte-layoutszone-outer" style="width&amp;#58;100%;"&gt;&lt;div class="ms-rte-layoutszone-inner" style="word-wrap&amp;#58;break-word;margin&amp;#58;0px;border&amp;#58;0px;"&gt;&lt;div class="ms-rtestate-read ms-rte-wpbox"&gt;&lt;div class="ms-rtestate-read {webpartid:Site Feed}" id="div_{webpartid:Site Feed}"&gt;&lt;/div&gt;
-  &lt;div class="ms-rtestate-read" id="vid_{webpartid:Site Feed}" style="display&amp;#58;none;"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;
-            &lt;td class="ms-wiki-columnSpacing" style="width&amp;#58;49.95%;"&gt;&lt;div class="ms-rte-layoutszone-outer" style="width&amp;#58;100%;"&gt;&lt;div class="ms-rte-layoutszone-inner" style="word-wrap&amp;#58;break-word;margin&amp;#58;0px;border&amp;#58;0px;"&gt;&lt;div class="ms-rtestate-read ms-rte-wpbox"&gt;&lt;div class="ms-rtestate-read {webpartid:Documents}" id="div_{webpartid:Documents}"&gt;&lt;/div&gt;
-  &lt;div class="ms-rtestate-read" id="vid_{webpartid:Documents}" style="display&amp;#58;none;"&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;&lt;/td&gt;
-                    &lt;/tr&gt;
-                &lt;/tbody&gt;
-            &lt;/table&gt;
-            &lt;span id="layoutsData" style="display&amp;#58;none;"&gt;true,false,2&lt;/span&gt;&lt;/div&gt;</pnp:Field>
-          </pnp:Fields>
-        </pnp:Page>
-      </pnp:Pages>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
     </pnp:ProvisioningTemplate>
   </pnp:Templates>

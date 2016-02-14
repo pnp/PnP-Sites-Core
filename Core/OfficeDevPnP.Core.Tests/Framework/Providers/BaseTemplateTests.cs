@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.XPath;
@@ -19,6 +20,219 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     [TestClass]
     public class BaseTemplateTests
     {
+
+        protected class BaseTemplate
+        {
+            public BaseTemplate(string template, string subSiteTemplate = "", string saveAsTemplate = "")
+            {
+                Template = template;
+                SubSiteTemplate = subSiteTemplate;
+                SaveAsTemplate = saveAsTemplate;
+            }
+
+            public string Template { get; set; }
+            public string SubSiteTemplate { get; set; }
+            public string SaveAsTemplate { get; set; }
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void ExtractSingleTemplate2()
+        {
+            bool deleteSites = true;
+            bool createSites = true;
+
+            List<BaseTemplate> templates = new List<BaseTemplate>(1);
+            templates.Add(new BaseTemplate("STS#0"));
+
+            ProcessBaseTemplates(templates, deleteSites, createSites);
+        }
+
+        [TestMethod]
+        [Ignore]
+        public void ExtractBaseTemplates2()
+        {
+            // use these flags to save time if the process failed after delete or create sites was done
+            bool deleteSites = true;
+            bool createSites = true;
+
+            List<BaseTemplate> templates = new List<BaseTemplate>(15);
+            templates.Add(new BaseTemplate("STS#0"));
+            templates.Add(new BaseTemplate("BLOG#0"));
+            templates.Add(new BaseTemplate("BDR#0"));
+            templates.Add(new BaseTemplate("DEV#0"));
+            templates.Add(new BaseTemplate("OFFILE#1"));
+#if !CLIENTSDKV15
+            templates.Add(new BaseTemplate("EHS#1"));
+            templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0"));
+#else
+            templates.Add(new BaseTemplate("STS#1"));
+            templates.Add(new BaseTemplate("BLANKINTERNET#0"));
+#endif
+            templates.Add(new BaseTemplate("BICENTERSITE#0"));
+            templates.Add(new BaseTemplate("SRCHCEN#0"));
+            templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "CMSPUBLISHING#0", "CMSPUBLISHING#0"));
+            templates.Add(new BaseTemplate("ENTERWIKI#0"));
+            templates.Add(new BaseTemplate("PROJECTSITE#0"));
+            templates.Add(new BaseTemplate("COMMUNITY#0"));
+            templates.Add(new BaseTemplate("COMMUNITYPORTAL#0"));
+            templates.Add(new BaseTemplate("SRCHCENTERLITE#0"));
+            templates.Add(new BaseTemplate("VISPRUS#0"));
+
+            ProcessBaseTemplates(templates, deleteSites, createSites);
+        }
+
+        private void ProcessBaseTemplates(List<BaseTemplate> templates, bool deleteSites, bool createSites)
+        {
+            using (var tenantCtx = TestCommon.CreateTenantClientContext())
+            {
+                tenantCtx.RequestTimeout = Timeout.Infinite;
+                Tenant tenant = new Tenant(tenantCtx);
+
+#if !CLIENTSDKV15
+                if (deleteSites)
+                {
+                    // First delete all template site collections when in SPO
+                    foreach (var template in templates)
+                    {
+                        string siteUrl = GetSiteUrl(template);
+
+                        try
+                        {
+                            Console.WriteLine("Deleting existing site {0}", siteUrl);
+                            tenant.DeleteSiteCollection(siteUrl, false);
+                        }
+                        catch{ }
+                    }
+                }
+
+                if (createSites)
+                {
+                    // Create site collections
+                    foreach (var template in templates)
+                    {
+                        string siteUrl = GetSiteUrl(template);
+
+                        Console.WriteLine("Creating site {0}", siteUrl);
+
+                        bool siteExists = false;
+                        if (template.SubSiteTemplate.Length > 0)
+                        {
+                            siteExists = tenant.SiteExists(siteUrl);
+                        }
+
+                        if (!siteExists)
+                        {
+                            tenant.CreateSiteCollection(new Entities.SiteEntity()
+                            {
+                                Lcid = 1033,
+                                TimeZoneId = 4,
+                                SiteOwnerLogin = (TestCommon.Credentials as SharePointOnlineCredentials).UserName,
+                                Title = "Template Site",
+                                Template = template.Template,
+                                Url = siteUrl,
+                            }, false, true);
+                        }
+
+                        if (template.SubSiteTemplate.Length > 0)
+                        {
+                            using (ClientContext ctx = TestCommon.CreateClientContext())
+                            {
+                                using (var sitecolCtx = ctx.Clone(siteUrl))
+                                {
+                                    sitecolCtx.Web.Webs.Add(new WebCreationInformation()
+                                    {
+                                        Title = string.Format("template{0}", template.SubSiteTemplate),
+                                        Language = 1033,
+                                        Url = string.Format("template{0}", template.SubSiteTemplate.Replace("#", "")),
+                                        UseSamePermissionsAsParentSite = true
+                                    });
+                                    sitecolCtx.ExecuteQueryRetry();
+                                }
+                            }
+                        }
+                    }
+                }
+#endif
+            }
+
+            // Export the base templates
+            using (ClientContext ctx = TestCommon.CreateClientContext())
+            {
+                foreach (var template in templates)
+                {
+                    string siteUrl = GetSiteUrl(template, false);
+
+                    // Export the base templates
+                    using (ClientContext cc = ctx.Clone(siteUrl))
+                    {
+                        // Specify null as base template since we do want "everything" in this case
+                        ProvisioningTemplateCreationInformation creationInfo = new ProvisioningTemplateCreationInformation(cc.Web);
+                        creationInfo.BaseTemplate = null;
+                        // Do not extract the home page for the base templates
+                        creationInfo.HandlersToProcess ^= Handlers.PageContents;
+
+                        // Override the save name. Case is online site collection provisioned using blankinternetcontainer#0 which returns
+                        // blankinternet#0 as web template using CSOM/SSOM API
+                        string templateName = template.Template;
+                        if (template.SaveAsTemplate.Length > 0)
+                        {
+                            templateName = template.SaveAsTemplate;
+                        }
+
+                        ProvisioningTemplate p = cc.Web.GetProvisioningTemplate(creationInfo);
+                        if (template.SubSiteTemplate.Length > 0)
+                        {
+                            p.Id = String.Format("{0}template", template.SubSiteTemplate.Replace("#", ""));
+                        }
+                        else
+                        {
+                            p.Id = String.Format("{0}template", templateName.Replace("#", ""));
+                        }
+
+                        // Cleanup before saving
+                        p.Security.AdditionalAdministrators.Clear();
+
+                        // persist the template using the XML provider
+                        XMLFileSystemTemplateProvider provider = new XMLFileSystemTemplateProvider(".", "");
+                        if (template.SubSiteTemplate.Length > 0)
+                        {
+                            provider.SaveAs(p, String.Format("{0}Template.xml", template.SubSiteTemplate.Replace("#", "")));
+                        }
+                        else
+                        {
+                            provider.SaveAs(p, String.Format("{0}Template.xml", templateName.Replace("#", "")));
+                        }
+                    }
+                }
+            }
+        }
+
+        private static string GetSiteUrl(BaseTemplate template, bool siteCollectionUrl = true)
+        {
+            Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
+            string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
+
+            string siteUrl = "";
+            if (template.SubSiteTemplate.Length > 0)
+            {
+                if (siteCollectionUrl)
+                {
+                    siteUrl = string.Format("{1}/sites/template{2}", template.Template.Replace("#", ""), baseUrl, template.SubSiteTemplate.Replace("#", ""));
+                }
+                else
+                {
+                    siteUrl = string.Format("{1}/sites/template{2}/template{2}", template.Template.Replace("#", ""), baseUrl, template.SubSiteTemplate.Replace("#", ""));
+                }
+            }
+            else
+            {
+                siteUrl = string.Format("{1}/sites/template{0}", template.Template.Replace("#", ""), baseUrl);
+            }
+
+            return siteUrl;
+        }
+
 
         /// <summary>
         /// This is not a test, merely used to dump the needed template files
@@ -103,6 +317,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 // Specify null as base template since we do want "everything" in this case
                 ProvisioningTemplateCreationInformation creationInfo = new ProvisioningTemplateCreationInformation(cc.Web);
                 creationInfo.BaseTemplate = null;
+                // Do not extract the home page for the base templates
+                creationInfo.HandlersToProcess ^= Handlers.PageContents;
 
                 // Override the save name. Case is online site collection provisioned using blankinternetcontainer#0 which returns
                 // blankinternet#0 as web template using CSOM/SSOM API

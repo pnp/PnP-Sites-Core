@@ -1,30 +1,33 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.0.1601.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-COMMUNITY0template">
     <pnp:ProvisioningTemplate ID="COMMUNITY0template" Version="1">
-      <pnp:WebSettings NoCrawl="false" WelcomePage="SitePages/Community Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
+      <pnp:WebSettings NoCrawl="false" WelcomePage="SitePages/Community Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="8;4;4;7;6" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="6" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
         <pnp:PropertyBagEntry Key="vti_indexedpropertykeys" Value="QwBvAG0AbQB1AG4AaQB0AHkAXwBNAGUAbQBiAGUAcgBzAEMAbwB1AG4AdAA=|" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="6" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="8b5f3e76-43d2-491e-a341-97c8db1a6f11" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="8" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser;#FastEndUser" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="8;4;4;7;6" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="7" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="7" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" />
         <pnp:PropertyBagEntry Key="Community_MembersCount" Value="0" Indexed="true" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="8;4;4;7;6;9" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
@@ -1436,9 +1439,9 @@
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Owners" RoleDefinition="Full Control" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Visitors" RoleDefinition="Read" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Members" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Read" />
               <pnp:RoleAssignment Principal="COMMUNITY0 template Moderators" RoleDefinition="Moderate" />
             </pnp:BreakRoleInheritance>
           </pnp:Security>
@@ -1598,9 +1601,9 @@
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Owners" RoleDefinition="Full Control" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Visitors" RoleDefinition="Read" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Members" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Read" />
               <pnp:RoleAssignment Principal="COMMUNITY0 template Moderators" RoleDefinition="Moderate" />
             </pnp:BreakRoleInheritance>
           </pnp:Security>
@@ -1966,9 +1969,9 @@
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Owners" RoleDefinition="Full Control" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Visitors" RoleDefinition="Read" />
-              <pnp:RoleAssignment Principal="COMMUNITY0 template Members" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Read" />
               <pnp:RoleAssignment Principal="COMMUNITY0 template Moderators" RoleDefinition="Moderate" />
             </pnp:BreakRoleInheritance>
           </pnp:Security>
@@ -2081,345 +2084,6 @@
           <pnp:Feature ID="a0e5a010-1329-49d4-9e09-f280cdbed37d" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:Pages>
-        <pnp:Page Url="{site}/SitePages/Community%20Home.aspx" Overwrite="true" Layout="Custom">
-          <pnp:WebParts>
-            <pnp:WebPart Title="Discussions List" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.WebPartPages.XsltListViewWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="ShowWithSampleData" type="bool">False</property>
-                        <property name="Default" type="string" />
-                        <property name="NoDefaultStyle" type="string" />
-                        <property name="CacheXslStorage" type="bool">True</property>
-                        <property name="ViewContentTypeId" type="string" />
-                        <property name="XmlDefinitionLink" type="string" />
-                        <property name="ManualRefresh" type="bool">False</property>
-                        <property name="ListUrl" type="string" null="true" />
-                        <property name="ListId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">{listid:Discussions List}</property>
-                        <property name="TitleUrl" type="string">{site}/Lists/Community Discussion</property>
-                        <property name="EnableOriginalValue" type="bool">False</property>
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="ServerRender" type="bool">False</property>
-                        <property name="ViewFlags" type="Microsoft.SharePoint.SPViewFlags, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">Html, TabularView, Hidden, ReadOnly</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="ListName" type="string">{{listid:Discussions List}}</property>
-                        <property name="ListDisplayName" type="string" null="true" />
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                        <property name="DisableSaveAsNewViewButton" type="bool">False</property>
-                        <property name="ViewFlag" type="string" />
-                        <property name="DataSourceID" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="AutoRefresh" type="bool">False</property>
-                        <property name="FireInitialRow" type="bool">True</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="Description" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="BaseXsltHashKey" type="string" null="true" />
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="CacheXslTimeOut" type="int">86400</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="Xsl" type="string" null="true" />
-                        <property name="JSLink" type="string" null="true" />
-                        <property name="CatalogIconImageUrl" type="string">/_layouts/15/images/itdisc.png?rev=40</property>
-                        <property name="SampleData" type="string" null="true" />
-                        <property name="UseSQLDataSourcePaging" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="PageSize" type="int">-1</property>
-                        <property name="ShowTimelineIfAvailable" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="DataFields" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="Title" type="string" />
-                        <property name="PageType" type="Microsoft.SharePoint.PAGETYPE, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">PAGE_NORMALVIEW</property>
-                        <property name="DataSourcesString" type="string" />
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="InplaceSearchEnabled" type="bool">True</property>
-                        <property name="WebId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">00000000-0000-0000-0000-000000000000</property>
-                        <property name="Height" type="string" />
-                        <property name="GhostedXslLink" type="string">thread.xsl</property>
-                        <property name="DisableViewSelectorMenu" type="bool">False</property>
-                        <property name="DisplayName" type="string" />
-                        <property name="IsClientRender" type="bool">False</property>
-                        <property name="XmlDefinition" type="string">&lt;View Name="{BB4A9AA8-4BBB-4F13-B50E-20BA91540EB6}" Type="HTML" Hidden="TRUE" ReadOnly="TRUE" DisplayName="" Url="{site}/SitePages/Community Home.aspx" Level="1" BaseViewID="3" ContentTypeID="0x012001" ImageUrl="/_layouts/15/images/vwdisc.png?rev=40" &gt;&lt;Query&gt;&lt;OrderBy UseIndexForOrderBy="TRUE" Override="TRUE"/&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name="DiscussionLastUpdated"/&gt;&lt;Value Type="DateTime"&gt;1900-01-01T00:00:00Z&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;/Query&gt;&lt;ViewFields&gt;&lt;FieldRef Name="LinkDiscussionTitle"/&gt;&lt;FieldRef Name="Author"/&gt;&lt;FieldRef Name="ItemChildCount"/&gt;&lt;FieldRef Name="Created"/&gt;&lt;FieldRef Name="Body"/&gt;&lt;FieldRef Name="LastReplyBy"/&gt;&lt;FieldRef Name="DiscussionLastUpdated"/&gt;&lt;FieldRef Name="BestAnswerId"/&gt;&lt;FieldRef Name="IsFeatured"/&gt;&lt;FieldRef Name="CategoriesLookup"/&gt;&lt;FieldRef Name="Popularity"/&gt;&lt;FieldRef Name="DescendantLikesCount"/&gt;&lt;FieldRef Name="DescendantRatingsCount"/&gt;&lt;FieldRef Name="AuthorReputationLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorNumOfRepliesLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorNumOfPostsLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorNumOfBestResponsesLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorLastActivityLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorMemberSinceLookup"/&gt;&lt;FieldRef Name="AuthorMemberStatusIntLookup" Explicit="TRUE"/&gt;&lt;FieldRef Name="AuthorGiftedBadgeLookup"/&gt;&lt;FieldRef Name="LikesCount"/&gt;&lt;FieldRef Name="LikedBy"/&gt;&lt;/ViewFields&gt;&lt;RowLimit Paged="TRUE"&gt;20&lt;/RowLimit&gt;&lt;JSLink&gt;sp.ui.discussions.js|sp.ui.communities.js&lt;/JSLink&gt;&lt;XslLink&gt;thread.xsl&lt;/XslLink&gt;&lt;Toolbar Type="Standard"/&gt;&lt;/View&gt;</property>
-                        <property name="InitialAsyncDataFetch" type="bool">False</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="ParameterBindings" type="string">  &lt;ParameterBinding Name="dvt_sortdir" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_sortfield" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_startposition" Location="Postback" DefaultValue=""/&gt;
-            &lt;ParameterBinding Name="dvt_firstrow" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="OpenMenuKeyAccessible" Location="Resource(wss,OpenMenuKeyAccessible)" /&gt;
-            &lt;ParameterBinding Name="open_menu" Location="Resource(wss,open_menu)" /&gt;
-            &lt;ParameterBinding Name="select_deselect_all" Location="Resource(wss,select_deselect_all)" /&gt;
-            &lt;ParameterBinding Name="idPresEnabled" Location="Resource(wss,idPresEnabled)" /&gt;&lt;ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noitemsinview_discboard)" /&gt;&lt;ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(wss,noitemsinview_discboard_howto3)" /&gt;</property>
-                        <property name="DataSourceMode" type="Microsoft.SharePoint.WebControls.SPDataSourceMode, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">List</property>
-                        <property name="AutoRefreshInterval" type="int">60</property>
-                        <property name="AsyncRefresh" type="bool">False</property>
-                        <property name="HelpUrl" type="string" />
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="XslLink" type="string" null="true" />
-                        <property name="SelectParameters" type="string" />
-                        <property name="HasClientDataSource" type="bool">False</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="Tools" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.Portal.WebControls.CommunityAdminWebPart, Microsoft.SharePoint.Portal, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="Description" type="string" />
-                        <property name="HelpUrl" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="CatalogIconImageUrl" type="string" />
-                        <property name="Title" type="string">Tools</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="TitleUrl" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="Height" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="Join" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.Portal.WebControls.CommunityJoinWebPart, Microsoft.SharePoint.Portal, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="Description" type="string" />
-                        <property name="HelpUrl" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="CatalogIconImageUrl" type="string" />
-                        <property name="Title" type="string">Join</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="TitleUrl" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="Height" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="What's happening" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.Portal.WebControls.DashboardWebPart, Microsoft.SharePoint.Portal, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="Description" type="string" />
-                        <property name="HelpUrl" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="CatalogIconImageUrl" type="string" />
-                        <property name="Title" type="string">What's happening</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="TitleUrl" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="Height" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-            <pnp:WebPart Title="Community Members" Row="1" Column="1">
-              <pnp:Contents>
-                <webParts>
-                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                    <metaData>
-                      <type name="Microsoft.SharePoint.WebPartPages.XsltListViewWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                    </metaData>
-                    <data>
-                      <properties>
-                        <property name="ShowWithSampleData" type="bool">False</property>
-                        <property name="Default" type="string" />
-                        <property name="NoDefaultStyle" type="string" />
-                        <property name="CacheXslStorage" type="bool">True</property>
-                        <property name="ViewContentTypeId" type="string" />
-                        <property name="XmlDefinitionLink" type="string" />
-                        <property name="ManualRefresh" type="bool">False</property>
-                        <property name="ListUrl" type="string" null="true" />
-                        <property name="ListId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">{listid:Community Members}</property>
-                        <property name="TitleUrl" type="string">{site}/Lists/Members</property>
-                        <property name="EnableOriginalValue" type="bool">False</property>
-                        <property name="Direction" type="direction">NotSet</property>
-                        <property name="ServerRender" type="bool">False</property>
-                        <property name="ViewFlags" type="Microsoft.SharePoint.SPViewFlags, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">Html, TabularView, Hidden, ReadOnly</property>
-                        <property name="AllowConnect" type="bool">True</property>
-                        <property name="ListName" type="string">{{listid:Community Members}}</property>
-                        <property name="ListDisplayName" type="string" null="true" />
-                        <property name="AllowZoneChange" type="bool">True</property>
-                        <property name="ChromeState" type="chromestate">Normal</property>
-                        <property name="DisableSaveAsNewViewButton" type="bool">False</property>
-                        <property name="ViewFlag" type="string" />
-                        <property name="DataSourceID" type="string" />
-                        <property name="ExportMode" type="exportmode">All</property>
-                        <property name="AutoRefresh" type="bool">False</property>
-                        <property name="FireInitialRow" type="bool">True</property>
-                        <property name="AllowEdit" type="bool">True</property>
-                        <property name="Description" type="string" />
-                        <property name="HelpMode" type="helpmode">Modeless</property>
-                        <property name="BaseXsltHashKey" type="string" null="true" />
-                        <property name="AllowMinimize" type="bool">True</property>
-                        <property name="CacheXslTimeOut" type="int">86400</property>
-                        <property name="ChromeType" type="chrometype">None</property>
-                        <property name="Xsl" type="string" null="true" />
-                        <property name="JSLink" type="string" null="true" />
-                        <property name="CatalogIconImageUrl" type="string">/_layouts/15/images/itcommem.png?rev=40</property>
-                        <property name="SampleData" type="string" null="true" />
-                        <property name="UseSQLDataSourcePaging" type="bool">True</property>
-                        <property name="TitleIconImageUrl" type="string" />
-                        <property name="PageSize" type="int">-1</property>
-                        <property name="ShowTimelineIfAvailable" type="bool">True</property>
-                        <property name="Width" type="string" />
-                        <property name="DataFields" type="string" />
-                        <property name="Hidden" type="bool">False</property>
-                        <property name="Title" type="string" />
-                        <property name="PageType" type="Microsoft.SharePoint.PAGETYPE, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">PAGE_NORMALVIEW</property>
-                        <property name="DataSourcesString" type="string" />
-                        <property name="AllowClose" type="bool">True</property>
-                        <property name="InplaceSearchEnabled" type="bool">True</property>
-                        <property name="WebId" type="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">00000000-0000-0000-0000-000000000000</property>
-                        <property name="Height" type="string" />
-                        <property name="GhostedXslLink" type="string">main.xsl</property>
-                        <property name="DisableViewSelectorMenu" type="bool">False</property>
-                        <property name="DisplayName" type="string" />
-                        <property name="IsClientRender" type="bool">True</property>
-                        <property name="XmlDefinition" type="string">&lt;View Name="{FCC95577-3800-429D-B08A-008430998322}" Type="HTML" Hidden="TRUE" ReadOnly="TRUE" DisplayName="" Url="{site}/SitePages/Community Home.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=40" &gt;&lt;Query&gt;&lt;Where&gt;&lt;Geq&gt;&lt;FieldRef Name="ReputationScore"/&gt;&lt;Value Type="Number"&gt;0&lt;/Value&gt;&lt;/Geq&gt;&lt;/Where&gt;&lt;OrderBy UseIndexForOrderBy="TRUE" Override="TRUE"/&gt;&lt;/Query&gt;&lt;ViewFields&gt;&lt;FieldRef Name="Member"/&gt;&lt;FieldRef Name="MemberStatusInt"/&gt;&lt;FieldRef Name="Created"/&gt;&lt;FieldRef Name="NumberOfDiscussions"/&gt;&lt;FieldRef Name="NumberOfReplies"/&gt;&lt;FieldRef Name="NumberOfBestResponses"/&gt;&lt;FieldRef Name="LastActivity"/&gt;&lt;FieldRef Name="ReputationScore"/&gt;&lt;FieldRef Name="GiftedBadgeText"/&gt;&lt;/ViewFields&gt;&lt;RowLimit&gt;5&lt;/RowLimit&gt;&lt;JSLink&gt;sp.ui.discussions.js|sp.ui.communities.js&lt;/JSLink&gt;&lt;XslLink Default="TRUE"&gt;main.xsl&lt;/XslLink&gt;&lt;Toolbar Type="Standard"/&gt;&lt;/View&gt;</property>
-                        <property name="InitialAsyncDataFetch" type="bool">False</property>
-                        <property name="AllowHide" type="bool">True</property>
-                        <property name="ParameterBindings" type="string">  &lt;ParameterBinding Name="dvt_sortdir" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_sortfield" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="dvt_startposition" Location="Postback" DefaultValue=""/&gt;
-            &lt;ParameterBinding Name="dvt_firstrow" Location="Postback;Connection"/&gt;
-            &lt;ParameterBinding Name="OpenMenuKeyAccessible" Location="Resource(wss,OpenMenuKeyAccessible)" /&gt;
-            &lt;ParameterBinding Name="open_menu" Location="Resource(wss,open_menu)" /&gt;
-            &lt;ParameterBinding Name="select_deselect_all" Location="Resource(wss,select_deselect_all)" /&gt;
-            &lt;ParameterBinding Name="idPresEnabled" Location="Resource(wss,idPresEnabled)" /&gt; &lt;ParameterBinding Name="NoAnnouncements" Location="Resource(wss,noXinviewofY_LIST)" /&gt;
-           &lt;ParameterBinding Name="NoAnnouncementsHowTo" Location="Resource(core,noXinviewofY_DEFAULT)" /&gt;
-           &lt;ParameterBinding Name="AddNewAnnouncement" Location="Resource(wss,addnewitem)" /&gt;
-           &lt;ParameterBinding Name="MoreAnnouncements" Location="Resource(wss,moreItemsParen)" /&gt;</property>
-                        <property name="DataSourceMode" type="Microsoft.SharePoint.WebControls.SPDataSourceMode, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c">List</property>
-                        <property name="AutoRefreshInterval" type="int">60</property>
-                        <property name="AsyncRefresh" type="bool">False</property>
-                        <property name="HelpUrl" type="string" />
-                        <property name="MissingAssembly" type="string">Cannot import this Web Part.</property>
-                        <property name="XslLink" type="string" null="true" />
-                        <property name="SelectParameters" type="string" />
-                        <property name="HasClientDataSource" type="bool">False</property>
-                      </properties>
-                    </data>
-                  </webPart>
-                </webParts>
-              </pnp:Contents>
-            </pnp:WebPart>
-          </pnp:WebParts>
-          <pnp:Fields>
-            <pnp:Field FieldName="WikiField">&lt;div class="ExternalClassD8EC90BDD63E40F6BCBDC56E28DCFED0"&gt;&lt;table id="layoutsTable" style="width&amp;#58;100%;"&gt;&lt;tbody&gt;&lt;tr style="vertical-align&amp;#58;top;"&gt;&lt;td style="width&amp;#58;66.6%;"&gt;
-                    &lt;div class="ms-rte-layoutszone-outer" style="width&amp;#58;100%;"&gt;
-                        &lt;div class="ms-rte-layoutszone-inner"&gt;&lt;div class="ms-comm-homeWelcome ms-core-defaultFont"&gt;Welcome to the community. We want to hear from you. Ask a question. Share your thoughts. Get smarter and help others.&lt;/div&gt;
-                    &lt;div class="ms-rtestate-read ms-rte-wpbox ms-comm-wiki-divFormat1"&gt;
-                        &lt;div class="ms-rtestate-read {webpartid:Discussions List}" id="div_{webpartid:Discussions List}"&gt;
-                        &lt;/div&gt;
-                        &lt;div class="ms-rtestate-read ms-hide ms-comm-wiki-divFormat2" id="vid_{webpartid:Discussions List}"&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;&lt;/td&gt;&lt;td class="ms-wiki-columnSpacing" style="width&amp;#58;33.3%;"&gt;
-                    &lt;div class="ms-rte-layoutszone-outer" style="width&amp;#58;100%;"&gt;
-                        &lt;div class="ms-rte-layoutszone-inner"&gt;
-                    &lt;div class="ms-rtestate-read ms-rte-wpbox ms-comm-wiki-divFormat1"&gt;
-                        &lt;div class="ms-rtestate-read {webpartid:Tools}" id="div_{webpartid:Tools}"&gt;
-                        &lt;/div&gt;
-                        &lt;div class="ms-rtestate-read ms-hide ms-comm-wiki-divFormat2" id="vid_{webpartid:Tools}"&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div class="ms-rtestate-read ms-rte-wpbox ms-comm-wiki-divFormat1"&gt;
-                        &lt;div class="ms-rtestate-read {webpartid:Join}" id="div_{webpartid:Join}"&gt;
-                        &lt;/div&gt;
-                        &lt;div class="ms-rtestate-read ms-hide ms-comm-wiki-divFormat2" id="vid_{webpartid:Join}"&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div class="ms-rtestate-read ms-rte-wpbox ms-comm-wiki-divFormat1"&gt;
-                        &lt;div class="ms-rtestate-read {webpartid:What's happening}" id="div_{webpartid:What's happening}"&gt;
-                        &lt;/div&gt;
-                        &lt;div class="ms-rtestate-read ms-hide ms-comm-wiki-divFormat2" id="vid_{webpartid:What's happening}"&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div class="ms-rtestate-read ms-rte-wpbox ms-comm-wiki-divFormat1"&gt;
-                        &lt;div class="ms-rtestate-read {webpartid:Community Members}" id="div_{webpartid:Community Members}"&gt;
-                        &lt;/div&gt;
-                        &lt;div class="ms-rtestate-read ms-hide ms-comm-wiki-divFormat2" id="vid_{webpartid:Community Members}"&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;span id="layoutsData" class="ms-hide"&gt;false,false,2&lt;/span&gt;&lt;/div&gt;</pnp:Field>
-          </pnp:Fields>
-        </pnp:Page>
-      </pnp:Pages>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
     </pnp:ProvisioningTemplate>
   </pnp:Templates>

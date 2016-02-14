@@ -246,17 +246,18 @@ namespace Microsoft.SharePoint.Client
         public static bool IsSubSite(this Web web)
         {
             Site site = (web.Context as ClientContext).Site;
+            var rootWeb = site.EnsureProperty(s => s.RootWeb);
 
-            var webUrl = web.EnsureProperty(s => s.Url);
-            var siteUrl = site.EnsureProperty(s => s.Url);
+            web.EnsureProperty(w => w.Id);
+            rootWeb.EnsureProperty(w => w.Id);
 
-            if (webUrl.Equals(siteUrl, StringComparison.InvariantCultureIgnoreCase))
+            if (rootWeb.Id != web.Id)
             {
-                return false;
+                return true;
             }
             else
             {
-                return true;
+                return false;
             }
         }
 

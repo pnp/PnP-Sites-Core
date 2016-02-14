@@ -51,23 +51,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var jsonInfo = template.PropertyBagEntries[provisioningTemplateInfoIndex].Value;
 
-                    ProvisioningTemplateInfo info = JsonConvert.DeserializeObject<ProvisioningTemplateInfo>(jsonInfo);
+                    if (jsonInfo != null)
+                    {
+                        ProvisioningTemplateInfo info = JsonConvert.DeserializeObject<ProvisioningTemplateInfo>(jsonInfo);
 
-                    // Override any previously defined Template ID, Version, and SitePolicy
-                    // with the one stored in the Template Info, if any
-                    if (!String.IsNullOrEmpty(info.TemplateId))
-                    {
-                        template.Id = info.TemplateId;
+                        // Override any previously defined Template ID, Version, and SitePolicy
+                        // with the one stored in the Template Info, if any
+                        if (info != null)
+                        {
+                            if (!String.IsNullOrEmpty(info.TemplateId))
+                            {
+                                template.Id = info.TemplateId;
+                            }
+                            if (!String.IsNullOrEmpty(info.TemplateSitePolicy))
+                            {
+                                template.SitePolicy = info.TemplateSitePolicy;
+                            }
+                            if (info.TemplateVersion > 0)
+                            {
+                                template.Version = info.TemplateVersion;
+                            }
+                        }
                     }
-                    if (!String.IsNullOrEmpty(info.TemplateSitePolicy))
-                    {
-                        template.SitePolicy = info.TemplateSitePolicy;
-                    }
-                    if (info.TemplateVersion > 0)
-                    {
-                        template.Version = info.TemplateVersion;
-                    }
-
                     template.PropertyBagEntries.RemoveAt(provisioningTemplateInfoIndex);
                 }
             }
