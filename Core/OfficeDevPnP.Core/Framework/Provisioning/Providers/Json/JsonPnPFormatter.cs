@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
 
         public System.IO.Stream ToFormattedTemplate(Model.ProvisioningTemplate template)
         {
-            String jsonString = JsonConvert.SerializeObject(template);
+            String jsonString = JsonConvert.SerializeObject(template, new BasePermissionsConverter());
             Byte[] jsonBytes = System.Text.Encoding.Unicode.GetBytes(jsonString);
             MemoryStream jsonStream = new MemoryStream(jsonBytes);
             jsonStream.Position = 0;
@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
         {
             StreamReader sr = new StreamReader(template, Encoding.Unicode);
             String jsonString = sr.ReadToEnd();
-            Model.ProvisioningTemplate result = JsonConvert.DeserializeObject<Model.ProvisioningTemplate>(jsonString);
+            Model.ProvisioningTemplate result = JsonConvert.DeserializeObject<Model.ProvisioningTemplate>(jsonString, new BasePermissionsConverter());
             return (result);
         }
     }

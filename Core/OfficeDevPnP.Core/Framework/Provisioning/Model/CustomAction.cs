@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.RegistrationId == other.RegistrationId &&
                 this.RegistrationType == other.RegistrationType &&
                 this.Remove == other.Remove &&
-                this.Rights == other.Rights &&
+                this.Rights.Equals(other.Rights) &&
                 this.ScriptBlock == other.ScriptBlock &&
                 this.ScriptSrc == other.ScriptSrc &&
                 this.Sequence == other.Sequence &&
