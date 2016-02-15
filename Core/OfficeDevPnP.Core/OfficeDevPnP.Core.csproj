@@ -590,6 +590,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenParser.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Json\BasePermissionsConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonFileSystemTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonPnPFormatter.cs" />
