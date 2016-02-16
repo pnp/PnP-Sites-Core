@@ -23,7 +23,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private readonly Guid PUBLISHING_FEATURE_SITE = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
-        private const string URL_TOKEN_REGEX = @"^(?<siteCollectionUrl>(?<webApplicationUrl>http(s)?\:\/\/(\w|\-|\.)+\/)(\w|\-)*\/(?<siteCollection>(\w|\-)+))(\/(?<subSite>(\w|\-)+))*";
 
         public override string Name
         {
@@ -187,15 +186,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The Web Application URL</returns>
         private String GetWebApplicationUrl(String webUrl)
         {
+            Uri uri = null;
             String result = null;
-
-            System.Text.RegularExpressions.Regex regex =
-                new System.Text.RegularExpressions.Regex(URL_TOKEN_REGEX);
-
-            var match = regex.Match(webUrl);
-            if (match.Success)
+            if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
             {
-                result = match.Groups["webApplicationUrl"].Value;
+                result = string.Format("{0}://{1}/", uri.Scheme, uri.Authority);
             }
 
             return (result);
