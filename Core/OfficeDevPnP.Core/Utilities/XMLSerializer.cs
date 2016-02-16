@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
@@ -9,7 +10,7 @@ namespace OfficeDevPnP.Core.Utilities
     public static class XMLSerializer
     {
         #region Private Instance Members
-        private static readonly Dictionary<Type, XmlSerializer> _XmlFormatter = new Dictionary<Type, XmlSerializer>();
+        private static readonly ConcurrentDictionary<Type, XmlSerializer> _XmlFormatter = new ConcurrentDictionary<Type, XmlSerializer>();
         #endregion
 
         #region Constructors
@@ -28,7 +29,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             if (!_XmlFormatter.ContainsKey(objectType))
             {
-                _XmlFormatter.Add(objectType, new XmlSerializer(objectType));
+                _XmlFormatter.TryAdd(objectType, new XmlSerializer(objectType));
             }
             return _XmlFormatter[objectType];
         }
