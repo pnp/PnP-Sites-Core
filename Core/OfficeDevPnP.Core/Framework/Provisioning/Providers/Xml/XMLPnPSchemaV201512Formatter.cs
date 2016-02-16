@@ -145,7 +145,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      {
                          Key = bag.Key,
                          Value = bag.Value,
-                         Indexed = bag.Indexed
+                         Indexed = bag.Indexed,
+                         Overwrite = bag.Overwrite,
+                         OverwriteSpecified = true,
                      }).ToArray();
             }
             else
@@ -1186,7 +1188,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     {
                         Key = bag.Key,
                         Value = bag.Value,
-                        Indexed = bag.Indexed
+                        Indexed = bag.Indexed,
+                        Overwrite = bag.OverwriteSpecified ? bag.Overwrite : false,
                     });
             }
 
