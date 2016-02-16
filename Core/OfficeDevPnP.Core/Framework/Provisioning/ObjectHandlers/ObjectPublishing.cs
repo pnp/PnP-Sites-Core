@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ExtractMasterPagesAndPageLayouts(Web web, ProvisioningTemplate template, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo)
         {
+            web.EnsureProperty(w => w.Url);
             String webApplicationUrl = GetWebApplicationUrl(web.Url);
 
             if (!String.IsNullOrEmpty(webApplicationUrl))
@@ -203,7 +204,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var defaultPageLayoutUrl = string.Empty;
             if (defaultLayoutXml != null && defaultLayoutXml != "__inherit")
             {
-                defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value;
+                defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value.Replace("_catalogs/masterpage/", String.Empty);
             }
 
             List<PageLayout> layouts = new List<PageLayout>();
@@ -219,7 +220,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (layout.Attribute("url") != null)
                     {
                         var pageLayout = new PageLayout();
-                        pageLayout.Path = layout.Attribute("url").Value;
+                        pageLayout.Path = layout.Attribute("url").Value.Replace("_catalogs/masterpage/", String.Empty);
 
                         if (pageLayout.Path == defaultPageLayoutUrl)
                         {
@@ -268,16 +269,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     throw new Exception("Publishing Feature not active. Provisioning failed");
                 }
 
+                // Set allowed web templates
                 var availableWebTemplates = template.Publishing.AvailableWebTemplates.Select(t => new WebTemplateEntity() { LanguageCode = t.LanguageCode.ToString(), TemplateName = t.TemplateName }).ToList();
                 if (availableWebTemplates.Any())
                 {
                     web.SetAvailableWebTemplates(availableWebTemplates);
                 }
+
+                // Set allowed page layouts
                 var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
                 if (availablePageLayouts.Any())
                 {
                     web.SetAvailablePageLayouts(site.RootWeb, availablePageLayouts);
                 }
+
+                // Set default page layout, if any
+                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
+                if (defaultPageLayout != null)
+                {
+                    web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
+                }
+
                 if (template.Publishing.DesignPackage != null)
                 {
                     var package = template.Publishing.DesignPackage;
