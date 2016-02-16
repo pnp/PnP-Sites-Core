@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using System;
 using System.Text;
 
 namespace OfficeDevPnP.Core.Utilities {
@@ -21,12 +22,15 @@ namespace OfficeDevPnP.Core.Utilities {
     /// );
     /// </example>
     public static class CAML {
-        const string VIEW_XML_WRAPPER = "<View><Query>{0}{1}</Query><RowLimit>{2}</RowLimit></View>";
+        const string VIEW_XML_WRAPPER = "<View Scope=\"{0}\"><Query>{1}{2}</Query>{3}<RowLimit>{4}</RowLimit></View>";
         const string FIELD_VALUE = "<FieldRef Name='{0}' {1}/><Value Type='{2}'>{3}</Value>";
         const string FIELD_VALUE_ID = "<FieldRef ID='{0}' {1} /><Value Type='{2}'>{3}</Value>";
         const string WHERE_CLAUSE = "<Where>{0}</Where>";
         const string GENERIC_CLAUSE = "<{0}>{1}</{0}>";
         const string CONDITION_CLAUSE = "<{0}>{1}{2}</{0}>";
+
+        const string VIEW_FIELDS_CLAUSE = "<ViewFields>{0}</ViewFields>";
+        const string FIELD_REF_CLAUSE = "<FieldRef Name='{0}'/>";
 
         public static readonly string Me = "<UserId />";
         public static readonly string Month = "<Month />";
@@ -51,7 +55,21 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <param name="rowLimit">&lt;RowLimit&gt; node.</param>
         /// <returns>String to be used in CAML queries</returns>
         public static string ViewQuery(string whereClause = "", string orderByClause = "", int rowLimit = 100) {
-            return string.Format(VIEW_XML_WRAPPER, whereClause, orderByClause, rowLimit);
+            return CAML.ViewQuery(ViewScope.DefaultValue, whereClause, orderByClause, string.Empty, rowLimit);
+        }
+
+        /// <summary>
+        /// Root &lt;View&gt; and &lt;Query&gt; nodes.
+        /// </summary>
+        /// <param name="scope">View scope</param>
+        /// <param name="whereClause">&lt;Where&gt; node.</param>
+        /// <param name="viewFields">&lt;ViewFields&gt; node.</param>
+        /// <param name="orderByClause">&lt;OrderBy&gt; node.</param>
+        /// <param name="rowLimit">&lt;RowLimit&gt; node.</param>
+        /// <returns>String to be used in CAML queries</returns>
+        public static string ViewQuery(ViewScope scope, string whereClause = "", string orderByClause = "", string viewFields = "", int rowLimit = 100) {
+            string viewScopeStr = scope == ViewScope.DefaultValue ? string.Empty : scope.ToString();
+            return string.Format(VIEW_XML_WRAPPER, viewScopeStr, whereClause, orderByClause, viewFields, rowLimit);
         }
 
         /// <summary>
@@ -78,6 +96,15 @@ namespace OfficeDevPnP.Core.Utilities {
             return string.Format(FIELD_VALUE_ID, fieldId.ToString(), additionalFieldRefParams, fieldValueType, value);
         }
 
+        /// <summary>
+        /// Creates a &lt;FieldRef&gt; node for ViewFields clause
+        /// </summary>
+        /// <param name="fieldName"></param>
+        /// <returns></returns>
+        public static string FieldRef(string fieldName) {
+            return string.Format(FIELD_REF_CLAUSE, fieldName);
+        }
+
         public static string OrderBy(params OrderByField[] fieldRefs) {
             var sb = new StringBuilder();
             foreach (var field in fieldRefs){
@@ -88,6 +115,15 @@ namespace OfficeDevPnP.Core.Utilities {
 
         public static string Where(string conditionClause) {
             return string.Format(GENERIC_CLAUSE, CamlClauses.Where, conditionClause);
+        }
+
+        public static string ViewFields(params string[] fieldRefs) {
+            string refs = string.Empty;
+
+            foreach (var refField in fieldRefs) {
+                refs += refField;
+            }
+            return string.Format(VIEW_FIELDS_CLAUSE, refs);
         }
 
         #region Conditions
@@ -166,6 +202,7 @@ namespace OfficeDevPnP.Core.Utilities {
         }
         enum CamlConditions { And, Or }
         enum CamlClauses { Where, OrderBy, GroupBy }
+
     }
 
     public class OrderByField {
