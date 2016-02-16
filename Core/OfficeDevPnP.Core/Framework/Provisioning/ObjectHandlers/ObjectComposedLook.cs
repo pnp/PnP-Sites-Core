@@ -258,9 +258,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             SharePointConnector readerToUse;
             Model.File f = GetComposedLookFile(asset);
 
-            // Strip the /sites/root part from /sites/root/lib/folder structure
+            // Strip the /sites/root part from /sites/root/lib/folder structure, special case for root site handling.
             Uri u = new Uri(webUrl);
-            if (f.Folder.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+            if (f.Folder.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1 && u.PathAndQuery.Length > 1)
             {
                 f.Folder = f.Folder.Replace(u.PathAndQuery, "");
             }

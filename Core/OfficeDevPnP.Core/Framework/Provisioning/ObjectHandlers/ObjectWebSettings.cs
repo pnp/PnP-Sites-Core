@@ -42,7 +42,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
                 webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
                 webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
-                webSettings.WelcomePage = Tokenize(web.RootFolder.WelcomePage, web.Url);
+                // Notice. No tokenization needed for the welcome page, it's always relative for the site
+                webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 template.WebSettings = webSettings;
 
