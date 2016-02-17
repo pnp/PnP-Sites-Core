@@ -22,7 +22,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
         private readonly Guid PUBLISHING_FEATURE_SITE = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
+        private const string HTML_PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
+        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
 
         public override string Name
         {
@@ -73,17 +75,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(masterPageGalleryFolder.Files);
                 web.Context.ExecuteQueryRetry();
 
-                foreach (var file in masterPageGalleryFolder.Files.AsEnumerable().Where(
+                var sourceFiles = masterPageGalleryFolder.Files.AsEnumerable().Where(
                     f => f.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ||
-                    f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)))
+                    f.Name.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase) ||
+                    f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase));
+
+                foreach (var file in sourceFiles)
                 {
                     var listItem = file.EnsureProperty(f => f.ListItemAllFields);
                     listItem.ContentType.EnsureProperties(ct => ct.Id, ct => ct.StringId);
 
                     // Check if the content type is of type Master Page or Page Layout
                     if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID) ||
-                        listItem.ContentType.StringId.StartsWith(PAGE_LAYOUT_CONTENT_TYPE_ID))
+                        listItem.ContentType.StringId.StartsWith(PAGE_LAYOUT_CONTENT_TYPE_ID) ||
+                        listItem.ContentType.StringId.StartsWith(HTML_MASTER_PAGE_CONTENT_TYPE_ID) ||
+                        listItem.ContentType.StringId.StartsWith(HTML_PAGE_LAYOUT_CONTENT_TYPE_ID))
                     {
+                        // Skip any .ASPX or .MASTER file related to an .HTML designer file
+                        if ((file.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase)
+                            && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".aspx", ".html"), 
+                                StringComparison.InvariantCultureIgnoreCase))) ||
+                            (file.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)
+                            && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".master", ".html"),
+                                StringComparison.InvariantCultureIgnoreCase))))
+                        {
+                            continue;
+                        }
+
                         // If the file is a custom one, and not one native
                         // and coming out from the publishing feature
                         if (creationInfo.IncludeNativePublishingFiles || 
