@@ -81,8 +81,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "TaxCatchAll",
                 "TaxCatchAllLabel",
                 "_ModerationStatus",
-                "HtmlDesignAssociated",
-                "HtmlDesignStatusAndPreview",
+                //"HtmlDesignAssociated",
+                //"HtmlDesignStatusAndPreview",
+                //"MetaInfo",
             };
 
                 foreach (var fieldValue in fieldValues.Where(f => !fieldstoExclude.Contains(f.Key)))
