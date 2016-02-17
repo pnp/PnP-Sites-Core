@@ -26,6 +26,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             // SharePoint setup
             using (ClientContext cc = TestCommon.CreateClientContext())
             {
+                cc.Web.RootFolder.UploadFile("TestDefault.aspx", @".\resources\testdefault.aspx", true);
+
                 if (!cc.Web.ListExists(testContainer))
                 {
                     List list = cc.Web.CreateDocumentLibrary(testContainer);
@@ -58,6 +60,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             // SharePoint setup
             using (ClientContext cc = TestCommon.CreateClientContext())
             {
+                var file = cc.Web.RootFolder.GetFile("TestDefault.aspx");
+                file.DeleteObject();
+                cc.ExecuteQueryRetry();
+
                 if (cc.Web.ListExists(testContainer))
                 {
                     List list = cc.Web.GetListByTitle(testContainer);
@@ -307,6 +313,47 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
 
             // file will be deleted at end of test 
+        }
+
+        /// <summary>
+        /// Pass the connection information as parameters
+        /// Get a file as string from passed SharePoint url
+        /// </summary>
+        [TestMethod]
+        public void SharePointConnectorGetFileFromWebRootFolder()
+        {
+            SharePointConnector spConnector = new SharePointConnector();
+            spConnector.Parameters.Add(SharePointConnector.CONNECTIONSTRING, TestCommon.DevSiteUrl);
+            spConnector.Parameters.Add(SharePointConnector.CLIENTCONTEXT, TestCommon.CreateClientContext());
+
+            string file = spConnector.GetFile("TestDefault.aspx");
+            Assert.IsNotNull(file);
+        }
+
+        /// <summary>
+        /// Delete file from default container
+        /// </summary>
+        [TestMethod]
+        public void SharePointConnectorDeleteFromWebRootFolder()
+        {
+            SharePointConnector spConnector = new SharePointConnector();
+            spConnector.Parameters.Add(SharePointConnector.CONNECTIONSTRING, TestCommon.DevSiteUrl);
+            spConnector.Parameters.Add(SharePointConnector.CLIENTCONTEXT, TestCommon.CreateClientContext());
+
+            // upload file
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\testdefault.aspx"))
+            {
+                spConnector.SaveFileStream("blabla.aspx", string.Empty, fileStream);
+            }
+
+            // delete the file
+            spConnector.DeleteFile("blabla.aspx");
+
+            // read the file
+            using (var bytes = spConnector.GetFileStream("blabla.aspx"))
+            {
+                Assert.IsNull(bytes);
+            }
         }
         #endregion
     }

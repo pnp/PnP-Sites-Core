@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
-        internal string GetContainer()
+        virtual internal string GetContainer()
         {
             if (this.Parameters.ContainsKey(CONTAINER))
             {
