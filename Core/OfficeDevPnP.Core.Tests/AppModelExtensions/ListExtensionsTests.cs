@@ -155,6 +155,24 @@ namespace Microsoft.SharePoint.Client.Tests
         }
         #endregion
 
+        [TestMethod()]
+        public void GetPagesLibraryTest()
+        {
+            const string publishingWebFeatureId = "22a9ef51-737b-4ff2-9346-694633fe4416";
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                if (!clientContext.Web.IsFeatureActive(new Guid(publishingWebFeatureId)))
+                {
+                    Assert.Inconclusive("Can't execute GetPagesLibraryTest on a web without activated Publishing feature.");
+                }
+
+                var web = clientContext.Web;
+                var pages = web.GetPagesLibrary();
+
+                Assert.IsNotNull(pages);
+            }
+        }
+
         #region Default value tests
         [TestMethod()]
         public void SetDefaultColumnValuesTest()
@@ -190,6 +208,5 @@ namespace Microsoft.SharePoint.Client.Tests
             }
         }
         #endregion
-
     }
 }
