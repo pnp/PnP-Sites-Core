@@ -90,12 +90,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             return security;
         }
 
-        private static string ReplaceGroupTokens(Web web, string loginName)
-        {
-			loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
-			loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
-			loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
-            return loginName;
-        }
-    }
+		private static string ReplaceGroupTokens(Web web, string loginName)
+		{
+			if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+			{
+				loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+			}
+			if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+			{
+				loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+			}
+			if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+			{
+				loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+			}
+			return loginName;
+		}
+	}
 }
