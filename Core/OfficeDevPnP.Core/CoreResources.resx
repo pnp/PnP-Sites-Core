@@ -909,4 +909,7 @@
   <data name="WebExtensions_RequestAccessEmailLimitExceeded" xml:space="preserve">
     <value>Request access email addresses exceed 255 characters. Skipping: {0}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists" xml:space="preserve">
+    <value>Field {0} exists not in website</value>
+  </data>
 </root>
