@@ -1113,7 +1113,7 @@ namespace Microsoft.SharePoint.Client
                     if (list.GetEventReceiverByName("LocationBasedMetadataDefaultsReceiver ItemAdded") == null)
                     {
                         EventReceiverDefinitionCreationInformation eventCi = new EventReceiverDefinitionCreationInformation();
-                        eventCi.Synchronization = EventReceiverSynchronization.DefaultSynchronization;
+                        eventCi.Synchronization = EventReceiverSynchronization.Synchronous;
                         eventCi.EventType = EventReceiverType.ItemAdded;
 #if !CLIENTSDKV15
                         eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
