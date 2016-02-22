@@ -974,6 +974,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                         }
+                        else
+                        {
+                            foreach (var ct in contentTypesToRemove.AsEnumerable().Where(ct => (ct.Name == name )))
+                            {
+                                contentTypesToRemove.Remove(ct);
+                                break;
+                            }
+                        }
                         if (ctBinding.Default)
                         {
                             defaultCtBinding = ctBinding;
@@ -998,8 +1006,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (shouldDelete)
                     {
-                        ct.DeleteObject();
+                        web.Context.Load(createdList.ContentTypes);
                         web.Context.ExecuteQueryRetry();
+                        if (createdList.ContentTypes != null && createdList.ContentTypes.Count > 1)
+                        {
+                            ct.DeleteObject();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                 }
             }
