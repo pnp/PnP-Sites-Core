@@ -1231,7 +1231,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     LocaleId = source.RegionalSettings.LocaleIdSpecified ? source.RegionalSettings.LocaleId : 1033,
                     ShowWeeks = source.RegionalSettings.ShowWeeksSpecified ? source.RegionalSettings.ShowWeeks : false,
                     Time24 = source.RegionalSettings.Time24Specified ? source.RegionalSettings.Time24 : false,
-                    TimeZone = Int32.Parse(source.RegionalSettings.TimeZone),
+                    TimeZone = !String.IsNullOrEmpty(source.RegionalSettings.TimeZone) ? Int32.Parse(source.RegionalSettings.TimeZone) : 0,
                     WorkDayEndHour = source.RegionalSettings.WorkDayEndHourSpecified ? source.RegionalSettings.WorkDayEndHour.FromSchemaToTemplateWorkHourV201512() : Model.WorkHour.PM0600,
                     WorkDays = source.RegionalSettings.WorkDaysSpecified ? source.RegionalSettings.WorkDays : 5,
                     WorkDayStartHour = source.RegionalSettings.WorkDayStartHourSpecified ? source.RegionalSettings.WorkDayStartHour.FromSchemaToTemplateWorkHourV201512() : Model.WorkHour.AM0900,
