@@ -259,7 +259,7 @@ All code should be version independent, meaning that code should not assume that
 ```C#
 #if !CLIENTSDKV15
 
-//your SharePoint version 15 specific code goes here
+//your SharePoint version 16 specific code goes here
 
 #endif
 ```
