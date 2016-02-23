@@ -765,7 +765,7 @@ namespace Microsoft.SharePoint.Client
 
             // Ensure other content-type properties
             contentType.EnsureProperties(c => c.Id, c => c.SchemaXml, c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden));
-            field.EnsureProperties(f => f.Id, f => f.SchemaXml);
+            field.EnsureProperties(f => f.Id, f => f.SchemaXmlWithResourceTokens);
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_AddField0ToContentType1, field.Id, contentType.Id);
 
@@ -774,7 +774,7 @@ namespace Microsoft.SharePoint.Client
             var flink = contentType.FieldLinks.FirstOrDefault(fld => fld.Id == field.Id);
             if (flink == null)
             {
-                XElement fieldElement = XElement.Parse(field.SchemaXml);
+                XElement fieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
                 fieldElement.SetAttributeValue("AllowDeletion", "TRUE"); // Default behavior when adding a field to a CT from the UI.
                 field.SchemaXml = fieldElement.ToString();
                 var fldInfo = new FieldLinkCreationInformation();
