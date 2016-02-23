@@ -1343,7 +1343,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             var sourceList = lists.AsEnumerable().Where(l => l.Id == listIdValue).FirstOrDefault();
                             if (sourceList != null)
-                                fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
+                                // // Fix for issue in PnP-Sites-Core: #360 [Lookup column creation in site provisioning engine] 
+                                //Chnaged below code as it is not generating provisioning xml proper for lookup fields           
+                                // fieldElement.Attribute("List").SetValue(String.Format("{{listid:{0}}}", sourceList.Title));
+                                fieldElement.Attribute("List").SetValue(String.Format("Lists/{0}", sourceList.Title));
                         }
 
                         list.Fields.Add(new Model.Field { SchemaXml = fieldElement.ToString() });

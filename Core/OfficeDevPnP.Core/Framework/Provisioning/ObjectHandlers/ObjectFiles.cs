@@ -159,6 +159,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+            // Fix for issue in PnP-Sites-Core: #365 [save site as template doesnot generate the assets files(css,js) required at the target site]            
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                scope.LogDebug("Started executing ExtractObjects method of ObjectFiles.cs");
+
+                var files = new Model.FileCollection(template);
+                var context = web.Context;
+                var siteAssetsList = web.Lists.GetByTitle(Constants.LIST_SITEASSETS);
+
+                //Place the Js & Css files under site assets root folder only
+                var query = CamlQuery.CreateAllItemsQuery(Constants.SITEASSETS_FILES_LIMIT);
+                var listofFiles = siteAssetsList.GetItems(query);
+
+                context.Load(listofFiles, items => items.Include(
+                     item => item["Title"],
+                     item => item["FileRef"]
+                 ));
+                context.ExecuteQuery();
+
+                foreach (var file in listofFiles)
+                {
+                    var title = file.FieldValues["FileRef"].ToString();
+                    if (!string.IsNullOrEmpty(title) && (title.EndsWith(".js", StringComparison.OrdinalIgnoreCase) || title.EndsWith(".css", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        scope.LogDebug("Processing file {0}", title);
+                        var fileModel = new Model.File();
+                        fileModel.Src = title.Split('/').Last();
+                        fileModel.Overwrite = true;
+                        fileModel.Folder = "SiteAssets";
+                        files.Add(fileModel);
+                    }
+                }
+
+                template.Files = files;
+                scope.LogDebug("Ended executing ExtractObjects method of ObjectFiles.cs");
+            }
 
             return template;
         }
@@ -309,11 +345,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            if (!_willExtract.HasValue)
-            {
-                _willExtract = false;
-            }
-            return _willExtract.Value;
+            return true;           
         }
 
     }
