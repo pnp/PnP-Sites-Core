@@ -207,6 +207,27 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
+        /// <summary>
+        /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="accessTokenGetter">The AccessToken getter method to use</param>
+        /// <returns></returns>
+        public ClientContext GetAzureADWebApplicationAuthenticatedContext(string siteUrl, Func<String, String> accessTokenGetter)
+        {
+            var clientContext = new ClientContext(siteUrl);
+            clientContext.ExecutingWebRequest += (sender, args) =>
+            {
+                Uri resourceUri = new Uri(siteUrl);
+                resourceUri = new Uri(resourceUri.Scheme + "://" + resourceUri.Host + "/");
+
+                String accessToken = accessTokenGetter(resourceUri.ToString());
+                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
+            };
+
+            return clientContext;
+        }
+
         async void clientContext_NativeApplicationExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             var host = new Uri(_contextUrl);

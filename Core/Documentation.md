@@ -5272,6 +5272,16 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > ##### Return value
 > 
 
+#### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
+Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **accessTokenGetter:** The AccessToken getter method to use
+
+> ##### Return value
+> 
+
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
 > ##### Parameters
