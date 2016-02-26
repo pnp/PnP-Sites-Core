@@ -58,7 +58,8 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 AddListFields();
-
+                // remove already existing fields from the default view to prevent duplicates
+                RemoveViewFields(); 
                 AddViewFields(experience);
             }
 
