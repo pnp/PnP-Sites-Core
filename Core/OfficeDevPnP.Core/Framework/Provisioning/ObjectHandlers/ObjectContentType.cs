@@ -258,8 +258,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //In this case the new Content Type has all field of the original Content Type and missing fields 
             //will be added at the end. To fix this issue we ordering the fields once more.
             createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => fld.Name).ToArray());
-            createdCT.Update(true);
-            web.Context.ExecuteQueryRetry();
 
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
@@ -280,6 +278,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.DisplayFormUrl = templateContentType.DisplayFormUrl;
             }
+
+            createdCT.Update(true);
+            web.Context.ExecuteQueryRetry();
 
             // If the CT is a DocumentSet
             if (templateContentType.DocumentSetTemplate != null)
