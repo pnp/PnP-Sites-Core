@@ -212,7 +212,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public FileCollection Files
         {
             get { return this._files; }
-            set { this._files = value; }
+            private set { this._files = value; }
         }
 
         /// <summary>
