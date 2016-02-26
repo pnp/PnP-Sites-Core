@@ -213,7 +213,7 @@ namespace OfficeDevPnP.Core
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="accessTokenGetter">The AccessToken getter method to use</param>
         /// <returns></returns>
-        public ClientContext GetAzureADWebApplicationAuthenticatedContext(string siteUrl, Func<String, String> accessTokenGetter)
+        public ClientContext GetAzureADWebApplicationAuthenticatedContext(String siteUrl, Func<String, String> accessTokenGetter)
         {
             var clientContext = new ClientContext(siteUrl);
             clientContext.ExecutingWebRequest += (sender, args) =>
@@ -222,6 +222,24 @@ namespace OfficeDevPnP.Core
                 resourceUri = new Uri(resourceUri.Scheme + "://" + resourceUri.Host + "/");
 
                 String accessToken = accessTokenGetter(resourceUri.ToString());
+                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
+            };
+
+            return clientContext;
+        }
+
+        /// <summary>
+        /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="accessToken">An explicit value for the AccessToken</param>
+        /// <returns></returns>
+        public ClientContext GetAzureADAccessTokenAuthenticatedContext(String siteUrl, String accessToken)
+        {
+            var clientContext = new ClientContext(siteUrl);
+
+            clientContext.ExecutingWebRequest += (sender, args) =>
+            {
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
             };
 
