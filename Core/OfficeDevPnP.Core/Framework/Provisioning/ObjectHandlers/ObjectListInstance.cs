@@ -1329,9 +1329,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    var schemaXml = ParseFieldSchema(field.SchemaXml, lists);
+                    //var schemaXml = ParseFieldSchema(field.SchemaXml, lists); //not being used..
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
+
+                    //get field type
+                    var fieldType = fieldElement.Attribute("Type") != null ? fieldElement.Attribute("Type").Value : null;
+
+                    if (fieldType != null && fieldType == "Calculated")
+                    {
+                        var calcualtedField = (FieldCalculated)field;
+
+                        // update SchemaXml value with field formula value
+                        // SchemaXml value contains the Internal Column names but we need the Column Display Names when extracting or provisioning will fail
+                        if (fieldElement.Element("Formula") != null)
+                        {
+                            fieldElement.Element("Formula").Value = calcualtedField.Formula;
+                            field.SchemaXml = fieldElement.ToString();
+                        }
+                    }
 
                     if (listId == null)
                         list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
