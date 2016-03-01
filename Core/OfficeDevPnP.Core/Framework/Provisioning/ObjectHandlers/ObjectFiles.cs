@@ -159,10 +159,125 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
+            // Fix for issue in PnP-Sites-Core: #365 [save site as template doesnot generate the assets files(css,js) required at the target site]            
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                scope.LogDebug("Started executing ExtractObjects method of ObjectFiles.cs");
+
+                var context = web.Context;
+                var siteAssetsList = web.Lists.GetByTitle(Constants.LIST_SITEASSETS);
+
+                //Place the Js & Css files under site assets root folder only
+                var query = CamlQuery.CreateAllItemsQuery(Constants.SITEASSETS_FILES_LIMIT);
+                var listofFiles = siteAssetsList.GetItems(query);
+
+                context.Load(listofFiles, items => items.Include(
+                     item => item["Title"],
+                     item => item["FileRef"]
+                 ));
+                context.ExecuteQuery();
+
+                //Copying each file from source site's Site Asset folder to Infrastructure site and adding that file to template xml.
+                foreach (var file in listofFiles)
+                {
+                    var filePath = file.FieldValues["FileRef"].ToString();
+                    if (!string.IsNullOrEmpty(filePath))
+                    {
+                        if (filePath.EndsWith("Notebook"))
+                        {
+                            continue;
+                        }
+                        scope.LogDebug("Processing file {0}", filePath);
+
+                        if (PersistFile(web, creationInfo, scope, filePath))
+                        {
+                            var pnpFile = new Model.File()
+                            {
+                                Folder = "SiteAssets",
+                                Overwrite = true,
+                                Src = filePath.Split('/').Last()
+                            };
+                            template.Files.Add(pnpFile);
+                        }
+                    }
+                }
+                scope.LogDebug("Ended executing ExtractObjects method of ObjectFiles.cs");
+            }
 
             return template;
         }
 
+
+        private bool PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string serverRelativeUrl)
+        {
+            var success = false;
+            if (creationInfo.PersistBrandingFiles)
+            {
+                if (creationInfo.FileConnector != null)
+                {
+
+                    try
+                    {
+                        var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+                        string fileName = string.Empty;
+                        if (serverRelativeUrl.IndexOf("/") > -1)
+                        {
+                            fileName = serverRelativeUrl.Substring(serverRelativeUrl.LastIndexOf("/") + 1);
+                        }
+                        else
+                        {
+                            fileName = serverRelativeUrl;
+                        }
+                        web.Context.Load(file);
+                        web.Context.ExecuteQueryRetry();
+                        ClientResult<Stream> stream = file.OpenBinaryStream();
+                        web.Context.ExecuteQueryRetry();
+
+                        using (Stream memStream = new MemoryStream())
+                        {
+                            CopyStream(stream.Value, memStream);
+                            memStream.Position = 0;
+                            creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                        }
+                        success = true;
+                    }
+                    catch (ServerException ex1)
+                    {
+                        // If we are referring a file from a location outside of the current web or at a location where we cannot retrieve the file an exception is thrown. We swallow this exception.
+                        if (ex1.ServerErrorCode != -2147024809)
+                        {
+                            throw;
+                        }
+                        else
+                        {
+                            scope.LogWarning("File is not necessarily located in the current web. Not retrieving {0}", serverRelativeUrl);
+                        }
+                    }
+                }
+                else
+                {
+                    WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                    scope.LogError("No connector present to persist homepage");
+                }
+            }
+            else
+            {
+                success = true;
+            }
+            return success;
+        }
+
+        private void CopyStream(Stream source, Stream destination)
+        {
+            byte[] buffer = new byte[32768];
+            int bytesRead;
+
+            do
+            {
+                bytesRead = source.Read(buffer, 0, buffer.Length);
+                destination.Write(buffer, 0, bytesRead);
+            } while (bytesRead != 0);
+        }
 
         public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
         {
@@ -309,11 +424,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            if (!_willExtract.HasValue)
-            {
-                _willExtract = false;
-            }
-            return _willExtract.Value;
+            return true;
         }
 
     }
