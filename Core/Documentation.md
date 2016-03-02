@@ -1132,6 +1132,16 @@ Return content type by Id
 > ##### Return value
 > Content type object or null if was not found
 
+#### BestMatch(Microsoft.SharePoint.Client.ContentTypeCollection,System.String)
+Searches for the content type with the closest match to the value of the specified content type ID. If the search finds two matches, the shorter ID is returned.
+> ##### Parameters
+> **contentTypes:** Content type collection to search
+
+> **contentTypeId:** Complete ID for the content type to search
+
+> ##### Return value
+> Content type Id object or null if was not found
+
 #### RemoveContentTypeFromListByName(Microsoft.SharePoint.Client.Web,System.String,System.String)
 Removes content type from list
 > ##### Parameters
