@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (existingCT == null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields);
                         if (newCT != null)
                         {
                             existingCTs.Add(newCT);
@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -171,9 +171,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
-                    var field = web.Fields.GetById(fieldId);
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    var field = web.GetFieldById<Microsoft.SharePoint.Client.Field>(fieldId);
+                    if (field != null)
+                    {
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
+                        web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    }
+                    else
+                    {
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists, fieldId);
+                        throw new ArgumentException(string.Format(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists, fieldId));
+                    }
                 }
             }
 
@@ -224,7 +232,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector,
+        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector, PnPMonitoredScope scope,
             List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null)
         {
             var name = parser.ParseString(templateContentType.Name);
@@ -235,8 +243,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var createdCT = web.CreateContentType(name, description, id, group);
             foreach (var fieldRef in templateContentType.FieldRefs)
             {
-                var field = web.Fields.GetById(fieldRef.Id);
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                var field = web.GetFieldById<Microsoft.SharePoint.Client.Field>(fieldRef.Id);
+                if (field != null)
+                {
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldRef.Id);
+                    web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                }
+                else
+                {
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists, fieldRef.Id);
+                    throw new ArgumentException(string.Format(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists, fieldRef.Id));
+                }
             }
 
             // Add new CTs

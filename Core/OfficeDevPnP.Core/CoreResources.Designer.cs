@@ -873,6 +873,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field {0} exists not in website.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Field__0__not_exists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request {
