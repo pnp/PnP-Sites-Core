@@ -411,7 +411,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var defaultViewForContentType = viewElement.Attribute("DefaultViewForContentType") != null ? viewElement.Attribute("DefaultViewForContentType").Value : null;
                 if (!string.IsNullOrEmpty(defaultViewForContentType) && bool.TryParse(defaultViewForContentType, out parsedDefaultViewForContentType))
                 {
-                    var contentType = web.GetContentTypeById(contentTypeID, searchInSiteHierarchy: true);
                     createdView.DefaultViewForContentType = parsedDefaultViewForContentType;
                     createdView.Update();
                 }
