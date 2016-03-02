@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var webId = string.Empty;
 
                     var field = rootWeb.Fields.GetById(fieldId);
-                    rootWeb.Context.Load(field, f => f.SchemaXml);
+                    rootWeb.Context.Load(field, f => f.SchemaXml, f => f.SchemaXmlWithResourceTokens);
                     rootWeb.Context.ExecuteQueryRetry();
 
                     List sourceList = FindSourceList(listIdentifier, web, rootWeb);
@@ -104,7 +104,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         try
                         {
                             var field = createdList.Fields.GetById(fieldId);
-                            web.Context.Load(field, f => f.SchemaXml);
+                            web.Context.Load(field, f => f.SchemaXml, f => f.SchemaXmlWithResourceTokens);
                             web.Context.ExecuteQueryRetry();
 
                             List sourceList = FindSourceList(listIdentifier, web, rootWeb);
@@ -160,7 +160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var isDirty = false;
 
-            var existingFieldElement = XElement.Parse(field.SchemaXml);
+            var existingFieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
 
             isDirty = UpdateFieldAttribute(existingFieldElement, "List", listGuid.ToString(), false);
 
