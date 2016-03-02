@@ -494,7 +494,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml)
         {
-            fieldElement = PrepareField(fieldElement);
+            fieldElement = PrepareField(fieldElement, listInfo);
 
             var fieldXml = parser.ParseString(fieldElement.ToString(), "~sitecollection", "~site");
             var field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
@@ -546,7 +546,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Is existing field of the same type?
                 if (existingFieldElement.Attribute("Type").Value == templateFieldElement.Attribute("Type").Value)
                 {
-                    templateFieldElement = PrepareField(templateFieldElement);
+                    templateFieldElement = PrepareField(templateFieldElement, listInfo);
 
                     foreach (var attribute in templateFieldElement.Attributes())
                     {
@@ -614,7 +614,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static XElement PrepareField(XElement fieldElement)
+        private static XElement PrepareField(XElement fieldElement, ListInfo listInfo)
         {
             var listIdentifier = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
@@ -640,7 +640,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            var typeIdentifier = fieldElement.Attribute("Type") != null ? fieldElement.Attribute("Type").Value : null;
+
+            if (typeIdentifier != null && typeIdentifier.Equals("Calculated"))
+            {
+                // the extract part generates a native english formula with internal names
+                // but on provision we must change a formula with field refs to the display names of this columns
+                // tested on SP15/(SP16)/O365
+                PrepareCalulatedField(fieldElement, listInfo);
+            }
+
             return fieldElement;
+        }
+
+        private static void PrepareCalulatedField(XElement fieldElement, ListInfo listInfo)
+        {
+            // only if there are field refs we must change the internal field names to the actual field titles
+            if (fieldElement.Element("FieldRefs") != null && fieldElement.Element("Formula") != null)
+            {
+                XElement xeFormula = fieldElement.Element("Formula");
+                XElement xeFieldRefs = fieldElement.Element("FieldRefs");
+
+                // a formula build by hand? than we change nothing!
+                if (!xeFormula.Value.Contains("[") && !xeFormula.Value.Contains("]"))
+                {
+                    listInfo.SiteList.Context.Load(listInfo.SiteList.Fields);
+                    listInfo.SiteList.Context.ExecuteQueryRetry();
+
+                    foreach (XElement xeFieldRef in xeFieldRefs.Elements())
+                    {
+                        if (xeFieldRef.HasAttributes && xeFieldRef.Attribute("Name") != null)
+                        {
+                            var fieldName = xeFieldRef.Attribute("Name").Value;
+                            if (!string.IsNullOrWhiteSpace(fieldName))
+                            {
+                                var fieldDisplayName = fieldName;
+
+                                Field field = listInfo.SiteList.Fields.GetFieldByName<Field>(fieldName);
+                                if (field != null)
+                                {
+                                    fieldDisplayName = field.Title;
+                                }
+                                xeFormula.Value = xeFormula.Value.Replace(fieldName, string.Concat("[", fieldDisplayName, "]"));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope)
