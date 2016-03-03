@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                                 Title = "Template Site",
                                 Template = template.Template,
                                 Url = siteUrl,
-                            }, false, true);
+                            }, true, true);
                         }
 
                         if (template.SubSiteTemplate.Length > 0)
