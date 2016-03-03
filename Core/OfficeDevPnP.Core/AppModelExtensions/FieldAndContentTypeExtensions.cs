@@ -323,6 +323,20 @@ namespace Microsoft.SharePoint.Client
             ct.Context.ExecuteQueryRetry();
             return results.FirstOrDefault() != null;
         }
+        
+        /// <summary>
+        /// Adds jsLink to a field.
+        /// </summary>
+        /// <param name="field">The field to add jsLink to</param>
+        /// <param name="jsLink">JSLink to set to the form. Set to empty string to remove the set JSLink customization.
+        /// Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+        /// </param>
+        public static void SetJsLinkCustomizations(this Field field, string jsLink)
+        {
+            field.JSLink = jsLink;
+            field.UpdateAndPushChanges(true);
+            field.Context.ExecuteQueryRetry();
+        }
 
 
         #endregion
@@ -551,6 +565,20 @@ namespace Microsoft.SharePoint.Client
 
             list.Context.ExecuteQueryRetry();
             return fields;
+        }
+        
+        /// <summary>
+        /// Adds jsLink to a list field.
+        /// </summary>
+        /// <param name="list">The list where the field exists.</param>
+        /// <param name="fieldName">The field to add jsLink to.</param>
+        /// <param name="jsLink">JSLink to set to the form. Set to empty string to remove the set JSLink customization.
+        /// Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+        /// </param>
+        public static void SetJsLinkCustomizations(this List list, string fieldName, string jsLink)
+        {
+            Field field = list.Fields.GetByInternalNameOrTitle(fieldName);
+            field.SetJsLinkCustomizations(jsLink);
         }
 
         #endregion
