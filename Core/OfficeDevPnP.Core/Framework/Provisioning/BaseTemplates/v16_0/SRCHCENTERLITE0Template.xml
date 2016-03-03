@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.2.1603.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCENTERLITE0template">
     <pnp:ProvisioningTemplate ID="SRCHCENTERLITE0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
@@ -9,16 +9,16 @@
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="ec81445e-393b-4473-a6ed-5c0dc2746ee3" />
-        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
-        <pnp:PropertyBagEntry Key="NoCrawl" Value="true" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
-        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
-        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
-        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="ec81445e-393b-4473-a6ed-5c0dc2746ee3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="NoCrawl" Value="true" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
         <pnp:Permissions>
@@ -417,9 +417,6 @@
           </pnp:FieldRefs>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Pages" Description="Use this list to store the tabs displayed in the default blank search pages." DocumentTemplate="" TemplateType="301" Url="SearchCenter" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
-          <pnp:ContentTypeBindings>
-            <pnp:ContentTypeBinding ContentTypeID="0x" Default="true" />
-          </pnp:ContentTypeBindings>
           <pnp:Views>
             <View Name="{C900C5B0-0DB9-4D49-837B-F91B689A91D8}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/TemplateSRCHCENTERLITE0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
@@ -440,7 +437,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{549E1CC6-575B-40C3-AFCD-DAD7C0290CB6}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{549E1CC6-575B-40C3-AFCD-DAD7C0290CB6}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{83a39958-4a8c-440c-ae07-a5295897117d}" StaticName="Comments" SourceID="{549E1CC6-575B-40C3-AFCD-DAD7C0290CB6}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{d7abe63f-587d-48be-8be2-67718de3ae74}" StaticName="Comments" SourceID="{549E1CC6-575B-40C3-AFCD-DAD7C0290CB6}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
@@ -503,9 +500,6 @@
           </pnp:Fields>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Results" Description="Use this list to store the tabs displayed in search results." DocumentTemplate="" TemplateType="301" Url="SearchResults" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
-          <pnp:ContentTypeBindings>
-            <pnp:ContentTypeBinding ContentTypeID="0x" Default="true" />
-          </pnp:ContentTypeBindings>
           <pnp:Views>
             <View Name="{0FA7CEFF-18AD-4BE1-8096-5C2EB7789D05}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/TemplateSRCHCENTERLITE0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
@@ -526,7 +520,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{F15B50BF-891C-497B-83BA-799ED308037F}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{F15B50BF-891C-497B-83BA-799ED308037F}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{51eab507-1a87-4d8b-8b85-b2b214048596}" StaticName="Comments" SourceID="{F15B50BF-891C-497B-83BA-799ED308037F}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{9fc3ea8c-c85d-4201-9467-246a49cb044c}" StaticName="Comments" SourceID="{F15B50BF-891C-497B-83BA-799ED308037F}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
