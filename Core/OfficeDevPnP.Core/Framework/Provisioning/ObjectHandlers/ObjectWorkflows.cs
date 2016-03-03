@@ -196,8 +196,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+
+                    // get existing subscriptions
+                    var existingWorkflowSubscriptions = web.GetWorkflowSubscriptions();
+
                     foreach (var subscription in template.Workflows.WorkflowSubscriptions)
                     {
+                        // Check if the subscription already exists before adding it, and 
+                        // if already exists a subscription with the same name and with the same DefinitionId, 
+                        // it is a duplicate
+                        string subscriptionName;
+                        if (subscription.PropertyDefinitions.TryGetValue("SharePointWorkflowContext.Subscription.Name", out subscriptionName) && 
+                            existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId))
+                            {
+                                // Thus, skip it!
+                                WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
+                                continue;
+                            }
 #if CLIENTSDKV15
                     // Create the WorkflowDefinition instance
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
@@ -226,12 +241,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 StatusFieldName = subscription.StatusFieldName,
                             };
 #endif
-                        foreach (var p in subscription.PropertyDefinitions
-                            .Where(d => d.Key == "TaskListId" || d.Key == "HistoryListId"))
+                        foreach (var propertyDefinition in subscription.PropertyDefinitions
+                            .Where(d => d.Key == "TaskListId" ||
+                                        d.Key == "HistoryListId" ||
+                                        d.Key == "SharePointWorkflowContext.Subscription.Id" ||
+                                        d.Key == "SharePointWorkflowContext.Subscription.Name"))
                         {
-                            workflowSubscription.SetProperty(p.Key, parser.ParseString(p.Value));
+                            workflowSubscription.SetProperty(propertyDefinition.Key, parser.ParseString(propertyDefinition.Value));
                         }
-
                         if (!String.IsNullOrEmpty(subscription.ListId))
                         {
                             // It is a List Workflow
