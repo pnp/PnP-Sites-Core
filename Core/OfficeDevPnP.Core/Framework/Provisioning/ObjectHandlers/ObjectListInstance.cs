@@ -461,7 +461,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 			field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
 			XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
 
-			element.SetAttributeValue("AllowDeletion", "TRUE");
+            element.SetAttributeValue("AllowDeletion", "TRUE");
 
             field.SchemaXml = element.ToString();
 
@@ -534,11 +534,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
-			web.Context.Load(existingField, f => f.SchemaXml, f => f.SchemaXmlWithResourceTokens);
-			web.Context.ExecuteQueryRetry();
+            web.Context.Load(existingField, f => f.SchemaXml, f => f.SchemaXmlWithResourceTokens);
+            web.Context.ExecuteQueryRetry();
 
-			var existingFieldElement = XElement.Parse(existingField.SchemaXmlWithResourceTokens);
-			var equalityComparer = new XNodeEqualityComparer();
+            var existingFieldElement = XElement.Parse(existingField.SchemaXmlWithResourceTokens);
+
+            var equalityComparer = new XNodeEqualityComparer();
 
             // Is field different in template?
             if (equalityComparer.GetHashCode(existingFieldElement) != equalityComparer.GetHashCode(templateFieldElement))
