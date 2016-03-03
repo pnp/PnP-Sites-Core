@@ -2276,6 +2276,17 @@ Get list by using Url
 > ##### Return value
 > 
 
+#### GetPagesLibrary(Microsoft.SharePoint.Client.Web)
+Gets the publishing pages library of the web.
+> ##### Parameters
+> **web:** The web.
+
+> ##### Return value
+> The publishing pages library. Returns null if library was not found.
+> ##### Exceptions
+> **System.InvalidOperationException:** Could not load pages library URL name from 'cmscore' resources file.
+
+
 #### SetListPermission(Microsoft.SharePoint.Client.List,OfficeDevPnP.Core.Enums.BuiltInIdentity,Microsoft.SharePoint.Client.RoleType)
 Set custom permission to the list
 > ##### Parameters
