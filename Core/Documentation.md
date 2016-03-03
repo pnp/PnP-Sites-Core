@@ -2825,6 +2825,23 @@ Adds a blank Wiki page to the site pages library
 > **System.ArgumentNullException:** Thrown when wikiPageLibraryName or wikiPageName is null
 
 
+#### EnsureWikiPage(Microsoft.SharePoint.Client.Web,System.String,System.String)
+Returns the Url for the requested wiki page, creates it if the pageis not yet available
+> ##### Parameters
+> **web:** Site to be processed - can be root web or sub site
+
+> **wikiPageLibraryName:** Name of the wiki page library
+
+> **wikiPageName:** Wiki page to operate on
+
+> ##### Return value
+> The relative URL of the added wiki page
+> ##### Exceptions
+> **System.ArgumentException:** Thrown when wikiPageLibraryName or wikiPageName is a zero-length string or contains only white space
+
+> **System.ArgumentNullException:** Thrown when wikiPageLibraryName or wikiPageName is null
+
+
 #### AddWikiPageByUrl(Microsoft.SharePoint.Client.Web,System.String,System.String)
 Adds a wiki page by Url
 > ##### Parameters

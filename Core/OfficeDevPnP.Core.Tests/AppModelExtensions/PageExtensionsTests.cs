@@ -33,28 +33,24 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     site.ActivateFeature(publishingSiteFeatureId);
                     deactivatePublishingOnTearDown = true;
                 }
-                using (scope.StartScope())
-                {                    
-                    using (scope.StartTry())
-                    {
-                        web = ctx.Site.OpenWeb(name);
-                        web.DeleteObject();
-                    }
-                    using (scope.StartCatch())
-                    {
-                        
-                        web = ctx.Web.Webs.Add(new WebCreationInformation
-                        {
-                            Title = name,
-                            WebTemplate = webTemplate,
-                            Url = name
-                        });                        
-                    }
-                    using (scope.StartFinally())
-                    {                        
-                        return web;
-                    }
+
+                try
+                {
+                    web = ctx.Site.OpenWeb(name);
+                    web.DeleteObject();
+                    ctx.ExecuteQueryRetry();
                 }
+                catch { }
+
+                web = ctx.Web.Webs.Add(new WebCreationInformation
+                {
+                    Title = name,
+                    WebTemplate = webTemplate,
+                    Url = name
+                });
+                ctx.ExecuteQueryRetry();
+
+                return web;
             }
         }
 
@@ -72,6 +68,50 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         #endregion
 
         #region Wiki page tests
+        [TestMethod]
+        public void AddWikiPageTest()
+        {
+            var web = Setup();
+
+            //Add new wiki library
+            web.CreateList(ListTemplateType.WebPageLibrary, "wikipages", false);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                using (var ctx2 = ctx.Clone(TestCommon.DevSiteUrl + "/WebExtensions"))
+                {
+                    var wikiPage2 = ctx2.Web.AddWikiPage("wikipages", "test.aspx");
+                    Assert.AreEqual(wikiPage2.ToLower(), "wikipages/test.aspx");
+                    var wikiPage1 = ctx2.Web.AddWikiPage("Site Pages", "test.aspx");
+                    Assert.AreEqual(wikiPage1.ToLower(), "sitepages/test.aspx");
+
+                    Teardown(ctx2.Web);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void EnsureWikiPageTest()
+        {
+            var web = Setup();
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                using (var ctx2 = ctx.Clone(TestCommon.DevSiteUrl + "/WebExtensions"))
+                {
+                    // first run creates the page
+                    var wikiPage1 = ctx2.Web.EnsureWikiPage("Site Pages", "test.aspx");
+                    Assert.AreEqual(wikiPage1.ToLower(), "sitepages/test.aspx");
+                    
+                    // Second run should return the page
+                    wikiPage1 = ctx2.Web.EnsureWikiPage("Site Pages", "test.aspx");
+                    Assert.AreEqual(wikiPage1.ToLower(), "sitepages/test.aspx");
+
+                    Teardown(ctx2.Web);
+                }
+            }
+        }
+
         [TestMethod]
         public void CanAddLayoutToWikiPageTest()
         {
