@@ -1,10 +1,12 @@
-﻿using OfficeDevPnP.Core;
+﻿using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -69,6 +71,9 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("fieldAsXml");
             }
 
+            // Variable to check for valid fields
+            Boolean fieldIsValid = true;
+
             var xd = XDocument.Parse(fieldAsXml);
             if (xd.Root != null)
             {
@@ -82,22 +87,73 @@ namespace Microsoft.SharePoint.Client
                     var name = fieldNode.Attribute("Name").Value;
 
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_CreateField01, name, id);
+
+                    // Double check any taxonomy field and verify existence of target term group and term set
+                    var fieldType = fieldNode.Attribute("Type") != null ? fieldNode.Attribute("Type").Value : null;
+
+                    if (fieldType != null && (fieldType == "TaxonomyFieldType" || fieldType == "TaxonomyFieldTypeMulti"))
+                    {
+                        TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+                        var termStores = session.TermStores;
+                        web.Context.Load(termStores, ts => ts.Include(t => t.Id));
+                        web.Context.ExecuteQueryRetry();
+
+                        // Search for taxonomy field settings
+                        var taxonomySspIdProperty = fieldNode.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'SspId']");
+                        var taxonomyTermSetIdProperty = fieldNode.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'TermSetId']");
+
+                        // If I have both the settings
+                        if (taxonomySspIdProperty != null &&
+                            taxonomyTermSetIdProperty != null)
+                        {
+                            TermStore targetTaxonomyStore = null;
+                            TermSet targetTermSet = null;
+
+                            Guid taxonomyStoreId;
+                            if (Guid.TryParse(taxonomySspIdProperty.Value, out taxonomyStoreId))
+                            {
+                                // If the ID of the TermStore does not exist, the taxonomy field is not valid
+                                targetTaxonomyStore = termStores.FirstOrDefault(ts => ts.Id == taxonomyStoreId);
+
+                                // If I have the store, let's try to get the TermSet
+                                if (targetTaxonomyStore != null)
+                                {
+                                    Guid taxonomyTermSetId;
+                                    if (Guid.TryParse(taxonomyTermSetIdProperty.Value, out taxonomyTermSetId))
+                                    {
+                                        targetTermSet = targetTaxonomyStore.GetTermSet(taxonomyTermSetId);
+                                    }
+                                }
+                            }
+                            fieldIsValid = targetTaxonomyStore != null && targetTermSet != null;
+                        }
+                        else
+                        {
+                            // Otherwise skip the field
+                            fieldIsValid = false;
+                        }
+                    }
                 }
             }
 
-            var fields = web.Fields;
-            web.Context.Load(fields);
-            web.Context.ExecuteQueryRetry();
+            Field result = null;
 
-            var field = fields.AddFieldAsXml(fieldAsXml, false, AddFieldOptions.AddFieldInternalNameHint);
-            web.Update();
-
-            if (executeQuery)
+            if (fieldIsValid)
             {
+                var fields = web.Fields;
+                web.Context.Load(fields);
                 web.Context.ExecuteQueryRetry();
+
+                result = fields.AddFieldAsXml(fieldAsXml, false, AddFieldOptions.AddFieldInternalNameHint);
+                web.Update();
+
+                if (executeQuery)
+                {
+                    web.Context.ExecuteQueryRetry();
+                }
             }
 
-            return field;
+            return result;
         }
         /// <summary>
         /// Removes a field by specifying its internal name
