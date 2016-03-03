@@ -489,7 +489,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef)
         {
-            XElement element = XElement.Parse(field.SchemaXml);
+            field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
+            XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
 
             element.SetAttributeValue("AllowDeletion", "TRUE");
 
@@ -564,10 +565,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
-            web.Context.Load(existingField, f => f.SchemaXml);
+            web.Context.Load(existingField, f => f.SchemaXmlWithResourceTokens);
             web.Context.ExecuteQueryRetry();
 
-            var existingFieldElement = XElement.Parse(existingField.SchemaXml);
+            var existingFieldElement = XElement.Parse(existingField.SchemaXmlWithResourceTokens);
 
             var equalityComparer = new XNodeEqualityComparer();
 
