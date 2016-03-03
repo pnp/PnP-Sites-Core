@@ -154,19 +154,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Pre-load useful properties
                     web.EnsureProperty(w => w.Id);
 
-                    // get existing definitions
-                    var existingWorkflowDefinitions = web.GetWorkflowDefinitions(false);
-
                     // Provision Workflow Definitions
                     foreach (var definition in template.Workflows.WorkflowDefinitions)
                     {
-                        // Check if the definition already exists before adding it
-                        if (existingWorkflowDefinitions.Any(w => w.Id == definition.Id))
-                        {
-                            WriteWarning(string.Format("Workflow Definition '{0}' already exists. Skipping...", definition.DisplayName), ProvisioningMessageType.Warning);
-                            continue;
-                        }
-
                         // Load the Workflow Definition XAML
                         Stream xamlStream = template.Connector.GetFileStream(definition.XamlPath);
                         System.Xml.Linq.XElement xaml = System.Xml.Linq.XElement.Load(xamlStream);
@@ -212,15 +202,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var subscription in template.Workflows.WorkflowSubscriptions)
                     {
+                        // Check if the subscription already exists before adding it, and 
+                        // if already exists a subscription with the same name and with the same DefinitionId, 
+                        // it is a duplicate
                         string subscriptionName;
-                        subscription.PropertyDefinitions.TryGetValue("SharePointWorkflowContext.Subscription.Name", out subscriptionName);
-
-                        // Check if the subscription already exists before adding it
-                        if (!String.IsNullOrEmpty(subscriptionName) && existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName))
-                        {
-                            WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
-                            continue;
-                        }
+                        if (subscription.PropertyDefinitions.TryGetValue("SharePointWorkflowContext.Subscription.Name", out subscriptionName) && 
+                            existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId))
+                            {
+                                // Thus, skip it!
+                                WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
+                                continue;
+                            }
 #if CLIENTSDKV15
                     // Create the WorkflowDefinition instance
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
