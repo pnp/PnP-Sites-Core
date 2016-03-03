@@ -14054,6 +14054,22 @@ Root <View> and <Query> nodes.
 > ##### Return value
 > String to be used in CAML queries
 
+#### ViewQuery(Microsoft.SharePoint.Client.ViewScope,System.String,System.String,System.String,System.Int32)
+Root <View> and <Query> nodes.
+> ##### Parameters
+> **scope:** View scope
+
+> **whereClause:** <Where> node.
+
+> **viewFields:** <ViewFields> node.
+
+> **orderByClause:** <OrderBy> node.
+
+> **rowLimit:** <RowLimit> node.
+
+> ##### Return value
+> String to be used in CAML queries
+
 #### FieldValue(System.String,System.String,System.String,System.String)
 Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
 > ##### Parameters
@@ -14078,6 +14094,14 @@ Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
 > **value:** 
 
 > **additionalFieldRefParams:** 
+
+> ##### Return value
+> 
+
+#### FieldRef(System.String)
+Creates a <FieldRef> node for ViewFields clause
+> ##### Parameters
+> **fieldName:** 
 
 > ##### Return value
 > 
