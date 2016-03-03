@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 using Utility = OfficeDevPnP.Core.Utilities.Utility;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {

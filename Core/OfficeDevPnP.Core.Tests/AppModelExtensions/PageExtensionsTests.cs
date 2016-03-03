@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Publishing;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
@@ -35,24 +36,24 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 }
 
                 try
-                {
-                    web = ctx.Site.OpenWeb(name);
-                    web.DeleteObject();
+                {                    
+                        web = ctx.Site.OpenWeb(name);
+                        web.DeleteObject();
                     ctx.ExecuteQueryRetry();
-                }
+                    }
                 catch { }
-
-                web = ctx.Web.Webs.Add(new WebCreationInformation
-                {
-                    Title = name,
-                    WebTemplate = webTemplate,
-                    Url = name
-                });
+                        
+                        web = ctx.Web.Webs.Add(new WebCreationInformation
+                        {
+                            Title = name,
+                            WebTemplate = webTemplate,
+                            Url = name
+                        });                        
                 ctx.ExecuteQueryRetry();
 
-                return web;
-            }
-        }
+                        return web;
+                    }
+                }
 
         public void Teardown(Web web)
         {

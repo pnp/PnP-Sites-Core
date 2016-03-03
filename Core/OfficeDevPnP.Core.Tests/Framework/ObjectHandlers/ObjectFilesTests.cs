@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {

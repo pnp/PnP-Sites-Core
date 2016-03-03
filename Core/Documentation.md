@@ -14082,6 +14082,51 @@ Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
 > ##### Return value
 > 
 
+## Core.Utilities.UrlUtility
+            
+Static methods to modify URL paths.
+        
+### Methods
+
+
+#### Combine(System.String,System.String[])
+Combines a path and a relative path.
+> ##### Parameters
+> **path:** 
+
+> **relativePaths:** 
+
+> ##### Return value
+> 
+
+#### Combine(System.String,System.String)
+Combines a path and a relative path.
+> ##### Parameters
+> **path:** 
+
+> **relative:** 
+
+> ##### Return value
+> 
+
+#### AppendQueryString(System.String,System.String)
+Adds query string parameters to the end of a querystring and guarantees the proper concatenation with ? and &.
+> ##### Parameters
+> **path:** 
+
+> **queryString:** 
+
+> ##### Return value
+> 
+
+#### EnsureTrailingSlash(System.String)
+Ensures that there is a trailing slash at the end of the url
+> ##### Parameters
+> **urlToProcess:** 
+
+> ##### Return value
+> 
+
 ## Core.Utilities.EncryptionUtility
             
 Utility class that support certificate based encryption/decryption
@@ -15709,49 +15754,3 @@ Converts the input string to a Guid and if null, it returns the default value.
 > **input:** Input string.
 
 > **defaultValue:** A default value to return for a null input value.
-
-
-## UrlUtility
-            
-Static methods to modify URL paths.
-        
-### Methods
-
-
-#### Combine(System.String,System.String[])
-Combines a path and a relative path.
-> ##### Parameters
-> **path:** 
-
-> **relativePaths:** 
-
-> ##### Return value
-> 
-
-#### Combine(System.String,System.String)
-Combines a path and a relative path.
-> ##### Parameters
-> **path:** 
-
-> **relative:** 
-
-> ##### Return value
-> 
-
-#### AppendQueryString(System.String,System.String)
-Adds query string parameters to the end of a querystring and guarantees the proper concatenation with ? and &.
-> ##### Parameters
-> **path:** 
-
-> **queryString:** 
-
-> ##### Return value
-> 
-
-#### EnsureTrailingSlash(System.String)
-Ensures that there is a trailing slash at the end of the url
-> ##### Parameters
-> **urlToProcess:** 
-
-> ##### Return value
-> 

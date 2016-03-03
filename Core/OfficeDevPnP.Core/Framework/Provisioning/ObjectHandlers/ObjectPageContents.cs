@@ -16,6 +16,7 @@ using System.Web;
 using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
