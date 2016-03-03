@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.2.1603.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BLANKINTERNET0template">
     <pnp:ProvisioningTemplate ID="BLANKINTERNET0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
@@ -9,67 +9,67 @@
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
-        <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" />
-        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" />
-        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="97394250-f9b3-490e-b9cc-f2813c91e34c" />
-        <pnp:PropertyBagEntry Key="vti_filenotfoundpage" Value="/sites/TemplateBLANKINTERNET0/Pages/PageNotFoundError.aspx" />
-        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
-        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="c8a5348f-ad69-41bc-874a-a7fe2b969eb2" />
-        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="46eb97cc-8331-46fc-b32c-d0ae71d72eed" />
-        <pnp:PropertyBagEntry Key="__NoMobileMapping718fe04388e144189ff39b936ea3cdd0" Value="True" />
-        <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="f37b1fb3-964e-43fa-ba9b-d9014fecd4cd" />
-        <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="ed372ae1-3476-45ff-b92c-2a2841fe3ef9" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12;16" />
-        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="e22c3701-aff3-4bba-a935-d42962b23906" />
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
-        <pnp:PropertyBagEntry Key="__PagesListId" Value="4327be8d-2537-483e-b4b3-794494eed0f9" />
-        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="7c87b3e8-e5fc-43e7-bfc3-ee9ba78682ff;" />
-        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="04fe5247-348a-405c-b3ed-93a961831a2d" />
-        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="63cbdcbb-dee5-48a9-9057-479df6671030" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="7c87b3e8-e5fc-43e7-bfc3-ee9ba78682ff;" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" />
-        <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" />
-        <pnp:PropertyBagEntry Key="SiteCollectionGroupIdf78f1331-712e-4cfc-a1b3-fa6a56b3b37b" Value="012aae2f-0ac7-4fef-9303-ed17b92f81b2" />
-        <pnp:PropertyBagEntry Key="showurlstructure" Value="1" />
-        <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" />
-        <pnp:PropertyBagEntry Key="__WebTemplates" Value="&lt;webtemplates&gt;&lt;lcid id=&quot;all&quot;&gt;&lt;webtemplate name=&quot;CMSPUBLISHING#0&quot; /&gt;&lt;webtemplate name=&quot;BLANKINTERNET#2&quot; /&gt;&lt;webtemplate name=&quot;ENTERWIKI#0&quot; /&gt;&lt;webtemplate name=&quot;SRCHCEN#0&quot; /&gt;&lt;/lcid&gt;&lt;/webtemplates&gt;" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" />
-        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
-        <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" />
-        <pnp:PropertyBagEntry Key="allowdesigner" Value="1" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="350d9ed3-8094-4b3a-807f-faddc277a6b9" />
-        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
-        <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;1b2f85c2-8feb-4e03-b698-b3f26f988c6c&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="be91eda9-9244-4583-a11b-eb1b80e7fa32" />
-        <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="ac1df728-9d2c-4343-a8a8-e6e0ddd393cb" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="a421c1ef-b9bd-472e-8e5e-a9da325f6dd7" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
-        <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1033" />
-        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="False" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="9db8c866-77ba-48d1-b59b-6069e1dcca86" />
-        <pnp:PropertyBagEntry Key="vti_mastercssfilecache" Value="corev15app.css" />
-        <pnp:PropertyBagEntry Key="__NoMobileMapping394fa0ae0b3140c293729dfc0b677860" Value="True" />
-        <pnp:PropertyBagEntry Key="__ImagesListId" Value="8f1aef47-c267-4bea-a378-97073aa4e54e" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" />
-        <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" />
-        <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" />
-        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;dc3e1514-2cd6-4456-b182-cd9d82d7e7c5&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;dc3e1514-2cd6-4456-b182-cd9d82d7e7c5&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" />
-        <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" />
-        <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="3495b434-8d7d-41e9-90a3-fdcfbf7d4db5" />
-        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="86d37f6c-d5a9-4fe9-88cc-a8bbc837f5d9" />
-        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="4cb30d6c-1354-4816-beea-04a989c06950" />
-        <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="97394250-f9b3-490e-b9cc-f2813c91e34c" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_filenotfoundpage" Value="/sites/TemplateBLANKINTERNET0/Pages/PageNotFoundError.aspx" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="c8a5348f-ad69-41bc-874a-a7fe2b969eb2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="46eb97cc-8331-46fc-b32c-d0ae71d72eed" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NoMobileMapping718fe04388e144189ff39b936ea3cdd0" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="f37b1fb3-964e-43fa-ba9b-d9014fecd4cd" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="ed372ae1-3476-45ff-b92c-2a2841fe3ef9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12;16" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="e22c3701-aff3-4bba-a935-d42962b23906" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="4327be8d-2537-483e-b4b3-794494eed0f9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="7c87b3e8-e5fc-43e7-bfc3-ee9ba78682ff;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="04fe5247-348a-405c-b3ed-93a961831a2d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="63cbdcbb-dee5-48a9-9057-479df6671030" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="7c87b3e8-e5fc-43e7-bfc3-ee9ba78682ff;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteCollectionGroupIdf78f1331-712e-4cfc-a1b3-fa6a56b3b37b" Value="012aae2f-0ac7-4fef-9303-ed17b92f81b2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="showurlstructure" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__WebTemplates" Value="&lt;webtemplates&gt;&lt;lcid id=&quot;all&quot;&gt;&lt;webtemplate name=&quot;CMSPUBLISHING#0&quot; /&gt;&lt;webtemplate name=&quot;BLANKINTERNET#2&quot; /&gt;&lt;webtemplate name=&quot;ENTERWIKI#0&quot; /&gt;&lt;webtemplate name=&quot;SRCHCEN#0&quot; /&gt;&lt;/lcid&gt;&lt;/webtemplates&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowdesigner" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="350d9ed3-8094-4b3a-807f-faddc277a6b9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;1b2f85c2-8feb-4e03-b698-b3f26f988c6c&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="be91eda9-9244-4583-a11b-eb1b80e7fa32" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="ac1df728-9d2c-4343-a8a8-e6e0ddd393cb" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="a421c1ef-b9bd-472e-8e5e-a9da325f6dd7" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1033" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="9db8c866-77ba-48d1-b59b-6069e1dcca86" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_mastercssfilecache" Value="corev15app.css" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NoMobileMapping394fa0ae0b3140c293729dfc0b677860" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="8f1aef47-c267-4bea-a378-97073aa4e54e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;dc3e1514-2cd6-4456-b182-cd9d82d7e7c5&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;dc3e1514-2cd6-4456-b182-cd9d82d7e7c5&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="3495b434-8d7d-41e9-90a3-fdcfbf7d4db5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="86d37f6c-d5a9-4fe9-88cc-a8bbc837f5d9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="4cb30d6c-1354-4816-beea-04a989c06950" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
         <pnp:AdditionalOwners>
@@ -2503,6 +2503,28 @@
           <pnp:Feature ID="a0e5a010-1329-49d4-9e09-f280cdbed37d" />
         </pnp:WebFeatures>
       </pnp:Features>
+      <pnp:Files>
+        <pnp:File Src="seattle.html" Folder="{site}/_catalogs/masterpage" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Html Master Page}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="HtmlDesignFromMaster" Value="https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html, https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html" />
+            <pnp:Property Key="HtmlDesignAssociated" Value="True" />
+            <pnp:Property Key="HtmlDesignStatusAndPreview" Value="https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html, Conversion successful." />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4327&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;HtmlDesignStatusAndPreview:SW|https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html, Conversion successful.&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;HtmlDesignFromMaster:SW|https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html, https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/seattle.html&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|Features\\HtmlDesign\\en-US\\seattle.html&#xD;&#xA;HtmlDesignAssociated:IW|1&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;HtmlDesignConversionSucceeded:BW|True&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedcustomprops:VX|HtmlDesignConversionSucceeded ContentType HtmlDesignFromMaster HtmlDesignStatusAndPreview HtmlDesignAssociated&#xD;&#xA;ContentTypeId:SW|0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A00DED223C7CE517042B8D1DD4E3D1C21E0&#xD;&#xA;vti_metatags:VR|HTTP-EQUIV=X-UA-Compatible IE=9 GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;ContentType:SW|Html Master Page&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="oslo.html" Folder="{site}/_catalogs/masterpage" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Html Master Page}" />
+            <pnp:Property Key="UIVersion" Value="System.String[]" />
+            <pnp:Property Key="HtmlDesignFromMaster" Value="https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html, https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html" />
+            <pnp:Property Key="HtmlDesignAssociated" Value="True" />
+            <pnp:Property Key="HtmlDesignStatusAndPreview" Value="https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html, Conversion successful." />
+            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|16.0.0.4327&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;HtmlDesignStatusAndPreview:SW|https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html, Conversion successful.&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;HtmlDesignFromMaster:SW|https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html, https://portal2016b4327.pnp.com{site}/_catalogs/masterpage/oslo.html&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|Features\\HtmlDesign\\en-US\\oslo.html&#xD;&#xA;HtmlDesignAssociated:IW|1&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;HtmlDesignConversionSucceeded:BW|True&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedcustomprops:VX|HtmlDesignConversionSucceeded ContentType HtmlDesignFromMaster HtmlDesignStatusAndPreview HtmlDesignAssociated&#xD;&#xA;ContentTypeId:SW|0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A00DED223C7CE517042B8D1DD4E3D1C21E0&#xD;&#xA;vti_metatags:VR|HTTP-EQUIV=X-UA-Compatible IE=9 GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;ContentType:SW|Html Master Page&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
+          </pnp:Properties>
+        </pnp:File>
+      </pnp:Files>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
       <pnp:Publishing AutoCheckRequirements="MakeCompliant">
         <pnp:PageLayouts />
