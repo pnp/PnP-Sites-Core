@@ -117,7 +117,7 @@ namespace Microsoft.SharePoint.Client
 
             enumerable.First().DeleteObject();
         }
-        
+
         /// <summary>
         /// Removes a field by specifying its ID
         /// </summary>
@@ -1503,7 +1503,7 @@ namespace Microsoft.SharePoint.Client
                 contentType.Context.Load(contentType);
                 contentType.Context.ExecuteQueryRetry();
             }
-            
+
             // Set translations for the culture
             contentType.NameResource.SetValueForUICulture(cultureName, nameResource);
             contentType.DescriptionResource.SetValueForUICulture(cultureName, descriptionResource);

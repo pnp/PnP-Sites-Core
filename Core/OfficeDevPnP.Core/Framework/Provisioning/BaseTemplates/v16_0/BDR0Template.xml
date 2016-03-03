@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.1.1602.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.2.1603.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BDR0template">
     <pnp:ProvisioningTemplate ID="BDR0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
@@ -9,58 +9,58 @@
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="docid_enabled" Value="1" />
-        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" />
-        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" />
-        <pnp:PropertyBagEntry Key="MaxObjectCacheSize" Value="100" />
-        <pnp:PropertyBagEntry Key="CBQMultiplier" Value="3" />
-        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" />
-        <pnp:PropertyBagEntry Key="CBQFlushOnSiteChange" Value="False" />
-        <pnp:PropertyBagEntry Key="docid_msft_hier_listidx" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;DictionarySerializer&gt;&#xD;&#xA;  &lt;dictionary&gt;&#xD;&#xA;    &lt;item&gt;&#xD;&#xA;      &lt;key&gt;124519766&lt;/key&gt;&#xD;&#xA;      &lt;webGuid&gt;a5e2e6c8-6b69-4886-a180-0d59336e62f6&lt;/webGuid&gt;&#xD;&#xA;      &lt;listGuid&gt;70117ccb-0712-4922-952e-f38f5d99a66e&lt;/listGuid&gt;&#xD;&#xA;    &lt;/item&gt;&#xD;&#xA;    &lt;item&gt;&#xD;&#xA;      &lt;key&gt;984702283&lt;/key&gt;&#xD;&#xA;      &lt;webGuid&gt;a5e2e6c8-6b69-4886-a180-0d59336e62f6&lt;/webGuid&gt;&#xD;&#xA;      &lt;listGuid&gt;edd90883-2047-4bd4-9e04-a56b7b5d5b95&lt;/listGuid&gt;&#xD;&#xA;    &lt;/item&gt;&#xD;&#xA;  &lt;/dictionary&gt;&#xD;&#xA;&lt;/DictionarySerializer&gt;" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="2f953f22-e75f-4729-87bf-505f3782786d" />
-        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" />
-        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="ee1e57e6-ab08-4f9d-b52f-4d715f1eae9f" />
-        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="786b5e90-47e8-4c4f-a78f-0dedb3843110" />
-        <pnp:PropertyBagEntry Key="mossMDNHints_5e4b6b8b-6f78-43d0-a535-15b068c88300" Value="4" />
-        <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" />
-        <pnp:PropertyBagEntry Key="showurlstructure" Value="1" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="020a1914-ac53-41f3-9751-c1f3b6eedd61" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="01bc6bf1-6d85-4430-a52c-4a5d17fde31e" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;15;15" />
-        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="b857cb46-5fbc-423e-8e1b-27ace69dfa55" />
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" />
-        <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser;#FastEndUser" />
-        <pnp:PropertyBagEntry Key="docid_diwi_lf" Value="1" />
-        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" />
-        <pnp:PropertyBagEntry Key="docid_diwi_ls" Value="1" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" />
-        <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" />
-        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" />
-        <pnp:PropertyBagEntry Key="docid_customProvider_class" Value="Microsoft.Office.DocumentManagement.Internal.OobProvider" />
-        <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" />
-        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" />
-        <pnp:PropertyBagEntry Key="CBQTimeToLive" Value="3600" />
-        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" />
-        <pnp:PropertyBagEntry Key="allowdesigner" Value="1" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="ab7addab-ff40-4e92-9df9-a66a7fa85c91" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" />
-        <pnp:PropertyBagEntry Key="docid_msft_hier_siteprefix" Value="4R3Z55TDAF73" />
-        <pnp:PropertyBagEntry Key="docid_customProvider_assembly" Value="Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-        <pnp:PropertyBagEntry Key="docid_settings_ui" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;DocIdUiSettings xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;&#xD;&#xA;  &lt;Prefix /&gt;&#xD;&#xA;  &lt;AssignmentEnabled&gt;true&lt;/AssignmentEnabled&gt;&#xD;&#xA;&lt;/DocIdUiSettings&gt;" />
-        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" />
-        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" />
-        <pnp:PropertyBagEntry Key="SiteCollectionGroupIdf78f1331-712e-4cfc-a1b3-fa6a56b3b37b" Value="cf50649c-6ab7-45c2-a897-c8fd62652d30" />
-        <pnp:PropertyBagEntry Key="docid_msft_hier_listcnt" Value="984702284" />
-        <pnp:PropertyBagEntry Key="CBQFlushOnTimeChange" Value="True" />
-        <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" />
-        <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" />
-        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;80070bfe-1d29-4b5d-9405-bab3f56d8253&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;80070bfe-1d29-4b5d-9405-bab3f56d8253&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" />
-        <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" />
-        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="2cd6eb57-3f58-4b92-98db-8565cc92162f" />
-        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="b0b82432-bc50-4b12-a305-5dbb03acb593" />
+        <pnp:PropertyBagEntry Key="docid_enabled" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="MaxObjectCacheSize" Value="100" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="CBQMultiplier" Value="3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="CBQFlushOnSiteChange" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_listidx" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;DictionarySerializer&gt;&#xD;&#xA;  &lt;dictionary&gt;&#xD;&#xA;    &lt;item&gt;&#xD;&#xA;      &lt;key&gt;124519766&lt;/key&gt;&#xD;&#xA;      &lt;webGuid&gt;a5e2e6c8-6b69-4886-a180-0d59336e62f6&lt;/webGuid&gt;&#xD;&#xA;      &lt;listGuid&gt;70117ccb-0712-4922-952e-f38f5d99a66e&lt;/listGuid&gt;&#xD;&#xA;    &lt;/item&gt;&#xD;&#xA;    &lt;item&gt;&#xD;&#xA;      &lt;key&gt;984702283&lt;/key&gt;&#xD;&#xA;      &lt;webGuid&gt;a5e2e6c8-6b69-4886-a180-0d59336e62f6&lt;/webGuid&gt;&#xD;&#xA;      &lt;listGuid&gt;edd90883-2047-4bd4-9e04-a56b7b5d5b95&lt;/listGuid&gt;&#xD;&#xA;    &lt;/item&gt;&#xD;&#xA;  &lt;/dictionary&gt;&#xD;&#xA;&lt;/DictionarySerializer&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="2f953f22-e75f-4729-87bf-505f3782786d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="ee1e57e6-ab08-4f9d-b52f-4d715f1eae9f" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="786b5e90-47e8-4c4f-a78f-0dedb3843110" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="mossMDNHints_5e4b6b8b-6f78-43d0-a535-15b068c88300" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="showurlstructure" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="020a1914-ac53-41f3-9751-c1f3b6eedd61" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="01bc6bf1-6d85-4430-a52c-4a5d17fde31e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;15;15" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="b857cb46-5fbc-423e-8e1b-27ace69dfa55" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser;#FastEndUser" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_diwi_lf" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_diwi_ls" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_customProvider_class" Value="Microsoft.Office.DocumentManagement.Internal.OobProvider" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalbandwidth" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="CBQTimeToLive" Value="3600" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowdesigner" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="ab7addab-ff40-4e92-9df9-a66a7fa85c91" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_siteprefix" Value="4R3Z55TDAF73" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_customProvider_assembly" Value="Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_settings_ui" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;DocIdUiSettings xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;&#xD;&#xA;  &lt;Prefix /&gt;&#xD;&#xA;  &lt;AssignmentEnabled&gt;true&lt;/AssignmentEnabled&gt;&#xD;&#xA;&lt;/DocIdUiSettings&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteCollectionGroupIdf78f1331-712e-4cfc-a1b3-fa6a56b3b37b" Value="cf50649c-6ab7-45c2-a897-c8fd62652d30" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_listcnt" Value="984702284" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="CBQFlushOnTimeChange" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;80070bfe-1d29-4b5d-9405-bab3f56d8253&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;f78f1331-712e-4cfc-a1b3-fa6a56b3b37b&quot; TermSetId=&quot;80070bfe-1d29-4b5d-9405-bab3f56d8253&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="2cd6eb57-3f58-4b92-98db-8565cc92162f" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="b0b82432-bc50-4b12-a305-5dbb03acb593" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
         <pnp:AdditionalOwners>
