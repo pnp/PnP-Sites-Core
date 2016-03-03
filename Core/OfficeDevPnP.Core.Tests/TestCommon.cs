@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Data.SqlClient;
 using System.Data;
+using System.Threading;
 
 namespace OfficeDevPnP.Core.Tests {
     static class TestCommon
@@ -150,6 +151,8 @@ namespace OfficeDevPnP.Core.Tests {
                 context = new ClientContext(contextUrl);
                 context.Credentials = credentials;
             }
+
+            context.RequestTimeout = Timeout.Infinite;
             return context;
         }
 
