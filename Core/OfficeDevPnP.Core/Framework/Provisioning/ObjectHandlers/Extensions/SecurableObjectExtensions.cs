@@ -92,9 +92,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
         private static string ReplaceGroupTokens(Web web, string loginName)
         {
-			loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
-			loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
-			loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+            if (web.AssociatedOwnerGroup.ServerObjectIsNull.HasValue && !web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+            {
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+            }
+            if (web.AssociatedMemberGroup.ServerObjectIsNull.HasValue && !web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+            {
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+            }
+            if (web.AssociatedVisitorGroup.ServerObjectIsNull.HasValue && !web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+            {
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+            }
             return loginName;
         }
     }
