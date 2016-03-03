@@ -1,16 +1,17 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client.Taxonomy;
+using Microsoft.SharePoint.Client.Utilities;
+using Microsoft.SharePoint.Client.WebParts;
+using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Enums;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core;
-using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Enums;
-using Microsoft.SharePoint.Client.WebParts;
-using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -728,6 +729,33 @@ namespace Microsoft.SharePoint.Client
             }
 
             return foundList;
+        }
+
+        /// <summary>
+        /// Gets the publishing pages library of the web.
+        /// </summary>
+        /// <param name="web">The web.</param>
+        /// <returns>The publishing pages library. Returns null if library was not found.</returns>
+        /// <exception cref="System.InvalidOperationException">
+        /// Could not load pages library URL name from 'cmscore' resources file.
+        /// </exception>
+        public static List GetPagesLibrary(this Web web)
+        {
+            if (web == null) throw new ArgumentNullException("web");
+
+            var context = web.Context;
+            int language = (int)web.EnsureProperty(w => w.Language);
+
+            var result = Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
+            context.ExecuteQueryRetry();
+            string pagesLibraryName = result.Value;
+
+            if (string.IsNullOrEmpty(pagesLibraryName))
+            {
+                throw new InvalidOperationException("Could not load pages library URL name from 'cmscore' resources file.");
+            }
+ 
+            return web.GetListByUrl(pagesLibraryName) ?? web.GetListByTitle(pagesLibraryName);
         }
 
         #region List Permissions

@@ -1113,20 +1113,12 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "fileLeafRef");
             }
 
-            ClientContext context = web.Context as ClientContext;
-
-            // Get the language agnostic "Pages" library name
-            context.Load(web, l => l.Language);
+            var context = web.Context as ClientContext;
+            List pages = web.GetPagesLibrary();
+            context.Load(pages);
             context.ExecuteQueryRetry();
 
-            ClientResult<string> pagesLibraryName = Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", (int)web.Language);
-            context.ExecuteQueryRetry();
-
-            List spList = web.Lists.GetByTitle(pagesLibraryName.Value);
-            context.Load(spList);
-            context.ExecuteQueryRetry();
-
-            if (spList != null && spList.ItemCount > 0)
+            if (pages != null && pages.ItemCount > 0)
             {
                 CamlQuery camlQuery = new CamlQuery();
                 camlQuery.ViewXml = string.Format(@"<View>  
@@ -1135,7 +1127,7 @@ namespace Microsoft.SharePoint.Client
                                                         </Query> 
                                                     </View>", fileLeafRef);
 
-                ListItemCollection listItems = spList.GetItems(camlQuery);
+                ListItemCollection listItems = pages.GetItems(camlQuery);
                 context.Load(listItems);
                 context.ExecuteQueryRetry();
 
