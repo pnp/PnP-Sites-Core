@@ -53,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+
             this.AddParameter(CLIENTCONTEXT, clientContext);
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
             this.AddParameterAsString(CONTAINER, container);
@@ -104,8 +105,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 foreach (var listItem in listItems)
                 {
                     result.Add(listItem.FieldValues["FileLeafRef"].ToString());
-
-
                 }
             }
 
@@ -133,11 +132,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (String.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("fileName");
-            }
-
-            if (String.IsNullOrEmpty(container))
-            {
-                throw new ArgumentException("container");
             }
 
             string result = null;
@@ -188,11 +182,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new ArgumentException("fileName");
             }
 
-            if (String.IsNullOrEmpty(container))
-            {
-                throw new ArgumentException("container");
-            }
-
             return GetFileFromStorage(fileName, container);
         }
 
@@ -218,30 +207,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
                 {
-                    List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
+                    Folder spFolder;
 
-                    string folders = GetFolders(container);
-
-                    Folder spFolder = null;
-
-                    if (folders.Length == 0)
+                    if (!string.IsNullOrEmpty(container))
                     {
-                        spFolder = list.RootFolder;
+                        List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
+
+                        string folders = GetFolders(container);
+
+                        if (folders.Length == 0)
+                        {
+                            spFolder = list.RootFolder;
+                        }
+                        else
+                        {
+                            spFolder = list.RootFolder;
+                            string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+                            for (int i = 1; i < parts.Length; i++)
+                            {
+                                var prevFolder = spFolder;
+                                spFolder = spFolder.ResolveSubFolder(parts[i]);
+
+                                if (spFolder == null)
+                                {
+                                    spFolder = prevFolder.CreateFolder(parts[i]);
+                                }
+                            }
+                        }
                     }
                     else
                     {
-                        spFolder = list.RootFolder;
-                        string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 1; i < parts.Length; i++)
-                        {
-                            var prevFolder = spFolder;
-                            spFolder = spFolder.ResolveSubFolder(parts[i]);
-
-                            if (spFolder == null)
-                            {
-                                spFolder = prevFolder.CreateFolder(parts[i]);
-                            }
-                        }
+                        spFolder = cc.Web.RootFolder;
                     }
 
                     spFolder.UploadFile(fileName, stream, true);
@@ -275,29 +271,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
                 {
-                    List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-
-                    string folders = GetFolders(container);
-
-                    Folder spFolder = null;
-
-                    if (folders.Length == 0)
-                    {
-                        spFolder = list.RootFolder;
-                    }
-                    else
-                    {
-                        spFolder = list.RootFolder;
-                        string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-                        for (int i = 1; i < parts.Length; i++)
-                        {
-                            spFolder = spFolder.ResolveSubFolder(parts[i]);
-                        }
-                    }
-
-                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
-
-                    var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
+                    string fileServerRelativeUrl = GetFileServerRelativeUrl(cc, fileName, container);
                     File file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
                     cc.Load(file);
                     cc.ExecuteQueryRetry();
@@ -337,6 +311,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #endregion
 
         #region Private Methods
+        private string GetFileServerRelativeUrl(ClientContext cc, string fileName, string container)
+        {
+            Folder spFolder;
+            if (!string.IsNullOrEmpty(container))
+            {
+                List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
+                string folders = GetFolders(container);
+
+                if (folders.Length == 0)
+                {
+                    spFolder = list.RootFolder;
+                }
+                else
+                {
+                    spFolder = list.RootFolder;
+                    string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    int startFrom = 1;
+                    if (parts[0].Equals("_catalogs", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        startFrom = 2;
+                    }
+
+                    for (int i = startFrom; i < parts.Length; i++)
+                    {
+                        spFolder = spFolder.ResolveSubFolder(parts[i]);
+                    }
+                }
+            }
+            else
+            {
+                spFolder = cc.Web.RootFolder;
+            }
+
+            spFolder.EnsureProperties(f => f.ServerRelativeUrl);
+
+            return UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
+        }
+
         private MemoryStream GetFileFromStorage(string fileName, string container)
         {
 
@@ -344,37 +357,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
                 {
-                    List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-                    string folders = GetFolders(container);
-
-                    File file = null;
-                    Folder spFolder = null;
-
-                    if (folders.Length == 0)
-                    {
-                        spFolder = list.RootFolder;
-                    }
-                    else
-                    {
-                        spFolder = list.RootFolder;
-                        string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
-
-                        int startFrom = 1;
-                        if (parts[0].Equals("_catalogs", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            startFrom = 2;
-                        }
-
-                        for (int i = startFrom; i < parts.Length; i++)
-                        {
-                            spFolder = spFolder.ResolveSubFolder(parts[i]);
-                        }
-                    }
-
-                    spFolder.EnsureProperties(f => f.ServerRelativeUrl);
-                    
-                    var fileServerRelativeUrl = UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
-                    file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+                    string fileServerRelativeUrl = GetFileServerRelativeUrl(cc, fileName, container);
+                    var file = cc.Web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
                     cc.Load(file);
                     cc.ExecuteQueryRetry();
                     if (file.Exists)
@@ -391,10 +375,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                         stream.Position = 0;
                         return stream;
                     }
-                    else
-                    {
-                        throw new Exception("File not found");
-                    }
+
+                    throw new Exception("File not found");
                 }
             }
             catch (Exception ex)
@@ -456,8 +438,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new Exception("No clientcontext specified");
             }
         }
+
         #endregion
 
+        internal override string GetContainer()
+        {
+            if (this.Parameters.ContainsKey(CONTAINER))
+            {
+                return this.Parameters[CONTAINER].ToString();
+            }
+            return string.Empty;
+        }
 
     }
 }

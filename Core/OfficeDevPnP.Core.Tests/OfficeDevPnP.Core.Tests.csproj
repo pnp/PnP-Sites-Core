@@ -408,6 +408,10 @@
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Sample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />
+    <Content Include="Resources\TestDefault.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\UpdateTermSet.csv" />
   </ItemGroup>
   <ItemGroup>
