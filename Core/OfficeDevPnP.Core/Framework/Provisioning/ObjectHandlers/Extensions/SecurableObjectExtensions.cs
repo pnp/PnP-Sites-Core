@@ -28,21 +28,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
-                Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+                var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
+                Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
                 if (principal == null)
                 {
-                    principal = context.Web.EnsureUser(roleAssignment.Principal);
+                    principal = context.Web.EnsureUser(roleAssignmentPrincipal);
                 }
 
-                var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(context);
-
-                var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignment.RoleDefinition);
-
-                if (roleDefinition != null)
+                if (principal != null)
                 {
-                    roleDefinitionBindingCollection.Add(roleDefinition);
+                    var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(context);
+
+                    var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignment.RoleDefinition);
+
+                    if (roleDefinition != null)
+                    {
+                        roleDefinitionBindingCollection.Add(roleDefinition);
+                    }
+                    securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
                 }
-                securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
             }
             context.ExecuteQueryRetry();
         }

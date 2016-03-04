@@ -2277,7 +2277,7 @@ Get list by using Url
 > 
 
 #### GetPagesLibrary(Microsoft.SharePoint.Client.Web)
-Gets the publishing pages library of the web.
+Gets the publishing pages library of the web based on site language
 > ##### Parameters
 > **web:** The web.
 
