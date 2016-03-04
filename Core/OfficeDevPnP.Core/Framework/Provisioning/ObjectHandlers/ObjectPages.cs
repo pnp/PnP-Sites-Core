@@ -85,7 +85,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0_, url);
 
                             web.AddWikiPageByUrl(url);
-                            web.AddLayoutToWikiPage(page.Layout, url);
+                            if (page.Layout == WikiPageLayout.Custom)
+                            {
+                                web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
+                            }
+                            else {
+                                web.AddLayoutToWikiPage(page.Layout, url);
+                            }
                         }
                         catch (Exception ex)
                         {
