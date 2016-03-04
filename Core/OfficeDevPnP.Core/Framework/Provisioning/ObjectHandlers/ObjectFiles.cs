@@ -197,7 +197,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
                     targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
 
-                    if (true)  // !targetField.ReadOnlyField)
+                    if (!targetField.ReadOnlyField)
                     {
                         switch (propertyName.ToUpperInvariant())
                         {
