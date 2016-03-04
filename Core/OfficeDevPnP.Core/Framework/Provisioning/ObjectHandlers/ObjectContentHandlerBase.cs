@@ -83,7 +83,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "_ModerationStatus",
                 //"HtmlDesignAssociated",
                 //"HtmlDesignStatusAndPreview",
-                //"MetaInfo",
+                "MetaInfo",
+                "CheckoutUser",
+                "NoExecute",
+                "_HasCopyDestinations",
+                "ContentVersion",
+                "UIVersion",
             };
 
                 foreach (var fieldValue in fieldValues.Where(f => !fieldstoExclude.Contains(f.Key)))
