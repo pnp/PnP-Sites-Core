@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Collections;
+using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace Microsoft.SharePoint.Client
@@ -345,6 +346,97 @@ namespace Microsoft.SharePoint.Client
                 return -1;
             }
         }
+        #endregion
+
+        #region Managed Navigation (publishing sites)
+
+        /// <summary>
+        /// Returns an editable version of the Global Navigation TermSet for a web site
+        /// </summary>
+        /// <param name="web">The target web.</param>
+        /// <param name="navigationKind">Declares whether to look for Current or Global Navigation</param>
+        /// <returns>The editable Global Navigation TermSet</returns>
+        public static NavigationTermSet GetEditableNavigationTermSet(this Web web, ManagedNavigationKind navigationKind)
+        {
+            if (!web.IsManagedNavigationEnabled(navigationKind))
+            {
+                throw new ApplicationException(
+                    $"The current web is not using the Taxonomy provider for {navigationKind} Navigation.");
+            }
+
+            switch (navigationKind)
+            {
+                case ManagedNavigationKind.Global:
+                    return (GetEditableNavigationTermSetByProviderName(web, web.Context,
+                        "GlobalNavigationTaxonomyProvider"));
+                case ManagedNavigationKind.Current:
+                    return (GetEditableNavigationTermSetByProviderName(web, web.Context,
+                        "CurrentNavigationTaxonomyProvider"));
+                default:
+                    return (null);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the current Web has the managed navigation enabled
+        /// </summary>
+        /// <param name="web">The target web.</param>
+        /// <param name="navigationKind">The kind of navigation (Current or Global).</param>
+        /// <returns>A boolean result of the test.</returns>
+        public static Boolean IsManagedNavigationEnabled(this Web web, ManagedNavigationKind navigationKind)
+        {
+            Boolean result = false;
+            var navigationSettings = new WebNavigationSettings(web.Context, web);
+            web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
+            web.Context.Load(web.ParentWeb, pw => pw.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+
+            StandardNavigationSettings targeNavigationSettings =
+                navigationKind == ManagedNavigationKind.Current ?
+                navigationSettings.CurrentNavigation : navigationSettings.GlobalNavigation;
+
+            if (targeNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
+                (web.ParentWeb.ServerObjectIsNull.HasValue && !web.ParentWeb.ServerObjectIsNull.Value))
+            {
+                Uri currentWebUri = new Uri(web.Url);
+                Uri parentWebUri = new Uri($"{currentWebUri.Scheme}://{currentWebUri.Host}{web.ParentWeb.ServerRelativeUrl}");
+
+                using (ClientContext parentContext = web.Context.Clone(parentWebUri))
+                {
+                    result = IsManagedNavigationEnabled(parentContext.Web, navigationKind);
+                }
+            }
+            else
+            {
+                result = targeNavigationSettings.Source == StandardNavigationSource.TaxonomyProvider;
+            }
+
+            return (result);
+        }
+
+        private static NavigationTermSet GetEditableNavigationTermSetByProviderName(
+            Web web, ClientRuntimeContext context, String providerName)
+        {
+            // Get the current taxonomy session and update cache, just in case
+            TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+            taxonomySession.UpdateCache();
+
+            context.ExecuteQueryRetry();
+
+            // Retrieve the Navigation TermSet for the current web
+            NavigationTermSet navigationTermSet = TaxonomyNavigation.GetTermSetForWeb(web.Context,
+                web, providerName, true);
+            context.Load(navigationTermSet);
+            context.ExecuteQueryRetry();
+
+            // Retrieve an editable TermSet for the current target navigation
+            NavigationTermSet editableNavigationTermSet = navigationTermSet.GetAsEditable(taxonomySession);
+            context.Load(editableNavigationTermSet);
+            context.ExecuteQueryRetry();
+
+            return (editableNavigationTermSet);
+        }
+        
         #endregion
 
         #region Navigation elements - quicklaunch, top navigation, search navigation
@@ -843,5 +935,20 @@ namespace Microsoft.SharePoint.Client
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Defines the kind of Managed Navigation for a site
+    /// </summary>
+    public enum ManagedNavigationKind
+    {
+        /// <summary>
+        /// Current Navigation
+        /// </summary>
+        Current,
+        /// <summary>
+        /// Global Navigation
+        /// </summary>
+        Global,
     }
 }
