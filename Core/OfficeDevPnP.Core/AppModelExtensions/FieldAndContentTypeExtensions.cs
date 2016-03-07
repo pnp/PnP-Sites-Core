@@ -1060,7 +1060,7 @@ namespace Microsoft.SharePoint.Client
                     var group = ct.Attribute("Group") != null ? ct.Attribute("Group").Value : string.Empty;
 
                     // Create CT
-                    web.CreateContentType(name, description, ctid, group);
+                    var newct = web.CreateContentType(name, description, ctid, group);
 
                     // Add fields to content type 
                     var fieldRefs = from fr in ct.Descendants(ns + "FieldRefs").Elements(ns + "FieldRef") select fr;
@@ -1070,6 +1070,57 @@ namespace Microsoft.SharePoint.Client
                         var required = fieldRef.Attribute("Required") != null ? bool.Parse(fieldRef.Attribute("Required").Value) : false;
                         var hidden = fieldRef.Attribute("Hidden") != null ? bool.Parse(fieldRef.Attribute("Hidden").Value) : false;
                         web.AddFieldToContentTypeById(ctid, frid, required, hidden);
+                    }
+
+                    // Add AllowedContentTypes/SharedFields/WelcomePageFields
+                    // Only for Document Sets of course
+                    if (ctid.StartsWith("0x0120D520")) //DocumentSetTemplate.DocumentSetTemplate.IsChildOfDocumentSetContentType() appears not to be working
+                    {
+                        // Load Docset Template
+                        var template = DocumentSetTemplate.GetDocumentSetTemplate(web.Context, newct);
+                        web.Context.Load(template, t => t.AllowedContentTypes, t => t.SharedFields, t => t.WelcomePageFields);
+                        web.Context.ExecuteQuery();
+
+                        // Add allowed content types
+                        var allowedContentTypes = from ac in ct.Descendants(ns + "AllowedContentTypes").Elements(ns + "AllowedContentType") select ac;
+                        foreach (var allowedContentType in allowedContentTypes)
+                        {
+                            var id = allowedContentType.Attribute("ID").Value;
+                            var act = web.GetContentTypeById(id);
+                            if (!template.AllowedContentTypes.Any(a => a.StringValue == id))
+                            {
+                                template.AllowedContentTypes.Add(act.Id);
+                                template.Update(true);
+                            }
+                        }
+
+                        // Add shared fields
+                        var sharedFields = from sf in ct.Descendants(ns + "SharedFields").Elements(ns + "SharedField") select sf;
+                        foreach (var sharedField in sharedFields)
+                        {
+                            var id = sharedField.Attribute("ID").Value;
+                            var field = web.GetFieldById<Field>(new Guid(id));
+                            if (!template.SharedFields.Any(a => a.Id == field.Id))
+                            {
+                                template.SharedFields.Add(field);
+                                template.Update(true);
+                            }
+                        }
+
+                        // Add WelcomePageFields fields
+                        var welcomePageFields = from wpf in ct.Descendants(ns + "WelcomePageFields").Elements(ns + "WelcomePageField") select wpf;
+                        foreach (var welcomePageField in welcomePageFields)
+                        {
+                            var id = welcomePageField.Attribute("ID").Value;
+                            var field = web.GetFieldById<Field>(new Guid(id));
+                            if (!template.WelcomePageFields.Any(a => a.Id == field.Id))
+                            {
+                                template.WelcomePageFields.Add(field);
+                                template.Update(true);
+                            }
+                        }
+                        
+                        web.Context.ExecuteQuery();
                     }
 
                     returnCT = web.GetContentTypeById(ctid);
