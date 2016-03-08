@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Linq;
 
@@ -277,6 +278,21 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 //Assert
                 Assert.IsTrue(fieldTitle2 != null);
                 Assert.IsTrue(fieldTitle1 != null);
+            }
+        }
+
+        [TestMethod]
+        public void TestPnPClientContext()
+        {
+            using (var clientContext = TestCommon.CreatePnPClientContext(5, 1000))
+            {
+                var lists = clientContext.Web.Lists;
+
+                clientContext.Load(lists);
+                clientContext.ExecuteQueryRetry();
+
+
+                Assert.IsTrue(lists.Count > 0);
             }
         }
     }
