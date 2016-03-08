@@ -5,8 +5,8 @@ namespace OfficeDevPnP.Core
 {
     public class PnPClientContext : ClientContext
     {
-        public int RetryCount { get; protected set; }
-        public int Delay { get; protected set; }
+        public int RetryCount { get; set; }
+        public int Delay { get; set; }
 
         /// <summary>
         /// Creates a ClientContext allowing you to override the default retry and delay values of ExecuteQueryRetry
