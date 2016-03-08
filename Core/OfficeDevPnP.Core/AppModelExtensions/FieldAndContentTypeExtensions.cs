@@ -1121,7 +1121,7 @@ namespace Microsoft.SharePoint.Client
                             }
                         }
                         
-                        web.Context.ExecuteQuery();
+                        web.Context.ExecuteQueryRetry();
                     }
 
                     returnCT = web.GetContentTypeById(ctid);
