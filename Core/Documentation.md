@@ -4692,6 +4692,16 @@ Sets a key/value pair in the web property bag
 > **value:** String value for the property bag entry
 
 
+#### SetPropertyBagValue(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Sets a key/value pair in the web property bag
+> ##### Parameters
+> **web:** Web that will hold the property bag entry
+
+> **key:** Key for the property bag entry
+
+> **value:** Datetime value for the property bag entry
+
+
 #### SetPropertyBagValueInternal(Microsoft.SharePoint.Client.Web,System.String,System.Object)
 Sets a key/value pair in the web property bag
 > ##### Parameters
@@ -4722,6 +4732,18 @@ Removes a property bag value
 
 #### GetPropertyBagValueInt(Microsoft.SharePoint.Client.Web,System.String,System.Int32)
 Get int typed property bag value. If does not contain, returns default value.
+> ##### Parameters
+> **web:** Web to read the property bag value from
+
+> **key:** Key of the property bag entry to return
+
+> **defaultValue:** 
+
+> ##### Return value
+> Value of the property bag entry as integer
+
+#### GetPropertyBagValueDateTime(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Get DateTime typed property bag value. If does not contain, returns default value.
 > ##### Parameters
 > **web:** Web to read the property bag value from
 
