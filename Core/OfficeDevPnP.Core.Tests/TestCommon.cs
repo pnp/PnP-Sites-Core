@@ -105,7 +105,8 @@ namespace OfficeDevPnP.Core.Tests
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                context = (PnPClientContext)am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                var clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                context = PnPClientContext.ConvertFrom(clientContext, retryCount, delay);
             }
             else
             {

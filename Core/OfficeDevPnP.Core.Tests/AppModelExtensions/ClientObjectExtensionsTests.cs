@@ -218,14 +218,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 {
                     //Act
                     var fields = clientContext.Web.EnsureProperty(w => w.Fields.Include(f => f.Id, f => f.Title)).ToList();
-                    
+
                     //equivalent to
                     //clientContext.Load(clientContext.Web, w => w.Fields.Include(f => f.Id, f => f.Title));
                     //clientContext.ExecuteQueryRetry();
                     //var fields = clientContext.Web.Fields;
 
                     field = fields[0];
-                    
+
                     var hidden = field.Required;
                 }
                 catch (Exception ex)
@@ -248,9 +248,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var fieldTitle1 = clientContext.Web.Fields.GetByInternalNameOrTitle("Title");
                 //at this stage clientContext.Web.IsObjectPropertyInstantiated("Fields") will be true
                 //but actually Fields are not loaded, CollectionNotInitializedException will be thrown when trying to access the collection
-                
+
                 var fields = clientContext.Web.EnsureProperty(w => w.Fields);
-                
+
                 //Act
                 var fieldTitle2 = fields.FirstOrDefault(f => f.Title.Equals("Title"));
 
@@ -311,6 +311,19 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     Assert.AreEqual(clonedContext.Delay, clientContext.Delay);
                     Assert.AreEqual(clonedContext.RetryCount, clientContext.RetryCount);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void TestPnPClientContextCast()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var context = PnPClientContext.ConvertFrom(clientContext);
+
+                var lists = context.Web.Lists;
+                context.Load(lists);
+                context.ExecuteQueryRetry();
             }
         }
     }
