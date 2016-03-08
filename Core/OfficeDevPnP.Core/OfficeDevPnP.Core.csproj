@@ -630,6 +630,7 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
+    <Compile Include="AppModelExtensions\PnPClientContext.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />

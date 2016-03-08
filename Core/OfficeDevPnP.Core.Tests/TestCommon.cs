@@ -96,6 +96,25 @@ namespace OfficeDevPnP.Core.Tests {
             return CreateContext(TenantUrl, Credentials);
         }
 
+        public static PnPClientContext CreatePnPClientContext(int retryCount = 10, int delay = 500)
+        {
+            PnPClientContext context;
+            if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
+            {
+                AuthenticationManager am = new AuthenticationManager();
+                context = (PnPClientContext)am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+            }
+            else
+            {
+                context = new PnPClientContext(DevSiteUrl);
+                context.Credentials = Credentials;
+            }
+
+            context.RequestTimeout = Timeout.Infinite;
+            return context;
+        }
+
+        
         public static bool AppOnlyTesting()
         {
             if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
