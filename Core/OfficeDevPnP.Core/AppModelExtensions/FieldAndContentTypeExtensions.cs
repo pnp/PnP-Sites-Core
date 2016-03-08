@@ -1075,7 +1075,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Add AllowedContentTypes/SharedFields/WelcomePageFields
                     // Only for Document Sets of course
-                    if (ctid.StartsWith("0x0120D520")) //DocumentSetTemplate.DocumentSetTemplate.IsChildOfDocumentSetContentType() appears not to be working
+                    if (ctid.StartsWith(BuiltInContentTypeId.DocumentSet)) //DocumentSetTemplate.DocumentSetTemplate.IsChildOfDocumentSetContentType() appears not to be working
                     {
                         // Load Docset Template
                         var template = DocumentSetTemplate.GetDocumentSetTemplate(web.Context, newct);
