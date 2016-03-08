@@ -295,5 +295,23 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsTrue(lists.Count > 0);
             }
         }
+
+        [TestMethod]
+        public void TestPnPClientContextClone()
+        {
+            using (var clientContext = TestCommon.CreatePnPClientContext(5, 1000))
+            {
+                using (var clonedContext = clientContext.Clone(clientContext.Url))
+                {
+                    var lists = clonedContext.Web.Lists;
+                    clonedContext.Load(lists);
+                    clonedContext.ExecuteQueryRetry();
+
+                    Assert.IsTrue(lists.Count > 0);
+                    Assert.AreEqual(clonedContext.Delay, clientContext.Delay);
+                    Assert.AreEqual(clonedContext.RetryCount, clientContext.RetryCount);
+                }
+            }
+        }
     }
 }

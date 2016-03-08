@@ -11,11 +11,12 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Threading;
 
-namespace OfficeDevPnP.Core.Tests {
+namespace OfficeDevPnP.Core.Tests
+{
     static class TestCommon
     {
         #region Constructor
-        static TestCommon() 
+        static TestCommon()
         {
             // Read configuration data
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
@@ -32,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests {
             }
             else
             {
-                if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]) && 
+                if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]) &&
                     !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOPassword"]))
                 {
                     UserName = ConfigurationManager.AppSettings["SPOUserName"];
@@ -88,11 +89,13 @@ namespace OfficeDevPnP.Core.Tests {
         #endregion
 
         #region Methods
-        public static ClientContext CreateClientContext() {
+        public static ClientContext CreateClientContext()
+        {
             return CreateContext(DevSiteUrl, Credentials);
         }
 
-        public static ClientContext CreateTenantClientContext() {
+        public static ClientContext CreateTenantClientContext()
+        {
             return CreateContext(TenantUrl, Credentials);
         }
 
@@ -106,7 +109,7 @@ namespace OfficeDevPnP.Core.Tests {
             }
             else
             {
-                context = new PnPClientContext(DevSiteUrl);
+                context = new PnPClientContext(DevSiteUrl, retryCount, delay);
                 context.Credentials = Credentials;
             }
 
@@ -114,7 +117,7 @@ namespace OfficeDevPnP.Core.Tests {
             return context;
         }
 
-        
+
         public static bool AppOnlyTesting()
         {
             if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
@@ -163,7 +166,7 @@ namespace OfficeDevPnP.Core.Tests {
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret); 
+                context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
             }
             else
             {
