@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
@@ -175,12 +174,10 @@ namespace Microsoft.SharePoint.Client
             list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
 
             var listItem = folder.ListItemAllFields;
-            list.Context.Load(listItem, f => f["ContentTypeId"]);
-            list.Context.ExecuteQueryRetry();
+            listItem.EnsureProperty(f => f["ContentTypeId"]);
 
             // If already a document set, just return the folder
-            if (listItem["ContentTypeId"].ToString().StartsWith(BuiltInContentTypeId.DocumentSet)) return folder;
-
+            if (listItem["ContentTypeId"].ToString() == BuiltInContentTypeId.Folder) return folder;
             listItem["ContentTypeId"] = BuiltInContentTypeId.DocumentSet;
 
             // Add missing properties            
