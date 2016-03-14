@@ -911,6 +911,42 @@ Add content type to list
 > **defaultContent:** If set true, content type is updated to be default content type for the list
 
 
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** String representation of the id of the field (=Guid)
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.Guid,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** The Id of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldByName(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldName:** The title or internal name of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
 #### AddFieldToContentTypeById(Microsoft.SharePoint.Client.Web,System.String,System.String,System.Boolean,System.Boolean)
 Associates field to content type
 > ##### Parameters

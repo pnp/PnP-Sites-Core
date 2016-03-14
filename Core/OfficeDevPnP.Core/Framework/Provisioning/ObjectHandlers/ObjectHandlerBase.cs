@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="url">the url to tokenize as String</param>
         /// <param name="webUrl">web url of the actual web as String</param>
         /// <returns>tokenized url as String</returns>
-        protected string Tokenize(string url, string webUrl)
+        protected string Tokenize(string url, string webUrl, Web web = null)
         {
             String result = null;
 
@@ -59,16 +59,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
+                    var subsite = false;
+                    if(web != null)
+                    {
+                        subsite = web.IsSubSite();
+                    }
+                    if (subsite)
+                    {
+                        result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{sitecollection}/_catalogs/theme");
+                    }
+                    else {
+                        result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
+                    }
                 }
 
                 // Try with master page catalog
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
+                    var subsite = false;
+                    if(web != null)
+                    {
+                        subsite = web.IsSubSite();
+                    }
+                    if (subsite)
+                    {
+                        result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{sitecollection}/_catalogs/masterpage");
+                    }
+                    else {
+                        result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
+                    }
                 }
 
                 // Try with site URL
+                if(result != null)
+                {
+                    url = result;
+                }
                 Uri uri;
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
