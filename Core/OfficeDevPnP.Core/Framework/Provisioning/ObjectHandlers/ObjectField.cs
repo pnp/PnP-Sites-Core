@@ -11,6 +11,7 @@ using SPField = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -184,40 +185,95 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             var fieldXml = parser.ParseString(templateFieldElement.ToString(), "~sitecollection", "~site");
+            var leftOverTokens = parser.GetLeftOverTokens(fieldXml);
+            if (!leftOverTokens.Any())
+            {
+                var taxonomyFieldIsValid = false;
+                var fieldElement = XElement.Parse(fieldXml);
+                if(fieldElement.Attribute("Type").Value == "TaxonomyFieldType")
+                {
+                    var termStoreIdElement = fieldElement.XPathSelectElement("//ArrayOfProperty/Property[Name='SspId']/Value");
+                    if (termStoreIdElement != null)
+                    {
+                        var termStoreId = Guid.Parse(termStoreIdElement.Value);
+                        TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(web.Context);
+                        try
+                        {
+                            taxSession.EnsureProperty(t => t.TermStores);
+                            var store = taxSession.TermStores.GetById(termStoreId);
+                            web.Context.Load(store);
+                            web.Context.ExecuteQueryRetry();
+                            if (store.ServerObjectIsNull.HasValue && !store.ServerObjectIsNull.Value)
+                            {
+                                var termSetIdElement = fieldElement.XPathSelectElement("//ArrayOfProperty/Property[Name='TermSetId']/Value");
+                                if (termSetIdElement != null)
+                                {
+                                    var termSetId = Guid.Parse(termSetIdElement.Value);
+                                    try
+                                    {
+                                        var termSet = store.GetTermSet(termSetId);
+                                        web.Context.Load(termSet);
+                                        web.Context.ExecuteQueryRetry();
+                                        taxonomyFieldIsValid = termSet.ServerObjectIsNull.HasValue && !termSet.ServerObjectIsNull.Value;
+                                    }
+                                    catch (Exception)
+                                    {
 
-            var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
-            web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue);
-            web.Context.ExecuteQueryRetry();
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                        }
+                    }
 
-            bool isDirty = false;
+                    
+                }
+                if (fieldElement.Attribute("Type").Value != "TaxonomyFieldType" || taxonomyFieldIsValid)
+                {
+                    var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
+                    web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue);
+                    web.Context.ExecuteQueryRetry();
+
+                    bool isDirty = false;
 #if !CLIENTSDKV15
-            if (originalFieldXml.ContainsResourceToken())
-            {
-                var originalFieldElement = XElement.Parse(originalFieldXml);
-                var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
-                if (nameAttributeValue.ContainsResourceToken())
-                {
-                    field.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
-                    isDirty = true;
-                }
-                var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
-                if(descriptionAttributeValue.ContainsResourceToken())
-                {
-                    field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser);
-                    isDirty = true;
-                }
-            }
+                    if (originalFieldXml.ContainsResourceToken())
+                    {
+                        var originalFieldElement = XElement.Parse(originalFieldXml);
+                        var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
+                        if (nameAttributeValue.ContainsResourceToken())
+                        {
+                            field.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
+                            isDirty = true;
+                        }
+                        var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
+                        if (descriptionAttributeValue.ContainsResourceToken())
+                        {
+                            field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser);
+                            isDirty = true;
+                        }
+                    }
 #endif
-            if(isDirty)
-            {
-                field.Update();
-                web.Context.ExecuteQuery();
-            }
+                    if (isDirty)
+                    {
+                        field.Update();
+                        web.Context.ExecuteQuery();
+                    }
 
-            if((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti")  && !string.IsNullOrEmpty(field.DefaultValue))
+                    if ((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(field.DefaultValue))
+                    {
+                        var taxField = web.Context.CastTo<TaxonomyField>(field);
+                        ValidateTaxonomyFieldDefaultValue(taxField);
+                    }
+                }
+            }
+            else
             {
-                var taxField = web.Context.CastTo<TaxonomyField>(field);
-                ValidateTaxonomyFieldDefaultValue(taxField);
+                // The token parser was not able to replace all tokens. Break with exception
+                var tokenString = leftOverTokens.Aggregate(String.Empty, (acc, i) => acc + " " + i);
+                scope.LogError("Token parser did not replace all tokens: {0}", tokenString);
+                throw new Exception(string.Format("Token parser did not replace all tokens: {0}", tokenString));
             }
         }
 
@@ -338,16 +394,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //if (Guid.TryParse(listIdentifier, out listGuid))
                             //{
                             //    fieldXml = ParseListSchema(fieldXml, web.Lists);
-                                //if (newfieldXml == fieldXml)
-                                //{
-                                //    var list = web.Lists.GetById(listGuid);
-                                //    web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
-                                //    web.Context.ExecuteQueryRetry();
+                            //if (newfieldXml == fieldXml)
+                            //{
+                            //    var list = web.Lists.GetById(listGuid);
+                            //    web.Context.Load(list, l => l.RootFolder.ServerRelativeUrl);
+                            //    web.Context.ExecuteQueryRetry();
 
-                                //    var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
-                                //    element.Attribute("List").SetValue(listUrl);
-                                //    fieldXml = element.ToString();
-                                //}
+                            //    var listUrl = list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
+                            //    element.Attribute("List").SetValue(listUrl);
+                            //    fieldXml = element.ToString();
+                            //}
                             //}
                         }
                         // Check if the field is of type TaxonomyField
