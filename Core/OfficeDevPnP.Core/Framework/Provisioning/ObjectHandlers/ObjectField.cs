@@ -184,6 +184,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
+        private string TokenizeFieldFormula(string fieldXml)
+        {
+            var schemaElement = XElement.Parse(fieldXml);
+            var formula = schemaElement.Descendants("Formula").FirstOrDefault();
+
+            if (formula != null)
+            {
+                var formulaString = formula.Value;
+                if (formulaString != null)
+                {
+                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    foreach (var fieldRef in fieldRefs)
+                    {
+                        var fieldInternalName = fieldRef.Attribute("Name").Value;
+                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                    }
+                    var fieldRefParent = schemaElement.Descendants("FieldRefs");
+                    fieldRefParent.Remove();
+
+                }
+                formula.Value = formulaString;
+            }
+
+            return schemaElement.ToString();
+        }
+
         private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
             var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
@@ -391,7 +417,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingFields = web.Fields;
                 web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString));
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString, f => f.InternalName, f => f.Title));
                 web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title));
                 web.Context.ExecuteQueryRetry();
 
@@ -440,6 +466,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             element.Attributes("Version").Remove();
                             fieldXml = element.ToString();
                         }
+                        if (element.Attribute("Type").Value == "Calculated")
+                        {
+                            fieldXml = TokenizeFieldFormula(fieldXml);
+                        }
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
                 }
@@ -468,7 +498,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var id = xDoc.Root.Attribute("ID") != null ? xDoc.Root.Attribute("ID").Value : null;
                 if (id != null)
                 {
-                    int index = template.SiteFields.FindIndex(f => f.SchemaXml.IndexOf(id, StringComparison.InvariantCultureIgnoreCase) > -1);
+                    int index = template.SiteFields.FindIndex(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(Guid.Parse(id)));
 
                     if (index > -1)
                     {

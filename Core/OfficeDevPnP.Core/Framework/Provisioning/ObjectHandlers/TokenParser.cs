@@ -114,6 +114,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermGroupIdToken(web));
             _tokens.Add(new SiteCollectionTermGroupNameToken(web));
 
+            // Fields
+            var fields = web.Fields;
+            web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
+            web.Context.ExecuteQueryRetry();
+            foreach(var field in fields)
+            {
+                _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+            }
+
             // Handle resources
             if (template.Localizations.Any())
             {
