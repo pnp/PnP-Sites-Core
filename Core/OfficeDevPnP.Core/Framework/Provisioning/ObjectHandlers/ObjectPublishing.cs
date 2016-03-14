@@ -25,8 +25,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
         private const string HTML_PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
-        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
-
+        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID =    "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
+        private const string ASP_NET_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD1";
         public override string Name
         {
             get { return "Publishing"; }
@@ -76,74 +76,103 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(masterPageGalleryFolder.Files);
                 web.Context.ExecuteQueryRetry();
 
-                var sourceFiles = masterPageGalleryFolder.Files.AsEnumerable().Where(
+
+                var sourceFiles = GetFiles(masterPageGalleryFolder).Where(
                     f => f.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ||
                     f.Name.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase) ||
                     f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase));
 
+                /*var sourceFiles = masterPageGalleryFolder.Files.AsEnumerable().Where(
+                    f => f.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ||
+                    f.Name.EndsWith(".html", StringComparison.InvariantCultureIgnoreCase) ||
+                    f.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase));
+                    */
+
                 foreach (var file in sourceFiles)
                 {
-                    var listItem = file.EnsureProperty(f => f.ListItemAllFields);
-                    listItem.ContentType.EnsureProperties(ct => ct.Id, ct => ct.StringId);
-
-                    // Check if the content type is of type Master Page or Page Layout
-                    if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID) ||
-                        listItem.ContentType.StringId.StartsWith(PAGE_LAYOUT_CONTENT_TYPE_ID) ||
-                        listItem.ContentType.StringId.StartsWith(HTML_MASTER_PAGE_CONTENT_TYPE_ID) ||
-                        listItem.ContentType.StringId.StartsWith(HTML_PAGE_LAYOUT_CONTENT_TYPE_ID))
+                    if (file.ListItemAllFields.ServerObjectIsNull != null && !file.ListItemAllFields.ServerObjectIsNull.Value)
                     {
-                        // Skip any .ASPX or .MASTER file related to an .HTML designer file
-                        if ((file.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase)
-                            && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".aspx", ".html"), 
-                                StringComparison.InvariantCultureIgnoreCase))) ||
-                            (file.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)
-                            && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".master", ".html"),
-                                StringComparison.InvariantCultureIgnoreCase))))
+                        var listItem = file.EnsureProperty(f => f.ListItemAllFields);
+                        listItem.ContentType.EnsureProperties(ct => ct.Id, ct => ct.StringId);
+
+                        // Check if the content type is of type Master Page or Page Layout
+                        if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID) ||
+                            listItem.ContentType.StringId.StartsWith(PAGE_LAYOUT_CONTENT_TYPE_ID) ||
+                            listItem.ContentType.StringId.StartsWith(ASP_NET_MASTER_PAGE_CONTENT_TYPE_ID) ||
+                            listItem.ContentType.StringId.StartsWith(HTML_PAGE_LAYOUT_CONTENT_TYPE_ID))
                         {
-                            continue;
-                        }
-
-                        // If the file is a custom one, and not one native
-                        // and coming out from the publishing feature
-                        if (creationInfo.IncludeNativePublishingFiles || 
-                            !IsPublishingFeatureNativeFile(publishingFeatureTemplate, file.Name))
-                        {
-                            var fullUri = new Uri(UrlUtility.Combine(webApplicationUrl, file.ServerRelativeUrl));
-
-                            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
-                            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
-
-                            var publishingFile = new Model.File()
+                            // Skip any .ASPX or .MASTER file related to an .HTML designer file
+                            if ((file.Name.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase)
+                                && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".aspx", ".html"),
+                                    StringComparison.InvariantCultureIgnoreCase))) ||
+                                (file.Name.EndsWith(".master", StringComparison.InvariantCultureIgnoreCase)
+                                && sourceFiles.Any(f => f.Name.Equals(file.Name.ToLower().Replace(".master", ".html"),
+                                    StringComparison.InvariantCultureIgnoreCase))))
                             {
-                                Folder = Tokenize(folderPath, web.Url),
-                                Src = HttpUtility.UrlDecode(fileName),
-                                Overwrite = true,
-                            };
-
-                            // Add field values to file
-                            RetrieveFieldValues(web, file, publishingFile);
-
-                            // Add the file to the template
-                            template.Files.Add(publishingFile);
-
-                            // Persist file using connector, if needed
-                            if (creationInfo.PersistPublishingFiles)
-                            {
-                                PersistFile(web, creationInfo, scope, folderPath, fileName, true);
+                                continue;
                             }
 
-                            if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
+                            // If the file is a custom one, and not one native
+                            // and coming out from the publishing feature
+                            if (creationInfo.IncludeNativePublishingFiles ||
+                                !IsPublishingFeatureNativeFile(publishingFeatureTemplate, file.Name))
                             {
-                                scope.LogWarning(String.Format("The file \"{0}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.", file.Name));
+                                var fullUri = new Uri(UrlUtility.Combine(webApplicationUrl, file.ServerRelativeUrl));
+
+                                var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+                                var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+                                var publishingFile = new Model.File()
+                                {
+                                    Folder = Tokenize(folderPath, web.Url),
+                                    Src = HttpUtility.UrlDecode(fileName),
+                                    Overwrite = true,
+                                };
+
+                                // Add field values to file
+                                RetrieveFieldValues(web, file, publishingFile);
+
+                                // Add the file to the template
+                                template.Files.Add(publishingFile);
+
+                                // Persist file using connector, if needed
+                                if (creationInfo.PersistPublishingFiles)
+                                {
+                                    PersistFile(web, creationInfo, scope, folderPath, fileName, true);
+                                }
+
+                                if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
+                                {
+                                    scope.LogWarning(String.Format("The file \"{0}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.", file.Name));
+                                }
                             }
-                        }
-                        else
-                        {
-                            scope.LogWarning(String.Format("Skipping file \"{0}\" because it is native in the publishing feature.", file.Name));
+                            else
+                            {
+                                scope.LogWarning(String.Format("Skipping file \"{0}\" because it is native in the publishing feature.", file.Name));
+                            }
                         }
                     }
                 }
             }
+        }
+
+        private IEnumerable<Microsoft.SharePoint.Client.File> GetFiles(Microsoft.SharePoint.Client.Folder folder)
+        {
+            var files = new List<Microsoft.SharePoint.Client.File>();
+            folder.EnsureProperty(f => f.Folders);
+            if (folder.Folders.Any())
+            {
+                foreach (var subfolder in folder.Folders)
+                {
+                    files.AddRange(GetFiles(subfolder));
+                }
+            }
+
+            var folderFiles = folder.EnsureProperty(f => f.Files);
+
+            files.AddRange(folderFiles);
+
+            return files;
         }
 
         /// <summary>
@@ -189,8 +218,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             Boolean result = false;
 
-            if (nativeFilesTemplate != null 
-                && nativeFilesTemplate.Files != null 
+            if (nativeFilesTemplate != null
+                && nativeFilesTemplate.Files != null
                 && nativeFilesTemplate.Files.Count > 0)
             {
                 result = nativeFilesTemplate.Files.Any(f => f.Src == fileName);
