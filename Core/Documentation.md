@@ -911,6 +911,42 @@ Add content type to list
 > **defaultContent:** If set true, content type is updated to be default content type for the list
 
 
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** String representation of the id of the field (=Guid)
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.Guid,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** The Id of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldByName(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldName:** The title or internal name of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
 #### AddFieldToContentTypeById(Microsoft.SharePoint.Client.Web,System.String,System.String,System.Boolean,System.Boolean)
 Associates field to content type
 > ##### Parameters
@@ -2442,6 +2478,26 @@ Updates navigation settings for the current web
 > **navigationSettings:** 
 
 
+#### GetEditableNavigationTermSet(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.ManagedNavigationKind)
+Returns an editable version of the Global Navigation TermSet for a web site
+> ##### Parameters
+> **web:** The target web.
+
+> **navigationKind:** Declares whether to look for Current or Global Navigation
+
+> ##### Return value
+> The editable Global Navigation TermSet
+
+#### IsManagedNavigationEnabled(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.ManagedNavigationKind)
+Determines whether the current Web has the managed navigation enabled
+> ##### Parameters
+> **web:** The target web.
+
+> **navigationKind:** The kind of navigation (Current or Global).
+
+> ##### Return value
+> A boolean result of the test.
+
 #### AddNavigationNode(Microsoft.SharePoint.Client.Web,System.String,System.Uri,System.String,OfficeDevPnP.Core.Enums.NavigationType,System.Boolean)
 Add a node to quick launch, top navigation bar or search navigation. The node will be added as the last node in the collection.
 > ##### Parameters
@@ -2931,18 +2987,26 @@ Returns web part properties
 > **System.ArgumentNullException:** Thrown when key or serverRelativePageUrl is null
 
 
-#### AddPublishingPage(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.Boolean)
+#### AddPublishingPage(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.Boolean,Microsoft.SharePoint.Client.Folder,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Boolean)
 Adds the publishing page.
 > ##### Parameters
 > **web:** The web.
 
 > **pageName:** Name of the page.
 
-> **pageTemplateName:** Name of the page template.
+> **pageTemplateName:** Name of the page template/layout excluded the .aspx file extension.
 
-> **title:** The title.
+> **title:** The title of the target publishing page.
 
 > **publish:** Should the page be published or not?
+
+> **folder:** The target folder for the page, within the Pages library.
+
+> **startDate:** Start date for scheduled publishing.
+
+> **endDate:** End date for scheduled publishing.
+
+> **schedule:** Defines whether to define a schedule or not.
 
 > ##### Exceptions
 > **System.ArgumentNullException:** Thrown when key or pageName is a zero-length string or contains only white space
@@ -2950,15 +3014,48 @@ Adds the publishing page.
 > **System.ArgumentException:** Thrown when key or pageName is null
 
 
+#### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem)
+Adds a user-friendly URL for a PublishingPage object.
+> ##### Parameters
+> **page:** The target page to add to managed navigation.
+
+> **web:** The target web.
+
+> **navigationTitle:** The title for the navigation item.
+
+> **friendlyUrlSegment:** The user-friendly text to use as the URL segment.
+
+> **editableParent:** The parent NavigationTermSetItem object below which this new friendly URL should be created.
+
+> ##### Return value
+> The simple link URL just created.
+
 #### GetPublishingPage(Microsoft.SharePoint.Client.Web,System.String)
-Gets a publishing page.
+Gets a Publishing Page from the root folder of the Pages library.
 > ##### Parameters
 > **web:** The web.
 
 > **fileLeafRef:** The file leaf reference.
 
 > ##### Return value
-> 
+> The PublishingPage object, if any. Otherwise null.
+> ##### Exceptions
+> **System.ArgumentNullException:** fileLeafRef
+
+> **System.ArgumentException:** fileLeafRef
+
+
+#### GetPublishingPage(Microsoft.SharePoint.Client.Web,System.String,Microsoft.SharePoint.Client.Folder)
+Gets a Publishing Page from any folder in the Pages library.
+> ##### Parameters
+> **web:** The web.
+
+> **fileLeafRef:** The file leaf reference.
+
+> **folder:** The folder where to search the page.
+
+> ##### Return value
+> The PublishingPage object, if any. Otherwise null.
 > ##### Exceptions
 > **System.ArgumentNullException:** fileLeafRef
 
@@ -4631,6 +4728,16 @@ Sets a key/value pair in the web property bag
 > **value:** String value for the property bag entry
 
 
+#### SetPropertyBagValue(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Sets a key/value pair in the web property bag
+> ##### Parameters
+> **web:** Web that will hold the property bag entry
+
+> **key:** Key for the property bag entry
+
+> **value:** Datetime value for the property bag entry
+
+
 #### SetPropertyBagValueInternal(Microsoft.SharePoint.Client.Web,System.String,System.Object)
 Sets a key/value pair in the web property bag
 > ##### Parameters
@@ -4661,6 +4768,18 @@ Removes a property bag value
 
 #### GetPropertyBagValueInt(Microsoft.SharePoint.Client.Web,System.String,System.Int32)
 Get int typed property bag value. If does not contain, returns default value.
+> ##### Parameters
+> **web:** Web to read the property bag value from
+
+> **key:** Key of the property bag entry to return
+
+> **defaultValue:** 
+
+> ##### Return value
+> Value of the property bag entry as integer
+
+#### GetPropertyBagValueDateTime(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Get DateTime typed property bag value. If does not contain, returns default value.
 > ##### Parameters
 > **web:** Web to read the property bag value from
 
@@ -5135,6 +5254,17 @@ Add required key/value settings on List Root-Folder
             
 This class will be used to provide access to the right base template configuration
         
+
+## SharePoint.Client.ManagedNavigationKind
+            
+Defines the kind of Managed Navigation for a site
+        
+### Fields
+
+#### Current
+Current Navigation
+#### Global
+Global Navigation
 
 ## Core.AppModelExtensions.VariationExtensions
             
