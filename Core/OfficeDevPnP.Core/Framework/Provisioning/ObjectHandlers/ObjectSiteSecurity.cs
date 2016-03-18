@@ -14,17 +14,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Site Security"; }
         }
-        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Web Web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-
+                Web web;
+                bool usingRootWeb = false;
 
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
-                if (web.IsSubSite())
+                if (Web.IsSubSite())
                 {
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
-                    return parser;
+                    web = Web.Context.GetSiteCollectionContext().Site.RootWeb;
+                    usingRootWeb = true;
+                }
+                else
+                {
+                    web = Web;
                 }
 
                 var siteSecurity = template.Security;
@@ -209,6 +214,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+                    if (usingRootWeb)
+                    {
+                        web = Web;
+                    }
                     var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
                     var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
                     web.Context.ExecuteQueryRetry();
@@ -265,14 +274,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        public override ProvisioningTemplate ExtractObjects(Web Web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
-                if (web.IsSubSite())
+                Web web;
+
+                if (Web.IsSubSite())
                 {
-                    return template;
+                    web = Web.Context.GetSiteCollectionContext().Site.RootWeb;
+                }
+                else
+                {
+                    web = Web;
                 }
 
                 web.Context.Load(web, w => w.HasUniqueRoleAssignments, w => w.Title);
@@ -560,8 +574,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template.Security.AdditionalMembers.Any() ||
                     template.Security.AdditionalOwners.Any() ||
                     template.Security.AdditionalVisitors.Any() ||
-                    template.Security.SiteGroups.Any()) &&
-                    !web.IsSubSite();
+                    template.Security.SiteGroups.Any());
             }
 
             return _willProvision.Value;
