@@ -1135,7 +1135,8 @@ namespace Microsoft.SharePoint.Client
                         {
                             var id = allowedContentType.Attribute("ID").Value;
                             var act = web.GetContentTypeById(id);
-                            if (!template.AllowedContentTypes.Any(a => a.StringValue == id))
+                            if (act != null &&
+                                !template.AllowedContentTypes.Any(a => a.StringValue == id))
                             {
                                 template.AllowedContentTypes.Add(act.Id);
                                 template.Update(true);
@@ -1148,7 +1149,8 @@ namespace Microsoft.SharePoint.Client
                         {
                             var id = sharedField.Attribute("ID").Value;
                             var field = web.GetFieldById<Field>(new Guid(id));
-                            if (!template.SharedFields.Any(a => a.Id == field.Id))
+                            if (field != null &&
+                                !template.SharedFields.Any(a => a.Id == field.Id))
                             {
                                 template.SharedFields.Add(field);
                                 template.Update(true);
@@ -1161,7 +1163,8 @@ namespace Microsoft.SharePoint.Client
                         {
                             var id = welcomePageField.Attribute("ID").Value;
                             var field = web.GetFieldById<Field>(new Guid(id));
-                            if (!template.WelcomePageFields.Any(a => a.Id == field.Id))
+                            if (field != null &&
+                                !template.WelcomePageFields.Any(a => a.Id == field.Id))
                             {
                                 template.WelcomePageFields.Add(field);
                                 template.Update(true);
