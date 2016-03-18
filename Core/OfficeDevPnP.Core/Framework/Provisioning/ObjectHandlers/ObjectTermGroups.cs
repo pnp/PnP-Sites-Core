@@ -310,9 +310,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
                     var termStore = session.GetDefaultSiteCollectionTermStore();
-					web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage);
+					web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage, t => t.OrphanedTermsTermSet);
 					web.Context.ExecuteQueryRetry();
 
+                    var orphanedTermsTermSetId = termStore.OrphanedTermsTermSet.Id;
 					if (termStore.ServerObjectIsNull.Value)
 					{
 						termStore = session.GetDefaultKeywordsTermStore();
@@ -365,7 +366,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Description = termGroup.Description
                         };
 
-                        foreach (var termSet in termGroup.TermSets)
+                        foreach (var termSet in termGroup.TermSets.Where(ts => ts.Id != orphanedTermsTermSetId))
                         {
                             var modelTermSet = new Model.TermSet();
                             modelTermSet.Name = termSet.Name;

@@ -911,6 +911,42 @@ Add content type to list
 > **defaultContent:** If set true, content type is updated to be default content type for the list
 
 
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** String representation of the id of the field (=Guid)
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldById(Microsoft.SharePoint.Client.ContentType,System.Guid,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldId:** The Id of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
+#### AddFieldByName(Microsoft.SharePoint.Client.ContentType,System.String,System.Boolean,System.Boolean)
+Associates field to content type
+> ##### Parameters
+> **contentType:** Content Type to add the field to
+
+> **fieldName:** The title or internal name of the field
+
+> **required:** True if the field is required
+
+> **hidden:** True if the field is hidden
+
+
 #### AddFieldToContentTypeById(Microsoft.SharePoint.Client.Web,System.String,System.String,System.Boolean,System.Boolean)
 Associates field to content type
 > ##### Parameters
@@ -4692,6 +4728,16 @@ Sets a key/value pair in the web property bag
 > **value:** String value for the property bag entry
 
 
+#### SetPropertyBagValue(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Sets a key/value pair in the web property bag
+> ##### Parameters
+> **web:** Web that will hold the property bag entry
+
+> **key:** Key for the property bag entry
+
+> **value:** Datetime value for the property bag entry
+
+
 #### SetPropertyBagValueInternal(Microsoft.SharePoint.Client.Web,System.String,System.Object)
 Sets a key/value pair in the web property bag
 > ##### Parameters
@@ -4722,6 +4768,18 @@ Removes a property bag value
 
 #### GetPropertyBagValueInt(Microsoft.SharePoint.Client.Web,System.String,System.Int32)
 Get int typed property bag value. If does not contain, returns default value.
+> ##### Parameters
+> **web:** Web to read the property bag value from
+
+> **key:** Key of the property bag entry to return
+
+> **defaultValue:** 
+
+> ##### Return value
+> Value of the property bag entry as integer
+
+#### GetPropertyBagValueDateTime(Microsoft.SharePoint.Client.Web,System.String,System.DateTime)
+Get DateTime typed property bag value. If does not contain, returns default value.
 > ##### Parameters
 > **web:** Web to read the property bag value from
 

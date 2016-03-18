@@ -25,6 +25,7 @@ namespace Microsoft.SharePoint.Client
             return clientContext.Clone(new Uri(siteUrl));
         }
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -38,6 +39,13 @@ namespace Microsoft.SharePoint.Client
 
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
         {
+
+            if (clientContext is PnPClientContext)
+            {
+                retryCount = (clientContext as PnPClientContext).RetryCount;
+                delay = (clientContext as PnPClientContext).Delay;
+            }
+
             int retryAttempts = 0;
             int backoffInterval = delay;
             if (retryCount <= 0)
@@ -172,7 +180,8 @@ namespace Microsoft.SharePoint.Client
             try
             {
                 hasMinimalVersion = clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
-            } catch (PropertyOrFieldNotInitializedException)
+            }
+            catch (PropertyOrFieldNotInitializedException)
             {
                 // swallow the exception.
             }

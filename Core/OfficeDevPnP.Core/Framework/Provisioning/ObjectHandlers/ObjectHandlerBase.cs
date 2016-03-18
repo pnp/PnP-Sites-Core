@@ -1,7 +1,11 @@
 ﻿using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Linq;
 using System.Web;
+using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -40,12 +44,104 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// Tokenizes calculated fieldXml to use tokens for field references
+        /// </summary>
+        /// <param name="fieldXml">the xml to tokenize</param>
+        /// <returns></returns>
+        protected string TokenizeFieldFormula(string fieldXml)
+        {
+            var schemaElement = XElement.Parse(fieldXml);
+            var formula = schemaElement.Descendants("Formula").FirstOrDefault();
+
+            if (formula != null)
+            {
+                var formulaString = formula.Value;
+                if (formulaString != null)
+                {
+                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    foreach (var fieldRef in fieldRefs)
+                    {
+                        var fieldInternalName = fieldRef.Attribute("Name").Value;
+                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                    }
+                    var fieldRefParent = schemaElement.Descendants("FieldRefs");
+                    fieldRefParent.Remove();
+
+                }
+                formula.Value = formulaString;
+            }
+
+            return schemaElement.ToString();
+        }
+
+        /// <summary>
+        /// If the field is a taxonomy field then we will check for the values of the referenced termstore and termset. 
+        /// </summary>
+        /// <param name="fieldXml">The xml to parse</param>
+        /// <param name="parser"></param>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected static bool IsFieldXmlValid(string fieldXml, TokenParser parser, ClientRuntimeContext context)
+        {
+            var isValid = true;
+            var leftOverTokens = parser.GetLeftOverTokens(fieldXml);
+            if (!leftOverTokens.Any())
+            {
+                var fieldElement = XElement.Parse(fieldXml);
+                if (fieldElement.Attribute("Type").Value == "TaxonomyFieldType")
+                {
+                    var termStoreIdElement = fieldElement.XPathSelectElement("//ArrayOfProperty/Property[Name='SspId']/Value");
+                    if (termStoreIdElement != null)
+                    {
+                        var termStoreId = Guid.Parse(termStoreIdElement.Value);
+                        TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(context);
+                        try
+                        {
+                            taxSession.EnsureProperty(t => t.TermStores);
+                            var store = taxSession.TermStores.GetById(termStoreId);
+                            context.Load(store);
+                            context.ExecuteQueryRetry();
+                            if (store.ServerObjectIsNull.HasValue && !store.ServerObjectIsNull.Value)
+                            {
+                                var termSetIdElement = fieldElement.XPathSelectElement("//ArrayOfProperty/Property[Name='TermSetId']/Value");
+                                if (termSetIdElement != null)
+                                {
+                                    var termSetId = Guid.Parse(termSetIdElement.Value);
+                                    try
+                                    {
+                                        var termSet = store.GetTermSet(termSetId);
+                                        context.Load(termSet);
+                                        context.ExecuteQueryRetry();
+                                        isValid = termSet.ServerObjectIsNull.HasValue && !termSet.ServerObjectIsNull.Value;
+                                    }
+                                    catch (Exception)
+                                    {
+                                        isValid = false;
+                                    }
+                                }
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            isValid = false;
+                        }
+                    }
+                    else
+                    {
+                        isValid = false;
+                    }
+                }
+            }
+            return isValid;
+        }
+
+        /// <summary>
         /// Tokenize a template item url based attribute with {themecatalog} or {masterpagecatalog} or {site}+
         /// </summary>
         /// <param name="url">the url to tokenize as String</param>
         /// <param name="webUrl">web url of the actual web as String</param>
         /// <returns>tokenized url as String</returns>
-        protected string Tokenize(string url, string webUrl)
+        protected string Tokenize(string url, string webUrl, Web web = null)
         {
             String result = null;
 
@@ -59,16 +155,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
+                    var subsite = false;
+                    if(web != null)
+                    {
+                        subsite = web.IsSubSite();
+                    }
+                    if (subsite)
+                    {
+                        result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{sitecollection}/_catalogs/theme");
+                    }
+                    else {
+                        result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
+                    }
                 }
 
                 // Try with master page catalog
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
-                    result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
+                    var subsite = false;
+                    if(web != null)
+                    {
+                        subsite = web.IsSubSite();
+                    }
+                    if (subsite)
+                    {
+                        result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{sitecollection}/_catalogs/masterpage");
+                    }
+                    else {
+                        result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
+                    }
                 }
 
                 // Try with site URL
+                if(result != null)
+                {
+                    url = result;
+                }
                 Uri uri;
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {

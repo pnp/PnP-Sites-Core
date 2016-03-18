@@ -704,6 +704,53 @@ namespace Microsoft.SharePoint.Client
             return true;
         }
 
+
+
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldId">String representation of the id of the field (=Guid)</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        public static void AddFieldById(this ContentType contentType, string fieldId, bool required = false, bool hidden = false)
+        {
+            AddFieldById(contentType, Guid.Parse(fieldId), required, hidden);
+        }
+
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldId">The Id of the field</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        public static void AddFieldById(this ContentType contentType, Guid fieldId, bool required = false, bool hidden = false)
+        {
+            var ctx = contentType.Context as ClientContext;
+            var field = ctx.Web.Fields.GetById(fieldId);
+            ctx.Load(field);
+            ctx.ExecuteQueryRetry();
+            AddFieldToContentType(ctx.Web, contentType, field, required, hidden);
+        }
+
+        /// <summary>
+        /// Associates field to content type
+        /// </summary>
+        /// <param name="contentType">Content Type to add the field to</param>
+        /// <param name="fieldName">The title or internal name of the field</param>
+        /// <param name="required">True if the field is required</param>
+        /// <param name="hidden">True if the field is hidden</param>
+        public static void AddFieldByName(this ContentType contentType, string fieldName, bool required = false, bool hidden = false)
+        {
+            var ctx = contentType.Context as ClientContext;
+            var field = ctx.Web.Fields.GetByInternalNameOrTitle(fieldName);
+            ctx.Load(field);
+            ctx.ExecuteQueryRetry();
+
+            AddFieldToContentType(ctx.Web, contentType, field, required, hidden);
+        }
+
         /// <summary>
         /// Associates field to content type
         /// </summary>

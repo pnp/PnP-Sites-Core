@@ -102,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         switch (field.TypeAsString)
                         {
                             case "URL":
-                                value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url);
+                                value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url, web);
                                 break;
                             case "User":
                                 var fieldUserValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
@@ -121,12 +121,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var internalFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
                                 if (internalFieldValue != null)
                                 {
-                                    value = Tokenize(JsonUtility.Serialize(internalFieldValue), web.Url);
+                                    value = Tokenize(JsonUtility.Serialize(internalFieldValue), web.Url, web);
                                 }
                                 break;
                             case "ContentTypeIdFieldType":
                             default:
-                                value = Tokenize(fieldValue.Value.ToString(), web.Url);
+                                value = Tokenize(fieldValue.Value.ToString(), web.Url, web);
                                 break;
                         }
 
