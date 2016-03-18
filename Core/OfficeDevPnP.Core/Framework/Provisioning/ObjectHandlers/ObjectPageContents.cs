@@ -215,6 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     Title = webPart.WebPart.Title,
                     Row = (uint)webPart.WebPart.ZoneIndex,
+                    Order = (uint)webPart.WebPart.ZoneIndex,
                     Contents = webPartxml
                 };
 #if !CLIENTSDKV15
