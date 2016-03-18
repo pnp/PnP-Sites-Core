@@ -184,7 +184,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     creationInfo.PropertyBagPropertiesToPreserve.Add("DesignPreviewThemedCssFolderUrl");
                 }
 
-                template.ComposedLook.Name = theme.Name;
+                template.ComposedLook.Name = 
+                    theme.Name != null ? theme.Name : String.Empty;
 
                 if (theme.IsCustomComposedLook)
                 {
