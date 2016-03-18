@@ -326,6 +326,7 @@
     <Compile Include="AppModelExtensions\NavigationExtensionsTests.cs" />
     <Compile Include="Diagnostics\LogTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
+    <Compile Include="Framework\Connectors\ConnectorZipFileTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
@@ -392,6 +393,9 @@
     <Content Include="Resources\ImportTermSet.csv" />
     <None Include="Resources\HelloWorldApp15.app" />
     <None Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.json" />
+    <Content Include="Resources\Templates\sitetemplate.zip">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\TestSolution.wsp" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
