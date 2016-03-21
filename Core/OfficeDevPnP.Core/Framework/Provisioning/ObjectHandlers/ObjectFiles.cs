@@ -187,6 +187,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                bool publishFile = false;
+                string publishFileLevel = String.Empty;
+
                 // Loop through and detect changes first, then, check out if required and apply
                 foreach (var kvp in properties)
                 {
@@ -216,6 +219,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     break;
                                 }
+                            case "_LEVEL":
+                                {
+                                    publishFile = true;
+                                    publishFileLevel = propertyValue;
+                                }
+                                break;
                             default:
                                 {
                                     switch (targetField.TypeAsString)
@@ -271,6 +280,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     file.ListItemAllFields.Update();
                     context.ExecuteQueryRetry();
+                }
+
+                if (publishFile)
+                {
+                    FileLevel level = (FileLevel)Enum.Parse(typeof(FileLevel), publishFileLevel);
+                    file.PublishFileToLevel(level);
                 }
             }
         }
