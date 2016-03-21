@@ -1124,6 +1124,28 @@ namespace Microsoft.SharePoint.Client
             // Return the content type object
             return myContentType;
         }
+        
+        /// <summary>
+        /// Removes a content type from the web by name
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="contentTypeName">Name of the content type to remove</param>
+        internal static void DeleteContentTypeByName(Web web, string contentTypeName)
+        {
+            //ContentTypeId ctid = (ContentTypeId)contentTypeName;
+            var contentTypes = web.Context.LoadQuery(web.ContentTypes.Where(c => c.Name == contentTypeName));
+            web.Context.ExecuteQueryRetry();
+
+            var enumerable = contentTypes as ContentType[] ?? contentTypes.ToArray();
+            if (!enumerable.Any())
+            {
+                Console.WriteLine(string.Format("Could not find content type with name: {0}", contentTypeName));
+            }
+            else
+            {
+                enumerable.First().DeleteObject();
+            }
+        }
 
         /// <summary>
         /// Return content type by name
