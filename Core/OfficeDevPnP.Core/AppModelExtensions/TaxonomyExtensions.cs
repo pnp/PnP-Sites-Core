@@ -1585,7 +1585,60 @@ namespace Microsoft.SharePoint.Client
 			clientContext.ExecuteQueryRetry();
 		}
 
-		private static void CleanupTaxonomyHiddenField(Web web, FieldCollection fields, TaxonomyFieldCreationInformation fieldCreationInformation)
+        /// <summary>
+        /// Sets a value of a taxonomy field that supports multiple values
+        /// </summary>
+        /// <param name="item">The item to process</param>
+        /// <param name="fieldId">The ID of the field to set</param>
+        /// <param name="termValues">The key and values of terms to set</param>
+        public static void SetTaxonomyFieldValues(this ListItem item, Guid fieldId, IEnumerable<KeyValuePair<Guid, String>> termValues)
+        {
+            ClientContext clientContext = item.Context as ClientContext;
+
+            List list = item.ParentList;
+
+            clientContext.Load(list);
+            clientContext.ExecuteQueryRetry();
+
+            IEnumerable<Field> fieldQuery = clientContext.LoadQuery(
+              list.Fields
+              .Include(
+                fieldArg => fieldArg.TypeAsString,
+                fieldArg => fieldArg.Id,
+                fieldArg => fieldArg.InternalName
+              )
+            ).Where(fieldArg => fieldArg.Id == fieldId);
+
+            clientContext.ExecuteQueryRetry();
+
+            TaxonomyField taxField = fieldQuery.Cast<TaxonomyField>().FirstOrDefault();
+
+            clientContext.Load(taxField);
+            clientContext.ExecuteQueryRetry();
+
+            if (taxField.AllowMultipleValues)
+            {
+                var termValuesString = String.Empty;
+                foreach (var term in termValues)
+                {
+                    termValuesString += "-1;#" + term.Value + "|" + term.Key.ToString("D") + ";#";
+                }
+
+                termValuesString = termValuesString.Substring(0, termValuesString.Length - 2);
+
+                var newTaxFieldValue = new TaxonomyFieldValueCollection(clientContext, termValuesString, taxField);
+                taxField.SetFieldValueByValueCollection(item, newTaxFieldValue);
+
+                item.Update();
+                clientContext.ExecuteQueryRetry();
+            }
+            else
+            {
+                throw new ArgumentException(CoreResources.TaxonomyExtensions_Field_Is_Not_Multivalues, taxField.StaticName);
+            }
+        }
+
+        private static void CleanupTaxonomyHiddenField(Web web, FieldCollection fields, TaxonomyFieldCreationInformation fieldCreationInformation)
 		{
 			// if the Guid is empty then we'll have no issue
 			if (fieldCreationInformation.Id != Guid.Empty)
