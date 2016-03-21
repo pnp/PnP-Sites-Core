@@ -4100,6 +4100,16 @@ Sets a value of a taxonomy field
 > **termGuid:** The id of the term to set
 
 
+#### SetTaxonomyFieldValues(Microsoft.SharePoint.Client.ListItem,System.Guid,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Guid,System.String}})
+Sets a value of a taxonomy field that supports multiple values
+> ##### Parameters
+> **item:** The item to process
+
+> **fieldId:** The ID of the field to set
+
+> **termValues:** The key and values of terms to set
+
+
 #### CreateTaxonomyField(Microsoft.SharePoint.Client.Web,OfficeDevPnP.Core.Entities.TaxonomyFieldCreationInformation)
 Can be used to create taxonomy field remotely to web.
 > ##### Parameters
@@ -6323,6 +6333,8 @@ Looks up a localized string similar to Importing term set from file stream..
 Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
 #### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
 Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtensions_Field_Is_Not_Multivalues
+Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
 #### TaxonomyExtensions_ImportTermSet_File_path_is_required_
 Looks up a localized string similar to File path is required..
 #### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_

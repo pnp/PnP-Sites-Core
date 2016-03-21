@@ -909,4 +909,7 @@
   <data name="WebExtensions_RequestAccessEmailLimitExceeded" xml:space="preserve">
     <value>Request access email addresses exceed 255 characters. Skipping: {0}</value>
   </data>
+  <data name="TaxonomyExtensions_Field_Is_Not_Multivalues" xml:space="preserve">
+    <value>The taxonomy field {0} does not support multiple values.</value>
+  </data>
 </root>
