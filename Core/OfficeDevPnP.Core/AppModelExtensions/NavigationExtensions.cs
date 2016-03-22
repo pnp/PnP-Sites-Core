@@ -360,8 +360,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (!web.IsManagedNavigationEnabled(navigationKind))
             {
-                throw new ApplicationException(
-                    $"The current web is not using the Taxonomy provider for {navigationKind} Navigation.");
+                throw new ApplicationException(String.Format("The current web is not using the Taxonomy provider for {0} Navigation.", navigationKind));
             }
 
             switch (navigationKind)
@@ -399,7 +398,7 @@ namespace Microsoft.SharePoint.Client
                 (web.ParentWeb.ServerObjectIsNull.HasValue && !web.ParentWeb.ServerObjectIsNull.Value))
             {
                 Uri currentWebUri = new Uri(web.Url);
-                Uri parentWebUri = new Uri($"{currentWebUri.Scheme}://{currentWebUri.Host}{web.ParentWeb.ServerRelativeUrl}");
+                Uri parentWebUri = new Uri(String.Format("{0}://{1}{2}", currentWebUri.Scheme, currentWebUri.Host, web.ParentWeb.ServerRelativeUrl));
 
                 using (ClientContext parentContext = web.Context.Clone(parentWebUri))
                 {
