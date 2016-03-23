@@ -574,6 +574,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupId.cs" />
