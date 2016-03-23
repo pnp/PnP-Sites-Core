@@ -89,6 +89,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add TermSetIds
             TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
 
+            var termStores = session.EnsureProperty(s => s.TermStores);
+            foreach (var ts in termStores)
+            {
+                _tokens.Add(new TermStoreIdToken(web, ts.Name, ts.Id));
+            }
             var termStore = session.GetDefaultSiteCollectionTermStore();
             web.Context.Load(termStore);
             web.Context.ExecuteQueryRetry();
@@ -118,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fields = web.Fields;
             web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
             web.Context.ExecuteQueryRetry();
-            foreach(var field in fields)
+            foreach (var field in fields)
             {
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
             }
