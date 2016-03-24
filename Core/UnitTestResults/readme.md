@@ -4,6 +4,8 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20160324-OnlineAppOnly-635944602301125122.md) | Thursday, March 24, 2016 | 10:50 PM | dev | debug | 259 | 3 | 39
+ [OnlineCred](PnPUnitTestResults-20160324-OnlineCred-635944572643560142.md) | Thursday, March 24, 2016 | 10:01 PM | dev | debug | 292 | 2 | 7
  [OnlineAppOnly](PnPUnitTestResults-20160323-OnlineAppOnly-635942906067112562.md) | Wednesday, March 23, 2016 | 11:43 PM | dev | debug | 260 | 2 | 39
  [OnlineCred](PnPUnitTestResults-20160322-OnlineCred-635942872984320192.md) | Tuesday, March 22, 2016 | 10:48 PM | dev | debug | 292 | 2 | 7
  [OnPremAppOnly](PnPUnitTestResults-20160322-OnPremAppOnly-635942859553543719.md) | Tuesday, March 22, 2016 | 10:25 PM | dev | debug15 | 239 | 3 | 51
@@ -102,5 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnPremCred](PnPUnitTestResults-20160209-OnPremCred-635906556182936501.md) | Tuesday, February 9, 2016 | 10:00 PM | dev | debug15 | 264 | 1 | 21
  [OnlineAppOnly](PnPUnitTestResults-20160209-OnlineAppOnly-635905747216160600.md) | Tuesday, February 9, 2016 | 11:32 PM | dev | debug | 254 | 1 | 39
  [OnlineCred](PnPUnitTestResults-20160208-OnlineCred-635905717896208665.md) | Monday, February 8, 2016 | 10:43 PM | dev | debug | 285 | 2 | 7
- [OnPremAppOnly](PnPUnitTestResults-20160208-OnPremAppOnly-635905705579936158.md) | Monday, February 8, 2016 | 10:22 PM | dev | debug15 | 234 | 1 | 51
- [OnPremCred](PnPUnitTestResults-20160208-OnPremCred-635905692253651686.md) | Monday, February 8, 2016 | 10:00 PM | dev | debug15 | 264 | 1 | 21
