@@ -105,23 +105,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url, web);
                                 break;
                             case "User":
-                                var fieldUserValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
-                                if (fieldUserValue != null)
+                                var userFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
+                                if (userFieldValue != null)
                                 {
 #if !CLIENTSDKV15
-                                    value = fieldUserValue.Email;
+                                    value = userFieldValue.Email;
 #else
                                 value = fieldUserValue.LookupValue;
 #endif
                                 }
                                 break;
                             case "LookupMulti":
-                            case "TaxonomyFieldType":
-                            case "TaxonomyFieldTypeMulti":
-                                var internalFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
-                                if (internalFieldValue != null)
+                                var lookupFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
+                                if (lookupFieldValue != null)
                                 {
-                                    value = Tokenize(JsonUtility.Serialize(internalFieldValue), web.Url, web);
+                                    value = Tokenize(JsonUtility.Serialize(lookupFieldValue), web.Url);
+                                }
+                                break;
+                            case "TaxonomyFieldType":
+                                var taxonomyFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.Taxonomy.TaxonomyFieldValue;
+                                if (taxonomyFieldValue != null)
+                                {
+                                    value = Tokenize(JsonUtility.Serialize(taxonomyFieldValue), web.Url);
+                                }
+                                break;
+                            case "TaxonomyFieldTypeMulti":
+                                var taxonomyMultiFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.Taxonomy.TaxonomyFieldValueCollection;
+                                if (taxonomyMultiFieldValue != null)
+                                {
+                                    value = Tokenize(JsonUtility.Serialize(taxonomyMultiFieldValue), web.Url);
                                 }
                                 break;
                             case "ContentTypeIdFieldType":
