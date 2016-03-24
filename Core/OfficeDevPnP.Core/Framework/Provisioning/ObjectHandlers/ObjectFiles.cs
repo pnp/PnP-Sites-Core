@@ -197,7 +197,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
                     targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
 
-                    if (!targetField.ReadOnlyField)
+                    // Changed by PaoloPia because there are fields like PublishingPageLayout
+                    // which are marked as read-only, but have to be overwritten while uploading
+                    // a publishing page file and which in reality can still be written
+                    if (!targetField.ReadOnlyField || propertyName == "PublishingPageLayout") 
                     {
                         switch (propertyName.ToUpperInvariant())
                         {
@@ -258,8 +261,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             file.ListItemAllFields[propertyName] = taxonomyValue;
                                             break;
                                         case "TaxonomyFieldTypeMulti":
-                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = taxonomyValueArray;
+                                            var taxonomyMultiValue = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
+                                            file.ListItemAllFields[propertyName] = taxonomyMultiValue;
                                             break;
                                         default:
                                             file.ListItemAllFields[propertyName] = propertyValue;
