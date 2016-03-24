@@ -47,12 +47,6 @@ Gets a site collection context for the passed web. This site collection client c
 > ##### Return value
 > A site collection client context object for the site collection
 
-#### Constructor
-Constructor
-> ##### Parameters
-> **message:** 
-
-
 #### HasMinimalServerLibraryVersion(Microsoft.SharePoint.Client.ClientRuntimeContext,System.String)
 Checks the server library version of the context for a minimally required version
 > ##### Parameters
@@ -62,6 +56,12 @@ Checks the server library version of the context for a minimally required versio
 
 > ##### Return value
 > 
+
+#### Constructor
+Constructor
+> ##### Parameters
+> **message:** 
+
 
 ## SharePoint.Client.ClientContextExtensions.MaximumRetryAttemptedException
             
@@ -4507,6 +4507,73 @@ Gets the UserProfileService proxy to enable calls to the UPA web service.
 > ##### Return value
 > UserProfileService web service client
 
+## Core.AppModelExtensions.VariationExtensions
+            
+Class that holds deprecated methods for variations
+            
+Class that provides methods for variations
+        
+### Methods
+
+
+#### ConfigureVariationsSettings(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationInformation)
+Configures the variation settings 1. Go to "Site Actions" -> "Site settings" 2. Under "Site collection administration", click "Variation Settings". This method is for the page above to change or update the "Variation Settings"
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **variationSettings:** Variation settings
+
+
+#### ProvisionSourceVariationLabel(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
+Creates source variation label
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **sourceVariationLabel:** Source variation label
+
+
+#### ProvisionTargetVariationLabels(Microsoft.SharePoint.Client.ClientContext,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.VariationLabelEntity})
+Creates target variation labels
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **variationLabels:** Variation labels
+
+
+#### WaitForVariationLabelCreation(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
+Wait for the variation label creation
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **variationLabel:** Variation label
+
+
+#### GetVariationLabels(Microsoft.SharePoint.Client.ClientContext)
+Retrieve all configured variation labels
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> ##### Return value
+> Collection of VariationLabelEntity objects
+
+#### CreateVariationLabels(Microsoft.SharePoint.Client.ClientContext,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.VariationLabelEntity})
+Create variation labels
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **variationLabels:** Variation labels
+
+
+#### CheckForHierarchyCreation(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
+Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020_Is_x0020_Created" list item value
+> ##### Parameters
+> **context:** Context for SharePoint objects and operations
+
+> **variationLabel:** Variation label
+
+> ##### Return value
+> True, if hierarchy is created for the variation label
+
 ## SharePoint.Client.WebExtensions
             
 Class that holds deprecated methods for site (both site collection and web site) creation, status, retrieval and settings
@@ -5260,89 +5327,6 @@ Add required key/value settings on List Root-Folder
 > **experience:** 
 
 
-## SharePoint.Client.BaseTemplateManager
-            
-This class will be used to provide access to the right base template configuration
-        
-
-## SharePoint.Client.ManagedNavigationKind
-            
-Defines the kind of Managed Navigation for a site
-        
-### Fields
-
-#### Current
-Current Navigation
-#### Global
-Global Navigation
-
-## Core.AppModelExtensions.VariationExtensions
-            
-Class that holds deprecated methods for variations
-            
-Class that provides methods for variations
-        
-### Methods
-
-
-#### ConfigureVariationsSettings(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationInformation)
-Configures the variation settings 1. Go to "Site Actions" -> "Site settings" 2. Under "Site collection administration", click "Variation Settings". This method is for the page above to change or update the "Variation Settings"
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **variationSettings:** Variation settings
-
-
-#### ProvisionSourceVariationLabel(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
-Creates source variation label
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **sourceVariationLabel:** Source variation label
-
-
-#### ProvisionTargetVariationLabels(Microsoft.SharePoint.Client.ClientContext,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.VariationLabelEntity})
-Creates target variation labels
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **variationLabels:** Variation labels
-
-
-#### WaitForVariationLabelCreation(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
-Wait for the variation label creation
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **variationLabel:** Variation label
-
-
-#### GetVariationLabels(Microsoft.SharePoint.Client.ClientContext)
-Retrieve all configured variation labels
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> ##### Return value
-> Collection of VariationLabelEntity objects
-
-#### CreateVariationLabels(Microsoft.SharePoint.Client.ClientContext,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.VariationLabelEntity})
-Create variation labels
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **variationLabels:** Variation labels
-
-
-#### CheckForHierarchyCreation(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Entities.VariationLabelEntity)
-Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020_Is_x0020_Created" list item value
-> ##### Parameters
-> **context:** Context for SharePoint objects and operations
-
-> **variationLabel:** Variation label
-
-> ##### Return value
-> True, if hierarchy is created for the variation label
-
 ## Core.AuthenticationManager
             
 This manager class can be used to obtain a SharePointContext object
@@ -5724,11 +5708,6 @@ Specifies a default column value for a document library
 #### Terms
 Taxonomy paths in the shape of "TermGroup|TermSet|Term"
 
-## Core.Entities.DefaultColumnTextValue
-            
-DefaultColumnTextValue
-        
-
 ## Core.Entities.DefaultColumnValue
             
 DefaultColumnValue
@@ -5739,6 +5718,11 @@ DefaultColumnValue
 The Path of the folder, Rootfolder of the document library is "/"
 #### FieldInternalName
 The internal name of the field
+
+## Core.Entities.DefaultColumnTextValue
+            
+DefaultColumnTextValue
+        
 
 ## Core.Entities.ExternalUserEntity
             
@@ -5866,16 +5850,6 @@ Represents Yammer Group information Generated based on Yammer response on 30th o
 Represents YammerUser Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
         
 
-## Core.Enums.NavigationType
-            
-Enum that defines the navigation types
-        
-
-## Core.Enums.TimeZone
-            
-Timezones to use when creating sitecollections Format UTC[PLUS|MINUS][HH:MM]_[DESCRIPTION]
-        
-
 ## Core.EcmListManualRecordDeclaration
             
 Specifies whether this list should allow the manual declaration of records. When manual record declaration is unavailable, records can only be declared through a policy or workflow.
@@ -5915,6 +5889,16 @@ Records can be edited but not deleted
 #### BlockEdit
 Records cannot be edited or deleted. Any change will require the record declaration to be revoked
 
+## Core.Enums.NavigationType
+            
+Enum that defines the navigation types
+        
+
+## Core.Enums.TimeZone
+            
+Timezones to use when creating sitecollections Format UTC[PLUS|MINUS][HH:MM]_[DESCRIPTION]
+        
+
 ## Core.VotingExperience
             
 Voting Experience in List
@@ -5929,6 +5913,25 @@ Out of the box wiki page layouts enumeration
             
 Extension type for Dictionaries
         
+
+## EnumerationExtensions
+            
+Extension methods to make working with Enum values easier. Copied from http://hugoware.net/blog/enumeration-extensions-2-0.
+        
+### Methods
+
+
+#### Include``1(System.Enum,``0)
+Includes an enumerated type and returns the new value
+
+#### Remove``1(System.Enum,``0)
+Removes an enumerated type and returns the new value
+
+#### Has``1(System.Enum,``0)
+Checks if an enumerated type contains a value
+
+#### Missing``1(System.Enum,``0)
+Checks if an enumerated type is missing a value
 
 ## Core.Extensions.EnumerableExtensions
             
@@ -5946,6 +5949,83 @@ Compares to instances of IEnumerable<T>
 
 > ##### Return value
 > Wether the two enumerations are deep equal
+
+## SafeConvertExtensions
+            
+Safely convert strings to specified types.
+        
+### Methods
+
+
+#### ToBoolean(System.String,System.Boolean)
+Converts the input string to a boolean and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+> **defaultValue:** A default value to return for a null input value.
+
+
+#### ToBoolean(System.String)
+Converts the input string to a boolean and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+
+#### ToInt32(System.String,System.Int32)
+Converts the input string to a Int32 and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+> **defaultValue:** A default value to return for a null input value.
+
+
+#### ToInt32(System.String)
+Converts the input string to a Int64 and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+
+#### ToInt64(System.String,System.Int32)
+Converts the input string to a Int32 and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+> **defaultValue:** A default value to return for a null input value.
+
+
+#### ToInt64(System.String)
+Converts the input string to a Int32 and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+
+#### ToDouble(System.String,System.Double)
+Converts the input string to a double and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+> **defaultValue:** A default value to return for a null input value.
+
+
+#### ToDouble(System.String)
+Converts the input string to a double and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+
+#### ToGuid(System.String)
+Converts the input string to a Guid and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+
+#### ToGuid(System.String,System.Guid)
+Converts the input string to a Guid and if null, it returns the default value.
+> ##### Parameters
+> **input:** Input string.
+
+> **defaultValue:** A default value to return for a null input value.
+
 
 ## Core.CoreResources
             
@@ -6488,6 +6568,11 @@ Looks up a localized string similar to Site search error. Error = {0}.
 #### WebExtensions_UninstallSolution
 Looks up a localized string similar to Removing sandbox solution '{0}'..
 
+## SharePoint.Client.BaseTemplateManager
+            
+This class will be used to provide access to the right base template configuration
+        
+
 ## Core.Framework.Provisioning.Connectors.AzureStorageConnector
             
 Connector for files in Azure blob storage
@@ -6904,6 +6989,24 @@ Gets or sets the Background Image
 #### Version
 Gets or sets the Version of the ComposedLook.
 
+## Core.Framework.Provisioning.Model.BaseModel
+            
+Base type for any Domain Model object (excluded the ProvisioningTemplate type)
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+
+## Core.Framework.Provisioning.Model.IProvisioningTemplateDescendant
+            
+Interface implemented by any descendant of a ProvisioningTemplate
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+
 ## Core.Framework.Provisioning.Model.ContentType
             
 Domain Object used in the Provisioning template that defines a Content Type https://msdn.microsoft.com/en-us/library/office/ms463449.aspx
@@ -7126,13 +7229,150 @@ Custom constructor to manage the ParentTemplate for the collection and all the c
 > **parentTemplate:** 
 
 
+#### 
+We implemented this to adhere to the generic List of T behavior
+Finds an item matching a search predicate
+> ##### Parameters
+> **match:** The matching predicate to use for finding any target item
+
+> ##### Return value
+> The target item matching the find predicate
+
 #### Constructor
 Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
 > ##### Parameters
 > **parentTemplate:** 
 
 
-#### 
+## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
+            
+Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
+        
+### Methods
+
+
+#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **provider:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **provider:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
+            
+Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
+        
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+> **innerException:** The exception that is the cause of the current exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
+> ##### Parameters
+> **info:** The object that contains the serialized data.
+
+> **context:** The stream that contains the serialized data.
+
+> ##### Exceptions
+> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
+            
+Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
+        
+### Methods
+
+
+#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Provides Token Definitions to the template provisioning pipeline
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
+            
+Defines a interface that accepts requests from the provisioning processing component
+        
+### Methods
+
+
+#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Defines a interface that accepts requests from the provisioning processing component
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
+## Core.Framework.Provisioning.Model.ProvisioningTemplateCollection`1
+            
+Generic collection of items stored in the ProvisioningTemplate graph
+            The type of Item for the collection
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+### Methods
+
+
+#### Constructor
+Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
+> ##### Parameters
+> **parentTemplate:** 
+
+
+#### Find(System.Predicate{`0})
 We implemented this to adhere to the generic List of T behavior
 Finds an item matching a search predicate
 > ##### Parameters
@@ -7227,15 +7467,6 @@ The Name of the Web Template
             
 A collection of AvailableWebTemplate objects
         
-
-## Core.Framework.Provisioning.Model.BaseModel
-            
-Base type for any Domain Model object (excluded the ProvisioningTemplate type)
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
 
 ## Core.Framework.Provisioning.Model.ContentTypeBindingCollection
             
@@ -7378,15 +7609,6 @@ Defines the child folders of the current Folder, if any
 Collection of Folder objects
         
 
-## Core.Framework.Provisioning.Model.IProvisioningTemplateDescendant
-            
-Interface implemented by any descendant of a ProvisioningTemplate
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-
 ## Core.Framework.Provisioning.Model.ListInstanceCollection
             
 Collection of ListInstance objects
@@ -7459,33 +7681,6 @@ Custom constructor to manage the ParentTemplate for the collection and all the c
 > ##### Parameters
 > **parentTemplate:** 
 
-
-## Core.Framework.Provisioning.Model.ProvisioningTemplateCollection`1
-            
-Generic collection of items stored in the ProvisioningTemplate graph
-            The type of Item for the collection
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-### Methods
-
-
-#### Constructor
-Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
-> ##### Parameters
-> **parentTemplate:** 
-
-
-#### Find(System.Predicate{`0})
-We implemented this to adhere to the generic List of T behavior
-Finds an item matching a search predicate
-> ##### Parameters
-> **match:** The matching predicate to use for finding any target item
-
-> ##### Return value
-> The target item matching the find predicate
 
 ## Core.Framework.Provisioning.Model.Publishing
             
@@ -7813,116 +8008,6 @@ Defines a collection of objects of type WorkflowSubscription
             
 Extensibility Provider CallOut
         
-
-## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
-            
-Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
-        
-### Methods
-
-
-#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **provider:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **provider:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
-            
-Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
-        
-### Methods
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-> **innerException:** The exception that is the cause of the current exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
-> ##### Parameters
-> **info:** The object that contains the serialized data.
-
-> **context:** The stream that contains the serialized data.
-
-> ##### Exceptions
-> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
-            
-Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
-        
-### Methods
-
-
-#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Provides Token Definitions to the template provisioning pipeline
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
-            
-Defines a interface that accepts requests from the provisioning processing component
-        
-### Methods
-
-
-#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Defines a interface that accepts requests from the provisioning processing component
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
 
 ## Core.Framework.Provisioning.Providers.ITemplateFormatter
             
@@ -8443,11 +8528,28 @@ The default namespace prefix of the target XML Namespace
 #### Description
 
 
+## Core.Framework.Provisioning.Providers.Xml.V201505.TaxonomyItem
+            
+
+        
+### Properties
+
+#### Name
+
+#### ID
+
+
 ## Core.Framework.Provisioning.Providers.Xml.V201505.TermSet
             
 
         
 ### Properties
+
+#### 
+
+#### 
+
+#### 
 
 #### CustomProperties
 
@@ -8459,11 +8561,18 @@ The default namespace prefix of the target XML Namespace
 
 #### IsOpenForTermCreation
 
-#### 
 
-#### 
+## Core.Framework.Provisioning.Providers.Xml.V201505.TermSetItem
+            
 
-#### 
+        
+### Properties
+
+#### Owner
+
+#### Description
+
+#### IsAvailableForTagging
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201505.StringDictionaryItem
@@ -8516,6 +8625,12 @@ The default namespace prefix of the target XML Namespace
 
 #### 
 
+#### 
+
+#### 
+
+#### 
+
 #### Terms
 
 #### Labels
@@ -8529,12 +8644,6 @@ The default namespace prefix of the target XML Namespace
 #### LanguageSpecified
 
 #### CustomSortOrder
-
-#### 
-
-#### 
-
-#### 
 
 #### 
 
@@ -8565,30 +8674,6 @@ The default namespace prefix of the target XML Namespace
 #### Value
 
 #### IsDefaultForLanguage
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201505.TermSetItem
-            
-
-        
-### Properties
-
-#### Owner
-
-#### Description
-
-#### IsAvailableForTagging
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201505.TaxonomyItem
-            
-
-        
-### Properties
-
-#### Name
-
-#### ID
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201505.TermStoreScope
@@ -9431,11 +9516,28 @@ The default namespace prefix of the target XML Namespace
 #### SiteCollectionTermGroupSpecified
 
 
+## Core.Framework.Provisioning.Providers.Xml.V201508.TaxonomyItem
+            
+
+        
+### Properties
+
+#### Name
+
+#### ID
+
+
 ## Core.Framework.Provisioning.Providers.Xml.V201508.TermSet
             
 
         
 ### Properties
+
+#### 
+
+#### 
+
+#### 
 
 #### CustomProperties
 
@@ -9447,11 +9549,18 @@ The default namespace prefix of the target XML Namespace
 
 #### IsOpenForTermCreation
 
-#### 
 
-#### 
+## Core.Framework.Provisioning.Providers.Xml.V201508.TermSetItem
+            
 
-#### 
+        
+### Properties
+
+#### Owner
+
+#### Description
+
+#### IsAvailableForTagging
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201508.StringDictionaryItem
@@ -9512,6 +9621,12 @@ The default namespace prefix of the target XML Namespace
 
 #### 
 
+#### 
+
+#### 
+
+#### 
+
 #### Terms
 
 #### Labels
@@ -9525,12 +9640,6 @@ The default namespace prefix of the target XML Namespace
 #### LanguageSpecified
 
 #### CustomSortOrder
-
-#### 
-
-#### 
-
-#### 
 
 #### 
 
@@ -9561,30 +9670,6 @@ The default namespace prefix of the target XML Namespace
 #### Value
 
 #### IsDefaultForLanguage
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201508.TermSetItem
-            
-
-        
-### Properties
-
-#### Owner
-
-#### Description
-
-#### IsAvailableForTagging
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201508.TaxonomyItem
-            
-
-        
-### Properties
-
-#### Name
-
-#### ID
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201508.TermStoreScope
@@ -11501,11 +11586,28 @@ The default namespace prefix of the target XML Namespace
 #### SiteCollectionTermGroupSpecified
 
 
+## Core.Framework.Provisioning.Providers.Xml.V201512.TaxonomyItem
+            
+
+        
+### Properties
+
+#### Name
+
+#### ID
+
+
 ## Core.Framework.Provisioning.Providers.Xml.V201512.TermSet
             
 
         
 ### Properties
+
+#### 
+
+#### 
+
+#### 
 
 #### CustomProperties
 
@@ -11517,11 +11619,18 @@ The default namespace prefix of the target XML Namespace
 
 #### IsOpenForTermCreation
 
-#### 
 
-#### 
+## Core.Framework.Provisioning.Providers.Xml.V201512.TermSetItem
+            
 
-#### 
+        
+### Properties
+
+#### Owner
+
+#### Description
+
+#### IsAvailableForTagging
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.StringDictionaryItem
@@ -11582,6 +11691,12 @@ The default namespace prefix of the target XML Namespace
 
 #### 
 
+#### 
+
+#### 
+
+#### 
+
 #### Terms
 
 #### Labels
@@ -11612,12 +11727,6 @@ The default namespace prefix of the target XML Namespace
 
 #### 
 
-#### 
-
-#### 
-
-#### 
-
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.TermTerms
             
@@ -11639,30 +11748,6 @@ The default namespace prefix of the target XML Namespace
 #### Value
 
 #### IsDefaultForLanguage
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201512.TermSetItem
-            
-
-        
-### Properties
-
-#### Owner
-
-#### Description
-
-#### IsAvailableForTagging
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201512.TaxonomyItem
-            
-
-        
-### Properties
-
-#### Name
-
-#### ID
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.TermStoreScope
@@ -13463,6 +13548,11 @@ The default namespace prefix of the target XML Namespace
 #### ResourceFile
 
 
+## Core.Framework.Provisioning.Providers.Xml.XMLTemplateProvider
+            
+Provider for xml based configurations
+        
+
 ## Core.Framework.Provisioning.Providers.Xml.XMLPnPSchemaFormatter
             
 Helper class that abstracts from any specific version of XMLPnPSchemaFormatter
@@ -13489,11 +13579,6 @@ Static method to retrieve a specific XMLPnPSchemaFormatter instance
 
 > ##### Return value
 > 
-
-## Core.Framework.Provisioning.Providers.Xml.XMLTemplateProvider
-            
-Provider for xml based configurations
-        
 
 ## Core.Framework.TimerJobs.Enums.AuthenticationType
             
@@ -14077,6 +14162,25 @@ Deletes a property from the custom property list
 > **propertyKey:** Name of the property to delete
 
 
+## Core.Utilities.CookieReader
+            
+WinInet.dll wrapper
+        
+### Fields
+
+#### INTERNET_COOKIE_HTTPONLY
+Enables the retrieval of cookies that are marked as "HTTPOnly". Do not use this flag if you expose a scriptable interface, because this has security implications. It is imperative that you use this flag only if you can guarantee that you will never expose the cookie to third-party code by way of an extensibility mechanism you provide. Version: Requires Internet Explorer 8.0 or later.
+### Methods
+
+
+#### GetCookie(System.String)
+Returns cookie contents as a string
+> ##### Parameters
+> **url:** 
+
+> ##### Return value
+> 
+
 ## Core.Framework.TimerJobs.Utilities.SiteEnumeration
             
 Singleton class that's responsible for resolving wildcard site Url's into a list af site Url's
@@ -14145,353 +14249,6 @@ Get all sites that match the passed query. Batching is done in batches of 500 as
 
 > ##### Return value
 > Total result rows of the query
-
-## Core.Utilities.CookieReader
-            
-WinInet.dll wrapper
-        
-### Fields
-
-#### INTERNET_COOKIE_HTTPONLY
-Enables the retrieval of cookies that are marked as "HTTPOnly". Do not use this flag if you expose a scriptable interface, because this has security implications. It is imperative that you use this flag only if you can guarantee that you will never expose the cookie to third-party code by way of an extensibility mechanism you provide. Version: Requires Internet Explorer 8.0 or later.
-### Methods
-
-
-#### GetCookie(System.String)
-Returns cookie contents as a string
-> ##### Parameters
-> **url:** 
-
-> ##### Return value
-> 
-
-## Core.Utilities.CAML
-            
-Use this class to build your CAML xml and avoid XML issues.
-            
-            CAML.ViewQuery(
-                CAML.Where(
-                    CAML.And(
-                        CAML.Eq(CAML.FieldValue("Project", "Integer", "{0}")),
-                        CAML.Geq(CAML.FieldValue("StartDate","DateTime", CAML.Today()))
-                    )
-                ),
-                CAML.OrderBy(
-                    new OrderByField("StartDate", false),
-                    new OrderByField("Title")
-                ),
-                rowLimit: 5
-            );
-            
-        
-### Methods
-
-
-#### Today(System.Nullable{System.Int32})
-Creates the <Today /> node.
-> ##### Parameters
-> **offset:** Time offset from today (+5 days or -5 days, for example).
-
-> ##### Return value
-> 
-
-#### ViewQuery(System.String,System.String,System.Int32)
-Root <View> and <Query> nodes.
-> ##### Parameters
-> **whereClause:** <Where> node.
-
-> **orderByClause:** <OrderBy> node.
-
-> **rowLimit:** <RowLimit> node.
-
-> ##### Return value
-> String to be used in CAML queries
-
-#### ViewQuery(Microsoft.SharePoint.Client.ViewScope,System.String,System.String,System.String,System.Int32)
-Root <View> and <Query> nodes.
-> ##### Parameters
-> **scope:** View scope
-
-> **whereClause:** <Where> node.
-
-> **viewFields:** <ViewFields> node.
-
-> **orderByClause:** <OrderBy> node.
-
-> **rowLimit:** <RowLimit> node.
-
-> ##### Return value
-> String to be used in CAML queries
-
-#### FieldValue(System.String,System.String,System.String,System.String)
-Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
-> ##### Parameters
-> **fieldName:** 
-
-> **fieldValueType:** 
-
-> **value:** 
-
-> **additionalFieldRefParams:** 
-
-> ##### Return value
-> 
-
-#### FieldValue(System.Guid,System.String,System.String,System.String)
-Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
-> ##### Parameters
-> **fieldId:** 
-
-> **fieldValueType:** 
-
-> **value:** 
-
-> **additionalFieldRefParams:** 
-
-> ##### Return value
-> 
-
-#### FieldRef(System.String)
-Creates a <FieldRef> node for ViewFields clause
-> ##### Parameters
-> **fieldName:** 
-
-> ##### Return value
-> 
-
-## Core.Utilities.UrlUtility
-            
-Static methods to modify URL paths.
-        
-### Methods
-
-
-#### Combine(System.String,System.String[])
-Combines a path and a relative path.
-> ##### Parameters
-> **path:** 
-
-> **relativePaths:** 
-
-> ##### Return value
-> 
-
-#### Combine(System.String,System.String)
-Combines a path and a relative path.
-> ##### Parameters
-> **path:** 
-
-> **relative:** 
-
-> ##### Return value
-> 
-
-#### AppendQueryString(System.String,System.String)
-Adds query string parameters to the end of a querystring and guarantees the proper concatenation with ? and &.
-> ##### Parameters
-> **path:** 
-
-> **queryString:** 
-
-> ##### Return value
-> 
-
-#### EnsureTrailingSlash(System.String)
-Ensures that there is a trailing slash at the end of the url
-> ##### Parameters
-> **urlToProcess:** 
-
-> ##### Return value
-> 
-
-## Core.Utilities.EncryptionUtility
-            
-Utility class that support certificate based encryption/decryption
-        
-### Methods
-
-
-#### Encrypt(System.String,System.String)
-Encrypt a piece of text based on a given certificate
-> ##### Parameters
-> **stringToEncrypt:** Text to encrypt
-
-> **thumbPrint:** Thumbprint of the certificate to use
-
-> ##### Return value
-> Encrypted text
-
-#### Decrypt(System.String,System.String)
-Decrypt a piece of text based on a given certificate
-> ##### Parameters
-> **stringToDecrypt:** Text to decrypt
-
-> **thumbPrint:** Thumbprint of the certificate to use
-
-> ##### Return value
-> Decrypted text
-
-#### EncryptStringWithDPAPI(System.Security.SecureString)
-Encrypts a string using the machine's DPAPI
-> ##### Parameters
-> **input:** String (SecureString) to encrypt
-
-> ##### Return value
-> Encrypted string
-
-#### DecryptStringWithDPAPI(System.String)
-Decrypts a DPAPI encryped string
-> ##### Parameters
-> **encryptedData:** Encrypted string
-
-> ##### Return value
-> Decrypted (SecureString)string
-
-#### ToSecureString(System.String)
-Converts a string to a SecureString
-> ##### Parameters
-> **input:** String to convert
-
-> ##### Return value
-> SecureString representation of the passed in string
-
-#### ToInsecureString(System.Security.SecureString)
-Converts a SecureString to a "regular" string
-> ##### Parameters
-> **input:** SecureString to convert
-
-> ##### Return value
-> A "regular" string representation of the passed SecureString
-
-## Core.Utilities.JsonUtility
-            
-Utility class that supports the serialization from Json to type and vice versa
-        
-### Methods
-
-
-#### Serialize``1(``0)
-Serializes an object of type T to a json string
-> ##### Parameters
-> **obj:** Object to serialize
-
-> ##### Return value
-> json string
-
-#### Deserialize``1(System.String)
-Deserializes a json string to an object of type T
-> ##### Parameters
-> **json:** json string
-
-> ##### Return value
-> Object of type T
-
-## Core.Utilities.SharePointContextToken
-            
-A JsonWebSecurityToken generated by SharePoint to authenticate to a 3rd party application and allow callbacks using a refresh token
-        
-### Properties
-
-#### TargetPrincipalName
-The principal name portion of the context token's "appctxsender" claim
-#### RefreshToken
-The context token's "refreshtoken" claim
-#### CacheKey
-The context token's "CacheKey" claim
-#### SecurityTokenServiceUri
-The context token's "SecurityTokenServiceUri" claim
-#### Realm
-The realm portion of the context token's "audience" claim
-
-## Core.Utilities.MultipleSymmetricKeySecurityToken
-            
-Represents a security token which contains multiple security keys that are generated using symmetric algorithms.
-        
-### Properties
-
-#### Id
-Gets the unique identifier of the security token.
-#### SecurityKeys
-Gets the cryptographic keys associated with the security token.
-#### ValidFrom
-Gets the first instant in time at which this security token is valid.
-#### ValidTo
-Gets the last instant in time at which this security token is valid.
-### Methods
-
-
-#### Constructor
-Initializes a new instance of the MultipleSymmetricKeySecurityToken class.
-> ##### Parameters
-> **keys:** An enumeration of Byte arrays that contain the symmetric keys.
-
-
-#### Constructor
-Initializes a new instance of the MultipleSymmetricKeySecurityToken class.
-> ##### Parameters
-> **tokenId:** The unique identifier of the security token.
-
-> **keys:** An enumeration of Byte arrays that contain the symmetric keys.
-
-
-#### MatchesKeyIdentifierClause(System.IdentityModel.Tokens.SecurityKeyIdentifierClause)
-Returns a value that indicates whether the key identifier for this instance can be resolved to the specified key identifier.
-> ##### Parameters
-> **keyIdentifierClause:** A SecurityKeyIdentifierClause to compare to this instance
-
-> ##### Return value
-> true if keyIdentifierClause is a SecurityKeyIdentifierClause and it has the same unique identifier as the Id property; otherwise, false.
-
-## Core.Utilities.X509CertificateUtility
-            
-Supporting class for certificate based operations
-        
-### Methods
-
-
-#### LoadCertificate(System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String)
-Loads a certificate from a given certificate store
-> ##### Parameters
-> **storeName:** Name of the certificate store
-
-> **storeLocation:** Location of the certificate store
-
-> **thumbprint:** Thumbprint of the certificate to load
-
-> ##### Return value
-> An certificate
-
-#### Encrypt(System.Byte[],System.Boolean,System.Security.Cryptography.X509Certificates.X509Certificate2)
-Encrypts data based on the RSACryptoServiceProvider
-> ##### Parameters
-> **plainData:** Bytes to encrypt
-
-> **fOAEP:** true to perform direct System.Security.Cryptography.RSA decryption using OAEP padding
-
-> **certificate:** Certificate to use
-
-> ##### Return value
-> Encrypted bytes
-
-#### Decrypt(System.Byte[],System.Boolean,System.Security.Cryptography.X509Certificates.X509Certificate2)
-Decrypts data based on the RSACryptoServiceProvider
-> ##### Parameters
-> **encryptedData:** Bytes to decrypt
-
-> **fOAEP:** true to perform direct System.Security.Cryptography.RSA decryption using OAEP padding
-
-> **certificate:** Certificate to use
-
-> ##### Return value
-> Decrypted bytes
-
-#### GetPublicKey(System.Security.Cryptography.X509Certificates.X509Certificate2)
-Returns the certificate public key
-> ##### Parameters
-> **certificate:** Certificate to operate on
-
-> ##### Return value
-> Public key of the certificate
 
 ## Core.IdentityModel.TokenProviders.ADFS.BaseProvider
             
@@ -15837,97 +15594,341 @@ This method needs to be called from a code behind of the SharePoint app startup 
 > **serviceEndPoint:** Optional Uri to the WebAPI service endpoint. If null then the assumption is taken that the WebAPI is hosted together with the page making this call
 
 
-## EnumerationExtensions
+## Core.Utilities.CAML
             
-Extension methods to make working with Enum values easier. Copied from http://hugoware.net/blog/enumeration-extensions-2-0.
+Use this class to build your CAML xml and avoid XML issues.
+            
+            CAML.ViewQuery(
+                CAML.Where(
+                    CAML.And(
+                        CAML.Eq(CAML.FieldValue("Project", "Integer", "{0}")),
+                        CAML.Geq(CAML.FieldValue("StartDate","DateTime", CAML.Today()))
+                    )
+                ),
+                CAML.OrderBy(
+                    new OrderByField("StartDate", false),
+                    new OrderByField("Title")
+                ),
+                rowLimit: 5
+            );
+            
         
 ### Methods
 
 
-#### Include``1(System.Enum,``0)
-Includes an enumerated type and returns the new value
+#### Today(System.Nullable{System.Int32})
+Creates the <Today /> node.
+> ##### Parameters
+> **offset:** Time offset from today (+5 days or -5 days, for example).
 
-#### Remove``1(System.Enum,``0)
-Removes an enumerated type and returns the new value
+> ##### Return value
+> 
 
-#### Has``1(System.Enum,``0)
-Checks if an enumerated type contains a value
+#### ViewQuery(System.String,System.String,System.Int32)
+Root <View> and <Query> nodes.
+> ##### Parameters
+> **whereClause:** <Where> node.
 
-#### Missing``1(System.Enum,``0)
-Checks if an enumerated type is missing a value
+> **orderByClause:** <OrderBy> node.
 
-## SafeConvertExtensions
+> **rowLimit:** <RowLimit> node.
+
+> ##### Return value
+> String to be used in CAML queries
+
+#### ViewQuery(Microsoft.SharePoint.Client.ViewScope,System.String,System.String,System.String,System.Int32)
+Root <View> and <Query> nodes.
+> ##### Parameters
+> **scope:** View scope
+
+> **whereClause:** <Where> node.
+
+> **viewFields:** <ViewFields> node.
+
+> **orderByClause:** <OrderBy> node.
+
+> **rowLimit:** <RowLimit> node.
+
+> ##### Return value
+> String to be used in CAML queries
+
+#### FieldValue(System.String,System.String,System.String,System.String)
+Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
+> ##### Parameters
+> **fieldName:** 
+
+> **fieldValueType:** 
+
+> **value:** 
+
+> **additionalFieldRefParams:** 
+
+> ##### Return value
+> 
+
+#### FieldValue(System.Guid,System.String,System.String,System.String)
+Creates both a <FieldRef> and <Value> nodes combination for Where clauses.
+> ##### Parameters
+> **fieldId:** 
+
+> **fieldValueType:** 
+
+> **value:** 
+
+> **additionalFieldRefParams:** 
+
+> ##### Return value
+> 
+
+#### FieldRef(System.String)
+Creates a <FieldRef> node for ViewFields clause
+> ##### Parameters
+> **fieldName:** 
+
+> ##### Return value
+> 
+
+## Core.Utilities.UrlUtility
             
-Safely convert strings to specified types.
+Static methods to modify URL paths.
         
 ### Methods
 
 
-#### ToBoolean(System.String,System.Boolean)
-Converts the input string to a boolean and if null, it returns the default value.
+#### Combine(System.String,System.String[])
+Combines a path and a relative path.
 > ##### Parameters
-> **input:** Input string.
+> **path:** 
 
-> **defaultValue:** A default value to return for a null input value.
+> **relativePaths:** 
 
+> ##### Return value
+> 
 
-#### ToBoolean(System.String)
-Converts the input string to a boolean and if null, it returns the default value.
+#### Combine(System.String,System.String)
+Combines a path and a relative path.
 > ##### Parameters
-> **input:** Input string.
+> **path:** 
 
+> **relative:** 
 
-#### ToInt32(System.String,System.Int32)
-Converts the input string to a Int32 and if null, it returns the default value.
+> ##### Return value
+> 
+
+#### AppendQueryString(System.String,System.String)
+Adds query string parameters to the end of a querystring and guarantees the proper concatenation with ? and &.
 > ##### Parameters
-> **input:** Input string.
+> **path:** 
 
-> **defaultValue:** A default value to return for a null input value.
+> **queryString:** 
 
+> ##### Return value
+> 
 
-#### ToInt32(System.String)
-Converts the input string to a Int64 and if null, it returns the default value.
+#### EnsureTrailingSlash(System.String)
+Ensures that there is a trailing slash at the end of the url
 > ##### Parameters
-> **input:** Input string.
+> **urlToProcess:** 
+
+> ##### Return value
+> 
+
+## SharePoint.Client.ManagedNavigationKind
+            
+Defines the kind of Managed Navigation for a site
+        
+### Fields
+
+#### Current
+Current Navigation
+#### Global
+Global Navigation
+
+## Core.Utilities.EncryptionUtility
+            
+Utility class that support certificate based encryption/decryption
+        
+### Methods
 
 
-#### ToInt64(System.String,System.Int32)
-Converts the input string to a Int32 and if null, it returns the default value.
+#### Encrypt(System.String,System.String)
+Encrypt a piece of text based on a given certificate
 > ##### Parameters
-> **input:** Input string.
+> **stringToEncrypt:** Text to encrypt
 
-> **defaultValue:** A default value to return for a null input value.
+> **thumbPrint:** Thumbprint of the certificate to use
 
+> ##### Return value
+> Encrypted text
 
-#### ToInt64(System.String)
-Converts the input string to a Int32 and if null, it returns the default value.
+#### Decrypt(System.String,System.String)
+Decrypt a piece of text based on a given certificate
 > ##### Parameters
-> **input:** Input string.
+> **stringToDecrypt:** Text to decrypt
 
+> **thumbPrint:** Thumbprint of the certificate to use
 
-#### ToDouble(System.String,System.Double)
-Converts the input string to a double and if null, it returns the default value.
+> ##### Return value
+> Decrypted text
+
+#### EncryptStringWithDPAPI(System.Security.SecureString)
+Encrypts a string using the machine's DPAPI
 > ##### Parameters
-> **input:** Input string.
+> **input:** String (SecureString) to encrypt
 
-> **defaultValue:** A default value to return for a null input value.
+> ##### Return value
+> Encrypted string
 
-
-#### ToDouble(System.String)
-Converts the input string to a double and if null, it returns the default value.
+#### DecryptStringWithDPAPI(System.String)
+Decrypts a DPAPI encryped string
 > ##### Parameters
-> **input:** Input string.
+> **encryptedData:** Encrypted string
 
+> ##### Return value
+> Decrypted (SecureString)string
 
-#### ToGuid(System.String)
-Converts the input string to a Guid and if null, it returns the default value.
+#### ToSecureString(System.String)
+Converts a string to a SecureString
 > ##### Parameters
-> **input:** Input string.
+> **input:** String to convert
 
+> ##### Return value
+> SecureString representation of the passed in string
 
-#### ToGuid(System.String,System.Guid)
-Converts the input string to a Guid and if null, it returns the default value.
+#### ToInsecureString(System.Security.SecureString)
+Converts a SecureString to a "regular" string
 > ##### Parameters
-> **input:** Input string.
+> **input:** SecureString to convert
 
-> **defaultValue:** A default value to return for a null input value.
+> ##### Return value
+> A "regular" string representation of the passed SecureString
+
+## Core.Utilities.JsonUtility
+            
+Utility class that supports the serialization from Json to type and vice versa
+        
+### Methods
+
+
+#### Serialize``1(``0)
+Serializes an object of type T to a json string
+> ##### Parameters
+> **obj:** Object to serialize
+
+> ##### Return value
+> json string
+
+#### Deserialize``1(System.String)
+Deserializes a json string to an object of type T
+> ##### Parameters
+> **json:** json string
+
+> ##### Return value
+> Object of type T
+
+## Core.Utilities.SharePointContextToken
+            
+A JsonWebSecurityToken generated by SharePoint to authenticate to a 3rd party application and allow callbacks using a refresh token
+        
+### Properties
+
+#### TargetPrincipalName
+The principal name portion of the context token's "appctxsender" claim
+#### RefreshToken
+The context token's "refreshtoken" claim
+#### CacheKey
+The context token's "CacheKey" claim
+#### SecurityTokenServiceUri
+The context token's "SecurityTokenServiceUri" claim
+#### Realm
+The realm portion of the context token's "audience" claim
+
+## Core.Utilities.MultipleSymmetricKeySecurityToken
+            
+Represents a security token which contains multiple security keys that are generated using symmetric algorithms.
+        
+### Properties
+
+#### Id
+Gets the unique identifier of the security token.
+#### SecurityKeys
+Gets the cryptographic keys associated with the security token.
+#### ValidFrom
+Gets the first instant in time at which this security token is valid.
+#### ValidTo
+Gets the last instant in time at which this security token is valid.
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the MultipleSymmetricKeySecurityToken class.
+> ##### Parameters
+> **keys:** An enumeration of Byte arrays that contain the symmetric keys.
+
+
+#### Constructor
+Initializes a new instance of the MultipleSymmetricKeySecurityToken class.
+> ##### Parameters
+> **tokenId:** The unique identifier of the security token.
+
+> **keys:** An enumeration of Byte arrays that contain the symmetric keys.
+
+
+#### MatchesKeyIdentifierClause(System.IdentityModel.Tokens.SecurityKeyIdentifierClause)
+Returns a value that indicates whether the key identifier for this instance can be resolved to the specified key identifier.
+> ##### Parameters
+> **keyIdentifierClause:** A SecurityKeyIdentifierClause to compare to this instance
+
+> ##### Return value
+> true if keyIdentifierClause is a SecurityKeyIdentifierClause and it has the same unique identifier as the Id property; otherwise, false.
+
+## Core.Utilities.X509CertificateUtility
+            
+Supporting class for certificate based operations
+        
+### Methods
+
+
+#### LoadCertificate(System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String)
+Loads a certificate from a given certificate store
+> ##### Parameters
+> **storeName:** Name of the certificate store
+
+> **storeLocation:** Location of the certificate store
+
+> **thumbprint:** Thumbprint of the certificate to load
+
+> ##### Return value
+> An certificate
+
+#### Encrypt(System.Byte[],System.Boolean,System.Security.Cryptography.X509Certificates.X509Certificate2)
+Encrypts data based on the RSACryptoServiceProvider
+> ##### Parameters
+> **plainData:** Bytes to encrypt
+
+> **fOAEP:** true to perform direct System.Security.Cryptography.RSA decryption using OAEP padding
+
+> **certificate:** Certificate to use
+
+> ##### Return value
+> Encrypted bytes
+
+#### Decrypt(System.Byte[],System.Boolean,System.Security.Cryptography.X509Certificates.X509Certificate2)
+Decrypts data based on the RSACryptoServiceProvider
+> ##### Parameters
+> **encryptedData:** Bytes to decrypt
+
+> **fOAEP:** true to perform direct System.Security.Cryptography.RSA decryption using OAEP padding
+
+> **certificate:** Certificate to use
+
+> ##### Return value
+> Decrypted bytes
+
+#### GetPublicKey(System.Security.Cryptography.X509Certificates.X509Certificate2)
+Returns the certificate public key
+> ##### Parameters
+> **certificate:** Certificate to operate on
+
+> ##### Return value
+> Public key of the certificate
