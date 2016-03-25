@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !CLIENTSDKV15
                                     value = userFieldValue.Email;
 #else
-                                value = fieldUserValue.LookupValue;
+                                value = userFieldValue.LookupValue;
 #endif
                                 }
                                 break;
