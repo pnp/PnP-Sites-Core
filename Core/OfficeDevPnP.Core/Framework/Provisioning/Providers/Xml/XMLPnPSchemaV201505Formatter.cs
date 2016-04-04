@@ -793,6 +793,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         contentType.ReadOnly,
                         (contentType.DocumentTemplate != null ?
                             contentType.DocumentTemplate.TargetName : null),
+                        contentType.JSLInk,
                         contentType.Overwrite,
                         (contentType.FieldRefs != null ?
                             (from fieldRef in contentType.FieldRefs

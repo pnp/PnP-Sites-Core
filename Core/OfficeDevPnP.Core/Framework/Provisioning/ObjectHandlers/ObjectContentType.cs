@@ -92,6 +92,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.ReadOnly = templateContentType.ReadOnly;
                 isDirty = true;
             }
+            if (existingContentType.JSLink != templateContentType.JSLink)
+            {
+                scope.LogPropertyUpdate("JSLink");
+                existingContentType.JSLink = templateContentType.JSLink;
+                isDirty = true;
+            }
             if (existingContentType.Sealed != templateContentType.Sealed)
             {
                 scope.LogPropertyUpdate("Sealed");
@@ -248,7 +254,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.NameResource.SetUserResourceValue(templateContentType.Name, parser);
             }
-            if(templateContentType.Description.ContainsResourceToken())
+            if (templateContentType.Description.ContainsResourceToken())
             {
                 createdCT.DescriptionResource.SetUserResourceValue(templateContentType.Description, parser);
             }
@@ -258,7 +264,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //In this case the new Content Type has all field of the original Content Type and missing fields 
             //will be added at the end. To fix this issue we ordering the fields once more.
             createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => fld.Name).ToArray());
-
+            createdCT.JSLink = templateContentType.JSLink;
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;
@@ -386,6 +392,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ct.Hidden,
                         ct.ReadOnly,
                         ct.DocumentTemplate,
+                        ct.JSLink,
                         false,
                             (from fieldLink in ct.FieldLinks.AsEnumerable<FieldLink>()
                              select new FieldRef(fieldLink.Name)

@@ -440,6 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
+                         JSLink = ct.JSLink,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201512.DocumentSetTemplate
                              {
@@ -1390,6 +1391,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         contentType.ReadOnly,
                         (contentType.DocumentTemplate != null ?
                             contentType.DocumentTemplate.TargetName : null),
+                        contentType.JSLink,
                         contentType.Overwrite,
                         (contentType.FieldRefs != null ?
                             (from fieldRef in contentType.FieldRefs
@@ -1555,7 +1557,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
-                            Rights = customAction.RightsSpecified ? customAction.Rights.ToBasePermissions(): new BasePermissions(),
+                            Rights = customAction.RightsSpecified ? customAction.Rights.ToBasePermissions() : new BasePermissions(),
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
@@ -2274,7 +2276,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return string.Join(",", permissions.ToArray());
         }
-            
+
         public static BasePermissions ToBasePermissions(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
@@ -2297,7 +2299,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return bp;
         }
-    
+
     }
 }
 

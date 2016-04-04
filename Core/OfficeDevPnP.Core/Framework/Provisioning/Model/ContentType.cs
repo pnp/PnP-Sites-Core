@@ -32,6 +32,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string Name { get; set; }
 
         /// <summary>
+        /// JSLink of Content Type
+        /// </summary>
+        public string JSLink { get; set; }
+
+        /// <summary>
         /// The description of the Content Type
         /// </summary>
         public string Description { get; set; }
@@ -103,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             _fieldRefs = new FieldRefCollection(this.ParentTemplate);
         }
 
-        public ContentType(string id, string name, string description, string group, bool contenttypeSealed, bool hidden, bool readyonly, string documentTemplate, bool overwrite, IEnumerable<FieldRef> fieldRefs):
+        public ContentType(string id, string name, string description, string group, bool contenttypeSealed, bool hidden, bool readyonly, string documentTemplate, string jslink, bool overwrite, IEnumerable<FieldRef> fieldRefs) :
             this()
         {
             this.Id = id;
@@ -112,6 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Group = group;
             this.Hidden = hidden;
             this.Sealed = contenttypeSealed;
+            this.JSLink = jslink;
             this.Overwrite = overwrite;
             this.ReadOnly = ReadOnly;
             this.DocumentTemplate = documentTemplate;
