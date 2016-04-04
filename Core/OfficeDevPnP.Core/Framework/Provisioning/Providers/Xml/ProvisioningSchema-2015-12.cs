@@ -4262,8 +4262,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private string rightsField;
         
-        private bool rightsFieldSpecified;
-        
         private string urlField;
         
         private bool enabledField;
@@ -4273,6 +4271,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         private string imageUrlField;
         
         private string scriptSrcField;
+        
+        private string registrationIdField;
+        
+        private RegistrationType registrationTypeField;
+        
+        private bool registrationTypeFieldSpecified;
         
         public CustomAction() {
             this.enabledField = true;
@@ -4377,17 +4381,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool RightsSpecified {
-            get {
-                return this.rightsFieldSpecified;
-            }
-            set {
-                this.rightsFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Url {
             get {
@@ -4442,6 +4435,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
                 this.scriptSrcField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string RegistrationId {
+            get {
+                return this.registrationIdField;
+            }
+            set {
+                this.registrationIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public RegistrationType RegistrationType {
+            get {
+                return this.registrationTypeField;
+            }
+            set {
+                this.registrationTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool RegistrationTypeSpecified {
+            get {
+                return this.registrationTypeFieldSpecified;
+            }
+            set {
+                this.registrationTypeFieldSpecified = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -4464,6 +4490,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
                 this.anyField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    public enum RegistrationType {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        List,
+        
+        /// <remarks/>
+        ContentType,
+        
+        /// <remarks/>
+        ProgId,
+        
+        /// <remarks/>
+        FileType,
     }
     
     /// <remarks/>
