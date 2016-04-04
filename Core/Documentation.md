@@ -3014,7 +3014,7 @@ Adds the publishing page.
 > **System.ArgumentException:** Thrown when key or pageName is null
 
 
-#### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem)
+#### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem,System.Boolean,System.Boolean)
 Adds a user-friendly URL for a PublishingPage object.
 > ##### Parameters
 > **page:** The target page to add to managed navigation.
@@ -3026,6 +3026,10 @@ Adds a user-friendly URL for a PublishingPage object.
 > **friendlyUrlSegment:** The user-friendly text to use as the URL segment.
 
 > **editableParent:** The parent NavigationTermSetItem object below which this new friendly URL should be created.
+
+> **showInGlobalNavigation:** Defines whether the navigation item has to be shown in the Global Navigation, optional and default to true.
+
+> **showInCurrentNavigation:** Defines whether the navigation item has to be shown in the Current Navigation, optional and default to true.
 
 > ##### Return value
 > The simple link URL just created.
@@ -12880,8 +12884,6 @@ The default namespace prefix of the target XML Namespace
 
 #### Rights
 
-#### RightsSpecified
-
 #### Url
 
 #### Enabled
@@ -12891,6 +12893,12 @@ The default namespace prefix of the target XML Namespace
 #### ImageUrl
 
 #### ScriptSrc
+
+#### RegistrationId
+
+#### RegistrationType
+
+#### RegistrationTypeSpecified
 
 #### 
 
@@ -12902,6 +12910,23 @@ The default namespace prefix of the target XML Namespace
 ### Properties
 
 #### Any
+
+
+## Core.Framework.Provisioning.Providers.Xml.V201512.RegistrationType
+            
+
+        
+### Fields
+
+#### None
+
+#### List
+
+#### ContentType
+
+#### ProgId
+
+#### FileType
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.File

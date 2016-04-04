@@ -1183,9 +1183,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="navigationTitle">The title for the navigation item.</param>
         /// <param name="friendlyUrlSegment">The user-friendly text to use as the URL segment.</param>
         /// <param name="editableParent">The parent NavigationTermSetItem object below which this new friendly URL should be created.</param>
+        /// <param name="showInGlobalNavigation">Defines whether the navigation item has to be shown in the Global Navigation, optional and default to true.</param>
+        /// <param name="showInCurrentNavigation">Defines whether the navigation item has to be shown in the Current Navigation, optional and default to true.</param>
         /// <returns>The simple link URL just created.</returns>
         public static String AddNavigationFriendlyUrl(this PublishingPage page, Web web, 
-            String navigationTitle, String friendlyUrlSegment, NavigationTermSetItem editableParent)
+            String navigationTitle, String friendlyUrlSegment, NavigationTermSetItem editableParent, 
+            Boolean showInGlobalNavigation = true, Boolean showInCurrentNavigation = true)
         {
             // Add the Friendly URL
             var friendlyUrl = page.AddFriendlyUrl(friendlyUrlSegment, editableParent, true);
@@ -1208,6 +1211,23 @@ namespace Microsoft.SharePoint.Client
                 if (defaultLabel != null)
                 {
                     defaultLabel.Value = navigationTitle;
+                }
+
+                // Configure the navigation settings
+                if (!showInGlobalNavigation || !showInCurrentNavigation)
+                {
+                    if (!showInGlobalNavigation && !showInCurrentNavigation)
+                    {
+                        friendlyUrlBackingTerm.SetLocalCustomProperty("_Sys_Nav_ExcludedProviders", "\"GlobalNavigationTaxonomyProvider\",\"CurrentNavigationTaxonomyProvider\"");
+                    }
+                    if (!showInGlobalNavigation)
+                    {
+                        friendlyUrlBackingTerm.SetLocalCustomProperty("_Sys_Nav_ExcludedProviders", "\"GlobalNavigationTaxonomyProvider\"");
+                    }
+                    else
+                    {
+                        friendlyUrlBackingTerm.SetLocalCustomProperty("_Sys_Nav_ExcludedProviders", "\"CurrentNavigationTaxonomyProvider\"");
+                    }
                 }
 
                 // Assign term title for site navigation
