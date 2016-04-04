@@ -39,7 +39,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var newGroup = false;
 
-                    TermGroup group = termStore.Groups.FirstOrDefault(g => g.Id == modelTermGroup.Id);
+                    TermGroup group = termStore.Groups.FirstOrDefault(
+                        g => g.Id == modelTermGroup.Id || g.Name == modelTermGroup.Name);
                     if (group == null)
                     {
                         if (modelTermGroup.Name == "Site Collection")
@@ -86,12 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var newTermSet = false;
                         if (!newGroup)
                         {
-                            set = group.TermSets.FirstOrDefault(ts => ts.Id == modelTermSet.Id);
-                            if (set == null)
-                            {
-                                set = group.TermSets.FirstOrDefault(ts => ts.Name == modelTermSet.Name);
-
-                            }
+                            set = group.TermSets.FirstOrDefault(ts => ts.Id == modelTermSet.Id || ts.Name == modelTermSet.Name);
                         }
                         if (set == null)
                         {
