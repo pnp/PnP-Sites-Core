@@ -14,9 +14,9 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the server object is null, otherwise false</returns>
         public static bool ServerObjectIsNull<T>(this T clientObject) where T : ClientObject
         {
-            return (clientObject.ServerObjectIsNull != null && 
+            return (!(clientObject.ServerObjectIsNull != null && 
                 clientObject.ServerObjectIsNull.HasValue && 
-                !clientObject.ServerObjectIsNull.Value);
+                !clientObject.ServerObjectIsNull.Value));
         }
 
         /// <summary>
