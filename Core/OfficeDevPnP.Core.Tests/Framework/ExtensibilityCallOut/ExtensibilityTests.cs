@@ -31,6 +31,43 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
             _em.ExecuteExtensibilityCallOut(_mockctx, _mockProvider, _mockTemplate);
         }
 
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void CanHandlerProvisioningCallOut()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "OfficeDevPnP.Core.Tests";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            _em.ExecuteExtensibilityProvisionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null, null);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void CanHandlerExtractionCallOut()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "OfficeDevPnP.Core.Tests";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            var template = _em.ExecuteExtensibilityExtractionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null);
+
+            Assert.IsTrue(template.Lists.Count == 1);
+        }
+
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         [ExpectedException(typeof(ExtensiblityPipelineException))]
@@ -129,7 +166,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
                 _mockTemplate.Providers.Add(_mockProvider);
 
-                var extensibilityHandler = new ObjectExtensibilityProviders();
+                var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
                 extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
 
@@ -151,13 +188,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                     Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockTokenProvider",
                     Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA,
                     Enabled = true
-                };       
+                };
 
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
                 _mockTemplate.Providers.Add(_mockProvider);
 
-                var extensibilityHandler = new ObjectExtensibilityProviders();
+                var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
                 extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
 
@@ -178,13 +215,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                     Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockTokenProvider",
                     Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA,
                     Enabled = false
-                };               
+                };
 
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
                 _mockTemplate.Providers.Add(_mockProvider);
 
-                var extensibilityHandler = new ObjectExtensibilityProviders();
+                var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
                 extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
 

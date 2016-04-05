@@ -6869,6 +6869,135 @@ Deletes a file from the specified container
 > **container:** Name of the container to delete the file from
 
 
+## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
+            
+Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
+            
+Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
+        
+### Methods
+
+
+#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **provider:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteExtensibilityProvisionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
+Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
+            
+Defines a interface that accepts requests from the provisioning processing component
+        
+### Methods
+
+
+#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Defines a interface that accepts requests from the provisioning processing component
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
+## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
+            
+Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
+        
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+> **innerException:** The exception that is the cause of the current exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
+> ##### Parameters
+> **info:** The object that contains the serialized data.
+
+> **context:** The stream that contains the serialized data.
+
+> ##### Exceptions
+> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
+            
+Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
+        
+### Methods
+
+
+#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Provides Token Definitions to the template provisioning pipeline
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
 ## Core.Framework.Provisioning.Model.ComposedLook
             
 Domain Object that defines a Composed Look in the Provision Template
@@ -7041,6 +7170,8 @@ Domain Object for the Provisioning Template
         
 ### Properties
 
+#### Providers
+Gets a collection of Providers that are used during the extensibility pipeline
 #### Parameters
 Any parameters that can be used throughout the template
 #### Id
@@ -7063,8 +7194,6 @@ Gets or sets CustomActions for the template
 Gets a collection of files for the template
 #### ComposedLook
 Gets or Sets the composed look of the template
-#### Providers
-Gets a collection of Providers that are used during the extensibility pipeline
 #### Pages
 Gets a collection of Wiki Pages for the template
 #### TermGroups
@@ -7165,6 +7294,11 @@ Gets or sets a value that specifies the URI of a file which contains the ECMAScr
 A Collection of CustomActions at the Site level
 #### 
 A Collection of CustomActions at the Web level
+
+## Core.Framework.Provisioning.Model.ExtensibilityHandler
+            
+Domain Object for Extensiblity Call out
+        
 
 ## Core.Framework.Provisioning.Model.FeatureCollection
             
@@ -7422,6 +7556,11 @@ Collection of Page objects
 ## Core.Framework.Provisioning.Model.PropertyBagEntryCollection
             
 Collection of PropertyBagEntry objects
+        
+
+## Core.Framework.Provisioning.Model.ExtensibilityHandlerCollection
+            
+Collection of ExtensibilityHandler objects
         
 
 ## Core.Framework.Provisioning.Model.ProviderCollection
@@ -7797,120 +7936,10 @@ Defines the Status Field Name of the Workflow Subscription
 Defines a collection of objects of type WorkflowSubscription
         
 
-## Core.Framework.Provisioning.ObjectHandlers.ObjectExtensibilityProviders
+## Core.Framework.Provisioning.ObjectHandlers.ObjectExtensibilityHandlers
             
 Extensibility Provider CallOut
         
-
-## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
-            
-Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
-        
-### Methods
-
-
-#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **provider:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **provider:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
-            
-Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
-        
-### Methods
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-> **innerException:** The exception that is the cause of the current exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
-> ##### Parameters
-> **info:** The object that contains the serialized data.
-
-> **context:** The stream that contains the serialized data.
-
-> ##### Exceptions
-> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
-            
-Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
-        
-### Methods
-
-
-#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Provides Token Definitions to the template provisioning pipeline
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
-            
-Defines a interface that accepts requests from the provisioning processing component
-        
-### Methods
-
-
-#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Defines a interface that accepts requests from the provisioning processing component
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
 
 ## Core.Framework.Provisioning.Providers.ITemplateFormatter
             

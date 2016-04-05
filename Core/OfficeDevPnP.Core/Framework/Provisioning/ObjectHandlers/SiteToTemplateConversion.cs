@@ -87,6 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -172,14 +173,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SearchSettings)) objectHandlers.Add(new ObjectSearchSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityProviders());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
 
                 var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
                 {
-                    var extensibilityHandler = objectHandlers.OfType<ObjectExtensibilityProviders>().First();
+                    var extensibilityHandler = objectHandlers.OfType<ObjectExtensibilityHandlers>().First();
                     extensibilityHandler.AddExtendedTokens(web, template, tokenParser, provisioningInfo);
                 }
 

@@ -408,10 +408,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
 
             // Translate Providers, if any
-            if (template.Providers != null && template.Providers.Count > 0)
+            if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
+                var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
                 result.Providers =
-                    (from provider in template.Providers
+                    (from provider in extensibilityHandlers
                      select new V201503.Provider
                      {
                          Assembly = provider.Assembly,
@@ -727,9 +728,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Providers, if any
             if (source.Providers != null)
             {
-                result.Providers.AddRange(
+                result.ExtensibilityHandlers.AddRange(
                     from provider in source.Providers
-                    select new Model.Provider
+                    select new Model.ExtensibilityHandler
                     {
                         Assembly = provider.Assembly,
                         Configuration = provider.Configuration != null ? provider.Configuration.ToProviderConfiguration() : null,
