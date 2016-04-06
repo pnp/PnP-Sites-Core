@@ -186,7 +186,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ProvisioningTemplate GetFileContents(Web web, ProvisioningTemplate template, string welcomePageUrl, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
         {
-            var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
+            var homepageUrl = web.RootFolder.WelcomePage;
+            if (string.IsNullOrEmpty(homepageUrl))
+            {
+                homepageUrl = "Default.aspx";
+            }
+
+            var fullUri = new Uri(UrlUtility.Combine(web.Url, homepageUrl));
 
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
             var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
