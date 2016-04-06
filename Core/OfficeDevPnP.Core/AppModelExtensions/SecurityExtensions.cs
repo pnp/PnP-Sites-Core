@@ -482,6 +482,21 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The created group</returns>
         public static Group AddGroup(this Web web, string groupName, string groupDescription, bool groupIsOwner, bool updateAndExecuteQuery = true)
         {
+            return web.AddGroup(groupName, groupDescription, groupIsOwner, false, updateAndExecuteQuery);
+        }
+
+        /// <summary>
+        /// Adds a group
+        /// </summary>
+        /// <param name="web">Site to add the group to</param>
+        /// <param name="groupName">Name of the group</param>
+        /// <param name="groupDescription">Description of the group</param>
+        /// <param name="groupIsOwner">Sets the created group as group owner if true</param>
+        /// <param name="OnlyAllowMembersViewMembership">Sets if group members can only be viewed by other members or everyone</param>
+        /// <param name="updateAndExecuteQuery">Set to false to postpone the executequery call</param>
+        /// <returns>The created group</returns>
+        public static Group AddGroup(this Web web, string groupName, string groupDescription, bool groupIsOwner, bool OnlyAllowMembersViewMembership, bool updateAndExecuteQuery = true)
+        {
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
@@ -494,7 +509,7 @@ namespace Microsoft.SharePoint.Client
                 group.Owner = group;
             }
 
-            group.OnlyAllowMembersViewMembership = false;
+            group.OnlyAllowMembersViewMembership = OnlyAllowMembersViewMembership;
             group.Update();
 
             if (updateAndExecuteQuery)
