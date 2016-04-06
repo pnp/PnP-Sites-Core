@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             file.ListItemAllFields[propertyName] = taxonomyValue;
                                             break;
                                         case "TaxonomyFieldTypeMulti":
-                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValueCollection>(propertyValue);
+                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
                                             file.ListItemAllFields[propertyName] = taxonomyValueArray;
                                             break;
                                         default:
