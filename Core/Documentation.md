@@ -3014,7 +3014,7 @@ Adds the publishing page.
 > **System.ArgumentException:** Thrown when key or pageName is null
 
 
-#### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem)
+#### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem,System.Boolean,System.Boolean)
 Adds a user-friendly URL for a PublishingPage object.
 > ##### Parameters
 > **page:** The target page to add to managed navigation.
@@ -3026,6 +3026,10 @@ Adds a user-friendly URL for a PublishingPage object.
 > **friendlyUrlSegment:** The user-friendly text to use as the URL segment.
 
 > **editableParent:** The parent NavigationTermSetItem object below which this new friendly URL should be created.
+
+> **showInGlobalNavigation:** Defines whether the navigation item has to be shown in the Global Navigation, optional and default to true.
+
+> **showInCurrentNavigation:** Defines whether the navigation item has to be shown in the Current Navigation, optional and default to true.
 
 > ##### Return value
 > The simple link URL just created.
@@ -4098,6 +4102,16 @@ Sets a value of a taxonomy field
 > **label:** The label of the term to set
 
 > **termGuid:** The id of the term to set
+
+
+#### SetTaxonomyFieldValues(Microsoft.SharePoint.Client.ListItem,System.Guid,System.Collections.Generic.IEnumerable{System.Collections.Generic.KeyValuePair{System.Guid,System.String}})
+Sets a value of a taxonomy field that supports multiple values
+> ##### Parameters
+> **item:** The item to process
+
+> **fieldId:** The ID of the field to set
+
+> **termValues:** The key and values of terms to set
 
 
 #### CreateTaxonomyField(Microsoft.SharePoint.Client.Web,OfficeDevPnP.Core.Entities.TaxonomyFieldCreationInformation)
@@ -6323,6 +6337,8 @@ Looks up a localized string similar to Importing term set from file stream..
 Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
 #### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
 Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtensions_Field_Is_Not_Multivalues
+Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
 #### TaxonomyExtensions_ImportTermSet_File_path_is_required_
 Looks up a localized string similar to File path is required..
 #### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
@@ -12897,8 +12913,6 @@ The default namespace prefix of the target XML Namespace
 
 #### Rights
 
-#### RightsSpecified
-
 #### Url
 
 #### Enabled
@@ -12908,6 +12922,12 @@ The default namespace prefix of the target XML Namespace
 #### ImageUrl
 
 #### ScriptSrc
+
+#### RegistrationId
+
+#### RegistrationType
+
+#### RegistrationTypeSpecified
 
 #### 
 
@@ -12919,6 +12939,23 @@ The default namespace prefix of the target XML Namespace
 ### Properties
 
 #### Any
+
+
+## Core.Framework.Provisioning.Providers.Xml.V201512.RegistrationType
+            
+
+        
+### Fields
+
+#### None
+
+#### List
+
+#### ContentType
+
+#### ProgId
+
+#### FileType
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.File

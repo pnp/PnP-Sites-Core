@@ -7,6 +7,19 @@ namespace Microsoft.SharePoint.Client
     public static class ClientObjectExtensions
     {
         /// <summary>
+        /// Checks if the ClientObject is null
+        /// </summary>
+        /// <typeparam name="T">Type of object to operate on</typeparam>
+        /// <param name="clientObject">Object to operate on</param>
+        /// <returns>True if the server object is null, otherwise false</returns>
+        public static bool ServerObjectIsNull<T>(this T clientObject) where T : ClientObject
+        {
+            return (!(clientObject.ServerObjectIsNull != null && 
+                clientObject.ServerObjectIsNull.HasValue && 
+                !clientObject.ServerObjectIsNull.Value));
+        }
+
+        /// <summary>
         /// Check if a property is available on a object
         /// </summary>
         /// <typeparam name="T">Type of object to operate on</typeparam>

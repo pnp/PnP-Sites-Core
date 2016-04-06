@@ -1788,6 +1788,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
+        /// </summary>
+        internal static string TaxonomyExtensions_Field_Is_Not_Multivalues {
+            get {
+                return ResourceManager.GetString("TaxonomyExtensions_Field_Is_Not_Multivalues", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File path is required..
         /// </summary>
         internal static string TaxonomyExtensions_ImportTermSet_File_path_is_required_ {
