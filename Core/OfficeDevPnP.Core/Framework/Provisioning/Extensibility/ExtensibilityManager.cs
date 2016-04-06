@@ -73,16 +73,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         }
 
         /// <summary>
-        /// Method to Invoke Custom Provisioning Providers. 
-        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// Method to Invoke Custom Provisioning Handlers. 
         /// </summary>
+        /// <remarks>
+        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// </remarks>
         /// <param name="ctx">Authenticated ClientContext that is passed to the custom provider.</param>
         /// <param name="handler">A custom Extensibility Provisioning Provider</param>
         /// <param name="template">ProvisioningTemplate that is passed to the custom provider</param>
+        /// <param name="applyingInformation">The Provisioning Template application information object</param>
+        /// <param name="tokenParser">The Token Parser used by the engine during template provisioning</param>
+        /// <param name="scope">The PnPMonitoredScope of the current step in the pipeline</param>
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public void ExecuteExtensibilityProvisionCallOut(ClientContext ctx, ExtensibilityHandler handler, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation, TokenParser tokenParser, PnPMonitoredScope scope)
+        public void ExecuteExtensibilityProvisionCallOut(ClientContext ctx, ExtensibilityHandler handler, 
+            ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation, 
+            TokenParser tokenParser, PnPMonitoredScope scope)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
 
@@ -141,6 +148,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             }
         }
 
+        /// <summary>
+        /// Method to Invoke Custom Extraction Handlers. 
+        /// </summary>
+        /// <remarks>
+        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// </remarks>
+        /// <param name="ctx">Authenticated ClientContext that is passed to the custom provider.</param>
+        /// <param name="handler">A custom Extensibility Provisioning Provider</param>
+        /// <param name="template">ProvisioningTemplate that is passed to the custom provider</param>
+        /// <param name="creationInformation">The Provisioning Template creation information object</param>
+        /// <param name="scope">The PnPMonitoredScope of the current step in the pipeline</param>
+        /// <exception cref="ExtensiblityPipelineException"></exception>
+        /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
+        /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
         public ProvisioningTemplate ExecuteExtensibilityExtractionCallOut(ClientContext ctx, ExtensibilityHandler handler, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInformation, PnPMonitoredScope scope)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";

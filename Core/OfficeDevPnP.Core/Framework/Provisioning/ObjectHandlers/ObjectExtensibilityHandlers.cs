@@ -121,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Providers.Any();
+                _willProvision = template.ExtensibilityHandlers.Union(template.Providers).Any();
             }
             return _willProvision.Value;
         }
@@ -130,7 +130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = creationInfo.ExtensibilityHandlers.Any();
             }
             return _willExtract.Value;
         }

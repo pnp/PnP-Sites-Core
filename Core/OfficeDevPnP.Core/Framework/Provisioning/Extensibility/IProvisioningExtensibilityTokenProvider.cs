@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 {
     /// <summary>
-    /// Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
+    /// Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipeline
     /// </summary>
     public interface IProvisioningExtensibilityTokenProvider
     {

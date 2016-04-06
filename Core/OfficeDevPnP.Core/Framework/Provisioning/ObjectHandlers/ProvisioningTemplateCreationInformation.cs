@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<String> propertyBagPropertiesToPreserve;
         private bool persistPublishingFiles = false;
         private bool includeNativePublishingFiles = false;
-        private List<ExtensibilityHandler> extensibilityProviders = new List<ExtensibilityHandler>();
+        private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
@@ -177,12 +177,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get
             {
-                return extensibilityProviders;
+                return extensibilityHandlers;
             }
 
             set
             {
-                extensibilityProviders = value;
+                extensibilityHandlers = value;
             }
         }
     }
