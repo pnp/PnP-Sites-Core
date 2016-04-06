@@ -328,6 +328,7 @@
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
+    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockHandler.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />

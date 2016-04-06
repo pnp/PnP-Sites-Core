@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         public ProviderCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
-
+            
         }
     }
 }

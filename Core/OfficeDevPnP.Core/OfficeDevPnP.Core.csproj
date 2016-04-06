@@ -429,6 +429,8 @@
     <Compile Include="Framework\Provisioning\Connectors\FileConnectorBase.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileSystemConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\SharePointConnector.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\Extensibility\ExtensibilityManager.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Deprecated\Extensibility\IProvisioningExtensibilityProvider.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ComposedLook.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ContentType.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ContentTypeBinding.deprecated.cs" />
@@ -445,9 +447,10 @@
     <Compile Include="Framework\Provisioning\Extensibility\ExtensibilityManager.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\ExtensiblityPipelineException.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityTokenProvider.cs" />
-    <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityProvider.cs" />
+    <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityHandler.cs" />
     <Compile Include="Framework\Provisioning\Model\DefaultDocumentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\CustomAction.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Model\ExtensibilityHandler.cs" />
     <Compile Include="Framework\Provisioning\Model\FeatureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
     <Compile Include="Framework\Provisioning\Model\AddInCollection.cs" />
@@ -486,6 +489,7 @@
     <Compile Include="Framework\Provisioning\Model\PageLayoutCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\PageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\PropertyBagEntryCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ExtensibilityHandlerCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProviderCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
@@ -541,7 +545,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectAuditSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectComposedLook.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentType.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectExtensibilityProviders.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectExtensibilityHandlers.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectListInstanceDataRows.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSearchSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSitePolicy.cs" />

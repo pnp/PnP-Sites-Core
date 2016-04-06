@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private SiteSecurity _siteSecurity;
         private CustomActions _customActions;
         private FileCollection _files;
-        private ProviderCollection _providers;
+        private ExtensibilityHandlerCollection _extensibilityHandlers;
         private PageCollection _pages;
         private TermGroupCollection _termGroups;
         private FileConnectorBase connector;
@@ -68,7 +68,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._customActions.ParentTemplate = this;
 
             this._files = new FileCollection(this);
-            this._providers = new ProviderCollection(this);
+            this._providers = new ProviderCollection(this); // Deprecated
+            this._extensibilityHandlers = new ExtensibilityHandlerCollection(this);
             this._pages = new PageCollection(this);
             this._termGroups = new TermGroupCollection(this);
 
@@ -100,7 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return this._localizations; }
             private set { this._localizations = value; }
         }
-        
+
         /// <summary>
         /// Gets or sets the ID of the Provisioning Template
         /// </summary>
@@ -235,14 +236,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        /// <summary>
-        /// Gets a collection of Providers that are used during the extensibility pipeline
-        /// </summary>
-        public ProviderCollection Providers
+        public ExtensibilityHandlerCollection ExtensibilityHandlers
         {
-            get { return this._providers; }
-            private set { this._providers = value; }
+            get { return this._extensibilityHandlers; }
+            private set { this._extensibilityHandlers = value; }
         }
+
 
         /// <summary>
         /// Gets a collection of Wiki Pages for the template
@@ -485,9 +484,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (
                 this.ComposedLook.Equals(other.ComposedLook) &&
-                this.ContentTypes.DeepEquals(other.ContentTypes) && 
+                this.ContentTypes.DeepEquals(other.ContentTypes) &&
                 this.CustomActions.SiteCustomActions.DeepEquals(other.CustomActions.SiteCustomActions) &&
-                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) && 
+                this.CustomActions.WebCustomActions.DeepEquals(other.CustomActions.WebCustomActions) &&
                 this.Features.SiteFeatures.DeepEquals(other.Features.SiteFeatures) &&
                 this.Features.WebFeatures.DeepEquals(other.Features.WebFeatures) &&
                 this.Files.DeepEquals(other.Files) &&
@@ -507,7 +506,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true)  &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true) &&
                 ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing &&

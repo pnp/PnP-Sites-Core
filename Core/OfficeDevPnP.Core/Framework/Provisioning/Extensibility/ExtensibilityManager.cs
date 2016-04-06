@@ -4,15 +4,16 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Collections.Generic;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 {
     /// <summary>
     ///  Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
     /// </summary>
-    public class ExtensibilityManager
+    public partial class ExtensibilityManager
     {
-        private Dictionary<Provider, Object> providerCache = new Dictionary<Provider, Object>();
+        private Dictionary<ExtensibilityHandler, Object> handlerCache = new Dictionary<ExtensibilityHandler, Object>();
 
         /// <summary>
         /// Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface.
@@ -38,7 +39,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
-            { 
+            {
+
                 var _instance = GetProviderInstance(provider) as IProvisioningExtensibilityTokenProvider;
                 if (_instance != null)
                 {
@@ -53,11 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,
                         provider.Assembly,
                         provider.Type);
-                
+
                     return tokens;
                 }
                 return new List<TokenDefinition>();
-                }
+            }
             catch (Exception ex)
             {
                 string _message = string.Format(
@@ -67,78 +69,165 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                     ex);
                 Log.Error(_loggingSource, _message);
                 throw new ExtensiblityPipelineException(_message, ex);
-            }      
+            }
         }
 
-
         /// <summary>
-        /// Method to Invoke Custom Provisioning Providers. 
-        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// Method to Invoke Custom Provisioning Handlers. 
         /// </summary>
+        /// <remarks>
+        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// </remarks>
         /// <param name="ctx">Authenticated ClientContext that is passed to the custom provider.</param>
-        /// <param name="provider">A custom Extensibility Provisioning Provider</param>
+        /// <param name="handler">A custom Extensibility Provisioning Provider</param>
         /// <param name="template">ProvisioningTemplate that is passed to the custom provider</param>
+        /// <param name="applyingInformation">The Provisioning Template application information object</param>
+        /// <param name="tokenParser">The Token Parser used by the engine during template provisioning</param>
+        /// <param name="scope">The PnPMonitoredScope of the current step in the pipeline</param>
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public void ExecuteExtensibilityCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template)
+        public void ExecuteExtensibilityProvisionCallOut(ClientContext ctx, ExtensibilityHandler handler, 
+            ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation, 
+            TokenParser tokenParser, PnPMonitoredScope scope)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
 
             if (ctx == null)
                 throw new ArgumentNullException(CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
-            if (string.IsNullOrWhiteSpace(provider.Assembly))
+            if (string.IsNullOrWhiteSpace(handler.Assembly))
                 throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
-            if (string.IsNullOrWhiteSpace(provider.Type))
+            if (string.IsNullOrWhiteSpace(handler.Type))
                 throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
             {
-                var _instance = GetProviderInstance(provider) as IProvisioningExtensibilityProvider;
-                if (_instance != null)
-                { 
+
+                var _instance = GetProviderInstance(handler);
+                if (_instance is IProvisioningExtensibilityProvider)
+                {
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
-                        provider.Assembly,
-                        provider.Type);
+                        handler.Assembly,
+                        handler.Type);
 
-                    _instance.ProcessRequest(ctx, template, provider.Configuration);
+                    (_instance as IProvisioningExtensibilityProvider).ProcessRequest(ctx, template, handler.Configuration);
 
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,
-                        provider.Assembly,
-                        provider.Type);
+                        handler.Assembly,
+                        handler.Type);
+                }
+                else if (_instance is IProvisioningExtensibilityHandler)
+                {
+                    Log.Info(_loggingSource,
+                        CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
+                        handler.Assembly,
+                        handler.Type);
+
+                    (_instance as IProvisioningExtensibilityHandler).Provision(ctx, template, applyingInformation, tokenParser, scope, handler.Configuration);
+
+                    Log.Info(_loggingSource,
+                        CoreResources.Provisioning_Extensibility_Pipeline_Success,
+                        handler.Assembly,
+                        handler.Type);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 string _message = string.Format(
-                    CoreResources.Provisioning_Extensibility_Pipeline_Exception, 
-                    provider.Assembly, 
-                    provider.Type, 
+                    CoreResources.Provisioning_Extensibility_Pipeline_Exception,
+                    handler.Assembly,
+                    handler.Type,
                     ex);
                 Log.Error(_loggingSource, _message);
                 throw new ExtensiblityPipelineException(_message, ex);
-             
+
             }
         }
 
-        private object GetProviderInstance(Provider provider)
+        /// <summary>
+        /// Method to Invoke Custom Extraction Handlers. 
+        /// </summary>
+        /// <remarks>
+        /// Ensure the ClientContext is not disposed in the custom provider.
+        /// </remarks>
+        /// <param name="ctx">Authenticated ClientContext that is passed to the custom provider.</param>
+        /// <param name="handler">A custom Extensibility Provisioning Provider</param>
+        /// <param name="template">ProvisioningTemplate that is passed to the custom provider</param>
+        /// <param name="creationInformation">The Provisioning Template creation information object</param>
+        /// <param name="scope">The PnPMonitoredScope of the current step in the pipeline</param>
+        /// <exception cref="ExtensiblityPipelineException"></exception>
+        /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
+        /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
+        public ProvisioningTemplate ExecuteExtensibilityExtractionCallOut(ClientContext ctx, ExtensibilityHandler handler, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInformation, PnPMonitoredScope scope)
         {
-            if (string.IsNullOrWhiteSpace(provider.Assembly))
+            var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
+
+            if (ctx == null)
+                throw new ArgumentNullException(CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
+
+            if (string.IsNullOrWhiteSpace(handler.Assembly))
                 throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
-            if (string.IsNullOrWhiteSpace(provider.Type))
+            if (string.IsNullOrWhiteSpace(handler.Type))
                 throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
-            if (!providerCache.ContainsKey(provider))
+            ProvisioningTemplate parsedTemplate = null;
+
+            try
             {
-                var _instance = Activator.CreateInstance(provider.Assembly, provider.Type).Unwrap();
-                providerCache.Add(provider, _instance);
+
+                var _instance = GetProviderInstance(handler);
+                if (_instance is IProvisioningExtensibilityHandler)
+                {
+                    Log.Info(_loggingSource,
+                        CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
+                        handler.Assembly,
+                        handler.Type);
+
+                    parsedTemplate = (_instance as IProvisioningExtensibilityHandler).Extract(ctx, template, creationInformation, scope, handler.Configuration);
+
+                    Log.Info(_loggingSource,
+                        CoreResources.Provisioning_Extensibility_Pipeline_Success,
+                        handler.Assembly,
+                        handler.Type);
+                }
+                else
+                {
+                    parsedTemplate = template;
+                }
             }
-            return providerCache[provider];
-        }    
+            catch (Exception ex)
+            {
+                string _message = string.Format(
+                    CoreResources.Provisioning_Extensibility_Pipeline_Exception,
+                    handler.Assembly,
+                    handler.Type,
+                    ex);
+                Log.Error(_loggingSource, _message);
+                throw new ExtensiblityPipelineException(_message, ex);
+
+            }
+
+            return parsedTemplate;
+        }
+        private object GetProviderInstance(ExtensibilityHandler handler)
+        {
+            if (string.IsNullOrWhiteSpace(handler.Assembly))
+                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+
+            if (string.IsNullOrWhiteSpace(handler.Type))
+                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+
+            if (!handlerCache.ContainsKey(handler))
+            {
+                var _instance = Activator.CreateInstance(handler.Assembly, handler.Type).Unwrap();
+                handlerCache.Add(handler, _instance);
+            }
+            return handlerCache[handler];
+        }
     }
 }

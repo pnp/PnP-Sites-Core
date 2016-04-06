@@ -1022,10 +1022,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Providers
 
             // Translate Providers, if any
-            if (template.Providers != null && template.Providers.Count > 0)
+            if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
+                var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
                 result.Providers =
-                    (from provider in template.Providers
+                    (from provider in extensibilityHandlers
                      select new V201512.Provider
                      {
                          HandlerType = String.Format("{0}, {1}", provider.Type, provider.Assembly),
@@ -1855,8 +1856,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         var handlerType = Type.GetType(provider.HandlerType, false);
                         if (handlerType != null)
                         {
-                            result.Providers.Add(
-                                new Model.Provider
+                            result.ExtensibilityHandlers.Add(
+                                new Model.ExtensibilityHandler
                                 {
                                     Assembly = handlerType.Assembly.FullName,
                                     Type = handlerType.FullName,
