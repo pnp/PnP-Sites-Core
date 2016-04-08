@@ -63,6 +63,11 @@ Checks the server library version of the context for a minimally required versio
 > ##### Return value
 > 
 
+#### GetCoreVersionTag
+Get's a tag that identifies the PnP Core library
+> ##### Return value
+> PnP Core library identification tag
+
 ## SharePoint.Client.ClientContextExtensions.MaximumRetryAttemptedException
             
 Defines a Maximum Retry Attemped Exception
@@ -6929,13 +6934,42 @@ Method to Invoke Custom Provisioning Token Providers which implement the IProvis
 
 
 #### ExecuteExtensibilityProvisionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
-Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
+Ensure the ClientContext is not disposed in the custom provider.
+Method to Invoke Custom Provisioning Handlers.
 > ##### Parameters
 > **ctx:** Authenticated ClientContext that is passed to the custom provider.
 
 > **handler:** A custom Extensibility Provisioning Provider
 
 > **template:** ProvisioningTemplate that is passed to the custom provider
+
+> **applyingInformation:** The Provisioning Template application information object
+
+> **tokenParser:** The Token Parser used by the engine during template provisioning
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteExtensibilityExtractionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
+Ensure the ClientContext is not disposed in the custom provider.
+Method to Invoke Custom Extraction Handlers.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> **creationInformation:** The Provisioning Template creation information object
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
 
 > ##### Exceptions
 > **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
@@ -6999,7 +7033,7 @@ Initializes a new instance of the ExtensiblityPipelineException class from seria
 
 ## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
             
-Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipleline
+Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipeline
         
 ### Methods
 
@@ -7013,6 +7047,43 @@ Provides Token Definitions to the template provisioning pipeline
 
 > **configurationData:** 
 
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityHandler
+            
+Defines an interface which allows to plugin custom Provisioning Extensibility Handlers to the template extraction/provisioning pipeline
+        
+### Methods
+
+
+#### Provision(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
+Execute custom actions during provisioning of a template
+> ##### Parameters
+> **ctx:** The target ClientContext
+
+> **template:** The current Provisioning Template
+
+> **applyingInformation:** The Provisioning Template application information object
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> **configurationData:** The configuration data, if any, for the handler
+
+
+#### Extract(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
+Execute custom actions during extraction of a template
+> ##### Parameters
+> **ctx:** The target ClientContext
+
+> **template:** The current Provisioning Template
+
+> **creationInformation:** The Provisioning Template creation information object
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> **configurationData:** The configuration data, if any, for the handler
+
+> ##### Return value
+> The Provisioning Template eventually enriched by the handler during extraction
 
 ## Core.Framework.Provisioning.Model.ComposedLook
             
