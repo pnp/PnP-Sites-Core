@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.2.1603.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.3.1604.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-CMSPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="CMSPUBLISHING0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -9,26 +9,31 @@
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="__InheritCurrentNavigation" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_enabled" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_siteprefix" Value="DRWVYPJ6AANJ" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsMasterUrl" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__PageLayouts" Value="__inherit" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritWebTemplates" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;0a0d85e4-9cb8-4eed-ad4a-d8d3f4ecd494&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="ae22dc4a-0958-49bb-8f5c-ecbb0ebc8bc7" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;7bdc9161-a10c-4428-a8d5-42520d9b5f6c&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="216912d8-79fe-4a09-8c5a-70a7616caa75" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12;17;17" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__PagesListId" Value="6b8afcb0-c32a-4a46-859b-5608c8aabefe" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="6768ebee-4ddf-4b12-b8ed-c8e6f49f18f2" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsThemedCssFolderUrl" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NavigationShowSiblings" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__ImagesListId" Value="9c8f3f93-e30f-43ea-8a0c-6b55c0dddb04" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_prefix_webid" Value="a6fda77b-aaf4-4e56-960a-e448c0937525" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="a51a42e3-baa5-4fcd-8a14-d65898e37c27" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NewPageUrlToken" Value="__inherit" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritCurrentNavigation" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4327" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.4351" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_customProvider_assembly" Value="Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_customProvider_class" Value="Microsoft.Office.DocumentManagement.Internal.OobProvider" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__WebTemplates" Value="" Overwrite="false" />
@@ -48,7 +53,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{D395F08E-BDF6-424B-8453-729089527D09}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{A570F3BD-FF87-4FF1-BCDB-B6193D30759A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -68,6 +73,8 @@
           <pnp:Fields>
             <Field ID="{8553196d-ec8d-4564-9861-3dbe931050c8}" ShowInFileDlg="FALSE" ShowInVersionHistory="FALSE" Type="File" Name="FileLeafRef" DisplayName="Name" AuthoringInfo="(for use in forms)" List="Docs" FieldRef="ID" ShowField="LeafName" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" Required="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="FileLeafRef" FromBaseType="TRUE" />
             <Field ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" Type="Text" Name="Title" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Title" Sealed="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" ColName="nvarchar7" />
+            <Field ID="{ae3e2a36-125d-45d3-9051-744b513536a6}" Type="Text" DisplayName="Document ID Value" Name="_dlc_DocId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="The value of the document ID assigned to this item." ShowInDisplayForm="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" ShowInViewForms="FALSE" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocId" Version="2" Customization="" ColName="nvarchar10" RowOrdinal="0" />
+            <Field ID="{3b63724f-3418-461f-868b-7706f69b029c}" Type="URL" DisplayName="Document ID" Name="_dlc_DocIdUrl" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Permanent link to this document." ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="TRUE" Sortable="FALSE" AuthoringInfo="(linked to document)" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocIdUrl" Version="2" Customization="" ColName="nvarchar11" RowOrdinal="0" ColName2="nvarchar12" RowOrdinal2="0" />
             <Field ID="{1d22ea11-1e32-424e-89ab-9fedbadb6ce1}" ColName="tp_ID" RowOrdinal="0" ReadOnly="TRUE" Type="Counter" Name="ID" DisplayName="ID" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ID" FromBaseType="TRUE" />
             <Field ID="{c042a256-787d-4a6f-8a8a-cf6ab767f12d}" Type="Computed" DisplayName="Content Type" Name="ContentType" DisplaceOnUpgrade="TRUE" RenderXMLUsingPattern="TRUE" Sortable="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ContentType" Group="_Hidden" PITarget="MicrosoftWindowsSharePointServices" PIAttribute="ContentTypeID" FromBaseType="TRUE">
               <FieldRefs>
@@ -886,7 +893,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{37DFAF5E-4B4F-45FB-871C-2974DEF92DFF}" Type="HTML" DisplayName="All Assets" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{CB434515-C8AA-4FD8-AE53-B77B43B155F9}" Type="HTML" DisplayName="All Assets" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -919,7 +926,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{0C52B5BF-6ED3-4857-A64D-392F7D5371A0}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{94885CB7-44A4-4CDA-B865-CC823D53F9CF}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -960,7 +967,7 @@
           </pnp:Views>
           <pnp:Fields>
             <Field ID="{8553196d-ec8d-4564-9861-3dbe931050c8}" ShowInFileDlg="FALSE" ShowInVersionHistory="FALSE" Type="File" Name="FileLeafRef" DisplayName="Name" AuthoringInfo="(for use in forms)" List="Docs" FieldRef="ID" ShowField="LeafName" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" Required="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="FileLeafRef" FromBaseType="TRUE" />
-            <Field ID="{8c0d0aac-9b76-4951-927a-2490abe13c0b}" Type="Computed" Name="PreviewOnForm" DisplaceOnUpgrade="TRUE" ShowInNewForm="FALSE" ShowInDisplayForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Preview" Sealed="TRUE" Sortable="FALSE" Filterable="FALSE" StaticName="PreviewOnForm" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}">
+            <Field ID="{8c0d0aac-9b76-4951-927a-2490abe13c0b}" Type="Computed" Name="PreviewOnForm" DisplaceOnUpgrade="TRUE" ShowInNewForm="FALSE" ShowInDisplayForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Preview" Sealed="TRUE" Sortable="FALSE" Filterable="FALSE" StaticName="PreviewOnForm" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}">
               <FieldRefs>
                 <FieldRef Name="FileLeafRef" />
                 <FieldRef Name="FileDirRef" />
@@ -995,7 +1002,7 @@
                 <HTML><![CDATA[' onerror="this.style.display='none';"></a>]]></HTML>
               </DisplayPattern>
             </Field>
-            <Field ID="{9941082a-4160-46a1-a5b2-03394bfdf7ee}" Type="Computed" Name="ThumbnailOnForm" Group="_Hidden" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Thumbnail Preview" Sealed="TRUE" Sortable="FALSE" StaticName="ThumbnailOnForm" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}">
+            <Field ID="{9941082a-4160-46a1-a5b2-03394bfdf7ee}" Type="Computed" Name="ThumbnailOnForm" Group="_Hidden" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Thumbnail Preview" Sealed="TRUE" Sortable="FALSE" StaticName="ThumbnailOnForm" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}">
               <FieldRefs>
                 <FieldRef Name="EncodedAbsThumbnailUrl" />
                 <FieldRef Name="FileLeafRef" />
@@ -1057,8 +1064,8 @@
                 <HTML><![CDATA[</a>]]></HTML>
               </DisplayPattern>
             </Field>
-            <Field ID="{246d0907-637c-46b7-9aa0-0bb914daa832}" Name="_Author" Group="Core Document Columns" Type="Text" DisplayName="Author" StaticName="_Author" Description="The primary author" Sealed="TRUE" AllowDeletion="TRUE" ShowInFileDlg="FALSE" ColName="nvarchar7" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{c53a03f3-f930-4ef2-b166-e0f2210c13c0}" Type="Computed" Name="FileType" DisplayName="File Type" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Filterable="TRUE" Sortable="TRUE" AuthoringInfo="(File extension)" StaticName="FileType" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}">
+            <Field ID="{246d0907-637c-46b7-9aa0-0bb914daa832}" Name="_Author" Group="Core Document Columns" Type="Text" DisplayName="Author" StaticName="_Author" Description="The primary author" Sealed="TRUE" AllowDeletion="TRUE" ShowInFileDlg="FALSE" ColName="nvarchar7" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{c53a03f3-f930-4ef2-b166-e0f2210c13c0}" Type="Computed" Name="FileType" DisplayName="File Type" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Filterable="TRUE" Sortable="TRUE" AuthoringInfo="(File extension)" StaticName="FileType" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}">
               <FieldRefs>
                 <FieldRef Name="File_x0020_Type" />
               </FieldRefs>
@@ -1066,7 +1073,7 @@
                 <Column Name="File_x0020_Type" HTMLEncode="TRUE" />
               </DisplayPattern>
             </Field>
-            <Field ID="{922551b8-c7e0-46a6-b7e3-3cf02917f68a}" Type="Computed" Name="ImageSize" DisplayName="Picture Size" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Filterable="FALSE" Sortable="FALSE" StaticName="ImageSize" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}">
+            <Field ID="{922551b8-c7e0-46a6-b7e3-3cf02917f68a}" Type="Computed" Name="ImageSize" DisplayName="Picture Size" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Filterable="FALSE" Sortable="FALSE" StaticName="ImageSize" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}">
               <FieldRefs>
                 <FieldRef Name="ImageWidth" />
                 <FieldRef Name="ImageHeight" />
@@ -1108,12 +1115,12 @@
                 </IfEqual>
               </DisplayPattern>
             </Field>
-            <Field ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" Type="Text" Name="Title" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Title" Sealed="TRUE" ColName="nvarchar8" StaticName="Title" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{7e68a0f9-af76-404c-9613-6f82bc6dc28c}" ReadOnly="TRUE" Type="Integer" Name="ImageWidth" DisplayName="Width" ColName="int1" StaticName="ImageWidth" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{1944c034-d61b-42af-aa84-647f2e74ca70}" ReadOnly="TRUE" Type="Integer" Name="ImageHeight" DisplayName="Height" ColName="int2" StaticName="ImageHeight" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{a5d2f824-bc53-422e-87fd-765939d863a5}" Type="DateTime" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" Name="ImageCreateDate" DisplayName="Date Picture Taken" Format="DateTime" Sealed="TRUE" ColName="datetime1" StaticName="ImageCreateDate" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{52578fc3-1f01-4f4d-b016-94ccbcf428cf}" Name="_Comments" StaticName="_Comments" Type="Note" DisplayName="Comments" Sortable="FALSE" Description="A summary of this asset" Sealed="TRUE" UnlimitedLengthInDocumentLibrary="TRUE" AllowDeletion="TRUE" ShowInFileDlg="FALSE" ColName="ntext2" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
-            <Field ID="{76d1cc87-56de-432c-8a2a-16e5ba5331b3}" ReadOnly="TRUE" Type="Computed" Name="NameOrTitle" ClassInfo="Menu" DisplayName="Name" DisplayNameSrcField="FileLeafRef" Filterable="FALSE" AuthoringInfo="(linked to display items)" CalloutMenu="TRUE" StaticName="NameOrTitle" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}">
+            <Field ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" Type="Text" Name="Title" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Title" Sealed="TRUE" ColName="nvarchar8" StaticName="Title" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{7e68a0f9-af76-404c-9613-6f82bc6dc28c}" ReadOnly="TRUE" Type="Integer" Name="ImageWidth" DisplayName="Width" ColName="int1" StaticName="ImageWidth" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{1944c034-d61b-42af-aa84-647f2e74ca70}" ReadOnly="TRUE" Type="Integer" Name="ImageHeight" DisplayName="Height" ColName="int2" StaticName="ImageHeight" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{a5d2f824-bc53-422e-87fd-765939d863a5}" Type="DateTime" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" Name="ImageCreateDate" DisplayName="Date Picture Taken" Format="DateTime" Sealed="TRUE" ColName="datetime1" StaticName="ImageCreateDate" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{52578fc3-1f01-4f4d-b016-94ccbcf428cf}" Name="_Comments" StaticName="_Comments" Type="Note" DisplayName="Comments" Sortable="FALSE" Description="A summary of this asset" Sealed="TRUE" UnlimitedLengthInDocumentLibrary="TRUE" AllowDeletion="TRUE" ShowInFileDlg="FALSE" ColName="ntext2" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
+            <Field ID="{76d1cc87-56de-432c-8a2a-16e5ba5331b3}" ReadOnly="TRUE" Type="Computed" Name="NameOrTitle" ClassInfo="Menu" DisplayName="Name" DisplayNameSrcField="FileLeafRef" Filterable="FALSE" AuthoringInfo="(linked to display items)" CalloutMenu="TRUE" StaticName="NameOrTitle" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}">
               <FieldRefs>
                 <FieldRef Name="FileLeafRef" />
                 <FieldRef Name="FileDirRef" />
@@ -1265,20 +1272,22 @@
                     ]]></HTML>
               </DisplayPattern>
             </Field>
-            <Field ID="{b66e9b50-a28e-469b-b1a0-af0e45486874}" Type="Note" Name="Keywords" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Keywords" Sealed="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" Description="For example: scenery, mountains, trees, nature" ColName="ntext3" StaticName="Keywords" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
+            <Field ID="{b66e9b50-a28e-469b-b1a0-af0e45486874}" Type="Note" Name="Keywords" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Keywords" Sealed="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" Description="For example: scenery, mountains, trees, nature" ColName="ntext3" StaticName="Keywords" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
             <Field ID="{f08ab41d-9a03-49ae-9413-6cd284a15625}" Type="Text" Group="Core Document Columns" Name="wic_System_Copyright" DisplayName="Copyright" SourceID="http://schemas.microsoft.com/sharepoint/v3/fields" StaticName="wic_System_Copyright" ColName="nvarchar9" />
-            <Field ID="{f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd}" Name="AlternateThumbnailUrl" DisplayName="Preview Image URL" Group="Core Image Columns" Description="Link to the image that will be shown as the preview for this asset" Type="URL" Format="Image" Sealed="TRUE" ShowInDisplayForm="FALSE" ColName="nvarchar10" ColName2="nvarchar11" StaticName="AlternateThumbnailUrl" SourceID="{9C8F3F93-E30F-43EA-8A0C-6B55C0DDDB04}" />
+            <Field ID="{f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd}" Name="AlternateThumbnailUrl" DisplayName="Preview Image URL" Group="Core Image Columns" Description="Link to the image that will be shown as the preview for this asset" Type="URL" Format="Image" Sealed="TRUE" ShowInDisplayForm="FALSE" ColName="nvarchar10" ColName2="nvarchar11" StaticName="AlternateThumbnailUrl" SourceID="{A51A42E3-BAA5-4FCD-8A14-D65898E37C27}" />
             <Field ID="{de38f937-8578-435e-8cd3-50be3ea59253}" Name="MediaLengthInSeconds" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="MediaLengthInSeconds" Group="_Hidden" Type="Integer" DisplayName="Length (seconds)" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ColName="int3" />
             <Field ID="{59cd571e-e2d9-485d-bb5d-e70d12f8d0b7}" Name="VideoWidthInPixels" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="VideoWidthInPixels" Group="_Hidden" Type="Integer" DisplayName="Frame Width" ShowInNewForm="TRUE" ShowInEditForm="TRUE" ColName="int4" />
             <Field ID="{84cd09bd-85a9-461f-86e3-4c3c1738ad6b}" Name="VideoHeightInPixels" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="VideoHeightInPixels" Group="_Hidden" Type="Integer" DisplayName="Frame Height" ShowInNewForm="TRUE" ShowInEditForm="TRUE" ColName="int5" />
-            <Field ID="{fd7ef3c2-486e-40cd-b651-6be6d1abbe25}" Name="VideoRenditionLabel" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="VideoRenditionLabel" Group="_Hidden" Type="Text" DisplayName="Label" Description="The text displayed in the video player for this rendition" ShowInNewForm="TRUE" ShowInEditForm="TRUE" Customization="" ColName="nvarchar12" RowOrdinal="0" Version="1" />
+            <Field ID="{ae3e2a36-125d-45d3-9051-744b513536a6}" Type="Text" DisplayName="Document ID Value" Name="_dlc_DocId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="The value of the document ID assigned to this item." ShowInDisplayForm="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" ShowInViewForms="FALSE" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocId" Version="2" Customization="" ColName="nvarchar12" RowOrdinal="0" />
+            <Field ID="{3b63724f-3418-461f-868b-7706f69b029c}" Type="URL" DisplayName="Document ID" Name="_dlc_DocIdUrl" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Permanent link to this document." ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="TRUE" Sortable="FALSE" AuthoringInfo="(linked to document)" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocIdUrl" Version="2" Customization="" ColName="nvarchar13" RowOrdinal="0" ColName2="nvarchar14" RowOrdinal2="0" />
+            <Field ID="{fd7ef3c2-486e-40cd-b651-6be6d1abbe25}" Name="VideoRenditionLabel" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="VideoRenditionLabel" Group="_Hidden" Type="Text" DisplayName="Label" Description="The text displayed in the video player for this rendition" ShowInNewForm="TRUE" ShowInEditForm="TRUE" Customization="" ColName="nvarchar15" RowOrdinal="0" Version="1" />
             <Field ID="{cf42542f-df94-4136-a0ac-29326fccd565}" Name="VideoRenditionBitRate" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="VideoRenditionBitRate" Group="_Hidden" Type="Integer" DisplayName="Bit Rate" ShowInNewForm="TRUE" ShowInEditForm="FALSE" Customization="" ColName="int6" RowOrdinal="0" Version="1" />
             <Field ID="{b76b58ec-0549-4f00-9575-2fd28bd55010}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetDescription" DisplayName="Description" Description="A summary of the Video" StaticName="VideoSetDescription" Group="_Hidden" Type="Note" NumLines="5" UnlimitedLengthInDocumentLibrary="TRUE" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="ntext4" RowOrdinal="0" Version="1" />
             <Field ID="{2de1df7b-48e1-4c8e-be0f-f00e504b9948}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetOwner" DisplayName="Owner" Description="The owner of the Video" StaticName="VideoSetOwner" Group="_Hidden" Type="User" List="UserInfo" ShowField="NameWithPictureAndDetails" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="int7" RowOrdinal="0" Version="1" />
-            <Field ID="{9cb4d391-367f-4342-8f17-ac808799784a}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetShowDownloadLink" DisplayName="Show Download Link" Description="Specifies whether a button appears on the video player page that allows the user to download the video being played." StaticName="VideoSetShowDownloadLink" Group="_Hidden" Type="Boolean" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="bit3" RowOrdinal="0" Version="1">
+            <Field ID="{9cb4d391-367f-4342-8f17-ac808799784a}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetShowDownloadLink" DisplayName="Show Download Link" Description="Specifies whether a button appears on the video player page that allows the user to download the video being played." StaticName="VideoSetShowDownloadLink" Group="_Hidden" Type="Boolean" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="bit4" RowOrdinal="0" Version="1">
               <Default>1</Default>
             </Field>
-            <Field ID="{6e4ee0c4-4d06-4c04-8d02-58d10fdf912d}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetShowEmbedLink" DisplayName="Show Embed Link" Description="Specifies whether a button appears on the video player that allows the user to get an embed code for the video being played." StaticName="VideoSetShowEmbedLink" Group="_Hidden" Type="Boolean" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="bit4" RowOrdinal="0" Version="1">
+            <Field ID="{6e4ee0c4-4d06-4c04-8d02-58d10fdf912d}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetShowEmbedLink" DisplayName="Show Embed Link" Description="Specifies whether a button appears on the video player that allows the user to get an embed code for the video being played." StaticName="VideoSetShowEmbedLink" Group="_Hidden" Type="Boolean" Hidden="FALSE" ShowInEditForm="TRUE" Customization="" ColName="bit5" RowOrdinal="0" Version="1">
               <Default>1</Default>
             </Field>
             <Field ID="{bcd999a7-9dca-4824-a515-878bee641ed3}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="PeopleInMedia" DisplayName="People In Video" Description="The people appearing in the video." StaticName="PeopleInMedia" Group="_Hidden" Type="UserMulti" Mult="TRUE" List="UserInfo" ShowField="ImnName" Hidden="FALSE" ShowInNewForm="TRUE" ShowInEditForm="TRUE" Customization="" ColName="int8" RowOrdinal="0" Version="1" />
@@ -2099,7 +2108,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{B94A10AA-D2C6-44F1-A58A-1B5772826E0E}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
+            <View Name="{814E9494-0CE0-4FCB-BEF2-27CC06D8C375}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2121,23 +2130,25 @@
           <pnp:Fields>
             <Field ID="{8553196d-ec8d-4564-9861-3dbe931050c8}" ShowInFileDlg="FALSE" ShowInVersionHistory="FALSE" Type="File" Name="FileLeafRef" DisplayName="Name" AuthoringInfo="(for use in forms)" List="Docs" FieldRef="ID" ShowField="LeafName" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" Required="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="FileLeafRef" FromBaseType="TRUE" />
             <Field ID="{fa564e0f-0c70-4ab9-b863-0177e6ddd247}" Type="Text" Name="Title" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" DisplayName="Title" Sealed="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Title" ColName="nvarchar7" />
+            <Field ID="{ae3e2a36-125d-45d3-9051-744b513536a6}" Type="Text" DisplayName="Document ID Value" Name="_dlc_DocId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="The value of the document ID assigned to this item." ShowInDisplayForm="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" ShowInViewForms="FALSE" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocId" Version="2" Customization="" ColName="nvarchar10" RowOrdinal="0" />
+            <Field ID="{3b63724f-3418-461f-868b-7706f69b029c}" Type="URL" DisplayName="Document ID" Name="_dlc_DocIdUrl" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Permanent link to this document." ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="TRUE" Sortable="FALSE" AuthoringInfo="(linked to document)" SourceID="{2960d51d-8aa4-49dc-9d3d-e618a538f46c}" StaticName="_dlc_DocIdUrl" Version="2" Customization="" ColName="nvarchar11" RowOrdinal="0" ColName2="nvarchar12" RowOrdinal2="0" />
             <Field ID="{9da97a8a-1da5-4a77-98d3-4bc10456e700}" Type="Note" RichText="FALSE" Name="Comments" Group="_Hidden" DisplayName="Comments" Sortable="FALSE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="Comments" Customization="" ColName="ntext2" RowOrdinal="0" Version="2" />
             <Field ID="{aea1a4dd-0f19-417d-8721-95a1d28762ab}" Name="PublishingContact" StaticName="PublishingContact" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact" Description="Contact is a site column created by the Publishing feature. It is used on the Page Content Type as the person or group who is the contact person for the page." Type="User" Required="FALSE" Sealed="TRUE" List="UserInfo" Customization="" ColName="int1" RowOrdinal="0" />
-            <Field ID="{c79dba91-e60b-400e-973d-c6d06f192720}" Name="PublishingContactEmail" StaticName="PublishingContactEmail" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact E-Mail Address" Description="Contact E-mail Address is a site column created by the Publishing feature. It is used on the Page Content Type as the e-mail address of the person or group who is the contact person for the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar10" RowOrdinal="0" />
-            <Field ID="{7546ad0d-6c33-4501-b470-fb3003ca14ba}" Name="PublishingContactName" StaticName="PublishingContactName" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact Name" Description="Contact Name is a site column created by the Publishing feature. It is used on the Page Content Type as the name of the person or group who is the contact person for the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar11" RowOrdinal="0" />
-            <Field ID="{dc47d55f-9bf9-494a-8d5b-e619214dd19a}" Name="PublishingContactPicture" StaticName="PublishingContactPicture" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact Picture" Description="Contact Picture is a site column created by the Publishing feature. It is used on the Page Content Type as the picture of the user or group who is the contact person for the page." Type="URL" Format="Image" Required="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar12" RowOrdinal="0" ColName2="nvarchar13" RowOrdinal2="0" />
-            <Field ID="{0f800910-b30d-4c8f-b011-8189b2297094}" Name="PublishingPageLayout" StaticName="PublishingPageLayout" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Page Layout" Type="URL" Required="FALSE" Sealed="TRUE" ReadOnly="TRUE" Customization="" ColName="nvarchar14" RowOrdinal="0" ColName2="nvarchar15" RowOrdinal2="0" Description="" />
+            <Field ID="{c79dba91-e60b-400e-973d-c6d06f192720}" Name="PublishingContactEmail" StaticName="PublishingContactEmail" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact E-Mail Address" Description="Contact E-mail Address is a site column created by the Publishing feature. It is used on the Page Content Type as the e-mail address of the person or group who is the contact person for the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar13" RowOrdinal="0" />
+            <Field ID="{7546ad0d-6c33-4501-b470-fb3003ca14ba}" Name="PublishingContactName" StaticName="PublishingContactName" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact Name" Description="Contact Name is a site column created by the Publishing feature. It is used on the Page Content Type as the name of the person or group who is the contact person for the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar14" RowOrdinal="0" />
+            <Field ID="{dc47d55f-9bf9-494a-8d5b-e619214dd19a}" Name="PublishingContactPicture" StaticName="PublishingContactPicture" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact Picture" Description="Contact Picture is a site column created by the Publishing feature. It is used on the Page Content Type as the picture of the user or group who is the contact person for the page." Type="URL" Format="Image" Required="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar15" RowOrdinal="0" ColName2="nvarchar16" RowOrdinal2="0" />
+            <Field ID="{0f800910-b30d-4c8f-b011-8189b2297094}" Name="PublishingPageLayout" StaticName="PublishingPageLayout" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Page Layout" Type="URL" Required="FALSE" Sealed="TRUE" ReadOnly="TRUE" Customization="" ColName="nvarchar17" RowOrdinal="0" ColName2="nvarchar18" RowOrdinal2="0" Description="" />
             <Field ID="{543bc2cf-1f30-488e-8f25-6fe3b689d9ac}" Name="PublishingRollupImage" StaticName="PublishingRollupImage" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Rollup Image" Description="Rollup Image is a site column created by the Publishing feature. It is used on the Page Content Type as the image for the page shown in content roll-ups such as the Content By Search web part." Type="Image" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext3" RowOrdinal="0" />
             <Field ID="{61cbb965-1e04-4273-b658-eedaa662f48d}" Name="Audience" StaticName="Audience" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Target Audiences" Description="Target Audiences is a site column created by the Publishing feature. It is used to specify audiences to which this page will be targeted." Type="TargetTo" Required="FALSE" Sealed="TRUE" Customization="" ColName="ntext4" RowOrdinal="0" />
-            <Field ID="{50631c24-1371-4ecf-a5ae-ed41b03f4499}" Name="PublishingIsFurlPage" StaticName="PublishingIsFurlPage" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Hide physical URLs from search" Description="If checked, the physical URL of this page will not appear in search results. Friendly URLs assigned to this page will always appear." Type="Boolean" Required="FALSE" Sealed="TRUE" Customization="" ColName="bit2" RowOrdinal="0" />
-            <Field ID="{ff92f929-d18b-46d4-9879-521378c689ef}" Name="SeoBrowserTitle" StaticName="SeoBrowserTitle" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Browser Title is a site column created by the Publishing feature. It is used as the title that appears at the top of a browser window and may appear in Internet search results." DisplayName="Browser Title" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar19" RowOrdinal="0" />
-            <Field ID="{d83897e5-2430-4df7-8e5a-9bc06c664992}" Name="SeoMetaDescription" StaticName="SeoMetaDescription" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Meta Description is a site column created by the Publishing feature. Internet search engines may display this description in search results pages." DisplayName="Meta Description" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar20" RowOrdinal="0" />
-            <Field ID="{45ae2169-585c-440b-aa4c-1d5e981fbbe5}" Name="SeoKeywords" StaticName="SeoKeywords" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Meta Keywords" DisplayName="Meta Keywords" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar21" RowOrdinal="0" />
-            <Field ID="{325c00dd-fd91-468b-81cf-5bb9951abba1}" Name="RobotsNoIndex" StaticName="SeoRobotsNoIndex" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Hide from Internet Search Engines is a site column created by the Publishing feature. It is used to indicate to search engine crawlers that a particular page should not be indexed." DisplayName="Hide from Internet Search Engines" Type="Boolean" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="bit3" RowOrdinal="0" />
+            <Field ID="{50631c24-1371-4ecf-a5ae-ed41b03f4499}" Name="PublishingIsFurlPage" StaticName="PublishingIsFurlPage" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Hide physical URLs from search" Description="If checked, the physical URL of this page will not appear in search results. Friendly URLs assigned to this page will always appear." Type="Boolean" Required="FALSE" Sealed="TRUE" Customization="" ColName="bit3" RowOrdinal="0" />
+            <Field ID="{ff92f929-d18b-46d4-9879-521378c689ef}" Name="SeoBrowserTitle" StaticName="SeoBrowserTitle" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Browser Title is a site column created by the Publishing feature. It is used as the title that appears at the top of a browser window and may appear in Internet search results." DisplayName="Browser Title" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar22" RowOrdinal="0" />
+            <Field ID="{d83897e5-2430-4df7-8e5a-9bc06c664992}" Name="SeoMetaDescription" StaticName="SeoMetaDescription" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Meta Description is a site column created by the Publishing feature. Internet search engines may display this description in search results pages." DisplayName="Meta Description" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar23" RowOrdinal="0" />
+            <Field ID="{45ae2169-585c-440b-aa4c-1d5e981fbbe5}" Name="SeoKeywords" StaticName="SeoKeywords" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Meta Keywords" DisplayName="Meta Keywords" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="nvarchar24" RowOrdinal="0" />
+            <Field ID="{325c00dd-fd91-468b-81cf-5bb9951abba1}" Name="RobotsNoIndex" StaticName="SeoRobotsNoIndex" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Hide from Internet Search Engines is a site column created by the Publishing feature. It is used to indicate to search engine crawlers that a particular page should not be indexed." DisplayName="Hide from Internet Search Engines" Type="Boolean" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" Customization="" ColName="bit4" RowOrdinal="0" />
             <Field ID="{3de94b06-4120-41a5-b907-88773e493458}" Name="PublishingPageImage" StaticName="PublishingPageImage" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Page Image" Description="Page Image is a site column created by the Publishing feature. It is used on the Article Page Content Type as the primary image of the page." Type="Image" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext5" RowOrdinal="0" />
             <Field ID="{f55c4d88-1f2e-4ad9-aaa8-819af4ee7ee8}" Name="PublishingPageContent" StaticName="PublishingPageContent" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Page Content" Description="Page Content is a site column created by the Publishing feature. It is used on the Article Page Content Type as the content of the page." Type="HTML" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext6" RowOrdinal="0" />
             <Field ID="{b3525efe-59b5-4f0f-b1e4-6e26cb6ef6aa}" Name="SummaryLinks" StaticName="SummaryLinks" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Summary Links" Description="Summary Links is a site column created by the Publishing feature. It is used on the Welcome Page Content Type to display a set of links." Type="SummaryLinks" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext7" RowOrdinal="0" />
-            <Field ID="{d3429cc9-adc4-439b-84a8-5679070f84cb}" Name="ArticleByLine" StaticName="ArticleByLine" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Byline" Description="Byline is a site column created by the Publishing feature. It is used on the Article Page Content Type as the byline of the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar22" RowOrdinal="0" />
+            <Field ID="{d3429cc9-adc4-439b-84a8-5679070f84cb}" Name="ArticleByLine" StaticName="ArticleByLine" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Byline" Description="Byline is a site column created by the Publishing feature. It is used on the Article Page Content Type as the byline of the page." Type="Text" Required="FALSE" Sealed="TRUE" MaxLength="255" Customization="" ColName="nvarchar25" RowOrdinal="0" />
             <Field ID="{71316cea-40a0-49f3-8659-f0cefdbdbd4f}" Name="ArticleStartDate" StaticName="ArticleStartDate" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Article Date" Description="Article Date is a site column created by the Publishing feature. It is used on the Article Page Content Type as the date of the page." Type="DateTime" Format="DateOnly" Required="FALSE" Sealed="TRUE" StorageTZ="UTC" Customization="" ColName="datetime3" RowOrdinal="0" />
             <Field ID="{66f500e9-7955-49ab-abb1-663621727d10}" Name="PublishingImageCaption" StaticName="PublishingImageCaption" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Image Caption" Description="Image Caption is a site column created by the Publishing feature. It is used on the Article Page Content Type as the caption for the primary image displayed on the page." Type="HTML" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext8" RowOrdinal="0" />
             <Field ID="{27761311-936a-40ba-80cd-ca5e7a540a36}" Name="SummaryLinks2" StaticName="SummaryLinks2" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Summary Links 2" Description="Summary Links 2 is a site column created by the Publishing feature. It is used on the Welcome Page Content Type to display a second set of links." Type="SummaryLinks" Required="FALSE" Sealed="TRUE" RichText="TRUE" RichTextMode="FullHtml" Customization="" ColName="ntext10" RowOrdinal="0" />
@@ -2957,7 +2968,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x012004" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{8FC3BD46-DAAB-438C-9357-4906FE86FB0B}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{2A0149E3-B208-4500-B815-257F1DFACC0B}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -2976,7 +2987,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{DA05C532-C797-43AE-A003-7BA1190FAEA1}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{4ABA1982-7FC4-4E72-8A2A-90894DAC45E5}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <Where>
                   <Eq>
@@ -3001,7 +3012,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{D6EE724F-9A76-4239-A2EC-9A76BC623E12}" Type="HTML" DisplayName="Due Today" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{E7CFD427-E11C-4D96-8262-32BCA43C4597}" Type="HTML" DisplayName="Due Today" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <Where>
                   <Eq>
@@ -3026,7 +3037,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{E5FB8F46-8157-484C-A690-5C20ED5714DD}" Type="HTML" DisplayName="Active Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{60878D37-5F00-4988-897C-3BBDFADF287A}" Type="HTML" DisplayName="Active Tasks" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <Where>
                   <Neq>
@@ -3050,7 +3061,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{6C685FA4-313F-4384-BA58-7C072E5A3B87}" Type="HTML" DisplayName="By Assigned To" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{250CBFAC-9B70-4760-89F3-E884C85947F4}" Type="HTML" DisplayName="By Assigned To" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <OrderBy>
                   <FieldRef Name="AssignedTo" />
@@ -3069,7 +3080,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{A131A581-D173-4627-B185-46D33966D91C}" Type="HTML" DisplayName="By My Groups" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
+            <View Name="{20C9924E-D1CD-4B19-B139-70A49857B56C}" Type="HTML" DisplayName="By My Groups" Url="/sites/TemplateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=40">
               <Query>
                 <Where>
                   <Membership Type="CurrentUserGroups">
