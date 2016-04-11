@@ -165,6 +165,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner
         /// <param name="s">String to write</param>
         private void WriteLine(string s)
         {
+            s = string.Format("[{0}] {1}", DateTime.Now.ToString(), s);
+
             sb.AppendLine(s);
             Console.WriteLine(s);
         }
