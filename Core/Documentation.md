@@ -1317,142 +1317,6 @@ Reorders content types on the list. The first one in the list is the default ite
 > **contentTypeNamesOrIds:** Content type names or ids to sort.
 
 
-#### SetLocalizationForContentType(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.String)
-Set localized labels for content type
-> ##### Parameters
-> **web:** Web to operate on
-
-> **contentTypeName:** Name of the content type
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **nameResource:** Localized value for the Name property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForContentType(Microsoft.SharePoint.Client.List,System.String,System.String,System.String,System.String)
-Set localized labels for content type
-> ##### Parameters
-> **list:** List to update
-
-> **contentTypeId:** Complete ID for the content type
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **nameResource:** Localized value for the Name property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForContentType(Microsoft.SharePoint.Client.ContentType,System.String,System.String,System.String)
-Set localized labels for content type
-> ##### Parameters
-> **contentType:** Name of the content type
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **nameResource:** Localized value for the Name property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.Web,System.Guid,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **web:** Web to operate on
-
-> **siteColumnId:** Guid with the site column ID
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **web:** Web to operate on
-
-> **siteColumnName:** Name of the site column
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.Field,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **web:** Web to operate on
-
-> **siteColumn:** Site column to localize
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.List,System.Guid,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **list:** List to update
-
-> **siteColumnId:** Guid of the site column ID
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.List,System.String,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **list:** List to update
-
-> **siteColumnName:** Name of the site column
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.List,Microsoft.SharePoint.Client.Field,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **list:** List to update
-
-> **siteColumn:** Site column to update
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
-#### SetLocalizationForField(Microsoft.SharePoint.Client.Field,System.String,System.String,System.String)
-Set localized labels for field
-> ##### Parameters
-> **field:** Field to update
-
-> **cultureName:** Culture for the localization (en-es, nl-be, fi-fi,...)
-
-> **titleResource:** Localized value for the Title property
-
-> **descriptionResource:** Localized value for the Description property
-
-
 ## SharePoint.Client.FileFolderExtensions
             
 Class that holds the deprecated file and folder methods
@@ -2261,41 +2125,6 @@ Sets JS link customization for a list form
 
 > **jslink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
 
-
-#### SetLocalizationLabelsForList(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.String)
-Can be used to set translations for different cultures.
-> ##### Parameters
-> **web:** Site to be processed - can be root web or sub site
-
-> **listTitle:** Title of the list
-
-> **cultureName:** Culture name like en-us or fi-fi
-
-> **titleResource:** Localized Title string
-
-> **descriptionResource:** Localized Description string
-
-> ##### Exceptions
-> **System.ArgumentException:** Thrown when listTitle, cultureName, titleResource, descriptionResource is a zero-length string or contains only white space
-
-> **System.ArgumentNullException:** listTitle, cultureName, titleResource, descriptionResource is null
-
-
-#### SetLocalizationLabelsForList(Microsoft.SharePoint.Client.List,System.String,System.String,System.String)
-Can be used to set translations for different cultures.
-> ##### Parameters
-> **list:** List to be processed
-
-> **cultureName:** Culture name like en-us or fi-fi
-
-> **titleResource:** Localized Title string
-
-> **descriptionResource:** Localized Description string
-
-> ##### Example
-> 
-                list.SetLocalizationForSiteLabels("fi-fi", "Name of the site in Finnish", "Description in Finnish");
-            
 
 #### GetListID(Microsoft.SharePoint.Client.Web,System.String)
 Returns the GUID id of a list
@@ -4314,225 +4143,21 @@ Class for deprecated tenant extension methods
 ### Methods
 
 
-#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,OfficeDevPnP.Core.Entities.SiteEntity,System.Boolean,System.Boolean)
+#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,OfficeDevPnP.Core.Entities.SiteEntity)
 Adds a SiteEntity by launching site collection creation and waits for the creation to finish
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
 
 > **properties:** Describes the site collection to be created
 
-> **removeFromRecycleBin:** It true and site is present in recycle bin, it will be removed first from the recycle bin
 
-> **wait:** If true, processing will halt until the site collection has been created
-
-> ##### Return value
-> Guid of the created site collection and Guid.Empty is the wait parameter is specified as false
-
-#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt32,System.Boolean,System.Boolean)
-Launches a site collection creation and waits for the creation to finish
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** The SPO url
-
-> **title:** The site title
-
-> **siteOwnerLogin:** Owner account
-
-> **template:** Site template being used
-
-> **storageMaximumLevel:** Site quota in MB
-
-> **storageWarningLevel:** Site quota warning level in MB
-
-> **timeZoneId:** TimeZoneID for the site. "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" = 3
-
-> **userCodeMaximumLevel:** The user code quota in points
-
-> **userCodeWarningLevel:** The user code quota warning level in points
-
-> **lcid:** The site locale. See http://technet.microsoft.com/en-us/library/ff463597.aspx for a complete list of Lcid's
-
-> **removeFromRecycleBin:** If true, any existing site with the same URL will be removed from the recycle bin
-
-> **wait:** Wait for the site to be created before continuing processing
-
-> ##### Return value
-> 
-
-#### CheckIfSiteExists(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String)
-Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. Status is irrelevant for sub sites
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** Url to the site collection
-
-> **status:** Status to check (Active, Creating, Recycled)
-
-> ##### Return value
-> True if in status, false if not in status
-
-#### IsSiteActive(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
-Checks if a site collection is Active
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** URL to the site collection
-
-> ##### Return value
-> True if active, false if not
-
-#### SiteExists(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
-Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** URL to the site collection
-
-> ##### Return value
-> True if existing, false if not
-
-#### SubSiteExists(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
-Checks if a sub site exists
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** URL to the sub site
-
-> ##### Return value
-> True if existing, false if not
-
-#### DeleteSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean)
+#### DeleteSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
 Deletes a site collection
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
 
 > **siteFullUrl:** Url of the site collection to delete
 
-> **useRecycleBin:** Leave the deleted site collection in the site collection recycle bin
-
-> ##### Return value
-> True if deleted
-
-#### DeleteSiteCollectionFromRecycleBin(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean)
-Deletes a site collection from the site collection recycle bin
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** URL of the site collection to delete
-
-> **wait:** If true, processing will halt until the site collection has been deleted from the recycle bin
-
-> ##### Return value
-> True if deleted
-
-#### GetSiteGuidByUrl(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
-Gets the ID of site collection with specified URL
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** A URL that specifies a site collection to get ID.
-
-> ##### Return value
-> The Guid of a site collection
-
-#### GetSiteGuidByUrl(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Uri)
-Gets the ID of site collection with specified URL
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** A URL that specifies a site collection to get ID.
-
-> ##### Return value
-> The Guid of a site collection or an Guid.Empty if the Site does not exist
-
-#### GetWebTemplates(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.UInt32,System.Int32)
-Returns available webtemplates/site definitions
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **lcid:** 
-
-> **compatibilityLevel:** 14 for SharePoint 2010, 15 for SharePoint 2013/SharePoint Online
-
-> ##### Return value
-> 
-
-#### SetSiteProperties(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Double},System.Nullable{System.Double})
-Sets tenant site Properties
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **siteFullUrl:** 
-
-> **title:** 
-
-> **allowSelfServiceUpgrade:** 
-
-> **sharingCapability:** 
-
-> **storageMaximumLevel:** 
-
-> **storageWarningLevel:** 
-
-> **userCodeMaximumLevel:** 
-
-> **userCodeWarningLevel:** 
-
-
-#### SetSiteLockState(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,OfficeDevPnP.Core.SiteLockState,System.Boolean)
-Sets a site to Unlock access or NoAccess. This operation may occur immediately, but the site lock may take a short while before it goes into effect.
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site (i.e. https://[tenant]-admin.sharepoint.com)
-
-> **siteFullUrl:** The target site to change the lock state.
-
-> **lockState:** The target state the site should be changed to.
-
-> **wait:** If true, processing will halt until the site collection lock state has been implemented
-
-
-#### AddAdministrators(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Collections.Generic.IEnumerable{OfficeDevPnP.Core.Entities.UserEntity},System.Uri,System.Boolean)
-Add a site collection administrator to a site collection
-> ##### Parameters
-> **tenant:** A tenant object pointing to the context of a Tenant Administration site
-
-> **adminLogins:** Array of admins loginnames to add
-
-> **siteUrl:** Url of the site to operate on
-
-> **addToOwnersGroup:** Optionally the added admins can also be added to the Site owners group
-
-
-#### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean)
-Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. EndIndex is the maximum number based on chunkcs of 300.
-> ##### Parameters
-> **tenant:** Tenant object to operate against
-
-> **startIndex:** Start getting site collections from this index. Defaults to 0
-
-> **endIndex:** The index of the last site. Defaults to 100.000
-
-> **includeDetail:** Option to return a limited set of data
-
-> ##### Return value
-> An IList of SiteEntity objects
-
-#### GetOneDriveSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant)
-Get OneDrive site collections by iterating through all user profiles.
-> ##### Parameters
-> **tenant:** 
-
-> ##### Return value
-> List of objects containing site collection info.
-
-#### GetUserProfileServiceClient(Microsoft.Online.SharePoint.TenantAdministration.Tenant)
-Gets the UserProfileService proxy to enable calls to the UPA web service.
-> ##### Parameters
-> **tenant:** 
-
-> ##### Return value
-> UserProfileService web service client
 
 ## SharePoint.Client.WebExtensions
             
@@ -4959,22 +4584,6 @@ Returns an event receiver definition
 > ##### Return value
 > 
 
-#### SetLocalizationLabels(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String)
-Can be used to set translations for different cultures.
-> ##### Parameters
-> **web:** Site to be processed - can be root web or sub site
-
-> **cultureName:** Culture name like en-us or fi-fi
-
-> **titleResource:** Localized Title string
-
-> **descriptionResource:** Localized Description string
-
-> ##### Example
-> 
-                web.SetLocalizationForSiteLabels("fi-fi", "Name of the site in Finnish", "Description in Finnish");
-            
-
 #### ApplyProvisioningTemplate(Microsoft.SharePoint.Client.Web,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation)
 Can be used to apply custom remote provisioning template on top of existing site.
 > ##### Parameters
@@ -5016,36 +4625,6 @@ Sets output cache on publishing web. The settings can be maintained from UI by v
 
 > **debugCacheInformation:** Specify true to enable the display of additional cache information on pages in this site collection. False otherwise.
 
-
-#### DisableRequestAccess(Microsoft.SharePoint.Client.Web)
-Disables the request access on the web.
-> ##### Parameters
-> **web:** The web to disable request access.
-
-
-#### EnableRequestAccess(Microsoft.SharePoint.Client.Web,System.String[])
-Enables request access for the specified e-mail addresses.
-> ##### Parameters
-> **web:** The web to enable request access.
-
-> **emails:** The e-mail addresses to send access requests to.
-
-
-#### EnableRequestAccess(Microsoft.SharePoint.Client.Web,System.Collections.Generic.IEnumerable{System.String})
-Enables request access for the specified e-mail addresses.
-> ##### Parameters
-> **web:** The web to enable request access.
-
-> **emails:** The e-mail addresses to send access requests to.
-
-
-#### GetRequestAccessEmails(Microsoft.SharePoint.Client.Web)
-Gets the request access e-mail addresses of the web.
-> ##### Parameters
-> **web:** The web to get the request access e-mail addresses from.
-
-> ##### Return value
-> The request access e-mail addresses of the web.
 
 ## SharePoint.Client.WorkflowExtensions
             
@@ -5448,118 +5027,6 @@ Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requi
 
 > ##### Return value
 > ClientContext to be used by CSOM code
-
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Native Application Client ID
-
-> **redirectUrl:** The Azure AD Native Application Redirect Uri as a string
-
-> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
-
-> ##### Return value
-> 
-
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Native Application Client ID
-
-> **redirectUri:** The Azure AD Native Application Redirect Uri
-
-> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
-
-> ##### Return value
-> 
-
-#### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **accessTokenGetter:** The AccessToken getter method to use
-
-> ##### Return value
-> 
-
-#### GetAzureADAccessTokenAuthenticatedContext(System.String,System.String)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **accessToken:** An explicit value for the AccessToken
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **storeName:** The name of the store for the certificate
-
-> **storeLocation:** The location of the store for the certificate
-
-> **thumbPrint:** The thumbprint of the certificate to locate in the store
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificatePath:** The path to the certificate (*.pfx) file on the file system
-
-> **certificatePassword:** Password to the certificate
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificatePath:** The path to the certificate (*.pfx) file on the file system
-
-> **certificatePassword:** Password to the certificate
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificate:** 
-
-> ##### Return value
-> 
 
 #### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
 Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
@@ -13799,40 +13266,6 @@ Prepares the timerjob to operate against SharePoint on-premises with app-only cr
 > **clientId:** Client ID of the app
 
 > **clientSecret:** Client Secret of the app
-
-
-#### UseAzureADAppOnlyAuthentication(System.String,System.String,System.String,System.String)
-Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType to AuthenticationType.AzureADAppOnly
-> ##### Parameters
-> **clientId:** Client ID of the app
-
-> **azureTenant:** The Azure tenant name, like contoso.com
-
-> **certificatePath:** The path to the *.pfx certicate file
-
-> **certificatePassword:** The password to the certificate
-
-
-#### UseAzureADAppOnlyAuthentication(System.String,System.String,System.String,System.Security.SecureString)
-Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType to AuthenticationType.AzureADAppOnly
-> ##### Parameters
-> **clientId:** Client ID of the app
-
-> **azureTenant:** The Azure tenant name, like contoso.com
-
-> **certificatePath:** The path to the *.pfx certicate file
-
-> **certificatePassword:** The password to the certificate
-
-
-#### UseAzureADAppOnlyAuthentication(System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2)
-Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType to AuthenticationType.AzureADAppOnly
-> ##### Parameters
-> **clientId:** Client ID of the app
-
-> **azureTenant:** The Azure tenant name, like contoso.com
-
-> **certificate:** The X.509 Certificate to use for AppOnly Authentication
 
 
 #### Clone(OfficeDevPnP.Core.Framework.TimerJobs.TimerJob)
