@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     public partial class Page
     {
-        [Obsolete("Instead of this member, please use WelcomePage property of the WebSettings object.")]
+        [Obsolete("Instead of this member, please use WelcomePage property of the WebSettings object. This method will be removed in the June 2016 release.")]
         public bool WelcomePage
         {
             get
@@ -37,13 +37,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        [Obsolete("Instead of this constructor, please use the one without the WelcomePage property")]
+        [Obsolete("Instead of this constructor, please use the one without the WelcomePage property. This constructor will be removed in the June 2016 release.")]
         public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false, ObjectSecurity security = null) :
             this(url, overwrite, layout, webParts, welcomePage, security, null)
         {
         }
 
-        [Obsolete("Instead of this constructor, please use the one without the WelcomePage property")]
+        [Obsolete("Instead of this constructor, please use the one without the WelcomePage property. This constructor will be removed in the June 2016 release.")]
         public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, bool welcomePage = false, ObjectSecurity security = null, Dictionary<String, String> fields = null) :
             this(url, overwrite, layout, webParts, security, fields)
         {

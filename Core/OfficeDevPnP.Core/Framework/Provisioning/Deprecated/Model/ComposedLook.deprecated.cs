@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the Site Logo
         /// </summary>
-        [Obsolete("Instead of this member, please use SiteLogo property of the WebSettings object.")]
+        [Obsolete("Instead of this member, please use SiteLogo property of the WebSettings object. This method will be removed in the June 2016 release.")]
         public string SiteLogo
         {
             get
@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the AlternateCSS
         /// </summary>
-        [Obsolete("Instead of this member, please use AlternateCSS property of the WebSettings object.")]
+        [Obsolete("Instead of this member, please use AlternateCSS property of the WebSettings object. This method will be removed in the June 2016 release.")]
         public string AlternateCSS
         {
             get
@@ -75,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the MasterPage for the Composed Look
         /// </summary>
-        [Obsolete("Instead of this member, please use MasterPageUrl property of the WebSettings object.")]
+        [Obsolete("Instead of this member, please use MasterPageUrl property of the WebSettings object. This method will be removed in the June 2016 release.")]
         public string MasterPage
         {
             get

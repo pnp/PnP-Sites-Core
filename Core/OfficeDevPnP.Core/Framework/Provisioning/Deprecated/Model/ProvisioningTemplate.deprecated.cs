@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets a collection of Providers that are used during the extensibility pipeline
         /// </summary>
         /// 
-        [Obsolete("Use ExtensibilityHandlers")]
+        [Obsolete("Use ExtensibilityHandlers. This property will be removed in the June 2016 release.")]
         public ProviderCollection Providers
         {
             get { return this._providers; }

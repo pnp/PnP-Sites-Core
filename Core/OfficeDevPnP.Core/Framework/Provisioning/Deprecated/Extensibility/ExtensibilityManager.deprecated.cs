@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        [Obsolete("Use ExecuteExtensibilityProvisionCallOut")]
+        [Obsolete("Use ExecuteExtensibilityProvisionCallOut. This method will be removed in the June 2016 release.")]
         public void ExecuteExtensibilityCallOut(ClientContext ctx, ExtensibilityHandler handler, ProvisioningTemplate template)
         {
             ExecuteExtensibilityProvisionCallOut(ctx, handler, template, null, null, null);
