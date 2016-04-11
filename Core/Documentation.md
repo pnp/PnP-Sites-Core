@@ -738,6 +738,14 @@ Field exists in content type
 > ##### Return value
 > True if exists, false otherwise
 
+#### SetJsLinkCustomizations(Microsoft.SharePoint.Client.Field,System.String)
+Adds jsLink to a field.
+> ##### Parameters
+> **field:** The field to add jsLink to
+
+> **jsLink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+
+
 #### CreateField(Microsoft.SharePoint.Client.List,OfficeDevPnP.Core.Entities.FieldCreationInformation,System.Boolean)
 Adds field to a list
 > ##### Parameters
@@ -833,6 +841,16 @@ Gets a list of fields from a list by names.
 
 > ##### Return value
 > List of fields requested.
+
+#### SetJsLinkCustomizations(Microsoft.SharePoint.Client.List,System.String,System.String)
+Adds jsLink to a list field.
+> ##### Parameters
+> **list:** The list where the field exists.
+
+> **fieldName:** The field to add jsLink to.
+
+> **jsLink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+
 
 #### ParseAdditionalAttributes(System.String)
 Helper method to parse Key="Value" strings into a keyvaluepair
