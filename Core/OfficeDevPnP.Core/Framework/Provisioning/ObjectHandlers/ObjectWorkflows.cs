@@ -245,7 +245,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             .Where(d => d.Key == "TaskListId" ||
                                         d.Key == "HistoryListId" ||
                                         d.Key == "SharePointWorkflowContext.Subscription.Id" ||
-                                        d.Key == "SharePointWorkflowContext.Subscription.Name"))
+                                        d.Key == "SharePointWorkflowContext.Subscription.Name" ||
+                                        d.Key == "CreatedBySPD"))
                         {
                             workflowSubscription.SetProperty(propertyDefinition.Key, parser.ParseString(propertyDefinition.Value));
                         }
