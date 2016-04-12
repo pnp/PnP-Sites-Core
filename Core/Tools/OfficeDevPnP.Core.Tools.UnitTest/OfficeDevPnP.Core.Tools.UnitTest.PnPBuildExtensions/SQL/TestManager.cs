@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         public int AddTestSetRecord()
         {
             // Grab the build of the environment we're testing
+
             string build = GetBuildNumber();
 
             // Log a record to indicate we're starting up the testing
@@ -70,6 +71,9 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
 
             // persist to the database
             SaveChanges();
+
+            // Clear the first test run flag
+            this.firstTest = true;
 
             return testRun.Id;
         }
@@ -186,7 +190,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
         /// <returns>Build number of the environment that's being tested</returns>
         private string GetBuildNumber()
         {
-            string build;
+            string build = "";
             try
             {
                 AuthenticationManager am = new AuthenticationManager();
@@ -241,7 +245,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
             {
                 Console.WriteLine("ERROR: Most likely something is wrong with the provided credentials (username+pwd, appid+secret, credential manager setting) causing the below error:");
                 Console.WriteLine(ex.ToString());
-                throw;
+                //throw;
             }
 
             return build;
