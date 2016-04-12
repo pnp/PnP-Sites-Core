@@ -100,6 +100,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner
             }
 
             // persist the log file
+            
             TestRun run = context.TestRunSet.Find(this.testRunId);
             run.MSBuildLog = sb.ToString();
             // If the run did not finish by now then something went wrong
