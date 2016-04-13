@@ -855,7 +855,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>Powershell.exe -ExecutionPolicy Unrestricted -file "$(SolutionDir)xmldoc2md.ps1" -xml "$(TargetDir)OfficeDevPnP.Core.XML" -xsl "$(SolutionDir)xmldoc2md.xsl" -output "$(SolutionDir)Documentation.md"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
