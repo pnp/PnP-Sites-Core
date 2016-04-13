@@ -520,6 +520,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  ContentTypeID = contentTypeBinding.ContentTypeId,
                                  Default = contentTypeBinding.Default,
                              }).ToArray() : null,
+                         UserCustomActions = list.UserCustomActions.Count > 0 ?
+                            (from userCustomAction in list.UserCustomActions
+                             select new V201512.CustomAction
+                             {
+                                 Title = userCustomAction.Title,
+                                 Description = userCustomAction.Description,
+                                 Name = userCustomAction.Name,
+                                 RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), userCustomAction.RegistrationType.ToString(), true),
+                                 RegistrationId = userCustomAction.RegistrationId,
+                                 Url = userCustomAction.Url,
+                                 ImageUrl = userCustomAction.ImageUrl,
+                                 Rights = userCustomAction.Rights.FromBasePermissionsToString(),
+                                 Sequence = userCustomAction.Sequence,
+                                 ScriptBlock = userCustomAction.ScriptBlock,
+                                 ScriptSrc = userCustomAction.ScriptSrc,
+                                 Group = userCustomAction.Group,
+                                 Location = userCustomAction.Location
+                             }).ToArray() : null,
                          Views = list.Views.Count > 0 ?
                          new V201512.ListInstanceViews
                          {
@@ -1450,6 +1468,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  {
                                      ContentTypeId = contentTypeBinding.ContentTypeID,
                                      Default = contentTypeBinding.Default,
+                                 }) : null),
+                        (list.UserCustomActions != null ?                              
+                                (from userCustomAction in list.UserCustomActions
+                                 select new Model.CustomAction
+                                 {
+                                     Title = userCustomAction.Title,
+                                     Description = userCustomAction.Description,
+                                     Name = userCustomAction.Name,
+                                     RegistrationType = (UserCustomActionRegistrationType)Enum.Parse(typeof(UserCustomActionRegistrationType), userCustomAction.RegistrationType.ToString(), true),
+                                     RegistrationId = userCustomAction.RegistrationId,
+                                     Url = userCustomAction.Url,
+                                     ImageUrl = userCustomAction.ImageUrl,
+                                     Rights =  userCustomAction.Rights.ToBasePermissions(),
+                                     Sequence = userCustomAction.Sequence,
+                                     ScriptBlock = userCustomAction.ScriptBlock,
+                                     ScriptSrc = userCustomAction.ScriptSrc,
+                                     Group = userCustomAction.Group,
+                                     Location = userCustomAction.Location
                                  }) : null),
                         (list.Views != null ?
                                 (from view in list.Views.Any

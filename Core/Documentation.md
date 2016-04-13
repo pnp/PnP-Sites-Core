@@ -7258,8 +7258,10 @@ Gets or sets whether attachments are enabled. Defaults to true.
 Gets or sets whether folder is enabled. Defaults to true.
 #### ContentTypeBindings
 Gets or sets the content types to associate to the list
+#### UserCustomActions
+Gets or sets the User Custom Actions to associate to the list
 #### Views
-Gets or sets the content types to associate to the list
+Gets or sets the Views to associate to the list
 #### FieldDefaults
 Defines a list of default values for the Fields of the List Instance
 #### Security
@@ -12764,6 +12766,8 @@ The default namespace prefix of the target XML Namespace
 
 #### ContentTypeBindings
 
+#### UserCustomActions
+
 #### Views
 
 #### Fields
@@ -12840,6 +12844,79 @@ The default namespace prefix of the target XML Namespace
 #### ContentTypeID
 
 #### Default
+
+
+## Core.Framework.Provisioning.Providers.Xml.V201512.CustomAction
+            
+
+        
+### Properties
+
+#### CommandUIExtension
+
+#### Name
+
+#### Description
+
+#### Group
+
+#### Location
+
+#### Title
+
+#### Sequence
+
+#### SequenceSpecified
+
+#### Rights
+
+#### Url
+
+#### Enabled
+
+#### ScriptBlock
+
+#### ImageUrl
+
+#### ScriptSrc
+
+#### RegistrationId
+
+#### RegistrationType
+
+#### RegistrationTypeSpecified
+
+#### 
+
+#### 
+
+#### 
+
+
+## Core.Framework.Provisioning.Providers.Xml.V201512.CustomActionCommandUIExtension
+            
+
+        
+### Properties
+
+#### Any
+
+
+## Core.Framework.Provisioning.Providers.Xml.V201512.RegistrationType
+            
+
+        
+### Fields
+
+#### None
+
+#### List
+
+#### ContentType
+
+#### ProgId
+
+#### FileType
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.ListInstanceViews
@@ -12972,79 +13049,6 @@ The default namespace prefix of the target XML Namespace
 #### SiteCustomActions
 
 #### WebCustomActions
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201512.CustomAction
-            
-
-        
-### Properties
-
-#### 
-
-#### 
-
-#### CommandUIExtension
-
-#### Name
-
-#### Description
-
-#### Group
-
-#### Location
-
-#### Title
-
-#### Sequence
-
-#### SequenceSpecified
-
-#### Rights
-
-#### Url
-
-#### Enabled
-
-#### ScriptBlock
-
-#### ImageUrl
-
-#### ScriptSrc
-
-#### RegistrationId
-
-#### RegistrationType
-
-#### RegistrationTypeSpecified
-
-#### 
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201512.CustomActionCommandUIExtension
-            
-
-        
-### Properties
-
-#### Any
-
-
-## Core.Framework.Provisioning.Providers.Xml.V201512.RegistrationType
-            
-
-        
-### Fields
-
-#### None
-
-#### List
-
-#### ContentType
-
-#### ProgId
-
-#### FileType
 
 
 ## Core.Framework.Provisioning.Providers.Xml.V201512.File

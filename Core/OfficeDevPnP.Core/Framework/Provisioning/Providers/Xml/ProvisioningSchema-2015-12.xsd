@@ -1398,6 +1398,19 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="UserCustomActions" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Defines a collection of elements of type CustomAction for the List Instance, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="CustomAction" type="pnp:CustomAction"
+                         minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="Views" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
