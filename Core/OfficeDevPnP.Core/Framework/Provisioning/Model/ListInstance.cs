@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ListInstance()
         {
             this._ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
+            this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
             this._views = new ViewCollection(this.ParentTemplate);
             this._fields = new FieldCollection(this.ParentTemplate);
             this._fieldRefs = new FieldRefCollection(this.ParentTemplate);
@@ -54,10 +55,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Folders.AddRange(folders);
         }
 
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings, IEnumerable<CustomAction> userCustomActions,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) :
+            this()
+        {
+            this.ContentTypeBindings.AddRange(contentTypeBindings);
+            this.UserCustomActions.AddRange(userCustomActions);
+            this.Views.AddRange(views);
+            this.Fields.AddRange(fields);
+            this.FieldRefs.AddRange(fieldRefs);
+            this.DataRows.AddRange(dataRows);
+            if (fieldDefaults != null)
+            {
+                this._fieldDefaults = fieldDefaults;
+            }
+            if (security != null)
+            {
+                this.Security = security;
+            }
+            this.Folders.AddRange(folders);
+        }
+
         #endregion
 
         #region Private Members
         private ContentTypeBindingCollection _ctBindings;
+        private CustomActionCollection _userCustomActions;
         private ViewCollection _views;
         private FieldCollection _fields;
         private FieldRefCollection _fieldRefs;
@@ -178,7 +201,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Gets or sets the content types to associate to the list
+        /// Gets or sets the User Custom Actions to associate to the list
+        /// </summary>
+        public CustomActionCollection UserCustomActions
+        {
+            get { return this._userCustomActions; }
+            private set { this._userCustomActions = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the Views to associate to the list
         /// </summary>
         public ViewCollection Views
         {

@@ -1136,6 +1136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
+                        l => l.UserCustomActions,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1203,6 +1204,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     list = ExtractViews(siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, lists);
+
+                    list = ExtractUserCustomActions(web, siteList, list);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1440,6 +1443,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+            return list;
+        }
+
+        private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list)
+        {
+            foreach (var uca in siteList.UserCustomActions)
+            {
+                web.Context.Load(uca, c => c);
+                web.Context.ExecuteQueryRetry();
+
+                //todo Finish once Schema updated?
+                list.UserCustomActions.Add(new CustomAction
+                {
+                    Title = uca.Title,
+                    Description = uca.Description,
+                    Name = uca.Name,
+                    RegistrationType = uca.RegistrationType,
+                    RegistrationId = uca.RegistrationId,
+                    Url = uca.Url,
+                    ImageUrl = uca.ImageUrl,
+                    Rights = uca.Rights,
+                    Sequence = uca.Sequence,
+                    ScriptBlock = uca.ScriptBlock,
+                    ScriptSrc = uca.ScriptSrc,
+                    Group = uca.Group,
+                    Location = uca.Location
+                }
+                );
+
+            }
+
             return list;
         }
 
