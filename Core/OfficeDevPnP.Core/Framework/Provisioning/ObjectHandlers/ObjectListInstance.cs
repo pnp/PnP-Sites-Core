@@ -281,6 +281,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion
 
+
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
                     {
@@ -852,6 +853,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+
+                #region UserCustomActions
+                //add any UserCustomActions
+                var existingUserCustomActions = existingList.UserCustomActions;
+                web.Context.Load(existingUserCustomActions, cts => cts);
+                web.Context.ExecuteQueryRetry();
+
+                foreach (CustomAction userCustomAction in templateList.UserCustomActions)
+                {
+                    //check for existing custom actions before adding (anything better to use than title?)
+                    if (!existingUserCustomActions.Any(uca => uca.Title == userCustomAction.Title))
+                    {
+                        UserCustomAction newUserCustomAction = existingList.UserCustomActions.Add();
+
+                        newUserCustomAction.Title = userCustomAction.Title;
+                        newUserCustomAction.Description = userCustomAction.Description;
+                        newUserCustomAction.Name = userCustomAction.Name;
+                      //  newUserCustomAction.RegistrationType = userCustomAction.RegistrationType;
+                      // newUserCustomAction.RegistrationId = userCustomAction.RegistrationId;
+                        newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
+                        newUserCustomAction.Rights = userCustomAction.Rights;
+                        newUserCustomAction.Sequence = userCustomAction.Sequence;
+                        newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
+                        newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
+                        newUserCustomAction.Group = userCustomAction.Group;
+                        newUserCustomAction.Location = userCustomAction.Location;
+
+                        newUserCustomAction.Update();
+
+                        isDirty = true;
+                    }
+                }
+                #endregion
+
                 if (isDirty)
                 {
                     existingList.Update();
@@ -894,7 +929,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (templateList.Security != null)
                 {
                     existingList.SetSecurity(parser, templateList.Security);
-                }
+                } 
+
                 return Tuple.Create(existingList, parser);
             }
             else
@@ -1063,6 +1099,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
                 }
+            }
+
+            //add any UserCustomActions
+            if (list.UserCustomActions.Any())
+            {
+                foreach (CustomAction userCustomAction in list.UserCustomActions)
+                {
+                    UserCustomAction newUserCustomAction = createdList.UserCustomActions.Add();
+
+                    newUserCustomAction.Title = userCustomAction.Title;
+                    newUserCustomAction.Description = userCustomAction.Description;
+                    newUserCustomAction.Name = userCustomAction.Name;
+                    newUserCustomAction.RegistrationType = userCustomAction.RegistrationType;
+                    newUserCustomAction.RegistrationId = userCustomAction.RegistrationId;
+                    newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
+                    newUserCustomAction.Rights = userCustomAction.Rights;
+                    newUserCustomAction.Sequence = userCustomAction.Sequence;
+                    newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
+                    newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
+                    newUserCustomAction.Group = userCustomAction.Group;
+                    newUserCustomAction.Location = userCustomAction.Location;
+
+                    newUserCustomAction.Update();
+                }
+
+                web.Context.ExecuteQueryRetry();
             }
 
             if (list.Security != null)
