@@ -91,7 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (subscriptions != null)
                     {
-#if CLIENTSDKV15
+#if ONPREMISES
                         template.Workflows.WorkflowSubscriptions.AddRange(
                             from s in subscriptions
                             select new Model.WorkflowSubscription(s.PropertyDefinitions.TokenizeWorkflowSubscriptionProperties(lists))
@@ -213,7 +213,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
                                 continue;
                             }
-#if CLIENTSDKV15
+#if ONPREMISES
                     // Create the WorkflowDefinition instance
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
                         new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)

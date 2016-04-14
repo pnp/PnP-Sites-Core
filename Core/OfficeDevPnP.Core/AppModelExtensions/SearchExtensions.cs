@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="searchConfiguration"></param>
         private static void SetSearchConfigurationImplementation(ClientRuntimeContext context, SearchObjectLevel searchObjectLevel, string searchConfiguration)
         {
-#if CLIENTSDKV15
+#if ONPREMISES
             if (searchObjectLevel == SearchObjectLevel.Ssa)
             {
                 // Reference: https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.client.search.portability.searchconfigurationportability_members.aspx

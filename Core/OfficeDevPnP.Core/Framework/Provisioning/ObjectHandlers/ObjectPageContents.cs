@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Row = (uint)webPart.WebPart.ZoneIndex,
                     Contents = webPartxml
                 };
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
                 if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                 {

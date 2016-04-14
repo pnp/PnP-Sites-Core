@@ -582,7 +582,7 @@ namespace Microsoft.SharePoint.Client
 
 
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// <see href="http://blogs.msdn.com/b/vesku/archive/2014/03/20/office365-multilingual-content-types-site-columns-and-site-other-elements.aspx"/>
@@ -626,7 +626,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>
@@ -1143,7 +1143,7 @@ namespace Microsoft.SharePoint.Client
                         EventReceiverDefinitionCreationInformation eventCi = new EventReceiverDefinitionCreationInformation();
                         eventCi.Synchronization = EventReceiverSynchronization.Synchronous;
                         eventCi.EventType = EventReceiverType.ItemAdded;
-#if !CLIENTSDKV15
+#if !ONPREMISES
                         eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";
 #else
                         eventCi.ReceiverAssembly = "Microsoft.Office.DocumentManagement, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c";

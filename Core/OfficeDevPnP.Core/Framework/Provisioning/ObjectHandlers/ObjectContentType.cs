@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
                 isDirty = true;
             }
-#if !CLIENTSDKV15
+#if !ONPREMISES
             if (templateContentType.Name.ContainsResourceToken())
             {
                 existingContentType.NameResource.SetUserResourceValue(templateContentType.Name, parser);
@@ -242,7 +242,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add new CTs
             parser.AddToken(new ContentTypeIdToken(web, name, id));
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
             // Set resources
             if (templateContentType.Name.ContainsResourceToken())
             {

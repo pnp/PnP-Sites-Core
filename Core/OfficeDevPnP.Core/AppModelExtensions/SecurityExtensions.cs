@@ -318,7 +318,8 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-        #region External sharing management
+#if !ONPREMISES
+#region External sharing management
         /// <summary>
         /// Get the external sharing settings for the provided site. Only works in Office 365 Multi-Tenant
         /// </summary>
@@ -364,9 +365,9 @@ namespace Microsoft.SharePoint.Client
                         DisplayName = externalUser.DisplayName,
                         AcceptedAs = externalUser.AcceptedAs,
                         InvitedAs = externalUser.InvitedAs,
-                        InvitedBy = externalUser.InvitedBy,
                         UniqueId = externalUser.UniqueId,
-                        WhenCreated = externalUser.WhenCreated
+                        InvitedBy = externalUser.InvitedBy,
+                        WhenCreated = externalUser.WhenCreated,
                     });
                 }
 
@@ -425,9 +426,9 @@ namespace Microsoft.SharePoint.Client
                             DisplayName = externalUser.DisplayName,
                             AcceptedAs = externalUser.AcceptedAs,
                             InvitedAs = externalUser.InvitedAs,
-                            InvitedBy = externalUser.InvitedBy,
                             UniqueId = externalUser.UniqueId,
-                            WhenCreated = externalUser.WhenCreated
+                            InvitedBy = externalUser.InvitedBy,
+                            WhenCreated = externalUser.WhenCreated,
                         });
                     }
 
@@ -444,9 +445,10 @@ namespace Microsoft.SharePoint.Client
             return externalUsers;
         }
 
-        #endregion
+#endregion
+#endif
 
-        #region Group management
+#region Group management
         /// <summary>
         /// Returns the integer ID for a given group name
         /// </summary>
@@ -1154,9 +1156,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-        #endregion
+#endregion
 
-        #region Authentication Realm
+#region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
@@ -1174,11 +1176,11 @@ namespace Microsoft.SharePoint.Client
             return returnGuid;
 
         }
-        #endregion
+#endregion
 
-        #region SecurableObject traversal
+#region SecurableObject traversal
 
-        #region Helpers
+#region Helpers
 
         /// <summary>
         /// Get URL path of a securable object
@@ -1312,9 +1314,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
-        #region Entity cache
+#region Entity cache
 
         /// <summary>
         /// A dictionary to cache resolved user emails. key: user login name, value: user email.
@@ -1369,7 +1371,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Get all unique role assignments for a web object and all its descendents down to document or list item level.
@@ -1434,6 +1436,6 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-        #endregion
+#endregion
     }
 }

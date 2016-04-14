@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
-#if CLIENTSDKV15
+#if ONPREMISES
     [TestClass()]
     public class Tenant15ExtensionsTests
     {

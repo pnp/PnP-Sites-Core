@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Utilities
     public static class UrlUtility
     {
         const char PATH_DELIMITER = '/';
-#if !CLIENTSDKV15
+#if !ONPREMISES
         const string INVALID_CHARS_REGEX = @"[\\#%*/:<>?+|\""]";
 #else
         const string INVALID_CHARS_REGEX = @"[\\~#%&*{}/:<>?+|\""]";

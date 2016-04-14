@@ -108,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var userFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
                                 if (userFieldValue != null)
                                 {
-#if !CLIENTSDKV15
+#if !ONPREMISES
                                     value = userFieldValue.Email;
 #else
                                 value = userFieldValue.LookupValue;

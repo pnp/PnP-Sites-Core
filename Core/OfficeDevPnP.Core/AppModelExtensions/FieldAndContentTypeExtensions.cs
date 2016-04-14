@@ -1581,7 +1581,7 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
 
         #region Localization
 

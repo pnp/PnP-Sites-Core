@@ -51,7 +51,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
         /// <param name="resolvedSites">List of site collections matching the passed wildcard site Url</param>
         internal void ResolveSite(Tenant tenant, string siteWildCard, List<string> resolvedSites)
         {
-#if !CLIENTSDKV15
+#if !ONPREMISES
             //strip the wildcard
             string searchString = siteWildCard.Substring(0, siteWildCard.IndexOf("*"));
 
@@ -108,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
         /// <param name="tenant">Tenant object to operate against</param>
         private void FillSitesViaTenantAPIAndSearch(Tenant tenant)
         {
-#if !CLIENTSDKV15
+#if !ONPREMISES
             // Use tenant API to get the regular sites
             var props = tenant.GetSiteCollections(includeDetail: false);
             

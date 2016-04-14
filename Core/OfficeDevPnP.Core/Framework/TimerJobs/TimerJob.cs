@@ -356,7 +356,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 ccSite = CreateClientContext(rootSite);
             }
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
             // Instantiate ClientContext against tenant admin site, this is needed to operate using the Tenant API
             string tenantAdminSiteUrl = tenantAdminSite;
             if (string.IsNullOrEmpty(tenantAdminSiteUrl))
@@ -804,7 +804,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AppOnly, clientId);
         }
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Prepares the timerjob to operate against SharePoint Only with Azure AD app-only credentials. Sets AuthenticationType 
         /// to AuthenticationType.AzureADAppOnly
@@ -1407,7 +1407,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
                 }
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
                 {
                     if (this.certificate != null)

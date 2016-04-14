@@ -536,7 +536,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
                 bool isDirty = false;
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -619,7 +619,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingField.UpdateAndPushChanges(true);
                         web.Context.ExecuteQueryRetry();
                         bool isDirty = false;
-#if !CLIENTSDKV15
+#if !ONPREMISES
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -708,7 +708,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.DraftVersionVisibility,
                 l => l.Views,
                 l => l.RootFolder
-#if !CLIENTSDKV15
+#if !ONPREMISES
 , l => l.MajorWithMinorVersionsLimit
 #endif
 );
@@ -776,7 +776,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 if (templateList.Title.ContainsResourceToken())
                 {
                     if (existingList.TitleResource.SetUserResourceValue(templateList.Title, parser))
@@ -801,7 +801,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.EnableVersioning = templateList.EnableVersioning;
                         isDirty = true;
                     }
-#if !CLIENTSDKV15
+#if !ONPREMISES
                     if (existingList.IsObjectPropertyInstantiated("MajorVersionLimit") && existingList.MajorVersionLimit != templateList.MaxVersionLimit)
                     {
                         existingList.MajorVersionLimit = templateList.MaxVersionLimit;
@@ -924,7 +924,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList, l => l.BaseTemplate);
             web.Context.ExecuteQueryRetry();
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
             if (list.Title.ContainsResourceToken())
             {
                 createdList.TitleResource.SetUserResourceValue(list.Title, parser);
@@ -954,7 +954,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableVersioning = list.EnableVersioning;
                 if (list.EnableVersioning)
                 {
-#if !CLIENTSDKV15
+#if !ONPREMISES
                     createdList.MajorVersionLimit = list.MaxVersionLimit;
 #endif
 

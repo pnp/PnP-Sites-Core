@@ -80,7 +80,7 @@ namespace Microsoft.SharePoint.Client
 
             IEnumerable<WebPartDefinition> query = null;
 
-#if CLIENTSDKV15
+#if ONPREMISES
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
             query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
 #else
@@ -395,7 +395,7 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
                 var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
 
-#if CLIENTSDKV15
+#if ONPREMISES
                 request.Credentials = web.Context.Credentials;
 #else
                 var credentials = web.Context.Credentials as SharePointOnlineCredentials;

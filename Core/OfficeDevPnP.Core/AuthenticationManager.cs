@@ -173,7 +173,7 @@ namespace OfficeDevPnP.Core
             return null;
         }
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
         /// </summary>

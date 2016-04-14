@@ -67,7 +67,7 @@ namespace Microsoft.SharePoint.Client.Tests
             clientContext.ExecuteQueryRetry();
 
             string appToRemove = APPNAME;
-#if CLIENTSDKV15
+#if ONPREMISES
             appToRemove += "15";
 #endif
 
@@ -315,7 +315,7 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.IsInstanceOfType(instances, typeof(ClientObjectList<AppInstance>), "Incorrect return value");
             int instanceCount = instances.Count;
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp;
 #else
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp15;
@@ -340,7 +340,7 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.IsInstanceOfType(instances, typeof(ClientObjectList<AppInstance>), "Incorrect return value");
             int instanceCount = instances.Count;
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp;
 #else
             byte[] appToLoad = OfficeDevPnP.Core.Tests.Properties.Resources.HelloWorldApp15;
@@ -354,7 +354,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
             string appToRemove = APPNAME;
 
-#if CLIENTSDKV15
+#if ONPREMISES
             appToRemove += "15";
 #endif
 

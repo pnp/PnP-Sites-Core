@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(
-#if !CLIENTSDKV15
+#if !ONPREMISES
                     w => w.NoCrawl,
                     w => w.RequestAccessEmail,
 #endif
@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.Url);
 
                 var webSettings = new WebSettings();
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 #endif
@@ -196,7 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (template.WebSettings != null)
                 {
                     var webSettings = template.WebSettings;
-#if !CLIENTSDKV15
+#if !ONPREMISES
                     web.NoCrawl = webSettings.NoCrawl;
 
                     web.EnsureProperty(w => w.HasUniqueRoleAssignments);

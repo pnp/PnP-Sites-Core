@@ -13,7 +13,7 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
-#if !CLIENTSDKV15
+#if !ONPREMISES
     [TestClass()]
     public class TenantExtensionsTests
     {

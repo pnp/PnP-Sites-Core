@@ -1025,7 +1025,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Localization
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>
@@ -1120,7 +1120,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
 #region Request Access
-#if !CLIENTSDKV15
+#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>

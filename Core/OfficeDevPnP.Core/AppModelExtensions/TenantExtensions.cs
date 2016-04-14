@@ -19,7 +19,7 @@ namespace Microsoft.SharePoint.Client
         const string SITE_STATUS_CREATING = "Creating"; 
         const string SITE_STATUS_RECYCLED = "Recycled"; 
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish

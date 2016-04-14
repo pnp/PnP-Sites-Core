@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         [TestMethod]
         public void ContainsInvalidUrlCharsReturnsTrueForInvalidString()
         {
-#if !CLIENTSDKV15
+#if !ONPREMISES
             var targetVals = new List<char> { '#', '%', '*', '\\', ':', '<', '>', '?', '/', '+', '|', '"' };
 #else
             var targetVals = new List<char> { '#', '~', '%', '&', '*', '{', '}', '\\', ':', '<', '>', '?', '/', '+', '|', '"' };
@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         [TestMethod]
         public void StripInvalidUrlCharsReturnsStrippedString()
         {
-#if !CLIENTSDKV15
+#if !ONPREMISES
             var invalidString = "a#%*\\:<>?/+|b";
 #else
             var invalidString = "a#~%&*{}\\:<>?/+|b";
@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         [TestMethod]
         public void ReplaceInvalidUrlCharsReturnsStrippedString()
         {
-#if !CLIENTSDKV15
+#if !ONPREMISES
             var invalidString = "a#%*\\:<>?/+|b";
             Assert.AreEqual("a---------------------------------b", invalidString.ReplaceInvalidUrlChars("---"));
 #else

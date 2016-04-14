@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             templates.Add(new BaseTemplate("BDR#0"));
             templates.Add(new BaseTemplate("DEV#0"));
             templates.Add(new BaseTemplate("OFFILE#1"));
-#if !CLIENTSDKV15
+#if !ONPREMISES
             templates.Add(new BaseTemplate("EHS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0"));
 #else
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 tenantCtx.RequestTimeout = Timeout.Infinite;
                 Tenant tenant = new Tenant(tenantCtx);
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 if (deleteSites)
                 {
                     // First delete all template site collections when in SPO
@@ -251,7 +251,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 DumpTemplate(ctx, "DEV#0");
                 DumpTemplate(ctx, "OFFILE#1");
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 DumpTemplate(ctx, "EHS#1");
                 DumpTemplate(ctx, "BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0");
 #else
@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             if (subSiteTemplate.Length > 0)
             {
                 siteUrl = string.Format("{1}/sites/template{0}/template{2}", template.Replace("#", ""), baseUrl, subSiteTemplate.Replace("#", ""));
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 var siteCollectionUrl = string.Format("{1}/sites/template{0}", template.Replace("#", ""), baseUrl);
                 CreateSiteCollection(template, siteCollectionUrl);
                 using (var sitecolCtx = ctx.Clone(siteCollectionUrl))
@@ -309,7 +309,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             else
             {
                 siteUrl = string.Format("{1}/sites/template{0}", template.Replace("#", ""), baseUrl);
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 CreateSiteCollection(template, siteUrl);
 #endif
             }
@@ -353,7 +353,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     provider.SaveAs(p, String.Format("{0}Template.xml", template.Replace("#", "")));
                 }
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
                 using (var tenantCtx = TestCommon.CreateTenantClientContext())
                 {
                     Tenant tenant = new Tenant(tenantCtx);
@@ -364,7 +364,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             }
         }
 
-#if !CLIENTSDKV15
+#if !ONPREMISES
         private static void CreateSiteCollection(string template, string siteUrl)
         {
             // check if site exists
