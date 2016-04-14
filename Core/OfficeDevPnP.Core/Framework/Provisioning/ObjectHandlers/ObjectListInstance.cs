@@ -870,8 +870,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newUserCustomAction.Title = userCustomAction.Title;
                         newUserCustomAction.Description = userCustomAction.Description;
                         newUserCustomAction.Name = userCustomAction.Name;
-                      //  newUserCustomAction.RegistrationType = userCustomAction.RegistrationType;
-                      // newUserCustomAction.RegistrationId = userCustomAction.RegistrationId;
                         newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
                         newUserCustomAction.Rights = userCustomAction.Rights;
                         newUserCustomAction.Sequence = userCustomAction.Sequence;
@@ -879,6 +877,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
                         newUserCustomAction.Group = userCustomAction.Group;
                         newUserCustomAction.Location = userCustomAction.Location;
+                        newUserCustomAction.Url = userCustomAction.Url;
 
                         newUserCustomAction.Update();
 
@@ -1120,6 +1119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
                     newUserCustomAction.Group = userCustomAction.Group;
                     newUserCustomAction.Location = userCustomAction.Location;
+                    newUserCustomAction.Url = userCustomAction.Url;
 
                     newUserCustomAction.Update();
                 }
@@ -1514,8 +1514,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 web.Context.Load(uca, c => c);
                 web.Context.ExecuteQueryRetry();
-
-                //todo Finish once Schema updated?
+                                
                 list.UserCustomActions.Add(new CustomAction
                 {
                     Title = uca.Title,
