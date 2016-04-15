@@ -1206,7 +1206,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, web.ServerRelativeUrl);
-            web.AllProperties[InheritMaster] = "False";
+            web.AllProperties[InheritCustomMaster] = "False";
             web.CustomMasterUrl = masterPageServerRelativeUrl;
             web.Update();
             web.Context.ExecuteQueryRetry();
@@ -1233,7 +1233,7 @@ namespace Microsoft.SharePoint.Client
                         if (resetSubsitesToInherit || inheritTheme)
                         {
                             Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritMaster] = "True";
+                            childWeb.AllProperties[InheritCustomMaster] = "True";
                             childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
                             childWeb.Update();
                             web.Context.ExecuteQueryRetry();
