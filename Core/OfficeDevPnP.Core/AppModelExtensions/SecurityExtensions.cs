@@ -481,6 +481,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="groupDescription">Description of the group</param>
         /// <param name="groupIsOwner">Sets the created group as group owner if true</param>
         /// <param name="updateAndExecuteQuery">Set to false to postpone the executequery call</param>
+        /// <param name="onlyAllowMembersViewMembership">Set whether members are allowed to see group membership, defaults to false</param>
         /// <returns>The created group</returns>
         public static Group AddGroup(this Web web, string groupName, string groupDescription, bool groupIsOwner, bool updateAndExecuteQuery = true, bool onlyAllowMembersViewMembership = false)
         {
