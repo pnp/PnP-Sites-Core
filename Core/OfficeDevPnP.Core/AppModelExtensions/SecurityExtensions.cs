@@ -482,7 +482,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="groupIsOwner">Sets the created group as group owner if true</param>
         /// <param name="updateAndExecuteQuery">Set to false to postpone the executequery call</param>
         /// <returns>The created group</returns>
-        public static Group AddGroup(this Web web, string groupName, string groupDescription, bool groupIsOwner, bool updateAndExecuteQuery = true)
+        public static Group AddGroup(this Web web, string groupName, string groupDescription, bool groupIsOwner, bool updateAndExecuteQuery = true, bool onlyAllowMembersViewMembership = false)
         {
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
@@ -496,7 +496,7 @@ namespace Microsoft.SharePoint.Client
                 group.Owner = group;
             }
 
-            group.OnlyAllowMembersViewMembership = false;
+            group.OnlyAllowMembersViewMembership = onlyAllowMembersViewMembership;
             group.Update();
 
             if (updateAndExecuteQuery)
