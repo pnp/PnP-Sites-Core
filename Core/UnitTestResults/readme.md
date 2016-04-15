@@ -4,6 +4,9 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20160415-OnlineAppOnly-635963608332897792.md) | Friday, April 15, 2016 | 9:47 PM | dev | debug | 264 | 2 | 39
+ [OnPremAppOnly](PnPUnitTestResults-20160415-OnPremAppOnly-635963594804564180.md) | Friday, April 15, 2016 | 9:24 PM | dev | debug15 | 243 | 3 | 51
+ [OnPremCred](PnPUnitTestResults-20160415-OnPremCred-635963580208152490.md) | Friday, April 15, 2016 | 9:00 PM | dev | debug15 | 273 | 3 | 21
  [OnlineAppOnly](PnPUnitTestResults-20160415-OnlineAppOnly-635962772184183412.md) | Friday, April 15, 2016 | 10:33 PM | dev | debug | 259 | 5 | 39
  [OnlineCred](PnPUnitTestResults-20160414-OnlineCred-635962744483045786.md) | Thursday, April 14, 2016 | 9:47 PM | dev | debug | 292 | 4 | 7
  [OnPremAppOnly](PnPUnitTestResults-20160414-OnPremAppOnly-635962731104894511.md) | Thursday, April 14, 2016 | 9:25 PM | dev | debug15 | 241 | 3 | 51
@@ -101,6 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnlineAppOnly](PnPUnitTestResults-20160302-OnlineAppOnly-635924761456610114.md) | Wednesday, March 2, 2016 | 11:42 PM | dev | debug | 250 | 6 | 38
  [OnlineCred](PnPUnitTestResults-20160301-OnlineCred-635924727446995321.md) | Tuesday, March 1, 2016 | 10:45 PM | dev | debug | 280 | 7 | 7
  [OnPremAppOnly](PnPUnitTestResults-20160301-OnPremAppOnly-635924714410499956.md) | Tuesday, March 1, 2016 | 10:24 PM | dev | debug15 | 235 | 0 | 51
- [OnPremCred](PnPUnitTestResults-20160301-OnPremCred-635924700260833129.md) | Tuesday, March 1, 2016 | 10:00 PM | dev | debug15 | 265 | 0 | 21
- [OnlineAppOnly](PnPUnitTestResults-20160301-OnlineAppOnly-635923891104326573.md) | Tuesday, March 1, 2016 | 11:31 PM | dev | debug | 250 | 5 | 39
- [OnlineCred](PnPUnitTestResults-20160229-OnlineCred-635923863065680366.md) | Monday, February 29, 2016 | 10:45 PM | dev | debug | 284 | 3 | 7
