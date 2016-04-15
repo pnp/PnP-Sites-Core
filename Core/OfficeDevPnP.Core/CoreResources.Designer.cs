@@ -314,6 +314,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find content type with id: {0}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_DeleteContentTypeById {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_DeleteContentTypeById", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find content type with name: {0}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_DeleteContentTypeByName {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_DeleteContentTypeByName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field &apos;{0}&apos; ({1}) already exists; no changes made..
         /// </summary>
         internal static string FieldAndContentTypeExtensions_Field01AlreadyExists {

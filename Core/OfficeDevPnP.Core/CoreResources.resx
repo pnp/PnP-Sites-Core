@@ -912,4 +912,10 @@
   <data name="TaxonomyExtensions_Field_Is_Not_Multivalues" xml:space="preserve">
     <value>The taxonomy field {0} does not support multiple values.</value>
   </data>
+  <data name="FieldAndContentTypeExtensions_DeleteContentTypeByName" xml:space="preserve">
+    <value>Could not find content type with name: {0}</value>
+  </data>
+  <data name="FieldAndContentTypeExtensions_DeleteContentTypeById" xml:space="preserve">
+    <value>Could not find content type with id: {0}</value>
+  </data>
 </root>
