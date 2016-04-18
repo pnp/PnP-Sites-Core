@@ -64,36 +64,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Properties.Resources.custombg.Save(customBackgroundFilePath);
 
             testWebName = string.Format("Test_CL{0:yyyyMMddTHHmmss}", DateTimeOffset.Now);
-
             pageLayoutTestWeb = Setup();
-
-            using (var context = TestCommon.CreateClientContext())
-            {
-                var wci1 = new WebCreationInformation();
-                wci1.Url = testWebName;
-                wci1.Title = testWebName;
-                wci1.WebTemplate = "CMSPUBLISHING#0";
-                var web1 = context.Web.Webs.Add(wci1);
-                context.ExecuteQueryRetry();
-                web1.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
-
-                var wci2 = new WebCreationInformation();
-                wci2.Url = "a";
-                wci2.Title = "A";
-                wci2.WebTemplate = "CMSPUBLISHING#0";
-                var webA = web1.Webs.Add(wci2);
-                context.ExecuteQueryRetry();
-                webA.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
-
-                var wci3 = new WebCreationInformation();
-                wci3.Url = "b";
-                wci3.Title = "B";
-                wci3.WebTemplate = "CMSPUBLISHING#0";
-                var webB = web1.Webs.Add(wci3);
-                context.ExecuteQueryRetry();
-                webB.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
-            }
-
         }
 
         [TestCleanup()]
@@ -245,8 +216,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                ExceptionHandlingScope scope = new ExceptionHandlingScope(ctx);
-
                 Web web;
                 Site site;
                 site = ctx.Site;
@@ -261,6 +230,43 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     site.RootWeb.ActivateFeature(publishingWebFeatureId);
                     deactivateWebFeatureOnTeardown = true;
                 }
+
+                var wci1 = new WebCreationInformation();
+                wci1.Url = testWebName;
+                wci1.Title = testWebName;
+                wci1.WebTemplate = "CMSPUBLISHING#0";
+                var web1 = web.Webs.Add(wci1);
+                ctx.ExecuteQueryRetry();
+
+                using (var web1Ctx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName))
+                {
+                    web1Ctx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+
+                    var wci2 = new WebCreationInformation();
+                    wci2.Url = "a";
+                    wci2.Title = "A";
+                    wci2.WebTemplate = "CMSPUBLISHING#0";
+                    var webA = web1Ctx.Web.Webs.Add(wci2);
+                    web1Ctx.ExecuteQueryRetry();
+
+                    using (var webACtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName + "/a"))
+                    {
+                        webACtx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+                    }
+
+                    var wci3 = new WebCreationInformation();
+                    wci3.Url = "b";
+                    wci3.Title = "B";
+                    wci3.WebTemplate = "CMSPUBLISHING#0";
+                    var webB = web1Ctx.Web.Webs.Add(wci3);
+                    web1Ctx.ExecuteQueryRetry();
+
+                    using (var webBCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName + "/a"))
+                    {
+                        webBCtx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+                    }
+                }
+
                 return web;
 
             }
