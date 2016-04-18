@@ -24,8 +24,12 @@ namespace OfficeDevPnP.Core.Tests
 
             if (string.IsNullOrEmpty(TenantUrl) || string.IsNullOrEmpty(DevSiteUrl))
             {
-                throw new ConfigurationErrorsException("Tenant credentials in App.config are not set up.");
+                throw new ConfigurationErrorsException("Tenant site Url or Dev site url in App.config are not set up.");
             }
+
+            // Trim trailing slashes
+            TenantUrl = TenantUrl.TrimEnd(new[] { '/' });
+            DevSiteUrl = DevSiteUrl.TrimEnd(new[] { '/' });
 
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
             {
