@@ -864,55 +864,119 @@ namespace Microsoft.SharePoint.Client
                 else
                 {
                     // Loop over the defined composed look and get the one that matches the information gathered from the "current" composed look
-                    foreach (var themeItem in themes)
+                    bool themeMatched = false;
+
+                    //first loop avoids comparing with "current" entry in order to detect oob themes
+                    //if no match then the second run includes "current"
+                    for (int i = 0; i < 2; i++)
                     {
-                        string masterPageUrl = null;
-                        string themeUrl = null;
-                        string imageUrl = null;
-                        string fontUrl = null;
-                        string name = "";
-
-                        if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
+                        if (themeMatched)
                         {
-                            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
-                        {
-                            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
-                        {
-                            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
-                        {
-                            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
-                        {
-                            name = themeItem["Name"] as String;
+                            break;
                         }
 
-                        // Exclude current from this comparison as otherwise we'll never detect the actual theme name
-                        if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
+                        foreach (var themeItem in themes)
                         {
-                            // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                            if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                            string masterPageUrl = null;
+                            string themeUrl = null;
+                            string imageUrl = null;
+                            string fontUrl = null;
+                            string name = "";
+
+                            if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
                             {
-                                theme.Name = name;
-                                theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
+                                masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
+                            {
+                                imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
+                            {
+                                fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
+                            {
+                                themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
+                            {
+                                name = themeItem["Name"] as String;
+                            }
 
-                                // Restore the default composed look image url
-                                if (imageUrl != null)
+                            // Exclude current from this comparison as otherwise we'll never detect the actual theme name
+                            if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) && i == 0)
+                            {
+                                // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
+                                if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                                 {
-                                    theme.BackgroundImage = imageUrl;
-                                }
+                                    theme.Name = name;
+                                    theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
 
-                                // We're taking the first matching composed look
-                                break;
+                                    // Restore the default composed look image url
+                                    if (imageUrl != null)
+                                    {
+                                        theme.BackgroundImage = imageUrl;
+                                    }
+
+                                    // We're taking the first matching composed look
+                                    themeMatched = true;
+                                    break;
+                                }
                             }
                         }
                     }
+
+                    //if (!themeMatched)
+                    //{
+                    //    foreach (var themeItem in themes)
+                    //    {
+                    //        string masterPageUrl = null;
+                    //        string themeUrl = null;
+                    //        string imageUrl = null;
+                    //        string fontUrl = null;
+                    //        string name = "";
+
+                    //        if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
+                    //        {
+                    //            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
+                    //        }
+                    //        if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
+                    //        {
+                    //            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
+                    //        }
+                    //        if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
+                    //        {
+                    //            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
+                    //        }
+                    //        if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
+                    //        {
+                    //            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
+                    //        }
+                    //        if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
+                    //        {
+                    //            name = themeItem["Name"] as String;
+                    //        }
+
+                    //        // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
+                    //        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                    //        {
+                    //            theme.Name = name;
+                    //            theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
+
+                    //            // Restore the default composed look image url
+                    //            if (imageUrl != null)
+                    //            {
+                    //                theme.BackgroundImage = imageUrl;
+                    //            }
+
+                    //            // We're taking the first matching composed look
+                    //            themeMatched = true;
+                    //            break;
+                    //        }
+                    //    }
+                    //}
+
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
                     if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
