@@ -40,7 +40,6 @@ namespace Microsoft.SharePoint.Client
                      </Query>
                 </View>";
 
-
         /// <summary>
         /// Checks if a composed look exists.
         /// </summary>
@@ -251,7 +250,8 @@ namespace Microsoft.SharePoint.Client
             web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
 
             // Update/create the "Current" reference in the composed looks gallery
-            web.CreateComposedLookByUrl(CurrentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
+            string currentLookName = GetLocalizedCurrentValue(web);
+            web.CreateComposedLookByUrl(currentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
         }
 
         /// <summary>
@@ -706,6 +706,15 @@ namespace Microsoft.SharePoint.Client
             return string.Empty;
         }
 
+        private static string GetLocalizedCurrentValue(this Web web)
+        {
+            web.EnsureProperties(w => w.Language);
+            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
+            web.Context.ExecuteQueryRetry();
+            return currentTranslated.Value;
+        }
+
+
         /// <summary>
         /// Returns the current theme of a web
         /// </summary>
@@ -713,10 +722,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Entity with attributes of current composed look, or null if none</returns>
         public static ThemeEntity GetCurrentComposedLook(this Web web)
         {
-            web.EnsureProperties(w => w.Language);
-            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
-            web.Context.ExecuteQueryRetry();
-            var themeName = currentTranslated.Value;
+            var themeName = GetLocalizedCurrentValue(web);
             return GetComposedLook(web, themeName);
         }
 
@@ -769,6 +775,8 @@ namespace Microsoft.SharePoint.Client
                 subSitePath = web.Url.Replace(siteCollectionUrl, "");
             }
 
+            string currentLookName = GetLocalizedCurrentValue(web);
+
             if (themes.Count > 0)
             {
                 List<string> customComposedLooks = new List<string>();
@@ -805,7 +813,7 @@ namespace Microsoft.SharePoint.Client
 
                     if (name != null)
                     {
-                        if (!name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase) &&
+                        if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) &&
                             !defaultComposedLooks.Contains(name))
                         {
                             customComposedLooks.Add(name);
@@ -885,25 +893,29 @@ namespace Microsoft.SharePoint.Client
                             name = themeItem["Name"] as String;
                         }
 
-                        // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                        // Exclude current from this comparison as otherwise we'll never detect the actual theme name
+                        if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            theme.Name = name;
-                            theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
-
-                            // Restore the default composed look image url
-                            if (imageUrl != null)
+                            // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
+                            if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                             {
-                                theme.BackgroundImage = imageUrl;
-                            }
+                                theme.Name = name;
+                                theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
 
-                            // We're taking the first matching composed look
-                            break;
+                                // Restore the default composed look image url
+                                if (imageUrl != null)
+                                {
+                                    theme.BackgroundImage = imageUrl;
+                                }
+
+                                // We're taking the first matching composed look
+                                break;
+                            }
                         }
                     }
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
-                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (!web.IsUsingOfficeTheme())
                         {
@@ -954,7 +966,7 @@ namespace Microsoft.SharePoint.Client
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
-            if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
+            if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase)
                 && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
             {
                 return null;
