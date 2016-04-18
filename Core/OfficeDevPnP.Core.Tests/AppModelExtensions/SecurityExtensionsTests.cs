@@ -521,8 +521,10 @@ namespace Microsoft.SharePoint.Client.Tests
 			parentWeb.Context.Load(web);
 			parentWeb.Context.ExecuteQueryRetry();
 
-		    return web;
-
+            using (var ctxTestTeamSubSite = parentWeb.Context.Clone(TestCommon.DevSiteUrl + "/" + siteUrl))
+            {
+                return ctxTestTeamSubSite.Web;
+            }
 	    }
 
 	    private string GetRandomString()
