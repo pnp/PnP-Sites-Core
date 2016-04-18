@@ -927,57 +927,6 @@ namespace Microsoft.SharePoint.Client
                         }
                     }
 
-                    //if (!themeMatched)
-                    //{
-                    //    foreach (var themeItem in themes)
-                    //    {
-                    //        string masterPageUrl = null;
-                    //        string themeUrl = null;
-                    //        string imageUrl = null;
-                    //        string fontUrl = null;
-                    //        string name = "";
-
-                    //        if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
-                    //        {
-                    //            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
-                    //        }
-                    //        if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
-                    //        {
-                    //            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
-                    //        }
-                    //        if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
-                    //        {
-                    //            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
-                    //        }
-                    //        if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
-                    //        {
-                    //            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
-                    //        }
-                    //        if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
-                    //        {
-                    //            name = themeItem["Name"] as String;
-                    //        }
-
-                    //        // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                    //        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
-                    //        {
-                    //            theme.Name = name;
-                    //            theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
-
-                    //            // Restore the default composed look image url
-                    //            if (imageUrl != null)
-                    //            {
-                    //                theme.BackgroundImage = imageUrl;
-                    //            }
-
-                    //            // We're taking the first matching composed look
-                    //            themeMatched = true;
-                    //            break;
-                    //        }
-                    //    }
-                    //}
-
-
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
                     if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
                     {
