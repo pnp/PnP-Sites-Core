@@ -94,6 +94,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(web, template, creationInfo));
 
+                web.EnsureProperty(w => w.Url);
+
                 foreach (var handler in objectHandlers)
                 {
                     if (handler.WillExtract(web, template, creationInfo))
@@ -107,7 +109,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        template = handler.ExtractObjects(web, template, creationInfo);
+
+                        using (var handlerContext = web.Context.Clone(web.Url))
+                        {
+                            template = handler.ExtractObjects(handlerContext.Web, template, creationInfo);
+                        }
                     }
                 }
                 return template;
