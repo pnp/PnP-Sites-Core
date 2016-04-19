@@ -31,7 +31,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var ctx = TestCommon.CreateClientContext())
                 {
                     // Load the base template which will be used for the comparison work
-                    var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                    // do not set the base template as that will mean that regional settings are not extracted
+                    // when the test site has the same regional settings as the base template had
+                    var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = null };
 
                     var template = new ProvisioningTemplate();
                     template = new ObjectRegionalSettings().ExtractObjects(ctx.Web, template, creationInfo);
