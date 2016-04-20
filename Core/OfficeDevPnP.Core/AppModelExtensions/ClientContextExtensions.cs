@@ -68,6 +68,14 @@ namespace Microsoft.SharePoint.Client
                     {
                         clientContext.ClientTag = GetCoreVersionTag();
                     }
+                    
+                    // Make CSOM request more reliable by disabling the return value cache. Given we 
+                    // often clone context objects and the default value is
+#if !ONPREMISES
+                    clientContext.DisableReturnValueCache = true;
+#elif SP2016
+                    clientContext.DisableReturnValueCache = true;
+#endif                
                     clientContext.ExecuteQuery();
                     return;
 
@@ -113,6 +121,13 @@ namespace Microsoft.SharePoint.Client
 
             ClientContext clonedClientContext = new ClientContext(siteUrl);
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
+            clonedClientContext.ClientTag = clientContext.ClientTag;
+#if !ONPREMISES
+            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
+#elif SP2016
+            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
+#endif
+
 
             // In case of using networkcredentials in on premises or SharePointOnlineCredentials in Office 365
             if (clientContext.Credentials != null)
