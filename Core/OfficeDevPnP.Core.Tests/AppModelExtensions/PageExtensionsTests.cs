@@ -41,13 +41,16 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 }
                 catch { }
 
-                web = ctx.Web.Webs.Add(new WebCreationInformation
+                using (var webCtx = ctx.Clone(TestCommon.DevSiteUrl))
                 {
-                    Title = name,
-                    WebTemplate = webTemplate,
-                    Url = name
-                });
-                ctx.ExecuteQueryRetry();
+                    web = webCtx.Web.Webs.Add(new WebCreationInformation
+                    {
+                        Title = name,
+                        WebTemplate = webTemplate,
+                        Url = name
+                    });
+                    webCtx.ExecuteQueryRetry();
+                }
 
                 // Create client context object for the newly created web and return that one...avoids "request uses too many resources" errors
                 using (var newWebCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + name))

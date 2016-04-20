@@ -223,24 +223,31 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 if (!site.IsFeatureActive(publishingSiteFeatureId))
                 {
                     site.ActivateFeature(publishingSiteFeatureId);
+                    Console.WriteLine("Site publishing feature activated");
                     deactivateSiteFeatureOnTeardown = true;
                 }
                 if (!web.IsFeatureActive(publishingWebFeatureId))
                 {
                     site.RootWeb.ActivateFeature(publishingWebFeatureId);
+                    Console.WriteLine("Web publishing feature activated");
                     deactivateWebFeatureOnTeardown = true;
                 }
 
-                var wci1 = new WebCreationInformation();
-                wci1.Url = testWebName;
-                wci1.Title = testWebName;
-                wci1.WebTemplate = "CMSPUBLISHING#0";
-                var web1 = web.Webs.Add(wci1);
-                ctx.ExecuteQueryRetry();
+                using (var wciCtx = ctx.Clone(TestCommon.DevSiteUrl))
+                {
+                    var wci1 = new WebCreationInformation();
+                    wci1.Url = testWebName;
+                    wci1.Title = testWebName;
+                    wci1.WebTemplate = "CMSPUBLISHING#0";
+                    var web1 = web.Webs.Add(wci1);
+                    ctx.ExecuteQueryRetry();
+                    Console.WriteLine("Web {0} created", testWebName);
+                }
 
                 using (var web1Ctx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName))
                 {
                     web1Ctx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+                    Console.WriteLine("Feature 41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092 on Web {0} activated", testWebName);
 
                     var wci2 = new WebCreationInformation();
                     wci2.Url = "a";
@@ -248,10 +255,12 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     wci2.WebTemplate = "CMSPUBLISHING#0";
                     var webA = web1Ctx.Web.Webs.Add(wci2);
                     web1Ctx.ExecuteQueryRetry();
+                    Console.WriteLine("Web {0} created", "a");
 
                     using (var webACtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName + "/a"))
                     {
                         webACtx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+                        Console.WriteLine("Feature 41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092 on Web {0} activated", "a");
                     }
 
                     var wci3 = new WebCreationInformation();
@@ -260,10 +269,12 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     wci3.WebTemplate = "CMSPUBLISHING#0";
                     var webB = web1Ctx.Web.Webs.Add(wci3);
                     web1Ctx.ExecuteQueryRetry();
+                    Console.WriteLine("Web {0} created", "b");
 
-                    using (var webBCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName + "/a"))
+                    using (var webBCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + testWebName + "/b"))
                     {
                         webBCtx.Web.ActivateFeature(new Guid("41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092"));
+                        Console.WriteLine("Feature 41E1D4BF-B1A2-47F7-AB80-D5D6CBBA3092 on Web {0} activated", "b");
                     }
                 }
 
