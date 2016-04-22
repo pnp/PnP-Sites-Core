@@ -182,7 +182,7 @@ namespace Microsoft.SharePoint.Client
             var childWeb = webs.FirstOrDefault(item => string.Equals(item.ServerRelativeUrl, serverRelativeUrl, StringComparison.OrdinalIgnoreCase));
             return childWeb;
         }
-
+        
         /// <summary>
         /// Determines if a child Web site with the specified leaf URL exists. 
         /// </summary>
@@ -235,6 +235,24 @@ namespace Microsoft.SharePoint.Client
                     // then this makes sense).
                     exists = true;
                 }
+            }
+            return exists;
+        }
+        
+        /// <summary>
+        /// Determines if a web exists by title.
+        /// </summary>
+        /// <param name="title">Title of the web to check.</param>
+        /// <param name="parentWeb">Parent web to check under.</param>
+        /// <returns>True if a web with the given title exists.</returns>
+        public static bool WebExistsByTitle(this Web parentWeb, string title)
+        {
+            bool exists = false;
+
+            var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
+            if (subWeb != null)
+            {
+                exists = true;
             }
             return exists;
         }
