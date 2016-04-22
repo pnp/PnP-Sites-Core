@@ -2291,16 +2291,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             BasePermissions bp = new BasePermissions();
 
             // Is it an int value (for backwards compability)?
-            int permissionInt = 0;
+            int permissionInt;
             if (int.TryParse(basePermissionString, out permissionInt))
             {
                 bp.Set((PermissionKind)permissionInt);
             }
-            else {
-                foreach (var pk in basePermissionString.Split(new char[] { ',' }))
+            else if(!string.IsNullOrEmpty(basePermissionString)){
+                foreach (var pk in basePermissionString.Split(','))
                 {
-                    PermissionKind permissionKind = PermissionKind.AddAndCustomizePages;
-                    if (Enum.TryParse<PermissionKind>(basePermissionString, out permissionKind))
+                    PermissionKind permissionKind;
+                    if (Enum.TryParse<PermissionKind>(pk, out permissionKind))
                     {
                         bp.Set(permissionKind);
                     }
