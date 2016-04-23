@@ -4,6 +4,9 @@ Below table is showing the last 100 test run results.
 
 Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
 :-----|:-----|:----|:----:|:----:|:----:|:----:|:----:|
+ [OnlineAppOnly](PnPUnitTestResults-20160423-OnlineAppOnly-635970525900521412.md) | Saturday, April 23, 2016 | 9:56 PM | dev | debug | 266 | 0 | 39
+ [OnPremAppOnly](PnPUnitTestResults-20160423-OnPremAppOnly-635970507732797520.md) | Saturday, April 23, 2016 | 9:26 PM | dev | debug15 | 246 | 0 | 51
+ [OnPremCred](PnPUnitTestResults-20160423-OnPremCred-635970492277795900.md) | Saturday, April 23, 2016 | 9:00 PM | dev | debug15 | 276 | 0 | 21
  [OnlineAppOnly](PnPUnitTestResults-20160423-OnlineAppOnly-635969688448926055.md) | Saturday, April 23, 2016 | 10:40 PM | dev | debug | 265 | 1 | 39
  [OnlineCred](PnPUnitTestResults-20160422-OnlineCred-635969657916752638.md) | Friday, April 22, 2016 | 9:49 PM | dev | debug | 298 | 0 | 7
  [OnPremAppOnly](PnPUnitTestResults-20160422-OnPremAppOnly-635969643619720030.md) | Friday, April 22, 2016 | 9:26 PM | dev | debug15 | 246 | 0 | 51
@@ -101,6 +104,3 @@ Configuration | Date | Time | Branch | Build | Passed | Failed | Skipped
  [OnPremCred](PnPUnitTestResults-20160328-OnPremCred-635948028333634430.md) | Monday, March 28, 2016 | 9:00 PM | dev | debug15 | 269 | 3 | 21
  [OnlineAppOnly](PnPUnitTestResults-20160328-OnlineAppOnly-635947225217726204.md) | Monday, March 28, 2016 | 10:42 PM | dev | debug | 258 | 4 | 39
  [OnlineCred](PnPUnitTestResults-20160327-OnlineCred-635947191687387819.md) | Sunday, March 27, 2016 | 9:46 PM | dev | debug | 291 | 3 | 7
- [OnPremAppOnly](PnPUnitTestResults-20160327-OnPremAppOnly-635947178678966190.md) | Sunday, March 27, 2016 | 9:24 PM | dev | debug15 | 239 | 3 | 51
- [OnPremCred](PnPUnitTestResults-20160327-OnPremCred-635947164256561506.md) | Sunday, March 27, 2016 | 9:00 PM | dev | debug15 | 269 | 3 | 21
- [OnlineAppOnly](PnPUnitTestResults-20160327-OnlineAppOnly-635946391952900082.md) | Sunday, March 27, 2016 | 12:33 AM | dev | debug | 260 | 2 | 39
