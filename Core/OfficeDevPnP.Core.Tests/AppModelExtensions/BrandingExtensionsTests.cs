@@ -9,6 +9,7 @@ using Microsoft.SharePoint.Client;
 using System.IO;
 using System.Configuration;
 using OfficeDevPnP.Core.Utilities;
+using System.Diagnostics;
 
 namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 {
@@ -274,13 +275,40 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         private void CreatePublishingWeb(ClientContext wciCtx, string urlAndName)
         {
-            var wci1 = new WebCreationInformation();
-            wci1.Url = urlAndName;
-            wci1.Title = urlAndName;
-            wci1.WebTemplate = "CMSPUBLISHING#0";
-            var web1 = wciCtx.Web.Webs.Add(wci1);
-            wciCtx.ExecuteQueryRetry();
-            Console.WriteLine("Web {0} created", urlAndName);
+            int retryAttempts = 0;
+            int retryCount = 10;
+            int delay = 500;
+            int backoffInterval = delay;
+
+            // Do while retry attempt is less than retry count
+            while (retryAttempts < retryCount)
+            {
+                try
+                {
+                    var wci1 = new WebCreationInformation();
+                    wci1.Url = urlAndName;
+                    wci1.Title = urlAndName;
+                    wci1.WebTemplate = "CMSPUBLISHING#0";
+                    var web1 = wciCtx.Web.Webs.Add(wci1);
+                    wciCtx.ExecuteQueryRetry();
+                    Console.WriteLine("Web {0} created", urlAndName);
+                    return;
+                }
+                catch (Microsoft.SharePoint.Client.ServerException ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    //retry
+                    Console.WriteLine("Site creation failed. Sleeping for {0} seconds before retrying.", backoffInterval);
+
+                    //Add delay for retry
+                    System.Threading.Thread.Sleep(backoffInterval);
+
+                    //Add to retry count and increase delay.
+                    retryAttempts++;
+                    backoffInterval = backoffInterval * 2;
+                }
+            }
+            throw new Exception(string.Format("Maximum site creation retry attempts {0} has been reached.", retryCount));
         }
 
         private void Teardown()
