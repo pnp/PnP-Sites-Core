@@ -200,7 +200,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Changed by PaoloPia because there are fields like PublishingPageLayout
                     // which are marked as read-only, but have to be overwritten while uploading
                     // a publishing page file and which in reality can still be written
-                    if (!targetField.ReadOnlyField || propertyName == "PublishingPageLayout") 
+                    if (!targetField.ReadOnlyField || 
+                        propertyName.Equals("PublishingPageLayout", StringComparison.InvariantCultureIgnoreCase) || 
+                        propertyName.Equals("ContentTypeId", StringComparison.InvariantCultureIgnoreCase)) 
                     {
                         switch (propertyName.ToUpperInvariant())
                         {
