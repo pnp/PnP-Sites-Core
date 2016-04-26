@@ -651,13 +651,6 @@ namespace OfficeDevPnP.Core.Utilities
         private const string ActorTokenClaimType = JsonWebTokenConstants.ReservedClaims.ActorToken;
 
         //
-        // Environment Constants
-        //
-
-        private static string GlobalEndPointPrefix = "accounts";
-        private static string AcsHostUrl = "accesscontrol.windows.net";
-
-        //
         // Hosted app configuration
         //
         private static string clientId = null;
@@ -668,6 +661,49 @@ namespace OfficeDevPnP.Core.Utilities
         private static string secondaryClientSecret = null;
         private static string realm = null;
         private static string serviceNamespace = null;
+        //
+        // Environment Constants
+        //
+        private static string acsHostUrl = "accesscontrol.windows.net";
+        private static string globalEndPointPrefix = "accounts";
+
+        public static string AcsHostUrl
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(acsHostUrl))
+                {
+                    return "accesscontrol.windows.net";
+                }
+                else
+                {
+                    return acsHostUrl;
+                }
+            }
+            set
+            {
+                acsHostUrl = value;
+            }
+        }
+
+        public static string GlobalEndPointPrefix
+        {
+            get
+            {
+                if (String.IsNullOrEmpty(globalEndPointPrefix))
+                {
+                    return "accounts";
+                }
+                else
+                {
+                    return globalEndPointPrefix;
+                }
+            }
+            set
+            {
+                globalEndPointPrefix = value;
+            }
+        }
 
         public static string ClientId
         {

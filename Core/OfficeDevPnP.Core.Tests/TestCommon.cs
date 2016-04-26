@@ -109,7 +109,16 @@ namespace OfficeDevPnP.Core.Tests
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                var clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                ClientContext clientContext = null;
+
+                if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
+                {
+                    clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "login.windows-ppe.net", globalEndPointPrefix: "login");
+                }
+                else
+                {
+                    clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                }
                 context = PnPClientContext.ConvertFrom(clientContext, retryCount, delay);
             }
             else
@@ -171,7 +180,15 @@ namespace OfficeDevPnP.Core.Tests
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
+
+                if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
+                {
+                    context = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
+                }
+                else
+                {
+                    context = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                }
             }
             else
             {
