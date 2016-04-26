@@ -253,6 +253,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             }
                                             file.ListItemAllFields[propertyName] = linkValue;
                                             break;
+                                        case "MultiChoice":
+                                            var multiChoice = JsonUtility.Deserialize<String[]>(propertyValue);
+                                            file.ListItemAllFields[propertyName] = multiChoice;
+                                            break;
                                         case "LookupMulti":
                                             var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(propertyValue);
                                             file.ListItemAllFields[propertyName] = lookupMultiValue;
