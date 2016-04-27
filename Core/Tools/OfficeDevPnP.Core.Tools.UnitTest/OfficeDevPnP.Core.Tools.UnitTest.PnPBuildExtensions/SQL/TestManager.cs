@@ -198,7 +198,18 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                 {
                     string realm = TokenHelper.GetRealmFromTargetUrl(new Uri(testConfiguration.TestSiteUrl));
 
-                    using (ClientContext ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret))
+                    ClientContext ctx = null;
+
+                    if (new Uri(testConfiguration.TestSiteUrl).DnsSafeHost.Contains("spoppe.com"))
+                    {
+                        ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix: "login");
+                    }
+                    else
+                    {
+                        ctx = am.GetAppOnlyAuthenticatedContext(testConfiguration.TestSiteUrl, realm, testConfiguration.TestAuthentication.AppId, testConfiguration.TestAuthentication.AppSecret);
+                    }
+
+                    using (ctx)
                     {
                         ctx.Load(ctx.Web, w => w.Title);
                         ctx.ExecuteQueryRetry();
