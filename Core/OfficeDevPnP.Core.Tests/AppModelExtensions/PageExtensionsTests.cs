@@ -52,6 +52,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     webCtx.ExecuteQueryRetry();
                 }
 
+                // Wait for 2 minutes after creating a publishing web...especially when using app-only as otherwise one 
+                // can get a "Microsoft.SharePoint.Client.ServerException: The site is not valid. The 'Pages' document library is missing." error
+                // during subsequent creation/deletion actions
+                if (webTemplate.Equals("CMSPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    System.Threading.Thread.Sleep(2 * 60 * 1000);
+                }
+
                 // Create client context object for the newly created web and return that one...avoids "request uses too many resources" errors
                 using (var newWebCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + name))
                 {
