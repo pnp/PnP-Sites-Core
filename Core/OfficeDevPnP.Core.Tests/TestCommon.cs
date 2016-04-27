@@ -183,11 +183,11 @@ namespace OfficeDevPnP.Core.Tests
 
                 if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
-                    context = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
                 }
                 else
                 {
-                    context = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
                 }
             }
             else
