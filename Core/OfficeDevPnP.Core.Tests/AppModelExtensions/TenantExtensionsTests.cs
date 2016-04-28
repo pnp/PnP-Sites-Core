@@ -228,6 +228,35 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
             }
         }
+
+        [TestMethod]
+        public void CreateDeleteCreateSiteCollectionTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+
+                //Create site collection test
+                string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                var siteExists = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsTrue(siteExists, "Site collection creation failed");
+
+                //Delete site collection test: move to recycle bin
+                tenant.DeleteSiteCollection(siteToCreateUrl, true);
+                bool recycled = tenant.CheckIfSiteExists(siteToCreateUrl, "Recycled");
+                Assert.IsTrue(recycled, "Site collection recycling failed");
+
+                //Remove from recycle bin
+                tenant.DeleteSiteCollectionFromRecycleBin(siteToCreateUrl, true);
+                var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
+
+                //Create a site collection using the same url as the previously deleted site collection
+                siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                siteExists = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsTrue(siteExists, "Second site collection creation failed");
+            }
+        }
         #endregion
 
         #region Site lockstate tests
