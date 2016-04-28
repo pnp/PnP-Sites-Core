@@ -918,4 +918,7 @@
   <data name="FieldAndContentTypeExtensions_DeleteContentTypeById" xml:space="preserve">
     <value>Could not find content type with id: {0}</value>
   </data>
+  <data name="ClientContextExtensions_ExecuteQueryRetry" xml:space="preserve">
+    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.</value>
+  </data>
 </root>

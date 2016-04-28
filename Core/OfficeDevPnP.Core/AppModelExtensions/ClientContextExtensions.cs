@@ -4,6 +4,7 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -64,11 +65,14 @@ namespace Microsoft.SharePoint.Client
                 try
                 {
                     // If the customer is not using the clienttag then fill with the PnP Core library tag
-                    if (String.IsNullOrEmpty(clientContext.ClientTag))
+                    // ClientTag property is limited to 32 chars
+                    string clientTag = String.Format("{0}:{1}", GetCoreVersionTag(), GetCallingPnPMethod());
+                    if (clientTag.Length > 32)
                     {
-                        clientContext.ClientTag = GetCoreVersionTag();
+                        clientTag = clientTag.Substring(0, 32);
                     }
-                    
+                    clientContext.ClientTag = clientTag;
+
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
 #if !ONPREMISES
@@ -78,7 +82,6 @@ namespace Microsoft.SharePoint.Client
 #endif                
                     clientContext.ExecuteQuery();
                     return;
-
                 }
                 catch (WebException wex)
                 {
@@ -87,7 +90,7 @@ namespace Microsoft.SharePoint.Client
                     // Check is request failed due to server unavailable - http status code 503
                     if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
-                        Debug.WriteLine("CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.", backoffInterval);
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
 
                         //Add delay for retry
                         Thread.Sleep(backoffInterval);
@@ -223,12 +226,42 @@ namespace Microsoft.SharePoint.Client
                 Assembly coreAssembly = Assembly.GetExecutingAssembly();
                 lock (PnPCoreVersionLock)
                 {
-                    PnPCoreVersion = String.Format("{0}:{1}", ((AssemblyTitleAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyTitleAttribute))).Title, 
-                                                             ((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version);
+                    PnPCoreVersion = String.Format("PnPCore:{0}",((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version);
                 }
             }
 
             return PnPCoreVersion;
+        }
+
+        private static string GetCallingPnPMethod()
+        {
+            StackTrace t = new StackTrace();
+
+            string pnpMethod = "";
+            try
+            {
+                for (int i = 0; i < t.FrameCount; i++)
+                {
+                    var frame = t.GetFrame(i);
+                    if (frame.GetMethod().Name.Equals("ExecuteQueryRetry"))
+                    {
+                        var method = t.GetFrame(i + 1).GetMethod();
+                        
+                        // Only return the calling method in case ExecuteQueryRetry was called from inside the PnP core library
+                        if (method.Module.Name.Equals("OfficeDevPnP.Core.dll", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            pnpMethod = method.Name;
+                        }
+                        break;
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+
+            return pnpMethod;
         }
 
     }
