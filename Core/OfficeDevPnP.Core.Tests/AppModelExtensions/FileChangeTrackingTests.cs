@@ -76,14 +76,21 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 using (SqlConnection connection = new SqlConnection(TestCommon.TestAutomationDatabaseConnectionString))
                 {
                     string appId = ConfigurationManager.AppSettings["AppId"];
-                    string user;
+                    string user = null;
                     if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
                     {
-                        user = CredentialManager.GetSharePointOnlineCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]).UserName;
+                        user = CredentialManager.GetCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]).UserName;
                     }
                     else
                     {
-                        user = ConfigurationManager.AppSettings["SPOUserName"];
+                        if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]))
+                        {
+                            user = ConfigurationManager.AppSettings["SPOUserName"];
+                        }
+                        else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremUserName"]) && !String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremDomain"]))
+                        {
+                            user = string.Format("{0}\\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);
+                        }
                     }
 
 
