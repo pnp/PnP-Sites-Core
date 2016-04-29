@@ -89,11 +89,29 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
 
                     if (testConfig.Type == TestConfigurationType.SharePoint2013 || testConfig.Type == TestConfigurationType.SharePoint2016)
                     {
+                        WriteProperty(writer, "SPOCredentialManagerLabel", testConfig.TestAuthentication.CredentialManagerLabel);
                         if (!testConfig.TestAuthentication.AppOnly)
                         {
-                            WriteProperty(writer, "OnPremUserName", testConfig.TestAuthentication.User);
-                            WriteProperty(writer, "OnPremDomain", testConfig.TestAuthentication.Domain);
-                            WriteProperty(writer, "OnPremPassword", testConfig.TestAuthentication.Password);
+                            if (!String.IsNullOrEmpty(testConfig.TestAuthentication.CredentialManagerLabel))
+                            {
+                                NetworkCredential cred = CredentialManager.GetCredential(testConfig.TestAuthentication.CredentialManagerLabel);
+                                if (cred.UserName.IndexOf("\\") > 0)
+                                {
+                                    string[] userParts = cred.UserName.Split('\\');
+                                    WriteProperty(writer, "OnPremUserName", userParts[1]);
+                                    WriteProperty(writer, "OnPremDomain", userParts[0]);
+                                }
+                                else
+                                {
+                                    throw new ArgumentException(String.Format("Username {0} stored in credential manager value {1} needs to be formatted as domain\\user", cred.UserName, testConfig.TestAuthentication.CredentialManagerLabel));
+                                }
+                            }
+                            else
+                            {
+                                WriteProperty(writer, "OnPremUserName", testConfig.TestAuthentication.User);
+                                WriteProperty(writer, "OnPremDomain", testConfig.TestAuthentication.Domain);
+                                WriteProperty(writer, "OnPremPassword", testConfig.TestAuthentication.Password);
+                            }
                         }
                         else // App-Only
                         {
@@ -125,8 +143,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                             else
                             {
                                 WriteProperty(writer, "SPOUserName", testConfig.TestAuthentication.User);
+                                WriteProperty(writer, "SPOPassword", testConfig.TestAuthentication.Password);
                             }
-                            WriteProperty(writer, "SPOPassword", testConfig.TestAuthentication.Password);
                         }
                         else // App-Only
                         {

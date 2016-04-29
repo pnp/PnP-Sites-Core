@@ -220,7 +220,26 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
                 {
                     if (!String.IsNullOrEmpty(testConfiguration.TestAuthentication.CredentialManagerLabel))
                     {
-                        var credentials = CredentialManager.GetSharePointOnlineCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
+                        System.Net.ICredentials credentials = null;
+
+                        if (testConfiguration.TestAuthentication.Type == TestAuthenticationType.OnPremises)
+                        {
+                            var tempCred = CredentialManager.GetCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
+                            if (tempCred.UserName.IndexOf("\\") > 0)
+                            {
+                                string[] userParts = tempCred.UserName.Split('\\');
+                                credentials = new System.Net.NetworkCredential(userParts[1], tempCred.SecurePassword, userParts[0]);
+                            }
+                            else
+                            {
+                                throw new ArgumentException(String.Format("Username {0} stored in credential manager value {1} needs to be formatted as domain\\user", tempCred.UserName, testConfiguration.TestAuthentication.CredentialManagerLabel));
+                            }
+                        }
+                        else
+                        {
+                            credentials = CredentialManager.GetSharePointOnlineCredential(testConfiguration.TestAuthentication.CredentialManagerLabel);
+                        }
+
                         using (ClientContext ctx = new ClientContext(testConfiguration.TestSiteUrl))
                         {
                             ctx.Credentials = credentials;
