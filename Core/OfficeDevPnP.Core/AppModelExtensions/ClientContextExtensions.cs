@@ -226,7 +226,7 @@ namespace Microsoft.SharePoint.Client
                 Assembly coreAssembly = Assembly.GetExecutingAssembly();
                 lock (PnPCoreVersionLock)
                 {
-                    PnPCoreVersion = String.Format("PnPCore:{0}",((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version);
+                    PnPCoreVersion = String.Format("PnPCore:{0}",((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version.Split('.')[2]);
                 }
             }
 
