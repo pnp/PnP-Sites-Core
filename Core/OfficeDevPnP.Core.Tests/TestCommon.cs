@@ -33,7 +33,18 @@ namespace OfficeDevPnP.Core.Tests
 
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
             {
-                Credentials = Core.Utilities.CredentialManager.GetSharePointOnlineCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]);
+                var tempCred = Core.Utilities.CredentialManager.GetCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]);
+
+                // username in format domain\user means we're testing in on-premises
+                if (tempCred.UserName.IndexOf("\\") > 0)
+                {
+                    string[] userParts = tempCred.UserName.Split('\\');
+                    Credentials = new NetworkCredential(userParts[1], tempCred.SecurePassword, userParts[0]);
+                }
+                else
+                {
+                    Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
+                }                                
             }
             else
             {
