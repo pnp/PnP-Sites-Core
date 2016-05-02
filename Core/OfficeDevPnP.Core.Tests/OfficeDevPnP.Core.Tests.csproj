@@ -334,6 +334,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />
