@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 // during subsequent creation/deletion actions
                 if (webTemplate.Equals("CMSPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    System.Threading.Thread.Sleep(2 * 60 * 1000);
+                    System.Threading.Thread.Sleep(3 * 60 * 1000);
                 }
 
                 // Create client context object for the newly created web and return that one...avoids "request uses too many resources" errors
