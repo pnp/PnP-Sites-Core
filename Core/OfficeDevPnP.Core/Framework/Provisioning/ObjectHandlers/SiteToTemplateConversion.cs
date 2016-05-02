@@ -181,7 +181,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
-                objectHandlers.Add(new ObjectPersistTemplateInfo());
+				if (provisioningInfo.PersistTemplateInfo)
+				{
+					objectHandlers.Add(new ObjectPersistTemplateInfo());
+				}
 
                 var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
