@@ -18,6 +18,32 @@ namespace Microsoft.SharePoint.Client.Tests
         private string _userLogin;
 
         #region Test initialize and cleanup
+        [ClassInitialize()]
+        public static void ClassInit(TestContext context)
+        {
+            // delete all the sub sites of 4 characters long...cleanup for potentially failed executions of
+            // AddPermissionLevelToGroupSubSiteTest and RemovePermissionLevelFromGroupSubSiteTest tests
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var subWebs = clientContext.Web.Webs;
+                clientContext.Load(subWebs, wc => wc.Include(w => w.ServerRelativeUrl));
+                clientContext.ExecuteQueryRetry();
+
+                for (int i = subWebs.Count - 1; i >= 0; i--)
+                {
+                    if (subWebs[i].ServerRelativeUrl.Split('/')[3].Length == 4)
+                    {
+                        try
+                        {
+                            subWebs[i].DeleteObject();
+                            clientContext.ExecuteQueryRetry();
+                        }
+                        catch { }
+                    }
+                }
+            }
+        }
+
         [TestInitialize]
         public void Initialize()
         {
