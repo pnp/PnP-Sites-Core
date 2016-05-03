@@ -297,8 +297,13 @@ namespace Microsoft.SharePoint.Client.Tests
 				}
 				finally
 				{
-					subweb.DeleteObject();
-					clientContext.ExecuteQueryRetry();
+                    // Eat exception to deal with the sporadic error "The object is not associated with an object identity or the object identity is invalid"                    
+                    try
+                    {
+                        subweb.DeleteObject();
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    catch { }
 				}
 			}
 		}
@@ -330,8 +335,13 @@ namespace Microsoft.SharePoint.Client.Tests
 				}
 				finally
 				{
-					subweb.DeleteObject();
-					clientContext.ExecuteQueryRetry();
+                    // Eat exception to deal with the sporadic error "The object is not associated with an object identity or the object identity is invalid"                    
+                    try
+                    {
+                        subweb.DeleteObject();
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    catch { }
 				}
 			}
 		}
