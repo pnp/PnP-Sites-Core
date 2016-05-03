@@ -909,20 +909,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser, PnPMonitoredScope scope)
         {
-            var listCreate = new ListCreationInformation();
-            listCreate.Description = list.Description;
-            listCreate.TemplateType = list.TemplateType;
-            listCreate.Title = parser.ParseString(list.Title);
+            List createdList;
+            if (list.Url.Equals("SiteAssets") && list.TemplateType == (int)ListTemplateType.DocumentLibrary)
+            {
+                //Ensure that the Site Assets library is created using the out of the box creation mechanism
+                //Site Assets that are created using the EnsureSiteAssetsLibrary method slightly differ from
+                //default Document Libraries. See issue 512 (https://github.com/OfficeDev/PnP-Sites-Core/issues/512)
+                //for details about the issue fixed by this approach.
+                createdList = web.Lists.EnsureSiteAssetsLibrary();
+                //Check that Title and Description have the correct values
+                web.Context.Load(createdList, l => l.Title,
+                                              l => l.Description);
+                web.Context.ExecuteQueryRetry();
+                var isDirty = false;
+                if (!string.Equals(createdList.Description, list.Description))
+                {
+                    createdList.Description = list.Description;
+                    isDirty = true;
+                }
+                if (!string.Equals(createdList.Title, list.Title))
+                {
+                    createdList.Title = list.Title;
+                    isDirty = true;
+                }
+                if (isDirty)
+                {
+                    createdList.Update();
+                    web.Context.ExecuteQueryRetry();
+                }
 
-            // the line of code below doesn't add the list to QuickLaunch
-            // the OnQuickLaunch property is re-set on the Created List object
-            listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
+            }
+            else
+            {
+                var listCreate = new ListCreationInformation();
+                listCreate.Description = list.Description;
+                listCreate.TemplateType = list.TemplateType;
+                listCreate.Title = parser.ParseString(list.Title);
 
-            listCreate.Url = parser.ParseString(list.Url);
-            listCreate.TemplateFeatureId = list.TemplateFeatureID;
+                // the line of code below doesn't add the list to QuickLaunch
+                // the OnQuickLaunch property is re-set on the Created List object
+                listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
 
-            var createdList = web.Lists.Add(listCreate);
-            createdList.Update();
+                listCreate.Url = parser.ParseString(list.Url);
+                listCreate.TemplateFeatureId = list.TemplateFeatureID;
+
+                createdList = web.Lists.Add(listCreate);
+                createdList.Update();
+            }
             web.Context.Load(createdList, l => l.BaseTemplate);
             web.Context.ExecuteQueryRetry();
 
