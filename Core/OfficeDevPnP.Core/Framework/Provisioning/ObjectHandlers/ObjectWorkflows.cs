@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.WorkflowServices;
 using System.IO;
+using System.Threading;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -155,44 +156,78 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperty(w => w.Id);
 
                     // Provision Workflow Definitions
-                    foreach (var definition in template.Workflows.WorkflowDefinitions)
+                    foreach (var templateDefinition in template.Workflows.WorkflowDefinitions)
                     {
                         // Load the Workflow Definition XAML
-                        Stream xamlStream = template.Connector.GetFileStream(definition.XamlPath);
+                        Stream xamlStream = template.Connector.GetFileStream(templateDefinition.XamlPath);
                         System.Xml.Linq.XElement xaml = System.Xml.Linq.XElement.Load(xamlStream);
 
-                        // Create the WorkflowDefinition instance
-                        Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition workflowDefinition =
+                        int retryCount = 5;
+                        int retryAttempts = 1;
+                        int delay = 2000;
+
+                        while (retryAttempts <= retryCount)
+                        {
+                            try
+                            {
+
+                                // Create the WorkflowDefinition instance
+                                Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition workflowDefinition =
                             new Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition(web.Context)
                             {
-                                AssociationUrl = definition.AssociationUrl,
-                                Description = definition.Description,
-                                DisplayName = definition.DisplayName,
-                                FormField = definition.FormField,
-                                DraftVersion = definition.DraftVersion,
-                                Id = definition.Id,
-                                InitiationUrl = definition.InitiationUrl,
-                                RequiresAssociationForm = definition.RequiresAssociationForm,
-                                RequiresInitiationForm = definition.RequiresInitiationForm,
-                                RestrictToScope = parser.ParseString(definition.RestrictToScope),
-                                RestrictToType = definition.RestrictToType != "Universal" ? definition.RestrictToType : null,
+                                AssociationUrl = templateDefinition.AssociationUrl,
+                                Description = templateDefinition.Description,
+                                DisplayName = templateDefinition.DisplayName,
+                                FormField = templateDefinition.FormField,
+                                DraftVersion = templateDefinition.DraftVersion,
+                                Id = templateDefinition.Id,
+                                InitiationUrl = templateDefinition.InitiationUrl,
+                                RequiresAssociationForm = templateDefinition.RequiresAssociationForm,
+                                RequiresInitiationForm = templateDefinition.RequiresInitiationForm,
+                                RestrictToScope = parser.ParseString(templateDefinition.RestrictToScope),
+                                RestrictToType = templateDefinition.RestrictToType != "Universal" ? templateDefinition.RestrictToType : null,
                                 Xaml = xaml.ToString(),
                             };
 
-                        //foreach (var p in definition.Properties)
-                        //{
-                        //    workflowDefinition.SetProperty(p.Key, parser.ParseString(p.Value));
-                        //}
+                                //foreach (var p in definition.Properties)
+                                //{
+                                //    workflowDefinition.SetProperty(p.Key, parser.ParseString(p.Value));
+                                //}
 
-                        // Save the Workflow Definition
-                        var definitionId = deploymentService.SaveDefinition(workflowDefinition);
-                        web.Context.Load(workflowDefinition);
-                        web.Context.ExecuteQueryRetry();
+                                // Save the Workflow Definition
+                                var newDefinition = deploymentService.SaveDefinition(workflowDefinition);
+                                //web.Context.Load(workflowDefinition); //not needed
+                                web.Context.ExecuteQueryRetry();
 
-                        // Let's publish the Workflow Definition, if needed
-                        if (definition.Published)
-                        {
-                            deploymentService.PublishDefinition(definitionId.Value);
+                                // Let's publish the Workflow Definition, if needed
+                                if (templateDefinition.Published)
+                                {
+                                    deploymentService.PublishDefinition(newDefinition.Value);
+                                    web.Context.ExecuteQueryRetry();
+                                }
+
+                                break; // no errors so exit loop
+                            }
+                            catch (Exception ex)
+                            {
+                                // check exception is due to connection closed issue
+                                if (ex is ServerException && ((ServerException)ex).ServerErrorCode == -2130575223 &&
+                                    ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPException", StringComparison.InvariantCultureIgnoreCase) &&
+                                    ((ServerException)ex).Message.Contains("A connection that was expected to be kept alive was closed by the server.")
+                                    )
+                                {
+                                    WriteWarning(String.Format("Connection closed whilst adding Workflow Definition, trying again in {0}ms", delay), ProvisioningMessageType.Warning);
+
+                                    Thread.Sleep(delay);
+
+                                    retryAttempts++;
+                                    delay = delay * 2; // double delay for next retry
+                                }
+                                else
+                                {
+                                    throw;
+                                }
+                            }
                         }
                     }
 
@@ -206,13 +241,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // if already exists a subscription with the same name and with the same DefinitionId, 
                         // it is a duplicate
                         string subscriptionName;
-                        if (subscription.PropertyDefinitions.TryGetValue("SharePointWorkflowContext.Subscription.Name", out subscriptionName) && 
+                        if (subscription.PropertyDefinitions.TryGetValue("SharePointWorkflowContext.Subscription.Name", out subscriptionName) &&
                             existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId))
-                            {
-                                // Thus, skip it!
-                                WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
-                                continue;
-                            }
+                        {
+                            // Thus, skip it!
+                            WriteWarning(string.Format("Workflow Subscription '{0}' already exists. Skipping...", subscription.Name), ProvisioningMessageType.Warning);
+                            continue;
+                        }
 #if ONPREMISES
                     // Create the WorkflowDefinition instance
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription workflowSubscription =
