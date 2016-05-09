@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.2.1603.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCEN0template">
     <pnp:ProvisioningTemplate ID="SRCHCEN0template" Version="1">
-      <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{site}/_catalogs/masterpage/seattle.master" CustomMasterPageUrl="{site}/_catalogs/masterpage/seattle.master" />
+      <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
@@ -196,7 +196,7 @@
             <ArrayOfProperty>
               <Property>
                 <Name>SspId</Name>
-                <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">222f4309-3105-42cc-9b1b-ce6daed64c42</Value>
+                <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
               </Property>
               <Property>
                 <Name>GroupId</Name>
@@ -699,7 +699,7 @@
             <ArrayOfProperty>
               <Property>
                 <Name>SspId</Name>
-                <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">222f4309-3105-42cc-9b1b-ce6daed64c42</Value>
+                <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
               </Property>
               <Property>
                 <Name>GroupId</Name>
@@ -3383,28 +3383,6 @@
           <pnp:Feature ID="9e99f7d7-08e9-455c-b3aa-fc71b9210027" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:Files>
-        <pnp:File Src="seattle.html" Folder="{site}/_catalogs/masterpage" Overwrite="true">
-          <pnp:Properties>
-            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Html Master Page}" />
-            <pnp:Property Key="UIVersion" Value="System.String[]" />
-            <pnp:Property Key="HtmlDesignFromMaster" Value="https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html, https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html" />
-            <pnp:Property Key="HtmlDesignAssociated" Value="True" />
-            <pnp:Property Key="HtmlDesignStatusAndPreview" Value="https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html, Conversion successful." />
-            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|15.0.0.4779&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;HtmlDesignStatusAndPreview:SW|https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html, Conversion successful.&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;HtmlDesignFromMaster:SW|https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html, https://portal2013.pnp.com{site}/_catalogs/masterpage/seattle.html&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|Features\\HtmlDesign\\en-US\\seattle.html&#xD;&#xA;HtmlDesignAssociated:IW|1&#xD;&#xA;vti_cachedneedsrewrite:BR|false&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;HtmlDesignConversionSucceeded:BW|True&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedhastheme:BR|false&#xD;&#xA;vti_cachedcustomprops:VX|HtmlDesignConversionSucceeded ContentType HtmlDesignFromMaster HtmlDesignStatusAndPreview HtmlDesignAssociated&#xD;&#xA;ContentTypeId:SW|0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A008C5B7DF32858CF4F8B96B1388160DDA7&#xD;&#xA;vti_metatags:VR|HTTP-EQUIV=X-UA-Compatible IE=10 GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;ContentType:SW|Html Master Page&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
-          </pnp:Properties>
-        </pnp:File>
-        <pnp:File Src="oslo.html" Folder="{site}/_catalogs/masterpage" Overwrite="true">
-          <pnp:Properties>
-            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Html Master Page}" />
-            <pnp:Property Key="UIVersion" Value="System.String[]" />
-            <pnp:Property Key="HtmlDesignFromMaster" Value="https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html, https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html" />
-            <pnp:Property Key="HtmlDesignAssociated" Value="True" />
-            <pnp:Property Key="HtmlDesignStatusAndPreview" Value="https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html, Conversion successful." />
-            <pnp:Property Key="MetaInfo" Value="vti_parserversion:SR|15.0.0.4779&#xD;&#xA;vti_folderitemcount:IW|0&#xD;&#xA;HtmlDesignStatusAndPreview:SW|https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html, Conversion successful.&#xD;&#xA;vti_charset:SR|utf-8&#xD;&#xA;HtmlDesignFromMaster:SW|https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html, https://portal2013.pnp.com{site}/_catalogs/masterpage/oslo.html&#xD;&#xA;vti_author:SR|SHAREPOINT\\system&#xD;&#xA;vti_setuppath:SR|Features\\HtmlDesign\\en-US\\oslo.html&#xD;&#xA;HtmlDesignAssociated:IW|1&#xD;&#xA;vti_cachedneedsrewrite:BR|false&#xD;&#xA;vti_generator:SR|Microsoft SharePoint&#xD;&#xA;vti_foldersubfolderitemcount:IW|0&#xD;&#xA;HtmlDesignConversionSucceeded:BW|True&#xD;&#xA;vti_modifiedby:SR|SHAREPOINT\\system&#xD;&#xA;vti_cachedhastheme:BR|false&#xD;&#xA;vti_cachedcustomprops:VX|HtmlDesignConversionSucceeded ContentType HtmlDesignFromMaster HtmlDesignStatusAndPreview HtmlDesignAssociated&#xD;&#xA;ContentTypeId:SW|0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A008C5B7DF32858CF4F8B96B1388160DDA7&#xD;&#xA;vti_metatags:VR|HTTP-EQUIV=X-UA-Compatible IE=10 GENERATOR Microsoft\\ SharePoint HTTP-EQUIV=Content-type text/html;\\ charset=utf-8 HTTP-EQUIV=Expires 0&#xD;&#xA;ContentType:SW|Html Master Page&#xD;&#xA;vti_cachedbodystyle:SR|&lt;body&gt;&#xD;&#xA;" />
-          </pnp:Properties>
-        </pnp:File>
-      </pnp:Files>
       <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
       <pnp:Publishing AutoCheckRequirements="MakeCompliant">
         <pnp:AvailableWebTemplates>
