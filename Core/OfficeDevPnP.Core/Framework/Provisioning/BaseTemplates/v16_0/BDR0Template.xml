@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.3.1604.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BDR0template">
     <pnp:ProvisioningTemplate ID="BDR0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
