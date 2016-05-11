@@ -170,11 +170,11 @@ namespace Microsoft.SharePoint.Client
         }
 
         private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
-        {            
+        {
             list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
-
+            folder.Context.Load(folder.ListItemAllFields, l => l["ContentTypeId"]);
+            folder.Context.ExecuteQueryRetry();
             var listItem = folder.ListItemAllFields;
-            listItem.EnsureProperty(f => f["ContentTypeId"]);
 
             // If already a document set, just return the folder
             if (listItem["ContentTypeId"].ToString() == BuiltInContentTypeId.Folder) return folder;
