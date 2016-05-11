@@ -205,6 +205,21 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Returns if the field is found
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web, sub site or sub site of sub site.</param>
+        /// <param name="fieldId">Guid for the field ID</param>
+        /// <returns>True or false depending on the field existence</returns>
+        public static bool AvailableFieldExistsById(this Web web, Guid fieldId)
+        {
+            web.Context.Load(web.AvailableFields, fields => fields.Include(field => field.Id));
+            web.Context.ExecuteQueryRetry();
+
+            return web.AvailableFields.Any(f => f.Id == fieldId);
+        }
+
+
+        /// <summary>
         /// Returns the field if it exists. Null if it does not exist.
         /// </summary>
         /// <typeparam name="TField">The selected field type to return.</typeparam>
@@ -296,6 +311,26 @@ namespace Microsoft.SharePoint.Client
             }
 
             return FieldExistsById(web, new Guid(fieldId));
+        }
+
+        /// <summary>
+        /// Does field exist in web
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
+        /// <param name="fieldId">String representation of the field ID (=guid)</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
+        /// <returns>True if exists, false otherwise</returns>
+        public static bool FieldExistsById(this Web web, string fieldId, bool searchInSiteHierarchy)
+        {
+            if (string.IsNullOrEmpty(fieldId))
+            {
+                throw new ArgumentNullException("fieldId");
+            }
+
+            if (!searchInSiteHierarchy)
+                return FieldExistsById(web, new Guid(fieldId));
+
+            return AvailableFieldExistsById(web, new Guid(fieldId));
         }
 
         /// <summary>
