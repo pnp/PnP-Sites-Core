@@ -277,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var customAction in webCustomActions)
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template, customAction.Name);
-                    customActions.WebCustomActions.Add(CopyUserCustomAction(customAction));
+                    customActions.WebCustomActions.Add(CopyUserCustomAction(customAction, creationInfo,template));
                 }
 
                 // if this is a sub site then we're not creating entities for site collection scoped custom actions
@@ -286,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var customAction in siteCustomActions)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template, customAction.Name);
-                        customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction));
+                        customActions.SiteCustomActions.Add(CopyUserCustomAction(customAction, creationInfo,template));
                     }
                 }
 
@@ -331,7 +331,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private CustomAction CopyUserCustomAction(UserCustomAction userCustomAction)
+        private CustomAction CopyUserCustomAction(UserCustomAction userCustomAction, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var customAction = new CustomAction();
             customAction.Description = userCustomAction.Description;
@@ -351,6 +351,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
+            if (creationInfo.PersistMultiLanguageResources)
+            {
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
+                    {
+                        var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", userCustomAction.Title.Replace(" ", "_"));
+                        customAction.Title = customActionTitle;
+
+                    }
+                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
+                    {
+                        var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", userCustomAction.Title.Replace(" ", "_"));
+                        customAction.Description = customActionDescription;
+                    }
+                }
+            }
             return customAction;
         }
 

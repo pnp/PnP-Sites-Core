@@ -416,6 +416,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             fieldXml = TokenizeFieldFormula(fieldXml);
                         }
+                        if(creationInfo.PersistMultiLanguageResources)
+                        {
+                            if (creationInfo.PersistMultiLanguageResources)
+                            {
+                                var fieldElement = XElement.Parse(fieldXml);
+                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                    fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+                                }
+                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                    fieldElement.SetAttributeValue("Description", fieldDescription);
+                                }
+
+                                fieldXml = fieldElement.ToString();
+                            }
+
+                        }
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
                 }
