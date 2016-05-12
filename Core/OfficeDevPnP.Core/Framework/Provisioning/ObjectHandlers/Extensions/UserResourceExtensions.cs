@@ -25,7 +25,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             var languages = ResourceTokens.Select(t => t.Item2).Distinct();
             foreach (int language in languages)
             {
-                var resourceFileName = System.IO.Path.Combine(tempFolder, string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language));
+                var culture = new CultureInfo(language);
+
+                var resourceFileName = System.IO.Path.Combine(tempFolder, string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name));
                 if (System.IO.File.Exists(resourceFileName))
                 {
                     // Read existing entries, if any
@@ -43,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-                var culture = new CultureInfo(language);
+            
 
                 // Create new resource file
                 using (ResXResourceWriter resx = new ResXResourceWriter(resourceFileName))
@@ -55,12 +57,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language) });
+                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name) });
 
                 // Persist the file using the connector
                 using (FileStream stream = System.IO.File.Open(resourceFileName, FileMode.Open))
                 {
-                    creationInfo.FileConnector.SaveFileStream(string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language), stream);
+                    creationInfo.FileConnector.SaveFileStream(string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name), stream);
                 }
                 // remove the temp resx file
                 System.IO.File.Delete(resourceFileName);
@@ -110,9 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 {
                     returnValue = true;
                     ResourceTokens.Add(new Tuple<string, int, string>(token, language.LCID, value.Value));
-                    //resx.AddResource(token, value.Value);
                 }
-                //}
             }
 
             return returnValue;

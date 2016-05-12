@@ -88,7 +88,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
+                
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -118,10 +120,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                if (creationInfo.PersistMultiLanguageResources)
-                {
-                    template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
-                }
+                //if (creationInfo.PersistMultiLanguageResources)
+                //{
+                //    template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
+                //}
 
                 return template;
             }
@@ -188,6 +190,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
                 objectHandlers.Add(new ObjectPersistTemplateInfo());
 
                 var tokenParser = new TokenParser(web, template);
