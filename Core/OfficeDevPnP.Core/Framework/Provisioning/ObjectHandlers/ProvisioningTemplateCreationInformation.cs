@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private FileConnectorBase fileConnector;
         private bool persistBrandingFiles = false;
         private bool persistMultiLanguageResourceFiles = false;
-        private string resourceFilePrefix = "PnP_Resource_";
+        private string resourceFilePrefix = "PnP_Resources";
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
