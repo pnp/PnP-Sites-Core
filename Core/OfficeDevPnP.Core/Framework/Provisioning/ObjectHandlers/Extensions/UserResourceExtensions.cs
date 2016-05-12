@@ -1,7 +1,12 @@
 ﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Resources;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,6 +16,58 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 #if !ONPREMISES
     internal static class UserResourceExtensions
     {
+        private static List<Tuple<string, int, string>> ResourceTokens = new List<Tuple<string, int, string>>();
+
+        public static ProvisioningTemplate SaveResourceValues(ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            var tempFolder = System.IO.Path.GetTempPath();
+
+            var languages = ResourceTokens.Select(t => t.Item2).Distinct();
+            foreach (int language in languages)
+            {
+                var resourceFileName = System.IO.Path.Combine(tempFolder, string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language));
+                if (System.IO.File.Exists(resourceFileName))
+                {
+                    // Read existing entries, if any
+                    using (ResXResourceReader resxReader = new ResXResourceReader(resourceFileName))
+                    {
+                        foreach (DictionaryEntry entry in resxReader)
+                        {
+                            // find if token is already there
+                            var existingToken = ResourceTokens.FirstOrDefault(t => t.Item1 == entry.Key.ToString() && t.Item2 == language);
+                            if (existingToken == null)
+                            {
+                                ResourceTokens.Add(new Tuple<string, int, string>(entry.Key.ToString(), language, entry.Value as string));
+                            }
+                        }
+                    }
+                }
+
+                var culture = new CultureInfo(language);
+
+                // Create new resource file
+                using (ResXResourceWriter resx = new ResXResourceWriter(resourceFileName))
+                {
+                    foreach (var token in ResourceTokens.Where(t => t.Item2 == language))
+                    {
+
+                        resx.AddResource(token.Item1, token.Item3);
+                    }
+                }
+
+                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language) });
+
+                // Persist the file using the connector
+                using (FileStream stream = System.IO.File.Open(resourceFileName, FileMode.Open))
+                {
+                    creationInfo.FileConnector.SaveFileStream(string.Format("{0}{1}.resx", creationInfo.ResourceFilePrefix, language), stream);
+                }
+                // remove the temp resx file
+                System.IO.File.Delete(resourceFileName);
+            }
+            return template;
+        }
+
         public static bool SetUserResourceValue(this UserResource userResource, string tokenValue, TokenParser parser)
         {
             bool isDirty = false;
@@ -39,6 +96,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 return false;
             }
         }
+
+        public static bool PersistResourceValue(UserResource userResource, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            bool returnValue = false;
+            foreach (var language in template.SupportedUILanguages)
+            {
+                var culture = new CultureInfo(language.LCID);
+
+                var value = userResource.GetValueForUICulture(culture.Name);
+                userResource.Context.ExecuteQueryRetry();
+                if (!string.IsNullOrEmpty(value.Value))
+                {
+                    returnValue = true;
+                    ResourceTokens.Add(new Tuple<string, int, string>(token, language.LCID, value.Value));
+                    //resx.AddResource(token, value.Value);
+                }
+                //}
+            }
+
+            return returnValue;
+        }
     }
+
+
 #endif
 }

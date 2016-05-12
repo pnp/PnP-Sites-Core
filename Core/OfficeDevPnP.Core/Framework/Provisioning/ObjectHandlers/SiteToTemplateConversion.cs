@@ -4,6 +4,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -116,6 +117,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+                    template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
+                }
+
                 return template;
             }
         }
