@@ -95,7 +95,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
 #if !ONPREMISES
-                        if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
+                        if ((!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken()) ||
+                            (!string.IsNullOrEmpty(customAction.Description) && customAction.Description.ContainsResourceToken()))
                         {
                             var uca = site.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
                             SetCustomActionResourceValues(parser, customAction, uca);
@@ -241,14 +242,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 bool isDirty = false;
 #if !ONPREMISES
-                if (customAction.Title.ContainsResourceToken())
+                if (!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken())
                 {
                     if (uca.TitleResource.SetUserResourceValue(customAction.Title, parser))
                     {
                         isDirty = true;
                     }
                 }
-                if (customAction.Description.ContainsResourceToken())
+                if (!string.IsNullOrEmpty(customAction.Description) && customAction.Description.ContainsResourceToken())
                 {
                     if (uca.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
                     {
@@ -354,15 +355,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             if (creationInfo.PersistMultiLanguageResources)
             {
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
+                var resourceKey = userCustomAction.Name.Replace(" ", "_");
+
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", resourceKey), template, creationInfo))
                 {
-                    var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", userCustomAction.Title.Replace(" ", "_"));
+                    var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", resourceKey);
                     customAction.Title = customActionTitle;
 
                 }
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", resourceKey), template, creationInfo))
                 {
-                    var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", userCustomAction.Title.Replace(" ", "_"));
+                    var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", resourceKey);
                     customAction.Description = customActionDescription;
                 }
             }
