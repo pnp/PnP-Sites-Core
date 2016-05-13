@@ -553,14 +553,41 @@ namespace OfficeDevPnP.Core.Utilities
             string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
 
             return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
-        }
+		}
 
-        /// <summary>
-        /// Get authentication realm from SharePoint
-        /// </summary>
-        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
-        /// <returns>String representation of the realm GUID</returns>
-        public static string GetRealmFromTargetUrl(Uri targetApplicationUri)
+		/// <summary>
+		/// Retrieves an S2S client context with an access token signed by the application's private certificate on 
+		/// behalf of the specified ClaimsIdentity and intended for application at the targetApplicationUri using the 
+		/// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the 
+		/// targetApplicationUri to discover it. Identity claim type and identity provider name (as registered in SharePoint) 
+		/// should be specified in configuration file e.g.:
+		///   <appSettings>
+		///	    <add key = "IdentityClaimType" value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" />
+		///	    <add key = "TrustedIdentityTokenIssuerName" value="sso" />
+		///	  </appSettings>
+		///	 To discover trusted identity token issuer name use following cmdlet: 
+		///	 Get-SPTrustedIdentityTokenIssuer | select name
+		/// </summary>
+		/// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+		/// <param name="identity">Claims identity of the user on whose behalf to create the access token</param>
+		/// <returns>A ClientContext using an access token with an audience of the target application</returns>
+		public static ClientContext GetS2SClientContextWithClaimsIdentity(Uri targetApplicationUri, System.Security.Claims.ClaimsIdentity identity)
+		{
+			string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
+
+			JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithClaimsIdentity(identity, IdentityClaimType, TrustedIdentityTokenIssuerName) : null;
+
+			string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+
+			return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
+		}
+
+		/// <summary>
+		/// Get authentication realm from SharePoint
+		/// </summary>
+		/// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+		/// <returns>String representation of the realm GUID</returns>
+		public static string GetRealmFromTargetUrl(Uri targetApplicationUri)
         {
             WebRequest request = WebRequest.Create(targetApplicationUri + "/_vti_bin/client.svc");
             request.Headers.Add("Authorization: Bearer ");
@@ -661,10 +688,12 @@ namespace OfficeDevPnP.Core.Utilities
         private static string secondaryClientSecret = null;
         private static string realm = null;
         private static string serviceNamespace = null;
-        //
-        // Environment Constants
-        //
-        private static string acsHostUrl = "accesscontrol.windows.net";
+		private static string identityClaimType = null;
+		private static string trustedIdentityTokenIssuerName = null;
+		//
+		// Environment Constants
+		//
+		private static string acsHostUrl = "accesscontrol.windows.net";
         private static string globalEndPointPrefix = "accounts";
 
         public static string AcsHostUrl
@@ -857,17 +886,54 @@ namespace OfficeDevPnP.Core.Utilities
             }
         }
 
+		public static string IdentityClaimType
+		{
+			get
+			{
+				if (String.IsNullOrEmpty(identityClaimType))
+				{
+					return WebConfigurationManager.AppSettings.Get("IdentityClaimType");
+				}
+				else
+				{
+					return identityClaimType;
+				}
+			}
+			set
+			{
+				identityClaimType = value;
+			}
+		}
 
-        //private static readonly string ClientId = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientId")) ? WebConfigurationManager.AppSettings.Get("HostedAppName") : WebConfigurationManager.AppSettings.Get("ClientId");
-        //private static readonly string IssuerId = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("IssuerId")) ? ClientId : WebConfigurationManager.AppSettings.Get("IssuerId");
-        //private static readonly string HostedAppHostNameOverride = WebConfigurationManager.AppSettings.Get("HostedAppHostNameOverride");
-        //private static readonly string HostedAppHostName = WebConfigurationManager.AppSettings.Get("HostedAppHostName");
-        //private static readonly string ClientSecret = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientSecret")) ? WebConfigurationManager.AppSettings.Get("HostedAppSigningKey") : WebConfigurationManager.AppSettings.Get("ClientSecret");
-        //private static readonly string SecondaryClientSecret = WebConfigurationManager.AppSettings.Get("SecondaryClientSecret");
-        //private static readonly string Realm = WebConfigurationManager.AppSettings.Get("Realm");
-        //private static readonly string ServiceNamespace = WebConfigurationManager.AppSettings.Get("Realm");
+		public static string TrustedIdentityTokenIssuerName
+		{
+			get
+			{
+				if (String.IsNullOrEmpty(trustedIdentityTokenIssuerName))
+				{
+					return WebConfigurationManager.AppSettings.Get("TrustedIdentityTokenIssuerName");
+				}
+				else
+				{
+					return trustedIdentityTokenIssuerName;
+				}
+			}
+			set
+			{
+				trustedIdentityTokenIssuerName = value;
+			}
+		}
 
-        private static readonly string ClientSigningCertificatePath = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePath");
+		//private static readonly string ClientId = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientId")) ? WebConfigurationManager.AppSettings.Get("HostedAppName") : WebConfigurationManager.AppSettings.Get("ClientId");
+		//private static readonly string IssuerId = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("IssuerId")) ? ClientId : WebConfigurationManager.AppSettings.Get("IssuerId");
+		//private static readonly string HostedAppHostNameOverride = WebConfigurationManager.AppSettings.Get("HostedAppHostNameOverride");
+		//private static readonly string HostedAppHostName = WebConfigurationManager.AppSettings.Get("HostedAppHostName");
+		//private static readonly string ClientSecret = string.IsNullOrEmpty(WebConfigurationManager.AppSettings.Get("ClientSecret")) ? WebConfigurationManager.AppSettings.Get("HostedAppSigningKey") : WebConfigurationManager.AppSettings.Get("ClientSecret");
+		//private static readonly string SecondaryClientSecret = WebConfigurationManager.AppSettings.Get("SecondaryClientSecret");
+		//private static readonly string Realm = WebConfigurationManager.AppSettings.Get("Realm");
+		//private static readonly string ServiceNamespace = WebConfigurationManager.AppSettings.Get("Realm");
+
+		private static readonly string ClientSigningCertificatePath = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePath");
         private static readonly string ClientSigningCertificatePassword = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePassword");
         private static readonly X509Certificate2 ClientCertificate = (string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword);
         private static readonly X509SigningCredentials SigningCredentials = (ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
@@ -973,7 +1039,18 @@ namespace OfficeDevPnP.Core.Utilities
             return claims;
         }
 
-        private static string IssueToken(
+		private static JsonWebTokenClaim[] GetClaimsWithClaimsIdentity(System.Security.Claims.ClaimsIdentity identity, string identityClaimType, string trustedProviderName)
+		{
+			var identityClaim = identity.Claims.Where(c => string.Equals(c.Type, identityClaimType, StringComparison.InvariantCultureIgnoreCase)).First();
+			JsonWebTokenClaim[] claims = new JsonWebTokenClaim[]
+			{
+				new JsonWebTokenClaim(NameIdentifierClaimType, identityClaim.Value),
+				new JsonWebTokenClaim("nii", "trusted:" + trustedProviderName)
+			};
+			return claims;
+		}
+
+		private static string IssueToken(
             string sourceApplication,
             string issuerApplication,
             string sourceRealm,
