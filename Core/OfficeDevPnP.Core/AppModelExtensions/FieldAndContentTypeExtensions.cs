@@ -1039,8 +1039,33 @@ namespace Microsoft.SharePoint.Client
             var ctCol = list.ContentTypes;
             list.Context.Load(ctCol);
             list.Context.ExecuteQueryRetry();
+            
+            return Enumerable.Any(ctCol, item =>
+            {
+                //We have to make sure that we compare the correct Content Type ID in lists. The List Content Type ID always extends the
+                //Parent Content Type ID and the given contentTypeId Parameter provides the Parent Content Type ID. A comparison of the
+                //List Content Type ID with the given Parent Content Type ID can lead to wrong results, because 
+                // - it can exclude Content Types (if a comparison is done using "StartsWith")
+                // - it can return no similarites even though both Content Types are similar (by using "Equals")
 
-            return Enumerable.Any(ctCol, item => item.Id.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase));
+                //According to the MSDN documentation (https://msdn.microsoft.com/en-us/library/aa543822(v=office.14).aspx) a list content type
+                //always consists of the Parent Content Type ID + "00" + Hexadecimal GUID. Therefore, to get the "real" Parent Content Type ID from the
+                //list, we have to cut the last 34 characters (2 characters for 00 and 32 characters for the GUID).
+                var itemId = item.Id.StringValue;
+                //Check if we can get the Parent Content Type ID. The Content Type ID must be longer than 34 characters 
+                //and the two characters starting at length-34 must be 00
+                //If this does not check out, use the old approach with "StartsWith".
+                if (itemId.Length > 34 && itemId.Substring(itemId.Length - 34, 2) == "00")
+                {
+                    itemId = itemId.Substring(0, itemId.Length - 34);
+                    return itemId.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase);
+                }
+                else
+                {
+                    return itemId.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase);
+                }
+                
+            });
         }
 
         /// <summary>
