@@ -23,7 +23,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (creationInfo.PersistMultiLanguageResources)
             {
+#if !SP2013
                 template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
+#endif
             }
             return template;
         }

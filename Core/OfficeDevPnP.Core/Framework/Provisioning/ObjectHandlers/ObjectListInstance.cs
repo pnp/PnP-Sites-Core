@@ -1231,8 +1231,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ? siteList.MajorWithMinorVersionsLimit
                                 : 0
                     };
+
                     if (creationInfo.PersistMultiLanguageResources)
                     {
+#if !SP2013
                         if (UserResourceExtensions.PersistResourceValue(siteList.TitleResource, string.Format("List_{0}_Title", siteList.Title.Replace(" ", "_")), template, creationInfo))
                         {
                             list.Title = string.Format("{{res:List_{0}_Title}}", siteList.Title.Replace(" ", "_"));
@@ -1241,6 +1243,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             list.Description = string.Format("{{res:List_{0}_Description}}", siteList.Title.Replace(" ", "_"));
                         }
+#endif
                     }
 
                     list = ExtractContentTypes(web, siteList, contentTypeFields, list);
@@ -1454,22 +1457,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (creationInfo.PersistMultiLanguageResources)
                     {
-                        if (creationInfo.PersistMultiLanguageResources)
+#if !SP2013
+                        if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
                         {
-                            if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
-                            {
-                                var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+                            var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                            fieldElement.SetAttributeValue("DisplayName", fieldTitle);
 
-                            }
-                            if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
-                            {
-                                var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("Description", fieldDescription);
-                            }
-
-                            schemaXml = fieldElement.ToString();
                         }
+                        if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                        {
+                            var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                            fieldElement.SetAttributeValue("Description", fieldDescription);
+                        }
+
+                        schemaXml = fieldElement.ToString();
+#endif
                     }
 
                     if (listId == null)

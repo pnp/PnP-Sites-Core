@@ -13,7 +13,8 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
-#if !ONPREMISES
+
+#if !SP2013
     internal static class UserResourceExtensions
     {
         private static List<Tuple<string, int, string>> ResourceTokens = new List<Tuple<string, int, string>>();
@@ -118,7 +119,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             return returnValue;
         }
     }
-
-
 #endif
 }

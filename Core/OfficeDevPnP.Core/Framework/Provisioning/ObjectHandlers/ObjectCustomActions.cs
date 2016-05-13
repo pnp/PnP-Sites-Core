@@ -351,23 +351,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
+#if !ONPREMISES
             if (creationInfo.PersistMultiLanguageResources)
             {
-                if (creationInfo.PersistMultiLanguageResources)
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
                 {
-                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
-                    {
-                        var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", userCustomAction.Title.Replace(" ", "_"));
-                        customAction.Title = customActionTitle;
+                    var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", userCustomAction.Title.Replace(" ", "_"));
+                    customAction.Title = customActionTitle;
 
-                    }
-                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
-                    {
-                        var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", userCustomAction.Title.Replace(" ", "_"));
-                        customAction.Description = customActionDescription;
-                    }
+                }
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", userCustomAction.Title.Replace(" ", "_")), template, creationInfo))
+                {
+                    var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", userCustomAction.Title.Replace(" ", "_"));
+                    customAction.Description = customActionDescription;
                 }
             }
+#endif
             return customAction;
         }
 
