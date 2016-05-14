@@ -167,7 +167,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             isDirty = UpdateFieldAttribute(existingFieldElement, "WebId", webId, isDirty);
 
-            isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", "{"+webId+"}", isDirty);
+            var webIdGuid = Guid.Parse(webId);
+
+            isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", webIdGuid.ToString("B"), isDirty);
 
             if (!string.IsNullOrEmpty(relationshipDeleteBehavior))
                 isDirty = UpdateFieldAttribute(existingFieldElement, "RelationshipDeleteBehavior", relationshipDeleteBehavior, isDirty);
