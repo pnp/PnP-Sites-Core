@@ -163,11 +163,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var existingFieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
 
-            isDirty = UpdateFieldAttribute(existingFieldElement, "List", listGuid.ToString(), false);
+            isDirty = UpdateFieldAttribute(existingFieldElement, "List", listGuid.ToString("B"), false);
 
             isDirty = UpdateFieldAttribute(existingFieldElement, "WebId", webId, isDirty);
 
-            isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", webId, isDirty);
+            var webIdGuid = Guid.Parse(webId);
+
+            isDirty = UpdateFieldAttribute(existingFieldElement, "SourceID", webIdGuid.ToString("B"), isDirty);
 
             if (!string.IsNullOrEmpty(relationshipDeleteBehavior))
                 isDirty = UpdateFieldAttribute(existingFieldElement, "RelationshipDeleteBehavior", relationshipDeleteBehavior, isDirty);
