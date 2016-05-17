@@ -382,10 +382,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
-            var searchFldUrl = folderServerRelativeUrl.EndsWith("/") ? folderServerRelativeUrl : folderServerRelativeUrl + "/";
             foreach (var list in listCollection)
             {
-                if (searchFldUrl.StartsWith(list.RootFolder.ServerRelativeUrl + "/", StringComparison.InvariantCultureIgnoreCase))
+                if (folderServerRelativeUrl.StartsWith(list.RootFolder.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
                     containingList = list;
                     break;
