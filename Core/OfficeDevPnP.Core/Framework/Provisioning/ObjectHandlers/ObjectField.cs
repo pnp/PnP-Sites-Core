@@ -419,19 +419,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (creationInfo.PersistMultiLanguageResources)
                         {
 #if !SP2013
-                            var fieldElement = XElement.Parse(fieldXml);
-                            if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                            if (creationInfo.BaseTemplate != null)
                             {
-                                var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("DisplayName", fieldTitle);
-                            }
-                            if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
-                            {
-                                var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("Description", fieldDescription);
-                            }
+                                int index = creationInfo.BaseTemplate.SiteFields.FindIndex(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
 
-                            fieldXml = fieldElement.ToString();
+                                if (index == -1)
+                                {
+                                    var fieldElement = XElement.Parse(fieldXml);
+                                    if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                                    {
+                                        var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                        fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+                                    }
+                                    if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                                    {
+                                        var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                        fieldElement.SetAttributeValue("Description", fieldDescription);
+                                    }
+
+                                    fieldXml = fieldElement.ToString();
+                                }
+                            }
 #endif
                         }
 

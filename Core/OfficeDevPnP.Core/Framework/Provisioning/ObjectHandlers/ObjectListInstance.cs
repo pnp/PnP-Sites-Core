@@ -1232,7 +1232,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 : 0
                     };
 
-                    if (creationInfo.PersistMultiLanguageResources)
+                    if (creationInfo.PersistMultiLanguageResources && baseTemplateList == null)
                     {
 #if !SP2013
                         if (UserResourceExtensions.PersistResourceValue(siteList.TitleResource, string.Format("List_{0}_Title", siteList.Title.Replace(" ", "_")), template, creationInfo))

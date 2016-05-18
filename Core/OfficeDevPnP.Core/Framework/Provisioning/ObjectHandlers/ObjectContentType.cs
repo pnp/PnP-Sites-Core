@@ -404,13 +404,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
-                        if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                        if (creationInfo.BaseTemplate != null)
                         {
-                            newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
-                        }
-                        if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
-                        {
-                            newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                            int index = creationInfo.BaseTemplate.ContentTypes.FindIndex(c => c.Id.Equals(ct.StringId));
+
+                            if (index == -1)
+                            {
+                                if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
+                                }
+                                if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                                }
+                            }
                         }
 #endif
                     }
