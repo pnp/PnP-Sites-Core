@@ -5,6 +5,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using User = OfficeDevPnP.Core.Framework.Provisioning.Model.User;
 using OfficeDevPnP.Core.Diagnostics;
+using Microsoft.SharePoint.Client.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -425,12 +426,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         r => r.RoleDefinitionBindings.Include(
                             rd => rd.Name,
                             rd => rd.RoleTypeKind),
-                        r => r.Member.LoginName));
+                        r => r.Member.LoginName,
+                        r => r.Member.PrincipalType));
 
                     web.Context.ExecuteQueryRetry();
 
                     foreach (var webRoleAssignment in webRoleAssignments)
                     {
+                        if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup
+                            && !creationInfo.IncludeSiteGroups)
+                            continue;
+
                         if (webRoleAssignment.Member.LoginName != "Excel Services Viewers")
                         {
                             foreach (var roleDefinition in webRoleAssignment.RoleDefinitionBindings)
@@ -439,7 +445,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     var modelRoleAssignment = new Model.RoleAssignment();
                                     modelRoleAssignment.RoleDefinition = roleDefinition.Name;
-                                    modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
+                                    if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup)
+                                    {
+                                        modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
+                                    }
+                                    else
+                                    {
+                                        modelRoleAssignment.Principal = webRoleAssignment.Member.LoginName;
+                                    }
                                     siteSecurity.SiteSecurityPermissions.RoleAssignments.Add(modelRoleAssignment);
                                 }
                             }
@@ -472,6 +485,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
             }
+            loginName = loginName.Replace(web.Title, "{sitename}");
             return loginName;
         }
 
