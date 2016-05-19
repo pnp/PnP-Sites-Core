@@ -14,6 +14,7 @@
     <EntitySet Name="TestConfigurationPropertySet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationPropertySet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.FileTrackingSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="FileTrackingBaselineSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.FileTrackingBaselineSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="UsersSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.UsersSet" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="TestResultTestResultMessage" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultTestResultMessage">
       <End Role="TestResult" EntitySet="TestResultSet" />
       <End Role="TestResultMessage" EntitySet="TestResultMessageSet" />
@@ -142,6 +143,15 @@
     <Property Name="ChangeDate" Type="datetime" Nullable="false" />
     <Property Name="FileContents" Type="varbinary(max)" Nullable="false" />
   </EntityType>
+  <EntityType Name="UsersSet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="UPN" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="IsAdmin" Type="bit" Nullable="false" />
+  </EntityType>
   <Association Name="TestResultTestResultMessage">
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
       <OnDelete Action="Cascade" />
@@ -241,6 +251,7 @@
           </AssociationSet>
           <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" />
           <EntitySet Name="FileTrackingBaselineSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTrackingBaseline" />
+          <EntitySet Name="UsersSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Users" />
         </EntityContainer>
         <EntityType Name="TestRun">
           <Key>
@@ -439,6 +450,15 @@
           <Property Name="ChangeDate" Type="DateTime" Nullable="false" />
           <Property Name="FileContents" Type="Binary" Nullable="false" MaxLength="Max" />
         </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UPN" Type="String" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -556,6 +576,16 @@
           <ScalarProperty Name="FileHash" ColumnName="FileHash" />
           <ScalarProperty Name="ChangeDate" ColumnName="ChangeDate" />
           <ScalarProperty Name="FileContents" ColumnName="FileContents" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UsersSet">
+      <EntityTypeMapping TypeName="IsTypeOf(OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Users)">
+        <MappingFragment StoreEntitySet="UsersSet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="UPN" ColumnName="UPN" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

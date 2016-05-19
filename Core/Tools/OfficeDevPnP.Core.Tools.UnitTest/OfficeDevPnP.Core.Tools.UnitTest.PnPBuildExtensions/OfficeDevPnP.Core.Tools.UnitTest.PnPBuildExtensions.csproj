@@ -196,6 +196,9 @@
     <Compile Include="SQL\TestRun.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="SQL\Users.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Tasks\PnPBase64EncoderTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigGeneratorTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigReaderTask.cs" />
@@ -228,6 +231,7 @@
     </Content>
     <Content Include="SQL\scripts\addfiletrackingbaselinetable.sql" />
     <Content Include="SQL\scripts\addfiletrackingtable.sql" />
+    <Content Include="SQL\scripts\adduserstable.sql" />
     <Content Include="SQL\scripts\createdpnprole.sql" />
     <Content Include="SQL\scripts\createuserandlogin.sql" />
     <Content Include="SQL\scripts\listgrants.sql" />

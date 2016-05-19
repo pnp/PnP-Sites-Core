@@ -2,13 +2,13 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 01/05/2016 19:27:42
--- Generated from EDMX file: C:\GitHub\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
+-- Date Created: 05/19/2016 15:56:41
+-- Generated from EDMX file: C:\github\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions\SQL\TestModel.edmx
 -- --------------------------------------------------
 
 SET QUOTED_IDENTIFIER OFF;
 GO
-USE [PnP];
+USE [PnPTestAutomation];
 GO
 IF SCHEMA_ID(N'dbo') IS NULL EXECUTE(N'CREATE SCHEMA [dbo]');
 GO
@@ -173,6 +173,15 @@ CREATE TABLE [dbo].[FileTrackingBaselineSet] (
 );
 GO
 
+-- Creating table 'UsersSet'
+CREATE TABLE [dbo].[UsersSet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [UPN] nvarchar(max)  NOT NULL,
+    [Name] nvarchar(max)  NOT NULL,
+    [IsAdmin] bit  NOT NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -222,6 +231,12 @@ GO
 -- Creating primary key on [Id] in table 'FileTrackingBaselineSet'
 ALTER TABLE [dbo].[FileTrackingBaselineSet]
 ADD CONSTRAINT [PK_FileTrackingBaselineSet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'UsersSet'
+ALTER TABLE [dbo].[UsersSet]
+ADD CONSTRAINT [PK_UsersSet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
