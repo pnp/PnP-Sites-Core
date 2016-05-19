@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQLDB
 {
     [ExtensionUri("logger://SQLLogger/v1")] /// Uri used to uniquely identify the SQL logger. 
     [FriendlyName("SQLLogger")] /// Alternate user friendly string to uniquely identify the logger.

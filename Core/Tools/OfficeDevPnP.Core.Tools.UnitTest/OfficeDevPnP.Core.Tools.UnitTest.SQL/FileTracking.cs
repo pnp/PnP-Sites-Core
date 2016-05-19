@@ -7,18 +7,22 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class TestConfigurationProperty
+    public partial class FileTracking
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Value { get; set; }
-        public int TestConfigurationId { get; set; }
-    
-        public virtual TestConfiguration TestConfiguration { get; set; }
+        public System.DateTime TestDate { get; set; }
+        public string Build { get; set; }
+        public string FileName { get; set; }
+        public string FileHash { get; set; }
+        public bool FileChanged { get; set; }
+        public string TestSiteUrl { get; set; }
+        public string TestUser { get; set; }
+        public string TestAppId { get; set; }
+        public string TestComputerName { get; set; }
     }
 }

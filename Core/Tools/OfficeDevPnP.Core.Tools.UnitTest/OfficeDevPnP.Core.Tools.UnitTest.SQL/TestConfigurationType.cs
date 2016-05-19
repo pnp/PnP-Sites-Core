@@ -7,18 +7,14 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class TestResultMessage
+    public enum TestConfigurationType : int
     {
-        public int Id { get; set; }
-        public string Category { get; set; }
-        public string Text { get; set; }
-        public int TestResultId { get; set; }
-    
-        public virtual TestResult TestResult { get; set; }
+        Online = 0,
+        SharePoint2013 = 1,
+        SharePoint2016 = 2
     }
 }

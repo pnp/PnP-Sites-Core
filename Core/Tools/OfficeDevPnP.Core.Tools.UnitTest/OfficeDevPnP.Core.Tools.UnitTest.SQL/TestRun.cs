@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
     using System.Collections.Generic;

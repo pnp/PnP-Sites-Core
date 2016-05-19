@@ -7,16 +7,15 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
     
-    public enum Outcome : int
+    public enum RunStatus : int
     {
-        Passed = 0,
-        Skipped = 1,
-        Failed = 2,
-        NotFound = 3,
-        None = 4
+        Initializing = 0,
+        Running = 1,
+        Done = 2,
+        Failed = 3
     }
 }

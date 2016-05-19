@@ -1,15 +1,14 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Utilities;
+using OfficeDevPnP.Core.Tools.UnitTest.SQL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Validation;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQLDB
 {
     public class TestManager
     {

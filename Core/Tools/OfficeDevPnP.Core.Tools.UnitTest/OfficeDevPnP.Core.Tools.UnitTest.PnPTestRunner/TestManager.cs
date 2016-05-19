@@ -1,13 +1,10 @@
-﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL;
+﻿using OfficeDevPnP.Core.Tools.UnitTest.SQL;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity.Validation;
 using System.Diagnostics;
-using System.Linq;
 using System.Management;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPTestRunner
 {

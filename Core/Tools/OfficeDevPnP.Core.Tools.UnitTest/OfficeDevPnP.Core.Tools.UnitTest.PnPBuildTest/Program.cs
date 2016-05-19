@@ -1,14 +1,6 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions;
+﻿using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions;
 using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Operations;
-using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
 {

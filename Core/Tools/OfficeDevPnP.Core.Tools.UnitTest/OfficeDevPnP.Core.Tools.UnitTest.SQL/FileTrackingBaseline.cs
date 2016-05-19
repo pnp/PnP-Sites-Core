@@ -7,14 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
+    using System.Collections.Generic;
     
-    public enum TestConfigurationType : int
+    public partial class FileTrackingBaseline
     {
-        Online = 0,
-        SharePoint2013 = 1,
-        SharePoint2016 = 2
+        public int Id { get; set; }
+        public string FileName { get; set; }
+        public string Build { get; set; }
+        public string FileHash { get; set; }
+        public System.DateTime ChangeDate { get; set; }
+        public byte[] FileContents { get; set; }
     }
 }

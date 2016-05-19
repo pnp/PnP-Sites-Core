@@ -7,13 +7,16 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
     
-    public enum TestAuthenticationType : int
+    public enum Outcome : int
     {
-        Online = 0,
-        OnPremises = 1
+        Passed = 0,
+        Skipped = 1,
+        Failed = 2,
+        NotFound = 3,
+        None = 4
     }
 }

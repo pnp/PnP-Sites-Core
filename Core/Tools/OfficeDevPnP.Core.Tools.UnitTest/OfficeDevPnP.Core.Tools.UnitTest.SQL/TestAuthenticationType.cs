@@ -7,15 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL
+namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
 {
     using System;
     
-    public enum RunStatus : int
+    public enum TestAuthenticationType : int
     {
-        Initializing = 0,
-        Running = 1,
-        Done = 2,
-        Failed = 3
+        Online = 0,
+        OnPremises = 1
     }
 }
