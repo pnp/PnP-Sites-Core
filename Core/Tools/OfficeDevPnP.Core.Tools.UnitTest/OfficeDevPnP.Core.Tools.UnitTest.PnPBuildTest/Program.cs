@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
             //t.GenerateMDSummaryReport();
             #endregion
 
-            string c1 = @"metadata=res://*/SQL.TestModel.csdl|res://*/SQL.TestModel.ssdl|res://*/SQL.TestModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=(localdb)\MSSQLLocalDB;initial catalog=PnPTestAutomation;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework&quot;";
+            string c1 = @"metadata=res://*/TestModel.csdl|res://*/TestModel.ssdl|res://*/TestModel.msl;provider=System.Data.SqlClient;provider connection string=&quot;data source=(localdb)\MSSQLLocalDB;initial catalog=PnPTestAutomation;integrated security=True;MultipleActiveResultSets=True;App=EntityFramework&quot;";
 
             Console.WriteLine(GetConnectionString(c1));
 
