@@ -110,6 +110,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="scripts\AddedAnonymousAccesscolumn.sql" />
     <Content Include="scripts\addfiletrackingbaselinetable.sql" />
     <Content Include="scripts\addfiletrackingtable.sql" />
     <Content Include="scripts\adduserstable.sql" />

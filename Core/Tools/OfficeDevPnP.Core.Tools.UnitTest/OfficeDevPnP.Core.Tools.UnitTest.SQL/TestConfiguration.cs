@@ -29,6 +29,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
         public TestConfigurationType Type { get; set; }
         public string TenantUrl { get; set; }
         public string TestSiteUrl { get; set; }
+        public bool AnonymousAccess { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TestRun> TestRuns { get; set; }

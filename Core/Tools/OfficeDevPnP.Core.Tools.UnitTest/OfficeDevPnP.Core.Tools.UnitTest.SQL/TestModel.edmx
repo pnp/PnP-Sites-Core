@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
   <EntityContainer Name="OfficeDevPnPCoreToolsUnitTestPnPBuildExtensionsSQLStoreContainer">
     <EntitySet Name="TestRunSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestRunSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="TestResultSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" store:Type="Tables" Schema="dbo" />
@@ -90,6 +90,7 @@
     <Property Name="Type" Type="int" Nullable="false" />
     <Property Name="TenantUrl" Type="nvarchar(max)" Nullable="true" />
     <Property Name="TestSiteUrl" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="AnonymousAccess" Type="bit" Nullable="false" />
     <Property Name="TestAuthentication_Id" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="TestAuthenticationSet">
@@ -350,6 +351,7 @@
           <Property Name="TestSiteUrl" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="TestAuthentication" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" FromRole="TestConfiguration" ToRole="TestAuthentication" />
           <NavigationProperty Name="TestConfigurationProperties" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" FromRole="TestConfiguration" ToRole="TestConfigurationProperty" />
+          <Property Name="AnonymousAccess" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="TestConfigurationTestRun">
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" >
@@ -444,19 +446,19 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FileName" Type="String" Nullable="false" />
-          <Property Name="Build" Type="String" Nullable="false" />
-          <Property Name="FileHash" Type="String" Nullable="false" />
-          <Property Name="ChangeDate" Type="DateTime" Nullable="false" />
-          <Property Name="FileContents" Type="Binary" Nullable="false" MaxLength="Max" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="Build" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="FileHash" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="ChangeDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="FileContents" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
         </EntityType>
         <EntityType Name="Users">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UPN" Type="String" Nullable="false" />
-          <Property Name="Name" Type="String" Nullable="false" />
+          <Property Name="UPN" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
         </EntityType>
       </Schema>
@@ -521,6 +523,7 @@
           <ScalarProperty Name="Type" ColumnName="Type" />
           <ScalarProperty Name="TenantUrl" ColumnName="TenantUrl" />
           <ScalarProperty Name="TestSiteUrl" ColumnName="TestSiteUrl" />
+          <ScalarProperty Name="AnonymousAccess" ColumnName="AnonymousAccess" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
