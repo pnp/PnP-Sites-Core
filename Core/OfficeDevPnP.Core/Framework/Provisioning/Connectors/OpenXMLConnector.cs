@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +15,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
     /// <summary>
     /// Connector that stores all the files into a unique .PNP OpenXML package
     /// </summary>
-    public class OpenXMLConnector : FileConnectorBase
+    public class OpenXMLConnector : FileConnectorBase, ICommitableFileConnector
     {
         private PnPInfo pnpInfo;
+        private FileConnectorBase persistenceConnector;
+        private String packageFileName;
 
         #region Constructors
 
@@ -26,7 +29,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="packageFileName">The name of the .PNP package file. If the .PNP extension is missing, it will be added</param>
         /// <param name="persistenceConnector">The FileConnector object that will be used for physical persistence of the file</param>
         /// <param name="author">The Author of the .PNP package file, if any. Optional</param>
-        public OpenXMLConnector(string packageFileName, FileConnectorBase persistenceConnector, String author = null)
+        /// <param name="signingCertificate">The X.509 certificate to use for digital signature of the template, optional</param>
+        /// <param name="cypheringCertificate">The X.509 certificate to use for encryption of the template, optional</param>
+        public OpenXMLConnector(string packageFileName,
+            FileConnectorBase persistenceConnector, 
+            String author = null,
+            X509Certificate2 signingCertificate = null,
+            X509Certificate2 cypheringCertificate = null)
             : base()
         {
             if (String.IsNullOrEmpty(packageFileName))
@@ -40,10 +49,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     (packageFileName + "pnp") : (packageFileName + ".pnp");
             }
 
+            this.packageFileName = packageFileName;
+
             if (persistenceConnector == null)
             {
                 throw new ArgumentException("persistenceConnector");
             }
+
+            this.persistenceConnector = persistenceConnector;
 
             // Try to load the .PNP package file
             var packageStream = persistenceConnector.GetFileStream(packageFileName);
@@ -81,6 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #endregion
 
         #region Base class overrides
+        
         /// <summary>
         /// Get the files available in the default container
         /// </summary>
@@ -93,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <summary>
         /// Get the files available in the specified container
         /// </summary>
-        /// <param name="container">Name of the container to get the files from</param>
+        /// <param name="container">Name of the container to get the files from (something like: "\images\subfolder")</param>
         /// <returns>List of files</returns>
         public override List<string> GetFiles(string container)
         {
@@ -101,8 +115,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
-
-            string path = ConstructPath("", container);
 
             var result = (from file in this.pnpInfo.Files
                          where file.Folder == container
@@ -152,7 +164,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 container = "";
             }
 
-            string result = null;
+            String result = null;
             MemoryStream stream = null;
             try
             {
@@ -242,22 +254,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                string filePath = ConstructPath(fileName, container);
+                Byte[] buffer = new Byte[stream.Length];
 
-                // Ensure the target path exists
-                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                // TODO: Handle large files with chunking
+                stream.Read(buffer, 0, (Int32)stream.Length);
 
-                using (var fileStream = File.Create(filePath))
+                // Check if the file already exists in the package
+                var existingFile = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                if (existingFile != null)
                 {
-                    stream.Seek(0, SeekOrigin.Begin);
-                    stream.CopyTo(fileStream);
+                    existingFile.Content = buffer;
+                }
+                else
+                {
+                    pnpInfo.Files.Add(new PnPFileInfo
+                    {
+                        Name = fileName,
+                        Folder = container,
+                        Content = buffer,
+                    });
                 }
 
-                Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileSaved, fileName, container);
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileSaved, fileName, container);
             }
             catch (Exception ex)
             {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileSaveFailed, fileName, container, ex.Message);
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileSaveFailed, fileName, container, ex.Message);
                 throw;
             }
         }
@@ -290,21 +312,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                string filePath = ConstructPath(fileName, container);
-
-                if (File.Exists(filePath))
+                var file = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                if (file != null)
                 {
-                    File.Delete(filePath);
-                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileDeleted, fileName, container);
+                    pnpInfo.Files.Remove(file);
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileDeleted, fileName, container);
                 }
                 else
                 {
-                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileDeleteNotFound, fileName, container);
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileDeleteNotFound, fileName, container);
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileDeleteFailed, fileName, container, ex.Message);
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileDeleteFailed, fileName, container, ex.Message);
                 throw;
             }
         }
@@ -315,16 +336,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             try
             {
-                string filePath = ConstructPath(fileName, container);
-
                 MemoryStream stream = new MemoryStream();
-                using (FileStream fileStream = File.OpenRead(filePath))
+                var file = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                if (file != null)
                 {
-                    stream.SetLength(fileStream.Length);
-                    fileStream.Read(stream.GetBuffer(), 0, (int)fileStream.Length);
+                    stream.Write(file.Content, 0, file.Content.Length);
+                }
+                else
+                {
+                    throw new FileNotFoundException();
                 }
 
-                Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileRetrieved, fileName, container);
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileRetrieved, fileName, container);
                 stream.Position = 0;
                 return stream;
             }
@@ -332,7 +355,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 if (ex is FileNotFoundException || ex is DirectoryNotFoundException)
                 {
-                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileNotFound, fileName, container, ex.Message);
+                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileNotFound, fileName, container, ex.Message);
                     return null;
                 }
 
@@ -340,41 +363,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
-        private string ConstructPath(string fileName, string container)
+        internal override string GetContainer()
         {
-            string filePath = "";
+            // The is no default container
+            return (String.Empty);
+        }
 
-            if (container.IndexOf(@"\") > 0)
-            {
-                string[] parts = container.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                filePath = Path.Combine(GetConnectionString(), parts[0]);
+        #endregion
 
-                if (parts.Length > 1)
-                {
-                    for (int i = 1; i < parts.Length; i++)
-                    {
-                        filePath = Path.Combine(filePath, parts[i]);
-                    }
-                }
+        #region Commit capability
 
-                if (!String.IsNullOrEmpty(fileName))
-                {
-                    filePath = Path.Combine(filePath, fileName);
-                }
-            }
-            else
-            {
-                if (!String.IsNullOrEmpty(fileName))
-                {
-                    filePath = Path.Combine(GetConnectionString(), container, fileName);
-                }
-                else
-                {
-                    filePath = Path.Combine(GetConnectionString(), container);
-                }
-            }
+        public void Commit()
+        {
+            Byte[] buffer = pnpInfo.PackTemplate();
 
-            return filePath;
+            MemoryStream stream = new MemoryStream();
+            
+            // TODO: Handle large files with chunking
+            stream.Write(buffer, 0, buffer.Length);
+            stream.Position = 0;
+
+            persistenceConnector.SaveFileStream(this.packageFileName, stream);
         }
 
         #endregion

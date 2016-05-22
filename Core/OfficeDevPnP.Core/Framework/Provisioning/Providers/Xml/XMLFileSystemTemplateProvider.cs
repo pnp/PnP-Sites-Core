@@ -5,10 +5,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     public class XMLFileSystemTemplateProvider : XMLTemplateProvider
     {
 
-        public XMLFileSystemTemplateProvider()
+        public XMLFileSystemTemplateProvider(): base()
         {
-
         }
+
         public XMLFileSystemTemplateProvider(string connectionString, string container) :
             base(new FileSystemConnector(connectionString, container))
         {

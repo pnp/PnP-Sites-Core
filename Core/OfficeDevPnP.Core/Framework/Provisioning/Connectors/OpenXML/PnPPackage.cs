@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         // urls
         public static string U_SITETEMPLATE_MANIFEST = "/manifest.xml";
 
-        public static string U_DIR_SITETEMPLATE = "/ProvisioningTemplate/";
+        public static string U_DIR_SITETEMPLATE = "/ProvisioningTemplates/";
         public static string U_SITETEMPLATE_BODY = U_DIR_SITETEMPLATE + "body.xaml";
         public static string U_SITETEMPLATE_PROPERTIES = U_DIR_SITETEMPLATE + "props.xml";
         public static string U_FILES_ORIGIN = "/files.origin";
@@ -158,7 +158,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                 foreach (PackagePart p in fileParts)
                 {
                     String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
-                    String folder = fileName.Substring(0, fileName.LastIndexOf('/'));
+                    String folder = fileName.LastIndexOf('/') >= 0 ?
+                        fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
                     fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
                     Byte[] content = ReadPackagePartBytes(p);
 
