@@ -18,32 +18,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         #region Constant strings
 
         // site template xaml
-        public const string R_SITETEMPLATE_MANIFEST = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/manifest";
-        public const string R_SITETEMPLATE_BODY = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/body";
-        public const string R_SITETEMPLATE_PROPERTIES = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/properties";
+        public const string R_PROVISIONINGTEMPLATE_MANIFEST = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/manifest";
+        public const string R_PROVISIONINGTEMPLATE_BODY = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/body";
+        public const string R_PROVISIONINGTEMPLATE_PROPERTIES = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/properties";
 
         // supporting files
-        public const string R_SITETEMPLATE_FILES_ORIGIN = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/files.origin";
-        public const string R_SITETEMPLATE_FILE = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/file";
+        public const string R_PROVISIONINGTEMPLATE_FILES_ORIGIN = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/files.origin";
+        public const string R_PROVISIONINGTEMPLATE_FILE = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/file";
 
         // content types
-        public const string CT_SITETEMPLATE_MANIFEST = "application/pnpprovisioningtemplate.manifest";
-        public const string CT_SITETEMPLATE_BODY = "application/pnpprovisioningtemplate.body";
-        public const string CT_SITETEMPLATE_PROPERTIES = "application/pnpprovisioningtemplate.properties";
+        public const string CT_PROVISIONINGTEMPLATE_MANIFEST = "application/pnpprovisioningtemplate.manifest";
+        public const string CT_PROVISIONINGTEMPLATE_BODY = "application/pnpprovisioningtemplate.body";
+        public const string CT_PROVISIONINGTEMPLATE_PROPERTIES = "application/pnpprovisioningtemplate.properties";
         public const string CT_ORIGIN = "application/pnpprovisioningtemplate.origin";
         public const string CT_FILE = "application/unknown";
 
         // urls
-        public static string U_SITETEMPLATE_MANIFEST = "/manifest.xml";
+        public static string U_PROVISIONINGTEMPLATE_MANIFEST = "/manifest.xml";
 
-        public static string U_DIR_SITETEMPLATE = "/ProvisioningTemplates/";
-        public static string U_SITETEMPLATE_BODY = U_DIR_SITETEMPLATE + "body.xaml";
-        public static string U_SITETEMPLATE_PROPERTIES = U_DIR_SITETEMPLATE + "props.xml";
+        public static string U_DIR_PROVISIONINGTEMPLATE = "/ProvisioningTemplate/";
+        public static string U_PROVISIONINGTEMPLATE_PROPERTIES = U_DIR_PROVISIONINGTEMPLATE + "props.xml";
         public static string U_FILES_ORIGIN = "/files.origin";
         public static string U_DIR_FILES = "/Files/";
 
         // file extensions
-        public const string EXT_SITETEMPLATE = ".pnp";
+        public const string EXT_PROVISIONINGTEMPLATE = ".pnp";
 
         #endregion
 
@@ -60,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             get
             {
-                return GetSinglePackagePartWithRelationshipType(R_SITETEMPLATE_MANIFEST, null);
+                return GetSinglePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_MANIFEST, null);
             }
         }
 
@@ -75,35 +74,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
             set
             {
-                PackagePart manifestPart = EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_MANIFEST, CT_SITETEMPLATE_MANIFEST, U_SITETEMPLATE_MANIFEST, null);
+                PackagePart manifestPart = EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_MANIFEST, CT_PROVISIONINGTEMPLATE_MANIFEST, U_PROVISIONINGTEMPLATE_MANIFEST, null);
                 SetXamlSerializedPackagePartValue(value, manifestPart);
-            }
-        }
-
-        /// <summary>
-        /// The Body Part of the package file
-        /// </summary>
-        public PackagePart BodyPart
-        {
-            get
-            {
-                return GetSinglePackagePartWithRelationshipType(R_SITETEMPLATE_BODY, ManifestPart);
-            }
-        }
-
-        /// <summary>
-        /// The Body of the package file
-        /// </summary>
-        public Byte[] Body
-        {
-            get
-            {
-                return ReadPackagePartBytes(this.BodyPart);
-            }
-            set
-            {
-                PackagePart bodyPart = EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_BODY, CT_SITETEMPLATE_BODY, U_SITETEMPLATE_BODY, ManifestPart);
-                SetPackagePartValue(value, bodyPart);
             }
         }
 
@@ -114,12 +86,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             get
             {
-                PackagePart propsPart = GetSinglePackagePartWithRelationshipType(R_SITETEMPLATE_PROPERTIES, ManifestPart);
+                PackagePart propsPart = GetSinglePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_PROPERTIES, ManifestPart);
                 return GetXamlSerializedPackagePartValue<PnPProperties>(propsPart);
             }
             set
             {
-                PackagePart propsPart = EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_PROPERTIES, CT_SITETEMPLATE_PROPERTIES, U_SITETEMPLATE_PROPERTIES, ManifestPart);
+                PackagePart propsPart = EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_PROPERTIES, CT_PROVISIONINGTEMPLATE_PROPERTIES, U_PROVISIONINGTEMPLATE_PROPERTIES, ManifestPart);
                 SetXamlSerializedPackagePartValue(value, propsPart);
             }
         }
@@ -131,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             get
             {
-                return GetSinglePackagePartWithRelationshipType(R_SITETEMPLATE_FILES_ORIGIN, ManifestPart);
+                return GetSinglePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_ORIGIN, ManifestPart);
             }
         }
 
@@ -142,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             get
             {
-                return GetAllPackagePartsWithRelationshipType(R_SITETEMPLATE_FILE, FilesOriginPart);
+                return GetAllPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
             }
         }
 
@@ -154,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             get
             {
                 Dictionary<String, PnPPackageFileItem> result = new Dictionary<String, PnPPackageFileItem>();
-                List<PackagePart> fileParts = GetAllPackagePartsWithRelationshipType(R_SITETEMPLATE_FILE, FilesOriginPart);
+                List<PackagePart> fileParts = GetAllPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
                 foreach (PackagePart p in fileParts)
                 {
                     String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
@@ -199,13 +171,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             fileName = fileName.TrimStart('/');
             folder = !String.IsNullOrEmpty(folder) ? (folder.TrimStart('/').TrimEnd('/') + "/") : String.Empty;
             string uriStr = U_DIR_FILES + folder + fileName;
-            PackagePart part = CreatePackagePart(R_SITETEMPLATE_FILE, CT_FILE, uriStr, FilesOriginPart);
+            PackagePart part = CreatePackagePart(R_PROVISIONINGTEMPLATE_FILE, CT_FILE, uriStr, FilesOriginPart);
             SetPackagePartValue(value, part);
         }
 
         public void ClearFiles()
         {
-            ClearPackagePartsWithRelationshipType(R_SITETEMPLATE_FILE, FilesOriginPart);
+            ClearPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
         }
 
         #endregion
@@ -215,16 +187,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         private void EnsureMandatoryPackageComponents()
         {
             // Manifest
-            EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_MANIFEST, CT_SITETEMPLATE_MANIFEST, U_SITETEMPLATE_MANIFEST, null);
+            EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_MANIFEST, CT_PROVISIONINGTEMPLATE_MANIFEST, U_PROVISIONINGTEMPLATE_MANIFEST, null);
 
             // Properties
-            EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_PROPERTIES, CT_SITETEMPLATE_PROPERTIES, U_SITETEMPLATE_PROPERTIES, ManifestPart);
-
-            // Body
-            EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_BODY, CT_SITETEMPLATE_BODY, U_SITETEMPLATE_BODY, ManifestPart);
+            EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_PROPERTIES, CT_PROVISIONINGTEMPLATE_PROPERTIES, U_PROVISIONINGTEMPLATE_PROPERTIES, ManifestPart);
 
             // Files origin
-            EnsurePackagePartWithRelationshipType(R_SITETEMPLATE_FILES_ORIGIN, CT_ORIGIN, U_FILES_ORIGIN, ManifestPart);
+            EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_ORIGIN, CT_ORIGIN, U_FILES_ORIGIN, ManifestPart);
         }
 
         private PackagePart EnsurePackagePartWithRelationshipType(string relType, string contentType, string uriStr, PackagePart parent)

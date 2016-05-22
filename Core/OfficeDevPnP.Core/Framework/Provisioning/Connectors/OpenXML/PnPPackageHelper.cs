@@ -46,7 +46,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             PnPInfo pnpInfo = new PnPInfo();
             pnpInfo.Manifest = package.Manifest;
-            pnpInfo.Body = package.Body;
             pnpInfo.Properties = package.Properties;
 
             pnpInfo.Files = new List<PnPFileInfo>();
@@ -66,7 +65,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         private static void SavePnPPackage(PnPInfo pnpInfo, PnPPackage package)
         {
             package.Manifest = pnpInfo.Manifest;
-            package.Body = pnpInfo.Body;
             package.Properties = pnpInfo.Properties;
             package.ClearFiles();
             if (pnpInfo.Files != null)

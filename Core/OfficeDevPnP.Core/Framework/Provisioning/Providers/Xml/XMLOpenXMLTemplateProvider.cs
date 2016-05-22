@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -17,6 +18,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             X509Certificate2 cypheringCertificate = null) :
             base(new OpenXMLConnector(packageFileName, persistenceConnector,
                 author, signingCertificate, cypheringCertificate))
+        {
+        }
+
+        public XMLOpenXMLTemplateProvider(OpenXMLConnector openXMLConnector) :
+            base(openXMLConnector)
         {
         }
     }

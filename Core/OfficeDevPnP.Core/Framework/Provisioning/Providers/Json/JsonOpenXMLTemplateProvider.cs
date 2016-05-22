@@ -19,5 +19,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
                 author, signingCertificate, cypheringCertificate))
         {
         }
+
+        public JsonOpenXMLTemplateProvider(OpenXMLConnector openXMLConnector) :
+            base(openXMLConnector)
+        {
+        }
     }
 }
