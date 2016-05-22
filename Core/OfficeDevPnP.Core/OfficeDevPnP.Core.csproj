@@ -329,11 +329,13 @@
     </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
@@ -428,6 +430,16 @@
     <Compile Include="Framework\Provisioning\Connectors\AzureStorageConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileConnectorBase.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileSystemConnector.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\ICommitableFileConnector.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXMLConnector.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPFileInfo.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPInfo.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPManifest.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPProperties.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackage.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageFileItem.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageFormatException.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageHelper.cs" />
     <Compile Include="Framework\Provisioning\Connectors\SharePointConnector.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\ExtensibilityManager.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\IProvisioningExtensibilityProvider.deprecated.cs" />
@@ -603,6 +615,7 @@
     <Compile Include="Framework\Provisioning\Providers\Json\BasePermissionsConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonFileSystemTemplateProvider.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Json\JsonOpenXMLTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonPnPFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
@@ -626,6 +639,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLFileSystemTemplateProvider.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLOpenXMLTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
@@ -661,6 +675,7 @@
     <Compile Include="Diagnostics\Tree\Tree.cs" />
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
+    <Compile Include="Utilities\PnPCoreUtilities.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -841,7 +856,9 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
+    <Content Include="pnp.ico" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TFSBaseBuildYear>2014</TFSBaseBuildYear>
