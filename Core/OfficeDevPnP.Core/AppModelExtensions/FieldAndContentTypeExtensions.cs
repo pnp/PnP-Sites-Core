@@ -1037,10 +1037,11 @@ namespace Microsoft.SharePoint.Client
             }
 
             var ctCol = list.ContentTypes;
-            list.Context.Load(ctCol);
+            list.Context.Load(ctCol, col => col.Include(ct => ct.Id, ct => ct.Parent));
             list.Context.ExecuteQueryRetry();
 
-            return Enumerable.Any(ctCol, item => item.Id.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase));
+            return (ctCol.Any(item => item.Id.StringValue.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase)
+             || item.Parent.Id.StringValue.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase)));
         }
 
         /// <summary>
