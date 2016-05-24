@@ -811,6 +811,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Publishing Pages
+
+            // Translate Publishing Pages, if any
+            if (template.PublishingPages != null && template.PublishingPages.Count > 0)
+            {
+                result.PublishingPages =
+                    (from pubPage in template.PublishingPages
+                     select new V201512.PublishingPage()
+                     {
+                         Overwrite = pubPage.Overwrite,
+                         Name = pubPage.Name,
+                         Layout = pubPage.Layout,
+                         Folder = pubPage.Folder,
+                         Publish = pubPage.Publish,
+                         WebParts = pubPage.WebParts.Count > 0 ?
+                            (from wp in pubPage.WebParts
+                             select new V201512.WebPartPageWebPart
+                             {
+                                 Zone = wp.Zone,
+                                 Order = (int)wp.Order,
+                                 Contents = XElement.Parse(wp.Contents).ToXmlElement(),
+                                 Title = wp.Title,
+                             }).ToArray() : null,
+                         Properties = pubPage.Properties != null && pubPage.Properties.Count > 0 ?
+                            (from p in pubPage.Properties
+                             select new V201512.StringDictionaryItem
+                             {
+                                 Key = p.Key,
+                                 Value = p.Value
+                             }).ToArray() : null,
+                         Security = pubPage.Security.FromTemplateToSchemaObjectSecurityV201512()
+                     }).ToArray();
+            }
+            else
+            {
+                result.PublishingPages = null;
+            }
+
+            #endregion
+
             #region Taxonomy
 
             // Translate Taxonomy elements, if any
@@ -1685,6 +1725,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 }
             }
 
+
+            #endregion
+
+            #region Publishing Pages
+
+            // Translate Files, if any
+            if (source.PublishingPages != null)
+            {
+                result.PublishingPages.AddRange(
+                    from pubPage in source.PublishingPages
+                    select new Model.PublishingPage(pubPage.Name,
+                        pubPage.Layout,
+                        pubPage.Folder,
+                        pubPage.Publish,
+                        pubPage.Overwrite,
+                        pubPage.WebParts != null ?
+                            (from wp in pubPage.WebParts
+                             select new Model.WebPart
+                             {
+                                 Order = (uint)wp.Order,
+                                 Zone = wp.Zone,
+                                 Title = wp.Title,
+                                 Contents = wp.Contents.InnerXml
+                             }) : null,
+                        pubPage.Properties != null ? pubPage.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
+                        pubPage.Security.FromSchemaToTemplateObjectSecurityV201512()
+                        )
+                    );
+            }
 
             #endregion
 
