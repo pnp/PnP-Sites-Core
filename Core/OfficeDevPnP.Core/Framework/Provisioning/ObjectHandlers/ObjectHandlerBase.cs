@@ -75,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
-        /// If the field is a taxonomy field then we will check for the values of the referenced termstore and termset. 
+        /// Check if all tokens where replaced. If the field is a taxonomy field then we will check for the values of the referenced termstore and termset. 
         /// </summary>
         /// <param name="fieldXml">The xml to parse</param>
         /// <param name="parser"></param>
@@ -131,6 +131,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isValid = false;
                     }
                 }
+            }
+            else
+            {
+                //Some tokens where not replaced
+                isValid = false;
             }
             return isValid;
         }

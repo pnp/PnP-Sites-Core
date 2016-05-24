@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ProvisioningTemplate baseTemplate;
         private FileConnectorBase fileConnector;
         private bool persistBrandingFiles = false;
+        private bool persistMultiLanguageResourceFiles = false;
+        private string resourceFilePrefix = "PnP_Resources";
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
@@ -57,6 +59,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.fileConnector = value;
+            }
+        }
+
+        /// <summary>
+        /// Will create resource files named "PnP_Resource_[LCID].resx for every supported language. The files will be persisted to the location specified by the connector
+        /// </summary>
+        public bool PersistMultiLanguageResources
+        {
+            get
+            {
+                return this.persistMultiLanguageResourceFiles;
+            }
+            set
+            {
+                this.persistMultiLanguageResourceFiles = value;
+            }
+        }
+
+        public string ResourceFilePrefix
+        {
+            get
+            {
+                return this.resourceFilePrefix;
+            }
+            set
+            {
+                this.resourceFilePrefix = value;
             }
         }
 

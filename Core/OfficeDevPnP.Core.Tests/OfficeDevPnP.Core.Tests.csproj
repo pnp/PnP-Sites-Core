@@ -327,6 +327,7 @@
     <Compile Include="Diagnostics\LogTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
+    <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockHandler.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
@@ -334,6 +335,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />

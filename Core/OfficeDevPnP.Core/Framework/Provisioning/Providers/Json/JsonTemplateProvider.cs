@@ -162,6 +162,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             {
                 this.Connector.SaveFileStream(uri, stream);
             }
+
+            if (this.Connector is ICommitableFileConnector)
+            {
+                ((ICommitableFileConnector)this.Connector).Commit();
+            }
         }
 
         #endregion

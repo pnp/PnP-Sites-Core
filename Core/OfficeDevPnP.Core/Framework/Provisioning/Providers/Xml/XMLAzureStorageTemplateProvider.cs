@@ -9,7 +9,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// </summary>
         public XMLAzureStorageTemplateProvider() : base()
         {
-
         }
 
         /// <summary>

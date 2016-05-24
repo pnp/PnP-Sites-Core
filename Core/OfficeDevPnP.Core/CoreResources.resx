@@ -921,4 +921,25 @@
   <data name="ClientContextExtensions_ExecuteQueryRetry" xml:space="preserve">
     <value>CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.</value>
   </data>
+  <data name="Provisioning_Connectors_OpenXML_FileDeleted" xml:space="preserve">
+    <value>File {0} deleted from folder {1}</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileDeleteFailed" xml:space="preserve">
+    <value>File {0} was not deleted from folder {1}. Error = {2}</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileDeleteNotFound" xml:space="preserve">
+    <value>File {0} was not deleted from folder {1} because it was not available</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileNotFound" xml:space="preserve">
+    <value>File {0} not found in directory {1}. Exception = {2}</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileRetrieved" xml:space="preserve">
+    <value>File {0} retrieved from folder {1}</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileSaved" xml:space="preserve">
+    <value>File {0} saved to folder {1}</value>
+  </data>
+  <data name="Provisioning_Connectors_OpenXML_FileSaveFailed" xml:space="preserve">
+    <value>File {0} was not saved to folder {1}. Error = {2}</value>
+  </data>
 </root>

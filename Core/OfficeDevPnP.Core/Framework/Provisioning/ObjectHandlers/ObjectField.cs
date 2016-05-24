@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
-                            var nameAttributeValue = originalFieldElement.Attribute("Title") != null ? originalFieldElement.Attribute("Title").Value : "";
+                            var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
                             if (nameAttributeValue.ContainsResourceToken())
                             {
                                 existingField.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
@@ -207,7 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);
-                    var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
+                    var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
                     if (nameAttributeValue.ContainsResourceToken())
                     {
                         field.TitleResource.SetUserResourceValue(nameAttributeValue, parser);
@@ -416,6 +416,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             fieldXml = TokenizeFieldFormula(fieldXml);
                         }
+                        if (creationInfo.PersistMultiLanguageResources)
+                        {
+#if !SP2013
+                            var fieldElement = XElement.Parse(fieldXml);
+                            if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                            {
+                                var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+                            }
+                            if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                            {
+                                var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                fieldElement.SetAttributeValue("Description", fieldDescription);
+                            }
+
+                            fieldXml = fieldElement.ToString();
+#endif
+                        }
+
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
                 }

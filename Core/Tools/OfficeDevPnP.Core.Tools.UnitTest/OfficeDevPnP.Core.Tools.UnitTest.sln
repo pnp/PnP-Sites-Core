@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core.Tools.Uni
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core", "..\..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj", "{F2077977-8EBF-409D-BBF4-8EFB328928A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeDevPnP.Core.Tools.UnitTest.SQL", "OfficeDevPnP.Core.Tools.UnitTest.SQL\OfficeDevPnP.Core.Tools.UnitTest.SQL.csproj", "{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,18 @@ Global
 		{F2077977-8EBF-409D-BBF4-8EFB328928A8}.Release15|Any CPU.Build.0 = Release15|Any CPU
 		{F2077977-8EBF-409D-BBF4-8EFB328928A8}.Release16|Any CPU.ActiveCfg = Release16|Any CPU
 		{F2077977-8EBF-409D-BBF4-8EFB328928A8}.Release16|Any CPU.Build.0 = Release16|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug15|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug15|Any CPU.Build.0 = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug16|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Debug16|Any CPU.Build.0 = Debug|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release15|Any CPU.ActiveCfg = Release|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release15|Any CPU.Build.0 = Release|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release16|Any CPU.ActiveCfg = Release|Any CPU
+		{8FDFC5AB-5EAF-477D-9F76-98F06F497D91}.Release16|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

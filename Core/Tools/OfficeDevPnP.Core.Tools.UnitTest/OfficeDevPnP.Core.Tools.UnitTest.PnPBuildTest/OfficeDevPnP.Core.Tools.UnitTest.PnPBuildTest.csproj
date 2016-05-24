@@ -71,6 +71,13 @@
       <Project>{ec40fd8a-ec1a-4ff7-bc6f-45f88e15e731}</Project>
       <Name>OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions</Name>
     </ProjectReference>
+    <ProjectReference Include="..\OfficeDevPnP.Core.Tools.UnitTest.SQL\OfficeDevPnP.Core.Tools.UnitTest.SQL.csproj">
+      <Project>{8fdfc5ab-5eaf-477d-9f76-98f06f497d91}</Project>
+      <Name>OfficeDevPnP.Core.Tools.UnitTest.SQL</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -669,6 +669,69 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File {0} deleted from folder {1}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileDeleted {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileDeleteFailed {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileDeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileDeleteNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileDeleteNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} retrieved from folder {1}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileRetrieved {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileRetrieved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} saved to folder {1}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileSaved {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileSaved", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+        /// </summary>
+        internal static string Provisioning_Connectors_OpenXML_FileSaveFailed {
+            get {
+                return ResourceManager.GetString("Provisioning_Connectors_OpenXML_FileSaveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
         /// </summary>
         internal static string Provisioning_Connectors_SharePoint_FileDeleted {

@@ -66,8 +66,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                         // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(templateList.Title,StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url),StringComparison.OrdinalIgnoreCase));
-                        
+                        var index = existingLists.FindIndex(x => x.Title.Equals(templateList.Title, StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
+
                         if (index == -1)
                         {
                             try
@@ -542,7 +542,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);
-                    var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
+                    var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
                     if (nameAttributeValue.ContainsResourceToken())
                     {
                         if (field.TitleResource.SetUserResourceValue(nameAttributeValue, parser))
@@ -625,7 +625,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
-                            var nameAttributeValue = originalFieldElement.Attribute("Name") != null ? originalFieldElement.Attribute("Name").Value : "";
+                            var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
                             if (nameAttributeValue.ContainsResourceToken())
                             {
                                 if (existingField.TitleResource.SetUserResourceValue(nameAttributeValue, parser))
@@ -1232,12 +1232,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 : 0
                     };
 
+                    if (creationInfo.PersistMultiLanguageResources)
+                    {
+#if !SP2013
+                        if (UserResourceExtensions.PersistResourceValue(siteList.TitleResource, string.Format("List_{0}_Title", siteList.Title.Replace(" ", "_")), template, creationInfo))
+                        {
+                            list.Title = string.Format("{{res:List_{0}_Title}}", siteList.Title.Replace(" ", "_"));
+                        }
+                        if (UserResourceExtensions.PersistResourceValue(siteList.DescriptionResource, string.Format("List_{0}_Description", siteList.Title.Replace(" ", "_")), template, creationInfo))
+                        {
+                            list.Description = string.Format("{{res:List_{0}_Description}}", siteList.Title.Replace(" ", "_"));
+                        }
+#endif
+                    }
 
                     list = ExtractContentTypes(web, siteList, contentTypeFields, list);
 
                     list = ExtractViews(siteList, list);
 
-                    list = ExtractFields(web, siteList, contentTypeFields, list, lists);
+                    list = ExtractFields(web, siteList, contentTypeFields, list, lists, creationInfo, template);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1266,8 +1279,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (logCTWarning)
                     {
-                        scope.LogWarning("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", list.Title);
-                        WriteWarning(string.Format("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", list.Title), ProvisioningMessageType.Warning);
+                        scope.LogWarning("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", siteList.Title);
+                        WriteWarning(string.Format("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", siteList.Title), ProvisioningMessageType.Warning);
                     }
                 }
 
@@ -1346,7 +1359,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, ListCollection lists)
+        private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, ListCollection lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var siteColumns = web.Fields;
             web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id));
@@ -1442,9 +1455,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         schemaXml = TokenizeFieldFormula(schemaXml);
                     }
 
+                    if (creationInfo.PersistMultiLanguageResources)
+                    {
+#if !SP2013
+                        if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                        {
+                            var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                            fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+
+                        }
+                        if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                        {
+                            var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                            fieldElement.SetAttributeValue("Description", fieldDescription);
+                        }
+
+                        schemaXml = fieldElement.ToString();
+#endif
+                    }
+
                     if (listId == null)
                     {
-                        list.Fields.Add((new Model.Field { SchemaXml = field.SchemaXml }));
+                        list.Fields.Add((new Model.Field { SchemaXml = schemaXml }));
                     }
                     else
                     {

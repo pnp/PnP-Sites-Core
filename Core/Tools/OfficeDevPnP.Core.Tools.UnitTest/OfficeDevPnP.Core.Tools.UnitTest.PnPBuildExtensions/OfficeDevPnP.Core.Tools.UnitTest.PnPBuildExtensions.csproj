@@ -104,7 +104,7 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Microsoft.VisualStudio.TestPlatform.ObjectModel.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -118,8 +118,8 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\WindowsPowerShell\3.0\System.Management.Automation.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
@@ -127,8 +127,8 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Http, Version=5.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.2\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
@@ -142,60 +142,7 @@
     <Compile Include="AppManager.cs" />
     <Compile Include="Operations\AppRegNew.cs" />
     <Compile Include="SharePointContext.cs" />
-    <Compile Include="SQL\DataManager.cs" />
-    <Compile Include="SQL\FileTracking.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\FileTrackingBaseline.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\Outcome.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\PnPAppConfigManager.cs" />
-    <Compile Include="SQL\RunStatus.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestAuthentication.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestAuthenticationType.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestConfiguration.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestConfigurationProperty.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestConfigurationType.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TestModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>TestModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestModelContainer.cs" />
-    <Compile Include="SQL\TestResult.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestResultMessage.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="SQL\TestRun.cs">
-      <DependentUpon>TestModel.tt</DependentUpon>
-    </Compile>
+    <Compile Include="SQLDB\PnPAppConfigManager.cs" />
     <Compile Include="Tasks\PnPBase64EncoderTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigGeneratorTask.cs" />
     <Compile Include="Tasks\PnPSQLAppConfigReaderTask.cs" />
@@ -210,14 +157,14 @@
     <Compile Include="Operations\RemoteOperation.cs" />
     <Compile Include="Resources\PublishingTypes.cs" />
     <Compile Include="Resources\ResourceManager.cs" />
-    <Compile Include="SQL\TestManager.cs" />
+    <Compile Include="SQLDB\TestManager.cs" />
     <Compile Include="Tasks\RegisterNewApp.cs" />
     <Compile Include="TokenHelper.cs" />
     <Compile Include="Utilities\RemoteOperationUtilities.cs" />
     <Compile Include="Utilities\CredentialManager.cs" />
     <Compile Include="Utilities\Run.cs" />
     <Compile Include="MD\VSTestLogger.cs" />
-    <Compile Include="SQL\VSTestLogger.cs" />
+    <Compile Include="SQLDB\VSTestLogger.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="MD\mastertestconfiguration sample.xml">
@@ -225,23 +172,6 @@
     </Content>
     <Content Include="nuget.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SQL\scripts\addfiletrackingbaselinetable.sql" />
-    <Content Include="SQL\scripts\addfiletrackingtable.sql" />
-    <Content Include="SQL\scripts\createdpnprole.sql" />
-    <Content Include="SQL\scripts\createuserandlogin.sql" />
-    <Content Include="SQL\scripts\listgrants.sql" />
-    <Content Include="SQL\scripts\listrolesandmembers.sql" />
-    <Content Include="SQL\TestModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TestModel.Context.cs</LastGenOutput>
-      <DependentUpon>TestModel.edmx</DependentUpon>
-    </Content>
-    <Content Include="SQL\TestModel.edmx.sql" />
-    <Content Include="SQL\TestModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>TestModel.cs</LastGenOutput>
-      <DependentUpon>TestModel.edmx</DependentUpon>
     </Content>
     <EmbeddedResource Include="Resources\pubxml.office365.providerhosted.azurewebsite.xml" />
   </ItemGroup>
@@ -268,14 +198,7 @@
     <None Include="Scripts\GenerateAppPackageProviderHosted.ps1">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EntityDeploy Include="SQL\TestModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>TestModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="SQL\mssqlbuild.cmd" />
-    <None Include="SQL\TestModel.edmx.diagram">
-      <DependentUpon>TestModel.edmx</DependentUpon>
-    </None>
+    <None Include="SQLDB\mssqlbuild.cmd" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -284,6 +207,10 @@
     <ProjectReference Include="..\..\..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
       <Project>{f2077977-8ebf-409d-bbf4-8efb328928a8}</Project>
       <Name>OfficeDevPnP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\OfficeDevPnP.Core.Tools.UnitTest.SQL\OfficeDevPnP.Core.Tools.UnitTest.SQL.csproj">
+      <Project>{8fdfc5ab-5eaf-477d-9f76-98f06f497d91}</Project>
+      <Name>OfficeDevPnP.Core.Tools.UnitTest.SQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
