@@ -13,10 +13,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
         public JsonOpenXMLTemplateProvider(string packageFileName,
             FileConnectorBase persistenceConnector,
             String author = null,
-            X509Certificate2 signingCertificate = null,
-            X509Certificate2 cypheringCertificate = null) :
+            X509Certificate2 signingCertificate = null) :
             base(new OpenXMLConnector(packageFileName, persistenceConnector,
-                author, signingCertificate, cypheringCertificate))
+                author, signingCertificate))
         {
         }
 

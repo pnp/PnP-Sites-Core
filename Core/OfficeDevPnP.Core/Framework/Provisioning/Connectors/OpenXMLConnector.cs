@@ -30,12 +30,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="persistenceConnector">The FileConnector object that will be used for physical persistence of the file</param>
         /// <param name="author">The Author of the .PNP package file, if any. Optional</param>
         /// <param name="signingCertificate">The X.509 certificate to use for digital signature of the template, optional</param>
-        /// <param name="cypheringCertificate">The X.509 certificate to use for encryption of the template, optional</param>
         public OpenXMLConnector(string packageFileName,
             FileConnectorBase persistenceConnector, 
             String author = null,
-            X509Certificate2 signingCertificate = null,
-            X509Certificate2 cypheringCertificate = null)
+            X509Certificate2 signingCertificate = null)
             : base()
         {
             if (String.IsNullOrEmpty(packageFileName))
