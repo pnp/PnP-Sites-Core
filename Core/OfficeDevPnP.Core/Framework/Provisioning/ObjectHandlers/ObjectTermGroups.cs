@@ -362,7 +362,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Description = termGroup.Description
                         };
 
-                        foreach (var termSet in termGroup.TermSets.Where(ts => ts.Id != orphanedTermsTermSetId))
+                        var nonOrphanTermSets = new List<TermSet>();
+                        foreach (var termSet in termGroup.TermSets)
+                        {
+                            if (termSet.Id != orphanedTermsTermSetId)
+                            {
+                                nonOrphanTermSets.Add(termSet);
+                            }
+                        }
+
+                        foreach (var termSet in nonOrphanTermSets)
                         {
                             var modelTermSet = new Model.TermSet();
                             modelTermSet.Name = termSet.Name;
