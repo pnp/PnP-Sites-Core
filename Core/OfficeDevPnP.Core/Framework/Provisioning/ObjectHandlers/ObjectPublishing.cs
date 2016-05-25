@@ -90,9 +90,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var file in sourceFiles)
                 {
-                    if (file.ListItemAllFields.ServerObjectIsNull != null && !file.ListItemAllFields.ServerObjectIsNull.Value)
+                    var listItem = file.EnsureProperty(f => f.ListItemAllFields);
+
+                    if (!listItem.ServerObjectIsNull())
                     {
-                        var listItem = file.EnsureProperty(f => f.ListItemAllFields);
                         listItem.ContentType.EnsureProperties(ct => ct.Id, ct => ct.StringId);
 
                         // Check if the content type is of type Master Page or Page Layout
