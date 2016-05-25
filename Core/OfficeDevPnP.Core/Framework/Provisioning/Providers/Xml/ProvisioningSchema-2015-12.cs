@@ -3412,6 +3412,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
         
         private ContentTypeBinding[] contentTypeBindingsField;
         
+        private CustomAction[] userCustomActionsField;
+        
         private ListInstanceViews viewsField;
         
         private ListInstanceFields fieldsField;
@@ -3488,6 +3490,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
             }
             set {
                 this.contentTypeBindingsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public CustomAction[] UserCustomActions {
+            get {
+                return this.userCustomActionsField;
+            }
+            set {
+                this.userCustomActionsField = value;
             }
         }
         
@@ -3844,6 +3857,284 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
                 this.defaultField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    public partial class CustomAction {
+        
+        private CustomActionCommandUIExtension commandUIExtensionField;
+        
+        private string nameField;
+        
+        private string descriptionField;
+        
+        private string groupField;
+        
+        private string locationField;
+        
+        private string titleField;
+        
+        private int sequenceField;
+        
+        private bool sequenceFieldSpecified;
+        
+        private string rightsField;
+        
+        private string urlField;
+        
+        private bool enabledField;
+        
+        private string scriptBlockField;
+        
+        private string imageUrlField;
+        
+        private string scriptSrcField;
+        
+        private string registrationIdField;
+        
+        private RegistrationType registrationTypeField;
+        
+        private bool registrationTypeFieldSpecified;
+        
+        public CustomAction() {
+            this.enabledField = true;
+        }
+        
+        /// <remarks/>
+        public CustomActionCommandUIExtension CommandUIExtension {
+            get {
+                return this.commandUIExtensionField;
+            }
+            set {
+                this.commandUIExtensionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Description {
+            get {
+                return this.descriptionField;
+            }
+            set {
+                this.descriptionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Group {
+            get {
+                return this.groupField;
+            }
+            set {
+                this.groupField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Location {
+            get {
+                return this.locationField;
+            }
+            set {
+                this.locationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Title {
+            get {
+                return this.titleField;
+            }
+            set {
+                this.titleField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int Sequence {
+            get {
+                return this.sequenceField;
+            }
+            set {
+                this.sequenceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool SequenceSpecified {
+            get {
+                return this.sequenceFieldSpecified;
+            }
+            set {
+                this.sequenceFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Rights {
+            get {
+                return this.rightsField;
+            }
+            set {
+                this.rightsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Url {
+            get {
+                return this.urlField;
+            }
+            set {
+                this.urlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool Enabled {
+            get {
+                return this.enabledField;
+            }
+            set {
+                this.enabledField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ScriptBlock {
+            get {
+                return this.scriptBlockField;
+            }
+            set {
+                this.scriptBlockField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ImageUrl {
+            get {
+                return this.imageUrlField;
+            }
+            set {
+                this.imageUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ScriptSrc {
+            get {
+                return this.scriptSrcField;
+            }
+            set {
+                this.scriptSrcField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string RegistrationId {
+            get {
+                return this.registrationIdField;
+            }
+            set {
+                this.registrationIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public RegistrationType RegistrationType {
+            get {
+                return this.registrationTypeField;
+            }
+            set {
+                this.registrationTypeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool RegistrationTypeSpecified {
+            get {
+                return this.registrationTypeFieldSpecified;
+            }
+            set {
+                this.registrationTypeFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    public partial class CustomActionCommandUIExtension {
+        
+        private System.Xml.XmlElement[] anyField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAnyElementAttribute()]
+        public System.Xml.XmlElement[] Any {
+            get {
+                return this.anyField;
+            }
+            set {
+                this.anyField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
+    public enum RegistrationType {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        List,
+        
+        /// <remarks/>
+        ContentType,
+        
+        /// <remarks/>
+        ProgId,
+        
+        /// <remarks/>
+        FileType,
     }
     
     /// <remarks/>
@@ -4234,284 +4525,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512 {
                 this.webCustomActionsField = value;
             }
         }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
-    public partial class CustomAction {
-        
-        private CustomActionCommandUIExtension commandUIExtensionField;
-        
-        private string nameField;
-        
-        private string descriptionField;
-        
-        private string groupField;
-        
-        private string locationField;
-        
-        private string titleField;
-        
-        private int sequenceField;
-        
-        private bool sequenceFieldSpecified;
-        
-        private string rightsField;
-        
-        private string urlField;
-        
-        private bool enabledField;
-        
-        private string scriptBlockField;
-        
-        private string imageUrlField;
-        
-        private string scriptSrcField;
-        
-        private string registrationIdField;
-        
-        private RegistrationType registrationTypeField;
-        
-        private bool registrationTypeFieldSpecified;
-        
-        public CustomAction() {
-            this.enabledField = true;
-        }
-        
-        /// <remarks/>
-        public CustomActionCommandUIExtension CommandUIExtension {
-            get {
-                return this.commandUIExtensionField;
-            }
-            set {
-                this.commandUIExtensionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
-            get {
-                return this.nameField;
-            }
-            set {
-                this.nameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Description {
-            get {
-                return this.descriptionField;
-            }
-            set {
-                this.descriptionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Group {
-            get {
-                return this.groupField;
-            }
-            set {
-                this.groupField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Location {
-            get {
-                return this.locationField;
-            }
-            set {
-                this.locationField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Title {
-            get {
-                return this.titleField;
-            }
-            set {
-                this.titleField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int Sequence {
-            get {
-                return this.sequenceField;
-            }
-            set {
-                this.sequenceField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool SequenceSpecified {
-            get {
-                return this.sequenceFieldSpecified;
-            }
-            set {
-                this.sequenceFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Rights {
-            get {
-                return this.rightsField;
-            }
-            set {
-                this.rightsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Url {
-            get {
-                return this.urlField;
-            }
-            set {
-                this.urlField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
-        public bool Enabled {
-            get {
-                return this.enabledField;
-            }
-            set {
-                this.enabledField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ScriptBlock {
-            get {
-                return this.scriptBlockField;
-            }
-            set {
-                this.scriptBlockField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ImageUrl {
-            get {
-                return this.imageUrlField;
-            }
-            set {
-                this.imageUrlField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ScriptSrc {
-            get {
-                return this.scriptSrcField;
-            }
-            set {
-                this.scriptSrcField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string RegistrationId {
-            get {
-                return this.registrationIdField;
-            }
-            set {
-                this.registrationIdField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public RegistrationType RegistrationType {
-            get {
-                return this.registrationTypeField;
-            }
-            set {
-                this.registrationTypeField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool RegistrationTypeSpecified {
-            get {
-                return this.registrationTypeFieldSpecified;
-            }
-            set {
-                this.registrationTypeFieldSpecified = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
-    public partial class CustomActionCommandUIExtension {
-        
-        private System.Xml.XmlElement[] anyField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAnyElementAttribute()]
-        public System.Xml.XmlElement[] Any {
-            get {
-                return this.anyField;
-            }
-            set {
-                this.anyField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema")]
-    public enum RegistrationType {
-        
-        /// <remarks/>
-        None,
-        
-        /// <remarks/>
-        List,
-        
-        /// <remarks/>
-        ContentType,
-        
-        /// <remarks/>
-        ProgId,
-        
-        /// <remarks/>
-        FileType,
     }
     
     /// <remarks/>

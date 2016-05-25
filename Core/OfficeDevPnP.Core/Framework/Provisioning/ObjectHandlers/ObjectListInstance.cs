@@ -283,6 +283,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion
 
+
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
                     {
@@ -854,6 +855,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+
+                #region UserCustomActions
+                //add any UserCustomActions
+                var existingUserCustomActions = existingList.UserCustomActions;
+                web.Context.Load(existingUserCustomActions, cts => cts);
+                web.Context.ExecuteQueryRetry();
+
+                foreach (CustomAction userCustomAction in templateList.UserCustomActions)
+                {
+                    //check for existing custom actions before adding (anything better to use than title?)
+                    if (!existingUserCustomActions.Any(uca => uca.Title == userCustomAction.Title))
+                    {
+                        UserCustomAction newUserCustomAction = existingList.UserCustomActions.Add();
+
+                        newUserCustomAction.Title = userCustomAction.Title;
+                        newUserCustomAction.Description = userCustomAction.Description;
+                        newUserCustomAction.Name = userCustomAction.Name;
+                        newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
+                        newUserCustomAction.Rights = userCustomAction.Rights;
+                        newUserCustomAction.Sequence = userCustomAction.Sequence;
+                        newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
+                        newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
+                        newUserCustomAction.Group = userCustomAction.Group;
+                        newUserCustomAction.Location = userCustomAction.Location;
+                        newUserCustomAction.Url = userCustomAction.Url;
+
+                        newUserCustomAction.Update();
+
+                        isDirty = true;
+                    }
+                }
+                #endregion
+
                 if (isDirty)
                 {
                     existingList.Update();
@@ -896,7 +930,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (templateList.Security != null)
                 {
                     existingList.SetSecurity(parser, templateList.Security);
-                }
+                } 
+
                 return Tuple.Create(existingList, parser);
             }
             else
@@ -1100,6 +1135,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            //add any UserCustomActions
+            if (list.UserCustomActions.Any())
+            {
+                foreach (CustomAction userCustomAction in list.UserCustomActions)
+                {
+                    UserCustomAction newUserCustomAction = createdList.UserCustomActions.Add();
+
+                    newUserCustomAction.Title = userCustomAction.Title;
+                    newUserCustomAction.Description = userCustomAction.Description;
+                    newUserCustomAction.Name = userCustomAction.Name;
+                    newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
+                    newUserCustomAction.Rights = userCustomAction.Rights;
+                    newUserCustomAction.Sequence = userCustomAction.Sequence;
+                    newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
+                    newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
+                    newUserCustomAction.Group = userCustomAction.Group;
+                    newUserCustomAction.Location = userCustomAction.Location;
+                   newUserCustomAction.Url = userCustomAction.Url;
+
+                    newUserCustomAction.Update();
+                }
+
+                web.Context.ExecuteQueryRetry();
+            }
+
             if (list.Security != null)
             {
                 createdList.SetSecurity(parser, list.Security);
@@ -1171,6 +1231,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
+                        l => l.UserCustomActions,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1251,6 +1312,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     list = ExtractViews(siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, lists, creationInfo, template);
+
+                    list = ExtractUserCustomActions(web, siteList, list);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1507,6 +1570,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+            return list;
+        }
+
+        private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list)
+        {
+            foreach (var uca in siteList.UserCustomActions)
+            {
+                web.Context.Load(uca, c => c);
+                web.Context.ExecuteQueryRetry();
+                                
+                list.UserCustomActions.Add(new CustomAction
+                {
+                    Title = uca.Title,
+                    Description = uca.Description,
+                    Name = uca.Name,
+                    RegistrationType = uca.RegistrationType,
+                    RegistrationId = uca.RegistrationId,
+                    Url = uca.Url,
+                    ImageUrl = uca.ImageUrl,
+                    Rights = uca.Rights,
+                    Sequence = uca.Sequence,
+                    ScriptBlock = uca.ScriptBlock,
+                    ScriptSrc = uca.ScriptSrc,
+                    Group = uca.Group,
+                    Location = uca.Location
+                }
+                );
+
+            }
+
             return list;
         }
 
