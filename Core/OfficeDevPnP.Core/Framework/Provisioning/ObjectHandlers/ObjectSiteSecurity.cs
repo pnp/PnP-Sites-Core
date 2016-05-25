@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
                     web.Context.ExecuteQueryRetry();
 
-                    if (!web.GroupExists(siteGroup.Title))
+                    if (!web.GroupExists(parser.ParseString(siteGroup.Title)))
                     {
                         scope.LogDebug("Creating group {0}", siteGroup.Title);
                         group = web.AddGroup(
