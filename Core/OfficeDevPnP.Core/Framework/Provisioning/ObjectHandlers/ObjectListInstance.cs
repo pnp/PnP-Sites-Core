@@ -1177,6 +1177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             f => f.Title,
                             f => f.Hidden,
                             f => f.InternalName,
+                            f => f.DefaultValue,
                             f => f.Required)));
 
                 web.Context.ExecuteQueryRetry();
@@ -1381,12 +1382,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var siteColumns = web.Fields;
-            web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id));
+            web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
             web.Context.ExecuteQueryRetry();
 
             foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
             {
-                if (siteColumns.FirstOrDefault(sc => sc.Id == field.Id) != null)
+                var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
+                if (siteColumn != null)
                 {
                     var addField = true;
                     if (siteList.ContentTypesEnabled && contentTypeFields.FirstOrDefault(c => c.Id == field.Id) == null)
@@ -1396,6 +1398,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             addField = false;
                         }
                     }
+
+                    if(siteColumn.DefaultValue != field.DefaultValue)
+                    {
+                        list.FieldDefaults.Add(field.InternalName, field.DefaultValue);
+                    }
+                    
 
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
