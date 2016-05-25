@@ -1160,6 +1160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
+               
                 // For each list in the site
                 var lists = web.Lists;
 
@@ -1180,6 +1181,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.ExecuteQueryRetry();
 
+                var allLists = new List<List>();
+
+                if (web.IsSubSite())
+                {
+                    // If current web is subweb then include the lists in the rootweb for lookup column support
+                    var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                    rootWeb.Context.Load(rootWeb.Lists, lsts => lsts.Include(l => l.Id, l => l.Title));
+                    rootWeb.Context.ExecuteQuery();
+                    foreach (var rootList in rootWeb.Lists)
+                    {
+                        allLists.Add(rootList);
+                    }
+                }
+
+                foreach (var list in lists)
+                {
+                    allLists.Add(list);
+                }
                 // Let's see if there are workflow subscriptions
                 Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription[] workflowSubscriptions = null;
                 try
@@ -1250,7 +1269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractViews(siteList, list);
 
-                    list = ExtractFields(web, siteList, contentTypeFields, list, lists, creationInfo, template);
+                    list = ExtractFields(web, siteList, contentTypeFields, list, allLists, creationInfo, template);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1359,7 +1378,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, ListCollection lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
+        private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var siteColumns = web.Fields;
             web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id));
@@ -1510,7 +1529,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private string ParseFieldSchema(string schemaXml, ListCollection lists)
+        private string ParseFieldSchema(string schemaXml, List<List> lists)
         {
             foreach (var list in lists)
             {
