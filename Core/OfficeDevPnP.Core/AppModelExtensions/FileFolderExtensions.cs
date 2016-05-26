@@ -367,10 +367,12 @@ namespace Microsoft.SharePoint.Client
         public static Folder EnsureFolderPath(this Web web, string webRelativeUrl)
         {
             if (webRelativeUrl == null) { throw new ArgumentNullException("webRelativeUrl"); }
-            if (string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, "webRelativeUrl"); }
+
+            //Web root folder should be returned if webRelativeUrl is empty
+            if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, "webRelativeUrl"); }
 
             // Check if folder exists
-            if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
+            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
             {
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
@@ -379,7 +381,7 @@ namespace Microsoft.SharePoint.Client
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
-            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder.ServerRelativeUrl));
+            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder)); 
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
@@ -400,7 +402,7 @@ namespace Microsoft.SharePoint.Client
             {
                 locationType = "Web";
                 currentFolder = web.RootFolder;
-                web.Context.Load(currentFolder, f => f.ServerRelativeUrl);
+                web.Context.Load(currentFolder);
                 web.Context.ExecuteQueryRetry();
             }
             else
