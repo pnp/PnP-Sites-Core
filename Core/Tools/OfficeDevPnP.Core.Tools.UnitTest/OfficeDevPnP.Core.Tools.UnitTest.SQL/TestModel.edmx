@@ -152,6 +152,9 @@
     <Property Name="UPN" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
     <Property Name="IsAdmin" Type="bit" Nullable="false" />
+    <Property Name="IsCoreMember" Type="bit" Nullable="false" />
+    <Property Name="SendTestResults" Type="bit" Nullable="false" />
+    <Property Name="Email" Type="nvarchar(max)" Nullable="true" />
   </EntityType>
   <Association Name="TestResultTestResultMessage">
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
@@ -460,6 +463,9 @@
           <Property Name="UPN" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
+          <Property Name="IsCoreMember" Type="Boolean" Nullable="false" />
+          <Property Name="SendTestResults" Type="Boolean" Nullable="false" />
+          <Property Name="Email" Type="String" Nullable="true" MaxLength="Max" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -589,6 +595,9 @@
           <ScalarProperty Name="UPN" ColumnName="UPN" />
           <ScalarProperty Name="Name" ColumnName="Name" />
           <ScalarProperty Name="IsAdmin" ColumnName="IsAdmin" />
+          <ScalarProperty Name="IsCoreMember" ColumnName="IsCoreMember" />
+          <ScalarProperty Name="SendTestResults" ColumnName="SendTestResults" />
+          <ScalarProperty Name="Email" ColumnName="Email" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

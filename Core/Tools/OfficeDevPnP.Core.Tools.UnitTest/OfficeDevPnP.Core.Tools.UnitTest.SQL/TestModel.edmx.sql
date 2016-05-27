@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/20/2016 13:26:38
+-- Date Created: 05/27/2016 10:24:37
 -- Generated from EDMX file: C:\github\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -17,31 +17,37 @@ GO
 -- Dropping existing FOREIGN KEY constraints
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestAuthentication]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestConfigurationSet] DROP CONSTRAINT [FK_TestConfigurationTestAuthentication];
-GO
-IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestConfigurationProperty]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestConfigurationPropertySet] DROP CONSTRAINT [FK_TestConfigurationTestConfigurationProperty];
-GO
-IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestRun]', 'F') IS NOT NULL
-    ALTER TABLE [dbo].[TestRunSet] DROP CONSTRAINT [FK_TestConfigurationTestRun];
-GO
 IF OBJECT_ID(N'[dbo].[FK_TestResultTestResultMessage]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[TestResultMessageSet] DROP CONSTRAINT [FK_TestResultTestResultMessage];
 GO
 IF OBJECT_ID(N'[dbo].[FK_TestRunTestResult]', 'F') IS NOT NULL
     ALTER TABLE [dbo].[TestResultSet] DROP CONSTRAINT [FK_TestRunTestResult];
 GO
+IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestRun]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestRunSet] DROP CONSTRAINT [FK_TestConfigurationTestRun];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestAuthentication]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestConfigurationSet] DROP CONSTRAINT [FK_TestConfigurationTestAuthentication];
+GO
+IF OBJECT_ID(N'[dbo].[FK_TestConfigurationTestConfigurationProperty]', 'F') IS NOT NULL
+    ALTER TABLE [dbo].[TestConfigurationPropertySet] DROP CONSTRAINT [FK_TestConfigurationTestConfigurationProperty];
+GO
 
 -- --------------------------------------------------
 -- Dropping existing tables
 -- --------------------------------------------------
 
-IF OBJECT_ID(N'[dbo].[FileTrackingBaselineSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[FileTrackingBaselineSet];
+IF OBJECT_ID(N'[dbo].[TestRunSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestRunSet];
 GO
-IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[FileTrackingSet];
+IF OBJECT_ID(N'[dbo].[TestResultSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestResultSet];
+GO
+IF OBJECT_ID(N'[dbo].[TestResultMessageSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestResultMessageSet];
+GO
+IF OBJECT_ID(N'[dbo].[TestConfigurationSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[TestConfigurationSet];
 GO
 IF OBJECT_ID(N'[dbo].[TestAuthenticationSet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[TestAuthenticationSet];
@@ -49,20 +55,14 @@ GO
 IF OBJECT_ID(N'[dbo].[TestConfigurationPropertySet]', 'U') IS NOT NULL
     DROP TABLE [dbo].[TestConfigurationPropertySet];
 GO
-IF OBJECT_ID(N'[dbo].[TestConfigurationSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestConfigurationSet];
+IF OBJECT_ID(N'[dbo].[FileTrackingSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[FileTrackingSet];
 GO
-IF OBJECT_ID(N'[dbo].[TestResultMessageSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestResultMessageSet];
+IF OBJECT_ID(N'[dbo].[FileTrackingBaselineSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[FileTrackingBaselineSet];
 GO
-IF OBJECT_ID(N'[dbo].[TestResultSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestResultSet];
-GO
-IF OBJECT_ID(N'[dbo].[TestRunSet]', 'U') IS NOT NULL
-    DROP TABLE [dbo].[TestRunSet];
-GO
-IF OBJECT_ID(N'[OfficeDevPnPCoreToolsUnitTestPnPBuildExtensionsSQLStoreContainer].[UsersSet]', 'U') IS NOT NULL
-    DROP TABLE [OfficeDevPnPCoreToolsUnitTestPnPBuildExtensionsSQLStoreContainer].[UsersSet];
+IF OBJECT_ID(N'[dbo].[UsersSet]', 'U') IS NOT NULL
+    DROP TABLE [dbo].[UsersSet];
 GO
 
 -- --------------------------------------------------
@@ -182,7 +182,10 @@ CREATE TABLE [dbo].[UsersSet] (
     [Id] int IDENTITY(1,1) NOT NULL,
     [UPN] nvarchar(max)  NOT NULL,
     [Name] nvarchar(max)  NOT NULL,
-    [IsAdmin] bit  NOT NULL
+    [IsAdmin] bit  NOT NULL,
+    [IsCoreMember] bit  NOT NULL,
+    [SendTestResults] bit  NOT NULL,
+    [Email] nvarchar(max)  NULL
 );
 GO
 

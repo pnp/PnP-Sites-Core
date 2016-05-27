@@ -18,5 +18,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
         public string UPN { get; set; }
         public string Name { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsCoreMember { get; set; }
+        public bool SendTestResults { get; set; }
+        public string Email { get; set; }
     }
 }
