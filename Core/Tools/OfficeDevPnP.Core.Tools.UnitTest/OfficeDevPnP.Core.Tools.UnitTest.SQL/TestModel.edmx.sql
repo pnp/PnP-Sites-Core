@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/27/2016 10:24:37
+-- Date Created: 05/27/2016 10:37:37
 -- Generated from EDMX file: C:\github\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -185,7 +185,8 @@ CREATE TABLE [dbo].[UsersSet] (
     [IsAdmin] bit  NOT NULL,
     [IsCoreMember] bit  NOT NULL,
     [SendTestResults] bit  NOT NULL,
-    [Email] nvarchar(max)  NULL
+    [Email] nvarchar(max)  NULL,
+    [IsEmailVerified] bit  NOT NULL
 );
 GO
 

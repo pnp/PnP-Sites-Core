@@ -151,10 +151,11 @@
     <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="UPN" Type="nvarchar(max)" Nullable="false" />
     <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
-    <Property Name="IsAdmin" Type="bit" Nullable="false" />
-    <Property Name="IsCoreMember" Type="bit" Nullable="false" />
-    <Property Name="SendTestResults" Type="bit" Nullable="false" />
+    <Property Name="IsAdmin" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="IsCoreMember" Type="bit" Nullable="false" DefaultValue="false" />
+    <Property Name="SendTestResults" Type="bit" Nullable="false" DefaultValue="false" />
     <Property Name="Email" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="IsEmailVerified" Type="bit" Nullable="false" DefaultValue="false" />
   </EntityType>
   <Association Name="TestResultTestResultMessage">
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
@@ -462,10 +463,11 @@
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="UPN" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" Unicode="true" FixedLength="false" />
-          <Property Name="IsAdmin" Type="Boolean" Nullable="false" />
-          <Property Name="IsCoreMember" Type="Boolean" Nullable="false" />
-          <Property Name="SendTestResults" Type="Boolean" Nullable="false" />
+          <Property Name="IsAdmin" Type="Boolean" Nullable="false" DefaultValue="False" />
+          <Property Name="IsCoreMember" Type="Boolean" Nullable="false" DefaultValue="False" />
+          <Property Name="SendTestResults" Type="Boolean" Nullable="false" DefaultValue="False" />
           <Property Name="Email" Type="String" Nullable="true" MaxLength="Max" />
+          <Property Name="IsEmailVerified" Type="Boolean" Nullable="false" DefaultValue="False" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -598,6 +600,7 @@
           <ScalarProperty Name="IsCoreMember" ColumnName="IsCoreMember" />
           <ScalarProperty Name="SendTestResults" ColumnName="SendTestResults" />
           <ScalarProperty Name="Email" ColumnName="Email" />
+          <ScalarProperty Name="IsEmailVerified" ColumnName="IsEmailVerified" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
