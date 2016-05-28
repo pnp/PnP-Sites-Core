@@ -60,9 +60,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_, file.Src);
                             checkedOut = CheckOutIfNeeded(web, targetFile);
 
-                            using (var stream = template.Connector.GetFileStream(file.Src))
+                            using (var stream = GetFileStream(template, file))
                             {
-                                targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
+                                targetFile = UploadFile(template, file, folder, stream);
                             }
                         }
                         else
@@ -72,10 +72,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        using (var stream = template.Connector.GetFileStream(file.Src))
+                        using (var stream = GetFileStream(template, file))
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, file.Src);
-                            targetFile = folder.UploadFile(template.Connector.GetFilenamePart(file.Src), stream, file.Overwrite);
+                            targetFile = UploadFile(template, file, folder, stream);
                         }
 
                         checkedOut = CheckOutIfNeeded(web, targetFile);
@@ -327,5 +327,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willExtract.Value;
         }
 
+        private static File UploadFile(ProvisioningTemplate template, Model.File file, Microsoft.SharePoint.Client.Folder folder, Stream stream)
+        {
+            File targetFile = null;
+            var fileName = template.Connector.GetFilenamePart(file.Src);
+            try
+            {
+                targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+            }
+            catch (Exception)
+            {
+                //The file name might contain encoded characters that prevent upload. Decode it and try again.
+                fileName = WebUtility.UrlDecode(fileName);
+                targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+            }
+            return targetFile;
+        }
+
+        /// <summary>
+        /// Retrieves <see cref="Stream"/> from connector. If the file name contains special characters (e.g. "%20") and cannot be retrieved, a workaround will be performed
+        /// </summary>
+        private static Stream GetFileStream(ProvisioningTemplate template, Model.File file)
+        {
+            var fileName = file.Src;
+            var stream = template.Connector.GetFileStream(fileName);
+            if (stream == null)
+            {
+                //Decode the URL and try again
+                fileName = WebUtility.UrlDecode(fileName);
+                stream = template.Connector.GetFileStream(fileName);
+            }
+
+            return stream;
+        }
     }
 }
