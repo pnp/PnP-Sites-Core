@@ -1,11 +1,8 @@
 ﻿using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
-using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL;
+using OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQLDB;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.Tasks
 {

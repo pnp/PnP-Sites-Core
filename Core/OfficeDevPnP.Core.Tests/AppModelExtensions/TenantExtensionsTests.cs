@@ -17,7 +17,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
     [TestClass()]
     public class TenantExtensionsTests
     {
-        private string sitecollectionName = "TestPnPSC_123456789_";
+        private static string sitecollectionNamePrefix = "TestPnPSC_123456789_";
+        private string sitecollectionName = "";
 
         #region Test initialize and cleanup
         [ClassInitialize()]
@@ -41,21 +42,24 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         private static void CleanupAllTestSiteCollections(ClientContext tenantContext)
         {
             var tenant = new Tenant(tenantContext);
-            for (int i = 0; i <= 9; i++)
+
+            var siteCols = tenant.GetSiteCollections();
+
+            foreach (var siteCol in siteCols)
             {
-                try
+                if (siteCol.Url.Contains(sitecollectionNamePrefix))
                 {
-                    string site = string.Format("TestPnPSC_123456789_{0}", i);
-                    site = GetTestSiteCollectionName(ConfigurationManager.AppSettings["SPODevSiteUrl"], site);
-                    // ensure the site collection in unlocked state before deleting
-                    tenant.SetSiteLockState(site, SiteLockState.Unlock);
-                    // delete the site collection, do not use the recyle bin
-                    tenant.DeleteSiteCollection(site, false);
-                }
-                catch (Exception ex)
-                {
-                    // eat all exceptions
-                    Console.WriteLine(ex.ToString());
+                    try
+                    {// ensure the site collection in unlocked state before deleting
+                        tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
+                        // delete the site collection, do not use the recyle bin
+                        tenant.DeleteSiteCollection(siteCol.Url, false);
+                    }
+                    catch (Exception ex)
+                    {
+                        // eat all exceptions
+                        Console.WriteLine(ex.ToString());
+                    }
                 }
             }
         }
@@ -63,12 +67,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         [TestInitialize()]
         public void Initialize()
         {
-            sitecollectionName = sitecollectionName + (new Random().Next(0, 9)).ToString();
-            using (var tenantContext = TestCommon.CreateTenantClientContext())
-            {
-                //Ensure nothing was left behind before we run our tests
-                CleanupCreatedTestSiteCollections(tenantContext);
-            }
+            sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
         #endregion
 
@@ -229,6 +228,35 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
             }
         }
+
+        [TestMethod]
+        public void CreateDeleteCreateSiteCollectionTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+
+                //Create site collection test
+                string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                var siteExists = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsTrue(siteExists, "Site collection creation failed");
+
+                //Delete site collection test: move to recycle bin
+                tenant.DeleteSiteCollection(siteToCreateUrl, true);
+                bool recycled = tenant.CheckIfSiteExists(siteToCreateUrl, "Recycled");
+                Assert.IsTrue(recycled, "Site collection recycling failed");
+
+                //Remove from recycle bin
+                tenant.DeleteSiteCollectionFromRecycleBin(siteToCreateUrl, true);
+                var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
+
+                //Create a site collection using the same url as the previously deleted site collection
+                siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                siteExists = tenant.SiteExists(siteToCreateUrl);
+                Assert.IsTrue(siteExists, "Second site collection creation failed");
+            }
+        }
         #endregion
 
         #region Site lockstate tests
@@ -286,19 +314,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             path = path.Substring(0, path.LastIndexOf('/'));
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
-        }
-
-        private void CleanupCreatedTestSiteCollections(ClientContext tenantContext)
-        {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
-            String testSiteCollection = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
-
-            //Ensure the test site collection was deleted and removed from recyclebin
-            var tenant = new Tenant(tenantContext);
-            if (tenant.SiteExists(testSiteCollection))
-            {
-                tenant.DeleteSiteCollection(testSiteCollection, false);
-            }
         }
 
         private string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)

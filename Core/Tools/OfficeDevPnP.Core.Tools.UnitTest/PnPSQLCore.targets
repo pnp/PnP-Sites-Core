@@ -89,7 +89,7 @@
     <Message Text="Build the PnP solution using configuration $(PnPBuildConfiguration)" />
     <Message Text="=================================================================================" />
     <!-- Trigger the download of the needed nuget packages -->
-    <Exec Command="$(ConfigurationPath)\nuget.exe restore $(PnPRepo)\Core\OfficeDevPnP.Core.sln" />
+    <Exec Command="$(ConfigurationPath)\nuget.exe restore $(PnPRepo)\Core\OfficeDevPnP.Core.sln -DisableParallelProcessing" />
     <!-- Build the project -->
     <MSBuild Projects="$(PnPRepo)\Core\OfficeDevPnP.Core.sln" Properties="Configuration=$(PnPBuildConfiguration)"/>
 

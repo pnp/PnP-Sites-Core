@@ -43,12 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 template.RegionalSettings = settings;
 
-                // If a base template is specified then use that one to "cleanup" the generated template model
-                if (creationInfo.BaseTemplate != null)
-                {
-                    template = CleanupEntities(template, creationInfo.BaseTemplate);
-
-                }
+                // We're not comparing regional settings with the value stored in the base template as base templates are always for the US locale (1033)
             }
             return template;
         }
@@ -130,15 +125,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return parser;
-        }
-
-        private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
-        {
-            if (template.RegionalSettings != null && baseTemplate.RegionalSettings != null && baseTemplate.RegionalSettings.Equals(template.RegionalSettings))
-            {
-                template.RegionalSettings = null;
-            }
-            return template;
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

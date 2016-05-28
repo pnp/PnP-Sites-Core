@@ -248,7 +248,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.NameResource.SetUserResourceValue(templateContentType.Name, parser);
             }
-            if(templateContentType.Description.ContainsResourceToken())
+            if (templateContentType.Description.ContainsResourceToken())
             {
                 createdCT.DescriptionResource.SetUserResourceValue(templateContentType.Description, parser);
             }
@@ -354,7 +354,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return template;
                 }
 
-                template.ContentTypes.AddRange(GetEntities(web, scope));
+                template.ContentTypes.AddRange(GetEntities(web, scope, creationInfo, template));
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
@@ -365,7 +365,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope)
+        private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
             web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks));
@@ -400,6 +400,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         EditFormUrl = ct.EditFormUrl,
                         NewFormUrl = ct.NewFormUrl,
                     };
+
+                    if (creationInfo.PersistMultiLanguageResources)
+                    {
+#if !SP2013
+                        if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                        {
+                            newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
+                        }
+                        if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
+                        {
+                            newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                        }
+#endif
+                    }
 
                     // If the Content Type is a DocumentSet
                     if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||

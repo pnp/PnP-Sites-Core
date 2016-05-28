@@ -183,6 +183,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 this.Connector.SaveFileStream(uri, stream);
             }
+
+            if (this.Connector is ICommitableFileConnector)
+            {
+                ((ICommitableFileConnector)this.Connector).Commit();
+            }
         }
 
         private Stream ResolveXIncludes(Stream stream)

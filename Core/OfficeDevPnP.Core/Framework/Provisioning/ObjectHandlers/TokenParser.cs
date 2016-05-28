@@ -73,6 +73,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
             }
 
+            if(web.IsSubSite())
+            {
+                // Add lists from rootweb
+                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
+                rootWeb.Context.ExecuteQueryRetry();
+                foreach(var rootList in rootWeb.Lists)
+                {
+                    // token already there? Skip the list
+                    if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
+                    {
+                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
+                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                    }
+                }
+            }
+
             // Add ContentTypes
             web.Context.Load(web.ContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
             web.Context.ExecuteQueryRetry();

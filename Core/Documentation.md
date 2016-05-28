@@ -1147,6 +1147,22 @@ Create new content type to web
 > ##### Return value
 > The created content type
 
+#### DeleteContentTypeByName(Microsoft.SharePoint.Client.Web,System.String)
+Deletes a content type from the web by name
+> ##### Parameters
+> **web:** Web to delete the content type from
+
+> **contentTypeName:** Name of the content type to delete
+
+
+#### DeleteContentTypeById(Microsoft.SharePoint.Client.Web,System.String)
+Deletes a content type from the web by id
+> ##### Parameters
+> **web:** Web to delete the content type from
+
+> **contentTypeId:** Id of the content type to delete
+
+
 #### GetContentTypeByName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Return content type by name
 > ##### Parameters
@@ -3469,7 +3485,7 @@ Returns the integer ID for a given group name
 > ##### Return value
 > Integer group ID
 
-#### AddGroup(Microsoft.SharePoint.Client.Web,System.String,System.String,System.Boolean,System.Boolean)
+#### AddGroup(Microsoft.SharePoint.Client.Web,System.String,System.String,System.Boolean,System.Boolean,System.Boolean)
 Adds a group
 > ##### Parameters
 > **web:** Site to add the group to
@@ -3481,6 +3497,8 @@ Adds a group
 > **groupIsOwner:** Sets the created group as group owner if true
 
 > **updateAndExecuteQuery:** Set to false to postpone the executequery call
+
+> **onlyAllowMembersViewMembership:** Set whether members are allowed to see group membership, defaults to false
 
 > ##### Return value
 > The created group
@@ -4627,6 +4645,16 @@ Determines if a Web (site) exists at the specified full URL, either accessible o
 > ##### Return value
 > true if the Web (site) exists; otherwise false
 
+#### WebExistsByTitle(Microsoft.SharePoint.Client.Web,System.String)
+Determines if a web exists by title.
+> ##### Parameters
+> **title:** Title of the web to check.
+
+> **parentWeb:** Parent web to check under.
+
+> ##### Return value
+> True if a web with the given title exists.
+
 #### IsSubSite(Microsoft.SharePoint.Client.Web)
 Checks if the current web is a sub site or not
 > ##### Parameters
@@ -5413,7 +5441,7 @@ Returns an app only ClientContext object
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String)
+#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String)
 Returns an app only ClientContext object
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5423,6 +5451,10 @@ Returns an app only ClientContext object
 > **appId:** Application ID which is requesting the ClientContext object
 
 > **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
 
 > ##### Return value
 > ClientContext to be used by CSOM code
@@ -5613,7 +5645,7 @@ Refreshes the SharePoint FedAuth cookie
 > **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
 
 
-#### EnsureToken(System.String,System.String,System.String,System.String)
+#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
 Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5623,6 +5655,10 @@ Ensure that AppAccessToken is filled with a valid string representation of the O
 > **appId:** Application ID which is requesting the ClientContext object
 
 > **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
 
 
 #### GetAccessTokenLease(System.DateTime)
@@ -6016,6 +6052,8 @@ Looks up a localized string similar to Source file path is required..
 Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
 #### ClientContextExtensions_Clone_Url_of_the_site_is_required_
 Looks up a localized string similar to Url of the site is required..
+#### ClientContextExtensions_ExecuteQueryRetry
+Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
 #### Exception_Message_EmptyString_Arg
 Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
 #### FeatureExtensions_ActivateSiteCollectionFeature
@@ -6040,6 +6078,10 @@ Looks up a localized string similar to Creating document set '{0}'..
 Looks up a localized string similar to Creating field '{0}' ({1})..
 #### FieldAndContentTypeExtensions_CreateFieldBase
 Looks up a localized string similar to New Field as XML: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeById
+Looks up a localized string similar to Could not find content type with id: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeByName
+Looks up a localized string similar to Could not find content type with name: {0}.
 #### FieldAndContentTypeExtensions_Field01AlreadyExists
 Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
 #### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_

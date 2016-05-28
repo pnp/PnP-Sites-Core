@@ -118,7 +118,7 @@ namespace Microsoft.SharePoint.Client
 
             enumerable.First().DeleteObject();
         }
-        
+
         /// <summary>
         /// Removes a field by specifying its ID
         /// </summary>
@@ -1037,10 +1037,11 @@ namespace Microsoft.SharePoint.Client
             }
 
             var ctCol = list.ContentTypes;
-            list.Context.Load(ctCol);
+            list.Context.Load(ctCol, col => col.Include(ct => ct.Id, ct => ct.Parent));
             list.Context.ExecuteQueryRetry();
 
-            return Enumerable.Any(ctCol, item => item.Id.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase));
+            return (ctCol.Any(item => item.Id.StringValue.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase)
+             || item.Parent.Id.StringValue.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase)));
         }
 
         /// <summary>
@@ -1253,6 +1254,47 @@ namespace Microsoft.SharePoint.Client
 
             // Return the content type object
             return myContentType;
+        }
+
+        /// <summary>
+        /// Deletes a content type from the web by name
+        /// </summary>
+        /// <param name="web">Web to delete the content type from</param>
+        /// <param name="contentTypeName">Name of the content type to delete</param>
+        internal static void DeleteContentTypeByName(this Web web, string contentTypeName)
+        {
+            var contentTypes = web.Context.LoadQuery(web.ContentTypes.Where(c => c.Name == contentTypeName));
+            web.Context.ExecuteQueryRetry();
+
+            var enumerable = contentTypes as ContentType[] ?? contentTypes.ToArray();
+            if (!enumerable.Any())
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_DeleteContentTypeByName, contentTypeName);
+            }
+            else
+            {
+                enumerable.First().DeleteObject();
+                web.Context.ExecuteQueryRetry();
+            }
+        }
+
+        /// <summary>
+        /// Deletes a content type from the web by id
+        /// </summary>
+        /// <param name="web">Web to delete the content type from</param>
+        /// <param name="contentTypeId">Id of the content type to delete</param>
+        internal static void DeleteContentTypeById(this Web web, string contentTypeId)
+        {
+            var contentType = GetContentTypeById(web, contentTypeId);
+            if (contentType == null)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_DeleteContentTypeById, contentTypeId);
+            }
+            else
+            {
+                contentType.DeleteObject();
+                web.Context.ExecuteQueryRetry();
+            }
         }
 
         /// <summary>
@@ -1633,7 +1675,7 @@ namespace Microsoft.SharePoint.Client
                 contentType.Context.Load(contentType);
                 contentType.Context.ExecuteQueryRetry();
             }
-            
+
             // Set translations for the culture
             contentType.NameResource.SetValueForUICulture(cultureName, nameResource);
             contentType.DescriptionResource.SetValueForUICulture(cultureName, descriptionResource);

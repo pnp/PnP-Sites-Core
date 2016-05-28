@@ -40,7 +40,6 @@ namespace Microsoft.SharePoint.Client
                      </Query>
                 </View>";
 
-
         /// <summary>
         /// Checks if a composed look exists.
         /// </summary>
@@ -251,7 +250,8 @@ namespace Microsoft.SharePoint.Client
             web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
 
             // Update/create the "Current" reference in the composed looks gallery
-            web.CreateComposedLookByUrl(CurrentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
+            string currentLookName = GetLocalizedCurrentValue(web);
+            web.CreateComposedLookByUrl(currentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
         }
 
         /// <summary>
@@ -706,6 +706,15 @@ namespace Microsoft.SharePoint.Client
             return string.Empty;
         }
 
+        private static string GetLocalizedCurrentValue(this Web web)
+        {
+            web.EnsureProperties(w => w.Language);
+            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
+            web.Context.ExecuteQueryRetry();
+            return currentTranslated.Value;
+        }
+
+
         /// <summary>
         /// Returns the current theme of a web
         /// </summary>
@@ -713,10 +722,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Entity with attributes of current composed look, or null if none</returns>
         public static ThemeEntity GetCurrentComposedLook(this Web web)
         {
-            web.EnsureProperties(w => w.Language);
-            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
-            web.Context.ExecuteQueryRetry();
-            var themeName = currentTranslated.Value;
+            var themeName = GetLocalizedCurrentValue(web);
             return GetComposedLook(web, themeName);
         }
 
@@ -769,6 +775,8 @@ namespace Microsoft.SharePoint.Client
                 subSitePath = web.Url.Replace(siteCollectionUrl, "");
             }
 
+            string currentLookName = GetLocalizedCurrentValue(web);
+
             if (themes.Count > 0)
             {
                 List<string> customComposedLooks = new List<string>();
@@ -805,7 +813,7 @@ namespace Microsoft.SharePoint.Client
 
                     if (name != null)
                     {
-                        if (!name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase) &&
+                        if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) &&
                             !defaultComposedLooks.Contains(name))
                         {
                             customComposedLooks.Add(name);
@@ -856,54 +864,71 @@ namespace Microsoft.SharePoint.Client
                 else
                 {
                     // Loop over the defined composed look and get the one that matches the information gathered from the "current" composed look
-                    foreach (var themeItem in themes)
+                    bool themeMatched = false;
+
+                    //first loop avoids comparing with "current" entry in order to detect oob themes
+                    //if no match then the second run includes "current"
+                    for (int i = 0; i < 2; i++)
                     {
-                        string masterPageUrl = null;
-                        string themeUrl = null;
-                        string imageUrl = null;
-                        string fontUrl = null;
-                        string name = "";
-
-                        if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
+                        if (themeMatched)
                         {
-                            masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
-                        {
-                            imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
-                        {
-                            fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
-                        {
-                            themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
-                        }
-                        if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
-                        {
-                            name = themeItem["Name"] as String;
+                            break;
                         }
 
-                        // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                        if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                        foreach (var themeItem in themes)
                         {
-                            theme.Name = name;
-                            theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
+                            string masterPageUrl = null;
+                            string themeUrl = null;
+                            string imageUrl = null;
+                            string fontUrl = null;
+                            string name = "";
 
-                            // Restore the default composed look image url
-                            if (imageUrl != null)
+                            if (themeItem["MasterPageUrl"] != null && themeItem["MasterPageUrl"].ToString().Length > 0)
                             {
-                                theme.BackgroundImage = imageUrl;
+                                masterPageUrl = System.Net.WebUtility.UrlDecode((themeItem["MasterPageUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["ImageUrl"] != null && themeItem["ImageUrl"].ToString().Length > 0)
+                            {
+                                imageUrl = System.Net.WebUtility.UrlDecode((themeItem["ImageUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["FontSchemeUrl"] != null && themeItem["FontSchemeUrl"].ToString().Length > 0)
+                            {
+                                fontUrl = System.Net.WebUtility.UrlDecode((themeItem["FontSchemeUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
+                            {
+                                themeUrl = System.Net.WebUtility.UrlDecode((themeItem["ThemeUrl"] as FieldUrlValue).Url);
+                            }
+                            if (themeItem["Name"] != null && themeItem["Name"].ToString().Length > 0)
+                            {
+                                name = themeItem["Name"] as String;
                             }
 
-                            // We're taking the first matching composed look
-                            break;
+                            // Exclude current from this comparison as otherwise we'll never detect the actual theme name
+                            if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) && i == 0)
+                            {
+                                // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
+                                if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                                {
+                                    theme.Name = name;
+                                    theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
+
+                                    // Restore the default composed look image url
+                                    if (imageUrl != null)
+                                    {
+                                        theme.BackgroundImage = imageUrl;
+                                    }
+
+                                    // We're taking the first matching composed look
+                                    themeMatched = true;
+                                    break;
+                                }
+                            }
                         }
                     }
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
-                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
                     {
                         if (!web.IsUsingOfficeTheme())
                         {
@@ -954,7 +979,7 @@ namespace Microsoft.SharePoint.Client
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
-            if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(CurrentLookName, StringComparison.InvariantCultureIgnoreCase)
+            if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase)
                 && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
             {
                 return null;
@@ -1206,7 +1231,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, web.ServerRelativeUrl);
-            web.AllProperties[InheritMaster] = "False";
+            web.AllProperties[InheritCustomMaster] = "False";
             web.CustomMasterUrl = masterPageServerRelativeUrl;
             web.Update();
             web.Context.ExecuteQueryRetry();
@@ -1233,7 +1258,7 @@ namespace Microsoft.SharePoint.Client
                         if (resetSubsitesToInherit || inheritTheme)
                         {
                             Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritMaster] = "True";
+                            childWeb.AllProperties[InheritCustomMaster] = "True";
                             childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
                             childWeb.Update();
                             web.Context.ExecuteQueryRetry();

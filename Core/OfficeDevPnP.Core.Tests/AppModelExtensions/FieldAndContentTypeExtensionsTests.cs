@@ -297,8 +297,13 @@ namespace Microsoft.SharePoint.Client.Tests
 				}
 				finally
 				{
-					subweb.DeleteObject();
-					clientContext.ExecuteQueryRetry();
+                    // Eat exception to deal with the sporadic error "The object is not associated with an object identity or the object identity is invalid"                    
+                    try
+                    {
+                        subweb.DeleteObject();
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    catch { }
 				}
 			}
 		}
@@ -330,13 +335,44 @@ namespace Microsoft.SharePoint.Client.Tests
 				}
 				finally
 				{
-					subweb.DeleteObject();
-					clientContext.ExecuteQueryRetry();
+                    // Eat exception to deal with the sporadic error "The object is not associated with an object identity or the object identity is invalid"                    
+                    try
+                    {
+                        subweb.DeleteObject();
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    catch { }
 				}
 			}
 		}
 
-		[TestMethod]
+        [TestMethod]
+        public void DeleteContentTypeByNameTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                clientContext.Web.CreateContentType(TEST_CT_PNP, TEST_CT_PNP_ID, TEST_CATEGORY);
+                Assert.IsTrue(clientContext.Web.ContentTypeExistsByName(TEST_CT_PNP));
+                // delete the content type
+                clientContext.Web.DeleteContentTypeByName(TEST_CT_PNP);
+                Assert.IsFalse(clientContext.Web.ContentTypeExistsByName(TEST_CT_PNP));
+            }
+        }
+
+        [TestMethod]
+        public void DeleteContentTypeByIdTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                clientContext.Web.CreateContentType(TEST_CT_PNP, TEST_CT_PNP_ID, TEST_CATEGORY);
+                Assert.IsTrue(clientContext.Web.ContentTypeExistsById(TEST_CT_PNP_ID));
+                // delete the content type
+                clientContext.Web.DeleteContentTypeById(TEST_CT_PNP_ID);
+                Assert.IsFalse(clientContext.Web.ContentTypeExistsById(TEST_CT_PNP_ID));
+            }
+        }
+
+        [TestMethod]
 		public void ContentTypeExistsByNameSearchInSiteHierarchyTest()
 		{
 			using (var clientContext = TestCommon.CreateClientContext())

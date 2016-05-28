@@ -24,12 +24,27 @@ namespace OfficeDevPnP.Core.Tests
 
             if (string.IsNullOrEmpty(TenantUrl) || string.IsNullOrEmpty(DevSiteUrl))
             {
-                throw new ConfigurationErrorsException("Tenant credentials in App.config are not set up.");
+                throw new ConfigurationErrorsException("Tenant site Url or Dev site url in App.config are not set up.");
             }
+
+            // Trim trailing slashes
+            TenantUrl = TenantUrl.TrimEnd(new[] { '/' });
+            DevSiteUrl = DevSiteUrl.TrimEnd(new[] { '/' });
 
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
             {
-                Credentials = Core.Utilities.CredentialManager.GetSharePointOnlineCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]);
+                var tempCred = Core.Utilities.CredentialManager.GetCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]);
+
+                // username in format domain\user means we're testing in on-premises
+                if (tempCred.UserName.IndexOf("\\") > 0)
+                {
+                    string[] userParts = tempCred.UserName.Split('\\');
+                    Credentials = new NetworkCredential(userParts[1], tempCred.SecurePassword, userParts[0]);
+                }
+                else
+                {
+                    Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
+                }                                
             }
             else
             {
@@ -105,7 +120,16 @@ namespace OfficeDevPnP.Core.Tests
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                var clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                ClientContext clientContext = null;
+
+                if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
+                {
+                    clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix: "login");
+                }
+                else
+                {
+                    clientContext = am.GetAppOnlyAuthenticatedContext(DevSiteUrl, AppId, AppSecret);
+                }
                 context = PnPClientContext.ConvertFrom(clientContext, retryCount, delay);
             }
             else
@@ -167,7 +191,15 @@ namespace OfficeDevPnP.Core.Tests
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
-                context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
+
+                if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
+                {
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
+                }
+                else
+                {
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, AppId, AppSecret);
+                }
             }
             else
             {

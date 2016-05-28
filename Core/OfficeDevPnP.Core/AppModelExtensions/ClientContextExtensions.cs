@@ -4,15 +4,13 @@ using System.Net;
 using System.Reflection;
 using System.Threading;
 using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
     public static partial class ClientContextExtensions
     {
-        private static string PnPCoreVersion;
-        private static readonly object PnPCoreVersionLock = new object();
-
-
         /// <summary>
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
@@ -64,13 +62,23 @@ namespace Microsoft.SharePoint.Client
                 try
                 {
                     // If the customer is not using the clienttag then fill with the PnP Core library tag
-                    if (String.IsNullOrEmpty(clientContext.ClientTag))
+                    // ClientTag property is limited to 32 chars
+                    string clientTag = String.Format("{0}:{1}", PnPCoreUtilities.PnPCoreVersionTag, GetCallingPnPMethod());
+                    if (clientTag.Length > 32)
                     {
-                        clientContext.ClientTag = GetCoreVersionTag();
+                        clientTag = clientTag.Substring(0, 32);
                     }
+                    clientContext.ClientTag = clientTag;
+
+                    // Make CSOM request more reliable by disabling the return value cache. Given we 
+                    // often clone context objects and the default value is
+#if !ONPREMISES
+                    clientContext.DisableReturnValueCache = true;
+#elif SP2016
+                    clientContext.DisableReturnValueCache = true;
+#endif                
                     clientContext.ExecuteQuery();
                     return;
-
                 }
                 catch (WebException wex)
                 {
@@ -79,7 +87,7 @@ namespace Microsoft.SharePoint.Client
                     // Check is request failed due to server unavailable - http status code 503
                     if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
-                        Debug.WriteLine("CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.", backoffInterval);
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
 
                         //Add delay for retry
                         Thread.Sleep(backoffInterval);
@@ -113,6 +121,13 @@ namespace Microsoft.SharePoint.Client
 
             ClientContext clonedClientContext = new ClientContext(siteUrl);
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
+            clonedClientContext.ClientTag = clientContext.ClientTag;
+#if !ONPREMISES
+            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
+#elif SP2016
+            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
+#endif
+
 
             // In case of using networkcredentials in on premises or SharePointOnlineCredentials in Office 365
             if (clientContext.Credentials != null)
@@ -197,23 +212,35 @@ namespace Microsoft.SharePoint.Client
             return hasMinimalVersion;
         }
 
-        /// <summary>
-        /// Get's a tag that identifies the PnP Core library
-        /// </summary>
-        /// <returns>PnP Core library identification tag</returns>
-        private static string GetCoreVersionTag()
+        private static string GetCallingPnPMethod()
         {
-            if (String.IsNullOrEmpty(PnPCoreVersion))
+            StackTrace t = new StackTrace();
+
+            string pnpMethod = "";
+            try
             {
-                Assembly coreAssembly = Assembly.GetExecutingAssembly();
-                lock (PnPCoreVersionLock)
+                for (int i = 0; i < t.FrameCount; i++)
                 {
-                    PnPCoreVersion = String.Format("{0}:{1}", ((AssemblyTitleAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyTitleAttribute))).Title, 
-                                                             ((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version);
+                    var frame = t.GetFrame(i);
+                    if (frame.GetMethod().Name.Equals("ExecuteQueryRetry"))
+                    {
+                        var method = t.GetFrame(i + 1).GetMethod();
+                        
+                        // Only return the calling method in case ExecuteQueryRetry was called from inside the PnP core library
+                        if (method.Module.Name.Equals("OfficeDevPnP.Core.dll", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            pnpMethod = method.Name;
+                        }
+                        break;
+                    }
                 }
             }
+            catch
+            {
 
-            return PnPCoreVersion;
+            }
+
+            return pnpMethod;
         }
 
     }

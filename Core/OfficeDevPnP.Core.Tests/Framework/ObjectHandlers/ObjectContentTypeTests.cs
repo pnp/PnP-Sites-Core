@@ -74,6 +74,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
+                // Provision a test content type
+                var ct = ctx.Web.GetContentTypeByName("Test Content Type");
+                if (ct == null)
+                {
+                    var provisionTemplate = new ProvisioningTemplate();
+                    var contentType = new ContentType()
+                    {
+                        Id = "0x010100503B9E20E5455344BFAC2292DC6FE805",
+                        Name = "Test Content Type",
+                        Group = "PnP",
+                        Description = "Test Description",
+                        Overwrite = true,
+                        Hidden = false
+                    };
+
+                    contentType.FieldRefs.Add(new FieldRef()
+                    {
+                        Id = BuiltInFieldId.Category,
+                        DisplayName = "Test Category",
+                    });
+                    provisionTemplate.ContentTypes.Add(contentType);
+                    TokenParser parser = new TokenParser(ctx.Web, provisionTemplate);
+                    new ObjectContentType().ProvisionObjects(ctx.Web, provisionTemplate, parser, new ProvisioningTemplateApplyingInformation());
+                }
+
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 

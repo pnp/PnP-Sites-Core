@@ -24,8 +24,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var name = "WebExtensions";
                 ctx.ExecuteQueryRetry();
 
-                ExceptionHandlingScope scope = new ExceptionHandlingScope(ctx);
-
                 Web web;
                 Site site;
                 site = ctx.Site;
@@ -36,24 +34,39 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 }
 
                 try
-                {                    
-                        web = ctx.Site.OpenWeb(name);
-                        web.DeleteObject();
+                {
+                    web = ctx.Site.OpenWeb(name);
+                    web.DeleteObject();
                     ctx.ExecuteQueryRetry();
-                    }
-                catch { }
-                        
-                        web = ctx.Web.Webs.Add(new WebCreationInformation
-                        {
-                            Title = name,
-                            WebTemplate = webTemplate,
-                            Url = name
-                        });                        
-                ctx.ExecuteQueryRetry();
-
-                        return web;
-                    }
                 }
+                catch { }
+
+                using (var webCtx = ctx.Clone(TestCommon.DevSiteUrl))
+                {
+                    web = webCtx.Web.Webs.Add(new WebCreationInformation
+                    {
+                        Title = name,
+                        WebTemplate = webTemplate,
+                        Url = name
+                    });
+                    webCtx.ExecuteQueryRetry();
+                }
+
+                // Wait for 2 minutes after creating a publishing web...especially when using app-only as otherwise one 
+                // can get a "Microsoft.SharePoint.Client.ServerException: The site is not valid. The 'Pages' document library is missing." error
+                // during subsequent creation/deletion actions
+                if (webTemplate.Equals("CMSPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    System.Threading.Thread.Sleep(3 * 60 * 1000);
+                }
+
+                // Create client context object for the newly created web and return that one...avoids "request uses too many resources" errors
+                using (var newWebCtx = ctx.Clone(TestCommon.DevSiteUrl + "/" + name))
+                {
+                    return newWebCtx.Web;
+                }
+            }
+        }
 
         public void Teardown(Web web)
         {

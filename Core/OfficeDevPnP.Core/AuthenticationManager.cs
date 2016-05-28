@@ -89,10 +89,12 @@ namespace OfficeDevPnP.Core
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <param name="acsHostUrl">Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts</param>
+        /// <param name="globalEndPointPrefix">Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string realm, string appId, string appSecret)
+        public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string realm, string appId, string appSecret, string acsHostUrl = "accesscontrol.windows.net", string globalEndPointPrefix = "accounts")
         {
-            EnsureToken(siteUrl, realm, appId, appSecret);
+            EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
             return clientContext;
         }
@@ -477,8 +479,10 @@ namespace OfficeDevPnP.Core
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <param name="acsHostUrl">Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts</param>
+        /// <param name="globalEndPointPrefix">Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        private void EnsureToken(string siteUrl, string realm, string appId, string appSecret)
+        private void EnsureToken(string siteUrl, string realm, string appId, string appSecret, string acsHostUrl, string globalEndPointPrefix)
         {
             if (appOnlyAccessToken == null)
             {
@@ -491,6 +495,17 @@ namespace OfficeDevPnP.Core
                         Utilities.TokenHelper.ServiceNamespace = realm;
                         Utilities.TokenHelper.ClientId = appId;
                         Utilities.TokenHelper.ClientSecret = appSecret;
+
+                        if (!String.IsNullOrEmpty(acsHostUrl))
+                        {
+                            Utilities.TokenHelper.AcsHostUrl = acsHostUrl;
+                        }
+
+                        if (!String.IsNullOrEmpty(globalEndPointPrefix))
+                        {
+                            Utilities.TokenHelper.GlobalEndPointPrefix = globalEndPointPrefix;
+                        }
+
                         var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
                         string token = response.AccessToken;
                         ThreadPool.QueueUserWorkItem(obj =>

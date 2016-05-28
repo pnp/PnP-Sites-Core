@@ -184,10 +184,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             var fileName1 = System.IO.Path.GetFileName(TestFilePath1);
             var file1 = folder.GetFile(fileName1);
-            Assert.AreEqual(fileName1, file1.Name, "Existing file could not be found.");
-
-            var file2 = folder.GetFile(fileName1.ToUpperInvariant());
-            Assert.AreEqual(fileName1, file2.Name, "Existing file could not be found: case-sensitive.");
+            Assert.AreEqual(fileName1, file1.Name, "Existing file could be found.");
 
             var fileName2 = System.IO.Path.GetFileName(TestFilePath2);
             var file3 = folder.GetFile(fileName2);
