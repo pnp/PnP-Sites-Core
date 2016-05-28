@@ -1520,6 +1520,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (field.TypeAsString.StartsWith("TaxonomyField"))
                     {
+                        schemaXml = TokenizeTaxonomyField(web, fieldElement);
+
                         // find the corresponding taxonomy container text field and include it too
                         var taxField = (TaxonomyField)field;
                         taxField.EnsureProperties(f => f.TextField, f => f.Id);

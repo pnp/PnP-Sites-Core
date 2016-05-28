@@ -374,6 +374,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //}
                             //}
                         }
+                        
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
@@ -382,30 +383,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                             taxTextFieldsToMoveUp.Add(taxField.TextField);
 
-                            // Replace Taxonomy field references to SspId, TermSetId with tokens
-                            TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
-                            TermStore store = session.GetDefaultSiteCollectionTermStore();
-
-                            var sspIdElement = element.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'SspId']/Value");
-                            if (sspIdElement != null)
-                            {
-                                sspIdElement.Value = "{sitecollectiontermstoreid}";
-                            }
-                            var termSetIdElement = element.XPathSelectElement("./Customization/ArrayOfProperty/Property[Name = 'TermSetId']/Value");
-                            if (termSetIdElement != null)
-                            {
-                                Guid termSetId = Guid.Parse(termSetIdElement.Value);
-                                if (termSetId != Guid.Empty)
-                                {
-                                    Microsoft.SharePoint.Client.Taxonomy.TermSet termSet = store.GetTermSet(termSetId);
-                                    if (!termSet.ServerObjectIsNull())
-                                    {
-                                        termSet.EnsureProperties(ts => ts.Name, ts => ts.Group);
-                                        termSetIdElement.Value = String.Format("{{termsetid:{0}:{1}}}", termSet.Group.Name, termSet.Name); // TODO
-                                    }
-                                }
-                            }
+                            fieldXml = TokenizeTaxonomyField(web, element);
                         }
+
                         // Check if we have version attribute. Remove if exists 
                         if (element.Attribute("Version") != null)
                         {
