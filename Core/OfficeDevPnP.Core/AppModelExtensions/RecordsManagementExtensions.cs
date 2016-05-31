@@ -391,7 +391,18 @@ namespace Microsoft.SharePoint.Client
             //Determine the SharePoint version based on the loaded CSOM library
             Assembly asm = Assembly.GetAssembly(typeof(Site));
             int sharePointVersion = asm.GetName().Version.Major;
+            
+            list.SetListAutoRecordDeclaration(autoDeclareRecords, sharePointVersion);
+        }
 
+        /// <summary>
+        /// Defines if auto record declaration is active for this list: all added items will be automatically declared as a record if active
+        /// </summary>
+        /// <param name="list">List to operate on</param>
+        /// <param name="autoDeclareRecords">True to automatically declare all added items as record, false otherwise</param>
+        /// <param name="sharePointVersion">Manuell input of the SharePoint Version</param>
+        public static void SetListAutoRecordDeclaration(this List list, bool autoDeclareRecords, int sharePointVersion)
+        {
             if (autoDeclareRecords)
             {
                 //Set the property that dictates custom list record settings to true
