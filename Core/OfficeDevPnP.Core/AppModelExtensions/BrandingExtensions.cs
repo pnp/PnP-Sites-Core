@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
@@ -1457,5 +1458,204 @@ namespace Microsoft.SharePoint.Client
             folder.Update();
             web.Context.ExecuteQueryRetry();
         }
+
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Web
+        /// </summary>
+        /// <param name="web">The Web to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        /// <param name="pathToCssFile">Path pointing to a custom CSS file</param>
+        /// <param name="pathToJavaScriptFile">Path pointing to a custom JS file</param>
+        public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null, string pathToCssFile = null,
+            string pathToJavaScriptFile = null)
+        {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+
+            var customActionScript = CoreResources.PnP_Responsive_CustomActionScript;
+
+            if (!string.IsNullOrEmpty(infrastructureUrl))
+            {
+                customActionScript = customActionScript.Replace("{InfrastructureSiteUrl}", infrastructureUrl);
+                using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                {
+                    var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+                    if (string.IsNullOrEmpty(pathToJavaScriptFile))
+                    {
+                        var fileInfo = new FileInfo(pathToJavaScriptFile);
+                        var jsFile = targetFolder.GetFile(fileInfo.Name);
+                        bool checkedOut = false;
+                        if (jsFile != null)
+                        {
+                            checkedOut = CheckOutIfNeeded(infrastructureContext.Web, jsFile);
+                            
+                        }
+                        var file = targetFolder.UploadFile(fileInfo.Name, pathToJavaScriptFile, true);
+                        if (checkedOut)
+                        {
+                            file.CheckIn("",CheckinType.MajorCheckIn);
+                        }
+                    }
+                    else
+                    {
+                        using (
+                            var stream =
+                                new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_JS))
+                            )
+                        {
+                            targetFolder.UploadFile("PnP-Responsive-UI.js", stream, true);
+                        }
+                    }
+
+                    if (string.IsNullOrEmpty(pathToCssFile))
+                    {
+                        var fileInfo = new FileInfo(pathToCssFile);
+                        targetFolder.UploadFile(fileInfo.Name, pathToCssFile, true);
+                    }
+                    else
+                    {
+                        using (
+                            var stream =
+                                new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_CSS))
+                            )
+                        {
+                            targetFolder.UploadFile("PnP_Responsive_UI.css", stream, true);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+
+                customActionScript = customActionScript.Replace("{InfrastructureSiteUrl}", web.ServerRelativeUrl);
+                if (!string.IsNullOrEmpty(pathToJavaScriptFile))
+                {
+                    var fileInfo = new FileInfo(pathToJavaScriptFile);
+                    var targetFile = targetFolder.GetFile(fileInfo.Name);
+                    bool checkedOut = false;
+                    if (targetFile != null)
+                    {
+                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                    }
+                    var file = targetFolder.UploadFile(fileInfo.Name, pathToJavaScriptFile, true);
+                    if (checkedOut)
+                    {
+                        file.CheckIn("", CheckinType.MajorCheckIn);
+                        web.Context.ExecuteQueryRetry();
+                    }
+
+                }
+                else
+                {
+                    var targetFile = targetFolder.GetFile("PnP-Responsive-UI.js");
+                    bool checkedOut = false;
+                    if (targetFile != null)
+                    {
+                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                    }
+                   
+                    using (
+                        var stream =
+                            new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_JS)))
+                    {
+                        var file = targetFolder.UploadFile("PnP-Responsive-UI.js", stream, true);
+                        if (checkedOut)
+                        {
+                            file.CheckIn("",CheckinType.MajorCheckIn);
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(pathToCssFile))
+                {
+                    var fileInfo = new FileInfo(pathToCssFile);
+                    var targetFile = targetFolder.GetFile(fileInfo.Name);
+                    bool checkedOut = false;
+                    if (targetFile != null)
+                    {
+                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                    }
+                    var file = targetFolder.UploadFile(fileInfo.Name, pathToCssFile, true);
+                    if (checkedOut)
+                    {
+                        file.CheckIn("", CheckinType.MajorCheckIn);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+                else
+                {
+                    var targetFile = targetFolder.GetFile("PnP_Responsive_UI.css");
+                    bool checkedOut = false;
+                    if (targetFile != null)
+                    {
+                        checkedOut = CheckOutIfNeeded(web, targetFile);
+                    }
+
+                    using (
+                        var stream =
+                            new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_CSS)))
+                    {
+                        var file = targetFolder.UploadFile("PnP_Responsive_UI.css", stream, true);
+                        if (checkedOut)
+                        {
+                            file.CheckIn("",CheckinType.MajorCheckIn);
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    }
+                }
+            }
+
+            // Deactive mobile feature
+            web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
+
+            web.AddJsBlock("PnPResponsiveUI", customActionScript);
+        }
+
+        /// <summary>
+        /// Disables the Responsive UI on a Classic SharePoint Web
+        /// </summary>
+        /// <param name="web"></param>
+        public static void DisableReponsiveUI(this Web web)
+        {
+            try
+            {
+                web.DeleteJsLink("PnPResponsiveUI");
+            }
+            catch
+            {
+                // Swallow exception as responsive UI might not be active.
+            }
+        }
+
+        private static bool CheckOutIfNeeded(Web web, File targetFile)
+        {
+            var checkedOut = false;
+            try
+            {
+                web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
+                web.Context.ExecuteQueryRetry();
+                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
+                    && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
+                    && targetFile.ListItemAllFields.ParentList.ForceCheckout)
+                {
+                    if (targetFile.CheckOutType == CheckOutType.None)
+                    {
+                        targetFile.CheckOut();
+                    }
+                    checkedOut = true;
+                }
+            }
+            catch (ServerException ex)
+            {
+                // Handling the exception stating the "The object specified does not belong to a list."
+                if (ex.ServerErrorCode != -2146232832)
+                {
+                    throw;
+                }
+            }
+            return checkedOut;
+        }
+
+
     }
 }
