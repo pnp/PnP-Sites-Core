@@ -5,6 +5,10 @@ using OfficeDevPnP.Core.Diagnostics;
 using System.Collections.Generic;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using System.Reflection;
+using System.IO;
+using System.Linq;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 {
@@ -224,10 +228,64 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 
             if (!handlerCache.ContainsKey(handler))
             {
-                var _instance = Activator.CreateInstance(handler.Assembly, handler.Type).Unwrap();
-                handlerCache.Add(handler, _instance);
+				var fullTypeName = $"{handler.Type}, {handler.Assembly}";
+				var type = GetType(fullTypeName, null);
+				var _instance = Activator.CreateInstance(type);
+				handlerCache.Add(handler, _instance);
             }
             return handlerCache[handler];
         }
-    }
+
+		internal static Type GetType(string handlerType, FileConnectorBase connector)
+		{
+			Type res = Type.GetType(handlerType, n => ResolveProviderAssembly(n, connector), null, false);
+			return res;
+		}
+
+		private static Assembly ResolveProviderAssembly(AssemblyName name, FileConnectorBase connector)
+		{
+			Assembly res = null;
+			//get from app domain
+			var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+			var hasVersionCulture = name.CultureInfo != null && name.Version != null;
+			res = assemblies.FirstOrDefault(a => hasVersionCulture ?
+				string.Equals(name.FullName, a.FullName, StringComparison.InvariantCultureIgnoreCase) :
+				string.Equals(name.Name, a.GetName().Name, StringComparison.InvariantCultureIgnoreCase));
+
+			if (res == null && connector != null)
+			{
+				try
+				{
+					//try load assembly to app domain using file connector
+					var assemblyStream = connector.GetFileStream(name.Name + ".dll");
+					if (assemblyStream != null)
+					{
+						byte[] rawAssembly;
+						using (BinaryReader br = new BinaryReader(assemblyStream))
+						{
+							rawAssembly = br.ReadBytes((int)assemblyStream.Length);
+						}
+
+						var symbolsStream = connector.GetFileStream(name.Name + ".pdb");
+						byte[] rawSymbols = null;
+						if (symbolsStream != null)
+						{
+							using (BinaryReader br = new BinaryReader(symbolsStream))
+							{
+								rawSymbols = br.ReadBytes((int)symbolsStream.Length);
+							}
+						}
+
+						res = AppDomain.CurrentDomain.Load(rawAssembly, rawSymbols);
+					}
+				}
+				catch (Exception e)
+				{
+					var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ResolveProviderAssembly";
+					Log.Error(_loggingSource, e.Message);
+				}
+			}
+			return res;
+		}
+	}
 }

@@ -1853,8 +1853,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     if (!String.IsNullOrEmpty(provider.HandlerType))
                     {
-                        var handlerType = Type.GetType(provider.HandlerType, false);
-                        if (handlerType != null)
+						var handlerType = _provider != null ?
+							Extensibility.ExtensibilityManager.GetType(provider.HandlerType, _provider.Connector) :
+							Type.GetType(provider.HandlerType, false);
+						if (handlerType != null)
                         {
                             result.ExtensibilityHandlers.Add(
                                 new Model.ExtensibilityHandler
