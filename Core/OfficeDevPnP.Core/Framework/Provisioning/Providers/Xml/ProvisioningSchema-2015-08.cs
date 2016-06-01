@@ -670,6 +670,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
         private string descriptionField;
         
         private bool isAvailableForTaggingField;
+
+        private bool isReusedField;
         
         public TermSetItem() {
             this.isAvailableForTaggingField = true;
@@ -706,6 +708,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201508 {
             }
             set {
                 this.isAvailableForTaggingField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsReused
+        {
+            get
+            {
+                return this.isReusedField;
+            }
+            set
+            {
+                this.isReusedField = value;
             }
         }
     }
