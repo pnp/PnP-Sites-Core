@@ -1890,7 +1890,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     LanguageSpecified = term.Language.HasValue,
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
-                    IsReused = term.IsReused,
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new V201512.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201512() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
@@ -1945,7 +1944,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     CustomSortOrder = term.CustomSortOrder,
                     IsAvailableForTagging = term.IsAvailableForTagging,
-                    IsReused = term.IsReused,
                     Owner = term.Owner,
                 }
                 );
