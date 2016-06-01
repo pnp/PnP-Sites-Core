@@ -14,9 +14,22 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
     
     public partial class Users
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Users()
+        {
+            this.IsAdmin = false;
+            this.IsCoreMember = false;
+            this.SendTestResults = false;
+            this.IsEmailVerified = false;
+        }
+    
         public int Id { get; set; }
         public string UPN { get; set; }
         public string Name { get; set; }
         public bool IsAdmin { get; set; }
+        public bool IsCoreMember { get; set; }
+        public bool SendTestResults { get; set; }
+        public string Email { get; set; }
+        public bool IsEmailVerified { get; set; }
     }
 }
