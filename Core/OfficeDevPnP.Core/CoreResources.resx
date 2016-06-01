@@ -942,4 +942,14 @@
   <data name="Provisioning_Connectors_OpenXML_FileSaveFailed" xml:space="preserve">
     <value>File {0} was not saved to folder {1}. Error = {2}</value>
   </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="PnP_Responsive_CustomActionScript" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\PnP-Responsive-CustomActionScript.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="PnP_Responsive_UI_CSS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\PnP-Responsive-UI_CSS.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="PnP_Responsive_UI_JS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\PnP-Responsive-UI.js;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>
