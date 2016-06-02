@@ -857,11 +857,8 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
     <Content Include="pnp.ico" />
-    <None Include="Resources\PnP-Responsive-CustomActionScript.js" />
-    <None Include="Resources\PnP-Responsive-UI_CSS.css" />
-    <None Include="Resources\PnP-Responsive-UI.js" />
-    <None Include="Resources\Responsive.UI.Template.xml" />
-    <None Include="Resources\Responsive.UI.Infrastructure.xml" />
+    <None Include="Resources\SP-Responsive-UI_CSS.css" />
+    <None Include="Resources\SP-Responsive-UI.js" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
