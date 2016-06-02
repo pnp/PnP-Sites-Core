@@ -1381,9 +1381,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
-            var siteColumns = web.Fields;
-            web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
-            web.Context.ExecuteQueryRetry();
+            var siteContext = web.Context.GetSiteCollectionContext();
+            var rootWeb = siteContext.Site.RootWeb;
+            siteContext.Load(rootWeb);
+            siteContext.ExecuteQueryRetry();
+
+            var siteColumns = rootWeb.Fields;
+            siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+            siteContext.ExecuteQueryRetry();
 
             foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
             {
