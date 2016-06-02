@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
-using Newtonsoft.Json.Converters;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
-using Utility = OfficeDevPnP.Core.Utilities.Utility;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 
@@ -1514,7 +1511,7 @@ namespace Microsoft.SharePoint.Client
             var checkedOut = false;
             if (targetFile != null)
             {
-                checkedOut = CheckOutIfNeeded(web, targetFile);
+                CheckOutIfNeeded(web, targetFile);
             }
             using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(contents)))
             {
