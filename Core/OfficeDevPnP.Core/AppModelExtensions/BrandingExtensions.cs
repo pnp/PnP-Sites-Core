@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
-using Utility = OfficeDevPnP.Core.Utilities.Utility;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 
@@ -1464,62 +1462,29 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The Web to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
-        /// <param name="pathToCssFile">Path pointing to a custom CSS file</param>
-        /// <param name="pathToJavaScriptFile">Path pointing to a custom JS file</param>
-        public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null, string pathToCssFile = null,
-            string pathToJavaScriptFile = null)
+        public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
             web.EnsureProperty(w => w.ServerRelativeUrl);
 
-            var customActionScript = CoreResources.PnP_Responsive_CustomActionScript;
+            var linkUrl = string.Empty;
 
             if (!string.IsNullOrEmpty(infrastructureUrl))
             {
-                customActionScript = customActionScript.Replace("{InfrastructureSiteUrl}", infrastructureUrl);
                 using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
                 {
                     var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
-                    if (string.IsNullOrEmpty(pathToJavaScriptFile))
+                    // Check if the file is there, if so, don't upload it.
+                    if (targetFolder.GetFile("SP-Responsive-UI.js") == null)
                     {
-                        var fileInfo = new FileInfo(pathToJavaScriptFile);
-                        var jsFile = targetFolder.GetFile(fileInfo.Name);
-                        bool checkedOut = false;
-                        if (jsFile != null)
-                        {
-                            checkedOut = CheckOutIfNeeded(infrastructureContext.Web, jsFile);
-                            
-                        }
-                        var file = targetFolder.UploadFile(fileInfo.Name, pathToJavaScriptFile, true);
-                        if (checkedOut)
-                        {
-                            file.CheckIn("",CheckinType.MajorCheckIn);
-                        }
-                    }
-                    else
-                    {
-                        using (
-                            var stream =
-                                new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_JS))
-                            )
-                        {
-                            targetFolder.UploadFile("PnP-Responsive-UI.js", stream, true);
-                        }
+                        linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                            CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
                     }
 
-                    if (string.IsNullOrEmpty(pathToCssFile))
+                    // Check if the file is there, if so, don't upload it.
+                    if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
                     {
-                        var fileInfo = new FileInfo(pathToCssFile);
-                        targetFolder.UploadFile(fileInfo.Name, pathToCssFile, true);
-                    }
-                    else
-                    {
-                        using (
-                            var stream =
-                                new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_CSS))
-                            )
-                        {
-                            targetFolder.UploadFile("PnP_Responsive_UI.css", stream, true);
-                        }
+                        UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                            CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
                     }
                 }
             }
@@ -1527,88 +1492,40 @@ namespace Microsoft.SharePoint.Client
             {
                 var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
 
-                customActionScript = customActionScript.Replace("{InfrastructureSiteUrl}", web.ServerRelativeUrl);
-                if (!string.IsNullOrEmpty(pathToJavaScriptFile))
-                {
-                    var fileInfo = new FileInfo(pathToJavaScriptFile);
-                    var targetFile = targetFolder.GetFile(fileInfo.Name);
-                    bool checkedOut = false;
-                    if (targetFile != null)
-                    {
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
-                    }
-                    var file = targetFolder.UploadFile(fileInfo.Name, pathToJavaScriptFile, true);
-                    if (checkedOut)
-                    {
-                        file.CheckIn("", CheckinType.MajorCheckIn);
-                        web.Context.ExecuteQueryRetry();
-                    }
-
-                }
-                else
-                {
-                    var targetFile = targetFolder.GetFile("PnP-Responsive-UI.js");
-                    bool checkedOut = false;
-                    if (targetFile != null)
-                    {
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
-                    }
-                   
-                    using (
-                        var stream =
-                            new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_JS)))
-                    {
-                        var file = targetFolder.UploadFile("PnP-Responsive-UI.js", stream, true);
-                        if (checkedOut)
-                        {
-                            file.CheckIn("",CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
-                        }
-                    }
-                }
-                if (!string.IsNullOrEmpty(pathToCssFile))
-                {
-                    var fileInfo = new FileInfo(pathToCssFile);
-                    var targetFile = targetFolder.GetFile(fileInfo.Name);
-                    bool checkedOut = false;
-                    if (targetFile != null)
-                    {
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
-                    }
-                    var file = targetFolder.UploadFile(fileInfo.Name, pathToCssFile, true);
-                    if (checkedOut)
-                    {
-                        file.CheckIn("", CheckinType.MajorCheckIn);
-                        web.Context.ExecuteQueryRetry();
-                    }
-                }
-                else
-                {
-                    var targetFile = targetFolder.GetFile("PnP_Responsive_UI.css");
-                    bool checkedOut = false;
-                    if (targetFile != null)
-                    {
-                        checkedOut = CheckOutIfNeeded(web, targetFile);
-                    }
-
-                    using (
-                        var stream =
-                            new MemoryStream(System.Text.Encoding.UTF8.GetBytes(CoreResources.PnP_Responsive_UI_CSS)))
-                    {
-                        var file = targetFolder.UploadFile("PnP_Responsive_UI.css", stream, true);
-                        if (checkedOut)
-                        {
-                            file.CheckIn("",CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
-                        }
-                    }
-                }
+                linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
             }
 
             // Deactive mobile feature
             web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
+            if (!string.IsNullOrEmpty(linkUrl))
+            {
+                web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+            }
+        }
 
-            web.AddJsBlock("PnPResponsiveUI", customActionScript);
+        private static string UploadStringAsFile(Web web, Folder folder, string contents, string fileName)
+        {
+            var url = string.Empty;
+            var targetFile = folder.GetFile(fileName);
+            var checkedOut = false;
+            if (targetFile != null)
+            {
+                CheckOutIfNeeded(web, targetFile);
+            }
+            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(contents)))
+            {
+                var file = folder.UploadFile(fileName, stream, true);
+                checkedOut = CheckOutIfNeeded(web, file);
+                if (checkedOut)
+                {
+                    file.CheckIn("", CheckinType.MajorCheckIn);
+                    web.Context.ExecuteQueryRetry();
+                }
+                file.EnsureProperty(f => f.ServerRelativeUrl);
+                url = file.ServerRelativeUrl;
+            }
+            return url;
         }
 
         /// <summary>
