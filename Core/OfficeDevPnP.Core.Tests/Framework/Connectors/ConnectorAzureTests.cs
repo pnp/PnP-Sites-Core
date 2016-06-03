@@ -274,6 +274,64 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
         }
 
         /// <summary>
+        /// Save file to specified container with folder
+        /// </summary>
+        [TestMethod]
+        public void AzureConnectorSaveStream2FolderTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
+            {
+                Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
+            }
+
+            string containerWithFolder = string.Format("{0}/{1}", testContainerSecure, "sub1");
+            AzureStorageConnector azureConnector = new AzureStorageConnector(TestCommon.AzureStorageKey, containerWithFolder);
+            long byteCount = 0;
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                byteCount = fileStream.Length;
+                azureConnector.SaveFileStream("blabla.png", containerWithFolder, fileStream);
+            }
+
+            //read the file
+            using (var bytes = azureConnector.GetFileStream("blabla.png", containerWithFolder))
+            {
+                Assert.IsTrue(byteCount == bytes.Length);
+            }
+
+            // file will be deleted at end of test since the used storage containers are deleted
+        }
+
+        /// <summary>
+        /// Save file to specified container with a folder structure
+        /// </summary>
+        [TestMethod]
+        public void AzureConnectorSaveStream2Folder2Test()
+        {
+            if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
+            {
+                Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
+            }
+
+            string containerWithFolder = string.Format("{0}/{1}", testContainerSecure, "sub1/sub11/");
+            AzureStorageConnector azureConnector = new AzureStorageConnector(TestCommon.AzureStorageKey, containerWithFolder);
+            long byteCount = 0;
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                byteCount = fileStream.Length;
+                azureConnector.SaveFileStream("blabla.png", containerWithFolder, fileStream);
+            }
+
+            //read the file
+            using (var bytes = azureConnector.GetFileStream("blabla.png", containerWithFolder))
+            {
+                Assert.IsTrue(byteCount == bytes.Length);
+            }
+
+            // file will be deleted at end of test since the used storage containers are deleted
+        }
+
+        /// <summary>
         /// Save file to specified container, ensure the overwrite works
         /// </summary>
         [TestMethod]
@@ -363,6 +421,39 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 
             //read the file
             using (var bytes = azureConnector.GetFileStream("blabla.png", testContainer))
+            {
+                Assert.IsNull(bytes);
+            }
+
+            // file will be deleted at end of test since the used storage containers are deleted
+        }
+
+        /// <summary>
+        /// Delete file from a specific container + folder
+        /// </summary>
+        [TestMethod]
+        public void AzureConnectorDelete2FolderTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
+            {
+                Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
+            }
+
+            AzureStorageConnector azureConnector = new AzureStorageConnector(TestCommon.AzureStorageKey, testContainerSecure);
+
+            string containerWithFolder = string.Format("{0}/{1}", testContainer, "sub1");
+
+            // Add a file
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                azureConnector.SaveFileStream("blabla.png", containerWithFolder, fileStream);
+            }
+
+            // Delete the file
+            azureConnector.DeleteFile("blabla.png", containerWithFolder);
+
+            //read the file
+            using (var bytes = azureConnector.GetFileStream("blabla.png", containerWithFolder))
             {
                 Assert.IsNull(bytes);
             }

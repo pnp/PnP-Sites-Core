@@ -369,6 +369,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 var orgContainer = container;
                 container = orgContainer.Substring(0, firstOccouranceOfSlash);
                 folder = orgContainer.Substring(firstOccouranceOfSlash + 1);
+                if (!folder.Substring(folder.Length - 1, 1).Equals("/", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    folder = folder + "/";
+                }
             }
 
             return Tuple.Create(container, folder);
