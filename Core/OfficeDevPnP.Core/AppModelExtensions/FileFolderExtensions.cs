@@ -375,7 +375,8 @@ namespace Microsoft.SharePoint.Client
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
             }
-            var folderServerRelativeUrl = web.ServerRelativeUrl + (web.ServerRelativeUrl.EndsWith("/") ? "" : "/") + webRelativeUrl;
+            
+            var folderServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, webRelativeUrl, "/");
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
@@ -385,7 +386,7 @@ namespace Microsoft.SharePoint.Client
             List containingList = null;
             foreach (var list in listCollection)
             {
-                if (folderServerRelativeUrl.StartsWith(list.RootFolder.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
+                if (folderServerRelativeUrl.StartsWith(UrlUtility.Combine(list.RootFolder.ServerRelativeUrl,"/"), StringComparison.InvariantCultureIgnoreCase))
                 {
                     containingList = list;
                     break;
