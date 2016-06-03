@@ -7,8 +7,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OfficeDevPnP.Core")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+#if SP2013
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2013")]
+#elif SP2016
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2016")]
+#else
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint Online")]
+#endif
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
