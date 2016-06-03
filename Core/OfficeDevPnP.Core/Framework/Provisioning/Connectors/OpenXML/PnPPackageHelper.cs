@@ -2,9 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 {
@@ -13,29 +10,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public static class PnPPackageExtensions
     {
-        public static Byte[] PackTemplate(this PnPInfo pnpInfo)
+        public static MemoryStream PackTemplate(this PnPInfo pnpInfo)
         {
-            Byte[] fileBytes;
-            using (MemoryStream stream = new MemoryStream())
+            MemoryStream stream = new MemoryStream();
+            using (PnPPackage package = PnPPackage.Open(stream, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
-                using (PnPPackage package = PnPPackage.Open(stream, FileMode.OpenOrCreate, FileAccess.ReadWrite))
-                {
-                    SavePnPPackage(pnpInfo, package);
-                }
-                fileBytes = stream.ToArray();
+                SavePnPPackage(pnpInfo, package);
             }
-            return fileBytes;
+            stream.Position = 0;
+            return stream;
+
         }
 
-        public static PnPInfo UnpackTemplate(this Byte[] packageBytes)
+        public static PnPInfo UnpackTemplate(this MemoryStream stream)
         {
             PnPInfo siteTemplate;
-            using (MemoryStream stream = new MemoryStream(packageBytes))
+            using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, FileAccess.Read))
             {
-                using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, FileAccess.Read))
-                {
-                    siteTemplate = LoadPnPPackage(package);
-                }
+                siteTemplate = LoadPnPPackage(package);
             }
             return siteTemplate;
         }
