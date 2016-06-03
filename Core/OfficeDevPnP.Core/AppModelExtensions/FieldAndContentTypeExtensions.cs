@@ -198,10 +198,11 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">Guid for the field ID</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
         /// <returns>True or false depending on the field existence</returns>
-        public static bool FieldExistsById(this Web web, Guid fieldId)
+        public static bool FieldExistsById(this Web web, Guid fieldId, bool searchInSiteHierarchy = false)
         {
-            var field = web.GetFieldById<Field>(fieldId);
+            var field = web.GetFieldById<Field>(fieldId, searchInSiteHierarchy);
             return field != null;
         }
 
@@ -211,10 +212,20 @@ namespace Microsoft.SharePoint.Client
         /// <typeparam name="TField">The selected field type to return.</typeparam>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">Guid for the field ID</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
         /// <returns>Field of type TField</returns>
-        public static TField GetFieldById<TField>(this Web web, Guid fieldId) where TField : Field
+        public static TField GetFieldById<TField>(this Web web, Guid fieldId, bool searchInSiteHierarchy = false) where TField : Field
         {
-            var fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == fieldId));
+            IEnumerable<Field> fields = null;
+            if (searchInSiteHierarchy)
+            {
+                fields = web.Context.LoadQuery(web.AvailableFields.Where(f => f.Id == fieldId));
+            }
+            else
+            {
+                fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == fieldId));
+            }
+
             web.Context.ExecuteQueryRetry();
 
             var field = fields.FirstOrDefault();
@@ -269,15 +280,25 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldName">String for the field internal name to be used as query criteria</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
         /// <returns>True or false depending on the field existence</returns>
-        public static bool FieldExistsByName(this Web web, string fieldName)
+        public static bool FieldExistsByName(this Web web, string fieldName,bool searchInSiteHierarchy= false)
         {
             if (string.IsNullOrEmpty(fieldName))
             {
                 throw new ArgumentNullException("fieldName");
             }
 
-            var fields = web.Fields;
+            FieldCollection fields = null;
+
+            if (searchInSiteHierarchy)
+            {
+                fields = web.AvailableFields;
+            }
+            else
+            {
+                fields = web.Fields;
+            }
             var results = web.Context.LoadQuery(fields.Where(item => item.InternalName == fieldName));
             web.Context.ExecuteQueryRetry();
             return results.FirstOrDefault() != null;
@@ -288,15 +309,16 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">String representation of the field ID (=guid)</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
         /// <returns>True if exists, false otherwise</returns>
-        public static bool FieldExistsById(this Web web, string fieldId)
+        public static bool FieldExistsById(this Web web, string fieldId, bool searchInSiteHierarchy=false)
         {
             if (string.IsNullOrEmpty(fieldId))
             {
                 throw new ArgumentNullException("fieldId");
             }
 
-            return FieldExistsById(web, new Guid(fieldId));
+            return FieldExistsById(web, new Guid(fieldId), searchInSiteHierarchy);
         }
 
         /// <summary>
