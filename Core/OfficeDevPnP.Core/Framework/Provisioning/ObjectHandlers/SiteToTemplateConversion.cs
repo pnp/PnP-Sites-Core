@@ -191,7 +191,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
-                objectHandlers.Add(new ObjectPersistTemplateInfo());
+
+                // Only persist template information in case this flag is set: this will allow the engine to 
+                // work with lesser permissions
+                if (provisioningInfo.PersistTemplateInfo)
+                {
+                    objectHandlers.Add(new ObjectPersistTemplateInfo());
+                }
 
                 var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
