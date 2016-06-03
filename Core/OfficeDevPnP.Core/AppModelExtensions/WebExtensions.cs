@@ -665,24 +665,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="value">Value for the property bag entry</param>
         private static void SetPropertyBagValueInternal(Web web, string key, object value)
         {
-            web.AllProperties.ClearObjectData();
-
             var props = web.AllProperties;
-
-            // Get the value, if the web properties are already loaded
-            if (props.FieldValues.Count > 0)
-            {
-                props[key] = value;
-            }
-            else
-            {
-                // Load the web properties
-                web.Context.Load(props);
-                web.Context.ExecuteQueryRetry();
-
-                props[key] = value;
-            }
-
+            props[key] = value;
             web.Update();
             web.Context.ExecuteQueryRetry();
         }
@@ -785,14 +769,9 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Value of the property bag entry</returns>
         private static object GetPropertyBagValueInternal(Web web, string key)
         {
-            web.AllProperties.ClearObjectData();
-
-            var props = web.AllProperties;
-            web.Context.Load(props);
-            web.Context.ExecuteQueryRetry();
-            if (props.FieldValues.ContainsKey(key))
+            if (web.PropertyBagContainsKey(key))
             {
-                return props.FieldValues[key];
+                return web.AllProperties[key];
             }
             else
             {
@@ -809,19 +788,23 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the entry exists, false otherwise</returns>
         public static bool PropertyBagContainsKey(this Web web, string key)
         {
-            web.AllProperties.ClearObjectData();
-            
-            var props = web.AllProperties;
-            web.Context.Load(props);
-            web.Context.ExecuteQueryRetry();
-            if (props.FieldValues.ContainsKey(key))
+            ClientRuntimeContext context = web.Context;
+
+            ExceptionHandlingScope exceptionHandlingScope = new ExceptionHandlingScope(context);
+
+            using (exceptionHandlingScope.StartScope())
             {
-                return true;
+                using (exceptionHandlingScope.StartTry())
+                {
+                    context.Load(web, w => w.AllProperties[key]);
+                }
+                using (exceptionHandlingScope.StartFinally())
+                {
+                }
             }
-            else
-            {
-                return false;
-            }
+            context.ExecuteQueryRetry();
+
+            return !exceptionHandlingScope.HasException;
         }
 
         /// <summary>
