@@ -1416,14 +1416,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
-            var siteContext = web.Context.GetSiteCollectionContext();
-            var rootWeb = siteContext.Site.RootWeb;
-            siteContext.Load(rootWeb);
-            siteContext.ExecuteQueryRetry();
-
-            var siteColumns = rootWeb.Fields;
-            siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
-            siteContext.ExecuteQueryRetry();
+            Microsoft.SharePoint.Client.FieldCollection siteColumns = null;
+            if (web.IsSubSite())
+            {
+                var siteContext = web.Context.GetSiteCollectionContext();
+                var rootWeb = siteContext.Site.RootWeb;
+                siteColumns = rootWeb.Fields;
+                siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+                siteContext.ExecuteQueryRetry();
+            }
+            else
+            {
+                siteColumns = web.Fields;
+                web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+                web.Context.ExecuteQueryRetry();
+            }
 
             foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
             {
