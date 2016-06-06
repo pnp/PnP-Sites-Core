@@ -8,7 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {
@@ -17,9 +17,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
     /// </summary>
     public class OpenXMLConnector : FileConnectorBase, ICommitableFileConnector
     {
-        private PnPInfo pnpInfo;
-        private FileConnectorBase persistenceConnector;
-        private String packageFileName;
+        private readonly PnPInfo pnpInfo;
+        private readonly FileConnectorBase persistenceConnector;
+        private readonly String packageFileName;
 
         #region Constructors
 
@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="author">The Author of the .PNP package file, if any. Optional</param>
         /// <param name="signingCertificate">The X.509 certificate to use for digital signature of the template, optional</param>
         public OpenXMLConnector(string packageFileName,
-            FileConnectorBase persistenceConnector, 
+            FileConnectorBase persistenceConnector,
             String author = null,
             X509Certificate2 signingCertificate = null)
             : base()
@@ -40,11 +40,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("packageFileName");
             }
-            else if (!packageFileName.EndsWith(".pnp", StringComparison.InvariantCultureIgnoreCase))
+            if (!packageFileName.EndsWith(".pnp", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Check for file extension
-                packageFileName = packageFileName.EndsWith(".") ?
-                    (packageFileName + "pnp") : (packageFileName + ".pnp");
+                packageFileName = packageFileName.TrimEnd('.') + "pnp";
             }
 
             this.packageFileName = packageFileName;
@@ -53,7 +52,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("persistenceConnector");
             }
-
             this.persistenceConnector = persistenceConnector;
 
             // Try to load the .PNP package file
@@ -61,15 +59,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (packageStream != null)
             {
                 // If the .PNP package exists unpack it into PnP OpenXML package info object
-                using (StreamReader sr = new StreamReader(packageStream))
-                {
-                    Byte[] buffer = new Byte[packageStream.Length];
-
-                    // TODO: Handle large files with chunking
-                    packageStream.Read(buffer, 0, (Int32)packageStream.Length);
-
-                    this.pnpInfo = buffer.UnpackTemplate();
-                }
+                MemoryStream ms = packageStream.ToMemoryStream();
+                this.pnpInfo = ms.UnpackTemplate();
             }
             else
             {
@@ -92,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #endregion
 
         #region Base class overrides
-        
+
         /// <summary>
         /// Get the files available in the default container
         /// </summary>
@@ -115,8 +106,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
 
             var result = (from file in this.pnpInfo.Files
-                         where file.Folder == container
-                         select file.Name).ToList();
+                          where file.Folder == container
+                          select file.Name).ToList();
 
             return result;
         }
@@ -128,20 +119,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override string GetFile(string fileName)
         {
-            return GetFile(fileName, GetContainer());
+            string container = GetContainer();
+            int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
+            if (idx != -1)
+            {
+                container = fileName.Substring(0, idx);
+                fileName = fileName.Substring(idx + 1);
+            }
+            return GetFile(fileName, container);
         }
 
         public override string GetFilenamePart(string fileName)
         {
-            if (fileName.IndexOf(@"\") != -1)
+            if (fileName.Contains("@"))
             {
                 var parts = fileName.Split(new[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 return parts.LastOrDefault();
             }
-            else
-            {
-                return fileName;
-            }
+            return fileName;
         }
 
         /// <summary>
@@ -193,7 +188,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override Stream GetFileStream(string fileName)
         {
-            return GetFileStream(fileName, GetContainer());
+            string container = GetContainer();
+            int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
+            if (idx != -1)
+            {
+                container = fileName.Substring(0, idx);
+                fileName = fileName.Substring(idx + 1);
+            }
+            return GetFileStream(fileName, container);
         }
 
         /// <summary>
@@ -252,16 +254,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                Byte[] buffer = new Byte[stream.Length];
-
-                // TODO: Handle large files with chunking
-                stream.Read(buffer, 0, (Int32)stream.Length);
+                var memoryStream = stream.ToMemoryStream();
+                byte[] bytes = memoryStream.ToArray();
 
                 // Check if the file already exists in the package
-                var existingFile = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                var existingFile = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (existingFile != null)
                 {
-                    existingFile.Content = buffer;
+                    existingFile.Content = bytes;
                 }
                 else
                 {
@@ -269,7 +269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     {
                         Name = fileName,
                         Folder = container,
-                        Content = buffer,
+                        Content = bytes,
                     });
                 }
 
@@ -310,7 +310,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                var file = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                var file = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (file != null)
                 {
                     pnpInfo.Files.Remove(file);
@@ -335,7 +335,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             try
             {
                 MemoryStream stream = new MemoryStream();
-                var file = pnpInfo.Files.FirstOrDefault(f => f.Name == fileName && f.Folder == container);
+                var file = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (file != null)
                 {
                     stream.Write(file.Content, 0, file.Content.Length);
@@ -365,22 +365,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             // The is no default container
             return (String.Empty);
-        }
-
+        }        
         #endregion
 
         #region Commit capability
 
         public void Commit()
         {
-            Byte[] buffer = pnpInfo.PackTemplate();
-
-            MemoryStream stream = new MemoryStream();
-            
-            // TODO: Handle large files with chunking
-            stream.Write(buffer, 0, buffer.Length);
-            stream.Position = 0;
-
+            MemoryStream stream = pnpInfo.PackTemplate();
             persistenceConnector.SaveFileStream(this.packageFileName, stream);
         }
 

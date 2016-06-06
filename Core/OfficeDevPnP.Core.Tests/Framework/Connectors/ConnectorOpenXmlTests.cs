@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
@@ -123,6 +119,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
         }
 
+        [TestMethod]
+        public void OpenXMLGetFileFromTemplate()
+        {
+            OpenXMLSaveTemplateInternal();
+            var fileSystemConnector = new FileSystemConnector(String.Format(@"{0}\..\..\Resources",AppDomain.CurrentDomain.BaseDirectory),"Templates");
+            var openXMLConnector = new OpenXMLConnector(packageFileName,fileSystemConnector);
+            var file = openXMLConnector.GetFile("Images/garagebg.jpg");
+            Assert.IsNotNull(file);
+            file = openXMLConnector.GetFile("garagebg.jpg", "Images");
+            Assert.IsNotNull(file);
+            Stream stream = openXMLConnector.GetFileStream("Images/garagebg.jpg");
+            Assert.IsNotNull(stream.Length > 0);
+            stream = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
+            Assert.IsNotNull(stream.Length > 0);
+        }
         #endregion
     }
 }

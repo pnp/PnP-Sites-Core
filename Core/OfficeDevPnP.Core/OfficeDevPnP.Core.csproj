@@ -420,6 +420,7 @@
     <Compile Include="Extensions\SafeConvertExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\ValidationExtensions.cs" />
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
