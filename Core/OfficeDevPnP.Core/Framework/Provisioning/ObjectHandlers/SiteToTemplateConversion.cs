@@ -48,9 +48,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogDebug(CoreResources.SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true);
                     }
-                    if (creationInfo.PersistComposedLookFiles)
+                    if (creationInfo.PersistBrandingFiles)
                     {
-                        scope.LogDebug(CoreResources.SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true);
+                        scope.LogDebug(CoreResources.SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true);
                     }
                 }
                 else
