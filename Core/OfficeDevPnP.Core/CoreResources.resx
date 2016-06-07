@@ -949,4 +949,7 @@
   <data name="SP_Responsive_UI_CSS" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\SP-Responsive-UI_CSS.css;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true" xml:space="preserve">
+    <value>PersistBrandingFiles is set to true</value>
+  </data>
 </root>
