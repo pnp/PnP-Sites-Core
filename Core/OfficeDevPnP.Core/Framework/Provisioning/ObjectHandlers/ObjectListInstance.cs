@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
 
-                    web.EnsureProperties(w => w.ServerRelativeUrl);
+                    web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
@@ -78,9 +78,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 parser = returnTuple.Item2;
                                 processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
 
-                                parser.AddToken(new ListIdToken(web, templateList.Title, createdList.Id));
+                                parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
 
-                                parser.AddToken(new ListUrlToken(web, templateList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                                foreach (var supportedlanguageId in web.SupportedUILanguageIds)
+                                {
+                                    var ci = new System.Globalization.CultureInfo(supportedlanguageId);
+                                    var titleResource = createdList.TitleResource.GetValueForUICulture(ci.Name);
+                                    createdList.Context.ExecuteQueryRetry();
+
+                                    if (titleResource != null && titleResource.Value != null)
+                                        parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
+                                }
+
+                                parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                             }
                             catch (Exception ex)
                             {
