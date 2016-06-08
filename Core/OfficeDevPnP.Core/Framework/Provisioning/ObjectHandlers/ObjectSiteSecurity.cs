@@ -19,8 +19,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-
-
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
                 if (web.IsSubSite())
                 {
@@ -230,7 +228,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
 
-                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignment.RoleDefinition);
+                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
 
                             if (roleDefinition != null)
                             {
@@ -444,7 +442,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (roleDefinition.RoleTypeKind != RoleType.Guest)
                                 {
                                     var modelRoleAssignment = new Model.RoleAssignment();
-                                    modelRoleAssignment.RoleDefinition = roleDefinition.Name;
+                                    var roleDefinitionValue = roleDefinition.Name;
+                                    if (roleDefinition.RoleTypeKind != RoleType.None)
+                                    {
+                                        // Replace with token
+                                        roleDefinitionValue = string.Format("{{roledefinition:{0}}}",
+                                            roleDefinition.RoleTypeKind);
+                                    }
+                                    modelRoleAssignment.RoleDefinition = roleDefinitionValue;
                                     if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup)
                                     {
                                         modelRoleAssignment.Principal = ReplaceGroupTokens(web, webRoleAssignment.Member.LoginName);
