@@ -350,40 +350,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (creationInfo.IncludeSiteGroups)
                 {
-                    // Only get groups that have a role assignment
-                    var webRoleAssignments = web.Context.LoadQuery(
-                        web.RoleAssignments.Include(
-                            r => r.Member
-                        ).Where(r => r.Member.PrincipalType == PrincipalType.SharePointGroup)
-                    );
+                    web.Context.Load(web.SiteGroups,
+                        o => o.IncludeWithDefaultProperties(
+                            gr => gr.Title,
+                            gr => gr.AllowMembersEditMembership,
+                            gr => gr.AutoAcceptRequestToJoinLeave,
+                            gr => gr.AllowRequestToJoinLeave,
+                            gr => gr.Description,
+                            gr => gr.Users.Include(u => u.LoginName),
+                            gr => gr.OnlyAllowMembersViewMembership,
+                            gr => gr.Owner.LoginName,
+                            gr => gr.RequestToJoinLeaveEmailSetting
+                            ));
 
                     web.Context.ExecuteQueryRetry();
 
-                    List<Group> groups = new List<Group>();
-                    List<int> skipGroups = new List<int>(associatedGroupIds);
-                    foreach (var ra in webRoleAssignments)
-                    {
-                        Group group = (Group)ra.Member;
-                        if (!skipGroups.Contains(group.Id))
-                        {
-                            skipGroups.Add(group.Id);
-                            groups.Add(group);
-                            web.Context.Load(group,
-                                    gr => gr.Title,
-                                    gr => gr.AllowMembersEditMembership,
-                                    gr => gr.AutoAcceptRequestToJoinLeave,
-                                    gr => gr.AllowRequestToJoinLeave,
-                                    gr => gr.Description,
-                                    gr => gr.Users.Include(u => u.LoginName),
-                                    gr => gr.OnlyAllowMembersViewMembership,
-                                    gr => gr.Owner.LoginName,
-                                    gr => gr.RequestToJoinLeaveEmailSetting
-                                    );
-                        }
-                    }
-                    web.Context.ExecuteQueryRetry();
-
-                    foreach (var group in groups)
+                    foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
                         scope.LogDebug("Processing group {0}", group.Title);
                         var siteGroup = new SiteGroup()
