@@ -177,9 +177,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     _tokens.Add(token);
                 }
-
-
             }
+
+            // OOTB Roledefs
+            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind));
+            foreach (var roleDef in web.RoleDefinitions.Where(r => r.RoleTypeKind != RoleType.None ))
+            {
+                _tokens.Add(new RoleDefinitionToken(web,roleDef));
+            }
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
