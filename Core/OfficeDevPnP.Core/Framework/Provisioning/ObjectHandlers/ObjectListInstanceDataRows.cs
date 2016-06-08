@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
 
                     web.EnsureProperties(w => w.ServerRelativeUrl);
-                    
+
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();
@@ -136,16 +136,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem.Update();
                                     }
                                     web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
-                                    
+
                                     if (dataRow.Security != null && dataRow.Security.RoleAssignments.Count != 0)
                                     {
                                         listitem.SetSecurity(parser, dataRow.Security);
                                     }
                                 }
-                                catch (Exception ex)
+                                catch (ServerException ex)
                                 {
-                                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
-                                    throw;
+                                    switch (ex.ServerErrorTypeName)
+                                    {
+                                        case "Microsoft.SharePoint.SPDuplicateValuesFoundException":
+                                            {
+                                                continue;
+                                            }
+                                        default:
+                                            {
+                                                scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
+                                                throw;
+                                            }
+                                    }
+
                                 }
                             }
                         }
