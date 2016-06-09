@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     public partial class ProvisioningTemplateApplyingInformation
     {
         private Handlers handlersToProcess = Handlers.All;
+        private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
@@ -33,6 +34,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 handlersToProcess = value;
+            }
+        }
+
+        public List<ExtensibilityHandler> ExtensibilityHandlers
+        {
+            get
+            {
+                return extensibilityHandlers;
+            }
+
+            set
+            {
+                extensibilityHandlers = value;
             }
         }
     }
