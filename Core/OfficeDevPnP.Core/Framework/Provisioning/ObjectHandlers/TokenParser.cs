@@ -182,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // OOTB Roledefs
             web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind));
-            foreach (var roleDef in web.RoleDefinitions.Where(r => r.RoleTypeKind != RoleType.None ))
+            foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None ))
             {
                 _tokens.Add(new RoleDefinitionToken(web,roleDef));
             }
