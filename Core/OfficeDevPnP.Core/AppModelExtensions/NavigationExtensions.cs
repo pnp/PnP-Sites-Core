@@ -449,14 +449,15 @@ namespace Microsoft.SharePoint.Client
         /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node</param>
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>
+        /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
 
-        public static void AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false)
+        public static void AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
             NavigationNodeCreationInformation node = new NavigationNodeCreationInformation
             {
-                AsLastNode = true,
+                AsLastNode = asLastNode,
                 Title = nodeTitle,
                 Url = nodeUri != null ? nodeUri.OriginalString : string.Empty,
                 IsExternal = isExternal
