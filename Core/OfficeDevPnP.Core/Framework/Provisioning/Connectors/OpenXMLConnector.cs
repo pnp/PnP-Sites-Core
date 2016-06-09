@@ -120,6 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         public override string GetFile(string fileName)
         {
             string container = GetContainer();
+            fileName = fileName.Replace("\\", "/");
             int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
             if (idx != -1)
             {
@@ -131,7 +132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public override string GetFilenamePart(string fileName)
         {
-            if (fileName.Contains("@"))
+            if (fileName.Contains(@"\"))
             {
                 var parts = fileName.Split(new[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
                 return parts.LastOrDefault();
@@ -189,6 +190,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         public override Stream GetFileStream(string fileName)
         {
             string container = GetContainer();
+            fileName = fileName.Replace("\\", "/");
             int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
             if (idx != -1)
             {
@@ -365,7 +367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             // The is no default container
             return (String.Empty);
-        }        
+        }
         #endregion
 
         #region Commit capability
