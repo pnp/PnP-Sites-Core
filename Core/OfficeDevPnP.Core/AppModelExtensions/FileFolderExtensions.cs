@@ -134,7 +134,6 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
-        /// Note it is a best practice to use Document Sets instead of Folders. But if folders have been used, this is a function to convert them.
         /// </summary>
         /// <param name="list">List in which the folder exists</param>
         /// <param name="folderName">Folder name to convert</param>
@@ -154,7 +153,6 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
-        /// Note it is a best practice to use Document Sets instead of Folders. But if folders have been used, this is a function to convert them.
         /// </summary>
         /// <param name="list">List in which the folder exists</param>
         /// <param name="folder">Folder to convert</param>
@@ -169,6 +167,12 @@ namespace Microsoft.SharePoint.Client
             return ConvertFolderToDocumentSetImplementation(list, folder);
         }
 
+        /// <summary>
+        /// Internal implementation of the Folder conversion to Document set
+        /// </summary>
+        /// <param name="list">Library in which the folder exists</param>
+        /// <param name="folder">Folder to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
         private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
         {
             list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
