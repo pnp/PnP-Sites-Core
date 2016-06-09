@@ -107,13 +107,13 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 
 				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
 
 				Assert.AreEqual(1, issueContentTypeCount, "Issue content type was not added.");
@@ -127,7 +127,7 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 
 				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
 				clientContext.Web.AddContentTypeToListByName(listName, "Task", defaultContent: true);
@@ -135,7 +135,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
 				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Task"));
 				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Item"));
@@ -153,7 +153,7 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 
 				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
 				clientContext.Web.AddContentTypeToListByName(listName, "Task", defaultContent: true);
@@ -161,7 +161,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
-				clientContext.ExecuteQuery();
+				clientContext.ExecuteQueryRetry();
 				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
 				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Task"));
 				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Item"));

@@ -298,7 +298,7 @@ namespace Microsoft.SharePoint.Client
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
                 // Ensure all properties are loaded (to be compatible with the previous implementation)
                 context.Load(newFolder);
-                context.ExecuteQuery();
+                context.ExecuteQueryRetry();
                 return (newFolder);
             }
         }

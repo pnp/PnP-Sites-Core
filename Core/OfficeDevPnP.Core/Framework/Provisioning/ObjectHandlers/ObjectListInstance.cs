@@ -162,7 +162,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (isDirty)
                                     {
                                         field.Update();
-                                        field.Context.ExecuteQuery();
+                                        field.Context.ExecuteQueryRetry();
                                     }
                                 }
 #endif
@@ -598,7 +598,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (isDirty)
                 {
                     field.Update();
-                    listInfo.SiteList.Context.ExecuteQuery();
+                    listInfo.SiteList.Context.ExecuteQueryRetry();
                 }
             }
             else
@@ -681,7 +681,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (isDirty)
                         {
                             existingField.Update();
-                            web.Context.ExecuteQuery();
+                            web.Context.ExecuteQueryRetry();
                         }
                     }
                     else
@@ -1224,7 +1224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // If current web is subweb then include the lists in the rootweb for lookup column support
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
                     rootWeb.Context.Load(rootWeb.Lists, lsts => lsts.Include(l => l.Id, l => l.Title));
-                    rootWeb.Context.ExecuteQuery();
+                    rootWeb.Context.ExecuteQueryRetry();
                     foreach (var rootList in rootWeb.Lists)
                     {
                         allLists.Add(rootList);

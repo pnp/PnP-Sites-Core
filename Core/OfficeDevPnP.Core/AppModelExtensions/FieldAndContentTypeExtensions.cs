@@ -1178,7 +1178,7 @@ namespace Microsoft.SharePoint.Client
                         // Load Docset Template
                         var template = DocumentSetTemplate.GetDocumentSetTemplate(web.Context, newct);
                         web.Context.Load(template, t => t.AllowedContentTypes, t => t.SharedFields, t => t.WelcomePageFields);
-                        web.Context.ExecuteQuery();
+                        web.Context.ExecuteQueryRetry();
 
                         // Add allowed content types
                         var allowedContentTypes = from ac in ct.Descendants(ns + "AllowedContentTypes").Elements(ns + "AllowedContentType") select ac;

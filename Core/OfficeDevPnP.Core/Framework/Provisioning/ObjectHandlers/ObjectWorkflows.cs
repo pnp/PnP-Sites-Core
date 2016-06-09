@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Retrieve all the lists and libraries
                     var lists = web.Lists;
                     web.Context.Load(lists);
-                    web.Context.ExecuteQuery();
+                    web.Context.ExecuteQueryRetry();
 
                     // Retrieve the workflow definitions (including unpublished ones)
                     Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition[] definitions = null;
