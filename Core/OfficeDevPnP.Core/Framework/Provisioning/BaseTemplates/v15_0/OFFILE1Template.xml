@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.5.1606.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-OFFILE1template">
     <pnp:ProvisioningTemplate ID="OFFILE1template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -85,11 +85,7 @@
             </pnp:RoleDefinition>
           </pnp:RoleDefinitions>
           <pnp:RoleAssignments>
-            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="Full Control" />
-            <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
-            <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
-            <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
-            <pnp:RoleAssignment Principal="Records Center Web Service Submitters" RoleDefinition="Records Center Web Service Submitters" />
+            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="{roledefinition:Administrator}" />
           </pnp:RoleAssignments>
         </pnp:Permissions>
       </pnp:Security>
@@ -1471,7 +1467,7 @@
             </View>
           </pnp:Views>
           <pnp:Fields>
-            <Field Type="Note" ID="{126cd502-6801-4ae4-9f56-bfc3488c4743}" DisplayName="Original Properties" StaticName="_vti_RoutingExistingProperties" Name="_vti_RoutingExistingProperties" Sealed="TRUE" ShowInDisplayForm="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" Required="FALSE" SourceID="{2a07501b-9143-46b1-a744-8f339fe88a53}" ColName="ntext2" RowOrdinal="0" />
+            <Field Type="Note" ID="{126cd502-6801-4ae4-9f56-bfc3488c4743}" DisplayName="Original Properties" StaticName="_vti_RoutingExistingProperties" Name="_vti_RoutingExistingProperties" Sealed="TRUE" ShowInDisplayForm="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" Required="FALSE" SourceID="{{listid:Drop Off Library}}" ColName="ntext2" RowOrdinal="0" />
           </pnp:Fields>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" DisplayName="Document ID Value" />
