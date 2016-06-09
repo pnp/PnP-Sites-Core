@@ -358,9 +358,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// The Search Settings for the Provisioning Template
+        /// The Site Collection level Search Settings for the Provisioning Template
         /// </summary>
-        public String SearchSettings { get; set; }
+        public String SiteSearchSettings { get; set; }
+
+        /// <summary>
+        /// The Web level Search Settings for the Provisioning Template
+        /// </summary>
+        public String WebSearchSettings { get; set; }
 
         /// <summary>
         /// Defines the SharePoint Add-ins to provision
