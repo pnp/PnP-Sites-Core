@@ -116,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             var result = (from file in this.pnpInfo.Files
                          where file.Folder == container
-                         select file.InternalName).ToList();
+                         select file.OriginalName).ToList();
 
             return result;
         }
