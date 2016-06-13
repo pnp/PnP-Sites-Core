@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.5.1606.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-STS1template">
     <pnp:ProvisioningTemplate ID="STS1template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -22,7 +22,7 @@
       <pnp:Security>
         <pnp:Permissions>
           <pnp:RoleAssignments>
-            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="Full Control" />
+            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="{roledefinition:Administrator}" />
           </pnp:RoleAssignments>
         </pnp:Permissions>
       </pnp:Security>
