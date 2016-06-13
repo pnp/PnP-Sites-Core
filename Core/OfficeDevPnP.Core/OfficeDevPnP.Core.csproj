@@ -433,6 +433,7 @@
     <Compile Include="Framework\Provisioning\Connectors\ICommitableFileConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXMLConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPFileInfo.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPFileMap.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPInfo.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPManifest.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPProperties.cs" />

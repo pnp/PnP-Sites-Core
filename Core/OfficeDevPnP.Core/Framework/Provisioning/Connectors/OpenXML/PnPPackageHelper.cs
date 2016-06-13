@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             PnPInfo pnpInfo = new PnPInfo();
             pnpInfo.Manifest = package.Manifest;
             pnpInfo.Properties = package.Properties;
+            pnpInfo.FilesMap = package.FilesMap;
 
             pnpInfo.Files = new List<PnPFileInfo>();
             foreach (KeyValuePair<String, PnPPackageFileItem> file in package.Files)
@@ -54,7 +55,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                 pnpInfo.Files.Add(
                     new PnPFileInfo
                     {
-                        Name = file.Key,
+                        InternalName = file.Key,
+                        OriginalName = package.FilesMap.Map[file.Key],
                         Folder = file.Value.Folder,
                         Content = file.Value.Content,
                     });
@@ -66,12 +68,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             package.Manifest = pnpInfo.Manifest;
             package.Properties = pnpInfo.Properties;
+            package.FilesMap = new PnPFilesMap(pnpInfo.Files.ToDictionary(f => f.InternalName, f => f.OriginalName));
             package.ClearFiles();
             if (pnpInfo.Files != null)
             {
                 foreach (PnPFileInfo file in pnpInfo.Files)
                 {
-                    package.AddFile(file.Name, file.Folder, file.Content);
+                    package.AddFile(file.InternalName, file.Folder, file.Content);
                 }
             }
         }
