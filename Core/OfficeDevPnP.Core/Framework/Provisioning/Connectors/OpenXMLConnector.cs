@@ -318,7 +318,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                var file = pnpInfo.Files.FirstOrDefault(f => f.InternalName == fileName && f.Folder == container);
+                var file = pnpInfo.Files.FirstOrDefault(f => f.OriginalName == fileName && f.Folder == container);
                 if (file != null)
                 {
                     pnpInfo.Files.Remove(file);
