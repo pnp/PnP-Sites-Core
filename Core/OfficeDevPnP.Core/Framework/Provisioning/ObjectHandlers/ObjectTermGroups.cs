@@ -181,6 +181,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
+            // If the term is a re-used term try to re-use before trying to create.  
+            if (modelTerm.IsReused && TryReuseTerm(web, modelTerm, parent, termStore, parser, scope))
+            {
+                return Tuple.Create(modelTerm.Id, parser);
+            }
+
+            // Create new term  
             Term term;
             if (modelTerm.Id == Guid.Empty)
             {
@@ -295,6 +302,74 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return Tuple.Create(modelTerm.Id, parser);
+        }
+
+        private bool TryReuseTerm(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        {
+            if (!modelTerm.IsReused) return false;
+
+            // Try to retrieve a matching term from the website also marked from re-use.  
+            Term preExistingTerm = null;
+            if (modelTerm.Id != Guid.Empty)
+            {
+                var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+                web.Context.Load(taxonomySession);
+                web.Context.ExecuteQueryRetry();
+
+                if (taxonomySession.ServerObjectIsNull.Value)
+                {
+                    return false;
+                }
+
+                var freshTermStore = taxonomySession.GetDefaultKeywordsTermStore();
+                preExistingTerm = freshTermStore.GetTerm(modelTerm.Id);
+
+                try
+                {
+                    web.Context.Load(preExistingTerm);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (preExistingTerm.ServerObjectIsNull.Value)
+                    {
+                        preExistingTerm = null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    preExistingTerm = null;
+                }
+
+                // If the matching term is not found, return false... we can't re-use just yet  
+                if (preExistingTerm == null)
+                {
+                    return false;
+                }
+
+                // if the matching term is found, re-use and return true  
+                else
+                {
+                    Term createdTerm = null;
+                    if (parent is TermSet)
+                    {
+                        createdTerm = ((TermSet)parent).ReuseTerm(preExistingTerm, false);
+                    }
+                    else if (parent is Term)
+                    {
+                        createdTerm = ((Term)parent).ReuseTerm(preExistingTerm, false);
+                    }
+
+                    termStore.CommitAll();
+                    web.Context.Load(createdTerm);
+                    web.Context.ExecuteQueryRetry();
+
+                    return true;
+                }
+            }
+            else
+            {
+                // Term re-use without an assigned ID is not yet supported  
+                return false;
+            }
         }
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -419,6 +494,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 modelTerm.Name = term.Name;
                 modelTerm.IsAvailableForTagging = term.IsAvailableForTagging;
+                modelTerm.IsReused = term.IsReused;
 
 
                 if (term.Labels.Any())
