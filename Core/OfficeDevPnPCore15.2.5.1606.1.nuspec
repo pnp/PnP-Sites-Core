@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>OfficeDevPnPCore15</id>
-        <version>2.5.1606.0</version>
+        <version>2.5.1606.1</version>
         <title>OfficeDevPnP.Core (on-premises)</title>
         <authors>Office 365 Developer Patterns &amp; Practices</authors>
         <owners>Microsoft Office Developer Patterns &amp; Practices</owners>
@@ -15,6 +15,7 @@
         <releaseNotes>[DEPRECATED - Please use the SharePointPnPCore2013 package]</releaseNotes>
         <copyright>Copyright 2016</copyright>
         <tags>Office AppModel FTCtoCAM Office365 SharePoint2013</tags>
+        <serviceable>false</serviceable>
         <dependencies>
             <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.2" />
             <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.2" />
