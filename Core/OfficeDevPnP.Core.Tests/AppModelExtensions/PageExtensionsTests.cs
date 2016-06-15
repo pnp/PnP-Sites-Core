@@ -83,6 +83,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Wiki page tests
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void AddWikiPageTest()
         {
             var web = Setup();
@@ -105,6 +106,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void EnsureWikiPageTest()
         {
             var web = Setup();
@@ -127,6 +129,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanAddLayoutToWikiPageTest()
         {
             var web = Setup();
@@ -137,6 +140,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
 	    [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanAddHtmlToWikiPageTest()
         {
             var web = Setup();
@@ -147,6 +151,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void ProveThatWeCanAddHtmlToPageAfterChangingLayoutTest()
         {
             var web = Setup();
@@ -246,7 +251,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
-        [Timeout(1 * 60 * 1000)]
+        [Timeout(10 * 60 * 1000)]
         public void CreatedPublishingPagesSetsTitleCorrectlyTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);
