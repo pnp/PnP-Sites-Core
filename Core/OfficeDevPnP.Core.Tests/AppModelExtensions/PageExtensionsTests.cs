@@ -246,7 +246,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
-        [Timeout(10 * 60 * 1000)]
+        [Timeout(1 * 60 * 1000)]
         public void CreatedPublishingPagesSetsTitleCorrectlyTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);
