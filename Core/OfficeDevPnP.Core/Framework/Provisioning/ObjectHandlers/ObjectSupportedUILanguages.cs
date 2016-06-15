@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.Load(web, w => w.SupportedUILanguageIds);
 
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
 
                 foreach (var id in web.SupportedUILanguageIds)
                 {
@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.IsMultilingual = true;
                 web.Context.Load(web, w => w.SupportedUILanguageIds);
                 web.Update();
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
 
                 var isDirty = false;
 

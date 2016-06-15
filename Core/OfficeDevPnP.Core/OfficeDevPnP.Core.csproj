@@ -433,6 +433,7 @@
     <Compile Include="Framework\Provisioning\Connectors\ICommitableFileConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXMLConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPFileInfo.cs" />
+    <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPFileMap.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPInfo.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPManifest.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\Model\PnPProperties.cs" />
@@ -582,12 +583,14 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateApplyingInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningTemplateCreationInformation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\SiteToTemplateConversion.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AuthenticationRealmToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CDATAEndToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CDATAStartToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserFullNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />

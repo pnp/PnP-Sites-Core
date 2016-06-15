@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region private variables
         private bool initialized = false;
         private CloudBlobClient blobClient = null;
+        private const string FOLDER = "Folder";
         #endregion
 
         #region Constructor
@@ -27,13 +28,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
 
         }
-        
+
         /// <summary>
         /// AzureStorageConnector constructor. Allows to directly set Azure Storage key and container
         /// </summary>
         /// <param name="connectionString">Azure Storage Key (DefaultEndpointsProtocol=https;AccountName=yyyy;AccountKey=xxxx)</param>
         /// <param name="container">Name of the Azure container to operate against</param>
-        public AzureStorageConnector(string connectionString, string container): base ()
+        public AzureStorageConnector(string connectionString, string container) : base()
         {
             if (String.IsNullOrEmpty(connectionString))
             {
@@ -79,9 +80,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             List<string> result = new List<string>();
 
+            var containerTuple = ParseContainer(container);
+
+            container = containerTuple.Item1;
+            string prefix = string.IsNullOrEmpty(containerTuple.Item2) ? null : containerTuple.Item2;
+
             CloudBlobContainer blobContainer = blobClient.GetContainerReference(container);
 
-            foreach (IListBlobItem item in blobContainer.ListBlobs(null, false))
+            foreach (IListBlobItem item in blobContainer.ListBlobs(prefix, false))
             {
                 if (item.GetType() == typeof(CloudBlockBlob))
                 {
@@ -120,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
- 
+
             string result = null;
             MemoryStream stream = null;
             try
@@ -216,8 +222,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
+                var containerTuple = ParseContainer(container);
+
+                container = containerTuple.Item1;
+                fileName = string.Concat(containerTuple.Item2, fileName);
+
                 CloudBlobContainer blobContainer = blobClient.GetContainerReference(container);
-                
+
                 // Create the container if it doesn't already exist.
                 blobContainer.CreateIfNotExists();
 
@@ -310,7 +321,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 blobClient = storageAccount.CreateCloudBlobClient();
                 initialized = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Log.Error(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_Azure_FailedToInitialize, ex.Message);
                 throw;
@@ -326,6 +337,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
+                var containerTuple = ParseContainer(container);
+
+                container = containerTuple.Item1;
+                fileName = string.Concat(containerTuple.Item2, fileName);
+
                 CloudBlobContainer blobContainer = blobClient.GetContainerReference(container);
                 CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(fileName);
 
@@ -342,8 +358,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 return null;
             }
         }
+
+        private Tuple<string, string> ParseContainer(string container)
+        {
+            var firstOccouranceOfSlash = container.IndexOf('/');
+            var folder = string.Empty;
+
+            if (firstOccouranceOfSlash > -1)
+            {
+                var orgContainer = container;
+                container = orgContainer.Substring(0, firstOccouranceOfSlash);
+                folder = orgContainer.Substring(firstOccouranceOfSlash + 1);
+                if (!folder.Substring(folder.Length - 1, 1).Equals("/", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    folder = folder + "/";
+                }
+            }
+
+            return Tuple.Create(container, folder);
+        }
         #endregion
 
-      
+
     }
 }

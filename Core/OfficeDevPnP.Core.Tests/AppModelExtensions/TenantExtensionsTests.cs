@@ -73,6 +73,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Get site collections tests
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetSiteCollectionsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -86,6 +87,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetOneDriveSiteCollectionsTest()
         {
             if (TestCommon.AppOnlyTesting())
@@ -104,6 +106,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetUserProfileServiceClientTest() {
             if (TestCommon.AppOnlyTesting())
             {
@@ -126,6 +129,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site existance tests
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void CheckIfSiteExistsTest() {
             using (var tenantContext = TestCommon.CreateTenantClientContext()) {
                 var tenant = new Tenant(tenantContext);
@@ -144,6 +148,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void SiteExistsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -161,6 +166,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SubSiteExistsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -206,6 +212,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site collection creation and deletion tests
         [TestMethod]
+        [Timeout(30 * 60 * 1000)]
         public void CreateDeleteSiteCollectionTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -230,6 +237,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(30 * 60 * 1000)]
         public void CreateDeleteCreateSiteCollectionTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -261,6 +269,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site lockstate tests
         [TestMethod]
+        [Timeout(30 * 60 * 1000)]
         public void SetSiteLockStateTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())

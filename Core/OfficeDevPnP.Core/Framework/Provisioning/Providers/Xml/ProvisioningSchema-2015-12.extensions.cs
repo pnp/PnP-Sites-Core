@@ -128,13 +128,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteAttributeString("FieldName", this.FieldName);
 
             // If the content is HTML-like, use a CDATA section
-            if (regExHTML.IsMatch(this.Value))
+            if (!String.IsNullOrEmpty(this.Value))
             {
-                writer.WriteCData(this.Value);
+                if (regExHTML.IsMatch(this.Value))
+                {
+                    writer.WriteCData(this.Value);
+                }
+                else
+                {
+                    writer.WriteString(this.Value);
+                }
             }
             else
             {
-                writer.WriteString(this.Value);
+                writer.WriteString(String.Empty);
             }
         }
     }
