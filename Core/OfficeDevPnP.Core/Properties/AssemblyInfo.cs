@@ -7,8 +7,13 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OfficeDevPnP.Core")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
+#if SP2013
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2013")]
+#elif SP2016
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2016")]
+#else
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint Online")]
+#endif
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2016")]
@@ -35,10 +40,10 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // Convention:
 // Major version = current version 2
-// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar, 3=Apr, 4=May, 6=Jun, 7=Jul, 8=Aug, 9=Sept,...
+// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar, 3=Apr, 4=May, 5=Jun, 6=Aug, 7=Sept,...
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.5.1606.0")]
-[assembly: AssemblyFileVersion("2.5.1606.0")]
+[assembly: AssemblyVersion("2.6.1608.0")]
+[assembly: AssemblyFileVersion("2.6.1608.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

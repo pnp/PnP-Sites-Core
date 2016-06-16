@@ -15,14 +15,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     public partial class ProvisioningTemplateApplyingInformation
     {
         private Handlers handlersToProcess = Handlers.All;
+        private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
-
-        /// <summary>
-        /// If true, system propertybag entries that start with _, vti_, dlc_ etc. will be overwritten if overwrite = true on the PropertyBagEntry. If not true those keys will be skipped, regardless of the overwrite property of the entry.
-        /// </summary>
-        public bool OverwriteSystemPropertyBagValues { get; set; }
+		public bool PersistTemplateInfo { get; set; } = true;
+		/// <summary>
+		/// If true, system propertybag entries that start with _, vti_, dlc_ etc. will be overwritten if overwrite = true on the PropertyBagEntry. If not true those keys will be skipped, regardless of the overwrite property of the entry.
+		/// </summary>
+		public bool OverwriteSystemPropertyBagValues { get; set; }
 
         public Handlers HandlersToProcess
         {
@@ -33,6 +34,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 handlersToProcess = value;
+            }
+        }
+
+        public List<ExtensibilityHandler> ExtensibilityHandlers
+        {
+            get
+            {
+                return extensibilityHandlers;
+            }
+
+            set
+            {
+                extensibilityHandlers = value;
             }
         }
     }

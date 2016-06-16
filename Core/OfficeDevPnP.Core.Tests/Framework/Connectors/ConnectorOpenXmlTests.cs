@@ -16,15 +16,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
+
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
             // File system setup
-            if (System.IO.File.Exists(@".\Resources\Templates\TestTemplate.pnp"))
+            if (File.Exists(String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory)
+                    + @"\Templates\TestTemplate.pnp"))
             {
-                System.IO.File.Delete(@".\Resources\Templates\TestTemplate.pnp");
+                System.IO.File.Delete(String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory)
+                    + @"\Templates\TestTemplate.pnp");
             }
         }
 

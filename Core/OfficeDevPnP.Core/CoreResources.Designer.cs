@@ -1743,6 +1743,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to PersistBrandingFiles is set to true.
+        /// </summary>
+        internal static string SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true {
+            get {
+                return ResourceManager.GetString("SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to PersistComposedLookFiles is set to true.
         /// </summary>
         internal static string SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true {

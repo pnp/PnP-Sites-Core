@@ -63,11 +63,6 @@ Checks the server library version of the context for a minimally required versio
 > ##### Return value
 > 
 
-#### GetCoreVersionTag
-Get's a tag that identifies the PnP Core library
-> ##### Return value
-> PnP Core library identification tag
-
 ## SharePoint.Client.ClientContextExtensions.MaximumRetryAttemptedException
             
 Defines a Maximum Retry Attemped Exception
@@ -470,6 +465,20 @@ Sets the web home page
 > **rootFolderRelativePath:** The path relative to the root folder of the site, e.g. SitePages/Home.aspx
 
 
+#### EnableResponsiveUI(Microsoft.SharePoint.Client.Web,System.String)
+Enables the responsive UI of a classic SharePoint Web
+> ##### Parameters
+> **web:** The Web to activate the Responsive UI to
+
+> **infrastructureUrl:** URL pointing to an infrastructure site
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
+Disables the Responsive UI on a Classic SharePoint Web
+> ##### Parameters
+> **web:** 
+
+
 ## SharePoint.Client.FeatureExtensions
             
 Class that holds deprecated feature activation and deactivation methods
@@ -666,22 +675,26 @@ Creates field from xml structure which follows the classic feature framework str
 > **xDocument:** Actual XML document
 
 
-#### FieldExistsById(Microsoft.SharePoint.Client.Web,System.Guid)
+#### FieldExistsById(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean)
 Returns if the field is found
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
 
 > **fieldId:** Guid for the field ID
 
+> **searchInSiteHierarchy:** If true, search parent sites and root site
+
 > ##### Return value
 > True or false depending on the field existence
 
-#### GetFieldById``1(Microsoft.SharePoint.Client.Web,System.Guid)
+#### GetFieldById``1(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
 
 > **fieldId:** Guid for the field ID
+
+> **searchInSiteHierarchy:** If true, search parent sites and root site
 
 > ##### Return value
 > Field of type TField
@@ -706,22 +719,26 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field of type TField
 
-#### FieldExistsByName(Microsoft.SharePoint.Client.Web,System.String)
+#### FieldExistsByName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Returns if the field is found
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
 
 > **fieldName:** String for the field internal name to be used as query criteria
 
+> **searchInSiteHierarchy:** If true, search parent sites and root site
+
 > ##### Return value
 > True or false depending on the field existence
 
-#### FieldExistsById(Microsoft.SharePoint.Client.Web,System.String)
+#### FieldExistsById(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Does field exist in web
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
 
 > **fieldId:** String representation of the field ID (=guid)
+
+> **searchInSiteHierarchy:** If true, search parent sites and root site
 
 > ##### Return value
 > True if exists, false otherwise
@@ -1518,6 +1535,38 @@ Creates a new document set as a child of an existing folder, with the specified 
 
 > ##### Return value
 > The created Folder representing the document set, so that additional operations (such as setting properties) can be done.
+
+#### ConvertFolderToDocumentSet(Microsoft.SharePoint.Client.List,System.String)
+Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+Converts a folder with the given name as a child of the List RootFolder.
+> ##### Parameters
+> **list:** List in which the folder exists
+
+> **folderName:** Folder name to convert
+
+> ##### Return value
+> The newly converted Document Set, so that additional operations (such as setting properties) can be done.
+
+#### ConvertFolderToDocumentSet(Microsoft.SharePoint.Client.List,Microsoft.SharePoint.Client.Folder)
+Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+Converts a folder with the given name as a child of the List RootFolder.
+> ##### Parameters
+> **list:** List in which the folder exists
+
+> **folder:** Folder to convert
+
+> ##### Return value
+> The newly converted Document Set, so that additional operations (such as setting properties) can be done.
+
+#### ConvertFolderToDocumentSetImplementation(Microsoft.SharePoint.Client.List,Microsoft.SharePoint.Client.Folder)
+Internal implementation of the Folder conversion to Document set
+> ##### Parameters
+> **list:** Library in which the folder exists
+
+> **folder:** Folder to convert
+
+> ##### Return value
+> The newly converted Document Set, so that additional operations (such as setting properties) can be done.
 
 #### CreateFolder(Microsoft.SharePoint.Client.Web,System.String)
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
@@ -2537,7 +2586,7 @@ Determines whether the current Web has the managed navigation enabled
 > ##### Return value
 > A boolean result of the test.
 
-#### AddNavigationNode(Microsoft.SharePoint.Client.Web,System.String,System.Uri,System.String,OfficeDevPnP.Core.Enums.NavigationType,System.Boolean)
+#### AddNavigationNode(Microsoft.SharePoint.Client.Web,System.String,System.Uri,System.String,OfficeDevPnP.Core.Enums.NavigationType,System.Boolean,System.Boolean)
 Add a node to quick launch, top navigation bar or search navigation. The node will be added as the last node in the collection.
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site
@@ -2551,6 +2600,8 @@ Add a node to quick launch, top navigation bar or search navigation. The node wi
 > **navigationType:** the type of navigation, quick launch, top navigation or search navigation
 
 > **isExternal:** true if the link is an external link
+
+> **asLastNode:** true if the link should be added as the last node of the collection
 
 
 #### DeleteNavigationNode(Microsoft.SharePoint.Client.Web,System.String,System.String,OfficeDevPnP.Core.Enums.NavigationType)
@@ -3391,6 +3442,22 @@ Get the search center url for the site collection (Site Settings -> Site collect
 
 > ##### Return value
 > Search center url for web
+
+#### SetWebSearchCenterUrl(Microsoft.SharePoint.Client.Web,System.String)
+Sets the search results page url on current web (Site Settings -> Search --> Search Settings)
+> ##### Parameters
+> **web:** SharePoint current web
+
+> **searchCenterUrl:** Search results page url
+
+
+#### GetWebSearchCenterUrl(Microsoft.SharePoint.Client.Web)
+Get the search results page url for the web (Site Settings -> Search --> Search Settings)
+> ##### Parameters
+> **web:** SharePoint site - current web
+
+> ##### Return value
+> Search results page url for web
 
 ## SharePoint.Client.SecurityExtensions
             
@@ -5260,6 +5327,46 @@ Publish a custom event to a target workflow instance
 > **payload:** The payload that will be sent to the event
 
 
+#### StartWorkflowInstance(Microsoft.SharePoint.Client.Web,System.String,System.Collections.Generic.IDictionary{System.String,System.Object})
+Starts a new instance of a workflow definition against the current web site
+> ##### Parameters
+> **web:** The target web site
+
+> **subscriptionName:** The name of the workflow subscription to start
+
+> **payload:** Any input argument for the workflow instance
+
+
+#### StartWorkflowInstance(Microsoft.SharePoint.Client.Web,System.Guid,System.Collections.Generic.IDictionary{System.String,System.Object})
+Starts a new instance of a workflow definition against the current web site
+> ##### Parameters
+> **web:** The target web site
+
+> **subscriptionId:** The ID of the workflow subscription to start
+
+> **payload:** Any input argument for the workflow instance
+
+
+#### StartWorkflowInstance(Microsoft.SharePoint.Client.ListItem,System.String,System.Collections.Generic.IDictionary{System.String,System.Object})
+Starts a new instance of a workflow definition against the current item
+> ##### Parameters
+> **item:** The target item
+
+> **subscriptionName:** The name of the workflow subscription to start
+
+> **payload:** Any input argument for the workflow instance
+
+
+#### StartWorkflowInstance(Microsoft.SharePoint.Client.ListItem,System.Guid,System.Collections.Generic.IDictionary{System.String,System.Object})
+Starts a new instance of a workflow definition against the current item
+> ##### Parameters
+> **item:** The target item
+
+> **subscriptionId:** The ID of the workflow subscription to start
+
+> **payload:** Any input argument for the workflow instance
+
+
 ## SharePoint.Client.ListRatingExtensions
             
 Enables: Ratings / Likes functionality on list in publishing web.
@@ -6154,6 +6261,20 @@ Looks up a localized string similar to File {0} retrieved from folder {1}.
 Looks up a localized string similar to File {0} saved to folder {1}.
 #### Provisioning_Connectors_FileSystem_FileSaveFailed
 Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleted
+Looks up a localized string similar to File {0} deleted from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+#### Provisioning_Connectors_OpenXML_FileNotFound
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+#### Provisioning_Connectors_OpenXML_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaved
+Looks up a localized string similar to File {0} saved to folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
 #### Provisioning_Connectors_SharePoint_FileDeleted
 Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
 #### Provisioning_Connectors_SharePoint_FileDeleteFailed
@@ -6372,10 +6493,14 @@ Looks up a localized string similar to IncludeAllTermGroups is set to true.
 Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
 #### SiteToTemplateConversion_MessagesDelegate_registered
 Looks up a localized string similar to MessagesDelegate registered.
+#### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
+Looks up a localized string similar to PersistBrandingFiles is set to true.
 #### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
 Looks up a localized string similar to PersistComposedLookFiles is set to true.
 #### SiteToTemplateConversion_ProgressDelegate_registered
 Looks up a localized string similar to ProgressDelegate registered.
+#### SP_Responsive_UI
+Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $(".ms-siteSettings-root . [rest of string was truncated]";.
 #### TaxonomyExtension_CreateTerm01UnderParent2
 Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
 #### TaxonomyExtension_CreateTermGroup0InStore1
@@ -6848,6 +6973,195 @@ Deletes a file from the specified container
 
 > **container:** Name of the container to delete the file from
 
+
+## Core.Framework.Provisioning.Connectors.ICommitableFileConnector
+            
+Interface for File Connectors
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXMLConnector
+            
+Connector that stores all the files into a unique .PNP OpenXML package
+        
+### Methods
+
+
+#### Constructor
+OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
+> ##### Parameters
+> **packageFileName:** The name of the .PNP package file. If the .PNP extension is missing, it will be added
+
+> **persistenceConnector:** The FileConnector object that will be used for physical persistence of the file
+
+> **author:** The Author of the .PNP package file, if any. Optional
+
+> **signingCertificate:** The X.509 certificate to use for digital signature of the template, optional
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from (something like: "\images\subfolder")
+
+> ##### Return value
+> List of files
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFileInfo
+            
+File descriptor for every single file in the PnP OpenXML file
+        
+### Properties
+
+#### Name
+The Name of the file in the PnP OpenXML file
+#### Folder
+The name of the folder within the PnP OpenXML file
+#### Content
+The binary content of the file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPInfo
+            
+Global container of the PnP OpenXML file
+        
+### Properties
+
+#### Manifest
+The Manifest of the PnP OpenXML file
+#### Properties
+Custom properties of the PnP OpenXML file
+#### Files
+Files contained in the PnP OpenXML file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPManifest
+            
+Manifest of a PnP OpenXML file
+        
+### Properties
+
+#### Type
+The Type of the package file defined by the current manifest
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPProperties
+            
+Properties of the PnP OpenXML container
+        
+### Properties
+
+#### Id
+Unique ID for the PnP OpenXML file
+#### Author
+Author of the PnP OpenXML file
+#### CreationDateTime
+Date and Time of creation for the PnP OpenXML file
+#### Generator
+Name of the Generator (engine) of the PnP OpenXML file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackage
+            
+Defines a PnP OpenXML package file
+        
+### Properties
+
+#### ManifestPart
+The Manifest Part of the package file
+#### Manifest
+The Manifest of the package file
+#### Properties
+The Properties of the package
+#### FilesOriginPart
+The Files origin
+#### FilesPackageParts
+The Files Parts of the package
+#### Files
+The Files of the package
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFileItem
+            
+Defines a single file in the PnP Open XML file package
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFormatException
+            
+Custom Exception type for PnP Packaging handling
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageExtensions
+            
+Extension class for PnP OpenXML package files
+        
 
 ## Core.Framework.Provisioning.Connectors.SharePointConnector
             

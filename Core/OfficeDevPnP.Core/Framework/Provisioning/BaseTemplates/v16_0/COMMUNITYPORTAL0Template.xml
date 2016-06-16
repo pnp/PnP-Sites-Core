@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.5.1606.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-COMMUNITYPORTAL0template">
     <pnp:ProvisioningTemplate ID="COMMUNITYPORTAL0template" Version="1">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="/_layouts/15/images/siteicon.png" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -180,17 +180,8 @@
             </pnp:RoleDefinition>
           </pnp:RoleDefinitions>
           <pnp:RoleAssignments>
-            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="Full Control" />
-            <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Read" />
-            <pnp:RoleAssignment Principal="Designers" RoleDefinition="Design" />
-            <pnp:RoleAssignment Principal="Hierarchy Managers" RoleDefinition="Manage Hierarchy" />
-            <pnp:RoleAssignment Principal="Approvers" RoleDefinition="Approve" />
-            <pnp:RoleAssignment Principal="Restricted Readers" RoleDefinition="Restricted Read" />
-            <pnp:RoleAssignment Principal="Translation Managers" RoleDefinition="Restricted Interfaces for Translation" />
-            <pnp:RoleAssignment Principal="{associatedownergroup}" RoleDefinition="Full Control" />
-            <pnp:RoleAssignment Principal="{associatedvisitorgroup}" RoleDefinition="Read" />
-            <pnp:RoleAssignment Principal="{associatedmembergroup}" RoleDefinition="Contribute" />
-            <pnp:RoleAssignment Principal="Records Center Web Service Submitters" RoleDefinition="Records Center Web Service Submitters" />
+            <pnp:RoleAssignment Principal="i:0#.w|pnp\pnpadmin" RoleDefinition="{roledefinition:Administrator}" />
+            <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="{roledefinition:Reader}" />
           </pnp:RoleAssignments>
         </pnp:Permissions>
       </pnp:Security>
@@ -726,7 +717,7 @@
               </Property>
               <Property>
                 <Name>TermSetId</Name>
-                <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">22aa8bbd-c06d-463a-9e02-4c0fa0d9246b</Value>
+                <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{termsetid:{sitecollectiontermgroupname}:Wiki Categories}</Value>
               </Property>
               <Property>
                 <Name>AnchorId</Name>
@@ -2480,10 +2471,10 @@
             </View>
           </pnp:Views>
           <pnp:Fields>
-            <Field ID="{8c4cfe39-587c-45b0-9754-71810a01c5e2}" Type="Text" DisplayName="Resource Id" Required="FALSE" SourceID="{115fea7b-a6e5-42bc-96b3-34e57d8d50a1}" StaticName="_x0024_Resources_x003a_cmscore_x" Name="_x0024_Resources_x003a_cmscore_x" ColName="nvarchar3" RowOrdinal="0" Version="1" />
-            <Field ID="{9a0a9832-8bf1-4de4-a809-c97bd256fbe7}" Type="Text" DisplayName="Resource Id" Required="FALSE" SourceID="{115fea7b-a6e5-42bc-96b3-34e57d8d50a1}" StaticName="_x0024_Resources_x003a_cmscore_x0" Name="_x0024_Resources_x003a_cmscore_x0" ColName="nvarchar4" RowOrdinal="0" Version="1" />
-            <Field ID="{33254558-5f60-43a1-8c30-f02bee20d03a}" Type="Text" DisplayName="CAML List Type" Required="FALSE" Description="Type the name of the list template for the CAML list type, or leave blank to search document library template" SourceID="{115fea7b-a6e5-42bc-96b3-34e57d8d50a1}" StaticName="_x0024_Resources_x003a_cmscore_x1" Name="_x0024_Resources_x003a_cmscore_x1" ColName="nvarchar5" RowOrdinal="0" Version="1" />
-            <Field ID="{0500c41a-0f80-4b01-9892-7c085eb461ab}" Type="Text" DisplayName="CAML Query" Required="TRUE" Description="Type the CAML markup for the report query" SourceID="{115fea7b-a6e5-42bc-96b3-34e57d8d50a1}" StaticName="_x0024_Resources_x003a_cmscore_x2" Name="_x0024_Resources_x003a_cmscore_x2" ColName="nvarchar6" RowOrdinal="0" Version="1" />
+            <Field ID="{8c4cfe39-587c-45b0-9754-71810a01c5e2}" Type="Text" DisplayName="Resource Id" Required="FALSE" SourceID="{{listid:Content and Structure Reports}}" StaticName="_x0024_Resources_x003a_cmscore_x" Name="_x0024_Resources_x003a_cmscore_x" ColName="nvarchar3" RowOrdinal="0" Version="1" />
+            <Field ID="{9a0a9832-8bf1-4de4-a809-c97bd256fbe7}" Type="Text" DisplayName="Resource Id" Required="FALSE" SourceID="{{listid:Content and Structure Reports}}" StaticName="_x0024_Resources_x003a_cmscore_x0" Name="_x0024_Resources_x003a_cmscore_x0" ColName="nvarchar4" RowOrdinal="0" Version="1" />
+            <Field ID="{33254558-5f60-43a1-8c30-f02bee20d03a}" Type="Text" DisplayName="CAML List Type" Required="FALSE" Description="Type the name of the list template for the CAML list type, or leave blank to search document library template" SourceID="{{listid:Content and Structure Reports}}" StaticName="_x0024_Resources_x003a_cmscore_x1" Name="_x0024_Resources_x003a_cmscore_x1" ColName="nvarchar5" RowOrdinal="0" Version="1" />
+            <Field ID="{0500c41a-0f80-4b01-9892-7c085eb461ab}" Type="Text" DisplayName="CAML Query" Required="TRUE" Description="Type the CAML markup for the report query" SourceID="{{listid:Content and Structure Reports}}" StaticName="_x0024_Resources_x003a_cmscore_x2" Name="_x0024_Resources_x003a_cmscore_x2" ColName="nvarchar6" RowOrdinal="0" Version="1" />
           </pnp:Fields>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="61cbb965-1e04-4273-b658-eedaa662f48d" Name="Target_x0020_Audiences" DisplayName="Target Audiences" />
@@ -2513,7 +2504,7 @@
             </View>
           </pnp:Views>
           <pnp:Fields>
-            <Field Type="Note" ID="{126cd502-6801-4ae4-9f56-bfc3488c4743}" DisplayName="Original Properties" StaticName="_vti_RoutingExistingProperties" Name="_vti_RoutingExistingProperties" Sealed="TRUE" ShowInDisplayForm="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" Required="FALSE" SourceID="{75d60031-3f28-4bc6-a68e-6e822ca43ae2}" ColName="ntext2" RowOrdinal="0" Description="" />
+            <Field Type="Note" ID="{126cd502-6801-4ae4-9f56-bfc3488c4743}" DisplayName="Original Properties" StaticName="_vti_RoutingExistingProperties" Name="_vti_RoutingExistingProperties" Sealed="TRUE" ShowInDisplayForm="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" Required="FALSE" SourceID="{{listid:Drop Off Library}}" ColName="ntext2" RowOrdinal="0" Description="" />
           </pnp:Fields>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" DisplayName="Document ID Value" />

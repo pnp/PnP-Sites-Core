@@ -148,7 +148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (isDirty)
                         {
                             existingField.Update();
-                            web.Context.ExecuteQuery();
+                            web.Context.ExecuteQueryRetry();
                         }
                         if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(existingField.DefaultValue))
                         {
@@ -224,7 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (isDirty)
                 {
                     field.Update();
-                    web.Context.ExecuteQuery();
+                    web.Context.ExecuteQueryRetry();
                 }
 
                 if ((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(field.DefaultValue))

@@ -106,8 +106,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
 
             var result = (from file in this.pnpInfo.Files
-                          where file.Folder == container
-                          select file.Name).ToList();
+                         where file.Folder == container
+                         select file.OriginalName).ToList();
 
             return result;
         }
@@ -260,16 +260,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 byte[] bytes = memoryStream.ToArray();
 
                 // Check if the file already exists in the package
-                var existingFile = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
+                var existingFile = pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (existingFile != null)
                 {
                     existingFile.Content = bytes;
                 }
                 else
                 {
+                    String fileInternalName = Guid.NewGuid().ToString();
+                    FileInfo fi = new FileInfo(fileName);
+                    if (!String.IsNullOrEmpty(fi.Extension))
+                    {
+                        fileInternalName = String.Format("{0}{1}", Guid.NewGuid(), fi.Extension);
+                    }
+
                     pnpInfo.Files.Add(new PnPFileInfo
                     {
-                        Name = fileName,
+                        InternalName = fileInternalName,
+                        OriginalName = fileName,
                         Folder = container,
                         Content = bytes,
                     });
@@ -312,7 +320,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                var file = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
+                var file = pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (file != null)
                 {
                     pnpInfo.Files.Remove(file);
@@ -337,7 +345,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             try
             {
                 MemoryStream stream = new MemoryStream();
-                var file = pnpInfo.Files.FirstOrDefault(f => f.Name.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
+                var file = pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
                 if (file != null)
                 {
                     stream.Write(file.Content, 0, file.Content.Length);

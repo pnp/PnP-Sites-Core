@@ -83,6 +83,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Wiki page tests
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void AddWikiPageTest()
         {
             var web = Setup();
@@ -105,6 +106,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void EnsureWikiPageTest()
         {
             var web = Setup();
@@ -127,6 +129,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanAddLayoutToWikiPageTest()
         {
             var web = Setup();
@@ -137,6 +140,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
 	    [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanAddHtmlToWikiPageTest()
         {
             var web = Setup();
@@ -147,6 +151,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void ProveThatWeCanAddHtmlToPageAfterChangingLayoutTest()
         {
             var web = Setup();
@@ -163,6 +168,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Publishing page tests
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanCreatePublishingPageTest()
         {
             var web = Setup("CMSPUBLISHING#0",true);
@@ -181,6 +187,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void PublishingPageWithInvalidCharsIsCorrectlyCreatedTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);
@@ -196,6 +203,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanCreatePublishedPublishingPageWhenModerationIsEnabledTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);
@@ -220,6 +228,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CanCreatePublishedPublishingPageWhenModerationIsDisabledTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);
@@ -242,6 +251,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(10 * 60 * 1000)]
         public void CreatedPublishingPagesSetsTitleCorrectlyTest()
         {
             var web = Setup("CMSPUBLISHING#0", true);

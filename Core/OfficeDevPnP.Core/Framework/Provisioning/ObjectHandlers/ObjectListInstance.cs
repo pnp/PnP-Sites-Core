@@ -127,14 +127,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                     {
-                                        CreateFieldRef(listInfo, field, fieldRef);
+                                        field = CreateFieldRef(listInfo, field, fieldRef);
                                     }
                                     else
                                     {
-                                        UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
+                                        field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
                                     }
                                 }
 
+#if !ONPREMISES
+                                var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
+
+                                if (siteField != null && siteField.SchemaXml.ContainsResourceToken())
+                                {
+                                    var isDirty = false;
+                                    var originalFieldElement = XElement.Parse(siteField.SchemaXml);
+                                    var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
+                                    if (nameAttributeValue.ContainsResourceToken())
+                                    {
+                                        if (field.TitleResource.SetUserResourceValue(nameAttributeValue, parser))
+                                        {
+                                            isDirty = true;
+                                        }
+                                    }
+                                    var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
+                                    if (descriptionAttributeValue.ContainsResourceToken())
+                                    {
+                                        if (field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser))
+                                        {
+                                            isDirty = true;
+                                        }
+                                    }
+
+                                    if (isDirty)
+                                    {
+                                        field.Update();
+                                        field.Context.ExecuteQueryRetry();
+                                    }
+                                }
+#endif
                             }
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
@@ -449,12 +480,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static void UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef)
+        private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef)
         {
             // find the field in the list
             var listField = siteList.Fields.GetById(fieldId);
 
-            siteList.Context.Load(listField, f => f.Title, f => f.Hidden, f => f.Required);
+            siteList.Context.Load(listField, f => f.Id, f => f.Title, f => f.Hidden, f => f.Required);
             siteList.Context.ExecuteQueryRetry();
 
             var isDirty = false;
@@ -487,9 +518,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listField.UpdateAndPushChanges(true);
                 siteList.Context.ExecuteQueryRetry();
             }
+
+            return listField;
         }
 
-        private static void CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef)
+        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef)
         {
             field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
             XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
@@ -500,7 +533,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var createdField = listInfo.SiteList.Fields.Add(field);
 
-            createdField.Context.Load(createdField, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
+            createdField.Context.Load(createdField, cf => cf.Id, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
             createdField.Context.ExecuteQueryRetry();
 
             var isDirty = false;
@@ -524,6 +557,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdField.Update();
                 createdField.Context.ExecuteQueryRetry();
             }
+
+            return createdField;
         }
 
         private static void CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientRuntimeContext context, PnPMonitoredScope scope)
@@ -563,7 +598,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (isDirty)
                 {
                     field.Update();
-                    listInfo.SiteList.Context.ExecuteQuery();
+                    listInfo.SiteList.Context.ExecuteQueryRetry();
                 }
             }
             else
@@ -646,7 +681,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (isDirty)
                         {
                             existingField.Update();
-                            web.Context.ExecuteQuery();
+                            web.Context.ExecuteQueryRetry();
                         }
                     }
                     else
@@ -1189,7 +1224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // If current web is subweb then include the lists in the rootweb for lookup column support
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
                     rootWeb.Context.Load(rootWeb.Lists, lsts => lsts.Include(l => l.Id, l => l.Title));
-                    rootWeb.Context.ExecuteQuery();
+                    rootWeb.Context.ExecuteQueryRetry();
                     foreach (var rootList in rootWeb.Lists)
                     {
                         allLists.Add(rootList);
@@ -1381,9 +1416,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
-            var siteColumns = web.Fields;
-            web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
-            web.Context.ExecuteQueryRetry();
+            Microsoft.SharePoint.Client.FieldCollection siteColumns = null;
+            if (web.IsSubSite())
+            {
+                var siteContext = web.Context.GetSiteCollectionContext();
+                var rootWeb = siteContext.Site.RootWeb;
+                siteColumns = rootWeb.Fields;
+                siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+                siteContext.ExecuteQueryRetry();
+            }
+            else
+            {
+                siteColumns = web.Fields;
+                web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+                web.Context.ExecuteQueryRetry();
+            }
 
             foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
             {

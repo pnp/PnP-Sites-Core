@@ -13,9 +13,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model
     public class PnPFileInfo
     {
         /// <summary>
-        /// The Name of the file in the PnP OpenXML file
+        /// The Internal Name of the file in the PnP OpenXML file
         /// </summary>
-        public String Name { get; set; }
+        public String InternalName { get; set; }
+
+        /// <summary>
+        /// The Original Name of the file in the source template
+        /// </summary>
+        public String OriginalName { get; set; }
 
         /// <summary>
         /// The name of the folder within the PnP OpenXML file
