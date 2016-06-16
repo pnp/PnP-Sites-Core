@@ -267,16 +267,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 }
                 else
                 {
-                    String fileInternalName = Guid.NewGuid().ToString();
-                    FileInfo fi = new FileInfo(fileName);
-                    if (!String.IsNullOrEmpty(fi.Extension))
-                    {
-                        fileInternalName = String.Format("{0}{1}", Guid.NewGuid(), fi.Extension);
-                    }
-
                     pnpInfo.Files.Add(new PnPFileInfo
                     {
-                        InternalName = fileInternalName,
+                        InternalName = fileName.AsInternalFilename(),
                         OriginalName = fileName,
                         Folder = container,
                         Content = bytes,

@@ -1,7 +1,9 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 {
@@ -32,6 +34,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return siteTemplate;
         }
 
+        public static string AsInternalFilename(this string filename)
+        {
+            return Guid.NewGuid() + Path.GetExtension(filename);
+        }
+
         #region Private Methods for handling templates
 
         private static PnPInfo LoadPnPPackage(PnPPackage package)
@@ -60,6 +67,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         {
             package.Manifest = pnpInfo.Manifest;
             package.Properties = pnpInfo.Properties;
+            Debug.Assert(pnpInfo.Files.TrueForAll(f => !string.IsNullOrWhiteSpace(f.InternalName)), "All files need an InternalFileName");
             package.FilesMap = new PnPFilesMap(pnpInfo.Files.ToDictionary(f => f.InternalName, f => f.OriginalName));
             package.ClearFiles();
             if (pnpInfo.Files != null)
