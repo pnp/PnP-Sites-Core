@@ -86,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
                     {
                         _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
-                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
                     }
                 }
             }
