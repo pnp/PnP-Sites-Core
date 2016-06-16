@@ -134,6 +134,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
                                     }
                                 }
+                                field.EnsureProperties(f => f.InternalName, f => f.Title);
+
+                                parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
 
 #if !ONPREMISES
                                 var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
@@ -204,7 +207,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         try
                                         {
                                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
-                                            CreateField(fieldElement, listInfo, parser, field.SchemaXml, web.Context, scope);
+                                            var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, web.Context, scope);
+                                            if (createdField != null)
+                                            {
+                                                createdField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                                parser.AddToken(new FieldTitleToken(web, createdField.InternalName,
+                                                    createdField.Title));
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -217,7 +226,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         try
                                         {
                                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0_, fieldGuid);
-                                            UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope, parser, field.SchemaXml);
+                                            var updatedField = UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope, parser, field.SchemaXml);
+                                            if (updatedField != null)
+                                            {
+                                                updatedField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                                parser.AddToken(new FieldTitleToken(web, updatedField.InternalName,
+                                                    updatedField.Title));
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -561,14 +576,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return createdField;
         }
 
-        private static void CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientRuntimeContext context, PnPMonitoredScope scope)
+        private static Field CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientRuntimeContext context, PnPMonitoredScope scope)
         {
+            Field field = null;
             fieldElement = PrepareField(fieldElement);
 
             var fieldXml = parser.ParseString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseString(originalFieldXml), parser, context))
             {
-                var field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
+                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
@@ -608,10 +624,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogError("The field was found invalid: {0}", tokenString);
                 throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
             }
+            return field;
         }
 
-        private void UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
+        private Field UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
+            Field field = null;
             web.Context.Load(existingField, f => f.SchemaXmlWithResourceTokens);
             web.Context.ExecuteQueryRetry();
 
@@ -682,6 +700,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             existingField.Update();
                             web.Context.ExecuteQueryRetry();
+                            field = existingField;
                         }
                     }
                     else
@@ -699,6 +718,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_, fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id), ProvisioningMessageType.Warning);
                 }
             }
+            return field;
         }
 
         private static XElement PrepareField(XElement fieldElement)
