@@ -383,6 +383,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdTerm = ((Term)parent).ReuseTerm(preExistingTerm, false);
                 }
 
+                if(modelTerm.IsSourceTerm)
+                {
+                    preExistingTerm.ReassignSourceTerm(createdTerm);
+                }
+
                 termStore.CommitAll();
                 web.Context.Load(createdTerm);
                 web.Context.ExecuteQueryRetry();
@@ -525,7 +530,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.Name = term.Name;
                 modelTerm.IsAvailableForTagging = term.IsAvailableForTagging;
                 modelTerm.IsReused = term.IsReused;
-
+                modelTerm.IsSourceTerm = term.IsSourceTerm;
 
                 if (term.Labels.Any())
                 {

@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Owner { get; set; }
         public Boolean IsAvailableForTagging { get; set; }
         public Boolean IsReused { get; set; }
+        public Boolean IsSourceTerm { get; set; }
         public int? Language { get; set; }
         public int CustomSortOrder { get; set; }
 
@@ -96,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}",
 
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 (this.Name != null ? this.Name.GetHashCode() : 0),
@@ -105,6 +106,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Owner != null ? this.Owner.GetHashCode() : 0),
                 this.IsAvailableForTagging.GetHashCode(),
                 this.IsReused.GetHashCode(),
+                this.IsSourceTerm.GetHashCode(),
                 this.CustomSortOrder.GetHashCode(),
                 this.Labels.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Terms.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -136,6 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Owner == other.Owner &&
                 this.IsAvailableForTagging == other.IsAvailableForTagging &&
                 this.IsReused == other.IsReused &&
+                this.IsSourceTerm == other.IsSourceTerm &&
                 this.CustomSortOrder == other.CustomSortOrder &&
                 this.Labels.DeepEquals(other.Labels) &&
                 this.Terms.DeepEquals(other.Terms) &&
