@@ -7,6 +7,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Resources;
 using System.Collections;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
@@ -74,13 +75,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
             }
 
-            if(web.IsSubSite())
+            if (web.IsSubSite())
             {
                 // Add lists from rootweb
                 var rootWeb = (web.Context as ClientContext).Site.RootWeb;
                 rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
                 rootWeb.Context.ExecuteQueryRetry();
-                foreach(var rootList in rootWeb.Lists)
+                foreach (var rootList in rootWeb.Lists)
                 {
                     // token already there? Skip the list
                     if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
@@ -146,6 +147,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
             }
 
+            if (web.IsSubSite())
+            {
+                // SiteColumns from rootsite
+                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                var siteColumns = rootWeb.Fields;
+                web.Context.Load(siteColumns, flds => flds.Include(f => f.Title, f => f.InternalName));
+                web.Context.ExecuteQueryRetry();
+                foreach (var field in siteColumns)
+                {
+                    _tokens.Add(new FieldTitleToken(rootWeb, field.InternalName, field.Title));
+                }
+            }
+
             // Handle resources
             if (template.Localizations.Any())
             {
@@ -182,9 +196,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // OOTB Roledefs
             web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind));
-            foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None ))
+            foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None))
             {
-                _tokens.Add(new RoleDefinitionToken(web,roleDef));
+                _tokens.Add(new RoleDefinitionToken(web, roleDef));
             }
 
             var sortedTokens = from t in _tokens
@@ -268,7 +282,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        var matchingTokens = token.GetRegex().Where(regex => regex.IsMatch(input));
+                        foreach (var regex in matchingTokens)
                         {
                             input = regex.Replace(input, token.GetReplaceValue());
                         }
