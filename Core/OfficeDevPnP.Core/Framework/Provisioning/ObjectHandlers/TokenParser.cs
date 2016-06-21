@@ -282,7 +282,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        var matchingTokens = token.GetRegex().Where(regex => regex.IsMatch(input));
+                        foreach (var regex in matchingTokens)
                         {
                             input = regex.Replace(input, token.GetReplaceValue());
                         }
