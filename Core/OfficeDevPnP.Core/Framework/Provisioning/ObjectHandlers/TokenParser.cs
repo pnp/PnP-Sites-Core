@@ -79,6 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // Add lists from rootweb
                 var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
                 rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
                 rootWeb.Context.ExecuteQueryRetry();
                 foreach (var rootList in rootWeb.Lists)
