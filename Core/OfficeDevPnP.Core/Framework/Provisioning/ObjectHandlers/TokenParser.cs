@@ -282,7 +282,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
+                        if (token.GetRegex().Length > 0 && token.GetRegex()[0].ToString() == "{fieldtitle:EventDate}")
+                        {
+                            Debugger.Break();
+                        }
+                        var matchingTokens = token.GetRegex().Where(regex => regex.IsMatch(input));
+                        foreach (var regex in matchingTokens)
                         {
                             input = regex.Replace(input, token.GetReplaceValue());
                         }
