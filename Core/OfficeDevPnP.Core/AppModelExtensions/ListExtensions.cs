@@ -20,6 +20,46 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class ListExtensions
     {
+        /// <summary>
+        /// The common URL delimiters
+        /// </summary>
+        private static readonly char[] UrlDelimiters = { '\\', '/' };
+
+        /// <summary>
+        /// Gets the web relative URL.
+        /// Allow users to get the web relative URL of a list.  
+        /// This is useful when exporting lists as it can then be used as a parameter to Web.GetListByUrl().
+        /// </summary>
+        /// <param name="list">The list to export the URL of.</param>
+        /// <returns>The web relative URL of the list.</returns>
+        public static string GetWebRelativeUrl(this List list)
+        {
+            list.EnsureProperties(l => l.RootFolder, l => l.ParentWebUrl);
+            return GetWebRelativeUrl(list.RootFolder.ServerRelativeUrl, list.ParentWebUrl);
+        }
+
+        /// <summary>
+        /// Gets the web relative URL.
+        /// </summary>
+        /// <param name="listRootFolderServerRelativeUrl">The list root folder server relative URL.</param>
+        /// <param name="parentWebServerRelativeUrl">The parent web server relative URL.</param>
+        /// <returns>The web relative URL.</returns>
+        /// <exception cref="Exception">Cannot establish web relative URL from the list root folder URI and the parent web URI.</exception>
+        private static string GetWebRelativeUrl(string listRootFolderServerRelativeUrl, string parentWebServerRelativeUrl)
+        {
+            var sanitisedListRootFolderServerRelativeUrl = listRootFolderServerRelativeUrl.Trim(UrlDelimiters);
+            var sanitisedParentWebServerRelativeUrl = parentWebServerRelativeUrl.Trim(UrlDelimiters);
+
+            if (!sanitisedListRootFolderServerRelativeUrl.StartsWith(sanitisedParentWebServerRelativeUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception($"Cannot establish web relative URL from the {listRootFolderServerRelativeUrl} list root folder URI and the {parentWebServerRelativeUrl} parent web URI.");
+            }
+
+            var listWebRelativeUrl = sanitisedListRootFolderServerRelativeUrl.Substring(sanitisedParentWebServerRelativeUrl.Length);
+
+            return listWebRelativeUrl.Trim(UrlDelimiters);
+        }
+
         #region Event Receivers
 
         /// <summary>
