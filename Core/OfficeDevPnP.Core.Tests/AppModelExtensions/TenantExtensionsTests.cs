@@ -313,7 +313,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {
             Uri u = new Uri(devSiteUrl);
-            string host = String.Format("{0}://{1}:{2}", u.Scheme, u.DnsSafeHost, u.Port);
+            string host = String.Format("{0}://{1}", u.Scheme, u.DnsSafeHost);
 
             string path = u.AbsolutePath;
             if (path.EndsWith("/"))
