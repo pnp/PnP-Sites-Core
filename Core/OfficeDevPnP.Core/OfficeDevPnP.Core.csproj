@@ -679,6 +679,11 @@
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Processors\PassThroughProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Schema\WebPart.v3.cs" />
+    <Compile Include="Utilities\WebParts\WebPartPostProcessorFactory.cs" />
+    <Compile Include="Utilities\WebParts\Processors\XsltWebPartPostProcessor.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -735,6 +740,9 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Utilities\WebParts\Schema\WebPart.v3.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="Web References\UPAWebService\ContactData.datasource">
       <DependentUpon>Reference.map</DependentUpon>
