@@ -195,6 +195,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             { 
+                // Decode URL
+                url = Uri.UnescapeDataString(url);
                 // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
