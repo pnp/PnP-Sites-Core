@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace OfficeDevPnP.Core.Extensions
 {
@@ -13,12 +8,13 @@ namespace OfficeDevPnP.Core.Extensions
         {
             var stream = source as MemoryStream;
             if (stream != null) return stream;
-            MemoryStream target = new MemoryStream();
+            var target = new MemoryStream();
             const int bufSize = 65535;
-            byte[] buf = new byte[bufSize];
-            int bytesRead = -1;
+            var buf = new byte[bufSize];
+            int bytesRead;
             while ((bytesRead = source.Read(buf, 0, bufSize)) > 0)
                 target.Write(buf, 0, bytesRead);
+            target.Position = 0;
             return target;
         }
     }
