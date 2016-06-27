@@ -106,8 +106,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
 
             var result = (from file in this.pnpInfo.Files
-                         where file.Folder == container
-                         select file.OriginalName).ToList();
+                          where file.Folder == container
+                          select file.OriginalName).ToList();
 
             return result;
         }
@@ -119,15 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override string GetFile(string fileName)
         {
-            string container = GetContainer();
-            fileName = fileName.Replace("\\", "/");
-            int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
-            if (idx != -1)
-            {
-                container = fileName.Substring(0, idx);
-                fileName = fileName.Substring(idx + 1);
-            }
-            return GetFile(fileName, container);
+            return GetFile(fileName, GetContainer());
         }
 
         public override string GetFilenamePart(string fileName)
@@ -189,15 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>String containing the file contents</returns>
         public override Stream GetFileStream(string fileName)
         {
-            string container = GetContainer();
-            fileName = fileName.Replace("\\", "/");
-            int idx = fileName.LastIndexOf("/", StringComparison.Ordinal);
-            if (idx != -1)
-            {
-                container = fileName.Substring(0, idx);
-                fileName = fileName.Substring(idx + 1);
-            }
-            return GetFileStream(fileName, container);
+            return GetFileStream(fileName, GetContainer());
         }
 
         /// <summary>
@@ -313,7 +297,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
             try
             {
-                var file = pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
+                var file = GetFileFromInsidePackage(fileName, container);
                 if (file != null)
                 {
                     pnpInfo.Files.Remove(file);
@@ -337,20 +321,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             try
             {
-                MemoryStream stream = new MemoryStream();
-                var file = pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
+                var file = GetFileFromInsidePackage(fileName, container);
+
                 if (file != null)
                 {
-                    stream.Write(file.Content, 0, file.Content.Length);
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileRetrieved, fileName, container);
+                    var stream = new MemoryStream(file.Content);
+                    return stream;
                 }
                 else
                 {
                     throw new FileNotFoundException();
                 }
-
-                Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_OpenXML_FileRetrieved, fileName, container);
-                stream.Position = 0;
-                return stream;
             }
             catch (Exception ex)
             {
@@ -362,6 +344,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Will first try to find the file based on container/filename from the mapped file names.
+        /// As a fallback it will try to find by container/filename in the pnp file structure, which was the original format.
+        /// </summary>
+        private PnPFileInfo GetFileFromInsidePackage(string fileName, string container)
+        {
+            string mappedPath = Path.Combine(container, fileName).Replace('\\', '/');
+            var file = (from item in pnpInfo.FilesMap.Map
+                        where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
+                        select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+            if (file != null) return file;
+            return pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
         }
 
         internal override string GetContainer()

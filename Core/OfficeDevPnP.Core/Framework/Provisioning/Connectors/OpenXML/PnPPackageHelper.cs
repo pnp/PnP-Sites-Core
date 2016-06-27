@@ -65,13 +65,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             pnpInfo.FilesMap = package.FilesMap;
 
             pnpInfo.Files = new List<PnPFileInfo>();
+
             foreach (KeyValuePair<String, PnPPackageFileItem> file in package.Files)
             {
                 pnpInfo.Files.Add(
                     new PnPFileInfo
                     {
                         InternalName = file.Key,
-                        OriginalName = package.FilesMap.Map[file.Key],
+                        OriginalName = package.FilesMap.Map[file.Key].Replace(file.Value.Folder + '/', ""),
                         Folder = file.Value.Folder,
                         Content = file.Value.Content,
                     });
@@ -84,13 +85,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             package.Manifest = pnpInfo.Manifest;
             package.Properties = pnpInfo.Properties;
             Debug.Assert(pnpInfo.Files.TrueForAll(f => !string.IsNullOrWhiteSpace(f.InternalName)), "All files need an InternalFileName");
-            package.FilesMap = new PnPFilesMap(pnpInfo.Files.ToDictionary(f => f.InternalName, f => f.OriginalName));
+            package.FilesMap = new PnPFilesMap(pnpInfo.Files.ToDictionary(f => f.InternalName, f => Path.Combine(f.Folder, f.OriginalName).Replace('\\', '/').TrimStart('/')));
             package.ClearFiles();
             if (pnpInfo.Files != null)
             {
                 foreach (PnPFileInfo file in pnpInfo.Files)
                 {
-                    package.AddFile(file.InternalName, file.Folder, file.Content);
+                    package.AddFile(file.InternalName, file.Content);
                 }
             }
         }

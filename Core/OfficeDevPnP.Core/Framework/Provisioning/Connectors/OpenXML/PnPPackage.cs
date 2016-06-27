@@ -186,6 +186,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
+
+        public void AddFile(string fileName, Byte[] value)
+        {
+            fileName = fileName.TrimStart('/');
+            string uriStr = U_DIR_FILES + fileName;
+            PackagePart part = CreatePackagePart(R_PROVISIONINGTEMPLATE_FILE, CT_FILE, uriStr, FilesOriginPart);
+            SetPackagePartValue(value, part);
+        }
+
+        [Obsolete("Folders are now handled inside the mapping file")]
         public void AddFile(string fileName, string folder, Byte[] value)
         {
             fileName = fileName.TrimStart('/');
