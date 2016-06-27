@@ -375,7 +375,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public void Commit()
         {
-            MemoryStream stream = pnpInfo.PackTemplate();
+            MemoryStream stream = pnpInfo.PackTemplateAsStream();
             persistenceConnector.SaveFileStream(this.packageFileName, stream);
         }
 

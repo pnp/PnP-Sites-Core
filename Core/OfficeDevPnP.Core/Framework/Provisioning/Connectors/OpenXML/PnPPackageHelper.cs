@@ -12,7 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public static class PnPPackageExtensions
     {
-        public static MemoryStream PackTemplate(this PnPInfo pnpInfo)
+
+        public static MemoryStream PackTemplateAsStream(this PnPInfo pnpInfo)
         {
             MemoryStream stream = new MemoryStream();
             using (PnPPackage package = PnPPackage.Open(stream, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -21,7 +22,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
             stream.Position = 0;
             return stream;
+        }
 
+        public static Byte[] PackTemplate(this PnPInfo pnpInfo)
+        {
+            using (MemoryStream stream = PackTemplateAsStream(pnpInfo))
+            {
+                return stream.ToArray();
+            }
         }
 
         public static PnPInfo UnpackTemplate(this MemoryStream stream)
@@ -32,6 +40,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                 siteTemplate = LoadPnPPackage(package);
             }
             return siteTemplate;
+        }
+
+        public static PnPInfo UnpackTemplate(this Byte[] packageBytes)
+        {
+            using (MemoryStream stream = new MemoryStream(packageBytes))
+            {
+                return UnpackTemplate(stream);
+            }
         }
 
         public static string AsInternalFilename(this string filename)
