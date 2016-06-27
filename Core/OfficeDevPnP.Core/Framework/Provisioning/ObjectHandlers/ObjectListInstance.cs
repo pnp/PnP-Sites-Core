@@ -133,37 +133,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
                                     }
-                                }
 
 #if !ONPREMISES
-                                var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
+									var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
 
-                                if (siteField != null && siteField.SchemaXml.ContainsResourceToken())
-                                {
-                                    var isDirty = false;
-                                    var originalFieldElement = XElement.Parse(siteField.SchemaXml);
-                                    var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
-                                    if (nameAttributeValue.ContainsResourceToken())
-                                    {
-                                        if (field.TitleResource.SetUserResourceValue(nameAttributeValue, parser))
-                                        {
-                                            isDirty = true;
-                                        }
-                                    }
-                                    var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
-                                    if (descriptionAttributeValue.ContainsResourceToken())
-                                    {
-                                        if (field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser))
-                                        {
-                                            isDirty = true;
-                                        }
-                                    }
+									if (siteField != null && siteField.SchemaXml.ContainsResourceToken())
+									{
+										var isDirty = false;
+										var originalFieldElement = XElement.Parse(siteField.SchemaXml);
+										var nameAttributeValue = originalFieldElement.Attribute("DisplayName") != null ? originalFieldElement.Attribute("DisplayName").Value : "";
+										if (nameAttributeValue.ContainsResourceToken())
+										{
+											if (field.TitleResource.SetUserResourceValue(nameAttributeValue, parser))
+											{
+												isDirty = true;
+											}
+										}
+										var descriptionAttributeValue = originalFieldElement.Attribute("Description") != null ? originalFieldElement.Attribute("Description").Value : "";
+										if (descriptionAttributeValue.ContainsResourceToken())
+										{
+											if (field.DescriptionResource.SetUserResourceValue(descriptionAttributeValue, parser))
+											{
+												isDirty = true;
+											}
+										}
 
-                                    if (isDirty)
-                                    {
-                                        field.Update();
-                                        field.Context.ExecuteQueryRetry();
-                                    }
+										if (isDirty)
+										{
+											field.Update();
+											field.Context.ExecuteQueryRetry();
+										}
+									}
                                 }
 #endif
                             }
