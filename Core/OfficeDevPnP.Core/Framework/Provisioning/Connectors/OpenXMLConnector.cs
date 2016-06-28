@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (!packageFileName.EndsWith(".pnp", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Check for file extension
-                packageFileName = packageFileName.TrimEnd('.') + "pnp";
+                packageFileName = packageFileName.TrimEnd('.') + ".pnp";
             }
 
             this.packageFileName = packageFileName;
