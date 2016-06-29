@@ -123,17 +123,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var fieldRef in listInfo.TemplateList.FieldRefs)
                             {
                                 var field = rootWeb.GetFieldById<Field>(fieldRef.Id);
-                                if (field != null)
+                                if (field == null) continue;
+
+                                if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                 {
-                                    if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
-                                    {
-                                        field = CreateFieldRef(listInfo, field, fieldRef);
-                                    }
-                                    else
-                                    {
-                                        field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
-                                    }
+                                    field = CreateFieldRef(listInfo, field, fieldRef);
                                 }
+                                else
+                                {
+                                    field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
+                                }
+                                
                                 field.EnsureProperties(f => f.InternalName, f => f.Title);
 
                                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
@@ -170,6 +170,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
 #endif
                             }
+
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
                         }
