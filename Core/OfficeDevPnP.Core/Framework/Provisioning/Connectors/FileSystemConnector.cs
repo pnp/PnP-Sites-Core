@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {
@@ -286,11 +287,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 string filePath = ConstructPath(fileName, container);
 
-                MemoryStream stream = new MemoryStream();
+                MemoryStream stream;
                 using (FileStream fileStream = File.OpenRead(filePath))
                 {
-                    stream.SetLength(fileStream.Length);
-                    fileStream.Read(stream.GetBuffer(), 0, (int)fileStream.Length);
+                    stream = fileStream.ToMemoryStream();
                 }
 
                 Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileRetrieved, fileName, container);

@@ -7085,12 +7085,19 @@ File descriptor for every single file in the PnP OpenXML file
         
 ### Properties
 
-#### Name
-The Name of the file in the PnP OpenXML file
+#### InternalName
+The Internal Name of the file in the PnP OpenXML file
+#### OriginalName
+The Original Name of the file in the source template
 #### Folder
 The name of the folder within the PnP OpenXML file
 #### Content
 The binary content of the file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFilesMap
+            
+Defines the mapping between original file names and OpenXML file names
+        
 
 ## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPInfo
             
@@ -7104,6 +7111,8 @@ The Manifest of the PnP OpenXML file
 Custom properties of the PnP OpenXML file
 #### Files
 Files contained in the PnP OpenXML file
+#### FilesMap
+Defines the mapping between original file names and OpenXML file names
 
 ## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPManifest
             
@@ -7141,6 +7150,8 @@ The Manifest Part of the package file
 The Manifest of the package file
 #### Properties
 The Properties of the package
+#### FilesMap
+The File Map for files stored in the OpenXML file
 #### FilesOriginPart
 The Files origin
 #### FilesPackageParts
