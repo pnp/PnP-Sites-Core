@@ -24,8 +24,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             if (!TestCommon.AppOnlyTesting())
             {
-                _termSetGuid = Guid.NewGuid();
-                _termGroupGuid = Guid.NewGuid();
+                _termSetGuid = Guid.Parse("355f020a-c4a4-43da-a314-986826bddc38");
+                _termGroupGuid = Guid.Parse("f3c879f2-c065-4aca-9a7d-b89ffc3c47f9");
             }
             else
             {
@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
-                var store = session.GetDefaultSiteCollectionTermStore();
+                var store = session.GetDefaultKeywordsTermStore();
 
                 var set = store.GetTermSet(_termSetGuid);
                 var group = set.Group;
@@ -117,16 +117,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             List<Term> terms = new List<Term>();
 
-            var term1 = new Term(Guid.NewGuid(), "TestProvisioningTerm 1", null, null, null, null, null);
+            var term1 = new Term(Guid.Parse("a091856e-761a-4123-b0bf-f734168e2be9"), "TestProvisioningTerm 1", null, null, null, null, null);
             term1.Properties.Add("TestProp1", "Test Value 1");
             term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
             term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
 
-            term1.Terms.Add(new Term(Guid.NewGuid(), "Sub Term 1", null, null, null, null, null));
+            term1.Terms.Add(new Term(Guid.Parse("c5828235-d524-4b9f-88a9-76c8e52c8fd0"), "Sub Term 1", null, null, null, null, null));
 
             terms.Add(term1);
 
-            terms.Add(new Term(Guid.NewGuid(), "TestProvisioningTerm 2", null, null, null, null, null));
+            terms.Add(new Term(Guid.Parse("08a5083c-8cb9-4161-b47a-f67f81876b10"), "TestProvisioningTerm 2", null, null, null, null, null));
 
             termSet.Terms.AddRange(terms);
 
@@ -145,22 +145,34 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
-                var store = session.GetDefaultKeywordsTermStore(); 
+                var store = session.GetDefaultKeywordsTermStore();
                 var group = store.GetGroup(_termGroupGuid);
-                var set = store.GetTermSet(_termSetGuid);
-
-                ctx.Load(group);
-                ctx.Load(set, s => s.Terms);
-                ctx.ExecuteQueryRetry();
-
+                ctx.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
+                        tset => tset.Name,
+                        tset => tset.Id));
+                ctx.ExecuteQuery();
+                var set = group.TermSets.FirstOrDefault(ts => ts.Id == termSet.Id || ts.Name == termSet.Name);
+                ctx.Load(set.Terms, s=>s.Include(y=>y.Terms, y=>y.Id, y=>y.Name));
+                ctx.ExecuteQuery();
                 Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
                 Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
-                Assert.IsTrue(set.Terms.Count == 2);
+                Assert.IsTrue(set.Terms[0].Id == term1.Id);
+                Assert.IsTrue(set.Terms[0].Terms[0].Id == term1.Terms[0].Id);
+                Assert.IsTrue(set.Terms[1].Name == terms[1].Name);
 
+                term1.Terms.Add(new Term(Guid.Parse("e9560121-e53d-4881-862b-f82362e79090"), "Sub Term 2", null, null, null, null, null) );
+                new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
-                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                ctx.Load(set.Terms, s => s.Include(y => y.Terms, y => y.Id, y => y.Name));
+                ctx.ExecuteQuery();
+
+                Assert.IsTrue(set.Terms[0].Id == term1.Id);
+                Assert.IsTrue(set.Terms[0].Terms[0].Id == term1.Terms[0].Id);
+                Assert.IsTrue(set.Terms[0].Terms[1].Id == term1.Terms[1].Id);
+                Assert.IsTrue(set.Terms[1].Name == terms[1].Name);
 
                 var template2 = new ProvisioningTemplate();
+                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
                 template2 = new ObjectTermGroups().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.TermGroups.Any());
