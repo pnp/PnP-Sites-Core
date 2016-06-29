@@ -21,21 +21,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
 
                 var termStore = GetTermStoreFor(web);
+
+                var termGroupsContext = new TermGroupsContext
+                {
+                    TermStore = termStore,
+                    Parser = parser,
+                    Scope = scope
+                };
+
                 foreach (var termGroup in template.TermGroups)
                 {
-                    var provisionedTermGroup = EnsureTermGroup(termGroup,termStore,web, parser);
+                    var provisionedTermGroup = EnsureTermGroup(termGroup, termGroupsContext);
                     foreach (var termSet in termGroup.TermSets)
                     {
-                        var provisionedTermSet = EnsureTermSet(termSet, provisionedTermGroup, termStore, web, parser);
-                        EnsureTerms(termSet.Terms, provisionedTermSet, termStore, web, parser);
+                        var provisionedTermSet = EnsureTermSet(termSet, provisionedTermGroup, termGroupsContext);
+                        EnsureTerms(termSet.Terms, provisionedTermSet, termGroupsContext);
                     }
                 }
             }
             return parser;
         }
 
-        private void EnsureTerms(Model.TermCollection terms, TermSetItem parent, TermStore termStore, Web web, TokenParser parser)
+        private void EnsureTerms(Model.TermCollection terms, TermSetItem parent, TermGroupsContext termGroupsContext)
         {
+            var termStore = termGroupsContext.TermStore;
+            var parser = termGroupsContext.Parser;
             foreach (var term in terms)
             {
                 if (term.Id == Guid.Empty)
@@ -65,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            //scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
+                            termGroupsContext.Scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
                             WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
                         }
                     }
@@ -82,13 +92,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     termStore.CommitAll();
                     termStore.Context.ExecuteQuery();
                 }
-                EnsureTerms(term.Terms,provisionedItem,termStore,web,parser);
+                EnsureTerms(term.Terms,provisionedItem,termGroupsContext);
 
             }
         }
 
-        private TermSet EnsureTermSet(Model.TermSet termSet, TermGroup provisionedTermGroup, TermStore termStore, Web web, TokenParser parser)
+        private TermSet EnsureTermSet(Model.TermSet termSet, TermGroup provisionedTermGroup, TermGroupsContext termGroupsContext)
         {
+            var termStore = termGroupsContext.TermStore;
             TermSet provisionedTermSet = null;
             try
             {
@@ -97,7 +108,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             catch (CollectionNotInitializedException ex)
             {
                 // no termsets will yield a CollectionNotInitializedException
-                WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Creating_TermSet, termSet.Name), ProvisioningMessageType.Progress);
             }
 
             if (provisionedTermSet == null)
@@ -106,8 +116,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     termSet.Id = Guid.NewGuid();
                 }
+                var parser = termGroupsContext.Parser;
                 provisionedTermSet = provisionedTermGroup.CreateTermSet(parser.ParseString(termSet.Name), termSet.Id, termSet.Language ?? termStore.DefaultLanguage);
-                parser.AddToken(new TermSetIdToken(web, termSet.Name, termSet.Name, termSet.Id));
+                parser.AddToken(new TermSetIdToken(termStore.Context.GetSiteCollectionContext().Web, termSet.Name, termSet.Name, termSet.Id));
                 provisionedTermSet.IsOpenForTermCreation = termSet.IsOpenForTermCreation;
                 provisionedTermSet.IsAvailableForTagging = termSet.IsAvailableForTagging;
                 foreach (var property in termSet.Properties)
@@ -119,32 +130,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     provisionedTermSet.Owner = termSet.Owner;
                 }
                 termStore.CommitAll();
-                web.Context.Load(provisionedTermSet);
-                web.Context.ExecuteQueryRetry();
+                termStore.Context.Load(provisionedTermSet);
+                termStore.Context.ExecuteQueryRetry();
 
             }
-            web.Context.Load(provisionedTermSet, s => s.Terms.Include(t => t.Id, t => t.Name));
-            web.Context.ExecuteQueryRetry();
+            termStore.Context.Load(provisionedTermSet, s => s.Terms.Include(t => t.Id, t => t.Name));
+            termStore.Context.ExecuteQueryRetry();
             return provisionedTermSet;
         }
 
-        private TermGroup EnsureTermGroup(Model.TermGroup termGroup, TermStore termStore, Web web, TokenParser parser)
+        private TermGroup EnsureTermGroup(Model.TermGroup termGroup, TermGroupsContext termGroupsCtx)
         {
+            var termStore = termGroupsCtx.TermStore;
+
             TermGroup group = termStore.Groups.FirstOrDefault(g => g.Id == termGroup.Id || g.Name == termGroup.Name);
             if (group == null)
             {
                 if (termGroup.Name == "Site Collection")
                 {
-                    var site = (web.Context as ClientContext).Site;
+                    var site = (termStore.Context as ClientContext).Site;
                     group = termStore.GetSiteCollectionGroup(site, true);
-                    web.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
+                    site.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
                         tset => tset.Name,
                         tset => tset.Id));
-                    web.Context.ExecuteQueryRetry();
+                    site.Context.ExecuteQueryRetry();
                 }
                 else
                 {
-                    var parsedGroupName = parser.ParseString(termGroup.Name);
+                    var parsedGroupName = termGroupsCtx.Parser.ParseString(termGroup.Name);
                     group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
 
                     if (group == null)
@@ -158,8 +171,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.Description = termGroup.Description;
 
                         termStore.CommitAll();
-                        web.Context.Load(group);
-                        web.Context.ExecuteQueryRetry();
+                        termStore.Context.Load(group);
+                        termStore.Context.ExecuteQueryRetry();
 
                     }
                 }
@@ -380,5 +393,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return _willExtract.Value;
         }
+    }
+
+    internal class TermGroupsContext
+    {
+        public TermStore TermStore { get; set; }
+        public TokenParser Parser { get; set; }
+        public PnPMonitoredScope Scope { get; set; }
     }
 }
