@@ -334,6 +334,8 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\FeatureTests.cs" />
+    <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
