@@ -196,7 +196,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #endregion
 
         #region Apply template and read the "result"
-        public static Tuple<ProvisioningTemplate, ProvisioningTemplate> ApplyProvisioningTemplate(ClientContext cc, string templateName, ProvisioningTemplateApplyingInformation ptai=null, ProvisioningTemplateCreationInformation ptci = null)
+        public static Tuple<ProvisioningTemplate, ProvisioningTemplate> ApplyProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess=Handlers.All, ProvisioningTemplateApplyingInformation ptai=null, ProvisioningTemplateCreationInformation ptci = null)
         {
             // Read the template from XML and apply it
             XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
@@ -205,6 +205,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             if (ptai == null)
             {
                 ptai = new ProvisioningTemplateApplyingInformation();
+                ptai.HandlersToProcess = handlersToProcess;
             }
 
             if (ptai.ProgressDelegate == null)
@@ -222,6 +223,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             if (ptci == null)
             {
                 ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                ptci.HandlersToProcess = handlersToProcess;
             }
 
             if (ptci.ProgressDelegate == null)
