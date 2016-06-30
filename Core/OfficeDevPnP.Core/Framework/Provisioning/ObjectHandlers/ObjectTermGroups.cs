@@ -181,6 +181,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
+            // If the term is a re-used term try to re-use before trying to create.  
+            if (modelTerm.IsReused)
+            {
+                var result = TryReuseTerm(web, modelTerm, parent, termStore, parser, scope);
+                if (result.Success)
+                {
+                    return Tuple.Create(modelTerm.Id, result.UpdatedParser);
+                }
+            }
+
+            // Create new term  
             Term term;
             if (modelTerm.Id == Guid.Empty)
             {
@@ -246,6 +257,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(term);
             web.Context.ExecuteQueryRetry();
 
+            parser = this.CreateChildTerms(web, modelTerm, term, termStore, parser, scope);
+            return Tuple.Create(modelTerm.Id, parser);
+        }
+
+        /// <summary>
+        /// Creates child terms for the current model term if any exist
+        /// </summary>
+        /// <returns>Updated parser object</returns>
+        private TokenParser CreateChildTerms(Web web, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        {
             if (modelTerm.Terms.Any())
             {
                 foreach (var modelTermTerm in modelTerm.Terms)
@@ -291,12 +312,101 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     term.CustomSortOrder = customSortString;
                     termStore.CommitAll();
-
                 }
             }
-            return Tuple.Create(modelTerm.Id, parser);
+
+            return parser;
         }
 
+        /// <summary>
+        /// Attempts to reuse the model term. If the term does not yet exists it will return
+        /// false for the first part of the the return tuple. this will notify the system
+        /// that the term should be created instead of re-used.
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="modelTerm"></param>
+        /// <param name="parent"></param>
+        /// <param name="termStore"></param>
+        /// <param name="parser"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
+        private TryReuseTermResult TryReuseTerm(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        {
+            if (!modelTerm.IsReused) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+            if (modelTerm.Id == Guid.Empty) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+
+            // Try to retrieve a matching term from the website also marked from re-use.  
+            var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+            web.Context.Load(taxonomySession);
+            web.Context.ExecuteQueryRetry();
+
+            if (taxonomySession.ServerObjectIsNull.Value)
+            {
+                return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+            }
+
+            var freshTermStore = taxonomySession.GetDefaultKeywordsTermStore();
+            Term preExistingTerm = freshTermStore.GetTerm(modelTerm.Id);
+
+            try
+            {
+                web.Context.Load(preExistingTerm);
+                web.Context.ExecuteQueryRetry();
+
+                if (preExistingTerm.ServerObjectIsNull.Value)
+                {
+                    preExistingTerm = null;
+                }
+            }
+            catch (Exception e)
+            {
+                preExistingTerm = null;
+            }
+
+            // If the matching term is not found, return false... we can't re-use just yet  
+            if (preExistingTerm == null)
+            {
+                return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+            }
+
+            // if the matching term is found re-use, create child terms, and return true  
+            else
+            {
+                // Reuse term
+                Term createdTerm = null;
+                if (parent is TermSet)
+                {
+                    createdTerm = ((TermSet)parent).ReuseTerm(preExistingTerm, false);
+                }
+                else if (parent is Term)
+                {
+                    createdTerm = ((Term)parent).ReuseTerm(preExistingTerm, false);
+                }
+
+                if(modelTerm.IsSourceTerm)
+                {
+                    preExistingTerm.ReassignSourceTerm(createdTerm);
+                }
+
+                termStore.CommitAll();
+                web.Context.Load(createdTerm);
+                web.Context.ExecuteQueryRetry();
+
+                // Create any child terms
+                parser = this.CreateChildTerms(web, modelTerm, createdTerm, termStore, parser, scope);
+
+                // Return true, because our TryReuseTerm attempt succeeded!
+                return new TryReuseTermResult() { Success = true, UpdatedParser = parser };
+            }
+        }
+
+        private class TryReuseTermResult
+        {
+            public bool Success { get; set; }
+            public TokenParser UpdatedParser { get; set; }
+        }
+
+        
         public override Model.ProvisioningTemplate ExtractObjects(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -407,19 +517,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 terms = ((Term)parent).Terms;
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
-            context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder));
+            context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder, t => t.IsReused));
             context.ExecuteQueryRetry();
 
             foreach (var term in terms)
             {
                 var modelTerm = new Model.Term();
-                if (!isSiteCollectionTermGroup)
+                if (!isSiteCollectionTermGroup || term.IsReused)
                 {
                     modelTerm.Id = term.Id;
                 }
                 modelTerm.Name = term.Name;
                 modelTerm.IsAvailableForTagging = term.IsAvailableForTagging;
-
+                modelTerm.IsReused = term.IsReused;
+                modelTerm.IsSourceTerm = term.IsSourceTerm;
 
                 if (term.Labels.Any())
                 {
