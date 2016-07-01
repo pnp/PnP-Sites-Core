@@ -334,9 +334,13 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\CustomActionTests.cs" />
     <Compile Include="Framework\Functional\FeatureTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+    <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
+    <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
@@ -387,6 +391,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
+    <Content Include="Framework\Functional\Templates\customaction_add.xml" />
     <Content Include="Framework\Functional\Templates\feature_base.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">

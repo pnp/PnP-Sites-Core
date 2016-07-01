@@ -1,14 +1,6 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using Microsoft.SharePoint.Client;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -50,8 +42,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                var result = ApplyProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
-                Assert.IsTrue(FeatureValidator.Validate(result.Item1.Features, result.Item2.Features));
+                var result = TestProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
+                Assert.IsTrue(FeatureValidator.Validate(result.SourceTemplate.Features, result.TargetTemplate.Features));
             }
         }
         #endregion
@@ -65,11 +57,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
             {
-                var result = ApplyProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
-                Assert.IsTrue(FeatureValidator.ValidateFeatures(result.Item1.Features.WebFeatures, result.Item2.Features.WebFeatures));
+                var result = TestProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
+                Assert.IsTrue(FeatureValidator.ValidateFeatures(result.SourceTemplate.Features.WebFeatures, result.TargetTemplate.Features.WebFeatures));
             }
         }
         #endregion
-
     }
 }

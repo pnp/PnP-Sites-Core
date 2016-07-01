@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0"?>
+
+<!--
+Base template: goal is to verify that all feature properties work as expected. please keep this XML up to date if additional properties are added.
+-->
+
 <pnp:ProvisioningTemplate ID="feature_base" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
   <pnp:Features>
     <pnp:SiteFeatures>

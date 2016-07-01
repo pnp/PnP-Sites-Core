@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     /// <summary>
     /// Feature validation class
     /// </summary>
-    public static class FeatureValidator
+    public class FeatureValidator : ValidatorBase
     {
         /// <summary>
         /// Validate site and web scoped features
