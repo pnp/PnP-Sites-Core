@@ -1,14 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -36,61 +29,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public static void ClassCleanup()
         {
             ClassCleanupBase();
-        }
-        #endregion
-
-        #region debug
-        [TestMethod]
-        public void DebugTest()
-        {
-            bool cleanup = true;
-
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                var siteActions = cc.Site.GetCustomActions();
-                foreach (var action in siteActions)
-                {
-                    if (action.Name.StartsWith("CA_"))
-                    {
-                        if (cleanup)
-                        {
-                            cc.Site.DeleteCustomAction(action.Id);
-                        }
-                        else
-                        {
-                            if (action.Name == "CA_1")
-                            {
-                                action.Description = "Site Classification Application - Updated";
-                                action.Group = "SiteActions";
-                                action.Location = "ScriptLink";
-                                action.Title = "Site Classification for Bert";
-                                action.Sequence = 1001;
-                                action.ScriptBlock = "alert('hi Bert');";
-                                action.Url = null;
-                                action.Update();
-                                cc.ExecuteQueryRetry();
-                            }
-                        }
-                    }
-                }
-
-                var webActions = cc.Web.GetCustomActions();
-                foreach (var action in webActions)
-                {
-                    if (action.Name.StartsWith("CA_"))
-                    {
-                        if (cleanup)
-                        {
-                            cc.Web.DeleteCustomAction(action.Id);
-                        }
-                        else
-                        {
-
-                        }
-                    }
-                }
-            }
-
         }
         #endregion
 

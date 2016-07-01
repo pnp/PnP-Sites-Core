@@ -24,7 +24,7 @@ please keep this XML up to date if additional properties are added to the delta 
     
     <pnp:SiteCustomActions>
       <!-- Changed properties: Description, Group, Location, Title, Sequence, Url, ScriptBlock -->
-      <pnp:CustomAction Name="CA_1" Description="CA 1 - updated" Group="SiteActions" Location="ScriptLink" Title="CA 1 updated title" Sequence="1001" ScriptBlock="alert('hi bert');" Rights="31" Enabled="true"/>
+      <pnp:CustomAction Name="CA_1" Description="CA 1 - updated" Group="SiteActions" Location="ScriptLink" Title="CA 1 updated {sitename}" Sequence="1001" ScriptBlock="alert('hi bert');" Rights="31" Enabled="true"/>
       <!-- Changed properties: CommandUIExtension, ImageUrl, Location, RegistrationId, RegistrationType, ScriptSrc  -->
       <pnp:CustomAction Name="CA_3" Description="ca 3" Title ="CA 3 Title" ImageUrl="https://site/SiteAssets/icons/imageupdated.png" RegistrationType="None" Location="ScriptLink" ScriptSrc="https://site/SiteAssets/myscript.js" Enabled="true">
         <pnp:CommandUIExtension />
