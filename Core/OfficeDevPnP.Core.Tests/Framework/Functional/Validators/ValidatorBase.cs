@@ -11,12 +11,19 @@ using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
+    #region Delegates
+    public delegate void ValidateEventHandler(object sender, ValidateEventArgs e);
+    #endregion
 
     /// <summary>
     /// Base object validator class
     /// </summary>
     public class ValidatorBase
     {
+        #region Events
+        public event ValidateEventHandler ValidateEvent;
+        #endregion
+
         #region Validation methods
         /// <summary>
         /// Validate two collection objects
@@ -26,39 +33,73 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         /// <param name="targetElement"></param>
         /// <param name="props"></param>
         /// <returns></returns>
-        public static bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> property) where T : class
+        public bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> properties, TokenParser tokenParser=null, List<string> parsedProperties=null) where T : class
         {
             IEnumerable sElements = (IEnumerable)sourceElement;
             IEnumerable tElements = (IEnumerable)targetElement;
-            int sCount = 0;
-            int tCount = 0;
 
-            foreach (string p in property)
+            string key = properties[0];
+            int sourceCount = 0;
+            int targetCount = 0;
+            foreach (object sElem in sElements)
             {
-                foreach (object sElem in sElements)
+                sourceCount++;
+                string sourceKey = sElem.GetType().GetProperty(key).GetValue(sElem).ToString();
+
+                if (tokenParser != null && parsedProperties != null)
                 {
-                    sCount++;
-                    object sValue = sElem.GetType().GetProperty(p).GetValue(sElem);
-
-                    foreach (object tElem in tElements)
+                    if (parsedProperties.Contains(key))
                     {
-                        object tValue = tElem.GetType().GetProperty(p).GetValue(tElem);
+                        sourceKey = tokenParser.ParseString(Convert.ToString(sourceKey));
+                    }
+                }
 
-                        if (Convert.ToString(sValue) == Convert.ToString(tValue))
+                foreach (object tElem in tElements)
+                {
+                    string targetKey = tElem.GetType().GetProperty(key).GetValue(tElem).ToString();
+
+                    if (sourceKey.Equals(targetKey))
+                    {
+                        targetCount++;
+                        //compare objects
+                        foreach(string property in properties)
                         {
-                            tCount++;
-                            break;
+                            string sourceProperty = sElem.GetType().GetProperty(property).GetValue(sElem).ToString();
+                            if (tokenParser != null && parsedProperties != null)
+                            {
+                                if (parsedProperties.Contains(property))
+                                {
+                                    sourceProperty = tokenParser.ParseString(Convert.ToString(sourceProperty));
+                                }
+                            }
+
+                            string targetProperty = tElem.GetType().GetProperty(property).GetValue(tElem).ToString();
+
+                            ValidateEventArgs e = null;
+                            if (ValidateEvent != null)
+                            {
+                                e = new ValidateEventArgs(property, sourceProperty, targetProperty, sElem, tElem);
+                                ValidateEvent(this, e);
+                            }
+
+                            if (e != null && e.IsEqual)
+                            {
+                                // Do nothing since we've declared equality in the event handler
+                            }
+                            else
+                            {
+                                if (!sourceProperty.Equals(targetProperty))
+                                {
+                                    return false;
+                                }
+                            }
                         }
+                        break;
                     }
                 }
             }
 
-            if (sCount != tCount)
-            {
-                return false;
-            }
-
-            return true;
+            return sourceCount == targetCount;
         }
 
         /// <summary>
@@ -71,7 +112,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         /// <param name="target"></param>
         /// <param name="property"></param>
         /// <returns></returns>
-        public static bool ValidateObjectSchemaXML<T>(TokenParser sourceParser, TokenParser targetParser, IEnumerable<T> source, IEnumerable<T> target, string property) where T : class
+        public bool ValidateObjectSchemaXML<T>(TokenParser sourceParser, TokenParser targetParser, IEnumerable<T> source, IEnumerable<T> target, string property) where T : class
         {
             int scount = 0;
             int tcount = 0;
@@ -112,7 +153,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         /// <param name="security"></param>
         /// <param name="item"></param>
         /// <returns></returns>
-        public static bool ValidateSecurity(ClientContext context, ObjectSecurity security, SecurableObject item)
+        public bool ValidateSecurity(ClientContext context, ObjectSecurity security, SecurableObject item)
         {
             int dataRowRoleAssignmentCount = security.RoleAssignments.Count;
             int roleCount = 0;
