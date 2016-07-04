@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
     #region Delegates
     public delegate void ValidateEventHandler(object sender, ValidateEventArgs e);
+    public delegate void ValidateXmlEventHandler(object sender, ValidateXmlEventArgs e);
     #endregion
 
     /// <summary>
@@ -22,18 +23,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     {
         #region Events
         public event ValidateEventHandler ValidateEvent;
+        public event ValidateXmlEventHandler ValidateXmlEvent;
         #endregion
 
         #region Validation methods
-        /// <summary>
-        /// Validate two collection objects
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sourceElement"></param>
-        /// <param name="targetElement"></param>
-        /// <param name="props"></param>
-        /// <returns></returns>
-        public bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> properties, TokenParser tokenParser=null, List<string> parsedProperties=null) where T : class
+
+        public bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> properties, TokenParser tokenParser=null, Dictionary<string, string[]> parsedProperties=null) where T : class
         {
             IEnumerable sElements = (IEnumerable)sourceElement;
             IEnumerable tElements = (IEnumerable)targetElement;
@@ -48,9 +43,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
                 if (tokenParser != null && parsedProperties != null)
                 {
-                    if (parsedProperties.Contains(key))
+                    if (parsedProperties.ContainsKey(key))
                     {
-                        sourceKey = tokenParser.ParseString(Convert.ToString(sourceKey));
+                        string[] parserExceptions;
+                        parsedProperties.TryGetValue(key, out parserExceptions);
+                        sourceKey = tokenParser.ParseString(Convert.ToString(sourceKey), parserExceptions);
                     }
                 }
 
@@ -67,9 +64,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                             string sourceProperty = sElem.GetType().GetProperty(property).GetValue(sElem).ToString();
                             if (tokenParser != null && parsedProperties != null)
                             {
-                                if (parsedProperties.Contains(property))
+                                if (parsedProperties.ContainsKey(property))
                                 {
-                                    sourceProperty = tokenParser.ParseString(Convert.ToString(sourceProperty));
+                                    string[] parserExceptions;
+                                    parsedProperties.TryGetValue(key, out parserExceptions);
+                                    sourceProperty = tokenParser.ParseString(Convert.ToString(sourceProperty), parserExceptions);
                                 }
                             }
 
@@ -97,6 +96,72 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         break;
                     }
                 }
+            }
+
+            return sourceCount == targetCount;
+        }
+
+        public bool ValidateObjectsXML<T>(IEnumerable<T> sElements, IEnumerable<T> tElements, string XmlPropertyName, List<string> properties, TokenParser tokenParser = null, Dictionary<string, string[]> parsedProperties = null) where T: class
+        {
+            string key = properties[0];
+            int sourceCount = 0;
+            int targetCount = 0;
+
+            foreach (var sElem in sElements)
+            {
+                sourceCount++;
+                string sourceXmlString = sElem.GetType().GetProperty(XmlPropertyName).GetValue(sElem).ToString();
+
+                if (tokenParser != null && parsedProperties != null)
+                {
+                    if (parsedProperties.ContainsKey(XmlPropertyName))
+                    {
+                        string[] parserExceptions;
+                        parsedProperties.TryGetValue(XmlPropertyName, out parserExceptions);
+                        sourceXmlString = tokenParser.ParseString(Convert.ToString(sourceXmlString), parserExceptions);
+                    }
+                }
+
+                XElement sourceXml = XElement.Parse(sourceXmlString);
+                string sourceKeyValue = sourceXml.Attribute(key).Value;
+
+                foreach(var tElem in tElements)
+                {
+                    string targetXmlString = tElem.GetType().GetProperty(XmlPropertyName).GetValue(tElem).ToString();
+                    XElement targetXml = XElement.Parse(targetXmlString);
+                    string targetKeyValue = targetXml.Attribute(key).Value;
+
+                    if (sourceKeyValue.Equals(targetKeyValue, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        targetCount++;
+
+                        // compare XML's
+                        ValidateXmlEventArgs e = null;
+                        if (ValidateXmlEvent != null)
+                        {
+                            e = new ValidateXmlEventArgs(sourceXml, targetXml);
+                            ValidateXmlEvent(this, e);
+                        }
+
+                        if (e != null && e.IsEqual)
+                        {
+                            // Do nothing since we've declared equality in the event handler
+                        }
+                        else
+                        {
+                            // Use XNode comparison on the source and target XElements
+                            var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
+                            if (!equalNodes)
+                            {
+                                return false;
+                            }
+                        }
+
+                        break;
+                    }
+                }
+
+
             }
 
             return sourceCount == targetCount;

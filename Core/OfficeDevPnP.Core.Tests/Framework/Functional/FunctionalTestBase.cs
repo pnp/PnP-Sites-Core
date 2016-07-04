@@ -274,6 +274,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
+
+        internal void DropAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.Attribute(Attribute).Remove();
+            }
+        }
+
+        internal void UpperCaseAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.SetAttributeValue(Attribute, xml.Attribute(Attribute).Value.ToUpper());
+            }
+        }
+
+
         #endregion
 
     }

@@ -11,8 +11,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     public class PropertyBagValidator: ValidatorBase
     {
         public bool Validate(PropertyBagEntryCollection sourceCollection, PropertyBagEntryCollection targetCollection, TokenParser tokenParser)
-        {            
-            bool isPropertyBagsMatch = ValidateObjects(sourceCollection, targetCollection, new List<string> { "Key", "Value", "Indexed" }, tokenParser, new List<string> { "Value" });
+        {
+            Dictionary<string, string[]> parserSettings = new Dictionary<string, string[]>();
+            parserSettings.Add("Value", null);
+            bool isPropertyBagsMatch = ValidateObjects(sourceCollection, targetCollection, new List<string> { "Key", "Value", "Indexed" }, tokenParser, parserSettings);
             Console.WriteLine("-- Property Bags validation " + isPropertyBagsMatch);
             return isPropertyBagsMatch; 
         }

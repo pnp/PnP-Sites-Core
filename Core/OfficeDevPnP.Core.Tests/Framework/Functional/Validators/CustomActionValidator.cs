@@ -37,7 +37,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
         }
 
-        public static bool ValidateCustomActions(ICollection source, ICollection target, TokenParser tokenParser)
+        public static bool ValidateCustomActions(CustomActionCollection source, CustomActionCollection target, TokenParser tokenParser)
         {
             int sCount = 0;
             int tCount = 0;
