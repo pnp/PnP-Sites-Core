@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file);
-                        web.Context.ExecuteQuery();
+                        web.Context.ExecuteQueryRetry();
                     }
                     catch (ServerException ex)
                     {
@@ -143,7 +143,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (page.Security != null && page.Security.RoleAssignments.Count != 0)
                     {
                         web.Context.Load(file.ListItemAllFields);
-                        web.Context.ExecuteQuery();
+                        web.Context.ExecuteQueryRetry();
                         file.ListItemAllFields.SetSecurity(parser, page.Security);
                     }
                 }

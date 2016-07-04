@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 if (list != null)
                 {
                     list.DeleteObject();
-                    ctx.ExecuteQuery();
+                    ctx.ExecuteQueryRetry();
                 }
             }
         }
@@ -51,7 +51,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var sourceList = ctx.Web.CreateList(ListTemplateType.GenericList, listName: ListTitle,
                     enableVersioning: false, urlPath: "Lists/" + ListTitle);
                 ctx.Load(sourceList, x=>x.Id);
-                ctx.ExecuteQuery();
+                ctx.ExecuteQueryRetry();
                 // listId with braces... this is how SharePoint maintains the list reference in the schema xml in the lookup field
                 _listIdWithBraces = sourceList.Id.ToString("B"); 
 

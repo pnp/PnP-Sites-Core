@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.Load(web.RegionalSettings);
                 web.Context.Load(web.RegionalSettings.TimeZone, tz => tz.Id);
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
 
                 Model.RegionalSettings settings = new Model.RegionalSettings();
 

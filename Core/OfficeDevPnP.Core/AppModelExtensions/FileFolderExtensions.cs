@@ -133,6 +133,72 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Converts a folder with the given name as a child of the List RootFolder. 
+        /// </summary>
+        /// <param name="list">List in which the folder exists</param>
+        /// <param name="folderName">Folder name to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static Folder ConvertFolderToDocumentSet(this List list, string folderName)
+        {
+            var folder = list.RootFolder.ResolveSubFolder(folderName);
+            if(folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+            
+            return ConvertFolderToDocumentSetImplementation(list, folder);        
+        }
+
+        /// <summary>
+        /// Converts a folder with the given name as a child of the List RootFolder. 
+        /// </summary>
+        /// <param name="list">List in which the folder exists</param>
+        /// <param name="folder">Folder to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static Folder ConvertFolderToDocumentSet(this List list, Folder folder)
+        {                        
+            return ConvertFolderToDocumentSetImplementation(list, folder);
+        }
+
+        /// <summary>
+        /// Internal implementation of the Folder conversion to Document set
+        /// </summary>
+        /// <param name="list">Library in which the folder exists</param>
+        /// <param name="folder">Folder to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+        private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
+        {
+            list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
+            folder.Context.Load(folder.ListItemAllFields, l => l["ContentTypeId"]);
+            folder.Context.ExecuteQueryRetry();
+            var listItem = folder.ListItemAllFields;
+
+            // If already a document set, just return the folder
+            if (listItem["ContentTypeId"].ToString() == BuiltInContentTypeId.Folder) return folder;
+            listItem["ContentTypeId"] = BuiltInContentTypeId.DocumentSet;
+
+            // Add missing properties            
+            listItem["HTML_x0020_File_x0020_Type"] = "Sharepoint.DocumentSet";
+            folder.Properties["docset_LastRefresh"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
+            folder.Properties["vti_contenttypeorder"] = string.Join(",", list.ContentTypes.ToList().Where(c => c.StringId.StartsWith(BuiltInContentTypeId.Document + "00"))?.Select(c => c.StringId));
+
+            listItem.Update();
+            folder.Update();
+            list.Context.ExecuteQueryRetry();
+
+            //Refresh Folder, otherwise 'Version conflict' error might be thrown on changing properties
+            folder = list.RootFolder.ResolveSubFolder(folder.Name);
+            return folder;
+        }
+
+        /// <summary>
         /// Creates a folder with the given name as a child of the Web. 
         /// Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
         /// </summary>
@@ -232,7 +298,7 @@ namespace Microsoft.SharePoint.Client
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
                 // Ensure all properties are loaded (to be compatible with the previous implementation)
                 context.Load(newFolder);
-                context.ExecuteQuery();
+                context.ExecuteQueryRetry();
                 return (newFolder);
             }
         }
@@ -367,10 +433,12 @@ namespace Microsoft.SharePoint.Client
         public static Folder EnsureFolderPath(this Web web, string webRelativeUrl)
         {
             if (webRelativeUrl == null) { throw new ArgumentNullException("webRelativeUrl"); }
-            if (string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, "webRelativeUrl"); }
+
+            //Web root folder should be returned if webRelativeUrl is empty
+            if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, "webRelativeUrl"); }
 
             // Check if folder exists
-            if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
+            if (!web.IsPropertyAvailable("ServerRelativeUrl"))
             {
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
@@ -380,7 +448,7 @@ namespace Microsoft.SharePoint.Client
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
-            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder.ServerRelativeUrl));
+            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder)); 
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
@@ -401,7 +469,7 @@ namespace Microsoft.SharePoint.Client
             {
                 locationType = "Web";
                 currentFolder = web.RootFolder;
-                web.Context.Load(currentFolder, f => f.ServerRelativeUrl);
+                web.Context.Load(currentFolder);
                 web.Context.ExecuteQueryRetry();
             }
             else

@@ -50,10 +50,25 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 if (siteCol.Url.Contains(sitecollectionNamePrefix))
                 {
                     try
-                    {// ensure the site collection in unlocked state before deleting
-                        tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
-                        // delete the site collection, do not use the recyle bin
-                        tenant.DeleteSiteCollection(siteCol.Url, false);
+                    {
+                        // Drop the site collection from the recycle bin
+                        if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
+                        {
+                            tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
+                        }
+                        else
+                        {
+                            // Eat the exceptions: would occur if the site collection is already in the recycle bin.
+                            try
+                            {
+                                // ensure the site collection in unlocked state before deleting
+                                tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
+                            }
+                            catch { }
+
+                            // delete the site collection, do not use the recyle bin
+                            tenant.DeleteSiteCollection(siteCol.Url, false);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -73,6 +88,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Get site collections tests
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetSiteCollectionsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -86,6 +102,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetOneDriveSiteCollectionsTest()
         {
             if (TestCommon.AppOnlyTesting())
@@ -104,6 +121,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void GetUserProfileServiceClientTest() {
             if (TestCommon.AppOnlyTesting())
             {
@@ -126,6 +144,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site existance tests
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void CheckIfSiteExistsTest() {
             using (var tenantContext = TestCommon.CreateTenantClientContext()) {
                 var tenant = new Tenant(tenantContext);
@@ -144,6 +163,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod()]
+        [Timeout(15 * 60 * 1000)]
         public void SiteExistsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -161,6 +181,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SubSiteExistsTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -206,6 +227,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site collection creation and deletion tests
         [TestMethod]
+        [Timeout(45 * 60 * 1000)]
         public void CreateDeleteSiteCollectionTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -230,6 +252,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        [Timeout(45 * 60 * 1000)]
         public void CreateDeleteCreateSiteCollectionTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -261,6 +284,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         #region Site lockstate tests
         [TestMethod]
+        [Timeout(45 * 60 * 1000)]
         public void SetSiteLockStateTest()
         {
             using (var tenantContext = TestCommon.CreateTenantClientContext())
@@ -304,7 +328,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {
             Uri u = new Uri(devSiteUrl);
-            string host = String.Format("{0}://{1}:{2}", u.Scheme, u.DnsSafeHost, u.Port);
+            string host = String.Format("{0}://{1}", u.Scheme, u.DnsSafeHost);
 
             string path = u.AbsolutePath;
             if (path.EndsWith("/"))
