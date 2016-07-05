@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -122,6 +123,83 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 TargetTemplate = targetTemplate,
                 TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
             };
+        }
+        #endregion
+
+        #region Validation support methods
+        internal void DropAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.Attribute(Attribute).Remove();
+            }
+        }
+
+        internal void UpperCaseAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.SetAttributeValue(Attribute, xml.Attribute(Attribute).Value.ToUpper());
+            }
+        }
+
+        internal bool TaxonomyFieldCustomizationPropertyIsEqual(XElement sourceXml, XElement targetXml, string property)
+        {
+
+            //  <Field ID="{35B749BF-0FE3-48F9-A84B-C5EA05246DEB}" Type="TaxonomyFieldType" Name="FLD_50" StaticName="FLD_50" DisplayName="Fld 50" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE">
+            //  <Customization>
+            //    <ArrayOfProperty>
+            //      <Property>
+            //        <Name>SspId</Name>
+            //        <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>TermSetId</Name>
+            //        <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{termsetid:TG_1:TS_1}</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>TextField</Name>
+            //        <Value xmlns:q6="http://www.w3.org/2001/XMLSchema" p4:type="q6:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">39E95FAA-894F-4FED-879D-A1A6A8381149</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>IsPathRendered</Name>
+            //        <Value xmlns:q7="http://www.w3.org/2001/XMLSchema" p4:type="q7:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>IsKeyword</Name>
+            //        <Value xmlns:q8="http://www.w3.org/2001/XMLSchema" p4:type="q8:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+            //      </Property>
+            //    </ArrayOfProperty>
+            //  </Customization>
+            //</Field>
+
+            var sourceCustomizationProperty = sourceXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
+            if (sourceCustomizationProperty != null)
+            {
+                var targetCustomizationProperty = targetXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
+                if (targetCustomizationProperty == null)
+                {
+                    // the property is not present which should never happen
+                    return false;
+                }
+                else
+                {
+                    // compare property values
+                    if (sourceCustomizationProperty.Value.Equals(targetCustomizationProperty.Value, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                // Property not in source can't make comparison fail
+                return true;
+            }
         }
         #endregion
 
@@ -274,24 +352,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
-
-        internal void DropAttribute(XElement xml, string Attribute)
-        {
-            if (xml.Attribute(Attribute) != null)
-            {
-                xml.Attribute(Attribute).Remove();
-            }
-        }
-
-        internal void UpperCaseAttribute(XElement xml, string Attribute)
-        {
-            if (xml.Attribute(Attribute) != null)
-            {
-                xml.SetAttributeValue(Attribute, xml.Attribute(Attribute).Value.ToUpper());
-            }
-        }
-
-
         #endregion
 
     }

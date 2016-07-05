@@ -347,6 +347,8 @@
     <Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
     <Compile Include="Framework\Functional\Validators\PropertyBagValidator.cs" />
     <Compile Include="Framework\Functional\PropertyBagTests.cs" />
+    <Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
+    <Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />

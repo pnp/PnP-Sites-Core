@@ -79,6 +79,10 @@ Base template: goal is to verify that all field properties work as expected. Fie
         </ArrayOfProperty>
       </Customization>
     </Field>
+    <!-- Lookup fields -->
+    <Field ID="{3a18fcce-7eab-45d7-b6b6-c61cec868057}" Type="LookupMulti" Name="FLD_60" DisplayName="Fld 60" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+    <Field ID="{ea724dbb-9222-476a-9f5a-3e09e4e62b8d}" Type="LookupMulti" Name="FLD_60_Created" DisplayName="Fld 60:Created" Group="PnP Demo" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Created" FieldRef="3a18fcce-7eab-45d7-b6b6-c61cec868057" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+    <Field ID="{19bac6e3-84b6-4a03-9421-a81ccdef542e}" Type="LookupMulti" Name="FLD_60_Modified" DisplayName="Fld 60:Modified" Group="PnP Demo" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Modified" FieldRef="3a18fcce-7eab-45d7-b6b6-c61cec868057" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
   </pnp:SiteFields>
   <pnp:TermGroups>
     <pnp:TermGroup Name="TG_1">

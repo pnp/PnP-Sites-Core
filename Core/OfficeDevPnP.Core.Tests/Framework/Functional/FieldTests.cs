@@ -122,42 +122,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 {
                     // let the deep comparison fail...
                 }
-
-            }
-
-
-        }
-
-        private bool TaxonomyFieldCustomizationPropertyIsEqual(XElement sourceXml, XElement targetXml, string property)
-        {
-            var sourceCustomizationProperty = sourceXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
-            if (sourceCustomizationProperty != null)
-            {
-                var targetCustomizationProperty = targetXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
-                if (targetCustomizationProperty == null)
-                {
-                    // the property is not present which should never happen
-                    return false;
-                }
-                else
-                {
-                    // compare property values
-                    if (sourceCustomizationProperty.Value.Equals(targetCustomizationProperty.Value, StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-            }
-            else
-            {
-                // Property not in source can't make comparison fail
-                return true;
             }
         }
+
 
         #endregion
 
@@ -174,8 +141,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             cc.Load(cc.Web.Fields, f => f.Include(t => t.InternalName));
             cc.ExecuteQueryRetry();
-            
-            foreach(var field in cc.Web.Fields.ToList())
+
+            foreach (var field in cc.Web.Fields.ToList())
+            {
+                // First drop the fields that have 2 _'s...convention used to name the fields dependent on a lookup.
+                if (field.InternalName.Replace("FLD_", "").IndexOf("_") > 0)
+                {
+                    if (field.InternalName.StartsWith("FLD_"))
+                    {
+                        field.DeleteObject();
+                    }
+                }
+            }
+
+            foreach (var field in cc.Web.Fields.ToList())
             {
                 if (field.InternalName.StartsWith("FLD_"))
                 {

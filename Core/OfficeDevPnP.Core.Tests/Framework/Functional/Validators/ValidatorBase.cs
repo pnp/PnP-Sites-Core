@@ -128,6 +128,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 foreach(var tElem in tElements)
                 {
                     string targetXmlString = tElem.GetType().GetProperty(XmlPropertyName).GetValue(tElem).ToString();
+
+                    if (tokenParser != null && parsedProperties != null)
+                    {
+                        if (parsedProperties.ContainsKey(XmlPropertyName))
+                        {
+                            string[] parserExceptions;
+                            parsedProperties.TryGetValue(XmlPropertyName, out parserExceptions);
+                            targetXmlString = tokenParser.ParseString(Convert.ToString(targetXmlString), parserExceptions);
+                        }
+                    }
+
                     XElement targetXml = XElement.Parse(targetXmlString);
                     string targetKeyValue = targetXml.Attribute(key).Value;
 
@@ -150,8 +161,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         else
                         {
                             // Use XNode comparison on the source and target XElements
-                            var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
-                            if (!equalNodes)
+
+                            // Not using XNode.DeepEquals anymore since it requires that the attributes in both XML's are ordered the same
+                            //var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
+                            var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
+                            if (!equalNodes.Success)
                             {
                                 return false;
                             }
