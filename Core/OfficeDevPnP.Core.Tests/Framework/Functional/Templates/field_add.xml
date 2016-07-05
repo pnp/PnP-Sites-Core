@@ -43,17 +43,19 @@ Base template: goal is to verify that all field properties work as expected. Fie
     <Field ID="{eead3cf0-7575-4961-b354-e7d7663ccc68}" Type="DateTime" Name="FLD_40" DisplayName="Fld 40" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateTime" FriendlyDisplayFormat="Relative">
       <Default>[today]</Default>
     </Field>
-    <!-- Calculated fields -->
+    <!-- Calculated -->
     <Field ID="{00ecca45-2dc2-447a-b722-633fe69a4c6f}" Type="Calculated" Name="FLD_41" DisplayName="Fld 41" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
-      <Formula>=FLD1+FLD2</Formula>
+      <Formula>=FLD_1+FLD_2</Formula>
       <FieldRefs>
         <FieldRef Name="FLD_1" ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
         <FieldRef Name="FLD_2" ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" />
       </FieldRefs>
     </Field>
-    <!--Taxonomy fields -->
+    <!-- Taxonomy fields -->
+    <!-- Taxonomy field with default value set, note that this implies that one provisions the terms with a known ID -->
     <Field ID="{39E95FAA-894F-4FED-879D-A1A6A8381149}" Type="Note" Name="FLD_50_Note" StaticName="FLD_50_Note" DisplayName="Fld 50 note" Group="PnP Demo" ShowInViewForms="FALSE"  Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" />
-    <Field ID="{35B749BF-0FE3-48F9-A84B-C5EA05246DEB}" Type="TaxonomyFieldType" Name="FLD_50" StaticName="FLD_50" DisplayName="Fld 50" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE">
+    <Field ID="{35B749BF-0FE3-48F9-A84B-C5EA05246DEB}" Type="TaxonomyFieldType" Name="FLD_50" StaticName="FLD_50" DisplayName="Fld 50" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE" Mult="FALSE">
+      <Default>1;#Tuesday|bec2fdc9-fb86-4d99-ba17-cd485ebaf33e</Default>
       <Customization>
         <ArrayOfProperty>
           <Property>
@@ -79,17 +81,84 @@ Base template: goal is to verify that all field properties work as expected. Fie
         </ArrayOfProperty>
       </Customization>
     </Field>
+    <!-- Multi value taxonomy field with default values set, note that this implies that one provisions the terms with a known ID. This field also contains all
+         possible customization properties -->
+    <Field ID="{0F8532DF-F175-48B4-A0BB-648D8577D44C}" Type="Note" Name="FLD_51_Note" StaticName="FLD_51_Note" DisplayName="Fld 51 note" Group="PnP Demo" ShowInViewForms="FALSE"  Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" />
+    <Field ID="{D582DFF8-CCAB-4C15-AA8E-253D5FC56AC4}" Type="TaxonomyFieldTypeMulti" Name="FLD_51" StaticName="FLD_51" DisplayName="Fld 51" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE" Mult="TRUE">
+      <Default>2;#Wednesday|d1d40a95-e8cf-4d45-acc7-ce12bc903707;#1;#Tuesday|bec2fdc9-fb86-4d99-ba17-cd485ebaf33e</Default>
+      <Customization>
+        <ArrayOfProperty>
+          <Property>
+            <Name>SspId</Name>
+            <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
+          </Property>
+          <Property>
+            <Name>TermSetId</Name>
+            <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{termsetid:TG_1:TS_1}</Value>
+          </Property>
+          <Property>
+            <Name>AnchorId</Name>
+            <Value xmlns:q3="http://www.w3.org/2001/XMLSchema" p4:type="q3:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">00000000-0000-0000-0000-000000000000</Value>
+          </Property>
+          <Property>
+            <Name>UserCreated</Name>
+            <Value xmlns:q4="http://www.w3.org/2001/XMLSchema" p4:type="q4:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>Open</Name>
+            <Value xmlns:q5="http://www.w3.org/2001/XMLSchema" p4:type="q5:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>TextField</Name>
+            <Value xmlns:q6="http://www.w3.org/2001/XMLSchema" p4:type="q6:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{0F8532DF-F175-48B4-A0BB-648D8577D44C}</Value>
+          </Property>
+          <Property>
+            <Name>IsPathRendered</Name>
+            <Value xmlns:q7="http://www.w3.org/2001/XMLSchema" p4:type="q7:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>IsKeyword</Name>
+            <Value xmlns:q8="http://www.w3.org/2001/XMLSchema" p4:type="q8:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>TargetTemplate</Name>
+          </Property>
+          <Property>
+            <Name>CreateValuesInEditForm</Name>
+            <Value xmlns:q9="http://www.w3.org/2001/XMLSchema" p4:type="q9:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>FilterAssemblyStrongName</Name>
+            <Value xmlns:q10="http://www.w3.org/2001/XMLSchema" p4:type="q10:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">Microsoft.SharePoint.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c</Value>
+          </Property>
+          <Property>
+            <Name>FilterClassName</Name>
+            <Value xmlns:q11="http://www.w3.org/2001/XMLSchema" p4:type="q11:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">Microsoft.SharePoint.Taxonomy.TaxonomyField</Value>
+          </Property>
+          <Property>
+            <Name>FilterMethodName</Name>
+            <Value xmlns:q12="http://www.w3.org/2001/XMLSchema" p4:type="q12:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">GetFilteringHtml</Value>
+          </Property>
+          <Property>
+            <Name>FilterJavascriptProperty</Name>
+            <Value xmlns:q13="http://www.w3.org/2001/XMLSchema" p4:type="q13:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">FilteringJavascript</Value>
+          </Property>
+        </ArrayOfProperty>
+      </Customization>
+    </Field>
     <!-- Lookup fields -->
     <Field ID="{3a18fcce-7eab-45d7-b6b6-c61cec868057}" Type="LookupMulti" Name="FLD_60" DisplayName="Fld 60" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
     <Field ID="{ea724dbb-9222-476a-9f5a-3e09e4e62b8d}" Type="LookupMulti" Name="FLD_60_Created" DisplayName="Fld 60:Created" Group="PnP Demo" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Created" FieldRef="3a18fcce-7eab-45d7-b6b6-c61cec868057" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
     <Field ID="{19bac6e3-84b6-4a03-9421-a81ccdef542e}" Type="LookupMulti" Name="FLD_60_Modified" DisplayName="Fld 60:Modified" Group="PnP Demo" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Modified" FieldRef="3a18fcce-7eab-45d7-b6b6-c61cec868057" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+    <Field ID="{D4F4C477-ADEE-4F19-B13C-450AE375EDC9}" Type="Lookup" Name="FLD_61" DisplayName="Fld 61" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Documents}}" WebId="{siteid}" ShowField="Title" Mult="FALSE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
   </pnp:SiteFields>
+  <!-- Supporting term data for the taxonomy fields -->
   <pnp:TermGroups>
     <pnp:TermGroup Name="TG_1">
       <pnp:TermSets>
         <pnp:TermSet Name="TS_1" >
           <pnp:Terms>
-            <pnp:Term Name="Monday" CustomSortOrder="1">
+            <pnp:Term Name="Monday" CustomSortOrder="1" >
               <pnp:CustomProperties>
                 <pnp:Property Key="TestProperty" Value="TestProperty"/>
               </pnp:CustomProperties>
@@ -99,8 +168,8 @@ Base template: goal is to verify that all field properties work as expected. Fie
                 <pnp:Term Name="C" CustomSortOrder="2" />
               </pnp:Terms>
             </pnp:Term>
-            <pnp:Term Name="Tuesday" CustomSortOrder="2" />
-            <pnp:Term Name="Wednesday" CustomSortOrder="3" />
+            <pnp:Term Name="Tuesday" CustomSortOrder="2" ID="bec2fdc9-fb86-4d99-ba17-cd485ebaf33e" />
+            <pnp:Term Name="Wednesday" CustomSortOrder="3" ID="d1d40a95-e8cf-4d45-acc7-ce12bc903707" />
             <pnp:Term Name="Thursday"  CustomSortOrder="4"/>
             <pnp:Term Name="Friday"  CustomSortOrder="5"/>
           </pnp:Terms>

@@ -16,9 +16,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public FieldTests()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
         }
         #endregion
 
@@ -45,14 +45,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Ensure we can test clean
                 DeleteFields(cc);
 
-                // Add web properties
+                // Add fields
                 var result = TestProvisioningTemplate(cc, "field_add.xml", Handlers.Fields | Handlers.TermGroups);
                 FieldValidator pv = new FieldValidator();
                 pv.ValidateXmlEvent += Pv_ValidateXmlEvent;              
                 Assert.IsTrue(pv.Validate(result.SourceTemplate.SiteFields, result.TargetTemplate.SiteFields, result.TargetTokenParser));
+
+                // Apply delta to fields
+                var result2 = TestProvisioningTemplate(cc, "field_delta_1.xml", Handlers.Fields);
+                Assert.IsTrue(pv.Validate(result2.SourceTemplate.SiteFields, result2.TargetTemplate.SiteFields, result2.TargetTokenParser));
             }
         }
+        #endregion
 
+        #region Web test cases
+        // No need to have these as the engine is blocking creation and extraction of fields at web level
+        #endregion
+
+        #region Validation event handlers
         private void Pv_ValidateXmlEvent(object sender, ValidateXmlEventArgs e)
         {
             string fieldType = e.SourceObject.Attribute("Type").Value;
@@ -69,20 +79,30 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             UpperCaseAttribute(e.TargetObject, "ID");
             UpperCaseAttribute(e.SourceObject, "ID");
 
-            // Drop the target FieldRefs element for calculated fields as that's the way how the engine extracts these fields
             if (fieldType.Equals("Calculated", StringComparison.InvariantCultureIgnoreCase))
             {
+                // Calculated has specific validation behaviour
+
                 var formulaNode = e.SourceObject.Descendants("Formula").FirstOrDefault();
                 if (formulaNode != null)
                 {
+                    // The engine drops the FieldRefs element when providing a calculated field
                     var fieldRefs = e.SourceObject.Descendants("FieldRefs");
                     if (fieldRefs != null)
                     {
                         fieldRefs.Remove();
                     }
+
+                    // Dropping Formula elements since the engine is creating (tokenized) formula's that use the display name instead of the Name property
+                    formulaNode.Remove();
+                    formulaNode = e.TargetObject.Descendants("Formula").FirstOrDefault();
+                    if (formulaNode != null)
+                    {
+                        formulaNode.Remove();
+                    }
                 }
             }
-            else if (fieldType.Equals("TaxonomyFieldType", StringComparison.InvariantCultureIgnoreCase))
+            else if (fieldType.Equals("TaxonomyFieldType", StringComparison.InvariantCultureIgnoreCase) || fieldType.Equals("TaxonomyFieldTypeMulti", StringComparison.InvariantCultureIgnoreCase))
             {
                 // TaxonomyFieldType has specific validation behaviour
 
@@ -105,7 +125,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Step 3: if customization properties are equal then drop them so that the xml comparison can be done
                 if (customizationPropertiesAreEqual)
                 {
-                    // drop the customization element so that the base implementation using the XNode.DeepComparison works
+                    // drop the customization elements so that the base XML comparison implementation works
                     var customizationXml = e.TargetObject.Descendants("Customization");
                     if (customizationXml != null)
                     {
@@ -120,20 +140,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 }
                 else
                 {
-                    // let the deep comparison fail...
+                    // let the xml comparison fail...
                 }
             }
         }
-
-
-        #endregion
-
-        #region Web test cases
-
-        #endregion
-
-        #region Validation event handlers
-
         #endregion
 
         #region Helper methods

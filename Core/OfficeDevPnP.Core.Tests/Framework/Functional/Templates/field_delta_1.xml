@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: Goal is to verify that delta handling of fields works. Field properties are slightly different as the engine accepts
+               SharePoint field XML, so essentially the list of possible properties is defined here: https://msdn.microsoft.com/en-us/library/office/aa979575.aspx
+               
+               Since the engine is using the native SharePoint field XML the engine applies to following update logic:
+               - Delta attributes are updated if they exist in the original field XML
+               - Delta attributes are added if they do not exist in the original XML
+               - Missing delta attributes are NOT removed from the original XML
+               - Delta elements (e.g. Default element) is replaced if existing in the original field XML
+               - Delta elements (e.g. Default element) are added if not existing in the original field XML
+               - Missing delta elements are NOT removed from the original XML
+               
+               The complete field XML is parsed, parser will not replace the ~sitecollection and ~site tokens               
+-->
+
+<pnp:ProvisioningTemplate ID="field_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:SiteFields>
+    <!-- Regular fields -->
+    <!-- Updated attributes: Group  -->
+    <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="FLD_1" DisplayName="Fld 1" Group="PnP Demo 2" MaxLength="255" AllowDeletion="TRUE" />
+    <!-- Added attributes: Required -->
+    <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="FLD_2" DisplayName="Fld 2" Group="PnP Demo" Title="Fld 2 title" Required="TRUE" MaxLength="20" AllowDeletion="TRUE" />
+    <!-- Updated attributes: DisplayName 
+         Updated element: Default -->
+    <Field ID="{54cb62c0-044e-4faf-ba4c-aa1b8d5053b9}" Type="Boolean" Name="FLD_12" DisplayName="Fld 12 updated" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE">
+      <Default>0</Default>
+    </Field>
+    <!-- Added element: Default -->
+    <Field ID="{ebd16147-9087-4b80-b100-028193ee3d23}" Type="Number" Name="FLD_35" DisplayName="Fld 35" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Min="1" Max="10" Decimals="2">
+      <Default>100</Default>
+    </Field>
+    <!-- Updated element: Validation -->
+    <Field ID="{f8c799e3-7b90-44e4-bdd3-d27f98878c69}" Type="Currency" Name="FLD_36" DisplayName="Fld 36" Group="PnP Demo" Description="Fld 36 description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" LCID="2067">
+      <Validation Message="Only 1000 is allowed!">=[FLD_36]=1000</Validation>
+    </Field>
+    <!-- Calculated fields -->
+    <!-- Updated elements: Formula and FieldRefs -->
+    <Field ID="{00ecca45-2dc2-447a-b722-633fe69a4c6f}" Type="Calculated" Name="FLD_41" DisplayName="Fld 41" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
+      <Formula>=FLD_1+FLD_2+FLD_35</Formula>
+      <FieldRefs>
+        <FieldRef Name="FLD_1" ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
+        <FieldRef Name="FLD_2" ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" />
+        <FieldRef Name="FLD_35" ID="{ebd16147-9087-4b80-b100-028193ee3d23}" />
+      </FieldRefs>
+    </Field>
+    <!-- Taxonomy fields -->
+    <!-- Updated elements: Default -->
+    <Field ID="{39E95FAA-894F-4FED-879D-A1A6A8381149}" Type="Note" Name="FLD_50_Note" StaticName="FLD_50_Note" DisplayName="Fld 50 note" Group="PnP Demo" ShowInViewForms="FALSE"  Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" />
+    <Field ID="{35B749BF-0FE3-48F9-A84B-C5EA05246DEB}" Type="TaxonomyFieldType" Name="FLD_50" StaticName="FLD_50" DisplayName="Fld 50" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE" Mult="FALSE">
+      <Default>2;#Wednesday|d1d40a95-e8cf-4d45-acc7-ce12bc903707</Default>
+      <Customization>
+        <ArrayOfProperty>
+          <Property>
+            <Name>SspId</Name>
+            <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
+          </Property>
+          <Property>
+            <Name>TermSetId</Name>
+            <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{termsetid:TG_1:TS_1}</Value>
+          </Property>
+          <Property>
+            <Name>TextField</Name>
+            <Value xmlns:q6="http://www.w3.org/2001/XMLSchema" p4:type="q6:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{39E95FAA-894F-4FED-879D-A1A6A8381149}</Value>
+          </Property>
+          <Property>
+            <Name>IsPathRendered</Name>
+            <Value xmlns:q7="http://www.w3.org/2001/XMLSchema" p4:type="q7:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+          <Property>
+            <Name>IsKeyword</Name>
+            <Value xmlns:q8="http://www.w3.org/2001/XMLSchema" p4:type="q8:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+          </Property>
+        </ArrayOfProperty>
+      </Customization>
+    </Field>
+    <!-- Lookup fields -->
+    <!-- Updated attributes: List -->
+    <Field ID="{3a18fcce-7eab-45d7-b6b6-c61cec868057}" Type="LookupMulti" Name="FLD_60" DisplayName="Fld 60" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Style Library}}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+  </pnp:SiteFields>
+</pnp:ProvisioningTemplate>
