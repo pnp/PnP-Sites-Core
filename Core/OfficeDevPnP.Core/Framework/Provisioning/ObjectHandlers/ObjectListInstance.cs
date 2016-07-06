@@ -123,7 +123,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var fieldRef in listInfo.TemplateList.FieldRefs)
                             {
                                 var field = rootWeb.GetFieldById<Field>(fieldRef.Id);
-                                if (field == null) continue;
+                                if (field == null)
+                                {
+                                    // log missing referenced field
+                                    this.WriteWarning(
+                                        string.Format("The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.",
+                                                      listInfo.TemplateList.Title,
+                                                      fieldRef.Name,
+                                                      fieldRef.Id),
+                                        ProvisioningMessageType.Error);
+
+                                    // move onto next field reference
+                                    continue;
+                                }
 
                                 if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                 {
