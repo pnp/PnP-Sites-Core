@@ -9,7 +9,7 @@ Delta template: Goal is to verify that all properties that can be updated are up
   <pnp:PropertyBagEntries>
 
     <!-- PropertyBag properties that can be updated via delta handling:
-         Value (parsed)
+         Value (*) (parsed)
          -->
     
     <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value ="nl-nl" Overwrite="true" />

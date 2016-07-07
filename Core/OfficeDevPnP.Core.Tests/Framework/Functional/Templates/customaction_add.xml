@@ -1,7 +1,24 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <!--
-Base template: goal is to verify that all custom action properties work as expected. please keep this XML up to date if additional properties are added.
+Base template: Goal is to verify that all custom action properties work as expected. please keep this XML up to date if additional properties are added.
+
+               Possible attributes are:
+               Name               (*) 
+               Location           (*)
+               Description            (resource)
+               Title                  (parsed, resource)
+               Group
+               CommandUIExtension     (parsed)
+               ImageUrl               (parsed)
+               RegistrationId
+               RegistrationType
+               ScriptBlock            (parsed)
+               ScriptSrc              (parsed, excluding ~site and ~sitecollection)
+               Sequence
+               Url                    (parsed)   
+               Rights
+               Enabled
 
 Non functional properties: Enabled
 -->

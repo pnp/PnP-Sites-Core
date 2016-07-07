@@ -8,7 +8,11 @@ Base template: goal is to verify that all property bag properties work as expect
   <pnp:PropertyBagEntries>
     
     <!--
-      Possible attributes: Key, Value, Overwrite, Indexed
+      Possible attributes: 
+      Key       (*)
+      Value     (*) (parsed)
+      Overwrite 
+      Indexed
     -->
     
     <pnp:PropertyBagEntry Key="PROP_1" Value ="https://testautomation.sharepointpnp.com" Overwrite="true" />

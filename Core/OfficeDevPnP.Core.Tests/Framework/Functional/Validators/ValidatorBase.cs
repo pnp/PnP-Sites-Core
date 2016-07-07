@@ -7,7 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
@@ -26,9 +28,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         public event ValidateXmlEventHandler ValidateXmlEvent;
         #endregion
 
+        #region public properties
+        public string SchemaVersion { get; set; }
+        public string XPathQuery { get; set; }
+        #endregion
+
+        #region construction
+        public ValidatorBase()
+        {
+            SchemaVersion = "http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema";
+        }
+        #endregion
+
         #region Validation methods
 
-        public bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> properties, TokenParser tokenParser=null, Dictionary<string, string[]> parsedProperties=null) where T : class
+        public virtual bool ValidateObjects<T>(T sourceElement, T targetElement, List<string> properties, TokenParser tokenParser=null, Dictionary<string, string[]> parsedProperties=null) where T : class
         {
             IEnumerable sElements = (IEnumerable)sourceElement;
             IEnumerable tElements = (IEnumerable)targetElement;
@@ -101,7 +115,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return sourceCount == targetCount;
         }
 
-        public bool ValidateObjectsXML<T>(IEnumerable<T> sElements, IEnumerable<T> tElements, string XmlPropertyName, List<string> properties, TokenParser tokenParser = null, Dictionary<string, string[]> parsedProperties = null) where T: class
+        public virtual bool ValidateObjectsXML<T>(IEnumerable<T> sElements, IEnumerable<T> tElements, string XmlPropertyName, List<string> properties, TokenParser tokenParser = null, Dictionary<string, string[]> parsedProperties = null) where T: class
         {
             string key = properties[0];
             int sourceCount = 0;
@@ -145,8 +159,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (sourceKeyValue.Equals(targetKeyValue, StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetCount++;
-
+                        
                         // compare XML's
+
+                        // call virtual override method, consuming validators can add fixed validation logic if needed
+                        OverrideXmlData(sourceXml, targetXml);
+                        
+                        // call event handler, validator instances can add additional validation behaviour if needed, including forcing an IsEqual
                         ValidateXmlEventArgs e = null;
                         if (ValidateXmlEvent != null)
                         {
@@ -160,8 +179,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         }
                         else
                         {
-                            // Use XNode comparison on the source and target XElements
-
                             // Not using XNode.DeepEquals anymore since it requires that the attributes in both XML's are ordered the same
                             //var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
                             var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
@@ -174,55 +191,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         break;
                     }
                 }
-
-
             }
 
             return sourceCount == targetCount;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="sourceParser"></param>
-        /// <param name="targetParser"></param>
-        /// <param name="source"></param>
-        /// <param name="target"></param>
-        /// <param name="property"></param>
-        /// <returns></returns>
-        public bool ValidateObjectSchemaXML<T>(TokenParser sourceParser, TokenParser targetParser, IEnumerable<T> source, IEnumerable<T> target, string property) where T : class
+        internal virtual void OverrideXmlData(XElement sourceObject, XElement targetObject)
         {
-            int scount = 0;
-            int tcount = 0;
 
-            foreach (var sField in source)
-            {
-                object sSchemaXml = sField.GetType().GetProperty("SchemaXml").GetValue(sField);
-                XElement sourceElement = XElement.Parse(sourceParser.ParseString(sSchemaXml.ToString(), "~sitecollection", "~site"));
-                var sValue = sourceElement.Attribute(property).Value;
-                scount++;
+        }
 
-                foreach (var tField in target)
-                {
-                    object tSchemaXml = sField.GetType().GetProperty("SchemaXml").GetValue(sField);
-                    XElement targetElement = XElement.Parse(targetParser.ParseString(tSchemaXml.ToString(), "~sitecollection", "~site"));
-                    var tValue = targetElement.Attribute(property).Value;
-
-                    if (sValue == tValue)
-                    {
-                        tcount++;
-                        break;
-                    }
-                }
-            }
-
-            if (scount != tcount)
-            {
-                return false;
-            }
-
-            return true;
+        internal string ExtractElementXml(ProvisioningTemplate provisioningTemplate)
+        {
+            XElement provXml = XElement.Parse(provisioningTemplate.ToXML());
+            var namespaceManager = new XmlNamespaceManager(new NameTable());
+            namespaceManager.AddNamespace("pnp", SchemaVersion);
+            XElement ctXml = provXml.XPathSelectElement(XPathQuery, namespaceManager);
+            return ctXml.ToString(SaveOptions.DisableFormatting);
         }
 
         /// <summary>
@@ -260,6 +245,85 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return true;
         }
         #endregion
+
+        #region Helper methods
+        internal void DropAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.Attribute(Attribute).Remove();
+            }
+        }
+
+        internal void UpperCaseAttribute(XElement xml, string Attribute)
+        {
+            if (xml.Attribute(Attribute) != null)
+            {
+                xml.SetAttributeValue(Attribute, xml.Attribute(Attribute).Value.ToUpper());
+            }
+        }
+
+        internal bool TaxonomyFieldCustomizationPropertyIsEqual(XElement sourceXml, XElement targetXml, string property)
+        {
+
+            //  <Field ID="{35B749BF-0FE3-48F9-A84B-C5EA05246DEB}" Type="TaxonomyFieldType" Name="FLD_50" StaticName="FLD_50" DisplayName="Fld 50" Group="PnP Demo" ShowField="Term1033" Required="FALSE" EnforceUniqueValues="FALSE">
+            //  <Customization>
+            //    <ArrayOfProperty>
+            //      <Property>
+            //        <Name>SspId</Name>
+            //        <Value xmlns:q1="http://www.w3.org/2001/XMLSchema" p4:type="q1:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{sitecollectiontermstoreid}</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>TermSetId</Name>
+            //        <Value xmlns:q2="http://www.w3.org/2001/XMLSchema" p4:type="q2:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">{termsetid:TG_1:TS_1}</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>TextField</Name>
+            //        <Value xmlns:q6="http://www.w3.org/2001/XMLSchema" p4:type="q6:string" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">39E95FAA-894F-4FED-879D-A1A6A8381149</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>IsPathRendered</Name>
+            //        <Value xmlns:q7="http://www.w3.org/2001/XMLSchema" p4:type="q7:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+            //      </Property>
+            //      <Property>
+            //        <Name>IsKeyword</Name>
+            //        <Value xmlns:q8="http://www.w3.org/2001/XMLSchema" p4:type="q8:boolean" xmlns:p4="http://www.w3.org/2001/XMLSchema-instance">false</Value>
+            //      </Property>
+            //    </ArrayOfProperty>
+            //  </Customization>
+            //</Field>
+
+            var sourceCustomizationProperty = sourceXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
+            if (sourceCustomizationProperty != null)
+            {
+                var targetCustomizationProperty = targetXml.XPathSelectElement(String.Format("./Customization/ArrayOfProperty/Property[Name = '{0}']/Value", property));
+                if (targetCustomizationProperty == null)
+                {
+                    // the property is not present which should never happen
+                    return false;
+                }
+                else
+                {
+                    // compare property values
+                    if (sourceCustomizationProperty.Value.Equals(targetCustomizationProperty.Value, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                // Property not in source can't make comparison fail
+                return true;
+            }
+        }
+
+        #endregion
+
 
     }
 }

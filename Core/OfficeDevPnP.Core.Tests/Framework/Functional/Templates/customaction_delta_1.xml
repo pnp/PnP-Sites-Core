@@ -9,18 +9,19 @@ please keep this XML up to date if additional properties are added to the delta 
   <pnp:CustomActions>
     
     <!-- Custom action properties that can be updated via delta handling:
-         CommandUIExtension (parsed)
-         Description (resource)
+         CommandUIExtension     (parsed)
+         Description            (resource)
          Group
-         ImageUrl (parsed)
-         Location
+         ImageUrl               (parsed)
+         Location           (*)
          RegistrationId
          RegistrationType
-         ScriptBlock (parsed)
-         ScriptSrc (parsed, excluding ~site and ~sitecollection)
+         ScriptBlock            (parsed)
+         ScriptSrc              (parsed, excluding ~site and ~sitecollection)
          Sequence
-         Title (resource, parsed)
-         Url (parsed)   -->
+         Title                  (parsed,resource)
+         Url                    (parsed)   
+         -->
     
     <pnp:SiteCustomActions>
       <!-- Changed properties: Description, Group, Location, Title, Sequence, Url, ScriptBlock -->
