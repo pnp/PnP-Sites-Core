@@ -289,17 +289,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
                     Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, createdCT);
 
+                // Load the collections to allow for deletion scenarions
+                web.Context.Load(documentSetTemplate, d => d.AllowedContentTypes, d => d.DefaultDocuments, d => d.SharedFields, d => d.WelcomePageFields);
+                web.Context.ExecuteQueryRetry();
+
                 if (!String.IsNullOrEmpty(templateContentType.DocumentSetTemplate.WelcomePage))
                 {
                     // TODO: Customize the WelcomePage of the DocumentSet
                 }
 
+                // Add additional content types to the set of allowed content types
+                bool hasDefaultDocumentContentTypeInTemplate = false;
                 foreach (String ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                 {
                     Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
                     if (ct != null)
                     {
+                        if (ct.Id.StringValue.Equals("0x0101", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            hasDefaultDocumentContentTypeInTemplate = true;
+                        }
+
                         documentSetTemplate.AllowedContentTypes.Add(ct.Id);
+                    }
+                }
+                // If the default document content type (0x0101) is not in our definition then remove it
+                if (!hasDefaultDocumentContentTypeInTemplate)
+                {
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == "0x0101");
+                    if (ct != null)
+                    {
+                        documentSetTemplate.AllowedContentTypes.Remove(ct.Id);
                     }
                 }
 

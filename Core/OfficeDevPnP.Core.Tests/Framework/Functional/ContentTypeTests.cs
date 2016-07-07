@@ -18,9 +18,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ContentTypeTests()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
         }
         #endregion
 
@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             {
                 // Ensure we can test clean
                 DeleteContentTypes(cc);
-
+                
                 // Add fields
                 var result = TestProvisioningTemplate(cc, "contenttype_add.xml", Handlers.ContentTypes | Handlers.Fields);
                 ContentTypeValidator cv = new ContentTypeValidator();

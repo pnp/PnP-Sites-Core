@@ -393,6 +393,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="App.config.sample" />
+    <None Include="Framework\Functional\Templates\CT21Document.docx" />
+    <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
+    <None Include="Framework\Functional\Templates\CT20Document.docx" />
     <None Include="packages.config" />
     <None Include="Resources\custom.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

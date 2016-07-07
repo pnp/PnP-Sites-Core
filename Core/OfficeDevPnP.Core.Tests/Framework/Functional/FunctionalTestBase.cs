@@ -76,13 +76,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public TestProvisioningTemplateResult TestProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess=Handlers.All, ProvisioningTemplateApplyingInformation ptai=null, ProvisioningTemplateCreationInformation ptci = null)
         {
             // Read the template from XML and apply it
-            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");            
             ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
 
             if (ptai == null)
             {
                 ptai = new ProvisioningTemplateApplyingInformation();
-                ptai.HandlersToProcess = handlersToProcess;
+                ptai.HandlersToProcess = handlersToProcess;               
             }
 
             if (ptai.ProgressDelegate == null)

@@ -27,8 +27,6 @@ Base template: goal is to verify that all content type properties work as expect
                
                Possible DocumentSetTemplate attributes are:
                
-               
-               
 -->
 
 <pnp:ProvisioningTemplate ID="contenttype_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -80,7 +78,54 @@ Base template: goal is to verify that all content type properties work as expect
       </pnp:FieldRefs>
     </pnp:ContentType>
     <!-- DocumentSet content types 0x0120D520 -->
-    
-    
+    <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023" Name="CT_20" Description="CT 20" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" Overwrite="false">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" Required="true" Hidden="false" />
+      </pnp:FieldRefs>
+      <!-- Note: the WelcomePage attribute value is not used as there's currently no CSOM implementation to set the welcome page -->
+      <pnp:DocumentSetTemplate WelcomePage="~sitecollection/_cts/CT_20/docsethomepage.aspx">
+        <pnp:AllowedContentTypes>
+          <pnp:AllowedContentType ContentTypeID="0x0101"/>
+          <pnp:AllowedContentType ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"/>
+        </pnp:AllowedContentTypes>
+        <pnp:DefaultDocuments>
+          <!-- Note that the FileSourcePath points to location on the FileProvider (filesystem/Azure/SP) relative to the path of this XML file. Files will
+               be added without them being referenced in the Files section of the template -->
+          <pnp:DefaultDocument Name="CT20Document.docx" ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" FileSourcePath="./CT20Document.docx"/>
+          <pnp:DefaultDocument Name="CT20Document0101.docx" ContentTypeID="0x0101" FileSourcePath="./CT20Document0101.docx"/>
+        </pnp:DefaultDocuments>
+        <pnp:SharedFields>
+          <pnp:SharedField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:SharedFields>
+        <pnp:WelcomePageFields>
+          <pnp:WelcomePageField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:WelcomePageFields>        
+      </pnp:DocumentSetTemplate>
+    </pnp:ContentType>
+    <pnp:ContentType ID="0x0120D52000E5DBFFDBB86B454096672F072D473FC8" Name="CT_21" Description="CT 21" Group="PnP Demo">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
+      </pnp:FieldRefs>
+      <pnp:DocumentSetTemplate>
+        <pnp:AllowedContentTypes>
+          <pnp:AllowedContentType ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"/>
+        </pnp:AllowedContentTypes>
+        <pnp:DefaultDocuments>
+          <!-- Note that the FileSourcePath points to location on the FileProvider (filesystem/Azure/SP) relative to the path of this XML file. Files will
+               be added without them being referenced in the Files section of the template -->
+          <pnp:DefaultDocument Name="CT21Document.docx" ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" FileSourcePath="./CT21Document.docx"/>
+        </pnp:DefaultDocuments>
+        <pnp:SharedFields>
+          <pnp:SharedField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:SharedFields>
+        <pnp:WelcomePageFields>
+          <pnp:WelcomePageField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:WelcomePageFields>
+      </pnp:DocumentSetTemplate>
+    </pnp:ContentType>
   </pnp:ContentTypes>
 </pnp:ProvisioningTemplate>

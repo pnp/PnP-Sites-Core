@@ -99,7 +99,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             foreach (var fieldRef in fieldRefElements)
             {
                 // Delete the OOB fieldrefs
-                if (BuiltInFieldId.Contains(new Guid(fieldRef.Attribute("ID").Value)) || fieldRef.Attribute("Name").Value.StartsWith("_dlc_"))
+                if (BuiltInFieldId.Contains(new Guid(fieldRef.Attribute("ID").Value)) || 
+                    fieldRef.Attribute("Name").Value.StartsWith("_dlc_") ||
+                    fieldRef.Attribute("ID").Value.Equals("cbb92da4-fd46-4c7d-af6c-3128c2a5576e", StringComparison.InvariantCultureIgnoreCase) //DocumentSetDescription 
+                    )
                 {
                     toDelete.Add(fieldRef);
                 }
@@ -124,6 +127,38 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (!fieldRefElements.Any())
             {
                 fieldRefs.Remove();
+            }
+
+            // Drop the WelcomePage attribute of the homepage
+            if (sourceObject.Element(ns + "DocumentSetTemplate") != null)
+            {
+                if (sourceObject.Element(ns + "DocumentSetTemplate").Attribute("WelcomePage") != null)
+                {
+                    sourceObject.Element(ns + "DocumentSetTemplate").Attribute("WelcomePage").Remove();
+                }
+
+                // Drop the FileSourcePath attribute in both source and target
+                var defaultDocuments = targetObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                if (defaultDocuments != null)
+                {
+                    IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
+
+                    foreach (var defaultDocument in defaultDocumentsElements)
+                    {
+                        DropAttribute(defaultDocument, "FileSourcePath");
+                    }
+                }
+
+                defaultDocuments = sourceObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                if (defaultDocuments != null)
+                {
+                    IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
+
+                    foreach (var defaultDocument in defaultDocumentsElements)
+                    {
+                        DropAttribute(defaultDocument, "FileSourcePath");
+                    }
+                }
             }
 
         }
