@@ -45,9 +45,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
                 Assert.IsTrue(CustomActionValidator.Validate(result.SourceTemplate.CustomActions, result.TargetTemplate.CustomActions, result.TargetTokenParser));
 
+#if !SP2013
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
                 Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser));
+#endif
             }
         }
         #endregion

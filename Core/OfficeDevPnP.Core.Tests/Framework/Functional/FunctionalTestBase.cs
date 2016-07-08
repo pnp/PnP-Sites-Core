@@ -41,8 +41,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             {
                 if (!debugMode)
                 {
+#if !ONPREMISES
                     CleanupAllTestSiteCollections(tenantContext);
-
+#endif
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
                     centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
@@ -59,7 +60,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             {
                 using (var tenantContext = TestCommon.CreateTenantClientContext())
                 {
+#if !ONPREMISES
                     CleanupAllTestSiteCollections(tenantContext);
+#else
+                    try
+                    {
+                        Tenant t = new Tenant(tenantContext);
+                        t.DeleteSiteCollection(centralSiteCollectionUrl);
+                    }
+                    catch { }
+#endif
                 }
             }
         }
@@ -70,7 +80,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
 
-        #endregion
+#endregion
 
         #region Apply template and read the "result"
         public TestProvisioningTemplateResult TestProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess=Handlers.All, ProvisioningTemplateApplyingInformation ptai=null, ProvisioningTemplateCreationInformation ptci = null)
@@ -156,24 +166,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             return siteToCreateUrl;
         }
 
-        internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
-        {
-            // create a sub site in the central site collection
-            Site site = tenant.GetSiteByUrl(sitecollectionUrl);
-            tenant.Context.Load(site);
-            tenant.Context.ExecuteQueryRetry();
-            Web web = site.RootWeb;
-            web.Context.Load(web);
-            web.Context.ExecuteQueryRetry();
-
-            //Create sub site
-            SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
-            var subWeb = web.CreateWeb(sub);
-            subWeb.EnsureProperty(t => t.Url);
-            return subWeb.Url;
-        }
-
-
         private static void CleanupAllTestSiteCollections(ClientContext tenantContext)
         {
             var tenant = new Tenant(tenantContext);
@@ -214,10 +206,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
         }
 
-#endif
+        internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
+        {
+            // create a sub site in the central site collection
+            Site site = tenant.GetSiteByUrl(sitecollectionUrl);
+            tenant.Context.Load(site);
+            tenant.Context.ExecuteQueryRetry();
+            Web web = site.RootWeb;
+            web.Context.Load(web);
+            web.Context.ExecuteQueryRetry();
 
-#if ONPREMISES
-        private string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
+            //Create sub site
+            SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
+            var subWeb = web.CreateWeb(sub);
+            subWeb.EnsureProperty(t => t.Url);
+            return subWeb.Url;
+        }
+#else
+        private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
         {
             string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
 
@@ -243,6 +249,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             tenant.CreateSiteCollection(siteToCreate);
             return siteToCreateUrl;
+        }
+
+        internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
+        {
+            using (ClientContext cc = new ClientContext(sitecollectionUrl))
+            {
+                //Create sub site
+                SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
+                var subWeb = cc.Web.CreateWeb(sub);
+                subWeb.EnsureProperty(t => t.Url);
+                return subWeb.Url;
+            }
         }
 
         private void CleanupCreatedTestSiteCollections(ClientContext tenantContext)
@@ -275,7 +293,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
-        #endregion
+#endregion
 
     }
 }
