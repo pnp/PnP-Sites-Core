@@ -19,8 +19,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ContentTypeTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_e37310cc-5d7a-43aa-a71b-419773241e46";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_e37310cc-5d7a-43aa-a71b-419773241e46/sub";
         }
         #endregion
 
@@ -51,11 +51,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Ensure we can test clean
                 DeleteContentTypes(cc);
                 
-                // Add fields
+                // Add content types
                 var result = TestProvisioningTemplate(cc, "contenttype_add.xml", Handlers.ContentTypes | Handlers.Fields);
                 ContentTypeValidator cv = new ContentTypeValidator();
                 Assert.IsTrue(cv.Validate(result.SourceTemplate.ContentTypes, result.TargetTemplate.ContentTypes, result.TargetTokenParser));
 
+                // change content types
+                var result2 = TestProvisioningTemplate(cc, "contenttype_delta_1.xml", Handlers.ContentTypes);
+                Assert.IsTrue(cv.Validate(result2.SourceTemplate.ContentTypes, result2.TargetTemplate.ContentTypes, result2.TargetTokenParser));
             }
         }
         #endregion

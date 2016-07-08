@@ -403,6 +403,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!BuiltInContentTypeId.Contains(ct.StringId))
                 {
+                    string ctDocumentTemplate = null;
+                    if (!String.IsNullOrEmpty(ct.DocumentTemplate))
+                    {
+                        if (!ct.DocumentTemplate.StartsWith("_cts/"))
+                        {
+                            ctDocumentTemplate = ct.DocumentTemplate;
+                        }
+                    }
+
                     ContentType newCT = new ContentType
                         (ct.StringId,
                         ct.Name,
@@ -411,7 +420,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ct.Sealed,
                         ct.Hidden,
                         ct.ReadOnly,
-                        ct.DocumentTemplate,
+                        ctDocumentTemplate,
                         false,
                             (from fieldLink in ct.FieldLinks.AsEnumerable<FieldLink>()
                              select new FieldRef(fieldLink.Name)
