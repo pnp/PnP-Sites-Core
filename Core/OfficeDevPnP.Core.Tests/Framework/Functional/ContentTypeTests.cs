@@ -44,6 +44,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
+
+                // Add supporting files, note that files validation will be done in the files test cases
+                TestProvisioningTemplate(cc, "contenttype_files.xml", Handlers.Files);
+
                 // Ensure we can test clean
                 DeleteContentTypes(cc);
                 

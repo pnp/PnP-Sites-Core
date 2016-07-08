@@ -262,21 +262,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;
-            if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+            
+            if (templateContentType.DocumentSetTemplate == null)
             {
-                createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                // Only apply a document template when the contenttype is not a document set
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                {
+                    createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                }
             }
-            if (!String.IsNullOrEmpty(templateContentType.NewFormUrl))
+
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
             {
-                createdCT.NewFormUrl = templateContentType.NewFormUrl;
+                createdCT.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
             }
-            if (!String.IsNullOrEmpty(templateContentType.EditFormUrl))
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
             {
-                createdCT.EditFormUrl = templateContentType.EditFormUrl;
+                createdCT.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
             }
-            if (!String.IsNullOrEmpty(templateContentType.DisplayFormUrl))
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
             {
-                createdCT.DisplayFormUrl = templateContentType.DisplayFormUrl;
+                createdCT.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
             }
 
             createdCT.Update(true);

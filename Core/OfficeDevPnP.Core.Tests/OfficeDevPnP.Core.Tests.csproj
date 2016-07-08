@@ -393,6 +393,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="App.config.sample" />
+    <None Include="Framework\Functional\Templates\ct3document.docx" />
+    <None Include="Framework\Functional\Templates\ct1document.docx" />
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
@@ -404,8 +406,17 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\contenttype_files.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\contenttype_add.xml">
       <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\CT3DisplayForm.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\CT3EditForm.aspx">
+      <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Framework\Functional\Templates\field_delta_1.xml">
       <SubType>Designer</SubType>
