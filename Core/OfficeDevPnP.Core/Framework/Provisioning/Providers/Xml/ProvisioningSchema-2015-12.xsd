@@ -372,6 +372,20 @@
         </xsd:annotation>
       </xsd:element>
 
+      <xsd:element name="PublishingPages" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The Publishing Pages to provision into the target Site through the Provisioning Template, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="PublishingPage" type="pnp:PublishingPage"
+                          minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+
       <xsd:element name="TermGroups" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -2424,6 +2438,78 @@
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           Defines the layout of the wikipage, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
+  <xsd:complexType name="PublishingPage">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Defines a Publishing Page element, to describe a Publishing Page that will be provisioned into the target Site.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:all>
+      <xsd:element name="Properties" type="pnp:FileProperties" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The File Properties, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="WebParts" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            The webparts to add to the page, optional collection of elements.
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="WebPart" type="pnp:WebPartPageWebPart"
+                         minOccurs="1" maxOccurs="unbounded" />
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Security" type="pnp:ObjectSecurity" minOccurs="0" maxOccurs="1" />
+    </xsd:all>
+
+    <xsd:attribute name="Name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The file name of the publishing page, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Layout" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Defines the layout of the Publishing Page, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    
+    <xsd:attribute name="Folder" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The TargetFolder of the File, supports tokens, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    
+    <xsd:attribute name="Publish" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Publish flag of the Publishing Page, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Overwrite flag for the Publishing Page, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

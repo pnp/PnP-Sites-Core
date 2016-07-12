@@ -1505,6 +1505,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating new publishing page {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_PublishingPages_Creating_new_page__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_PublishingPages_Creating_new_page__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Overwriting existing publishing page {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_PublishingPages_Overwriting_existing_page__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_PublishingPages_Overwriting_existing_page__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieve Template Info.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_RetrieveTemplateInfo {

@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private FileCollection _files;
         private ExtensibilityHandlerCollection _extensibilityHandlers;
         private PageCollection _pages;
+        private PublishingPageCollection _publishingPages;
         private TermGroupCollection _termGroups;
         private FileConnectorBase connector;
         private string _id;
@@ -71,6 +72,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._providers = new ProviderCollection(this); // Deprecated
             this._extensibilityHandlers = new ExtensibilityHandlerCollection(this);
             this._pages = new PageCollection(this);
+            this._publishingPages = new PublishingPageCollection(this);
             this._termGroups = new TermGroupCollection(this);
 
             this._supportedUILanguages = new SupportedUILanguageCollection(this);
@@ -250,6 +252,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._pages; }
             private set { this._pages = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of publishing pages for the template
+        /// </summary>
+        public PublishingPageCollection PublishingPages
+        {
+            get { return this._publishingPages; }
+            private set { this._publishingPages = value; }
         }
 
         /// <summary>

@@ -491,6 +491,8 @@
     <Compile Include="Framework\Provisioning\Model\Field.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldRefCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\PublishingPageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\PublishingPage.cs" />
     <Compile Include="Framework\Provisioning\Model\FileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Folder.cs" />
     <Compile Include="Framework\Provisioning\Model\FolderCollection.cs" />
@@ -552,6 +554,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishingPages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLocalization.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
@@ -716,6 +719,7 @@
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
