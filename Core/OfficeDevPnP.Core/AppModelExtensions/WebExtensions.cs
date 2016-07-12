@@ -264,19 +264,16 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True is sub site, false otherwise</returns>
         public static bool IsSubSite(this Web web)
         {
-            Site site = (web.Context as ClientContext).Site;
-            var rootWeb = site.EnsureProperty(s => s.RootWeb);
+            web.EnsureProperty(w => w.ParentWeb);
+            bool? isSubSite = web.ParentWeb.ServerObjectIsNull;
 
-            web.EnsureProperty(w => w.Id);
-            rootWeb.EnsureProperty(w => w.Id);
-
-            if (rootWeb.Id != web.Id)
+            if (isSubSite == true)
             {
-                return true;
+                return false;
             }
             else
             {
-                return false;
+                return true;
             }
         }
 
