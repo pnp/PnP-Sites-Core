@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all content type properties work as expected. 
+               
+               Possible ContentType attributes are:
+               ID                   (*) (parsed)
+               Name                 (*) (parsed, resource)
+               Description              (parsed, resource)
+               Group                    (parsed) 
+               FieldRefs (e)
+               Hidden
+               Sealed
+               ReadOnly
+               Overwrite
+               NewFormUrl               (parsed)
+               EditFormUrl              (parsed)
+               DisplayFormUrl           (parsed)
+               DocumentTemplate (e)      
+               DocumentSetTemplate (e)
+               
+               Possible FieldRef attributes are:
+               ID                   (*)
+               Required
+               Hidden
+               Name                 (for information only)
+               
+               Possible DocumentTemplate attributes are:
+               TargetName           (*)  (parsed)
+               
+               Possible DocumentSetTemplate elements are:
+               AllowedContentTypes (e) with zero or more AllowedContentType (e) 
+               DefaultDocuments (e) with zero or more DefaultDocument (e) 
+               SharedFields (e) with zero or more SharedField (e) 
+               WelcomePageFields (e) with zero or more WelcomePageField (e) 
+               
+               Possible AllowedContentType attributes are:
+               ContentTypeID        (*)
+               
+               Possible DefaultDocument attributes are:
+               Name                 (*)
+               ContentTypeID        (*)
+               FileSourcePath       (*)               
+
+               Possible SharedField attributes are:
+               ID                   (*)
+               
+               Possible WelcomePageField attributes are:
+               ID                   (*)
+
+               
+-->
+
+<pnp:ProvisioningTemplate ID="contenttype_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <!-- Supporting fields to test content types -->
+  <pnp:SiteFields>
+    <Field ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" Type="Text" Name="FLD_CT_1" DisplayName="Fld CT 1" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+    <Field ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Type="Text" Name="FLD_CT_2" DisplayName="Fld CT 2" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+    <Field ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" Type="Text" Name="FLD_CT_3" DisplayName="Fld CT 3" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+    <Field ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" Type="Text" Name="FLD_CT_4" DisplayName="Fld CT 4" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+  </pnp:SiteFields>
+  <!-- Test content types -->
+  <pnp:ContentTypes>
+    <!-- Document content types 0x0101 -->
+    <!-- Simple one -->
+    <pnp:ContentType ID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" Name="CT_1" Description="CT 1" Group="PnP Demo">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+      </pnp:FieldRefs>
+      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct1document.docx"/>
+    </pnp:ContentType>
+    <!-- Bare minimum -->
+    <pnp:ContentType ID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Name="CT_2" />
+    <!-- Complex one -->
+    <pnp:ContentType ID="0x0101001AF9DBB0E32F47A1A0BA519392153128" Name="CT_3" Description="CT 3" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" 
+                     Overwrite="true" DisplayFormUrl="~sitecollection/siteassets/CT3DisplayForm.aspx" EditFormUrl="~sitecollection/siteassets/CT3EditForm.aspx">
+      <pnp:FieldRefs>
+        <!-- Specify all FieldRef properties-->
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"  Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
+        <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" />
+        <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" />
+      </pnp:FieldRefs>
+      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct3document.docx"/>
+    </pnp:ContentType>
+    <!-- List content types 0x01 -->
+    <!-- Simple one -->
+    <pnp:ContentType ID="0x010076029D9059824413B137EA0A9B5FAAA0" Name="CT_10" Description="CT 10" Group="PnP Demo">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+      </pnp:FieldRefs>
+    </pnp:ContentType>
+    <!-- Bare minimum -->
+    <pnp:ContentType ID="0x0100B1459203A48B4E878238B723CD10EECA" Name="CT_11" />
+    <!-- Complex one -->
+    <pnp:ContentType ID="0x010002256D58F4CF427DA2AAA876B1DCF366" Name="CT_12" Description="CT 12" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" Overwrite="true">
+      <pnp:FieldRefs>
+        <!-- Specify all FieldRef properties-->
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
+        <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" />
+        <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" />
+      </pnp:FieldRefs>
+    </pnp:ContentType>
+    <!-- DocumentSet content types 0x0120D520 -->
+    <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023" Name="CT_20" Description="CT 20" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" Overwrite="false">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" Required="true" Hidden="false" />
+        <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" Required="true" Hidden="false" />
+      </pnp:FieldRefs>
+      <!-- Note that a DocumentTemplate is not possible for DocumentSet content types -->
+      <!-- Note: the WelcomePage attribute value is not used as there's currently no CSOM implementation to set the welcome page -->
+      <pnp:DocumentSetTemplate WelcomePage="~sitecollection/_cts/CT_20/docsethomepage.aspx">
+        <pnp:AllowedContentTypes>
+          <pnp:AllowedContentType ContentTypeID="0x0101"/>
+          <pnp:AllowedContentType ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"/>
+        </pnp:AllowedContentTypes>
+        <pnp:DefaultDocuments>
+          <!-- Note that the FileSourcePath points to location on the FileProvider (filesystem/Azure/SP) relative to the path of this XML file. Files will
+               be added without them being referenced in the Files section of the template -->
+          <pnp:DefaultDocument Name="CT20Document.docx" ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" FileSourcePath="./CT20Document.docx"/>
+          <pnp:DefaultDocument Name="CT20Document0101.docx" ContentTypeID="0x0101" FileSourcePath="./CT20Document0101.docx"/>
+        </pnp:DefaultDocuments>
+        <pnp:SharedFields>
+          <pnp:SharedField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:SharedFields>
+        <pnp:WelcomePageFields>
+          <pnp:WelcomePageField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:WelcomePageFields>        
+      </pnp:DocumentSetTemplate>
+    </pnp:ContentType>
+    <pnp:ContentType ID="0x0120D52000E5DBFFDBB86B454096672F072D473FC8" Name="CT_21" Description="CT 21" Group="PnP Demo">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+        <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
+      </pnp:FieldRefs>
+      <pnp:DocumentSetTemplate>
+        <pnp:AllowedContentTypes>
+          <!-- Testing that the engine drops the default 0x0101 content type from the allowed content types -->
+          <pnp:AllowedContentType ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"/>
+        </pnp:AllowedContentTypes>
+        <pnp:DefaultDocuments>
+          <!-- Note that the FileSourcePath points to location on the FileProvider (filesystem/Azure/SP) relative to the path of this XML file. Files will
+               be added without them being referenced in the Files section of the template -->
+          <pnp:DefaultDocument Name="CT21Document.docx" ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" FileSourcePath="./CT21Document.docx"/>
+        </pnp:DefaultDocuments>
+        <pnp:SharedFields>
+          <pnp:SharedField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:SharedFields>
+        <pnp:WelcomePageFields>
+          <pnp:WelcomePageField ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"/>
+        </pnp:WelcomePageFields>
+      </pnp:DocumentSetTemplate>
+    </pnp:ContentType>
+    <!-- Minimalistic document set -->
+    <pnp:ContentType ID="0x0120D520006F71536046A14A71A827ECCAE8D5B1AA" Name="CT_22" Description="CT 22" Group="PnP Demo">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+      </pnp:FieldRefs>
+      <!-- Note that we need at least an empty DocumentSetTemplate element as the engine recognizes that it's a document set based on this. In this
+           case it's relevant to remove the default document content type from the set of allowed content types -->
+      <pnp:DocumentSetTemplate />
+    </pnp:ContentType>
+  </pnp:ContentTypes>
+</pnp:ProvisioningTemplate>

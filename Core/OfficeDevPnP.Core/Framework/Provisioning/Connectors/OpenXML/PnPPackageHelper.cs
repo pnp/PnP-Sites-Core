@@ -72,7 +72,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                     new PnPFileInfo
                     {
                         InternalName = file.Key,
-                        OriginalName = package.FilesMap.Map[file.Key].Replace(file.Value.Folder + '/', ""),
+                        OriginalName = String.IsNullOrEmpty(file.Value.Folder) ?
+                            package.FilesMap.Map[file.Key] :
+                            package.FilesMap.Map[file.Key].Replace(file.Value.Folder + '/', ""),
                         Folder = file.Value.Folder,
                         Content = file.Value.Content,
                     });

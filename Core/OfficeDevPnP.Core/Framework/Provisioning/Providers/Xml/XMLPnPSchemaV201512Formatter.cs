@@ -440,6 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
+                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate {  TargetName = ct.DocumentTemplate } : null,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201512.DocumentSetTemplate
                              {

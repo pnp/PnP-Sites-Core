@@ -109,6 +109,11 @@ namespace OfficeDevPnP.Core.Tests
             return CreateContext(DevSiteUrl, Credentials);
         }
 
+        public static ClientContext CreateClientContext(string url)
+        {
+            return CreateContext(url, Credentials);
+        }
+
         public static ClientContext CreateTenantClientContext()
         {
             return CreateContext(TenantUrl, Credentials);

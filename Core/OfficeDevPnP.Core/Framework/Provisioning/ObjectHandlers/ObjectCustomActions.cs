@@ -140,6 +140,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 isDirty = true;
                             }
                         }
+                        else
+                        {
+                            // Required to allow for a delta action to blank out the CommandUIExtension attribute
+                            existingCustomAction.CommandUIExtension = null;
+                        }
 
                         if (existingCustomAction.Description != customAction.Description)
                         {
