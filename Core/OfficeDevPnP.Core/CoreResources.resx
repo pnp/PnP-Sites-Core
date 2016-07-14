@@ -955,4 +955,16 @@
   <data name="Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing" xml:space="preserve">
     <value>Context web does not have the publishing features enabled, skipping navigation settings</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation" xml:space="preserve">
+    <value>Missing Current Managed Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation" xml:space="preserve">
+    <value>Missing Current Structural Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation" xml:space="preserve">
+    <value>Missing Global Managed Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation" xml:space="preserve">
+    <value>Missing Global Structural Navigation settings in the current template</value>
+  </data>
 </root>

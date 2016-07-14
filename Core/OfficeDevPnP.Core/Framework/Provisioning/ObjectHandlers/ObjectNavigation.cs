@@ -7,11 +7,14 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectNavigation : ObjectHandlerBase
     {
+        const string NavigationShowSiblings = "__NavigationShowSiblings";
+
         public override string Name
         {
             get { return "Navigation"; }
@@ -94,33 +97,84 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                if (template.AuditSettings != null)
+                if (template.Navigation != null)
                 {
-                    var site = (web.Context as ClientContext).Site;
-
-                    site.EnsureProperties(s => s.Audit, s => s.AuditLogTrimmingRetention, s => s.TrimAuditLog);
-
-                    var siteAuditSettings = site.Audit;
-
-                    var isDirty = false;
-                    if (template.AuditSettings.AuditFlags != siteAuditSettings.AuditFlags)
+                    // The Navigation handler works only for sites with Publishing Features enabled
+                    if (!web.IsPublishingWeb())
                     {
-                        site.Audit.AuditFlags = template.AuditSettings.AuditFlags;
-                        site.Audit.Update();
-                        isDirty = true;
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing);
+                        return parser;
                     }
-                    if (template.AuditSettings.AuditLogTrimmingRetention != site.AuditLogTrimmingRetention)
+
+                    // Retrieve the current web navigation settings
+                    var navigationSettings = new WebNavigationSettings(web.Context, web);
+                    web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (template.Navigation.GlobalNavigation != null)
                     {
-                        site.AuditLogTrimmingRetention = template.AuditSettings.AuditLogTrimmingRetention;
-                        isDirty = true;
+                        switch (template.Navigation.GlobalNavigation.NavigationType)
+                        {
+                            case GlobalNavigationType.Inherit:
+                                navigationSettings.GlobalNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                                break;
+                            case GlobalNavigationType.Managed:
+                                if (template.Navigation.GlobalNavigation.ManagedNavigation == null)
+                                {
+                                    throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation);
+                                }
+                                navigationSettings.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
+                                navigationSettings.GlobalNavigation.TermStoreId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId));
+                                navigationSettings.GlobalNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId));
+                                break;
+                            case GlobalNavigationType.Structural:
+                            default:
+                                if (template.Navigation.GlobalNavigation.StructuralNavigation == null)
+                                {
+                                    throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
+                                }
+                                ProvisionGlobalStructuralNavigation(web,
+                                    template.Navigation.GlobalNavigation.StructuralNavigation);
+                                break;
+                        }
+                        web.Context.ExecuteQueryRetry();
                     }
-                    if (template.AuditSettings.TrimAuditLog != site.TrimAuditLog)
+
+                    if (template.Navigation.CurrentNavigation != null)
                     {
-                        site.TrimAuditLog = template.AuditSettings.TrimAuditLog;
-                        isDirty = true;
-                    }
-                    if (isDirty)
-                    {
+                        switch (template.Navigation.CurrentNavigation.NavigationType)
+                        {
+                            case CurrentNavigationType.Inherit:
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                                break;
+                            case CurrentNavigationType.Managed:
+                                if (template.Navigation.CurrentNavigation.ManagedNavigation == null)
+                                {
+                                    throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation);
+                                }
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.TaxonomyProvider;
+                                navigationSettings.CurrentNavigation.TermStoreId = Guid.Parse(parser.ParseString(template.Navigation.CurrentNavigation.ManagedNavigation.TermStoreId));
+                                navigationSettings.CurrentNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.CurrentNavigation.ManagedNavigation.TermSetId));
+                                break;
+                            case CurrentNavigationType.StructuralLocal:
+                                web.SetPropertyBagValue(NavigationShowSiblings, "false");
+                                if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
+                                {
+                                    throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
+                                }
+                                ProvisionCurrentStructuralNavigation(web,
+                                    template.Navigation.CurrentNavigation.StructuralNavigation);
+                                break;
+                            case CurrentNavigationType.Structural:
+                            default:
+                                if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
+                                {
+                                    throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
+                                }
+                                ProvisionCurrentStructuralNavigation(web,
+                                    template.Navigation.CurrentNavigation.StructuralNavigation);
+                                break;
+                        }
                         web.Context.ExecuteQueryRetry();
                     }
                 }
@@ -135,11 +189,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             bool siblingsEnabled = false;
 
-            if (bool.TryParse(web.GetPropertyBagValueString("__NavigationShowSiblings", "false"), out siblingsEnabled))
+            if (bool.TryParse(web.GetPropertyBagValueString(NavigationShowSiblings, "false"), out siblingsEnabled))
             {
             }
 
             return siblingsEnabled;
+        }
+
+        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation)
+        {
+            ProvisionStructuralNavigation(web, structuralNavigation, false);
+        }
+
+        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation)
+        {
+            ProvisionStructuralNavigation(web, structuralNavigation, true);
+        }
+
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, Boolean currentNavigation)
+        {
+            // Determine the target structural navigation
+            var navigationType = currentNavigation ?
+                Enums.NavigationType.QuickLaunch :
+                Enums.NavigationType.TopNavigationBar;
+
+            // Remove existing nodes, if requested
+            if (structuralNavigation.RemoveExistingNodes)
+            {
+                web.DeleteAllNavigationNodes(navigationType);
+            }
+
+            // Provision root level nodes, and children recursively
+            ProvisionStructuralNavigationNodes(
+                web, 
+                navigationType, 
+                structuralNavigation.NavigationNodes);
+        }
+
+        private void ProvisionStructuralNavigationNodes(Web web, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, String parentNodeTitle = null)
+        {
+            foreach (var node in nodes)
+            {
+                web.AddNavigationNode(
+                    node.Title,
+                    new Uri(node.Url),
+                    parentNodeTitle,
+                    navigationType,
+                    node.IsExternal);
+
+                ProvisionStructuralNavigationNodes(
+                    web, 
+                    navigationType, 
+                    node.NavigationNodes, 
+                    node.Title);
+            }
         }
 
         private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings)
@@ -169,6 +272,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 TermStoreId = currentNavigation ? navigationSettings.CurrentNavigation.TermStoreId.ToString() : navigationSettings.GlobalNavigation.TermStoreId.ToString(),
                 TermSetId = currentNavigation ? navigationSettings.CurrentNavigation.TermSetId.ToString() : navigationSettings.GlobalNavigation.TermSetId.ToString(),
             };
+
+            // Apply any token replacement for taxonomy IDs
+            TokenizeManagedNavigationTaxonomyIds(web, result);
+
             return (result);
         }
 
@@ -183,6 +290,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             select n.ToDomainModelNavigationNode());
 
             return (result);
+        }
+
+        protected void TokenizeManagedNavigationTaxonomyIds(Web web, ManagedNavigation managedNavigation)
+        {
+            // Replace Taxonomy field references to SspId, TermSetId with tokens
+            TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+            TermStore defaultStore = session.GetDefaultSiteCollectionTermStore();
+            web.Context.Load(defaultStore, ts => ts.Name, ts => ts.Id);
+            web.Context.ExecuteQueryRetry();
+
+            Guid navigationTermStoreId = Guid.Parse(managedNavigation.TermStoreId);
+            if (navigationTermStoreId != Guid.Empty)
+            {
+                TermStore navigationTermStore = session.TermStores.GetById(navigationTermStoreId);
+                web.Context.Load(navigationTermStore, ts => ts.Name, ts => ts.Id);
+                web.Context.ExecuteQueryRetry();
+
+                if (!navigationTermStore.ServerObjectIsNull())
+                {
+                    if (navigationTermStore.Id == defaultStore.Id)
+                    {
+                        managedNavigation.TermStoreId = "{sitecollectiontermstoreid}";
+                    }
+                    else
+                    {
+                        managedNavigation.TermStoreId = $"{{termstoreid:{navigationTermStore.Name}}}";
+                    }
+
+                    Guid navigationTermSetId = Guid.Parse(managedNavigation.TermSetId);
+                    if (navigationTermSetId != Guid.Empty)
+                    {
+                        var navigationTermSet = navigationTermStore.GetTermSet(navigationTermSetId);
+                        web.Context.Load(navigationTermSet, ts => ts.Name, ts => ts.Id, ts => ts.Group);
+                        web.Context.ExecuteQueryRetry();
+
+                        if (!navigationTermSet.ServerObjectIsNull())
+                        {
+                            managedNavigation.TermSetId = $"{{termsetid:{navigationTermSet.Group.Name}:{navigationTermSet.Name}}}";
+                        }
+                    }
+                }
+            }
         }
 
         #endregion
