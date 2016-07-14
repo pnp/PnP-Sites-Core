@@ -263,6 +263,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Security = new V201605.Security();
 
+                result.Security.BreakRoleInheritance = template.Security.BreakRoleInheritance;
+                result.Security.CopyRoleAssignments = template.Security.CopyRoleAssignments;
+                result.Security.ClearSubscopes = template.Security.ClearSubscopes;
+
                 if (template.Security.AdditionalAdministrators != null && template.Security.AdditionalAdministrators.Count > 0)
                 {
                     result.Security.AdditionalAdministrators =
@@ -395,6 +399,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security = null;
                 }
+            }
+
+            #endregion
+
+            #region Navigation
+
+            if (template.Navigation != null)
+            {
+                result.Navigation = new V201605.Navigation {
+                    GlobalNavigation =
+                        template.Navigation.GlobalNavigation != null ?
+                            new NavigationGlobalNavigation {
+                                NavigationType = (NavigationGlobalNavigationNavigationType)Enum.Parse(typeof(NavigationGlobalNavigationNavigationType), template.Navigation.GlobalNavigation.NavigationType.ToString()),
+                                StructuralNavigation =
+                                    template.Navigation.GlobalNavigation.StructuralNavigation != null ?
+                                        new V201605.StructuralNavigation
+                                        {
+                                            RemoveExistingNodes = template.Navigation.GlobalNavigation.StructuralNavigation.RemoveExistingNodes,
+                                            NavigationNode = (from n in template.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes
+                                                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                                        } : null,
+                                ManagedNavigation =
+                                    template.Navigation.GlobalNavigation.ManagedNavigation != null ?
+                                        new V201605.ManagedNavigation
+                                        {
+                                            TermSetId = template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId,
+                                            TermStoreId = template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId,
+                                        } : null
+                                }
+                                : null,
+                    CurrentNavigation =
+                        template.Navigation.CurrentNavigation != null ?
+                            new NavigationCurrentNavigation
+                            {
+                                NavigationType = (NavigationCurrentNavigationNavigationType)Enum.Parse(typeof(NavigationCurrentNavigationNavigationType), template.Navigation.CurrentNavigation.NavigationType.ToString()),
+                                StructuralNavigation =
+                                    template.Navigation.CurrentNavigation.StructuralNavigation != null ?
+                                        new V201605.StructuralNavigation
+                                        {
+                                            RemoveExistingNodes = template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes,
+                                            NavigationNode = (from n in template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes
+                                                              select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                                        } : null,
+                                ManagedNavigation =
+                                    template.Navigation.CurrentNavigation.ManagedNavigation != null ?
+                                        new V201605.ManagedNavigation
+                                        {
+                                            TermSetId = template.Navigation.CurrentNavigation.ManagedNavigation.TermSetId,
+                                            TermStoreId = template.Navigation.CurrentNavigation.ManagedNavigation.TermStoreId,
+                                        } : null
+                            }
+                            : null
+                        };
             }
 
             #endregion
@@ -1287,6 +1344,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Security configuration, if any
             if (source.Security != null)
             {
+                result.Security.BreakRoleInheritance = source.Security.BreakRoleInheritance;
+                result.Security.CopyRoleAssignments = source.Security.CopyRoleAssignments;
+                result.Security.ClearSubscopes = source.Security.ClearSubscopes;
+
                 if (source.Security.AdditionalAdministrators != null)
                 {
                     result.Security.AdditionalAdministrators.AddRange(
@@ -1363,6 +1424,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Name = rd.Name,
                              });
                     }
+                }
+            }
+
+            #endregion
+
+            #region Navigation
+
+            if (source.Navigation != null)
+            {
+                result.Navigation = new Model.Navigation(
+                    source.Navigation.GlobalNavigation != null ?
+                        new GlobalNavigation(
+                            (GlobalNavigationType)Enum.Parse(typeof(GlobalNavigationType), source.Navigation.GlobalNavigation.NavigationType.ToString()),
+                            source.Navigation.GlobalNavigation.StructuralNavigation != null ?
+                                new Model.StructuralNavigation
+                                {
+                                    RemoveExistingNodes = source.Navigation.GlobalNavigation.StructuralNavigation.RemoveExistingNodes,
+                                } : null,
+                            source.Navigation.GlobalNavigation.ManagedNavigation != null ?
+                                new Model.ManagedNavigation
+                                {
+                                    TermSetId = source.Navigation.GlobalNavigation.ManagedNavigation.TermSetId,
+                                    TermStoreId = source.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId,
+                                } : null
+                        )
+                        : null,
+                    source.Navigation.CurrentNavigation != null ?
+                        new CurrentNavigation(
+                            (CurrentNavigationType)Enum.Parse(typeof(CurrentNavigationType), source.Navigation.CurrentNavigation.NavigationType.ToString()),
+                            source.Navigation.CurrentNavigation.StructuralNavigation != null ?
+                                new Model.StructuralNavigation
+                                {
+                                    RemoveExistingNodes = source.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes,
+                                } : null,
+                            source.Navigation.CurrentNavigation.ManagedNavigation != null ?
+                                new Model.ManagedNavigation
+                                {
+                                    TermSetId = source.Navigation.CurrentNavigation.ManagedNavigation.TermSetId,
+                                    TermStoreId = source.Navigation.CurrentNavigation.ManagedNavigation.TermStoreId,
+                                } : null
+                        )
+                        : null
+                    );
+
+                // If I need to update the Global Structural Navigation nodes
+                if (result.Navigation.GlobalNavigation != null &&
+                    result.Navigation.GlobalNavigation.StructuralNavigation != null &&
+                    source.Navigation.GlobalNavigation != null &&
+                    source.Navigation.GlobalNavigation.StructuralNavigation != null)
+                {
+                    result.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.AddRange(
+                        from n in source.Navigation.GlobalNavigation.StructuralNavigation.NavigationNode
+                        select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()
+                        );
+                }
+
+                // If I need to update the Current Structural Navigation nodes
+                if (result.Navigation.CurrentNavigation != null &&
+                    result.Navigation.CurrentNavigation.StructuralNavigation != null &&
+                    source.Navigation.CurrentNavigation != null &&
+                    source.Navigation.CurrentNavigation.StructuralNavigation != null)
+                {
+                    result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.AddRange(
+                        from n in source.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode
+                        select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()
+                        );
                 }
             }
 
@@ -2295,7 +2422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return string.Join(",", permissions.ToArray());
         }
-            
+
         public static BasePermissions ToBasePermissionsV201605(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
@@ -2306,7 +2433,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 bp.Set((PermissionKind)permissionInt);
             }
-            else if(!string.IsNullOrEmpty(basePermissionString)){
+            else if (!string.IsNullOrEmpty(basePermissionString))
+            {
                 foreach (var pk in basePermissionString.Split(','))
                 {
                     PermissionKind permissionKind;
@@ -2318,7 +2446,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return bp;
         }
-    
+
+        public static Model.NavigationNode FromSchemaNavigationNodeToModelNavigationNodeV201605(
+            this V201605.NavigationNode node)
+        {
+            var result = new Model.NavigationNode
+            {
+                IsExternal = node.IsExternal,
+                Title = node.Title,
+                Url = node.Url,
+            };
+
+            result.NavigationNodes.AddRange(
+                (from n in node.ChildNodes
+                select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()));
+
+            return (result);  
+        }
+
+        public static V201605.NavigationNode FromModelNavigationNodeToSchemaNavigationNodeV201605(
+            this Model.NavigationNode node)
+        {
+            var result = new V201605.NavigationNode
+            {
+                IsExternal = node.IsExternal,
+                Title = node.Title,
+                Url = node.Url,
+                ChildNodes = (from n in node.NavigationNodes
+                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+            };
+
+            return (result);
+        }
     }
 }
 

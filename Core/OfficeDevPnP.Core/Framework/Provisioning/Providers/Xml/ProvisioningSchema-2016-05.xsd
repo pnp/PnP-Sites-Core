@@ -997,6 +997,13 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="ClearSubscopes" type="xsd:boolean" use="required">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Defines whether to clear subscopes or not while breaking role inheritance, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:complexType>
 
   <xsd:complexType name="Navigation">
@@ -3801,6 +3808,42 @@
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       A Term Set, optional collection of elements.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="Contributors" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                An optional list of TermGroup Contributors.
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="User" type="pnp:User" minOccurs="1" maxOccurs="unbounded">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      A single TermGroup Contributor.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="Members" minOccurs="0">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                An optional list of TermGroup Members.
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="User" type="pnp:User" minOccurs="1" maxOccurs="unbounded">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      A single TermGroup Member.
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:element>

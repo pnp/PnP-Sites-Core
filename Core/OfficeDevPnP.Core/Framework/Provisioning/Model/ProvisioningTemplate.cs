@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
     {
-        #region Private Members
+        #region Private Fields
 
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private LocalizationCollection _localizations;
@@ -26,6 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ComposedLook _composedLook;
         private Features _features;
         private SiteSecurity _siteSecurity;
+        private Navigation _navigation;
         private CustomActions _customActions;
         private FileCollection _files;
         private ExtensibilityHandlerCollection _extensibilityHandlers;
@@ -139,6 +140,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._siteSecurity != null)
                 {
                     this._siteSecurity.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Navigation configurations of the Provisioning Template
+        /// </summary>
+        public Navigation Navigation
+        {
+            get { return this._navigation; }
+            set
+            {
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = null;
+                }
+                this._navigation = value;
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = this;
                 }
             }
         }

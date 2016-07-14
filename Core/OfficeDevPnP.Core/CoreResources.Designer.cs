@@ -1430,6 +1430,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating new page {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Pages_Creating_new_page__0_ {

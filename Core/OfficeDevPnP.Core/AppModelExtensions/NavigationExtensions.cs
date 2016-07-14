@@ -390,12 +390,12 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web.ParentWeb, pw => pw.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
 
-            StandardNavigationSettings targeNavigationSettings =
+            StandardNavigationSettings targetNavigationSettings =
                 navigationKind == ManagedNavigationKind.Current ?
                 navigationSettings.CurrentNavigation : navigationSettings.GlobalNavigation;
 
-            if (targeNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
-                (web.ParentWeb.ServerObjectIsNull.HasValue && !web.ParentWeb.ServerObjectIsNull.Value))
+            if (targetNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
+                !web.ParentWeb.ServerObjectIsNull())
             {
                 Uri currentWebUri = new Uri(web.Url);
                 Uri parentWebUri = new Uri(String.Format("{0}://{1}{2}", currentWebUri.Scheme, currentWebUri.Host, web.ParentWeb.ServerRelativeUrl));
@@ -407,7 +407,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                result = targeNavigationSettings.Source == StandardNavigationSource.TaxonomyProvider;
+                result = targetNavigationSettings.Source == StandardNavigationSource.TaxonomyProvider;
             }
 
             return (result);

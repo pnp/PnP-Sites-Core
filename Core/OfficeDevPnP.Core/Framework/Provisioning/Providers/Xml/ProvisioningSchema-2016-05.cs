@@ -270,6 +270,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         private TermSet[] termSetsField;
         
+        private User[] contributorsField;
+        
+        private User[] membersField;
+        
         private string descriptionField;
         
         private bool siteCollectionTermGroupField;
@@ -284,6 +288,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
             }
             set {
                 this.termSetsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public User[] Contributors {
+            get {
+                return this.contributorsField;
+            }
+            set {
+                this.contributorsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public User[] Members {
+            get {
+                return this.membersField;
+            }
+            set {
+                this.membersField = value;
             }
         }
         
@@ -816,6 +842,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
             }
             set {
                 this.idField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
+    public partial class User {
+        
+        private string nameField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
             }
         }
     }
@@ -2417,6 +2465,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         private bool copyRoleAssignmentsField;
         
+        private bool clearSubscopesField;
+        
         public Security() {
             this.breakRoleInheritanceField = false;
             this.copyRoleAssignmentsField = false;
@@ -2510,26 +2560,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
                 this.copyRoleAssignmentsField = value;
             }
         }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
-    public partial class User {
-        
-        private string nameField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
+        public bool ClearSubscopes {
             get {
-                return this.nameField;
+                return this.clearSubscopesField;
             }
             set {
-                this.nameField = value;
+                this.clearSubscopesField = value;
             }
         }
     }
@@ -4377,7 +4416,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
     public partial class BaseFieldValue {
         
         private string fieldNameField;
@@ -5105,7 +5144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
     public partial class WebPartPageWebPart {
         
         private System.Xml.XmlElement contentsField;
@@ -5397,7 +5436,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
     public partial class WikiPageWebPart {
         
         private System.Xml.XmlElement contentsField;
