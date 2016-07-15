@@ -67,6 +67,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 group.Description = modelTermGroup.Description;
 
+                                // Handle TermGroup Contributors, if any
+                                if (modelTermGroup.Contributors != null && modelTermGroup.Contributors.Count > 0)
+                                {
+                                    foreach(var c in modelTermGroup.Contributors)
+                                    {
+                                        group.AddContributor(c.Name);
+                                    }
+                                }
+
+                                // Handle TermGroup Managers, if any
+                                if (modelTermGroup.Managers != null && modelTermGroup.Managers.Count > 0)
+                                {
+                                    foreach (var m in modelTermGroup.Managers)
+                                    {
+                                        group.AddGroupManager(m.Name);
+                                    }
+                                }
+
                                 termStore.CommitAll();
                                 web.Context.Load(group);
                                 web.Context.ExecuteQueryRetry();
@@ -361,6 +379,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Id = isSiteCollectionTermGroup ? Guid.Empty : termGroup.Id,
                             Description = termGroup.Description
                         };
+
+                        // If we need to include TermGroups security
+                        if (creationInfo.IncludeTermGroupsSecurity)
+                        {
+                            termGroup.EnsureProperties(tg => tg.ContributorPrincipalNames, tg => tg.GroupManagerPrincipalNames);
+
+                            // Extract the TermGroup contributors
+                            modelTermGroup.Contributors.AddRange(
+                                from c in termGroup.ContributorPrincipalNames
+                                select new Model.User { Name = c });
+
+                            // Extract the TermGroup managers
+                            modelTermGroup.Managers.AddRange(
+                                from m in termGroup.GroupManagerPrincipalNames
+                                select new Model.User { Name = m });
+                        }
 
                         foreach (var termSet in termGroup.TermSets)
                         {

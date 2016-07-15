@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
+        private bool includeTermGroupsSecurity = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
         private bool persistPublishingFiles = false;
@@ -161,6 +162,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return this.includeSiteCollectionTermGroup; }
             set { this.includeSiteCollectionTermGroup = value; }
+        }
+
+        public bool IncludeTermGroupsSecurity
+        {
+            get { return this.includeTermGroupsSecurity; }
+            set { this.includeTermGroupsSecurity = value; }
         }
 
         internal List<String> PropertyBagPropertiesToPreserve

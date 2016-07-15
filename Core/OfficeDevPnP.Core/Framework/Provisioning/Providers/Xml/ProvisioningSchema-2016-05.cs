@@ -272,7 +272,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         private User[] contributorsField;
         
-        private User[] membersField;
+        private User[] managersField;
         
         private string descriptionField;
         
@@ -304,12 +304,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public User[] Members {
+        public User[] Managers {
             get {
-                return this.membersField;
+                return this.managersField;
             }
             set {
-                this.membersField = value;
+                this.managersField = value;
             }
         }
         

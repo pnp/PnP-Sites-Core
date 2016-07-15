@@ -3832,10 +3832,10 @@
               </xsd:sequence>
             </xsd:complexType>
           </xsd:element>
-          <xsd:element name="Members" minOccurs="0">
+          <xsd:element name="Managers" minOccurs="0">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
-                An optional list of TermGroup Members.
+                An optional list of TermGroup Managers.
               </xsd:documentation>
             </xsd:annotation>
             <xsd:complexType>

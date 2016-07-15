@@ -884,6 +884,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         Contributors = (from c in grp.Contributors
+                                         select new V201605.User { Name = c.Name }).ToArray(),
+                         Managers = (from m in grp.Managers
+                                     select new V201605.User { Name = m.Name }).ToArray(),
                          TermSets = (
                             from termSet in grp.TermSets
                             select new V201605.TermSet
@@ -1848,7 +1852,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 termSet.CustomProperties != null ? termSet.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null)
                             {
                                 Description = termSet.Description,
-                            })
+                            }),
+                        (from c in termGroup.Contributors
+                         select new Model.User { Name = c.Name }).ToArray(),
+                        (from m in termGroup.Managers
+                         select new Model.User { Name = m.Name }).ToArray()
                         )
                     {
                         Description = termGroup.Description,
