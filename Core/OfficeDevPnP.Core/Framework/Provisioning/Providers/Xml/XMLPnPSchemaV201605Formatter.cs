@@ -1744,9 +1744,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Files
 
-            // Translate Files, if any
+            // Translate Files and Directories, if any
             if (source.Files != null)
             {
+                // Handle Files
                 result.Files.AddRange(
                     from file in source.Files.File
                     select new Model.File(file.Src,
@@ -1762,7 +1763,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Contents = wp.Contents.InnerXml
                              }) : null,
                         file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
-                        file.Security.FromSchemaToTemplateObjectSecurityV201605()
+                        file.Security.FromSchemaToTemplateObjectSecurityV201605(),
+                        file.LevelSpecified ? 
+                            (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString()) : 
+                            Model.FileLevel.Draft
+                        )
+                    );
+
+                // Handle Directories of files
+                result.Directories.AddRange(
+                    from dir in source.Files.Directory
+                    select new Model.Directory(dir.Src,
+                        dir.Folder,
+                        dir.Overwrite,
+                        dir.LevelSpecified ?
+                            (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), dir.Level.ToString()) :
+                            Model.FileLevel.Draft,
+                        dir.Recursive,
+                        dir.IncludedExtensions,
+                        dir.ExcludedExtensions,
+                        dir.MetadataMappingFile,                        
+                        dir.Security.FromSchemaToTemplateObjectSecurityV201605()
                         )
                     );
             }

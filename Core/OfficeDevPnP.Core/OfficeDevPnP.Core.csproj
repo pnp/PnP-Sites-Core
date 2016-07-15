@@ -467,6 +467,8 @@
     <Compile Include="Framework\Provisioning\Model\CurrentNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\DefaultDocumentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\CustomAction.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Model\Directory.cs" />
+    <Compile Include="Framework\Provisioning\Model\DirectoryCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ExtensibilityHandler.cs" />
     <Compile Include="Framework\Provisioning\Model\FeatureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
@@ -494,6 +496,7 @@
     <Compile Include="Framework\Provisioning\Model\FieldRefCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\FileCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FileLevel.cs" />
     <Compile Include="Framework\Provisioning\Model\Folder.cs" />
     <Compile Include="Framework\Provisioning\Model\FolderCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\GlobalNavigation.cs" />

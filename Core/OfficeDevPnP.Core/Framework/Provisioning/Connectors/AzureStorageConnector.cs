@@ -100,6 +100,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         }
 
         /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                throw new ArgumentException("container");
+            }
+
+            if (!initialized)
+            {
+                Initialize();
+            }
+
+            List<string> result = new List<string>();
+
+            var containerTuple = ParseContainer(container);
+
+            container = containerTuple.Item1;
+            string prefix = string.IsNullOrEmpty(containerTuple.Item2) ? null : containerTuple.Item2;
+
+            CloudBlobContainer blobContainer = blobClient.GetContainerReference(container);
+
+            foreach (IListBlobItem item in blobContainer.ListBlobs(prefix, false))
+            {
+                if (item.GetType() == typeof(CloudBlobDirectory))
+                {
+                    CloudBlobDirectory blob = (CloudBlobDirectory)item;
+                    result.Add(blob.Uri.ToString());
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets a file as string from the default container
         /// </summary>
         /// <param name="fileName">Name of the file to get</param>

@@ -82,6 +82,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         }
 
         /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                container = "";
+            }
+
+            List<string> result = new List<string>();
+
+            string path = ConstructPath("", container);
+
+            foreach (string folder in Directory.EnumerateDirectories(path))
+            {
+                result.Add(folder.Substring(path.Length + 1));
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets a file as string from the default container
         /// </summary>
         /// <param name="fileName">Name of the file to get</param>

@@ -29,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private Navigation _navigation;
         private CustomActions _customActions;
         private FileCollection _files;
+        private DirectoryCollection _directories;
         private ExtensibilityHandlerCollection _extensibilityHandlers;
         private PageCollection _pages;
         private TermGroupCollection _termGroups;
@@ -69,6 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._customActions.ParentTemplate = this;
 
             this._files = new FileCollection(this);
+            this._directories = new DirectoryCollection(this);
             this._providers = new ProviderCollection(this); // Deprecated
             this._extensibilityHandlers = new ExtensibilityHandlerCollection(this);
             this._pages = new PageCollection(this);
@@ -235,6 +237,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._files; }
             private set { this._files = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of directories from which upload files for the template
+        /// </summary>
+        public DirectoryCollection Directories
+        {
+            get { return this._directories; }
+            private set { this._directories = value; }
         }
 
         /// <summary>

@@ -28,6 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Files"; }
         }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -36,7 +37,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
-                foreach (var file in template.Files)
+                // Build on the fly the list of additional files coming from the Directories
+                var directoryFiles = new List<Model.File>();
+                foreach (var directory in template.Directories)
+                {
+                    var metadataProperties = directory.GetMetadataProperties();
+                    directoryFiles.AddRange(directory.GetDirectoryFiles(metadataProperties));
+                }
+
+                foreach (var file in template.Files.Union(directoryFiles))
                 {
                     var folderName = parser.ParseString(file.Folder);
 
@@ -359,6 +368,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return stream;
+        }
+    }
+
+    internal static class DirectoryExtensions
+    {
+        internal static Dictionary<String, Dictionary<String, String>> GetMetadataProperties(this Model.Directory directory)
+        {
+            Dictionary<String, Dictionary<String, String>> result = null;
+
+            if (directory.MetadataMappingFile != null)
+            {
+                var metadataPropertiesStream = directory.ParentTemplate.Connector.GetFileStream(directory.MetadataMappingFile);
+                if (metadataPropertiesStream != null)
+                {
+                    using (var sr = new StreamReader(metadataPropertiesStream))
+                    {
+                        var metadataPropertiesString = sr.ReadToEnd();
+                        result = JsonConvert.DeserializeObject<Dictionary<String, Dictionary<String, String>>>(metadataPropertiesString);
+                    }
+                }
+            }
+
+            return (result);
+        }
+
+        internal static List<Model.File> GetDirectoryFiles(this Model.Directory directory, 
+            Dictionary<String, Dictionary<String, String>> metadataProperties = null)
+        {
+            var result = new List<Model.File>();
+
+            var files = directory.ParentTemplate.Connector.GetFiles(directory.Src);
+
+            result.AddRange(from file in files
+                            select new Model.File(
+                                directory.Src + @"\" + file,
+                                directory.Folder,
+                                directory.Overwrite,
+                                null, // No WebPartPages are supported with this technique
+                                metadataProperties[directory.Src + @"\" + file],
+                                directory.Security,
+                                directory.Level
+                                ));
+
+            if (directory.Recursive)
+            {
+                var subFolders = directory.ParentTemplate.Connector.GetFolders(directory.Src);
+                foreach (var folder in subFolders)
+                {
+                    directory.Src += @"\" + folder;
+                    result.AddRange(directory.GetDirectoryFiles(metadataProperties));
+                }
+            }
+
+            return (result);
         }
     }
 }

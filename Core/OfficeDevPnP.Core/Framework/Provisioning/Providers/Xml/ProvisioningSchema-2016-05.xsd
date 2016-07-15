@@ -2666,6 +2666,14 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="Level" type="pnp:FileLevel" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Level status for the File, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
     <xsd:attribute name="Recursive" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">

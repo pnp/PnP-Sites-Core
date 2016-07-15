@@ -5231,6 +5231,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         private bool overwriteField;
         
+        private FileLevel levelField;
+        
+        private bool levelFieldSpecified;
+        
         private bool recursiveField;
         
         private string includedExtensionsField;
@@ -5288,6 +5292,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
             }
             set {
                 this.overwriteField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public FileLevel Level {
+            get {
+                return this.levelField;
+            }
+            set {
+                this.levelField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool LevelSpecified {
+            get {
+                return this.levelFieldSpecified;
+            }
+            set {
+                this.levelFieldSpecified = value;
             }
         }
         

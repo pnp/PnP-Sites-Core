@@ -113,6 +113,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         }
 
         /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                container = "";
+            }
+
+            var result = (from file in this.pnpInfo.Files
+                          where file.Folder.StartsWith(container, StringComparison.InvariantCultureIgnoreCase) 
+                            && !file.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase)
+                          select file.Folder).ToList();
+
+            return result;
+        }
+
+        /// <summary>
         /// Gets a file as string from the default container
         /// </summary>
         /// <param name="fileName">Name of the file to get</param>
