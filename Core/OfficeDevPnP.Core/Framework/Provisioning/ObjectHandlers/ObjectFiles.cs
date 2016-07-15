@@ -400,6 +400,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var files = directory.ParentTemplate.Connector.GetFiles(directory.Src);
 
+            if (!String.IsNullOrEmpty(directory.IncludedExtensions))
+            {
+                var includedExtensions = directory.IncludedExtensions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                files = files.Where(f => includedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
+            }
+
+            if (!String.IsNullOrEmpty(directory.ExcludedExtensions))
+            {
+                var excludedExtensions = directory.ExcludedExtensions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                files = files.Where(f => !excludedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
+            }
+
             result.AddRange(from file in files
                             select new Model.File(
                                 directory.Src + @"\" + file,
