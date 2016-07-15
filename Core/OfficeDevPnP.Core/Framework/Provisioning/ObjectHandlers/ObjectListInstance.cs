@@ -762,6 +762,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.EnableFolderCreation,
                 l => l.EnableModeration,
                 l => l.EnableMinorVersions,
+                l => l.ForceCheckout,
                 l => l.DraftVersionVisibility,
                 l => l.Views,
                 l => l.RootFolder
@@ -906,6 +907,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     isDirty = true;
                                 }
                             }
+                        }
+
+                        if (templateList.ForceCheckout != existingList.ForceCheckout)
+                        {
+                            existingList.ForceCheckout = templateList.ForceCheckout;
+                            isDirty = true;
                         }
                     }
                 }
@@ -1053,6 +1060,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Only supported on Document Libraries
                         createdList.EnableMinorVersions = list.EnableMinorVersions;
                         createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
+                        createdList.ForceCheckout = list.ForceCheckout;
 
                         if (list.EnableMinorVersions)
                         {
@@ -1224,6 +1232,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.ContentTypes,
                         l => l.Views,
                         l => l.EnableModeration,
+                        l => l.ForceCheckout,
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
@@ -1304,7 +1313,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         MinorVersionLimit =
                             siteList.IsObjectPropertyInstantiated("MajorWithMinorVersionsLimit")
                                 ? siteList.MajorWithMinorVersionsLimit
-                                : 0
+                                : 0,
+                        ForceCheckout = siteList.IsObjectPropertyInstantiated("ForceCheckout") ? 
+                            siteList.ForceCheckout : false,
                     };
 
                     if (creationInfo.PersistMultiLanguageResources)

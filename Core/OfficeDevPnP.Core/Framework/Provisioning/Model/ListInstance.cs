@@ -152,6 +152,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public bool Hidden { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to force checkout of documents in the library
+        /// </summary>
+        public bool ForceCheckout { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets whether attachments are enabled. Defaults to true.
         /// </summary>
         public bool EnableAttachments
