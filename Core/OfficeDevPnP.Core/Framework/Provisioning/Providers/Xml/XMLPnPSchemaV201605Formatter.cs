@@ -577,6 +577,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              {
                                  ContentTypeID = contentTypeBinding.ContentTypeId,
                                  Default = contentTypeBinding.Default,
+                                 Remove = contentTypeBinding.Remove,
                              }).ToArray() : null,
                          Views = list.Views.Count > 0 ?
                          new V201605.ListInstanceViews
@@ -1583,6 +1584,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  {
                                      ContentTypeId = contentTypeBinding.ContentTypeID,
                                      Default = contentTypeBinding.Default,
+                                     Remove = contentTypeBinding.Remove,
                                  }) : null),
                         (list.Views != null ?
                                 (from view in list.Views.Any
