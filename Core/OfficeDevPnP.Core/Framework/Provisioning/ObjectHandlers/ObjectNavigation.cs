@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation);
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser);
                                 break;
                         }
                         web.Context.ExecuteQueryRetry();
@@ -163,7 +163,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser);
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -172,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser);
                                 break;
                         }
                         web.Context.ExecuteQueryRetry();
@@ -196,17 +196,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return siblingsEnabled;
         }
 
-        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation)
+        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, false);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, false);
         }
 
-        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation)
+        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, true);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, true);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, Boolean currentNavigation)
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, Boolean currentNavigation)
         {
             // Determine the target structural navigation
             var navigationType = currentNavigation ?
@@ -221,24 +221,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Provision root level nodes, and children recursively
             ProvisionStructuralNavigationNodes(
-                web, 
+                web,
+                parser,
                 navigationType, 
-                structuralNavigation.NavigationNodes);
+                structuralNavigation.NavigationNodes
+                );
         }
 
-        private void ProvisionStructuralNavigationNodes(Web web, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, String parentNodeTitle = null)
+        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, String parentNodeTitle = null)
         {
             foreach (var node in nodes)
             {
                 web.AddNavigationNode(
                     node.Title,
-                    new Uri(node.Url),
+                    new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
                     parentNodeTitle,
                     navigationType,
                     node.IsExternal);
 
                 ProvisionStructuralNavigationNodes(
                     web, 
+                    parser,
                     navigationType, 
                     node.NavigationNodes, 
                     node.Title);
@@ -286,8 +289,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = currentNavigation ?
                 web.Navigation.QuickLaunch : web.Navigation.TopNavigationBar;
 
+            web.Context.Load(web, w => w.ServerRelativeUrl);
+            web.Context.Load(sourceNodes);
+            web.Context.ExecuteQueryRetry();
+
             result.NavigationNodes.AddRange(from n in sourceNodes
-                                            select n.ToDomainModelNavigationNode());
+                                            select n.ToDomainModelNavigationNode(web));
 
             return (result);
         }
@@ -349,17 +356,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
     internal static class NavigationNodeExtensions
     {
-        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node)
+        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web)
         {
             var result = new Model.NavigationNode
             {
                 Title = node.Title,
                 IsExternal = node.IsExternal,
-                Url = node.Url,
+                Url = node.Url.Replace(web.ServerRelativeUrl, "{site}"),
             };
 
+            node.Context.Load(node.Children);
+            node.Context.ExecuteQueryRetry();
+
             result.NavigationNodes.AddRange(from n in node.Children
-                                            select n.ToDomainModelNavigationNode());
+                                            select n.ToDomainModelNavigationNode(web));
 
             return (result);
         }

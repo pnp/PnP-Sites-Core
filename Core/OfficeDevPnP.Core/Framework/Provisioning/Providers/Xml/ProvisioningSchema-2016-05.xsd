@@ -3830,7 +3830,7 @@
             </xsd:annotation>
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="User" type="pnp:User" minOccurs="1" maxOccurs="unbounded">
+                <xsd:element name="User" type="pnp:User" minOccurs="0" maxOccurs="unbounded">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       A single TermGroup Contributor.
@@ -3848,7 +3848,7 @@
             </xsd:annotation>
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="User" type="pnp:User" minOccurs="1" maxOccurs="unbounded">
+                <xsd:element name="User" type="pnp:User" minOccurs="0" maxOccurs="unbounded">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       A single TermGroup Member.

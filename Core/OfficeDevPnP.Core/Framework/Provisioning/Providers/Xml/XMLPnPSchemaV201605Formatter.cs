@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Load the XSD embedded resource
             Stream stream = typeof(XMLPnPSchemaV201605Formatter)
                 .Assembly
-                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2015-12.xsd");
+                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2016-05.xsd");
 
             // Prepare the XML Schema Set
             XmlSchemaSet schemas = new XmlSchemaSet();
@@ -765,6 +765,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Files, if any
             if (template.Files != null && template.Files.Count > 0)
             {
+                result.Files = new ProvisioningTemplateFiles();
+
                 result.Files.File =
                     (from file in template.Files
                      select new V201605.File
@@ -1014,11 +1016,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (!String.IsNullOrEmpty(template.SiteSearchSettings))
             {
+                if (result.SearchSettings== null)
+                {
+                    result.SearchSettings = new ProvisioningTemplateSearchSettings();
+                }
                 result.SearchSettings.SiteSearchSettings = template.SiteSearchSettings.ToXmlElement();
             }
 
             if (!String.IsNullOrEmpty(template.WebSearchSettings))
             {
+                if (result.SearchSettings == null)
+                {
+                    result.SearchSettings = new ProvisioningTemplateSearchSettings();
+                }
                 result.SearchSettings.WebSearchSettings = template.WebSearchSettings.ToXmlElement();
             }
 
@@ -1747,45 +1757,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Files and Directories, if any
             if (source.Files != null)
             {
-                // Handle Files
-                result.Files.AddRange(
-                    from file in source.Files.File
-                    select new Model.File(file.Src,
-                        file.Folder,
-                        file.Overwrite,
-                        file.WebParts != null ?
-                            (from wp in file.WebParts
-                             select new Model.WebPart
-                             {
-                                 Order = (uint)wp.Order,
-                                 Zone = wp.Zone,
-                                 Title = wp.Title,
-                                 Contents = wp.Contents.InnerXml
-                             }) : null,
-                        file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
-                        file.Security.FromSchemaToTemplateObjectSecurityV201605(),
-                        file.LevelSpecified ? 
-                            (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString()) : 
-                            Model.FileLevel.Draft
-                        )
-                    );
+                if (source.Files.File != null && source.Files.File.Length > 0)
+                {
+                    // Handle Files
+                    result.Files.AddRange(
+                        from file in source.Files.File
+                        select new Model.File(file.Src,
+                            file.Folder,
+                            file.Overwrite,
+                            file.WebParts != null ?
+                                (from wp in file.WebParts
+                                 select new Model.WebPart
+                                 {
+                                     Order = (uint)wp.Order,
+                                     Zone = wp.Zone,
+                                     Title = wp.Title,
+                                     Contents = wp.Contents.InnerXml
+                                 }) : null,
+                            file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
+                            file.Security.FromSchemaToTemplateObjectSecurityV201605(),
+                            file.LevelSpecified ?
+                                (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString()) :
+                                Model.FileLevel.Draft
+                            )
+                        );
+                }
 
-                // Handle Directories of files
-                result.Directories.AddRange(
-                    from dir in source.Files.Directory
-                    select new Model.Directory(dir.Src,
-                        dir.Folder,
-                        dir.Overwrite,
-                        dir.LevelSpecified ?
-                            (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), dir.Level.ToString()) :
-                            Model.FileLevel.Draft,
-                        dir.Recursive,
-                        dir.IncludedExtensions,
-                        dir.ExcludedExtensions,
-                        dir.MetadataMappingFile,                        
-                        dir.Security.FromSchemaToTemplateObjectSecurityV201605()
-                        )
-                    );
+                if (source.Files.Directory != null && source.Files.Directory.Length > 0)
+                {
+                    // Handle Directories of files
+                    result.Directories.AddRange(
+                        from dir in source.Files.Directory
+                        select new Model.Directory(dir.Src,
+                            dir.Folder,
+                            dir.Overwrite,
+                            dir.LevelSpecified ?
+                                (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), dir.Level.ToString()) :
+                                Model.FileLevel.Draft,
+                            dir.Recursive,
+                            dir.IncludedExtensions,
+                            dir.ExcludedExtensions,
+                            dir.MetadataMappingFile,
+                            dir.Security.FromSchemaToTemplateObjectSecurityV201605()
+                            )
+                        );
+                }
             }
 
             #endregion
@@ -2492,9 +2508,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 Url = node.Url,
             };
 
-            result.NavigationNodes.AddRange(
-                (from n in node.ChildNodes
-                select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()));
+            if (node.ChildNodes != null && node.ChildNodes.Length > 0)
+            {
+                result.NavigationNodes.AddRange(
+                    (from n in node.ChildNodes
+                     select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()));
+            }
 
             return (result);  
         }

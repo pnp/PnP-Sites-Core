@@ -12,16 +12,30 @@ using System.Xml.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
 {
+    // IMPORTANT: Whenever you refresh the .CS file for the schema version (ProvisioningSchema-2016-05.cs)
+    // you have to comment the attribute:
+    //
+    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema")]
+    // 
+    // for the following types:
+    // - DataValue
+    // - BaseFieldValue
+    // - FieldDefault
+    // - WebPartPageWebPart
+    // - WikiPageWebPart
+    //
+    // If you don't do that, the XmlSerializer will fail to serialize the generated templates
+
     [XmlSchemaProviderAttribute("GetSchema")]
     public partial class WikiPageWebPart : IXmlSerializable
     {
         public static XmlQualifiedName GetSchema(XmlSchemaSet schemaSet)
         {
             String wikiPageWebPartSchemaString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "elementFormDefault=\"qualified\" " +
-                "xmlns=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
-                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
+                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                     "<xsd:complexType name=\"WikiPageWebPart\">" +
                         "<xsd:all>" +
@@ -43,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(webPartSchema);
 
-            return (new XmlQualifiedName("WikiPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("WikiPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -53,7 +67,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
 
             XElement webPartXml = (XElement)XElement.ReadFrom(reader);
             this.Title = webPartXml.Attribute("Title").Value;
@@ -69,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
             writer.WriteAttributeString("Title", this.Title);
             writer.WriteAttributeString("Row", this.Row.ToString());
             writer.WriteAttributeString("Column", this.Column.ToString());
-            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
+            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05);
 
             using (XmlReader xr = new XmlNodeReader(this.Contents))
             {
@@ -86,10 +100,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
         public static XmlQualifiedName GetSchema(XmlSchemaSet schemaSet)
         {
             String baseFieldValueSchemaString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "elementFormDefault=\"qualified\" " +
-                "xmlns=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
-                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
+                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                     "<xsd:complexType name=\"BaseFieldValue\">" +
                         "<xsd:simpleContent>" +
@@ -104,7 +118,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(baseFieldValueSchema);
 
-            return (new XmlQualifiedName("BaseFieldValue", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("BaseFieldValue", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -114,7 +128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
 
             XElement baseFieldValueXml = (XElement)XElement.ReadFrom(reader);
             this.FieldName = baseFieldValueXml.Attribute("FieldName").Value;
@@ -152,10 +166,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
         public static XmlQualifiedName GetSchema(XmlSchemaSet schemaSet)
         {
             String wikiPageWebPartSchemaString = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
-              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+              "<xsd:schema targetNamespace=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "elementFormDefault=\"qualified\" " +
-                "xmlns=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
-                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema\" " +
+                "xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
+                "xmlns:pnp=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\" " +
                 "xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">" +
                     "<xsd:complexType name=\"WebPartPageWebPart\">" +
                         "<xsd:all>" +
@@ -177,7 +191,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(webPartSchema);
 
-            return (new XmlQualifiedName("WebPartPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("WebPartPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -187,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
 
             XElement webPartXml = (XElement)XElement.ReadFrom(reader);
             this.Title = webPartXml.Attribute("Title").Value;
@@ -203,7 +217,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
             writer.WriteAttributeString("Title", this.Title);
             writer.WriteAttributeString("Zone", this.Zone);
             writer.WriteAttributeString("Order", this.Order.ToString());
-            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
+            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05);
 
             using (XmlReader xr = new XmlNodeReader(this.Contents))
             {
@@ -215,6 +229,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605
     }
 
     public partial class NavigationNode {
+
+        [XmlIgnore]
         public NavigationNode[] ChildNodes
         {
             get { return (this.NavigationNode1); }
