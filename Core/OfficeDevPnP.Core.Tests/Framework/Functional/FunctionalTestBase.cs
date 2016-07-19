@@ -211,19 +211,30 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
         {
-            // create a sub site in the central site collection
-            Site site = tenant.GetSiteByUrl(sitecollectionUrl);
-            tenant.Context.Load(site);
-            tenant.Context.ExecuteQueryRetry();
-            Web web = site.RootWeb;
-            web.Context.Load(web);
-            web.Context.ExecuteQueryRetry();
+            // Create a sub site in the central site collection
+            using (var cc = TestCommon.CreateClientContext(sitecollectionUrl))
+            {
+                //Create sub site
+                SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
+                var subWeb = cc.Web.CreateWeb(sub);
+                subWeb.EnsureProperty(t => t.Url);
+                return subWeb.Url;
+            }
 
-            //Create sub site
-            SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
-            var subWeb = web.CreateWeb(sub);
-            subWeb.EnsureProperty(t => t.Url);
-            return subWeb.Url;
+            // Below approach is not working on edog...to be investigated
+            //// create a sub site in the central site collection
+            //Site site = tenant.GetSiteByUrl(sitecollectionUrl);
+            //tenant.Context.Load(site);
+            //tenant.Context.ExecuteQueryRetry();
+            //Web web = site.RootWeb;
+            //web.Context.Load(web);
+            //web.Context.ExecuteQueryRetry();
+
+            ////Create sub site
+            //SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
+            //var subWeb = web.CreateWeb(sub);
+            //subWeb.EnsureProperty(t => t.Url);
+            //return subWeb.Url;
         }
 #else
         private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
