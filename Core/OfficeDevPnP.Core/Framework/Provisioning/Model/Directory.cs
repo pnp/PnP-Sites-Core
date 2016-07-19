@@ -94,9 +94,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this()
         {
             this.Src = src;
+            this.Folder = folder;
             this.Overwrite = overwrite;
             this.Level = level;
-            this.Folder = folder;
+            this.Recursive = recursive;
+            this.IncludedExtensions = includeExtensions;
+            this.ExcludedExtensions = excludeExtensions;
+            this.MetadataMappingFile = metadataMappingFile;
             if (security != null)
             {
                 this.Security = security;

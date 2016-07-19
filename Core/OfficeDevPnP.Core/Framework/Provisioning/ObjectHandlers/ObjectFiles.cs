@@ -322,7 +322,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Files.Any();
+                _willProvision = template.Files.Any() | template.Directories.Any();
             }
             return _willProvision.Value;
         }
@@ -418,7 +418,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 directory.Folder,
                                 directory.Overwrite,
                                 null, // No WebPartPages are supported with this technique
-                                metadataProperties[directory.Src + @"\" + file],
+                                metadataProperties != null ? metadataProperties[directory.Src + @"\" + file] : null,
                                 directory.Security,
                                 directory.Level
                                 ));
@@ -429,6 +429,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var folder in subFolders)
                 {
                     directory.Src += @"\" + folder;
+                    directory.Folder += @"\" + folder;
                     result.AddRange(directory.GetDirectoryFiles(metadataProperties));
                 }
             }
