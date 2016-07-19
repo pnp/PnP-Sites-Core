@@ -1552,6 +1552,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating new TermSet &apos;{0}&apos;.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_TermGroups_Creating_TermSet {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups_Creating_TermSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_ {
@@ -1785,7 +1794,7 @@ namespace OfficeDevPnP.Core {
         ///        return;
         ///	}
         ///	
-        ///	$(&quot;.ms-siteSettings-root . [rest of string was truncated]&quot;;.
+        ///	$(&quot;.ms-siteSettings-root .ms-linksection- [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -1821,7 +1830,10 @@ namespace OfficeDevPnP.Core {
         ///
         ///.ms-dialog #s4-bodyContainer {
         ///    min-width: 0;
-        ///    f [rest of string was truncated]&quot;;.
+        ///    font-size: 1em;
+        ///}
+        ///
+        ////* Tablet [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI_CSS {
             get {
