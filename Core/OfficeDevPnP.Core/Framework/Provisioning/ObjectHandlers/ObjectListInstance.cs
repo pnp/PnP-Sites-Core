@@ -762,6 +762,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.EnableFolderCreation,
                 l => l.EnableModeration,
                 l => l.EnableMinorVersions,
+                l => l.ForceCheckout,
                 l => l.DraftVersionVisibility,
                 l => l.Views,
                 l => l.RootFolder
@@ -907,6 +908,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                         }
+
+                        if (templateList.ForceCheckout != existingList.ForceCheckout)
+                        {
+                            existingList.ForceCheckout = templateList.ForceCheckout;
+                            isDirty = true;
+                        }
                     }
                 }
                 if (isDirty)
@@ -930,12 +937,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var bindingAddedToList = false;
                     foreach (var ctb in bindingsToAdd)
                     {
-                        // Added a check so that if no bindings were actually added then the SetDefaultContentTypeToList method will not be executed
-                        // This is to address a specific scenario when OOTB PWA lists can not be updated as they are centrally managed
-                        var addedToList = existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
-                        if (addedToList)
+                        var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
+                        if (tempCT != null)
                         {
-                            bindingAddedToList = true;
+                            // Get the name of the existing CT
+                            var name = tempCT.EnsureProperty(ct => ct.Name);
+
+                            // If the CT does not exist in the target list, and we don't have to remove it
+                            if (!existingList.ContentTypeExistsByName(name) && !ctb.Remove)
+                            {
+                                // Added a check so that if no bindings were actually added then the SetDefaultContentTypeToList method will not be executed
+                                // This is to address a specific scenario when OOTB PWA lists can not be updated as they are centrally managed
+                                var addedToList = existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                                if (addedToList)
+                                {
+                                    bindingAddedToList = true;
+                                }
+                            }
+                            // Else if the CT exists in the target list, and we have to remove it
+                            else if (existingList.ContentTypeExistsByName(name) && ctb.Remove)
+                            {
+                                // Then remove it from the target list
+                                existingList.RemoveContentTypeByName(name);
+                            }
                         }
                     }
 
@@ -1053,6 +1077,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Only supported on Document Libraries
                         createdList.EnableMinorVersions = list.EnableMinorVersions;
                         createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
+                        createdList.ForceCheckout = list.ForceCheckout;
 
                         if (list.EnableMinorVersions)
                         {
@@ -1119,12 +1144,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId, searchInSiteHierarchy: true);
                     if (tempCT != null)
                     {
-                        // Check if CT is already available
+                        // Get the name of the existing CT
                         var name = tempCT.EnsureProperty(ct => ct.Name);
-                        if (!createdList.ContentTypeExistsByName(name))
+
+                        // If the CT does not exist in the target list, and we don't have to remove it
+                        if (!createdList.ContentTypeExistsByName(name) && !ctBinding.Remove)
                         {
+                            // Then add it to the target list
                             createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                         }
+                        // Else if the CT exists in the target list, and we have to remove it
+                        else if (createdList.ContentTypeExistsByName(name) && ctBinding.Remove)
+                        {
+                            // Then remove it from the target list
+                            createdList.RemoveContentTypeByName(name);
+                        }
+
                         if (ctBinding.Default)
                         {
                             defaultCtBinding = ctBinding;
@@ -1224,6 +1259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.ContentTypes,
                         l => l.Views,
                         l => l.EnableModeration,
+                        l => l.ForceCheckout,
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
@@ -1304,7 +1340,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         MinorVersionLimit =
                             siteList.IsObjectPropertyInstantiated("MajorWithMinorVersionsLimit")
                                 ? siteList.MajorWithMinorVersionsLimit
-                                : 0
+                                : 0,
+                        ForceCheckout = siteList.IsObjectPropertyInstantiated("ForceCheckout") ? 
+                            siteList.ForceCheckout : false,
                     };
 
                     if (creationInfo.PersistMultiLanguageResources)

@@ -19,11 +19,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Changed by Paolo Pialorsi to embrace the new sub-site attributes for break role inheritance and copy role assignments
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
-                if (web.IsSubSite())
+                if (web.IsSubSite() && !template.Security.BreakRoleInheritance)
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
                     return parser;
+                }
+
+                if (web.IsSubSite() && template.Security.BreakRoleInheritance)
+                {
+                    web.BreakRoleInheritance(template.Security.CopyRoleAssignments, template.Security.ClearSubscopes);
                 }
 
                 var siteSecurity = template.Security;
@@ -272,13 +278,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                web.EnsureProperties(w => w.HasUniqueRoleAssignments, w => w.Title);
+
+                // Changed by Paolo Pialorsi to embrace the new sub-site attributes for break role inheritance and copy role assignments
                 // if this is a sub site then we're not creating security entities as by default security is inherited from the root site
-                if (web.IsSubSite())
+                if (web.IsSubSite() && !web.HasUniqueRoleAssignments)
                 {
                     return template;
                 }
-
-                web.Context.Load(web, w => w.HasUniqueRoleAssignments, w => w.Title);
 
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;

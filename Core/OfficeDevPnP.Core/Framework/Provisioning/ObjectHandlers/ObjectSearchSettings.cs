@@ -22,11 +22,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var site = (web.Context as ClientContext).Site;
                 try
                 {
-                    var searchSettings = site.GetSearchConfiguration();
+                    var siteSearchSettings = site.GetSearchConfiguration();
 
-                    if (!String.IsNullOrEmpty(searchSettings))
+                    if (!String.IsNullOrEmpty(siteSearchSettings))
                     {
-                        template.SearchSettings = searchSettings;
+                        template.SiteSearchSettings = siteSearchSettings;
+                    }
+
+                    var webSearchSettings = web.GetSearchConfiguration();
+
+                    if (!String.IsNullOrEmpty(webSearchSettings))
+                    {
+                        template.WebSearchSettings = webSearchSettings;
                     }
                 }
                 catch (ServerException)
@@ -43,9 +50,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var site = (web.Context as ClientContext).Site;
-                if (!String.IsNullOrEmpty(template.SearchSettings))
+                if (!String.IsNullOrEmpty(template.SiteSearchSettings))
                 {
-                    site.SetSearchConfiguration(template.SearchSettings);
+                    site.SetSearchConfiguration(template.SiteSearchSettings);
+                }
+
+                if (!String.IsNullOrEmpty(template.WebSearchSettings))
+                {
+                    web.SetSearchConfiguration(template.WebSearchSettings);
                 }
             }
 

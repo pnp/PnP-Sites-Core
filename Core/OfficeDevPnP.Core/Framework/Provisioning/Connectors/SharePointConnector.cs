@@ -88,10 +88,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
             {
                 List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-                string folders = GetFolders(container);
+                string folders = GetUrlFolders(container);
 
                 CamlQuery camlQuery = new CamlQuery();
                 camlQuery.ViewXml = @"<View Scope='FilesOnly'><Query></Query></View>";
+
+                if (folders.Length > 0)
+                {
+                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                }
+
+                ListItemCollection listItems = list.GetItems(camlQuery);
+                cc.Load(listItems);
+                cc.ExecuteQueryRetry();
+
+                foreach (var listItem in listItems)
+                {
+                    result.Add(listItem.FieldValues["FileLeafRef"].ToString());
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                throw new ArgumentException("container");
+            }
+
+            List<string> result = new List<string>();
+
+            using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
+            {
+                List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
+                string folders = GetUrlFolders(container);
+
+                CamlQuery camlQuery = new CamlQuery();
+                camlQuery.ViewXml = @"<View><Query><Where><Eq><FieldRef Name='ContentType' /><Valye Type='Text'>Folder</Value></Eq></Where></Query></View>";
 
                 if (folders.Length > 0)
                 {
@@ -213,7 +262,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     {
                         List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
 
-                        string folders = GetFolders(container);
+                        string folders = GetUrlFolders(container);
 
                         if (folders.Length == 0)
                         {
@@ -317,7 +366,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (!string.IsNullOrEmpty(container))
             {
                 List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-                string folders = GetFolders(container);
+                string folders = GetUrlFolders(container);
 
                 if (folders.Length == 0)
                 {
@@ -401,7 +450,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return parts[0];
         }
 
-        private string GetFolders(string container)
+        private string GetUrlFolders(string container)
         {
             string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 

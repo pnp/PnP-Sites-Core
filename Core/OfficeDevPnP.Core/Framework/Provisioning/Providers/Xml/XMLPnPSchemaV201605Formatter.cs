@@ -8,14 +8,14 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Extensions;
 using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
-    internal class XMLPnPSchemaV201512Formatter :
+    internal class XMLPnPSchemaV201605Formatter :
         IXMLSchemaFormatter, ITemplateFormatter
     {
         private TemplateProviderBase _provider;
@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         string IXMLSchemaFormatter.NamespaceUri
         {
-            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12); }
+            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05); }
         }
 
         string IXMLSchemaFormatter.NamespacePrefix
@@ -46,13 +46,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XDocument xml = XDocument.Load(template);
 
             // Load the XSD embedded resource
-            Stream stream = typeof(XMLPnPSchemaV201512Formatter)
+            Stream stream = typeof(XMLPnPSchemaV201605Formatter)
                 .Assembly
-                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2015-12.xsd");
+                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2016-05.xsd");
 
             // Prepare the XML Schema Set
             XmlSchemaSet schemas = new XmlSchemaSet();
-            schemas.Add(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12,
+            schemas.Add(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05,
                 new XmlTextReader(stream));
 
             Boolean result = true;
@@ -72,18 +72,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ArgumentNullException("template");
             }
 
-            V201512.ProvisioningTemplate result = new V201512.ProvisioningTemplate();
+            V201605.ProvisioningTemplate result = new V201605.ProvisioningTemplate();
 
-            V201512.Provisioning wrappedResult = new V201512.Provisioning();
-            wrappedResult.Preferences = new V201512.Preferences
+            V201605.Provisioning wrappedResult = new V201605.Provisioning();
+            wrappedResult.Preferences = new V201605.Preferences
             {
                 Generator = this.GetType().Assembly.FullName
             };
-            wrappedResult.Templates = new V201512.Templates[] {
-                new V201512.Templates
+            wrappedResult.Templates = new V201605.Templates[] {
+                new V201605.Templates
                 {
                     ID = String.Format("CONTAINER-{0}", template.Id),
-                    ProvisioningTemplate = new V201512.ProvisioningTemplate[]
+                    ProvisioningTemplate = new V201605.ProvisioningTemplate[]
                     {
                         result
                     }
@@ -100,12 +100,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.ImagePreviewUrl = template.ImagePreviewUrl;
             result.DisplayName = template.DisplayName;
             result.Description = template.Description;
+            result.BaseSiteTemplate = template.BaseSiteTemplate;
 
             if (template.Properties != null && template.Properties.Any())
             {
                 result.Properties =
                     (from p in template.Properties
-                     select new V201512.StringDictionaryItem
+                     select new V201605.StringDictionaryItem
                      {
                          Key = p.Key,
                          Value = p.Value,
@@ -141,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.PropertyBagEntries =
                     (from bag in template.PropertyBagEntries
-                     select new V201512.PropertyBagEntry()
+                     select new V201605.PropertyBagEntry()
                      {
                          Key = bag.Key,
                          Value = bag.Value,
@@ -161,7 +162,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (template.WebSettings != null)
             {
-                result.WebSettings = new V201512.WebSettings
+                result.WebSettings = new V201605.WebSettings
                 {
                     NoCrawl = template.WebSettings.NoCrawl,
                     NoCrawlSpecified = true,
@@ -182,17 +183,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (template.RegionalSettings != null)
             {
-                result.RegionalSettings = new V201512.RegionalSettings()
+                result.RegionalSettings = new V201605.RegionalSettings()
                 {
                     AdjustHijriDays = template.RegionalSettings.AdjustHijriDays,
                     AdjustHijriDaysSpecified = true,
-                    AlternateCalendarType = template.RegionalSettings.AlternateCalendarType.FromTemplateToSchemaCalendarTypeV201512(),
+                    AlternateCalendarType = template.RegionalSettings.AlternateCalendarType.FromTemplateToSchemaCalendarTypeV201605(),
                     AlternateCalendarTypeSpecified = true,
-                    CalendarType = template.RegionalSettings.CalendarType.FromTemplateToSchemaCalendarTypeV201512(),
+                    CalendarType = template.RegionalSettings.CalendarType.FromTemplateToSchemaCalendarTypeV201605(),
                     CalendarTypeSpecified = true,
                     Collation = template.RegionalSettings.Collation,
                     CollationSpecified = true,
-                    FirstDayOfWeek = (V201512.DayOfWeek)Enum.Parse(typeof(V201512.DayOfWeek), template.RegionalSettings.FirstDayOfWeek.ToString()),
+                    FirstDayOfWeek = (V201605.DayOfWeek)Enum.Parse(typeof(V201605.DayOfWeek), template.RegionalSettings.FirstDayOfWeek.ToString()),
                     FirstDayOfWeekSpecified = true,
                     FirstWeekOfYear = template.RegionalSettings.FirstWeekOfYear,
                     FirstWeekOfYearSpecified = true,
@@ -203,11 +204,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Time24 = template.RegionalSettings.Time24,
                     Time24Specified = true,
                     TimeZone = template.RegionalSettings.TimeZone.ToString(),
-                    WorkDayEndHour = template.RegionalSettings.WorkDayEndHour.FromTemplateToSchemaWorkHourV201512(),
+                    WorkDayEndHour = template.RegionalSettings.WorkDayEndHour.FromTemplateToSchemaWorkHourV201605(),
                     WorkDayEndHourSpecified = true,
                     WorkDays = template.RegionalSettings.WorkDays,
                     WorkDaysSpecified = true,
-                    WorkDayStartHour = template.RegionalSettings.WorkDayStartHour.FromTemplateToSchemaWorkHourV201512(),
+                    WorkDayStartHour = template.RegionalSettings.WorkDayStartHour.FromTemplateToSchemaWorkHourV201605(),
                     WorkDayStartHourSpecified = true,
                 };
             }
@@ -224,7 +225,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.SupportedUILanguages =
                     (from l in template.SupportedUILanguages
-                     select new V201512.SupportedUILanguagesSupportedUILanguage
+                     select new V201605.SupportedUILanguagesSupportedUILanguage
                      {
                          LCID = l.LCID,
                      }).ToArray();
@@ -240,13 +241,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (template.AuditSettings != null)
             {
-                result.AuditSettings = new V201512.AuditSettings
+                result.AuditSettings = new V201605.AuditSettings
                 {
                     AuditLogTrimmingRetention = template.AuditSettings.AuditLogTrimmingRetention,
                     AuditLogTrimmingRetentionSpecified = true,
                     TrimAuditLog = template.AuditSettings.TrimAuditLog,
                     TrimAuditLogSpecified = true,
-                    Audit = template.AuditSettings.AuditFlags.FromTemplateToSchemaAuditsV201512(),
+                    Audit = template.AuditSettings.AuditFlags.FromTemplateToSchemaAuditsV201605(),
                 };
             }
             else
@@ -261,13 +262,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Security configuration, if any
             if (template.Security != null)
             {
-                result.Security = new V201512.Security();
+                result.Security = new V201605.Security();
+
+                result.Security.BreakRoleInheritance = template.Security.BreakRoleInheritance;
+                result.Security.CopyRoleAssignments = template.Security.CopyRoleAssignments;
+                result.Security.ClearSubscopes = template.Security.ClearSubscopes;
 
                 if (template.Security.AdditionalAdministrators != null && template.Security.AdditionalAdministrators.Count > 0)
                 {
                     result.Security.AdditionalAdministrators =
                         (from user in template.Security.AdditionalAdministrators
-                         select new V201512.User
+                         select new V201605.User
                          {
                              Name = user.Name,
                          }).ToArray();
@@ -281,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security.AdditionalOwners =
                         (from user in template.Security.AdditionalOwners
-                         select new V201512.User
+                         select new V201605.User
                          {
                              Name = user.Name,
                          }).ToArray();
@@ -295,7 +300,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security.AdditionalMembers =
                         (from user in template.Security.AdditionalMembers
-                         select new V201512.User
+                         select new V201605.User
                          {
                              Name = user.Name,
                          }).ToArray();
@@ -309,7 +314,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security.AdditionalVisitors =
                         (from user in template.Security.AdditionalVisitors
-                         select new V201512.User
+                         select new V201605.User
                          {
                              Name = user.Name,
                          }).ToArray();
@@ -323,7 +328,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Security.SiteGroups =
                         (from g in template.Security.SiteGroups
-                         select new V201512.SiteGroup
+                         select new V201605.SiteGroup
                          {
                              AllowMembersEditMembership = g.AllowMembersEditMembership,
                              AllowMembersEditMembershipSpecified = true,
@@ -333,7 +338,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              AutoAcceptRequestToJoinLeaveSpecified = true,
                              Description = g.Description,
                              Members = g.Members.Any() ? (from m in g.Members
-                                                          select new V201512.User
+                                                          select new V201605.User
                                                           {
                                                               Name = m.Name,
                                                           }).ToArray() : null,
@@ -356,7 +361,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     {
                         result.Security.Permissions.RoleAssignments =
                             (from ra in template.Security.SiteSecurityPermissions.RoleAssignments
-                             select new V201512.RoleAssignment
+                             select new V201605.RoleAssignment
                              {
                                  Principal = ra.Principal,
                                  RoleDefinition = ra.RoleDefinition,
@@ -370,7 +375,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     {
                         result.Security.Permissions.RoleDefinitions =
                             (from rd in template.Security.SiteSecurityPermissions.RoleDefinitions
-                             select new V201512.RoleDefinition
+                             select new V201605.RoleDefinition
                              {
                                  Description = rd.Description,
                                  Name = rd.Name,
@@ -399,12 +404,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #endregion
 
+            #region Navigation
+
+            if (template.Navigation != null)
+            {
+                result.Navigation = new V201605.Navigation {
+                    GlobalNavigation =
+                        template.Navigation.GlobalNavigation != null ?
+                            new NavigationGlobalNavigation {
+                                NavigationType = (NavigationGlobalNavigationNavigationType)Enum.Parse(typeof(NavigationGlobalNavigationNavigationType), template.Navigation.GlobalNavigation.NavigationType.ToString()),
+                                StructuralNavigation =
+                                    template.Navigation.GlobalNavigation.StructuralNavigation != null ?
+                                        new V201605.StructuralNavigation
+                                        {
+                                            RemoveExistingNodes = template.Navigation.GlobalNavigation.StructuralNavigation.RemoveExistingNodes,
+                                            NavigationNode = (from n in template.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes
+                                                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                                        } : null,
+                                ManagedNavigation =
+                                    template.Navigation.GlobalNavigation.ManagedNavigation != null ?
+                                        new V201605.ManagedNavigation
+                                        {
+                                            TermSetId = template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId,
+                                            TermStoreId = template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId,
+                                        } : null
+                                }
+                                : null,
+                    CurrentNavigation =
+                        template.Navigation.CurrentNavigation != null ?
+                            new NavigationCurrentNavigation
+                            {
+                                NavigationType = (NavigationCurrentNavigationNavigationType)Enum.Parse(typeof(NavigationCurrentNavigationNavigationType), template.Navigation.CurrentNavigation.NavigationType.ToString()),
+                                StructuralNavigation =
+                                    template.Navigation.CurrentNavigation.StructuralNavigation != null ?
+                                        new V201605.StructuralNavigation
+                                        {
+                                            RemoveExistingNodes = template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes,
+                                            NavigationNode = (from n in template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes
+                                                              select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                                        } : null,
+                                ManagedNavigation =
+                                    template.Navigation.CurrentNavigation.ManagedNavigation != null ?
+                                        new V201605.ManagedNavigation
+                                        {
+                                            TermSetId = template.Navigation.CurrentNavigation.ManagedNavigation.TermSetId,
+                                            TermStoreId = template.Navigation.CurrentNavigation.ManagedNavigation.TermStoreId,
+                                        } : null
+                            }
+                            : null
+                        };
+            }
+
+            #endregion
+
             #region Site Columns
 
             // Translate Site Columns (Fields), if any
             if (template.SiteFields != null && template.SiteFields.Count > 0)
             {
-                result.SiteFields = new V201512.ProvisioningTemplateSiteFields
+                result.SiteFields = new V201605.ProvisioningTemplateSiteFields
                 {
                     Any =
                         (from field in template.SiteFields
@@ -425,7 +483,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.ContentTypes =
                     (from ct in template.ContentTypes
-                     select new V201512.ContentType
+                     select new V201605.ContentType
                      {
                          ID = ct.Id,
                          Description = ct.Description,
@@ -433,16 +491,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = ct.Name,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
-                          select new V201512.ContentTypeFieldRef
+                          select new V201605.ContentTypeFieldRef
                           {
                               Name = fieldRef.Name,
                               ID = fieldRef.Id.ToString(),
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
-                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate {  TargetName = ct.DocumentTemplate } : null,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
-                             new V201512.DocumentSetTemplate
+                             new V201605.DocumentSetTemplate
                              {
                                  AllowedContentTypes = ct.DocumentSetTemplate.AllowedContentTypes.Count > 0 ?
                                      (from act in ct.DocumentSetTemplate.AllowedContentTypes
@@ -491,7 +548,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Lists =
                     (from list in template.Lists
-                     select new V201512.ListInstance
+                     select new V201605.ListInstance
                      {
                          ContentTypesEnabled = list.ContentTypesEnabled,
                          Description = list.Description,
@@ -509,6 +566,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          OnQuickLaunch = list.OnQuickLaunch,
                          EnableAttachments = list.EnableAttachments,
                          EnableFolderCreation = list.EnableFolderCreation,
+                         ForceCheckout = list.ForceCheckout,
                          RemoveExistingContentTypes = list.RemoveExistingContentTypes,
                          TemplateFeatureID = list.TemplateFeatureID != Guid.Empty ? list.TemplateFeatureID.ToString() : null,
                          TemplateType = list.TemplateType,
@@ -516,13 +574,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Url = list.Url,
                          ContentTypeBindings = list.ContentTypeBindings.Count > 0 ?
                             (from contentTypeBinding in list.ContentTypeBindings
-                             select new V201512.ContentTypeBinding
+                             select new V201605.ContentTypeBinding
                              {
                                  ContentTypeID = contentTypeBinding.ContentTypeId,
                                  Default = contentTypeBinding.Default,
+                                 Remove = contentTypeBinding.Remove,
                              }).ToArray() : null,
                          Views = list.Views.Count > 0 ?
-                         new V201512.ListInstanceViews
+                         new V201605.ListInstanceViews
                          {
                              Any =
                                 (from view in list.Views
@@ -530,7 +589,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              RemoveExistingViews = list.RemoveExistingViews,
                          } : null,
                          Fields = list.Fields.Count > 0 ?
-                         new V201512.ListInstanceFields
+                         new V201605.ListInstanceFields
                          {
                              Any =
                              (from field in list.Fields
@@ -541,7 +600,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              select new FieldDefault { FieldName = value.Key, Value = value.Value }).ToArray() : null,
                          FieldRefs = list.FieldRefs.Count > 0 ?
                          (from fieldRef in list.FieldRefs
-                          select new V201512.ListInstanceFieldRef
+                          select new V201605.ListInstanceFieldRef
                           {
                               Name = fieldRef.Name,
                               DisplayName = fieldRef.DisplayName,
@@ -556,12 +615,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  DataValue = dr.Values.Count > 0 ?
                                     (from value in dr.Values
                                      select new DataValue { FieldName = value.Key, Value = value.Value }).ToArray() : null,
-                                 Security = dr.Security.FromTemplateToSchemaObjectSecurityV201512()
+                                 Security = dr.Security.FromTemplateToSchemaObjectSecurityV201605()
                              }).ToArray() : null,
-                         Security = list.Security.FromTemplateToSchemaObjectSecurityV201512(),
+                         Security = list.Security.FromTemplateToSchemaObjectSecurityV201605(),
                          Folders = list.Folders.Count > 0 ?
                          (from folder in list.Folders
-                          select folder.FromTemplateToSchemaFolderV201512()).ToArray() : null,
+                          select folder.FromTemplateToSchemaFolderV201605()).ToArray() : null,
                      }).ToArray();
             }
             else
@@ -576,7 +635,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Features, if any
             if (template.Features != null)
             {
-                result.Features = new V201512.Features();
+                result.Features = new V201605.Features();
 
                 // TODO: This nullability check could be useless, because
                 // the SiteFeatures property is initialized in the Features
@@ -585,7 +644,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Features.SiteFeatures =
                         (from feature in template.Features.SiteFeatures
-                         select new V201512.Feature
+                         select new V201605.Feature
                          {
                              ID = feature.Id.ToString(),
                              Deactivate = feature.Deactivate,
@@ -603,7 +662,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.Features.WebFeatures =
                         (from feature in template.Features.WebFeatures
-                         select new V201512.Feature
+                         select new V201605.Feature
                          {
                              ID = feature.Id.ToString(),
                              Deactivate = feature.Deactivate,
@@ -627,13 +686,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate CustomActions, if any
             if (template.CustomActions != null && (template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any()))
             {
-                result.CustomActions = new V201512.CustomActions();
+                result.CustomActions = new V201605.CustomActions();
 
                 if (template.CustomActions.SiteCustomActions != null && template.CustomActions.SiteCustomActions.Count > 0)
                 {
                     result.CustomActions.SiteCustomActions =
                         (from customAction in template.CustomActions.SiteCustomActions
-                         select new V201512.CustomAction
+                         select new V201605.CustomAction
                          {
                              CommandUIExtension = new CustomActionCommandUIExtension
                              {
@@ -646,10 +705,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
-                             Rights = customAction.Rights.FromBasePermissionsToStringV201512(),
+                             Rights = customAction.Rights.FromBasePermissionsToStringV201605(),
                              RegistrationId = customAction.RegistrationId,
                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
                              RegistrationTypeSpecified = true,
+                             Remove = customAction.Remove,
                              ScriptBlock = customAction.ScriptBlock,
                              ScriptSrc = customAction.ScriptSrc,
                              Sequence = customAction.Sequence,
@@ -667,7 +727,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     result.CustomActions.WebCustomActions =
                         (from customAction in template.CustomActions.WebCustomActions
-                         select new V201512.CustomAction
+                         select new V201605.CustomAction
                          {
                              CommandUIExtension = new CustomActionCommandUIExtension
                              {
@@ -680,10 +740,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
-                             Rights = customAction.Rights.FromBasePermissionsToStringV201512(),
+                             Rights = customAction.Rights.FromBasePermissionsToStringV201605(),
                              RegistrationId = customAction.RegistrationId,
                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
                              RegistrationTypeSpecified = true,
+                             Remove = customAction.Remove,
                              ScriptBlock = customAction.ScriptBlock,
                              ScriptSrc = customAction.ScriptSrc,
                              Sequence = customAction.Sequence,
@@ -705,16 +766,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Files, if any
             if (template.Files != null && template.Files.Count > 0)
             {
-                result.Files =
+                result.Files = new ProvisioningTemplateFiles();
+
+                result.Files.File =
                     (from file in template.Files
-                     select new V201512.File
+                     select new V201605.File
                      {
                          Overwrite = file.Overwrite,
                          Src = file.Src,
                          Folder = file.Folder,
                          WebParts = file.WebParts.Count > 0 ?
                             (from wp in file.WebParts
-                             select new V201512.WebPartPageWebPart
+                             select new V201605.WebPartPageWebPart
                              {
                                  Zone = wp.Zone,
                                  Order = (int)wp.Order,
@@ -723,12 +786,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              }).ToArray() : null,
                          Properties = file.Properties != null && file.Properties.Count > 0 ?
                             (from p in file.Properties
-                             select new V201512.StringDictionaryItem
+                             select new V201605.StringDictionaryItem
                              {
                                  Key = p.Key,
                                  Value = p.Value
                              }).ToArray() : null,
-                         Security = file.Security.FromTemplateToSchemaObjectSecurityV201512()
+                         Security = file.Security.FromTemplateToSchemaObjectSecurityV201605()
                      }).ToArray();
             }
             else
@@ -743,50 +806,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Pages, if any
             if (template.Pages != null && template.Pages.Count > 0)
             {
-                var pages = new List<V201512.Page>();
+                var pages = new List<V201605.Page>();
 
                 foreach (var page in template.Pages)
                 {
-                    var schemaPage = new V201512.Page();
+                    var schemaPage = new V201605.Page();
 
-                    var pageLayout = V201512.WikiPageLayout.OneColumn;
+                    var pageLayout = V201605.WikiPageLayout.OneColumn;
                     switch (page.Layout)
                     {
                         case WikiPageLayout.OneColumn:
-                            pageLayout = V201512.WikiPageLayout.OneColumn;
+                            pageLayout = V201605.WikiPageLayout.OneColumn;
                             break;
                         case WikiPageLayout.OneColumnSideBar:
-                            pageLayout = V201512.WikiPageLayout.OneColumnSidebar;
+                            pageLayout = V201605.WikiPageLayout.OneColumnSidebar;
                             break;
                         case WikiPageLayout.TwoColumns:
-                            pageLayout = V201512.WikiPageLayout.TwoColumns;
+                            pageLayout = V201605.WikiPageLayout.TwoColumns;
                             break;
                         case WikiPageLayout.TwoColumnsHeader:
-                            pageLayout = V201512.WikiPageLayout.TwoColumnsHeader;
+                            pageLayout = V201605.WikiPageLayout.TwoColumnsHeader;
                             break;
                         case WikiPageLayout.TwoColumnsHeaderFooter:
-                            pageLayout = V201512.WikiPageLayout.TwoColumnsHeaderFooter;
+                            pageLayout = V201605.WikiPageLayout.TwoColumnsHeaderFooter;
                             break;
                         case WikiPageLayout.ThreeColumns:
-                            pageLayout = V201512.WikiPageLayout.ThreeColumns;
+                            pageLayout = V201605.WikiPageLayout.ThreeColumns;
                             break;
                         case WikiPageLayout.ThreeColumnsHeader:
-                            pageLayout = V201512.WikiPageLayout.ThreeColumnsHeader;
+                            pageLayout = V201605.WikiPageLayout.ThreeColumnsHeader;
                             break;
                         case WikiPageLayout.ThreeColumnsHeaderFooter:
-                            pageLayout = V201512.WikiPageLayout.ThreeColumnsHeaderFooter;
+                            pageLayout = V201605.WikiPageLayout.ThreeColumnsHeaderFooter;
                             break;
                         case WikiPageLayout.Custom:
-                            pageLayout = V201512.WikiPageLayout.Custom;
+                            pageLayout = V201605.WikiPageLayout.Custom;
                             break;
                     }
                     schemaPage.Layout = pageLayout;
                     schemaPage.Overwrite = page.Overwrite;
-                    schemaPage.Security = (page.Security != null) ? page.Security.FromTemplateToSchemaObjectSecurityV201512() : null;
+                    schemaPage.Security = (page.Security != null) ? page.Security.FromTemplateToSchemaObjectSecurityV201605() : null;
 
                     schemaPage.WebParts = page.WebParts.Count > 0 ?
                         (from wp in page.WebParts
-                         select new V201512.WikiPageWebPart
+                         select new V201605.WikiPageWebPart
                          {
                              Column = (int)wp.Column,
                              Row = (int)wp.Row,
@@ -798,7 +861,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                     schemaPage.Fields = (page.Fields != null && page.Fields.Count > 0) ?
                                 (from f in page.Fields
-                                 select new V201512.BaseFieldValue
+                                 select new V201605.BaseFieldValue
                                  {
                                      FieldName = f.Key,
                                      Value = f.Value,
@@ -819,14 +882,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.TermGroups =
                     (from grp in template.TermGroups
-                     select new V201512.TermGroup
+                     select new V201605.TermGroup
                      {
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         Contributors = (from c in grp.Contributors
+                                         select new V201605.User { Name = c.Name }).ToArray(),
+                         Managers = (from m in grp.Managers
+                                     select new V201605.User { Name = m.Name }).ToArray(),
                          TermSets = (
                             from termSet in grp.TermSets
-                            select new V201512.TermSet
+                            select new V201605.TermSet
                             {
                                 ID = termSet.Id != Guid.Empty ? termSet.Id.ToString() : null,
                                 Name = termSet.Name,
@@ -835,10 +902,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 Description = termSet.Description,
                                 Language = termSet.Language.HasValue ? termSet.Language.Value : 0,
                                 LanguageSpecified = termSet.Language.HasValue,
-                                Terms = termSet.Terms.FromModelTermsToSchemaTermsV201512(),
+                                Terms = termSet.Terms.FromModelTermsToSchemaTermsV201605(),
                                 CustomProperties = termSet.Properties.Count > 0 ?
                                      (from p in termSet.Properties
-                                      select new V201512.StringDictionaryItem
+                                      select new V201605.StringDictionaryItem
                                       {
                                           Key = p.Key,
                                           Value = p.Value
@@ -854,7 +921,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate ComposedLook, if any
             if (template.ComposedLook != null && !template.ComposedLook.Equals(Model.ComposedLook.Empty))
             {
-                result.ComposedLook = new V201512.ComposedLook
+                result.ComposedLook = new V201605.ComposedLook
                 {
                     BackgroundFile = template.ComposedLook.BackgroundFile,
                     ColorFile = template.ComposedLook.ColorFile,
@@ -882,7 +949,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             if (template.Workflows != null &&
                 (template.Workflows.WorkflowDefinitions.Any() || template.Workflows.WorkflowSubscriptions.Any()))
             {
-                result.Workflows = new V201512.Workflows
+                result.Workflows = new V201605.Workflows
                 {
                     WorkflowDefinitions = template.Workflows.WorkflowDefinitions.Count > 0 ?
                         (from wd in template.Workflows.WorkflowDefinitions
@@ -897,7 +964,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              InitiationUrl = wd.InitiationUrl,
                              Properties = (wd.Properties != null && wd.Properties.Count > 0) ?
                                 (from p in wd.Properties
-                                 select new V201512.StringDictionaryItem
+                                 select new V201605.StringDictionaryItem
                                  {
                                      Key = p.Key,
                                      Value = p.Value,
@@ -909,7 +976,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              RequiresInitiationForm = wd.RequiresInitiationForm,
                              RequiresInitiationFormSpecified = true,
                              RestrictToScope = wd.RestrictToScope,
-                             RestrictToType = (V201512.WorkflowsWorkflowDefinitionRestrictToType)Enum.Parse(typeof(V201512.WorkflowsWorkflowDefinitionRestrictToType), wd.RestrictToType),
+                             RestrictToType = (V201605.WorkflowsWorkflowDefinitionRestrictToType)Enum.Parse(typeof(V201605.WorkflowsWorkflowDefinitionRestrictToType), wd.RestrictToType),
                              RestrictToTypeSpecified = true,
                              XamlPath = wd.XamlPath,
                          }).ToArray() : null,
@@ -930,7 +997,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ParentContentTypeId = ws.ParentContentTypeId,
                              PropertyDefinitions = (ws.PropertyDefinitions != null && ws.PropertyDefinitions.Count > 0) ?
                                 (from pd in ws.PropertyDefinitions
-                                 select new V201512.StringDictionaryItem
+                                 select new V201605.StringDictionaryItem
                                  {
                                      Key = pd.Key,
                                      Value = pd.Value,
@@ -948,9 +1015,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Search Settings
 
-            if (!String.IsNullOrEmpty(template.SearchSettings))
+            if (!String.IsNullOrEmpty(template.SiteSearchSettings))
             {
-                result.SearchSettings = template.SearchSettings.ToXmlElement();
+                if (result.SearchSettings== null)
+                {
+                    result.SearchSettings = new ProvisioningTemplateSearchSettings();
+                }
+                result.SearchSettings.SiteSearchSettings = template.SiteSearchSettings.ToXmlElement();
+            }
+
+            if (!String.IsNullOrEmpty(template.WebSearchSettings))
+            {
+                if (result.SearchSettings == null)
+                {
+                    result.SearchSettings = new ProvisioningTemplateSearchSettings();
+                }
+                result.SearchSettings.WebSearchSettings = template.WebSearchSettings.ToXmlElement();
             }
 
             #endregion
@@ -959,18 +1039,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (template.Publishing != null)
             {
-                result.Publishing = new V201512.Publishing
+                result.Publishing = new V201605.Publishing
                 {
-                    AutoCheckRequirements = (V201512.PublishingAutoCheckRequirements)Enum.Parse(typeof(V201512.PublishingAutoCheckRequirements), template.Publishing.AutoCheckRequirements.ToString()),
+                    AutoCheckRequirements = (V201605.PublishingAutoCheckRequirements)Enum.Parse(typeof(V201605.PublishingAutoCheckRequirements), template.Publishing.AutoCheckRequirements.ToString()),
                     AvailableWebTemplates = template.Publishing.AvailableWebTemplates.Count > 0 ?
                         (from awt in template.Publishing.AvailableWebTemplates
-                         select new V201512.PublishingWebTemplate
+                         select new V201605.PublishingWebTemplate
                          {
                              LanguageCode = awt.LanguageCode,
                              LanguageCodeSpecified = true,
                              TemplateName = awt.TemplateName,
                          }).ToArray() : null,
-                    DesignPackage = template.Publishing.DesignPackage != null ? new V201512.PublishingDesignPackage
+                    DesignPackage = template.Publishing.DesignPackage != null ? new V201605.PublishingDesignPackage
                     {
                         DesignPackagePath = template.Publishing.DesignPackage.DesignPackagePath,
                         MajorVersion = template.Publishing.DesignPackage.MajorVersion,
@@ -981,11 +1061,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         PackageName = template.Publishing.DesignPackage.PackageName,
                     } : null,
                     PageLayouts = template.Publishing.PageLayouts != null ?
-                        new V201512.PublishingPageLayouts
+                        new V201605.PublishingPageLayouts
                         {
                             PageLayout = template.Publishing.PageLayouts.Count > 0 ?
                         (from pl in template.Publishing.PageLayouts
-                         select new V201512.PublishingPageLayoutsPageLayout
+                         select new V201605.PublishingPageLayoutsPageLayout
                          {
                              Path = pl.Path,
                          }).ToArray() : null,
@@ -1007,10 +1087,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.AddIns =
                     (from addin in template.AddIns
-                     select new V201512.AddInsAddin
+                     select new V201605.AddInsAddin
                      {
                          PackagePath = addin.PackagePath,
-                         Source = (V201512.AddInsAddinSource)Enum.Parse(typeof(V201512.AddInsAddinSource), addin.Source),
+                         Source = (V201605.AddInsAddinSource)Enum.Parse(typeof(V201605.AddInsAddinSource), addin.Source),
                      }).ToArray();
             }
             else
@@ -1028,7 +1108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
                 result.Providers =
                     (from provider in extensibilityHandlers
-                     select new V201512.Provider
+                     select new V201605.Provider
                      {
                          HandlerType = String.Format("{0}, {1}", provider.Type, provider.Assembly),
                          Configuration = provider.Configuration != null ? provider.Configuration.ToXmlNode() : null,
@@ -1047,7 +1127,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
                 ((IXMLSchemaFormatter)this).NamespaceUri);
 
-            var output = XMLSerializer.SerializeToStream<V201512.Provisioning>(wrappedResult, ns);
+            var output = XMLSerializer.SerializeToStream<V201605.Provisioning>(wrappedResult, ns);
             output.Position = 0;
             return (output);
         }
@@ -1078,10 +1158,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             sourceStream.Position = 0;
             XDocument xml = XDocument.Load(sourceStream);
-            XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
 
             // Prepare a variable to hold the single source formatted template
-            V201512.ProvisioningTemplate source = null;
+            V201605.ProvisioningTemplate source = null;
 
             // Prepare a variable to hold the resulting ProvisioningTemplate instance
             Model.ProvisioningTemplate result = new Model.ProvisioningTemplate();
@@ -1090,7 +1170,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             if (xml.Root.Name == pnp + "Provisioning")
             {
                 // Deserialize the whole wrapper
-                V201512.Provisioning wrappedResult = XMLSerializer.Deserialize<V201512.Provisioning>(xml);
+                V201605.Provisioning wrappedResult = XMLSerializer.Deserialize<V201605.Provisioning>(xml);
 
                 // Handle the wrapper schema parameters
                 if (wrappedResult.Preferences != null &&
@@ -1136,7 +1216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         }
                         else
                         {
-                            source = XMLSerializer.Deserialize<V201512.ProvisioningTemplate>(xml);
+                            source = XMLSerializer.Deserialize<V201605.ProvisioningTemplate>(xml);
                         }
                     }
 
@@ -1160,7 +1240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 }
                 else
                 {
-                    source = XMLSerializer.Deserialize<V201512.ProvisioningTemplate>(xml);
+                    source = XMLSerializer.Deserialize<V201605.ProvisioningTemplate>(xml);
                 }
             }
 
@@ -1173,6 +1253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.ImagePreviewUrl = source.ImagePreviewUrl;
             result.DisplayName = source.DisplayName;
             result.Description = source.Description;
+            result.BaseSiteTemplate = source.BaseSiteTemplate;
 
             if (source.Properties != null && source.Properties.Length > 0)
             {
@@ -1228,8 +1309,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.RegionalSettings = new Model.RegionalSettings()
                 {
                     AdjustHijriDays = source.RegionalSettings.AdjustHijriDaysSpecified ? source.RegionalSettings.AdjustHijriDays : 0,
-                    AlternateCalendarType = source.RegionalSettings.AlternateCalendarTypeSpecified ? source.RegionalSettings.AlternateCalendarType.FromSchemaToTemplateCalendarTypeV201512() : Microsoft.SharePoint.Client.CalendarType.None,
-                    CalendarType = source.RegionalSettings.CalendarTypeSpecified ? source.RegionalSettings.CalendarType.FromSchemaToTemplateCalendarTypeV201512() : Microsoft.SharePoint.Client.CalendarType.None,
+                    AlternateCalendarType = source.RegionalSettings.AlternateCalendarTypeSpecified ? source.RegionalSettings.AlternateCalendarType.FromSchemaToTemplateCalendarTypeV201605() : Microsoft.SharePoint.Client.CalendarType.None,
+                    CalendarType = source.RegionalSettings.CalendarTypeSpecified ? source.RegionalSettings.CalendarType.FromSchemaToTemplateCalendarTypeV201605() : Microsoft.SharePoint.Client.CalendarType.None,
                     Collation = source.RegionalSettings.CollationSpecified ? source.RegionalSettings.Collation : 0,
                     FirstDayOfWeek = source.RegionalSettings.FirstDayOfWeekSpecified ?
                         (System.DayOfWeek)Enum.Parse(typeof(System.DayOfWeek), source.RegionalSettings.FirstDayOfWeek.ToString()) : System.DayOfWeek.Sunday,
@@ -1238,9 +1319,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     ShowWeeks = source.RegionalSettings.ShowWeeksSpecified ? source.RegionalSettings.ShowWeeks : false,
                     Time24 = source.RegionalSettings.Time24Specified ? source.RegionalSettings.Time24 : false,
                     TimeZone = !String.IsNullOrEmpty(source.RegionalSettings.TimeZone) ? Int32.Parse(source.RegionalSettings.TimeZone) : 0,
-                    WorkDayEndHour = source.RegionalSettings.WorkDayEndHourSpecified ? source.RegionalSettings.WorkDayEndHour.FromSchemaToTemplateWorkHourV201512() : Model.WorkHour.PM0600,
+                    WorkDayEndHour = source.RegionalSettings.WorkDayEndHourSpecified ? source.RegionalSettings.WorkDayEndHour.FromSchemaToTemplateWorkHourV201605() : Model.WorkHour.PM0600,
                     WorkDays = source.RegionalSettings.WorkDaysSpecified ? source.RegionalSettings.WorkDays : 5,
-                    WorkDayStartHour = source.RegionalSettings.WorkDayStartHourSpecified ? source.RegionalSettings.WorkDayStartHour.FromSchemaToTemplateWorkHourV201512() : Model.WorkHour.AM0900,
+                    WorkDayStartHour = source.RegionalSettings.WorkDayStartHourSpecified ? source.RegionalSettings.WorkDayStartHour.FromSchemaToTemplateWorkHourV201605() : Model.WorkHour.AM0900,
                 };
             }
             else
@@ -1283,6 +1364,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate Security configuration, if any
             if (source.Security != null)
             {
+                result.Security.BreakRoleInheritance = source.Security.BreakRoleInheritance;
+                result.Security.CopyRoleAssignments = source.Security.CopyRoleAssignments;
+                result.Security.ClearSubscopes = source.Security.ClearSubscopes;
+
                 if (source.Security.AdditionalAdministrators != null)
                 {
                     result.Security.AdditionalAdministrators.AddRange(
@@ -1359,6 +1444,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Name = rd.Name,
                              });
                     }
+                }
+            }
+
+            #endregion
+
+            #region Navigation
+
+            if (source.Navigation != null)
+            {
+                result.Navigation = new Model.Navigation(
+                    source.Navigation.GlobalNavigation != null ?
+                        new GlobalNavigation(
+                            (GlobalNavigationType)Enum.Parse(typeof(GlobalNavigationType), source.Navigation.GlobalNavigation.NavigationType.ToString()),
+                            source.Navigation.GlobalNavigation.StructuralNavigation != null ?
+                                new Model.StructuralNavigation
+                                {
+                                    RemoveExistingNodes = source.Navigation.GlobalNavigation.StructuralNavigation.RemoveExistingNodes,
+                                } : null,
+                            source.Navigation.GlobalNavigation.ManagedNavigation != null ?
+                                new Model.ManagedNavigation
+                                {
+                                    TermSetId = source.Navigation.GlobalNavigation.ManagedNavigation.TermSetId,
+                                    TermStoreId = source.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId,
+                                } : null
+                        )
+                        : null,
+                    source.Navigation.CurrentNavigation != null ?
+                        new CurrentNavigation(
+                            (CurrentNavigationType)Enum.Parse(typeof(CurrentNavigationType), source.Navigation.CurrentNavigation.NavigationType.ToString()),
+                            source.Navigation.CurrentNavigation.StructuralNavigation != null ?
+                                new Model.StructuralNavigation
+                                {
+                                    RemoveExistingNodes = source.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes,
+                                } : null,
+                            source.Navigation.CurrentNavigation.ManagedNavigation != null ?
+                                new Model.ManagedNavigation
+                                {
+                                    TermSetId = source.Navigation.CurrentNavigation.ManagedNavigation.TermSetId,
+                                    TermStoreId = source.Navigation.CurrentNavigation.ManagedNavigation.TermStoreId,
+                                } : null
+                        )
+                        : null
+                    );
+
+                // If I need to update the Global Structural Navigation nodes
+                if (result.Navigation.GlobalNavigation != null &&
+                    result.Navigation.GlobalNavigation.StructuralNavigation != null &&
+                    source.Navigation.GlobalNavigation != null &&
+                    source.Navigation.GlobalNavigation.StructuralNavigation != null)
+                {
+                    result.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.AddRange(
+                        from n in source.Navigation.GlobalNavigation.StructuralNavigation.NavigationNode
+                        select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()
+                        );
+                }
+
+                // If I need to update the Current Structural Navigation nodes
+                if (result.Navigation.CurrentNavigation != null &&
+                    result.Navigation.CurrentNavigation.StructuralNavigation != null &&
+                    source.Navigation.CurrentNavigation != null &&
+                    source.Navigation.CurrentNavigation.StructuralNavigation != null)
+                {
+                    result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.AddRange(
+                        from n in source.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode
+                        select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()
+                        );
                 }
             }
 
@@ -1451,6 +1602,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  {
                                      ContentTypeId = contentTypeBinding.ContentTypeID,
                                      Default = contentTypeBinding.Default,
+                                     Remove = contentTypeBinding.Remove,
                                  }) : null),
                         (list.Views != null ?
                                 (from view in list.Views.Any
@@ -1478,15 +1630,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      select new Model.DataRow(
                                  (from dataValue in dataRow.DataValue
                                   select dataValue).ToDictionary(k => k.FieldName, v => v.Value),
-                                 dataRow.Security.FromSchemaToTemplateObjectSecurityV201512()
+                                 dataRow.Security.FromSchemaToTemplateObjectSecurityV201605()
                              )).ToList() : null),
                         (list.FieldDefaults != null ?
                             (from fd in list.FieldDefaults
                              select fd).ToDictionary(k => k.FieldName, v => v.Value) : null),
-                        list.Security.FromSchemaToTemplateObjectSecurityV201512(),
+                        list.Security.FromSchemaToTemplateObjectSecurityV201605(),
                         (list.Folders != null ?
                             (new List<Model.Folder>(from folder in list.Folders
-                                                    select folder.FromSchemaToTemplateFolderV201512())) : null)
+                                                    select folder.FromSchemaToTemplateFolderV201605())) : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,
@@ -1502,6 +1654,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         OnQuickLaunch = list.OnQuickLaunch,
                         EnableAttachments = list.EnableAttachments,
                         EnableFolderCreation = list.EnableFolderCreation,
+                        ForceCheckout = list.ForceCheckout,
                         RemoveExistingContentTypes = list.RemoveExistingContentTypes,
                         TemplateFeatureID = !String.IsNullOrEmpty(list.TemplateFeatureID) ? Guid.Parse(list.TemplateFeatureID) : Guid.Empty,
                         RemoveExistingViews = list.Views != null ? list.Views.RemoveExistingViews : false,
@@ -1561,12 +1714,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
-                            Rights = customAction.Rights.ToBasePermissionsV201512(),
+                            Rights = customAction.Rights.ToBasePermissionsV201605(),
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             RegistrationId = customAction.RegistrationId,
                             RegistrationType = (UserCustomActionRegistrationType)Enum.Parse(typeof(UserCustomActionRegistrationType), customAction.RegistrationType.ToString(), true),
-                            // Remove = MISSING IN THE SCHEMA!,
+                            Remove = customAction.Remove,
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
                             Title = customAction.Title,
                             Url = customAction.Url,
@@ -1586,12 +1739,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
-                            Rights = customAction.Rights.ToBasePermissionsV201512(),
+                            Rights = customAction.Rights.ToBasePermissionsV201605(),
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             RegistrationId = customAction.RegistrationId,
                             RegistrationType = (UserCustomActionRegistrationType)Enum.Parse(typeof(UserCustomActionRegistrationType), customAction.RegistrationType.ToString(), true),
-                            // Remove = MISSING IN THE SCHEMA!,
+                            Remove = customAction.Remove,
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
                             Title = customAction.Title,
                             Url = customAction.Url,
@@ -1603,27 +1756,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Files
 
-            // Translate Files, if any
+            // Translate Files and Directories, if any
             if (source.Files != null)
             {
-                result.Files.AddRange(
-                    from file in source.Files
-                    select new Model.File(file.Src,
-                        file.Folder,
-                        file.Overwrite,
-                        file.WebParts != null ?
-                            (from wp in file.WebParts
-                             select new Model.WebPart
-                             {
-                                 Order = (uint)wp.Order,
-                                 Zone = wp.Zone,
-                                 Title = wp.Title,
-                                 Contents = wp.Contents.InnerXml
-                             }) : null,
-                        file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
-                        file.Security.FromSchemaToTemplateObjectSecurityV201512()
-                        )
-                    );
+                if (source.Files.File != null && source.Files.File.Length > 0)
+                {
+                    // Handle Files
+                    result.Files.AddRange(
+                        from file in source.Files.File
+                        select new Model.File(file.Src,
+                            file.Folder,
+                            file.Overwrite,
+                            file.WebParts != null ?
+                                (from wp in file.WebParts
+                                 select new Model.WebPart
+                                 {
+                                     Order = (uint)wp.Order,
+                                     Zone = wp.Zone,
+                                     Title = wp.Title,
+                                     Contents = wp.Contents.InnerXml
+                                 }) : null,
+                            file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
+                            file.Security.FromSchemaToTemplateObjectSecurityV201605(),
+                            file.LevelSpecified ?
+                                (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString()) :
+                                Model.FileLevel.Draft
+                            )
+                        );
+                }
+
+                if (source.Files.Directory != null && source.Files.Directory.Length > 0)
+                {
+                    // Handle Directories of files
+                    result.Directories.AddRange(
+                        from dir in source.Files.Directory
+                        select new Model.Directory(dir.Src,
+                            dir.Folder,
+                            dir.Overwrite,
+                            dir.LevelSpecified ?
+                                (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), dir.Level.ToString()) :
+                                Model.FileLevel.Draft,
+                            dir.Recursive,
+                            dir.IncludedExtensions,
+                            dir.ExcludedExtensions,
+                            dir.MetadataMappingFile,
+                            dir.Security.FromSchemaToTemplateObjectSecurityV201605()
+                            )
+                        );
+                }
             }
 
             #endregion
@@ -1639,31 +1819,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     var pageLayout = WikiPageLayout.OneColumn;
                     switch (page.Layout)
                     {
-                        case V201512.WikiPageLayout.OneColumn:
+                        case V201605.WikiPageLayout.OneColumn:
                             pageLayout = WikiPageLayout.OneColumn;
                             break;
-                        case V201512.WikiPageLayout.OneColumnSidebar:
+                        case V201605.WikiPageLayout.OneColumnSidebar:
                             pageLayout = WikiPageLayout.OneColumnSideBar;
                             break;
-                        case V201512.WikiPageLayout.TwoColumns:
+                        case V201605.WikiPageLayout.TwoColumns:
                             pageLayout = WikiPageLayout.TwoColumns;
                             break;
-                        case V201512.WikiPageLayout.TwoColumnsHeader:
+                        case V201605.WikiPageLayout.TwoColumnsHeader:
                             pageLayout = WikiPageLayout.TwoColumnsHeader;
                             break;
-                        case V201512.WikiPageLayout.TwoColumnsHeaderFooter:
+                        case V201605.WikiPageLayout.TwoColumnsHeaderFooter:
                             pageLayout = WikiPageLayout.TwoColumnsHeaderFooter;
                             break;
-                        case V201512.WikiPageLayout.ThreeColumns:
+                        case V201605.WikiPageLayout.ThreeColumns:
                             pageLayout = WikiPageLayout.ThreeColumns;
                             break;
-                        case V201512.WikiPageLayout.ThreeColumnsHeader:
+                        case V201605.WikiPageLayout.ThreeColumnsHeader:
                             pageLayout = WikiPageLayout.ThreeColumnsHeader;
                             break;
-                        case V201512.WikiPageLayout.ThreeColumnsHeaderFooter:
+                        case V201605.WikiPageLayout.ThreeColumnsHeaderFooter:
                             pageLayout = WikiPageLayout.ThreeColumnsHeaderFooter;
                             break;
-                        case V201512.WikiPageLayout.Custom:
+                        case V201605.WikiPageLayout.Custom:
                             pageLayout = WikiPageLayout.Custom;
                             break;
                     }
@@ -1678,7 +1858,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Row = (uint)wp.Row,
                                  Contents = wp.Contents.InnerXml
                              }).ToList() : null),
-                        page.Security.FromSchemaToTemplateObjectSecurityV201512(),
+                        page.Security.FromSchemaToTemplateObjectSecurityV201605(),
                         (page.Fields != null && page.Fields.Length > 0) ?
                              (from f in page.Fields
                               select f).ToDictionary(i => i.FieldName, i => i.Value) : null
@@ -1707,11 +1887,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 termSet.LanguageSpecified ? (int?)termSet.Language : null,
                                 termSet.IsAvailableForTagging,
                                 termSet.IsOpenForTermCreation,
-                                termSet.Terms != null ? termSet.Terms.FromSchemaTermsToModelTermsV201512() : null,
+                                termSet.Terms != null ? termSet.Terms.FromSchemaTermsToModelTermsV201605() : null,
                                 termSet.CustomProperties != null ? termSet.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null)
                             {
                                 Description = termSet.Description,
-                            })
+                            }),
+                        (from c in termGroup.Contributors
+                         select new Model.User { Name = c.Name }).ToArray(),
+                        (from m in termGroup.Managers
+                         select new Model.User { Name = m.Name }).ToArray()
                         )
                     {
                         Description = termGroup.Description,
@@ -1789,9 +1973,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Search Settings
 
-            if (source.SearchSettings != null)
+            if (source.SearchSettings != null && source.SearchSettings.SiteSearchSettings != null)
             {
-                result.SearchSettings = source.SearchSettings.OuterXml;
+                result.SiteSearchSettings = source.SearchSettings.SiteSearchSettings.OuterXml;
+            }
+
+            if (source.SearchSettings != null && source.SearchSettings.WebSearchSettings != null)
+            {
+                result.WebSearchSettings = source.SearchSettings.WebSearchSettings.OuterXml;
             }
 
             #endregion
@@ -1876,13 +2065,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         }
     }
 
-    internal static class V201512Extensions
+    internal static class V201605Extensions
     {
-        public static V201512.Term[] FromModelTermsToSchemaTermsV201512(this TermCollection terms)
+        public static V201605.Term[] FromModelTermsToSchemaTermsV201605(this TermCollection terms)
         {
-            V201512.Term[] result = terms.Count > 0 ? (
+            V201605.Term[] result = terms.Count > 0 ? (
                 from term in terms
-                select new V201512.Term
+                select new V201605.Term
                 {
                     ID = term.Id != Guid.Empty ? term.Id.ToString() : null,
                     Name = term.Name,
@@ -1892,24 +2081,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
                     CustomSortOrder = term.CustomSortOrder,
-                    Terms = term.Terms.Count > 0 ? new V201512.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201512() } : null,
+                    Terms = term.Terms.Count > 0 ? new V201605.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201605() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
                         (from p in term.Properties
-                         select new V201512.StringDictionaryItem
+                         select new V201605.StringDictionaryItem
                          {
                              Key = p.Key,
                              Value = p.Value
                          }).ToArray() : null,
                     LocalCustomProperties = term.LocalProperties.Count > 0 ?
                         (from p in term.LocalProperties
-                         select new V201512.StringDictionaryItem
+                         select new V201605.StringDictionaryItem
                          {
                              Key = p.Key,
                              Value = p.Value
                          }).ToArray() : null,
                     Labels = term.Labels.Count > 0 ?
                         (from l in term.Labels
-                         select new V201512.TermLabelsLabel
+                         select new V201605.TermLabelsLabel
                          {
                              Language = l.Language,
                              IsDefaultForLanguage = l.IsDefaultForLanguage,
@@ -1920,7 +2109,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
-        public static List<Model.Term> FromSchemaTermsToModelTermsV201512(this V201512.Term[] terms)
+        public static List<Model.Term> FromSchemaTermsToModelTermsV201605(this V201605.Term[] terms)
         {
             List<Model.Term> result = new List<Model.Term>(
                 from term in terms
@@ -1928,7 +2117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     !string.IsNullOrEmpty(term.ID) ? Guid.Parse(term.ID) : Guid.Empty,
                     term.Name,
                     term.LanguageSpecified ? term.Language : (int?)null,
-                    (term.Terms != null && term.Terms.Items != null) ? term.Terms.Items.FromSchemaTermsToModelTermsV201512() : null,
+                    (term.Terms != null && term.Terms.Items != null) ? term.Terms.Items.FromSchemaTermsToModelTermsV201605() : null,
                     term.Labels != null ?
                     (new List<Model.TermLabel>(
                         from label in term.Labels
@@ -1952,203 +2141,203 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
-        public static V201512.CalendarType FromTemplateToSchemaCalendarTypeV201512(this Microsoft.SharePoint.Client.CalendarType calendarType)
+        public static V201605.CalendarType FromTemplateToSchemaCalendarTypeV201605(this Microsoft.SharePoint.Client.CalendarType calendarType)
         {
             switch (calendarType)
             {
                 case Microsoft.SharePoint.Client.CalendarType.ChineseLunar:
-                    return V201512.CalendarType.ChineseLunar;
+                    return V201605.CalendarType.ChineseLunar;
                 case Microsoft.SharePoint.Client.CalendarType.Gregorian:
-                    return V201512.CalendarType.Gregorian;
+                    return V201605.CalendarType.Gregorian;
                 case Microsoft.SharePoint.Client.CalendarType.GregorianArabic:
-                    return V201512.CalendarType.GregorianArabicCalendar;
+                    return V201605.CalendarType.GregorianArabicCalendar;
                 case Microsoft.SharePoint.Client.CalendarType.GregorianMEFrench:
-                    return V201512.CalendarType.GregorianMiddleEastFrenchCalendar;
+                    return V201605.CalendarType.GregorianMiddleEastFrenchCalendar;
                 case Microsoft.SharePoint.Client.CalendarType.GregorianXLITEnglish:
-                    return V201512.CalendarType.GregorianTransliteratedEnglishCalendar;
+                    return V201605.CalendarType.GregorianTransliteratedEnglishCalendar;
                 case Microsoft.SharePoint.Client.CalendarType.GregorianXLITFrench:
-                    return V201512.CalendarType.GregorianTransliteratedFrenchCalendar;
+                    return V201605.CalendarType.GregorianTransliteratedFrenchCalendar;
                 case Microsoft.SharePoint.Client.CalendarType.Hebrew:
-                    return V201512.CalendarType.Hebrew;
+                    return V201605.CalendarType.Hebrew;
                 case Microsoft.SharePoint.Client.CalendarType.Hijri:
-                    return V201512.CalendarType.Hijri;
+                    return V201605.CalendarType.Hijri;
                 case Microsoft.SharePoint.Client.CalendarType.Japan:
-                    return V201512.CalendarType.Japan;
+                    return V201605.CalendarType.Japan;
                 case Microsoft.SharePoint.Client.CalendarType.Korea:
-                    return V201512.CalendarType.Korea;
+                    return V201605.CalendarType.Korea;
                 case Microsoft.SharePoint.Client.CalendarType.KoreaJapanLunar:
-                    return V201512.CalendarType.KoreaandJapaneseLunar;
+                    return V201605.CalendarType.KoreaandJapaneseLunar;
                 case Microsoft.SharePoint.Client.CalendarType.SakaEra:
-                    return V201512.CalendarType.SakaEra;
+                    return V201605.CalendarType.SakaEra;
                 case Microsoft.SharePoint.Client.CalendarType.Taiwan:
-                    return V201512.CalendarType.Taiwan;
+                    return V201605.CalendarType.Taiwan;
                 case Microsoft.SharePoint.Client.CalendarType.Thai:
-                    return V201512.CalendarType.Thai;
+                    return V201605.CalendarType.Thai;
                 case Microsoft.SharePoint.Client.CalendarType.UmAlQura:
-                    return V201512.CalendarType.UmmalQura;
+                    return V201605.CalendarType.UmmalQura;
                 case Microsoft.SharePoint.Client.CalendarType.None:
                 default:
-                    return V201512.CalendarType.None;
+                    return V201605.CalendarType.None;
             }
         }
 
-        public static Microsoft.SharePoint.Client.CalendarType FromSchemaToTemplateCalendarTypeV201512(this V201512.CalendarType calendarType)
+        public static Microsoft.SharePoint.Client.CalendarType FromSchemaToTemplateCalendarTypeV201605(this V201605.CalendarType calendarType)
         {
             switch (calendarType)
             {
-                case V201512.CalendarType.ChineseLunar:
+                case V201605.CalendarType.ChineseLunar:
                     return Microsoft.SharePoint.Client.CalendarType.ChineseLunar;
-                case V201512.CalendarType.Gregorian:
+                case V201605.CalendarType.Gregorian:
                     return Microsoft.SharePoint.Client.CalendarType.Gregorian;
-                case V201512.CalendarType.GregorianArabicCalendar:
+                case V201605.CalendarType.GregorianArabicCalendar:
                     return Microsoft.SharePoint.Client.CalendarType.GregorianArabic;
-                case V201512.CalendarType.GregorianMiddleEastFrenchCalendar:
+                case V201605.CalendarType.GregorianMiddleEastFrenchCalendar:
                     return Microsoft.SharePoint.Client.CalendarType.GregorianMEFrench;
-                case V201512.CalendarType.GregorianTransliteratedEnglishCalendar:
+                case V201605.CalendarType.GregorianTransliteratedEnglishCalendar:
                     return Microsoft.SharePoint.Client.CalendarType.GregorianXLITEnglish;
-                case V201512.CalendarType.GregorianTransliteratedFrenchCalendar:
+                case V201605.CalendarType.GregorianTransliteratedFrenchCalendar:
                     return Microsoft.SharePoint.Client.CalendarType.GregorianXLITFrench;
-                case V201512.CalendarType.Hebrew:
+                case V201605.CalendarType.Hebrew:
                     return Microsoft.SharePoint.Client.CalendarType.Hebrew;
-                case V201512.CalendarType.Hijri:
+                case V201605.CalendarType.Hijri:
                     return Microsoft.SharePoint.Client.CalendarType.Hijri;
-                case V201512.CalendarType.Japan:
+                case V201605.CalendarType.Japan:
                     return Microsoft.SharePoint.Client.CalendarType.Japan;
-                case V201512.CalendarType.Korea:
+                case V201605.CalendarType.Korea:
                     return Microsoft.SharePoint.Client.CalendarType.Korea;
-                case V201512.CalendarType.KoreaandJapaneseLunar:
+                case V201605.CalendarType.KoreaandJapaneseLunar:
                     return Microsoft.SharePoint.Client.CalendarType.KoreaJapanLunar;
-                case V201512.CalendarType.SakaEra:
+                case V201605.CalendarType.SakaEra:
                     return Microsoft.SharePoint.Client.CalendarType.SakaEra;
-                case V201512.CalendarType.Taiwan:
+                case V201605.CalendarType.Taiwan:
                     return Microsoft.SharePoint.Client.CalendarType.Taiwan;
-                case V201512.CalendarType.Thai:
+                case V201605.CalendarType.Thai:
                     return Microsoft.SharePoint.Client.CalendarType.Thai;
-                case V201512.CalendarType.UmmalQura:
+                case V201605.CalendarType.UmmalQura:
                     return Microsoft.SharePoint.Client.CalendarType.UmAlQura;
-                case V201512.CalendarType.None:
+                case V201605.CalendarType.None:
                 default:
                     return Microsoft.SharePoint.Client.CalendarType.None;
             }
         }
 
-        public static V201512.WorkHour FromTemplateToSchemaWorkHourV201512(this Model.WorkHour workHour)
+        public static V201605.WorkHour FromTemplateToSchemaWorkHourV201605(this Model.WorkHour workHour)
         {
             switch (workHour)
             {
                 case Model.WorkHour.AM0100:
-                    return V201512.WorkHour.Item100AM;
+                    return V201605.WorkHour.Item100AM;
                 case Model.WorkHour.AM0200:
-                    return V201512.WorkHour.Item200AM;
+                    return V201605.WorkHour.Item200AM;
                 case Model.WorkHour.AM0300:
-                    return V201512.WorkHour.Item300AM;
+                    return V201605.WorkHour.Item300AM;
                 case Model.WorkHour.AM0400:
-                    return V201512.WorkHour.Item400AM;
+                    return V201605.WorkHour.Item400AM;
                 case Model.WorkHour.AM0500:
-                    return V201512.WorkHour.Item500AM;
+                    return V201605.WorkHour.Item500AM;
                 case Model.WorkHour.AM0600:
-                    return V201512.WorkHour.Item600AM;
+                    return V201605.WorkHour.Item600AM;
                 case Model.WorkHour.AM0700:
-                    return V201512.WorkHour.Item700AM;
+                    return V201605.WorkHour.Item700AM;
                 case Model.WorkHour.AM0800:
-                    return V201512.WorkHour.Item800AM;
+                    return V201605.WorkHour.Item800AM;
                 case Model.WorkHour.AM0900:
-                    return V201512.WorkHour.Item900AM;
+                    return V201605.WorkHour.Item900AM;
                 case Model.WorkHour.AM1000:
-                    return V201512.WorkHour.Item1000AM;
+                    return V201605.WorkHour.Item1000AM;
                 case Model.WorkHour.AM1100:
-                    return V201512.WorkHour.Item1100AM;
+                    return V201605.WorkHour.Item1100AM;
                 case Model.WorkHour.AM1200:
-                    return V201512.WorkHour.Item1200AM;
+                    return V201605.WorkHour.Item1200AM;
                 case Model.WorkHour.PM0100:
-                    return V201512.WorkHour.Item100PM;
+                    return V201605.WorkHour.Item100PM;
                 case Model.WorkHour.PM0200:
-                    return V201512.WorkHour.Item200PM;
+                    return V201605.WorkHour.Item200PM;
                 case Model.WorkHour.PM0300:
-                    return V201512.WorkHour.Item300PM;
+                    return V201605.WorkHour.Item300PM;
                 case Model.WorkHour.PM0400:
-                    return V201512.WorkHour.Item400PM;
+                    return V201605.WorkHour.Item400PM;
                 case Model.WorkHour.PM0500:
-                    return V201512.WorkHour.Item500PM;
+                    return V201605.WorkHour.Item500PM;
                 case Model.WorkHour.PM0600:
-                    return V201512.WorkHour.Item600PM;
+                    return V201605.WorkHour.Item600PM;
                 case Model.WorkHour.PM0700:
-                    return V201512.WorkHour.Item700PM;
+                    return V201605.WorkHour.Item700PM;
                 case Model.WorkHour.PM0800:
-                    return V201512.WorkHour.Item800PM;
+                    return V201605.WorkHour.Item800PM;
                 case Model.WorkHour.PM0900:
-                    return V201512.WorkHour.Item900PM;
+                    return V201605.WorkHour.Item900PM;
                 case Model.WorkHour.PM1000:
-                    return V201512.WorkHour.Item1000PM;
+                    return V201605.WorkHour.Item1000PM;
                 case Model.WorkHour.PM1100:
-                    return V201512.WorkHour.Item1100PM;
+                    return V201605.WorkHour.Item1100PM;
                 case Model.WorkHour.PM1200:
-                    return V201512.WorkHour.Item1200PM;
+                    return V201605.WorkHour.Item1200PM;
                 default:
-                    return V201512.WorkHour.Item100AM;
+                    return V201605.WorkHour.Item100AM;
             }
         }
 
-        public static Model.WorkHour FromSchemaToTemplateWorkHourV201512(this V201512.WorkHour workHour)
+        public static Model.WorkHour FromSchemaToTemplateWorkHourV201605(this V201605.WorkHour workHour)
         {
             switch (workHour)
             {
-                case V201512.WorkHour.Item100AM:
+                case V201605.WorkHour.Item100AM:
                     return Model.WorkHour.AM0100;
-                case V201512.WorkHour.Item200AM:
+                case V201605.WorkHour.Item200AM:
                     return Model.WorkHour.AM0200;
-                case V201512.WorkHour.Item300AM:
+                case V201605.WorkHour.Item300AM:
                     return Model.WorkHour.AM0300;
-                case V201512.WorkHour.Item400AM:
+                case V201605.WorkHour.Item400AM:
                     return Model.WorkHour.AM0400;
-                case V201512.WorkHour.Item500AM:
+                case V201605.WorkHour.Item500AM:
                     return Model.WorkHour.AM0500;
-                case V201512.WorkHour.Item600AM:
+                case V201605.WorkHour.Item600AM:
                     return Model.WorkHour.AM0600;
-                case V201512.WorkHour.Item700AM:
+                case V201605.WorkHour.Item700AM:
                     return Model.WorkHour.AM0700;
-                case V201512.WorkHour.Item800AM:
+                case V201605.WorkHour.Item800AM:
                     return Model.WorkHour.AM0800;
-                case V201512.WorkHour.Item900AM:
+                case V201605.WorkHour.Item900AM:
                     return Model.WorkHour.AM0900;
-                case V201512.WorkHour.Item1000AM:
+                case V201605.WorkHour.Item1000AM:
                     return Model.WorkHour.AM1000;
-                case V201512.WorkHour.Item1100AM:
+                case V201605.WorkHour.Item1100AM:
                     return Model.WorkHour.AM1100;
-                case V201512.WorkHour.Item1200AM:
+                case V201605.WorkHour.Item1200AM:
                     return Model.WorkHour.AM1200;
-                case V201512.WorkHour.Item100PM:
+                case V201605.WorkHour.Item100PM:
                     return Model.WorkHour.PM0100;
-                case V201512.WorkHour.Item200PM:
+                case V201605.WorkHour.Item200PM:
                     return Model.WorkHour.PM0200;
-                case V201512.WorkHour.Item300PM:
+                case V201605.WorkHour.Item300PM:
                     return Model.WorkHour.PM0300;
-                case V201512.WorkHour.Item400PM:
+                case V201605.WorkHour.Item400PM:
                     return Model.WorkHour.PM0400;
-                case V201512.WorkHour.Item500PM:
+                case V201605.WorkHour.Item500PM:
                     return Model.WorkHour.PM0500;
-                case V201512.WorkHour.Item600PM:
+                case V201605.WorkHour.Item600PM:
                     return Model.WorkHour.PM0600;
-                case V201512.WorkHour.Item700PM:
+                case V201605.WorkHour.Item700PM:
                     return Model.WorkHour.PM0700;
-                case V201512.WorkHour.Item800PM:
+                case V201605.WorkHour.Item800PM:
                     return Model.WorkHour.PM0800;
-                case V201512.WorkHour.Item900PM:
+                case V201605.WorkHour.Item900PM:
                     return Model.WorkHour.PM0900;
-                case V201512.WorkHour.Item1000PM:
+                case V201605.WorkHour.Item1000PM:
                     return Model.WorkHour.PM1000;
-                case V201512.WorkHour.Item1100PM:
+                case V201605.WorkHour.Item1100PM:
                     return Model.WorkHour.PM1100;
-                case V201512.WorkHour.Item1200PM:
+                case V201605.WorkHour.Item1200PM:
                     return Model.WorkHour.PM1200;
                 default:
                     return Model.WorkHour.AM0100;
             }
         }
 
-        public static V201512.AuditSettingsAudit[] FromTemplateToSchemaAuditsV201512(this Microsoft.SharePoint.Client.AuditMaskType audits)
+        public static V201605.AuditSettingsAudit[] FromTemplateToSchemaAuditsV201605(this Microsoft.SharePoint.Client.AuditMaskType audits)
         {
-            List<V201512.AuditSettingsAudit> result = new List<AuditSettingsAudit>();
+            List<V201605.AuditSettingsAudit> result = new List<AuditSettingsAudit>();
             if (audits.HasFlag(Microsoft.SharePoint.Client.AuditMaskType.All))
             {
                 result.Add(new AuditSettingsAudit { AuditFlag = AuditSettingsAuditAuditFlag.All });
@@ -2217,7 +2406,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return result.ToArray();
         }
 
-        public static Model.ObjectSecurity FromSchemaToTemplateObjectSecurityV201512(this V201512.ObjectSecurity objectSecurity)
+        public static Model.ObjectSecurity FromSchemaToTemplateObjectSecurityV201605(this V201605.ObjectSecurity objectSecurity)
         {
             return ((objectSecurity != null && objectSecurity.BreakRoleInheritance != null) ?
                 new Model.ObjectSecurity(
@@ -2235,18 +2424,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 } : null);
         }
 
-        public static V201512.ObjectSecurity FromTemplateToSchemaObjectSecurityV201512(this Model.ObjectSecurity objectSecurity)
+        public static V201605.ObjectSecurity FromTemplateToSchemaObjectSecurityV201605(this Model.ObjectSecurity objectSecurity)
         {
             return ((objectSecurity != null && (objectSecurity.ClearSubscopes == true || objectSecurity.CopyRoleAssignments == true || objectSecurity.RoleAssignments.Count > 0)) ?
-                new V201512.ObjectSecurity
+                new V201605.ObjectSecurity
                 {
-                    BreakRoleInheritance = new V201512.ObjectSecurityBreakRoleInheritance
+                    BreakRoleInheritance = new V201605.ObjectSecurityBreakRoleInheritance
                     {
                         ClearSubscopes = objectSecurity.ClearSubscopes,
                         CopyRoleAssignments = objectSecurity.CopyRoleAssignments,
                         RoleAssignment = (objectSecurity.RoleAssignments != null && objectSecurity.RoleAssignments.Count > 0) ?
                             (from ra in objectSecurity.RoleAssignments
-                             select new V201512.RoleAssignment
+                             select new V201605.RoleAssignment
                              {
                                  Principal = ra.Principal,
                                  RoleDefinition = ra.RoleDefinition,
@@ -2255,26 +2444,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 } : null);
         }
 
-        public static Model.Folder FromSchemaToTemplateFolderV201512(this V201512.Folder folder)
+        public static Model.Folder FromSchemaToTemplateFolderV201605(this V201605.Folder folder)
         {
-            Model.Folder result = new Model.Folder(folder.Name, null, folder.Security.FromSchemaToTemplateObjectSecurityV201512());
+            Model.Folder result = new Model.Folder(folder.Name, null, folder.Security.FromSchemaToTemplateObjectSecurityV201605());
             if (folder.Folder1 != null && folder.Folder1.Length > 0)
             {
-                result.Folders.AddRange(from child in folder.Folder1 select child.FromSchemaToTemplateFolderV201512());
+                result.Folders.AddRange(from child in folder.Folder1 select child.FromSchemaToTemplateFolderV201605());
             }
             return (result);
         }
 
-        public static V201512.Folder FromTemplateToSchemaFolderV201512(this Model.Folder folder)
+        public static V201605.Folder FromTemplateToSchemaFolderV201605(this Model.Folder folder)
         {
-            V201512.Folder result = new V201512.Folder();
+            V201605.Folder result = new V201605.Folder();
             result.Name = folder.Name;
-            result.Security = folder.Security.FromTemplateToSchemaObjectSecurityV201512();
-            result.Folder1 = folder.Folders != null ? (from child in folder.Folders select child.FromTemplateToSchemaFolderV201512()).ToArray() : null;
+            result.Security = folder.Security.FromTemplateToSchemaObjectSecurityV201605();
+            result.Folder1 = folder.Folders != null ? (from child in folder.Folders select child.FromTemplateToSchemaFolderV201605()).ToArray() : null;
             return (result);
         }
 
-        public static string FromBasePermissionsToStringV201512(this BasePermissions basePermissions)
+        public static string FromBasePermissionsToStringV201605(this BasePermissions basePermissions)
         {
             List<string> permissions = new List<string>();
             foreach (var pk in (PermissionKind[])Enum.GetValues(typeof(PermissionKind)))
@@ -2286,8 +2475,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return string.Join(",", permissions.ToArray());
         }
-            
-        public static BasePermissions ToBasePermissionsV201512(this string basePermissionString)
+
+        public static BasePermissions ToBasePermissionsV201605(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
 
@@ -2297,7 +2486,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 bp.Set((PermissionKind)permissionInt);
             }
-            else if(!string.IsNullOrEmpty(basePermissionString)){
+            else if (!string.IsNullOrEmpty(basePermissionString))
+            {
                 foreach (var pk in basePermissionString.Split(','))
                 {
                     PermissionKind permissionKind;
@@ -2309,7 +2499,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return bp;
         }
-    
+
+        public static Model.NavigationNode FromSchemaNavigationNodeToModelNavigationNodeV201605(
+            this V201605.NavigationNode node)
+        {
+            var result = new Model.NavigationNode
+            {
+                IsExternal = node.IsExternal,
+                Title = node.Title,
+                Url = node.Url,
+            };
+
+            if (node.ChildNodes != null && node.ChildNodes.Length > 0)
+            {
+                result.NavigationNodes.AddRange(
+                    (from n in node.ChildNodes
+                     select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()));
+            }
+
+            return (result);  
+        }
+
+        public static V201605.NavigationNode FromModelNavigationNodeToSchemaNavigationNodeV201605(
+            this Model.NavigationNode node)
+        {
+            var result = new V201605.NavigationNode
+            {
+                IsExternal = node.IsExternal,
+                Title = node.Title,
+                Url = node.Url,
+                ChildNodes = (from n in node.NavigationNodes
+                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+            };
+
+            return (result);
+        }
     }
 }
 

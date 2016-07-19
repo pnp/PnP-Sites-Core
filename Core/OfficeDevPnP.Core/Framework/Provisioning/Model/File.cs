@@ -5,6 +5,9 @@ using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
+    /// <summary>
+    /// Defines a File element, to describe a file that will be provisioned into the target Site
+    /// </summary>
     public partial class File : BaseModel, IEquatable<File>
     {
         #region Private Members
@@ -16,11 +19,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The Src of the File
+        /// </summary>
         public string Src { get; set; }
 
+        /// <summary>
+        /// The TargetFolder of the File
+        /// </summary>
         public string Folder { get; set; }
 
+        /// <summary>
+        /// The Overwrite flag for the File
+        /// </summary>
         public bool Overwrite { get; set; }
+
+        /// <summary>
+        /// The Level status for the File
+        /// </summary>
+        public FileLevel Level { get; set; }
 
         public WebPartCollection WebParts
         {
@@ -62,11 +80,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._webParts = new WebPartCollection(this.ParentTemplate);
         }
 
-        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string, string> properties, ObjectSecurity security = null) :
+        public File(string src, string folder, bool overwrite, IEnumerable<WebPart> webParts, IDictionary<string, string> properties, ObjectSecurity security = null, FileLevel level = FileLevel.Draft) :
             this()
         {
             this.Src = src;
             this.Overwrite = overwrite;
+            this.Level = level;
             this.Folder = folder;
             this.WebParts.AddRange(webParts);
             if (properties != null)
