@@ -100,6 +100,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.ImagePreviewUrl = template.ImagePreviewUrl;
             result.DisplayName = template.DisplayName;
             result.Description = template.Description;
+            result.BaseSiteTemplate = template.BaseSiteTemplate;
 
             if (template.Properties != null && template.Properties.Any())
             {
@@ -1252,6 +1253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.ImagePreviewUrl = source.ImagePreviewUrl;
             result.DisplayName = source.DisplayName;
             result.Description = source.Description;
+            result.BaseSiteTemplate = source.BaseSiteTemplate;
 
             if (source.Properties != null && source.Properties.Length > 0)
             {

@@ -452,6 +452,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String Description { get; set; }
 
+        /// <summary>
+        /// The Base SiteTemplate of the Provisioning Template
+        /// </summary>
+        public String BaseSiteTemplate { get; set; }
+
         public FileConnectorBase Connector
         {
             get
