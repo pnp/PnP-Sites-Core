@@ -41,9 +41,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             {
                 if (!debugMode)
                 {
-#if !ONPREMISES
                     CleanupAllTestSiteCollections(tenantContext);
-#endif
+
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
                     centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
@@ -63,12 +62,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 #if !ONPREMISES
                     CleanupAllTestSiteCollections(tenantContext);
 #else
+                    // first cleanup the just created one...most likely it's not indexed yet
                     try
                     {
                         Tenant t = new Tenant(tenantContext);
                         t.DeleteSiteCollection(centralSiteCollectionUrl);
                     }
                     catch { }
+
+                    // Use search based site collection retreival to delete the one's that are left over from failed test cases
+                    CleanupAllTestSiteCollections(tenantContext);
 #endif
                 }
             }
@@ -261,6 +264,30 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 subWeb.EnsureProperty(t => t.Url);
                 return subWeb.Url;
             }
+        }
+
+        private static void CleanupAllTestSiteCollections(ClientContext tenantContext)
+        {
+            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                       
+            var tenant = new Tenant(tenantContext);
+            try
+            {
+                using (ClientContext cc = tenantContext.Clone(devSiteUrl))
+                {
+                    var sites = cc.Web.SiteSearch();
+
+                    foreach(var site in sites)
+                    {
+                        if (site.Url.Contains(sitecollectionNamePrefix))
+                        {
+                            tenant.DeleteSiteCollection(site.Url);
+                        }
+                    }
+                }
+            }
+            catch
+            { }
         }
 
         private void CleanupCreatedTestSiteCollections(ClientContext tenantContext)
