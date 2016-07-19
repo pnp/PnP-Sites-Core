@@ -67,14 +67,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser));
 
+#if !SP2013
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser));
+#endif
             }
         }
-        #endregion
+#endregion
 
-        #region Helper methods
+#region Helper methods
         private void DeleteCustomActions(ClientContext cc)
         {
             var siteActions = cc.Site.GetCustomActions();
@@ -95,6 +97,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 }
             }
         }
-        #endregion
+#endregion
     }
 }
