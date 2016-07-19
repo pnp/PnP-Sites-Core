@@ -33,6 +33,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
+
+        [TestInitialize()]
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Test that require taxonomy creation are not supported in app-only.");
+            }
+        }
         #endregion
 
         #region Site collection test cases

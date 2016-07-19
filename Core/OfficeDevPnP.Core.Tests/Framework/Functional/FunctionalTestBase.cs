@@ -75,7 +75,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestInitialize()]
-        public void Initialize()
+        public virtual void Initialize()
         {
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
