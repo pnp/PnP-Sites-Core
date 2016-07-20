@@ -67,6 +67,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 group.Description = modelTermGroup.Description;
 
+                                #if !ONPREMISES
+
                                 // Handle TermGroup Contributors, if any
                                 if (modelTermGroup.Contributors != null && modelTermGroup.Contributors.Count > 0)
                                 {
@@ -85,6 +87,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                 }
 
+                                #endif
+
                                 termStore.CommitAll();
                                 web.Context.Load(group);
                                 web.Context.ExecuteQueryRetry();
@@ -95,9 +99,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region TermSets
+#region TermSets
 
                     foreach (var modelTermSet in modelTermGroup.TermSets)
                     {
@@ -190,7 +194,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+#endregion
 
                 }
             }
@@ -380,6 +384,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Description = termGroup.Description
                         };
 
+                        #if !ONPREMISES
+
                         // If we need to include TermGroups security
                         if (creationInfo.IncludeTermGroupsSecurity)
                         {
@@ -395,6 +401,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 from m in termGroup.GroupManagerPrincipalNames
                                 select new Model.User { Name = m });
                         }
+
+                        #endif
 
                         foreach (var termSet in termGroup.TermSets)
                         {
