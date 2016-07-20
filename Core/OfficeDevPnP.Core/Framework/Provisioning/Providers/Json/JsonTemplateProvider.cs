@@ -14,7 +14,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
     /// </summary>
     public abstract class JsonTemplateProvider : TemplateProviderBase
     {
-
         #region Constructor
         protected JsonTemplateProvider() : base()
         {
@@ -48,14 +47,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             {
                 if (file.EndsWith(".json", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    // Load it from a File Stream
-                    Stream stream = this.Connector.GetFileStream(file);
-
                     // And convert it into a ProvisioningTemplate
-                    ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream);
+                    ProvisioningTemplate provisioningTemplate = this.GetTemplate(file, formatter);
 
-                    // Add the template to the result
-                    result.Add(provisioningTemplate);
+                    if (provisioningTemplate != null)
+                    {
+                        // Add the template to the result
+                        result.Add(provisioningTemplate);
+                    }
                 }
             }
 
@@ -64,16 +63,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
 
         public override ProvisioningTemplate GetTemplate(string uri)
         {
-            var formatter = new JsonPnPFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, null, formatter));
+            return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, ITemplateProviderExtension[] extensions)
+        {
+            return (this.GetTemplate(uri, null, null, extensions));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier)
         {
-            var formatter = new JsonPnPFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, identifier, formatter));
+            return (this.GetTemplate(uri, identifier, null));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, ITemplateFormatter formatter)
@@ -83,16 +83,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter)
         {
+            return (this.GetTemplate(uri, null, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions)
+        {
             if (String.IsNullOrEmpty(uri))
             {
                 throw new ArgumentException("uri");
             }
 
+            if (formatter == null)
+            {
+                formatter = new JsonPnPFormatter();
+                formatter.Initialize(this);
+            }
+
             // Get the XML document from a File Stream
             Stream stream = this.Connector.GetFileStream(uri);
 
+            if (stream == null)
+            {
+                throw new ApplicationException(string.Format(CoreResources.Provisioning_Formatter_Invalid_Template_URI, uri));
+            }
+
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
 
             // Store the identifier of this template, is needed for latter save operation
             this.Uri = uri;
@@ -102,27 +124,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
 
         public override void Save(ProvisioningTemplate template)
         {
-            var formatter = new JsonPnPFormatter();
-            this.Save(template, formatter);
+            this.Save(template, (ITemplateProviderExtension[])null);
+        }
+
+        public override void Save(ProvisioningTemplate template, ITemplateProviderExtension[] extensions = null)
+        {
+            this.Save(template, null, extensions);
         }
 
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException("template");
-            }
+            this.Save(template, formatter, null);
+        }
 
-            SaveToConnector(template, this.Uri, formatter);
+        public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
+            this.SaveAs(template, this.Uri, formatter, extensions);
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)
         {
-            var formatter = new JsonPnPFormatter();
-            this.SaveAs(template, uri, formatter);
+            this.SaveAs(template, uri, (ITemplateProviderExtension[])null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateProviderExtension[] extensions = null)
+        {
+            this.SaveAs(template, uri, null, extensions);
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
+        {
+            this.SaveAs(template, uri, formatter, null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
         {
             if (template == null)
             {
@@ -134,7 +169,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
                 throw new ArgumentException("uri");
             }
 
-            SaveToConnector(template, uri, formatter);
+            if (formatter == null)
+            {
+                formatter = new JsonPnPFormatter();
+            }
+
+            SaveToConnector(template, uri, formatter, extensions);
         }
 
         public override void Delete(string uri)
@@ -147,28 +187,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             this.Connector.DeleteFile(uri);
         }
        
-        #endregion
-
-        #region Helper methods
-        
-        private void SaveToConnector(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
-        {
-            if (String.IsNullOrEmpty(template.Id))
-            {
-                template.Id = Path.GetFileNameWithoutExtension(uri);
-            }
-
-            using (var stream = formatter.ToFormattedTemplate(template))
-            {
-                this.Connector.SaveFileStream(uri, stream);
-            }
-
-            if (this.Connector is ICommitableFileConnector)
-            {
-                ((ICommitableFileConnector)this.Connector).Commit();
-            }
-        }
-
         #endregion
     }
 }

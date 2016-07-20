@@ -281,6 +281,7 @@
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -368,6 +369,8 @@
     <Compile Include="Framework\ObjectHandlers\ObjectContentTypeTests.cs" />
     <Compile Include="Framework\ObjectHandlers\TokenParserTests.cs" />
     <Compile Include="Framework\Providers\BaseTemplateTests.cs" />
+    <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
+    <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />
@@ -460,8 +463,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-NOT-Valid-XInclude-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Sample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Sample-02.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />
     <Content Include="Resources\TestDefault.aspx">
