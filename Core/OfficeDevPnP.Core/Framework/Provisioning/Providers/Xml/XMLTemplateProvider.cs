@@ -49,14 +49,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 if (file.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    // Load it from a File Stream
-                    Stream stream = this.Connector.GetFileStream(file);
-
                     ProvisioningTemplate provisioningTemplate;
                     try
                     {
-                        // And convert it into a ProvisioningTemplate
-                        provisioningTemplate = formatter.ToProvisioningTemplate(stream);
+                        // Use the GetTemplate method to share the same logic
+                        provisioningTemplate = this.GetTemplate(file, formatter);
                     }
                     catch (ApplicationException)
                     {
