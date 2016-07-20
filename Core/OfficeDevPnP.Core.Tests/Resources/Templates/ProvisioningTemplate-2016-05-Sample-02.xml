@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=1.4.815.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" />
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
-        <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security>
+      <pnp:Security ClearSubscopes="false">
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -25,6 +26,7 @@
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
         </pnp:AdditionalVisitors>
+        <pnp:Permissions />
       </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -43,12 +45,12 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0">
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" RemoveExistingContentTypes="true">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -69,15 +71,15 @@
       </pnp:Features>
       <pnp:CustomActions>
         <pnp:SiteCustomActions>
-          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="31" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}">
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None">
             <pnp:CommandUIExtension />
           </pnp:CustomAction>
-          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="31" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}">
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None">
             <pnp:CommandUIExtension />
           </pnp:CustomAction>
         </pnp:SiteCustomActions>
         <pnp:WebCustomActions>
-          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="31" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}">
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None">
             <pnp:CommandUIExtension />
           </pnp:CustomAction>
         </pnp:WebCustomActions>
@@ -89,7 +91,7 @@
         <pnp:File Src="Custom.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" />
         <pnp:File Src="Custom.spfont" Folder="_catalogs/Theme/15" Overwrite="true" />
       </pnp:Files>
-      <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" MasterPage="_catalogs/MasterPage/CustomMaster.master" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" Version="1" />
+      <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
       <pnp:Providers>
         <pnp:Provider Enabled="true" HandlerType="OfficeDev.PnP.Provisioning.Providers.FakeProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
           <pnp:Configuration>

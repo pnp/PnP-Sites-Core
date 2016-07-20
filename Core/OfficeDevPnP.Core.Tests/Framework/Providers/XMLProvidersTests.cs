@@ -3,6 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Tests.Framework.Providers.Extensibility;
+using System.Security.Cryptography.X509Certificates;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -99,7 +103,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 8);
+            Assert.IsTrue(result.Count == 10);
             Assert.IsTrue(result[0].Files.Count == 5);
             Assert.IsTrue(result[1].Files.Count == 5);
             Assert.IsTrue(result[2].Files.Count == 6);
@@ -107,7 +111,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result[4].Files.Count == 1);
             Assert.IsTrue(result[5].Files.Count == 5);
             Assert.IsTrue(result[6].Files.Count == 1);
-            Assert.IsTrue(result[7].Files.Count == 5);
+            Assert.IsTrue(result[7].Files.Count == 1);
+            Assert.IsTrue(result[8].Files.Count == 1);
+            Assert.IsTrue(result[9].Files.Count == 5);
         }
 
         [TestMethod]
@@ -230,7 +236,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLFileSystemConvertTemplatesFromV201503toV201505()
+        public void XMLFileSystemConvertTemplatesFromV201503toV201605()
         {
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -239,10 +245,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var _source1 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-01.xml");
-            provider.SaveAs(_source1, "ProvisioningTemplate-2015-05-Sample-01.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.LatestFormatter);
 
             var _source2 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-02.xml");
-            provider.SaveAs(_source2, "ProvisioningTemplate-2015-05-Sample-02.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.LatestFormatter);
         }
 
         [TestMethod]
@@ -325,5 +331,71 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         #endregion
 
+        #region Provider Extensibility Tests
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLEncryptionTest()
+        {
+            X509Certificate2 certificate = RetrieveCertificateFromStore(new X509Store(StoreLocation.CurrentUser), "PnPTestCertificate");
+
+            if (certificate == null)
+            {
+                Assert.Inconclusive("Missing certificate with SN=PnPTestCertificate in CurrentUser Certificate Store, so can't test");
+            }
+
+            XMLEncryptionTemplateProviderExtension extension =
+                new XMLEncryptionTemplateProviderExtension();
+
+            extension.Initialize(certificate);
+
+            ITemplateProviderExtension[] extensions = new ITemplateProviderExtension[] { extension };
+
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-01.xml");
+            template.DisplayName = "Ciphered template";
+
+            provider.SaveAs(template, "ProvisioningTemplate-2016-05-Ciphered.xml", extensions);
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Ciphered.xml", extensions);
+
+            provider.Delete("ProvisioningTemplate-2016-05-Ciphered.xml");
+
+            Assert.IsTrue(result.DisplayName == "Ciphered template");
+        }
+
+        private static X509Certificate2 RetrieveCertificateFromStore(X509Store store, String subjectName)
+        {
+            if (store == null)
+                throw new ArgumentNullException("store");
+
+            X509Certificate2 cert = null;
+
+            try
+            {
+                store.Open(OpenFlags.ReadOnly);
+
+                X509Certificate2Collection certs = store.Certificates.Find(X509FindType.FindBySubjectName, subjectName, false);
+
+                if (certs.Count > 0)
+                {
+                    // Get the first certificate in the collection
+                    cert = certs[0];
+                }
+            }
+            finally
+            {
+                if (store != null)
+                    store.Close();
+            }
+
+            return cert;
+        }
+
+        #endregion
     }
 }
