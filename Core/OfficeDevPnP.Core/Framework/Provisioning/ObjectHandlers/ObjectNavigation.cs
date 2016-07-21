@@ -293,7 +293,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(sourceNodes);
             web.Context.ExecuteQueryRetry();
 
-            result.NavigationNodes.AddRange(from n in sourceNodes
+            result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
                                             select n.ToDomainModelNavigationNode(web));
 
             return (result);
@@ -368,7 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             node.Context.Load(node.Children);
             node.Context.ExecuteQueryRetry();
 
-            result.NavigationNodes.AddRange(from n in node.Children
+            result.NavigationNodes.AddRange(from n in node.Children.AsEnumerable()
                                             select n.ToDomainModelNavigationNode(web));
 
             return (result);
