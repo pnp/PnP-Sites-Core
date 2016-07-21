@@ -2,6 +2,7 @@
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -28,7 +29,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         public ContentTypeValidator(): base()
         {
             // optionally override schema version
-            // SchemaVersion = "http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema";
+            SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
             XPathQuery = "/pnp:Templates/pnp:ProvisioningTemplate/pnp:ContentTypes/pnp:ContentType";
         }
         #endregion
