@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         #region construction
         public ValidatorBase()
         {
-            SchemaVersion = "http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema";
+            SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
         }
         #endregion
 
@@ -203,7 +204,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
         internal string ExtractElementXml(ProvisioningTemplate provisioningTemplate)
         {
-            XElement provXml = XElement.Parse(provisioningTemplate.ToXML());
+            XElement provXml = XElement.Parse(provisioningTemplate.ToXML(XMLPnPSchemaFormatter.GetSpecificFormatter(SchemaVersion)));
             var namespaceManager = new XmlNamespaceManager(new NameTable());
             namespaceManager.AddNamespace("pnp", SchemaVersion);
             XElement ctXml = provXml.XPathSelectElement(XPathQuery, namespaceManager);
