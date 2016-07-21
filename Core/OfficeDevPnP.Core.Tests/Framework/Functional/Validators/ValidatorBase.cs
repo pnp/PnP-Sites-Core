@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         #region construction
         public ValidatorBase()
         {
-            SchemaVersion = "http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema";
+            SchemaVersion = "http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema";
         }
         #endregion
 
