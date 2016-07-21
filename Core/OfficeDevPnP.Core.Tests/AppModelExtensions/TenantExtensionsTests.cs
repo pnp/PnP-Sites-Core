@@ -188,7 +188,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 var tenant = new Tenant(tenantContext);
                 string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                Console.WriteLine("SubSiteExistsTest: step 1");
                 string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                Console.WriteLine("SubSiteExistsTest: step 1.1");
                 string subSiteUrlGood = "";
                 string subSiteUrlWrong = "";
 
@@ -198,6 +200,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Web web = site.RootWeb;
                 web.Context.Load(web);
                 web.Context.ExecuteQueryRetry();
+                Console.WriteLine("SubSiteExistsTest: step 1.2");
 
                 //Create sub site
                 SiteEntity sub = new SiteEntity() { Title = "Test Sub", Url = "sub", Description = "Test" };
@@ -207,19 +210,27 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 subSiteUrlWrong = String.Format("{0}{1}", siteToCreateUrl, "8988980");
 
                 // Check real sub site
+                Console.WriteLine("SubSiteExistsTest: step 2");
                 bool subSiteExists = tenant.SubSiteExists(subSiteUrlGood);
+                Console.WriteLine("SubSiteExistsTest: step 2.1");
                 Assert.IsTrue(subSiteExists);
 
                 // check non existing sub site
+                Console.WriteLine("SubSiteExistsTest: step 3");
                 bool subSiteExists2 = tenant.SubSiteExists(subSiteUrlWrong);
+                Console.WriteLine("SubSiteExistsTest: step 3.1");
                 Assert.IsFalse(subSiteExists2);
 
                 // check root site (= site collection). Will return true when existing
+                Console.WriteLine("SubSiteExistsTest: step 4");
                 bool subSiteExists3 = tenant.SubSiteExists(siteToCreateUrl);
+                Console.WriteLine("SubSiteExistsTest: step 4.1");
                 Assert.IsTrue(subSiteExists3);
 
                 // check root site (= site collection) that does not exist. Will return false when non-existant
+                Console.WriteLine("SubSiteExistsTest: step 5");
                 bool subSiteExists4 = tenant.SubSiteExists(siteToCreateUrl + "8808809808");
+                Console.WriteLine("SubSiteExistsTest: step 5.1");
                 Assert.IsFalse(subSiteExists4);
             }
         }
@@ -235,18 +246,27 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
 
                 //Create site collection test
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 1");
                 string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 1.1");
                 var siteExists = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 1.2");
                 Assert.IsTrue(siteExists, "Site collection creation failed");
 
                 //Delete site collection test: move to recycle bin
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 2");
                 tenant.DeleteSiteCollection(siteToCreateUrl, true);
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 2.1");
                 bool recycled = tenant.CheckIfSiteExists(siteToCreateUrl, "Recycled");
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 2.2");
                 Assert.IsTrue(recycled, "Site collection recycling failed");
 
                 //Remove from recycle bin
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 3");
                 tenant.DeleteSiteCollectionFromRecycleBin(siteToCreateUrl, true);
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 3.1");
                 var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("CreateDeleteSiteCollectionTest: step 3.2");
                 Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
             }
         }
@@ -260,23 +280,35 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
 
                 //Create site collection test
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 1");
                 string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 1.1");
                 var siteExists = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 1.1");
                 Assert.IsTrue(siteExists, "Site collection creation failed");
 
                 //Delete site collection test: move to recycle bin
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 2");
                 tenant.DeleteSiteCollection(siteToCreateUrl, true);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 2.1");
                 bool recycled = tenant.CheckIfSiteExists(siteToCreateUrl, "Recycled");
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 2.2");
                 Assert.IsTrue(recycled, "Site collection recycling failed");
 
                 //Remove from recycle bin
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 3");
                 tenant.DeleteSiteCollectionFromRecycleBin(siteToCreateUrl, true);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 3.1");
                 var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 3.2");
                 Assert.IsFalse(siteExists2, "Site collection deletion from recycle bin failed");
 
                 //Create a site collection using the same url as the previously deleted site collection
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 4");
                 siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 4.1");
                 siteExists = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("CreateDeleteCreateSiteCollectionTest: step 4.2");
                 Assert.IsTrue(siteExists, "Second site collection creation failed");
             }
         }
@@ -295,30 +327,43 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
+                Console.WriteLine("SetSiteLockStateTest: step 1");
                 if (!tenant.SiteExists(siteToCreateUrl))
                 {
                     siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                    Console.WriteLine("SetSiteLockStateTest: step 1.1");
                     var siteExists = tenant.SiteExists(siteToCreateUrl);
+                    Console.WriteLine("SetSiteLockStateTest: step 1.2");
                     Assert.IsTrue(siteExists, "Site collection creation failed");
                 }
 
+                Console.WriteLine("SetSiteLockStateTest: step 2");
                 // Set Lockstate NoAccess test
                 tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.NoAccess, true);
+
+                Console.WriteLine("SetSiteLockStateTest: step 2.1");
                 var siteProperties = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
+                Console.WriteLine("SetSiteLockStateTest: step 2.1");
                 tenantContext.Load(siteProperties);
                 tenantContext.ExecuteQueryRetry();
                 Assert.IsTrue(siteProperties.LockState == SiteLockState.NoAccess.ToString(), "LockState wasn't set to NoAccess");
 
                 // Set Lockstate NoAccess test
+                Console.WriteLine("SetSiteLockStateTest: step 3");
                 tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.Unlock, true);
+                Console.WriteLine("SetSiteLockStateTest: step 3.1");
                 var siteProperties2 = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
+                Console.WriteLine("SetSiteLockStateTest: step 3.2");
                 tenantContext.Load(siteProperties2);
                 tenantContext.ExecuteQueryRetry();
                 Assert.IsTrue(siteProperties2.LockState == SiteLockState.Unlock.ToString(), "LockState wasn't set to UnLock");
 
                 //Delete site collection, also
+                Console.WriteLine("SetSiteLockStateTest: step 4");
                 tenant.DeleteSiteCollection(siteToCreateUrl, false);
+                Console.WriteLine("SetSiteLockStateTest: step 4.1");
                 var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                Console.WriteLine("SetSiteLockStateTest: step 4.2");
                 Assert.IsFalse(siteExists2, "Site collection deletion, including from recycle bin, failed");
             }
         }
@@ -364,7 +409,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 SiteOwnerLogin = siteOwnerLogin,
             };
 
+            Console.WriteLine(String.Format("!!Before creating site collection {0}", siteToCreateUrl));
             tenant.CreateSiteCollection(siteToCreate, false, true);
+            Console.WriteLine(String.Format("!!Site collection created {0}", siteToCreateUrl));
             return siteToCreateUrl;
         }
         #endregion
