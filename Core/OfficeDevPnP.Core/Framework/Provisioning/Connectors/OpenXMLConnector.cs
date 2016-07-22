@@ -153,6 +153,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public override string GetFilenamePart(string fileName)
         {
+            fileName = fileName.Replace(@"/", @"\");
+
             if (fileName.Contains(@"\"))
             {
                 var parts = fileName.Split(new[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
