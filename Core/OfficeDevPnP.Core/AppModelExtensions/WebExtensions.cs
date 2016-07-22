@@ -406,8 +406,9 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
-            site.Context.ExecuteQueryRetry();
+			UninstallSolution(site, packageGuid, fileName, majorVersion, minorVersion);
+            //Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+            //site.Context.ExecuteQueryRetry();
 
 
             var packageServerRelativeUrl = UrlUtility.Combine(rootWeb.RootFolder.ServerRelativeUrl, fileName);
@@ -453,7 +454,7 @@ namespace Microsoft.SharePoint.Client
             site.Context.Load(solutions);
             site.Context.ExecuteQueryRetry();
 
-            if (solutions.AreItemsAvailable)
+            if (solutions.AreItemsAvailable && solutions.Count > 0)
             {
                 var packageItem = solutions.FirstOrDefault();
                 var packageInfo = new DesignPackageInfo()

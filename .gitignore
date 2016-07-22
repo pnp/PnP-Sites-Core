@@ -178,3 +178,4 @@ FakesAssemblies/
 
 # Visual Studio 2015 cache/options directory
 .vs/
+/Core/OfficeDevPnP.Core.Tests/Framework/ObjectHandlers

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=3751622786b357c2" />
+  
+  <pnp:Templates ID="CONTAINER-TEMPLATE-83E844EE7F75442EB12C340DF9BBFF8F">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-83E844EE7F75442EB12C340DF9BBFF8F" Version="1">
+
+      <pnp:Publishing AutoCheckRequirements="MakeCompliant">
+        <pnp:DesignPackage DesignPackagePath="PnPDesignPackagev1.4-1.4.wsp"
+        MajorVersion="1"
+        MinorVersion="0"
+        PackageGuid="{38094c22-84c8-4d84-a2e4-19e934aa3fd0}"
+        PackageName="PnP Design Package"/>
+        <pnp:AvailableWebTemplates>          
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#0" />
+          <pnp:WebTemplate TemplateName="BLOG#0" />
+          <pnp:WebTemplate TemplateName="CMSPUBLISHING#0" />
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="PnPPageLayout.aspx">
+          <pnp:PageLayout Path="PnPPageLayout.aspx" />
+          <pnp:PageLayout Path="PnPWelcomeLayout.aspx" />
+        </pnp:PageLayouts>
+      </pnp:Publishing>
+
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+
+
+</pnp:Provisioning>
