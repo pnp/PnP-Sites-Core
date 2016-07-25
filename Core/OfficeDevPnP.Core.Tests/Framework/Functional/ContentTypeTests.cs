@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
-        public void SiteCollectionFieldAddingTest()
+        public void SiteCollectionContentTypeAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {

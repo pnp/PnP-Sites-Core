@@ -366,6 +366,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
                 fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
             }
+            
+            // add the default provided container (if any)
+            if (!String.IsNullOrEmpty(container))
+            {
+                if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
+                {
+                    container = String.Format(@"{0}\{1}", template.Connector.GetContainer(), container);
+                }               
+            }
+            else
+            {
+                container = template.Connector.GetContainer();
+            }
 
             var stream = template.Connector.GetFileStream(fileName, container);
             if (stream == null)
