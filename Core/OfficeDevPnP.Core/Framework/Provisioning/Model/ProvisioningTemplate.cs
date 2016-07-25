@@ -558,6 +558,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+
         /// <summary>
         /// Serializes a template to XML
         /// </summary>

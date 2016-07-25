@@ -622,7 +622,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Folders = list.Folders.Count > 0 ?
                          (from folder in list.Folders
                           select folder.FromTemplateToSchemaFolderV201605()).ToArray() : null,
-                     }).ToArray();
+                         UserCustomActions = list.UserCustomActions.Count > 0 ?
+                         (from customAction in list.UserCustomActions
+                          select new V201605.CustomAction
+                          {
+                              CommandUIExtension = new CustomActionCommandUIExtension
+                              {
+                                  Any = customAction.CommandUIExtension != null ?
+                                     (from x in customAction.CommandUIExtension.Elements() select x.ToXmlElement()).ToArray() : null,
+                              },
+                              Description = customAction.Description,
+                              Enabled = customAction.Enabled,
+                              Group = customAction.Group,
+                              ImageUrl = customAction.ImageUrl,
+                              Location = customAction.Location,
+                              Name = customAction.Name,
+                              Rights = customAction.Rights.FromBasePermissionsToStringV201605(),
+                              RegistrationId = customAction.RegistrationId,
+                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
+                              RegistrationTypeSpecified = true,
+                              Remove = customAction.Remove,
+                              ScriptBlock = customAction.ScriptBlock,
+                              ScriptSrc = customAction.ScriptSrc,
+                              Sequence = customAction.Sequence,
+                              SequenceSpecified = true,
+                              Title = customAction.Title,
+                              Url = customAction.Url,
+                          }).ToArray() : null,
+                        }).ToArray();
             }
             else
             {
@@ -1639,7 +1666,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         list.Security.FromSchemaToTemplateObjectSecurityV201605(),
                         (list.Folders != null ?
                             (new List<Model.Folder>(from folder in list.Folders
-                                                    select folder.FromSchemaToTemplateFolderV201605())) : null)
+                                                    select folder.FromSchemaToTemplateFolderV201605())) : null),
+                        (list.UserCustomActions != null ?
+                            (new List<Model.CustomAction>(
+                                from customAction in list.UserCustomActions
+                                select new Model.CustomAction
+                                {
+                                    CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
+                                        (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
+                                    Description = customAction.Description,
+                                    Enabled = customAction.Enabled,
+                                    Group = customAction.Group,
+                                    ImageUrl = customAction.ImageUrl,
+                                    Location = customAction.Location,
+                                    Name = customAction.Name,
+                                    Rights = customAction.Rights.ToBasePermissionsV201605(),
+                                    ScriptBlock = customAction.ScriptBlock,
+                                    ScriptSrc = customAction.ScriptSrc,
+                                    RegistrationId = customAction.RegistrationId,
+                                    RegistrationType = (UserCustomActionRegistrationType)Enum.Parse(typeof(UserCustomActionRegistrationType), customAction.RegistrationType.ToString(), true),
+                                    Remove = customAction.Remove,
+                                    Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
+                                    Title = customAction.Title,
+                                    Url = customAction.Url,
+                                })) : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,
