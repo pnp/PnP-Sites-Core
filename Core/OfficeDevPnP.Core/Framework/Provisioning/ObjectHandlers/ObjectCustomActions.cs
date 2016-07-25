@@ -69,8 +69,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     caExists = web.CustomActionExists(customAction.Name);
                 }
 
-                // If the CustomAction does not exist and we don't have to remove it
-                if (!caExists && !customAction.Remove)
+                // If the CustomAction does not exist, we don't have to remove it, and it is enabled
+                if (!caExists && !customAction.Remove && customAction.Enabled)
                 {
                     // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
