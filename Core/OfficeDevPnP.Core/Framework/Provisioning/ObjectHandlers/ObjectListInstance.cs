@@ -916,6 +916,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+
+                #region UserCustomActions
+
+                // Add any UserCustomActions
+                var existingUserCustomActions = existingList.UserCustomActions;
+                web.Context.Load(existingUserCustomActions);
+                web.Context.ExecuteQueryRetry();
+
+                foreach (CustomAction userCustomAction in templateList.UserCustomActions)
+                {
+                    // Check for existing custom actions before adding (compare by custom action name)
+                    if (!existingUserCustomActions.AsEnumerable().Any(uca => uca.Name == userCustomAction.Name))
+                    {
+                        CreateListCustomAction(existingList, parser, userCustomAction);
+                        isDirty = true;
+                    }
+                    else
+                    {
+                        var existingCustomAction = existingUserCustomActions.AsEnumerable().FirstOrDefault(uca => uca.Name == userCustomAction.Name);
+                        if (existingCustomAction != null)
+                        {
+                            isDirty = true;
+
+                            // If the custom action already exists
+                            if (userCustomAction.Remove)
+                            {
+                                // And if we need to remove it, we simply delete it
+                                existingCustomAction.DeleteObject();
+                            }
+                            else
+                            {
+                                // Otherwise we update it, and before we force the target 
+                                // registration type and ID to avoid issues
+                                userCustomAction.RegistrationType = UserCustomActionRegistrationType.List;
+                                userCustomAction.RegistrationId = existingList.Id.ToString("B").ToUpper();
+                                ObjectCustomActions.UpdateCustomAction(parser, scope, userCustomAction, existingCustomAction);
+                            }
+                        }
+                    }
+                }
+                #endregion
+
                 if (isDirty)
                 {
                     existingList.Update();
@@ -984,6 +1026,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id), ProvisioningMessageType.Warning);
                 return null;
             }
+        }
+
+        private static void CreateListCustomAction(List existingList, TokenParser parser, CustomAction userCustomAction)
+        {
+            UserCustomAction newUserCustomAction = existingList.UserCustomActions.Add();
+
+            newUserCustomAction.Title = userCustomAction.Title;
+            newUserCustomAction.Description = userCustomAction.Description;
+
+#if !ONPREMISES
+            if (!string.IsNullOrEmpty(userCustomAction.Title) && userCustomAction.Title.ContainsResourceToken())
+            {
+                newUserCustomAction.TitleResource.SetUserResourceValue(userCustomAction.Title, parser);
+            }
+            if (!string.IsNullOrEmpty(userCustomAction.Description) && userCustomAction.Description.ContainsResourceToken())
+            {
+                newUserCustomAction.DescriptionResource.SetUserResourceValue(userCustomAction.Description, parser);
+            }
+#endif
+
+            newUserCustomAction.Name = userCustomAction.Name;
+            newUserCustomAction.ImageUrl = userCustomAction.ImageUrl;
+            newUserCustomAction.Rights = userCustomAction.Rights;
+            newUserCustomAction.Sequence = userCustomAction.Sequence;
+            newUserCustomAction.Group = userCustomAction.Group;
+            newUserCustomAction.Location = userCustomAction.Location;
+            //newUserCustomAction.RegistrationId = userCustomAction.RegistrationId;
+            //newUserCustomAction.RegistrationType = userCustomAction.RegistrationType;
+            newUserCustomAction.CommandUIExtension =
+                userCustomAction.CommandUIExtension != null ?
+                    parser.ParseString(userCustomAction.CommandUIExtension.ToString()) :
+                    string.Empty;
+            newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
+            newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
+            newUserCustomAction.Url = userCustomAction.Url;
+
+            newUserCustomAction.Update();
         }
 
         private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser, PnPMonitoredScope scope)
@@ -1190,6 +1269,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            // Add any custom action
+            if (list.UserCustomActions.Any())
+            {
+                foreach (var userCustomAction in list.UserCustomActions)
+                {
+                    CreateListCustomAction(createdList, parser, userCustomAction);
+                }
+
+                web.Context.ExecuteQueryRetry();
+            }
+
             if (list.Security != null)
             {
                 createdList.SetSecurity(parser, list.Security);
@@ -1263,6 +1353,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.BaseTemplate,
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
+                        l => l.UserCustomActions,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1364,6 +1455,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     list = ExtractViews(siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, allLists, creationInfo, template);
+
+                    list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
                     list.Security = siteList.GetSecurity();
 
@@ -1641,6 +1734,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+            return list;
+        }
+
+        private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
+        {
+            foreach (var userCustomAction in siteList.UserCustomActions.AsEnumerable())
+            {
+                web.Context.Load(userCustomAction);
+                web.Context.ExecuteQueryRetry();
+
+                var customAction = new CustomAction
+                {
+                    Title = userCustomAction.Title,
+                    Description = userCustomAction.Description,
+                    Enabled = true,
+                    Name = userCustomAction.Name,
+                    //RegistrationType = userCustomAction.RegistrationType,
+                    //RegistrationId = userCustomAction.RegistrationId,
+                    Url = userCustomAction.Url,
+                    ImageUrl = userCustomAction.ImageUrl,
+                    Rights = userCustomAction.Rights,
+                    Sequence = userCustomAction.Sequence,
+                    ScriptBlock = userCustomAction.ScriptBlock,
+                    ScriptSrc = userCustomAction.ScriptSrc,
+                    CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
+                        XElement.Parse(userCustomAction.CommandUIExtension) : null,
+                    Group = userCustomAction.Group,
+                    Location = userCustomAction.Location,
+                };
+
+#if !ONPREMISES
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+                    siteList.EnsureProperty(l => l.Title);
+                    var listKey = siteList.Title.Replace(" ", "_");
+                    var resourceKey = userCustomAction.Name.Replace(" ", "_");
+
+                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("List_{0}_CustomAction_{1}_Title", listKey, resourceKey), template, creationInfo))
+                    {
+                        var customActionTitle = string.Format("{{res:List_{0}_CustomAction_{1}_Title}}", listKey, resourceKey);
+                        customAction.Title = customActionTitle;
+
+                    }
+                    if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("List_{0}_CustomAction_{1}_Description", listKey, resourceKey), template, creationInfo))
+                    {
+                        var customActionDescription = string.Format("{{res:List_{0}_CustomAction_{1}_Description}}", listKey, resourceKey);
+                        customAction.Description = customActionDescription;
+                    }
+                }
+#endif
+
+                list.UserCustomActions.Add(customAction);
+            }
+
             return list;
         }
 
