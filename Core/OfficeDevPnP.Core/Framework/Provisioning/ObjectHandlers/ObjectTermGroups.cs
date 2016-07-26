@@ -124,7 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
                             foreach (var property in modelTermSet.Properties)
                             {
-                                set.SetCustomProperty(property.Key, property.Value);
+                                set.SetCustomProperty(property.Key, parser.ParseString(property.Value));
                             }
                             if (modelTermSet.Owner != null)
                             {
@@ -404,6 +404,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         #endif
 
+                        web.EnsureProperty(w => w.Url);
+
                         foreach (var termSet in termGroup.TermSets)
                         {
                             // Do not include the orphan term set
@@ -422,7 +424,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             modelTermSet.Terms.AddRange(GetTerms<TermSet>(web.Context, termSet, termStore.DefaultLanguage, isSiteCollectionTermGroup));
                             foreach (var property in termSet.CustomProperties)
                             {
-                                modelTermSet.Properties.Add(property.Key, property.Value);
+                                if (property.Key.Equals("_Sys_Nav_AttachedWeb_SiteId", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    modelTermSet.Properties.Add(property.Key, "{sitecollectionid}");
+                                }
+                                else if (property.Key.Equals("_Sys_Nav_AttachedWeb_WebId", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    modelTermSet.Properties.Add(property.Key, "{siteid}");
+                                }
+                                else
+                                {
+                                    modelTermSet.Properties.Add(property.Key, Tokenize(property.Value, web.Url, web));
+                                }
                             }
                             modelTermGroup.TermSets.Add(modelTermSet);
                         }

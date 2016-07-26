@@ -50,6 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = new List<TokenDefinition>();
 
             _tokens.Add(new SiteCollectionToken(web));
+            _tokens.Add(new SiteCollectionIdToken(web));
             _tokens.Add(new SiteToken(web));
             _tokens.Add(new MasterPageCatalogToken(web));
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
