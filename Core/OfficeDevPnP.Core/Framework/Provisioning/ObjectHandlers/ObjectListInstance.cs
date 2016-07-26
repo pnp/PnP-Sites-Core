@@ -1354,6 +1354,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.UserCustomActions,
+                        l => l.MajorVersionLimit,
+                        l => l.MajorWithMinorVersionsLimit,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1426,13 +1428,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         OnQuickLaunch = siteList.OnQuickLaunch,
                         EnableModeration = siteList.EnableModeration,
                         MaxVersionLimit =
-                            siteList.IsObjectPropertyInstantiated("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
+                            siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
                         EnableMinorVersions = siteList.EnableMinorVersions,
                         MinorVersionLimit =
-                            siteList.IsObjectPropertyInstantiated("MajorWithMinorVersionsLimit")
+                            siteList.IsPropertyAvailable("MajorWithMinorVersionsLimit")
                                 ? siteList.MajorWithMinorVersionsLimit
                                 : 0,
-                        ForceCheckout = siteList.IsObjectPropertyInstantiated("ForceCheckout") ? 
+                        ForceCheckout = siteList.IsPropertyAvailable("ForceCheckout") ? 
                             siteList.ForceCheckout : false,
                     };
 
