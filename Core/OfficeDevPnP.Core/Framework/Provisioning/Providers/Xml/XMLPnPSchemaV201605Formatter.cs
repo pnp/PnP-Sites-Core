@@ -2131,6 +2131,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     LanguageSpecified = term.Language.HasValue,
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsDeprecated = term.IsDeprecated,
+                    IsReused = term.IsReused,
+                    IsSourceTerm = term.IsSourceTerm,
+                    SourceTermId = term.SourceTermId != Guid.Empty ? term.SourceTermId.ToString() : null,
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new V201605.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201605() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
@@ -2185,6 +2189,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     CustomSortOrder = term.CustomSortOrder,
                     IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsReused = term.IsReused,
+                    IsSourceTerm = term.IsSourceTerm,
+                    SourceTermId = !String.IsNullOrEmpty(term.SourceTermId) ? new Guid(term.SourceTermId) : Guid.Empty,
+                    IsDeprecated = term.IsDeprecated,
                     Owner = term.Owner,
                 }
                 );
