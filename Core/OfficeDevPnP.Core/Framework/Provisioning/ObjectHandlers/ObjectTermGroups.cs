@@ -96,7 +96,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 modelTermSet.Id = Guid.NewGuid();
                             }
                             set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id, modelTermSet.Language ?? termStore.DefaultLanguage);
-                            parser.AddToken(new TermSetIdToken(web, modelTermGroup.Name, modelTermSet.Name, modelTermSet.Id));
+                            parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
                             newTermSet = true;
                             set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
                             set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
