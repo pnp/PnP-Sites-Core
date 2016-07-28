@@ -335,12 +335,14 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\ListTests.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
     <Compile Include="Framework\Functional\FeatureTests.cs" />
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
+    <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
     <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
@@ -409,6 +411,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\list_add.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\contenttype_delta_1.xml">
       <SubType>Designer</SubType>
     </Content>

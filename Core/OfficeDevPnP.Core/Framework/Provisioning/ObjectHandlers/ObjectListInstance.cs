@@ -1150,6 +1150,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                     createdList.MajorVersionLimit = list.MaxVersionLimit;
 #endif
+                    // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
+                    if (DraftVisibilityType.Approver ==
+                        (DraftVisibilityType)list.DraftVersionVisibility)
+                    {
+                        if (list.EnableModeration)
+                        {
+                            createdList.DraftVersionVisibility =
+                                (DraftVisibilityType)list.DraftVersionVisibility;
+                        }
+                        else
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true);
+                            WriteWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true, ProvisioningMessageType.Warning);
+                        }
+                    }
+                    else
+                    {
+                        createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
+                    }
 
                     if (createdList.BaseTemplate == (int)ListTemplateType.DocumentLibrary)
                     {
@@ -1161,26 +1180,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (list.EnableMinorVersions)
                         {
                             createdList.MajorWithMinorVersionsLimit = list.MinorVersionLimit; // Set only if enabled, otherwise you'll get exception due setting value to zero.
-
-                            // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
-                            if (DraftVisibilityType.Approver ==
-                                (DraftVisibilityType)list.DraftVersionVisibility)
-                            {
-                                if (list.EnableModeration)
-                                {
-                                    createdList.DraftVersionVisibility =
-                                        (DraftVisibilityType)list.DraftVersionVisibility;
-                                }
-                                else
-                                {
-                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true);
-                                    WriteWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true, ProvisioningMessageType.Warning);
-                                }
-                            }
-                            else
-                            {
-                                createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
-                            }
                         }
                     }
                 }
@@ -1356,6 +1355,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.UserCustomActions,
                         l => l.MajorVersionLimit,
                         l => l.MajorWithMinorVersionsLimit,
+                        l => l.DraftVersionVisibility,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1436,6 +1436,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 : 0,
                         ForceCheckout = siteList.IsPropertyAvailable("ForceCheckout") ? 
                             siteList.ForceCheckout : false,
+                        DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0, 
                     };
 
                     if (creationInfo.PersistMultiLanguageResources)
