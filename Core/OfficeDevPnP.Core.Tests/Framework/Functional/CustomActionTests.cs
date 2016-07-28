@@ -13,8 +13,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public CustomActionTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9/sub";
         }
         #endregion
 
@@ -49,6 +49,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
                 Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser));
+
+                // Update custom actions
+                var result3 = TestProvisioningTemplate(cc, "customaction_1605_delta_2.xml", Handlers.CustomActions);
+                Assert.IsTrue(CustomActionValidator.Validate(result3.SourceTemplate.CustomActions, result3.TargetTemplate.CustomActions, result3.TargetTokenParser));
 #endif
             }
         }

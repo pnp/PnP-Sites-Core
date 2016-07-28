@@ -424,6 +424,7 @@
     <Content Include="Framework\Functional\Templates\CT3EditForm.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\customaction_1605_delta_2.xml" />
     <Content Include="Framework\Functional\Templates\field_delta_1.xml">
       <SubType>Designer</SubType>
     </Content>
