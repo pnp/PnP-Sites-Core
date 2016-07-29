@@ -13,9 +13,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ListTests()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4/sub";
         }
         #endregion
 

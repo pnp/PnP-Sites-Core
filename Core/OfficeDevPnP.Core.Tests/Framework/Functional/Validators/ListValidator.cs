@@ -95,6 +95,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
+#if ONPREMISES
+            // MaxVersionLimit cannot be set in on-premises, so remove it before comparing before and after
+            if (sourceObject.Attribute("MaxVersionLimit") != null)
+            {
+                DropAttribute(targetObject, "MaxVersionLimit");
+                DropAttribute(sourceObject, "MaxVersionLimit");
+            }
+#endif
+
         }
         #endregion
     }
