@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -164,6 +165,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // When no provisioning info was passed then we want to execute all handlers
                     provisioningInfo = new ProvisioningTemplateApplyingInformation();
                     provisioningInfo.HandlersToProcess = Handlers.All;
+                }
+
+                // Check if the target site shares the same base template with the template's source site
+                var targetSiteTemplateId = web.GetBaseTemplateId();
+                if (!String.IsNullOrEmpty(targetSiteTemplateId) && !String.IsNullOrEmpty(template.BaseSiteTemplate))
+                {
+                    if (!targetSiteTemplateId.Equals(template.BaseSiteTemplate, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var templatesNotMatchingWarning = String.Format(CoreResources.Provisioning_Asymmetric_Base_Templates, template.BaseSiteTemplate, targetSiteTemplateId);
+                        scope.LogWarning(templatesNotMatchingWarning);
+                        if (provisioningInfo.MessagesDelegate!= null)
+                        {
+                            provisioningInfo.MessagesDelegate(templatesNotMatchingWarning, ProvisioningMessageType.Warning);
+                        }
+                    }
                 }
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
