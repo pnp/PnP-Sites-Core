@@ -43,10 +43,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             foreach (ListInstance list in sourceCollection)
             {
-                ProvisioningTemplate pt = new ProvisioningTemplate();
-                pt.Lists.Add(list);
+                // don't add hidden lists since they're not exported again...
+                if (!list.Hidden)
+                {
+                    ProvisioningTemplate pt = new ProvisioningTemplate();
+                    pt.Lists.Add(list);
 
-                sourceLists.Add(new SerializedListInstance() { SchemaXml = ExtractElementXml(pt) });                
+                    sourceLists.Add(new SerializedListInstance() { SchemaXml = ExtractElementXml(pt) });
+                }
             }
 
             foreach (ListInstance list in targetCollection)
@@ -68,9 +72,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         internal override void OverrideXmlData(XElement sourceObject, XElement targetObject)
         {
             XNamespace ns = SchemaVersion;
-            
+
             // Drop list properties if they're not provided in the source XML
-            string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID", "EnableAttachments"};
+            string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID", "EnableAttachments" };
             foreach (string listProperty in ListProperties)
             {
                 if (sourceObject.Attribute(listProperty) == null)

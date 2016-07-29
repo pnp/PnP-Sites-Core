@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that delta handling of all list properties and elements work as expected. 
+               
+               Possible Lists attributes that support delta handling are (TODO):
+               Title                (*) (parsed for resource, resource)
+               -Description              (parsed for resource, resource)
+               -DocumentTemplate         (parsed)
+               -OnQuickLaunch
+               -EnableVersioning
+               -EnableMinorVersions
+               -EnableModeration
+               -MinorVersionLimit
+               -MaxVersionLimit
+               -DraftVersionVisibility  
+               ContentTypesEnabled
+               -Hidden
+               -EnableAttachments
+               -EnableFolderCreation
+               
+               ContentTypeBindings (e)
+               
+               Views (e)
+               
+               Fields (e)
+               
+               FieldRefs (e)
+               
+               DataRows (e)
+               
+               Folders (e)
+               
+               FieldDefaults (e)
+               
+               Security (e)
+-->
+
+<pnp:ProvisioningTemplate ID="list_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Lists>
+    <!-- Document Libraries-->
+    <!-- Delta attributes: Description, DocumentTemplate, OnQuickLaunch-->
+    <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" Description="updated LI 1" DocumentTemplate="{site}/LI_1/Forms/ct1document.docx" />
+    <!-- Delta attributes: OnQuickLaunch, MaxVersionLimit, MinorVersionLimit, DraftVersionVisibility, EnableFolderCreation, EnableModeration-->
+    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" OnQuickLaunch="false" EnableVersioning="true" EnableMinorVersions="true" MaxVersionLimit="5" MinorVersionLimit="5"
+                      DraftVersionVisibility="0" EnableFolderCreation="false" EnableModeration="false" />
+    <!-- Delta attributes: Hidden, EnableVersioning, EnableMinorVersions-->
+    <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="false" EnableVersioning="true" EnableMinorVersions="true" MaxVersionLimit="5" MinorVersionLimit="5" />
+
+    <!-- Lists -->
+    <!-- Delta attributes: EnableVersioning -->
+    <pnp:ListInstance Title="LI_11" TemplateType="100" Url="Lists/LI_11" EnableVersioning="false" DraftVersionVisibility="0" EnableModeration="false" />
+    <!-- Delta attributes: EnableAttachments -->
+    <pnp:ListInstance Title="LI_12" TemplateType="100" Url="Lists/LI_12" Hidden="false" EnableAttachments="false" EnableModeration="true"/>
+    
+    <!-- Feature based -->    
+
+  </pnp:Lists>
+</pnp:ProvisioningTemplate>

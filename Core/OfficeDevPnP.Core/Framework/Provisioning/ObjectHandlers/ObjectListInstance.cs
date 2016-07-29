@@ -765,9 +765,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.ForceCheckout,
                 l => l.DraftVersionVisibility,
                 l => l.Views,
+                l => l.DocumentTemplateUrl,
                 l => l.RootFolder
 #if !ONPREMISES
 , l => l.MajorWithMinorVersionsLimit
+, l => l.MajorVersionLimit
 #endif
 );
             web.Context.ExecuteQueryRetry();
@@ -843,13 +845,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-                if (templateList.EnableModeration)
+                if (existingList.EnableModeration != templateList.EnableModeration)
                 {
-                    if (existingList.EnableModeration != templateList.EnableModeration)
-                    {
-                        existingList.EnableModeration = templateList.EnableModeration;
-                        isDirty = true;
-                    }
+                    existingList.EnableModeration = templateList.EnableModeration;
+                    isDirty = true;
                 }
 
                 if (templateList.EnableVersioning)
@@ -860,7 +859,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
 #if !ONPREMISES
-                    if (existingList.IsObjectPropertyInstantiated("MajorVersionLimit") && existingList.MajorVersionLimit != templateList.MaxVersionLimit)
+                    if (existingList.MajorVersionLimit != templateList.MaxVersionLimit)
                     {
                         existingList.MajorVersionLimit = templateList.MaxVersionLimit;
                         isDirty = true;
@@ -874,6 +873,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingList.EnableMinorVersions = templateList.EnableMinorVersions;
                             isDirty = true;
                         }
+
                         if ((DraftVisibilityType)templateList.DraftVersionVisibility != existingList.DraftVersionVisibility)
                         {
                             existingList.DraftVersionVisibility = (DraftVisibilityType)templateList.DraftVersionVisibility;
@@ -916,9 +916,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+                else
+                {
+                    if (existingList.EnableVersioning != templateList.EnableVersioning)
+                    {
+                        existingList.EnableVersioning = templateList.EnableVersioning;
+                        isDirty = true;
+                    }
+                }
+
+                if (isDirty)
+                {
+                    existingList.Update();
+                    web.Context.ExecuteQueryRetry();
+                    isDirty = false;
+                }
 
                 #region UserCustomActions
-
                 // Add any UserCustomActions
                 var existingUserCustomActions = existingList.UserCustomActions;
                 web.Context.Load(existingUserCustomActions);
@@ -956,14 +970,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                #endregion
 
                 if (isDirty)
                 {
                     existingList.Update();
                     web.Context.ExecuteQueryRetry();
+                    isDirty = false;
                 }
-
+                #endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
@@ -1356,6 +1370,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.MajorVersionLimit,
                         l => l.MajorWithMinorVersionsLimit,
                         l => l.DraftVersionVisibility,
+                        l => l.DocumentTemplateUrl,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,

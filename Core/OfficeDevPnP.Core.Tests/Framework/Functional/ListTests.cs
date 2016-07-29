@@ -14,8 +14,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ListTests()
         {
             debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9/sub";
+            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4";
+            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4/sub";
         }
         #endregion
 
@@ -39,15 +39,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
+                // Add supporting files needed during add
+                TestProvisioningTemplate(cc, "list_supporting_data_1.xml", Handlers.Files);
+
                 // Ensure we can test clean
                 DeleteLists(cc);
-                
+
                 // Add lists
                 var result = TestProvisioningTemplate(cc, "list_add.xml", Handlers.Lists);
                 ListInstanceValidator lv = new ListInstanceValidator();
                 Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
 
+                // Add supporting files needed during delta testing
+                TestProvisioningTemplate(cc, "list_supporting_data_2.xml", Handlers.Files);
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator();
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
             }
+            
         }
         #endregion
 

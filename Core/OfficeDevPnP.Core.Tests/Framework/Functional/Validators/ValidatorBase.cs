@@ -140,7 +140,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 XElement sourceXml = XElement.Parse(sourceXmlString);
                 string sourceKeyValue = sourceXml.Attribute(key).Value;
 
-                foreach(var tElem in tElements)
+                foreach (var tElem in tElements)
                 {
                     string targetXmlString = tElem.GetType().GetProperty(XmlPropertyName).GetValue(tElem).ToString();
 
@@ -160,12 +160,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (sourceKeyValue.Equals(targetKeyValue, StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetCount++;
-                        
+
                         // compare XML's
 
                         // call virtual override method, consuming validators can add fixed validation logic if needed
                         OverrideXmlData(sourceXml, targetXml);
-                        
+
                         // call event handler, validator instances can add additional validation behaviour if needed, including forcing an IsEqual
                         ValidateXmlEventArgs e = null;
                         if (ValidateXmlEvent != null)
@@ -185,7 +185,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                             var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
                             if (!equalNodes.Success)
                             {
-                                return false;
+                                    return false;
                             }
                         }
 

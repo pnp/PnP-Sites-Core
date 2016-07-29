@@ -4,9 +4,9 @@
 Base template: goal is to verify that all list properties and elements work as expected. 
                
                Possible Lists attributes are:
-               -Title                (*) (parsed, resource)
-               -Description              (parsed, resource)
-               DocumentTemplate 
+               -Title                (*) (parsed only for resource, resource)
+               -Description              (parsed only for resource, resource)
+               -DocumentTemplate         (parsed, tested via delta_1 handling as once first needs to have the library present before a file can be copied to the forms folder)
                -OnQuickLaunch
                -TemplateType         (*)
                -Url                  (*)
@@ -45,7 +45,7 @@ Base template: goal is to verify that all list properties and elements work as e
     <!-- Document Libraries-->
     <!-- Minimal attributes Title, TemplateType, Url -->
     <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" />
-    <!-- Test other attributes: Description, EnableModeration, OnQuickLaunch
+    <!-- Test other attributes: Description, EnableModeration, OnQuickLaunch,
                                 EnableFolderCreation (not for discussionboards and events)
                                 EnableVersionining (not for survey), MaxVersionLimit
                                 EnableMinorVersions, MinorVersionLimit (only for doc libraries)

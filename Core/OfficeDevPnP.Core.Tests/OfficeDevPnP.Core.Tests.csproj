@@ -411,6 +411,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\list_delta_1.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\list_supporting_data_2.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\list_supporting_data_1.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\list_add.xml">
       <SubType>Designer</SubType>
     </Content>
