@@ -534,6 +534,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Cerca una stringa localizzata simile a The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+        /// </summary>
+        internal static string Provisioning_Asymmetric_Base_Templates {
+            get {
+                return ResourceManager.GetString("Provisioning_Asymmetric_Base_Templates", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Cerca una stringa localizzata simile a Could not initialize AzureStorageConnector. Error = {0}.
         /// </summary>
         internal static string Provisioning_Connectors_Azure_FailedToInitialize {

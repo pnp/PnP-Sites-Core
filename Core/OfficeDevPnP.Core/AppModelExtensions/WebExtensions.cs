@@ -30,6 +30,17 @@ namespace Microsoft.SharePoint.Client
         #region Web (site) query, creation and deletion
 
         /// <summary>
+        /// Returns the Base Template ID for the current web
+        /// </summary>
+        /// <param name="parentWeb">The parent Web (site) to get the base template from</param>
+        /// <returns>The Base Template ID for the current web</returns>
+        public static String GetBaseTemplateId(this Web parentWeb)
+        {
+            parentWeb.EnsureProperties(w => w.WebTemplate, w => w.Configuration);
+            return ($"{parentWeb.WebTemplate}#{parentWeb.Configuration}");
+        }
+
+        /// <summary>
         /// Adds a new child Web (site) to a parent Web.
         /// </summary>
         /// <param name="parentWeb">The parent Web (site) to create under</param>
@@ -1137,8 +1148,8 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#region Request Access
-#if !ONPREMISES
+        #region Request Access
+        #if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1218,7 +1229,7 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-    #endif
-    #endregion
+        #endif
+        #endregion
     }
 }
