@@ -193,6 +193,34 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
+
+            // Field handling
+            var targetFields = targetObject.Descendants("Field");
+            if (targetFields != null && targetFields.Any())
+            {
+                foreach (var targetField in targetFields.ToList())
+                {
+                    // Ensure both target and source using the same casing
+                    UpperCaseAttribute(targetField, "ID");
+
+                    // Drop attributes before comparison
+                    DropAttribute(targetField, "SourceID");
+                    DropAttribute(targetField, "StaticName");
+                    DropAttribute(targetField, "ColName");
+                    DropAttribute(targetField, "RowOrdinal");
+                    DropAttribute(targetField, "Version");
+                }
+            }
+            var sourceFields = sourceObject.Descendants("Field");
+            if (sourceFields != null && sourceFields.Any())
+            {
+                foreach (var sourceField in sourceFields.ToList())
+                {
+                    // Ensure both target and source using the same casing
+                    UpperCaseAttribute(sourceField, "ID");
+                }
+            }
+
         }
         #endregion
     }

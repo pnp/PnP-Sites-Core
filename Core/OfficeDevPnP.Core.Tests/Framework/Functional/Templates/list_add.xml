@@ -24,8 +24,8 @@ Base template: goal is to verify that all list properties and elements work as e
                EnableFolderCreation               
                -ContentTypeBindings (e)               
                Views (e)               
-               Fields (e)               
-               FieldRefs (e)               
+               -Fields (e)               
+               -FieldRefs (e)               
                DataRows (e)               
                Folders (e)               
                FieldDefaults (e)               
@@ -41,6 +41,12 @@ Base template: goal is to verify that all list properties and elements work as e
                Hidden 
                Required
                Name                     (informative, not actually used)
+
+               Possible Field attributes are:
+               ID                   (*)
+               Type                 (*)
+               Name                 (*)
+               Many other...see field tests
 -->
 
 <pnp:ProvisioningTemplate ID="list_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -79,6 +85,13 @@ Base template: goal is to verify that all list properties and elements work as e
         <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6" Hidden="false" Required="true" Name="Informative"/>
         <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden ="true" />
       </pnp:FieldRefs>
+    </pnp:ListInstance>
+    <!-- Test Fields element -->
+    <pnp:ListInstance Title="LI_7" TemplateType="101" Url="LI_7">
+      <pnp:Fields>
+        <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1" Description="Fld LI 7 1" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2" Description="Fld LI 7 2" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
     </pnp:ListInstance>
 
     <!-- Lists -->

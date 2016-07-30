@@ -40,6 +40,8 @@ Base template: goal is to verify that delta handling of all list properties and 
                Hidden
                Required
 
+               Possible Field delta attributes are:
+               A lot (see field tests)
 -->
 
 <pnp:ProvisioningTemplate ID="list_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -75,6 +77,15 @@ Base template: goal is to verify that delta handling of all list properties and 
         <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden="false" />
         <pnp:FieldRef ID="B46D91E2-C755-4C3A-AC72-7FD3E4853476" />
       </pnp:FieldRefs>
+    </pnp:ListInstance>
+    <!-- Delta Field attributes: all except Type, Name and ID  
+         Add FieldRef element  -->
+    <pnp:ListInstance Title="LI_7" TemplateType="101" Url="LI_7">
+      <pnp:Fields>
+        <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1 updated" Description="Fld LI 7 1 updated" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2 updated" Description="Fld LI 7 2 updated" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{37A07407-5757-45F5-9277-7E807AA0007F}" Type="Text" Name="FLD_LI_7_3" DisplayName="Fld LI 7 3 new" Description="Fld LI 7 3 new" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
     </pnp:ListInstance>
 
     <!-- Lists -->
