@@ -4,26 +4,26 @@
 Base template: goal is to verify that all list properties and elements work as expected. 
                
                Possible Lists attributes are:
-               -Title                (*) (parsed only for resource, resource)
-               -Description              (parsed only for resource, resource)
-               -DocumentTemplate         (parsed, tested via delta_1 handling as once first needs to have the library present before a file can be copied to the forms folder)
-               -OnQuickLaunch
-               -TemplateType         (*)
-               -Url                  (*)
-               -EnableVersioning
-               -EnableMinorVersions
-               -EnableModeration
-               -MinorVersionLimit
-               -MaxVersionLimit
-               -DraftVersionVisibility   
+               Title                (*) (parsed only for resource, resource)
+               Description              (parsed only for resource, resource)
+               DocumentTemplate         (parsed, tested via delta_1 handling as once first needs to have the library present before a file can be copied to the forms folder)
+               OnQuickLaunch
+               TemplateType         (*)
+               Url                  (*)
+               EnableVersioning
+               EnableMinorVersions
+               EnableModeration
+               MinorVersionLimit
+               MaxVersionLimit
+               DraftVersionVisibility   
                RemoveExistingContentTypes
-               -TemplateFeatureID
+               TemplateFeatureID
                ContentTypesEnabled
-               -Hidden
-               -EnableAttachments
-               -EnableFolderCreation
+               Hidden
+               EnableAttachments
+               EnableFolderCreation
                
-               ContentTypeBindings (e)
+               -ContentTypeBindings (e)
                
                Views (e)
                
@@ -43,7 +43,7 @@ Base template: goal is to verify that all list properties and elements work as e
 <pnp:ProvisioningTemplate ID="list_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
   <pnp:Lists>
     <!-- Document Libraries-->
-    <!-- Minimal attributes Title, TemplateType, Url -->
+    <!-- Minimal attributes: Title, TemplateType, Url -->
     <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" />
     <!-- Test other attributes: Description, EnableModeration, OnQuickLaunch,
                                 EnableFolderCreation (not for discussionboards and events)
@@ -54,8 +54,23 @@ Base template: goal is to verify that all list properties and elements work as e
     <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" Description="LI 2 description" 
                       EnableMinorVersions="true" MinorVersionLimit="10" EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2" 
                       EnableFolderCreation="true"  OnQuickLaunch="true" EnableModeration="true" />
-    <!-- Minimal attributes Hidden -->
+    <!-- Test other attributes: Hidden -->
     <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="true" />
+    <!-- Test other attributes: ContentTypesEnabled, RemoveExistingContentTypes 
+                                ContentTypeBinding element with ContentTypeID and Default properties
+      -->
+    <pnp:ListInstance Title="LI_4" TemplateType="101" Url="LI_4" ContentTypesEnabled="true" RemoveExistingContentTypes="true" EnableFolderCreation="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true"/>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_5" TemplateType="101" Url="LI_5" ContentTypesEnabled="true" RemoveExistingContentTypes="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+
     <!-- Lists -->
     <!-- Minimal attributes Title, TemplateType, Url -->
     <pnp:ListInstance Title="LI_10" TemplateType="100" Url="Lists/LI_10" />
@@ -70,6 +85,11 @@ Base template: goal is to verify that all list properties and elements work as e
     <!-- Minimal attributes Hidden, 
                             EnableAttachments (not for doc libs or surveys -->
     <pnp:ListInstance Title="LI_12" TemplateType="100" Url="Lists/LI_12" Hidden="true" EnableAttachments="true"/>
+    <pnp:ListInstance Title="LI_13" TemplateType="100" Url="Lists/LI_13" >
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x010076029D9059824413B137EA0A9B5FAAA0" Default="true"/>
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
 
     <!-- Feature based: create promoted links list 
          TemplateFeatureID 

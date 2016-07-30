@@ -104,6 +104,48 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 #endif
 
+            // If RemoveExistingContentTypes is set then remove the attribute from source since on target we don't add this. 
+            var contentTypeBindings = targetObject.Descendants(ns + "ContentTypeBinding");
+            bool removeExistingContentTypes = false;
+            if (sourceObject.Attribute("RemoveExistingContentTypes") != null)
+            {
+                removeExistingContentTypes = sourceObject.Attribute("RemoveExistingContentTypes").Value.ToBoolean();
+                DropAttribute(sourceObject, "RemoveExistingContentTypes");
+            }
+
+            if (contentTypeBindings != null && contentTypeBindings.Any())
+            {
+                // One can add ContentTypeBindings without specifying ContentTypesEnabled. The engine will turn on ContentTypesEnabled automatically in that case
+                if (sourceObject.Attribute("ContentTypesEnabled") == null)
+                {
+                    DropAttribute(targetObject, "ContentTypesEnabled");
+                }
+
+                if (removeExistingContentTypes)
+                {
+                    foreach (var contentTypeBinding in contentTypeBindings.ToList())
+                    {
+                        // Remove the folder content type if present because we're not removing that one via RemoveExistingContentTypes
+                        if (contentTypeBinding.Attribute("ContentTypeID").Value == "0x0120")
+                        {
+                            contentTypeBinding.Remove();
+                        }
+                    }
+                }
+                else // We did not remove existing content types
+                {
+                    var sourceContentTypeBindings = sourceObject.Descendants(ns + "ContentTypeBinding");
+                    foreach (var contentTypeBinding in contentTypeBindings.ToList())
+                    {
+                        string value = contentTypeBinding.Attribute("ContentTypeID").Value;
+                        // drop all content types which are not mentioned in the source
+                        if (sourceContentTypeBindings.Where(p => p.Attribute("ContentTypeID").Value == value).Any() == false)
+                        {
+                            contentTypeBinding.Remove();
+                        }                   
+                    }
+                }
+            }
         }
         #endregion
     }

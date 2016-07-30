@@ -13,9 +13,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ListTests()
         {
-            //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_17e927f9-79c2-4c10-94da-2d2ed1300eb4/sub";
+            debugMode = true;
+            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c66625da-ac01-4f21-b4f4-5e2354ddbbc2";
+            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c66625da-ac01-4f21-b4f4-5e2354ddbbc2/sub";
         }
         #endregion
 
@@ -39,11 +39,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                // Add supporting files needed during add
-                TestProvisioningTemplate(cc, "list_supporting_data_1.xml", Handlers.Files);
-
                 // Ensure we can test clean
                 DeleteLists(cc);
+
+                // Add supporting files needed during add
+                TestProvisioningTemplate(cc, "list_supporting_data_1.xml", Handlers.Fields | Handlers.ContentTypes);
 
                 // Add lists
                 var result = TestProvisioningTemplate(cc, "list_add.xml", Handlers.Lists);

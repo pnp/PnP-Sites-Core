@@ -20,23 +20,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 this.Web.EnsureProperty(w => w.Url);
                 using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
                 {
-                    context.Load(Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
+                    context.Load(context.Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
                     context.ExecuteQueryRetry();
                     switch (_groupType)
                     {
                         case AssociatedGroupType.owners:
                             {
-                                CacheValue = Web.AssociatedOwnerGroup.Title;
+                                CacheValue = context.Web.AssociatedOwnerGroup.Title;
                                 break;
                             }
                         case AssociatedGroupType.members:
                             {
-                                CacheValue = Web.AssociatedMemberGroup.Title;
+                                CacheValue = context.Web.AssociatedMemberGroup.Title;
                                 break;
                             }
                         case AssociatedGroupType.visitors:
                             {
-                                CacheValue = Web.AssociatedVisitorGroup.Title;
+                                CacheValue = context.Web.AssociatedVisitorGroup.Title;
                                 break;
                             }
                     }
