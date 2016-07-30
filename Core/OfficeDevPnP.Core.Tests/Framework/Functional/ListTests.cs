@@ -81,7 +81,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
 
             // Drop the created content types
-            DeleteContentTypes(cc);
+            //DeleteContentTypes(cc);
         }
 
         private static void DeleteListsImplementation(ClientContext cc)

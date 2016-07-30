@@ -21,23 +21,26 @@ Base template: goal is to verify that all list properties and elements work as e
                ContentTypesEnabled
                Hidden
                EnableAttachments
-               EnableFolderCreation
-               
-               -ContentTypeBindings (e)
-               
-               Views (e)
-               
-               Fields (e)
-               
-               FieldRefs (e)
-               
-               DataRows (e)
-               
-               Folders (e)
-               
-               FieldDefaults (e)
-               
+               EnableFolderCreation               
+               -ContentTypeBindings (e)               
+               Views (e)               
+               Fields (e)               
+               FieldRefs (e)               
+               DataRows (e)               
+               Folders (e)               
+               FieldDefaults (e)               
                Security (e)
+               
+               Possible ContentTypeBinding attributes are:
+               ContentTypeID        (*)
+               Default
+               
+               Possible FieldRef attributes are:
+               ID                   (*)
+               DisplayName
+               Hidden 
+               Required
+               Name                     (informative, not actually used)
 -->
 
 <pnp:ProvisioningTemplate ID="list_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -69,6 +72,13 @@ Base template: goal is to verify that all list properties and elements work as e
       <pnp:ContentTypeBindings>
         <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
       </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name  -->
+    <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6" Hidden="false" Required="true" Name="Informative"/>
+        <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden ="true" />
+      </pnp:FieldRefs>
     </pnp:ListInstance>
 
     <!-- Lists -->

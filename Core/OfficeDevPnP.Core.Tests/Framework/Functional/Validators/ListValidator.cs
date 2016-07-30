@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     public class ListInstanceValidator : ValidatorBase
     {
         #region construction
-        public ListInstanceValidator(): base()
+        public ListInstanceValidator() : base()
         {
             // optionally override schema version
             SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
@@ -73,6 +73,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
+            // Base property handling
             // Drop list properties if they're not provided in the source XML
             string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID", "EnableAttachments" };
             foreach (string listProperty in ListProperties)
@@ -103,7 +104,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 DropAttribute(sourceObject, "MaxVersionLimit");
             }
 #endif
-
+            // Contenttype handling
             // If RemoveExistingContentTypes is set then remove the attribute from source since on target we don't add this. 
             var contentTypeBindings = targetObject.Descendants(ns + "ContentTypeBinding");
             bool removeExistingContentTypes = false;
@@ -142,7 +143,53 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         if (sourceContentTypeBindings.Where(p => p.Attribute("ContentTypeID").Value == value).Any() == false)
                         {
                             contentTypeBinding.Remove();
-                        }                   
+                        }
+                    }
+                }
+            }
+
+            // FieldRef handling
+            var fieldRefs = sourceObject.Descendants(ns + "FieldRef");
+            if (fieldRefs != null && fieldRefs.Any())
+            {
+                foreach (var fieldRef in fieldRefs.ToList())
+                {
+                    // Drop the name attribute from the source fieldrefs since this is just an informational attribute
+                    if (fieldRef.Attribute("Name") != null)
+                    {
+                        DropAttribute(fieldRef, "Name");
+                    }
+
+                    // Drop hidden fieldrefs since they're not retreived by the engine again
+                    if (fieldRef.Attribute("Hidden") != null && fieldRef.Attribute("Hidden").Value.ToBoolean() == true)
+                    {
+                        fieldRef.Remove();
+                    }
+                }
+            }
+            var targetFieldRefs = targetObject.Descendants(ns + "FieldRef");
+            if (targetFieldRefs != null && targetFieldRefs.Any())
+            {
+                foreach (var targetFieldRef in targetFieldRefs.ToList())
+                {
+                    // Drop the name attribute from the source fieldrefs since this is just an informational attribute
+                    if (targetFieldRef.Attribute("Name") != null)
+                    {
+                        DropAttribute(targetFieldRef, "Name");
+                    }
+
+                    // Drop the fields which were not present in source (there's always some OOB fieldrefs)
+                    if (!fieldRefs.Where(p => p.Attribute("ID").Value == targetFieldRef.Attribute("ID").Value).Any())
+                    {
+                        targetFieldRef.Remove();
+                    }
+                    else
+                    {
+                        // If the source object does not have a DisplayName attribute then also remove it from the target
+                        if (!(fieldRefs.Where(p => p.Attribute("ID").Value == targetFieldRef.Attribute("ID").Value).FirstOrDefault().Attribute("DisplayName") != null) )
+                        {
+                            DropAttribute(targetFieldRef, "DisplayName");
+                        }
                     }
                 }
             }

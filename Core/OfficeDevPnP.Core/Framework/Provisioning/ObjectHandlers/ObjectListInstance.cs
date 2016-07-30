@@ -1002,9 +1002,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // If the CT does not exist in the target list, and we don't have to remove it
                             if (!existingList.ContentTypeExistsByName(name) && !ctb.Remove)
                             {
-                                // Added a check so that if no bindings were actually added then the SetDefaultContentTypeToList method will not be executed
-                                // This is to address a specific scenario when OOTB PWA lists can not be updated as they are centrally managed
-                                var addedToList = existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                                existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                             }
                             // Else if the CT exists in the target list, and we have to remove it
                             else if (existingList.ContentTypeExistsByName(name) && ctb.Remove)
@@ -1021,6 +1019,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // which may cause missing CTs from the "New Button"
                     if (defaultCtBinding != null)
                     {
+                        // Only update the defualt contenttype when we detect a change in default value
                         if (!currentDefaultContentTypeId.Equals(defaultCtBinding.ContentTypeId, StringComparison.InvariantCultureIgnoreCase))
                         {
                             existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
