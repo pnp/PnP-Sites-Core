@@ -221,6 +221,49 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
+            // View handling
+            var sourceViews = sourceObject.Descendants("View");
+            var targetViews = targetObject.Descendants("View");
+
+            if (sourceViews != null && sourceViews.Any())
+            {
+                int sourceViewCount = 0;
+                int targetViewCount = 0;
+                foreach (var sourceView in sourceViews)
+                {
+                    sourceViewCount++;
+                    string sourceViewName = sourceView.Attribute("DisplayName").Value;
+
+                    if (targetViews.Where(v => v.Attribute("DisplayName").Value.Equals(sourceViewName, StringComparison.InvariantCultureIgnoreCase)).First() != null)
+                    {
+                        targetViewCount++;
+                    }
+                }
+
+                if (sourceViewCount == targetViewCount)
+                {
+                    // if RemoveExistingViews was checked then we should have the same count of source and target views
+                    if (sourceObject.Descendants(ns + "Views").First().Attribute("RemoveExistingViews") != null && sourceObject.Descendants(ns + "Views").First().Attribute("RemoveExistingViews").Value.ToBoolean() == true)
+                    {
+                        if (sourceViews.Count() == targetViews.Count())
+                        {
+                            // we've found the source views in the target + the original views were dropped, so we're good. Drop the view element to ensure valid XML comparison
+                            sourceObject.Descendants(ns + "Views").Remove();
+                            targetObject.Descendants(ns + "Views").Remove();
+                        }
+                    }
+                    else
+                    {
+                        // we've found the source views in the target so we're good. Drop the view element to ensure valid XML comparison
+                        sourceObject.Descendants(ns + "Views").Remove();
+                        targetObject.Descendants(ns + "Views").Remove();
+                    }
+                }
+
+            }
+
+
+
         }
         #endregion
     }

@@ -18,8 +18,7 @@ Base template: goal is to verify that delta handling of all list properties and 
                -EnableAttachments
                -EnableFolderCreation               
                -ContentTypeBindings (e)               
-               Views (e)               
-               Fields (e)               
+               -Fields (e)               
                -FieldRefs (e)               
                DataRows (e)               
                Folders (e)               

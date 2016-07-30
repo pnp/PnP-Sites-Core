@@ -23,7 +23,7 @@ Base template: goal is to verify that all list properties and elements work as e
                EnableAttachments
                EnableFolderCreation               
                -ContentTypeBindings (e)               
-               Views (e)               
+               -Views (e)               
                -Fields (e)               
                -FieldRefs (e)               
                DataRows (e)               
@@ -112,6 +112,31 @@ Base template: goal is to verify that all list properties and elements work as e
       <pnp:ContentTypeBindings>
         <pnp:ContentTypeBinding ContentTypeID="0x010076029D9059824413B137EA0A9B5FAAA0" Default="true"/>
       </pnp:ContentTypeBindings>
+      <pnp:Views RemoveExistingViews="true">
+        <View Name="{7459362D-A5B4-4605-8762-9A0B8E00038D}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="LI_13_View_1" Url="{site}/Lists/LI_13/LI_13_View_1.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=43" >
+          <Query>
+            <OrderBy>
+              <FieldRef Name="FLD_CT_1" />
+            </OrderBy>
+          </Query>
+          <ViewFields>
+            <FieldRef Name="DocIcon" />
+            <FieldRef Name="LinkTitle" />
+            <FieldRef Name="FLD_CT_1" />
+          </ViewFields>
+          <RowLimit Paged="TRUE" >
+            30
+          </RowLimit>
+          <Aggregations Value="Off" />
+          <JSLink>
+            clienttemplates.js
+          </JSLink>
+          <XslLink Default="TRUE" >
+            main.xsl
+          </XslLink>
+          <Toolbar Type="Standard" />
+        </View>  
+      </pnp:Views>
     </pnp:ListInstance>
 
     <!-- Feature based: create promoted links list 
