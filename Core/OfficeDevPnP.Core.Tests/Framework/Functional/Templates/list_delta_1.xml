@@ -47,6 +47,21 @@ Base template: goal is to verify that delta handling of all list properties and 
     <!-- Delta attributes: Hidden, EnableVersioning, EnableMinorVersions-->
     <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="false" EnableVersioning="true" EnableMinorVersions="true" MaxVersionLimit="5" MinorVersionLimit="5" />
 
+    <!-- Delta attributes: Default -->
+    <pnp:ListInstance Title="LI_4" TemplateType="101" Url="LI_4" ContentTypesEnabled="true" RemoveExistingContentTypes="true">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Default="true"/>
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <!-- Delta attributes: Additional binding -->
+    <pnp:ListInstance Title="LI_5" TemplateType="101" Url="LI_5" ContentTypesEnabled="true" RemoveExistingContentTypes="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Default="true" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+
     <!-- Lists -->
     <!-- Delta attributes: EnableVersioning -->
     <pnp:ListInstance Title="LI_11" TemplateType="100" Url="Lists/LI_11" EnableVersioning="false" DraftVersionVisibility="0" EnableModeration="false" />

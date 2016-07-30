@@ -989,8 +989,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
                     var defaultCtBinding = templateList.ContentTypeBindings.FirstOrDefault(ctb => ctb.Default == true);
+                    var currentDefaultContentTypeId = existingContentTypes.First().StringId;                       
 
-                    var bindingAddedToList = false;
                     foreach (var ctb in bindingsToAdd)
                     {
                         var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
@@ -1005,10 +1005,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // Added a check so that if no bindings were actually added then the SetDefaultContentTypeToList method will not be executed
                                 // This is to address a specific scenario when OOTB PWA lists can not be updated as they are centrally managed
                                 var addedToList = existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
-                                if (addedToList)
-                                {
-                                    bindingAddedToList = true;
-                                }
                             }
                             // Else if the CT exists in the target list, and we have to remove it
                             else if (existingList.ContentTypeExistsByName(name) && ctb.Remove)
@@ -1023,9 +1019,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // list extension .SetDefaultContentTypeToList() re-sets 
                     // the list.RootFolder UniqueContentTypeOrder property
                     // which may cause missing CTs from the "New Button"
-                    if (defaultCtBinding != null && bindingAddedToList)
+                    if (defaultCtBinding != null)
                     {
-                        existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
+                        if (!currentDefaultContentTypeId.Equals(defaultCtBinding.ContentTypeId, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
+                        }
                     }
                 }
                 if (templateList.Security != null)

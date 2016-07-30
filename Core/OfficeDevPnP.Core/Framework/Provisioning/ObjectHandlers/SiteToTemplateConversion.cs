@@ -182,6 +182,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                // Always ensure the Url property is loaded. In the tokens we need this and we don't want to call ExecuteQuery as this can 
+                // impact delta scenarions (calling ExecuteQuery before the planned update is called)
+                web.EnsureProperty(w => w.Url);
+
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.RegionalSettings)) objectHandlers.Add(new ObjectRegionalSettings());
