@@ -24,6 +24,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     /// </summary>
     public class ValidatorBase
     {
+        #region Variables
+        internal ClientContext cc = null;
+        #endregion
+
         #region Events
         public event ValidateEventHandler ValidateEvent;
         public event ValidateXmlEventHandler ValidateXmlEvent;
@@ -211,21 +215,74 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return ctXml.ToString(SaveOptions.DisableFormatting);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="security"></param>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool ValidateSecurity(ClientContext context, ObjectSecurity security, SecurableObject item)
+        internal bool ValidateSecurity(XElement sourceObject, XElement targetObject)
         {
-            int dataRowRoleAssignmentCount = security.RoleAssignments.Count;
+            XNamespace ns = SchemaVersion;
+
+            var sourceBreakRoleInheritance = sourceObject.Descendants(ns + "BreakRoleInheritance");
+            if (sourceBreakRoleInheritance != null && sourceBreakRoleInheritance.Any())
+            {
+                bool copyRoleAssignments = sourceBreakRoleInheritance.First().Attribute("CopyRoleAssignments").Value.ToBoolean();
+
+                var sourceRoleAssignments = sourceObject.Descendants(ns + "RoleAssignment");
+                var targetRoleAssignments = targetObject.Descendants(ns + "RoleAssignment");
+
+                // Verify the number of role assignments
+                if (copyRoleAssignments)
+                {
+                    // we've copied the 3 default assignments to this securable object. The number of RoleAssignments in target now should be 3 + the added amount from source
+                    if (sourceRoleAssignments.Count() + 3 != targetRoleAssignments.Count())
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    // we've not copied the default assignments to this securable object. The number of RoleAssignments in target now should be equal or more to the amount from source
+                    if (sourceRoleAssignments.Count() > targetRoleAssignments.Count())
+                    {
+                        return false;
+                    }
+                }
+
+                // verify the added ones appear in target
+                foreach(var sourceRoleAssignment in sourceRoleAssignments)
+                {
+                    var targetRoleAssignment = targetRoleAssignments.Where(p => p.Attribute("Principal").Value == sourceRoleAssignment.Attribute("Principal").Value);
+
+                    if (targetRoleAssignment != null && targetRoleAssignment.Any())
+                    {
+                        if (!sourceRoleAssignment.Attribute("RoleDefinition").Value.Equals(targetRoleAssignment.First().Attribute("RoleDefinition").Value, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Verify that the target securable item has the needed security settings
+        /// </summary>
+        /// <param name="context">Client context object</param>
+        /// <param name="security">Security template model</param>
+        /// <param name="item">Securable item</param>
+        /// <returns></returns>
+        public bool ValidateSecurityCSOM(ClientContext context, ObjectSecurity security, SecurableObject item)
+        {
+            int roleAssignmentCount = security.RoleAssignments.Count;
             int roleCount = 0;
 
             IEnumerable roles = context.LoadQuery(item.RoleAssignments.Include(roleAsg => roleAsg.Member,
                 roleAsg => roleAsg.RoleDefinitionBindings.Include(roleDef => roleDef.Name)));
-            context.ExecuteQuery();
+            context.ExecuteQueryRetry();
 
             foreach (var s in security.RoleAssignments)
             {
@@ -238,7 +295,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
-            if (dataRowRoleAssignmentCount != roleCount)
+            if (roleAssignmentCount != roleCount)
             {
                 return false;
             }

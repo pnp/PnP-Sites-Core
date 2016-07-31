@@ -22,7 +22,7 @@ Base template: goal is to verify that delta handling of all list properties and 
                FieldRefs (e)               
                -DataRows (e)               
                Folders (e)               
-               -Security (e)
+               Security (e)
 
                Possible ContentTypeBindings delta changes are:
                Adding a new ContentTypeBinding 
@@ -71,7 +71,8 @@ Base template: goal is to verify that delta handling of all list properties and 
       </pnp:ContentTypeBindings>
     </pnp:ListInstance>
     <!-- Delta FieldRef attributes: DisplayName, Hidden, Required  
-         Add FieldRef element  -->
+         Add FieldRef element 
+         Add Security element -->
     <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6">
       <pnp:FieldRefs>
         <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6 updated" Required="false" />
@@ -82,17 +83,28 @@ Base template: goal is to verify that delta handling of all list properties and 
         <pnp:Folder Name="F1">
           <pnp:Folder Name="F1.2" />
         </pnp:Folder>
-        <pnp:Folder Name="F3" />
+        <pnp:Folder Name="F3">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Folder>
       </pnp:Folders>      
     </pnp:ListInstance>
     <!-- Delta Field attributes: all except Type, Name and ID  
-         Add FieldRef element  -->
+         Add FieldRef, Security elements  -->
     <pnp:ListInstance Title="LI_7" TemplateType="101" Url="LI_7">
       <pnp:Fields>
         <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1 updated" Description="Fld LI 7 1 updated" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2 updated" Description="Fld LI 7 2 updated" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{37A07407-5757-45F5-9277-7E807AA0007F}" Type="Text" Name="FLD_LI_7_3" DisplayName="Fld LI 7 3 new" Description="Fld LI 7 3 new" MaxLength="255" AllowDeletion="TRUE" />
       </pnp:Fields>
+      <pnp:Security>
+        <pnp:BreakRoleInheritance ClearSubscopes="false" CopyRoleAssignments="false">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
     </pnp:ListInstance>
 
     <!-- Lists -->

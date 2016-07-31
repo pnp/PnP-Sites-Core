@@ -26,10 +26,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class ListInstanceValidator : ValidatorBase
     {
-        #region Variables
-        ClientContext cc = null;
-        #endregion
-
         #region construction        
         public ListInstanceValidator() : base()
         {
@@ -322,7 +318,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
-
             // Folder handling
             // Folders are not extracted, so manual validation needed
             var sourceFolders = sourceObject.Descendants(ns + "Folders");
@@ -338,11 +333,42 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         list.EnsureProperty(w => w.RootFolder);
                         foreach(var folder in sourceFolders.Descendants(ns + "Folder"))
                         {
+                            // only verify first level folders
                             if (folder.Parent.Equals(sourceFolders.First()))
                             {
                                 if (!list.RootFolder.FolderExists(folder.Attribute("Name").Value))
                                 {
                                     foldersValid = false;
+                                }
+
+                                // if the folder has a security element then verify this as well
+                                var sourceFolderSecurity = folder.Descendants(ns + "Security");
+                                if (sourceFolderSecurity != null && sourceFolderSecurity.Any())
+                                {
+                                    // convert XML in ObjectSecurity object
+                                    ObjectSecurity targetFolderSecurityElement = new ObjectSecurity();
+                                    targetFolderSecurityElement.ClearSubscopes = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("ClearSubscopes").Value.ToBoolean();
+                                    targetFolderSecurityElement.CopyRoleAssignments = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("CopyRoleAssignments").Value.ToBoolean();
+
+                                    var sourceRoleAssignments = folder.Descendants(ns + "RoleAssignment");
+                                    foreach (var sourceRoleAssignment in sourceRoleAssignments)
+                                    {
+                                        targetFolderSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
+                                            { Principal = sourceRoleAssignment.Attribute("Principal").Value,
+                                              RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
+                                        });
+                                    }
+
+                                    // grab the "Securable" for the folder
+                                    var currentFolderItem = list.RootFolder.EnsureFolder(folder.Attribute("Name").Value).ListItemAllFields;
+                                    cc.Load(currentFolderItem);
+                                    cc.ExecuteQueryRetry();
+
+                                    // use CSOM to verify security settings
+                                    if (ValidateSecurityCSOM(this.cc, targetFolderSecurityElement, currentFolderItem))
+                                    {
+                                        sourceFolderSecurity.Remove();
+                                    }
                                 }
                             }
                         }
@@ -352,6 +378,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     {
                         sourceFolders.Remove();
                     }
+                }
+            }
+
+            // Security handling
+            var sourceSecurity = sourceObject.Descendants(ns + "Security");
+            if (sourceSecurity != null && sourceSecurity.Any())
+            {
+                var targetSecurity = targetObject.Descendants(ns + "Security");
+                if (ValidateSecurity(sourceSecurity.First(), targetSecurity.First()))
+                {
+                    sourceSecurity.Remove();
+                    targetSecurity.Remove();
                 }
             }
 

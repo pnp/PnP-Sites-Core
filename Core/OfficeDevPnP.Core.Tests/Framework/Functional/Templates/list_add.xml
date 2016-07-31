@@ -29,7 +29,7 @@ Base template: goal is to verify that all list properties and elements work as e
                -DataRows (e)               
                Folders (e)               
                FieldDefaults (e)               
-               -Security (e)
+               Security (e)
                
                Possible ContentTypeBinding attributes are:
                ContentTypeID        (*)
@@ -84,7 +84,8 @@ Base template: goal is to verify that all list properties and elements work as e
       </pnp:ContentTypeBindings>
     </pnp:ListInstance>
     <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name 
-              Folder element with Name attribute -->
+              Folder element with Name attribute 
+              Security element on Folder element -->
     <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6" EnableFolderCreation="true">
       <pnp:FieldRefs>
         <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6" Hidden="false" Required="true" Name="Informative"/>
@@ -94,7 +95,13 @@ Base template: goal is to verify that all list properties and elements work as e
         <pnp:Folder Name="F1">
           <pnp:Folder Name="F1.1" />
         </pnp:Folder>
-        <pnp:Folder Name="F2" />
+        <pnp:Folder Name="F2">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Folder>
       </pnp:Folders>
     </pnp:ListInstance>
     <!-- Test Fields and FieldDefaults element -->
@@ -151,6 +158,20 @@ Base template: goal is to verify that all list properties and elements work as e
           <Toolbar Type="Standard" />
         </View>  
       </pnp:Views>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_14" TemplateType="100" Url="Lists/LI_14">
+      <pnp:Security>        
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_15" TemplateType="100" Url="Lists/LI_15">
+      <pnp:Security>
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="false">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
     </pnp:ListInstance>
 
     <!-- Feature based: create promoted links list 
