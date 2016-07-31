@@ -1,5 +1,6 @@
 using Microsoft.SharePoint.Client;
 using System;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -7,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private string _contentTypeId = null;
         public ContentTypeIdToken(Web web, string name, string contenttypeid)
-            : base(web, string.Format("{{contenttypeid:{0}}}", name))
+            : base(web, string.Format("{{contenttypeid:{0}}}", Regex.Escape(name)))
         {
             _contentTypeId = contenttypeid;
         }
