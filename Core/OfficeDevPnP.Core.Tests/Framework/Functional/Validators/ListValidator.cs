@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -25,13 +26,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class ListInstanceValidator : ValidatorBase
     {
-        #region construction
+        #region Variables
+        ClientContext cc = null;
+        #endregion
+
+        #region construction        
         public ListInstanceValidator() : base()
         {
             // optionally override schema version
             SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
             XPathQuery = "/pnp:Templates/pnp:ProvisioningTemplate/pnp:Lists/pnp:ListInstance";
         }
+
+        public ListInstanceValidator(ClientContext cc) : this()
+        {
+            this.cc = cc;
+        }
+
         #endregion
 
         #region Validation logic
@@ -186,7 +197,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     else
                     {
                         // If the source object does not have a DisplayName attribute then also remove it from the target
-                        if (!(fieldRefs.Where(p => p.Attribute("ID").Value == targetFieldRef.Attribute("ID").Value).FirstOrDefault().Attribute("DisplayName") != null) )
+                        if (!(fieldRefs.Where(p => p.Attribute("ID").Value == targetFieldRef.Attribute("ID").Value).FirstOrDefault().Attribute("DisplayName") != null))
                         {
                             DropAttribute(targetFieldRef, "DisplayName");
                         }
@@ -262,7 +273,87 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             }
 
+            // FieldDefaults handling
+            var sourceFieldDefaults = sourceObject.Descendants(ns + "FieldDefault");
+            if (sourceFieldDefaults != null && sourceFieldDefaults.Any())
+            {
+                bool validFieldDefaults = true;
 
+                foreach(var sourceFieldDefault in sourceFieldDefaults)
+                {
+                    string fieldDefaultValue = sourceFieldDefault.Value;
+                    string fieldDefaultName = sourceFieldDefault.Attribute("FieldName").Value;
+
+                    if (fieldDefaultValue != null && fieldDefaultName != null)
+                    {
+                        var targetField = targetFields.Where(p => p.Attribute("Name").Value.Equals(fieldDefaultName, StringComparison.InvariantCultureIgnoreCase)).First();
+                        if (targetField.Descendants("Default").Any())
+                        {
+                            string targetFieldDefaultValue = targetField.Descendants("Default").First().Value;
+                            if (!targetFieldDefaultValue.Equals(fieldDefaultValue, StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                validFieldDefaults = false;
+                            }
+                            else
+                            {
+                                // remove the Default node
+                                targetField.Descendants("Default").First().Remove();
+                            }
+                        }
+                        else
+                        {
+                            validFieldDefaults = false;
+                        }
+                    }
+                }
+
+                if (validFieldDefaults)
+                {
+                    sourceObject.Descendants(ns + "FieldDefaults").Remove();
+                }
+            }
+
+            // Drop any remaining Default node
+            foreach (var targetField in targetFields)
+            {
+                if (targetField.Descendants("Default").Any())
+                {
+                    targetField.Descendants("Default").First().Remove();
+                }
+            }
+
+
+            // Folder handling
+            // Folders are not extracted, so manual validation needed
+            var sourceFolders = sourceObject.Descendants(ns + "Folders");
+            if (sourceFolders != null && sourceFolders.Any())
+            {
+                // use CSOM to verify the folders are listed in target and only remove the source folder from the XML when this is the case
+                if (this.cc != null)
+                {
+                    var foldersValid = true;
+                    var list = this.cc.Web.GetListByUrl(sourceObject.Attribute("Url").Value);
+                    if (list != null)
+                    {
+                        list.EnsureProperty(w => w.RootFolder);
+                        foreach(var folder in sourceFolders.Descendants(ns + "Folder"))
+                        {
+                            if (folder.Parent.Equals(sourceFolders.First()))
+                            {
+                                if (!list.RootFolder.FolderExists(folder.Attribute("Name").Value))
+                                {
+                                    foldersValid = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if (foldersValid)
+                    {
+                        sourceFolders.Remove();
+                    }
+                }
+            }
 
         }
         #endregion

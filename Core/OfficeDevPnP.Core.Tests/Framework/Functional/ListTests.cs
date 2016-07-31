@@ -13,9 +13,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ListTests()
         {
-            //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c66625da-ac01-4f21-b4f4-5e2354ddbbc2";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c66625da-ac01-4f21-b4f4-5e2354ddbbc2/sub";
+            debugMode = true;
+            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c127d4e0-b703-48e6-ad68-453351618a34";
+            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c127d4e0-b703-48e6-ad68-453351618a34/sub";
         }
         #endregion
 
@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 // Add lists
                 var result = TestProvisioningTemplate(cc, "list_add.xml", Handlers.Lists);
-                ListInstanceValidator lv = new ListInstanceValidator();
+                ListInstanceValidator lv = new ListInstanceValidator(cc);
                 Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
 
                 // Add supporting files needed during delta testing
@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 // Delta lists
                 var result2 = TestProvisioningTemplate(cc, "list_delta_1.xml", Handlers.Lists);
-                ListInstanceValidator lv2 = new ListInstanceValidator();
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
                 Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
             }
             

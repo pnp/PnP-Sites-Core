@@ -5,25 +5,24 @@ Base template: goal is to verify that delta handling of all list properties and 
                
                Possible Lists attributes that support delta handling are (TODO):
                Title                (*) (parsed for resource, resource)
-               -Description              (parsed for resource, resource)
-               -DocumentTemplate         (parsed)
-               -OnQuickLaunch
-               -EnableVersioning
-               -EnableMinorVersions
-               -EnableModeration
-               -MinorVersionLimit
-               -MaxVersionLimit
-               -DraftVersionVisibility  
-               -Hidden
-               -EnableAttachments
-               -EnableFolderCreation               
-               -ContentTypeBindings (e)               
-               -Fields (e)               
-               -FieldRefs (e)               
-               DataRows (e)               
+               Description              (parsed for resource, resource)
+               DocumentTemplate         (parsed)
+               OnQuickLaunch
+               EnableVersioning
+               EnableMinorVersions
+               EnableModeration
+               MinorVersionLimit
+               MaxVersionLimit
+               DraftVersionVisibility  
+               Hidden
+               EnableAttachments
+               EnableFolderCreation               
+               ContentTypeBindings (e)               
+               Fields (e)               
+               FieldRefs (e)               
+               -DataRows (e)               
                Folders (e)               
-               FieldDefaults (e)               
-               Security (e)
+               -Security (e)
 
                Possible ContentTypeBindings delta changes are:
                Adding a new ContentTypeBinding 
@@ -41,6 +40,9 @@ Base template: goal is to verify that delta handling of all list properties and 
 
                Possible Field delta attributes are:
                A lot (see field tests)
+               
+               Possible Folder delta attributes are:
+               Folders can be added, not removed
 -->
 
 <pnp:ProvisioningTemplate ID="list_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -76,6 +78,12 @@ Base template: goal is to verify that delta handling of all list properties and 
         <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden="false" />
         <pnp:FieldRef ID="B46D91E2-C755-4C3A-AC72-7FD3E4853476" />
       </pnp:FieldRefs>
+      <pnp:Folders>
+        <pnp:Folder Name="F1">
+          <pnp:Folder Name="F1.2" />
+        </pnp:Folder>
+        <pnp:Folder Name="F3" />
+      </pnp:Folders>      
     </pnp:ListInstance>
     <!-- Delta Field attributes: all except Type, Name and ID  
          Add FieldRef element  -->
