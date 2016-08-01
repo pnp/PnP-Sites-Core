@@ -336,6 +336,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
     <Compile Include="Framework\Functional\ListTests.cs" />
+    <Compile Include="Framework\Functional\ComposedLookTest.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
     <Compile Include="Framework\Functional\FeatureTests.cs" />
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
     <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
     <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
@@ -403,6 +405,9 @@
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\garagewhite.spcolor">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Resources\custom.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -411,6 +416,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+    <Content Include="Framework\Functional\Templates\composedlook_files.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\garagebg.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Framework\Functional\Templates\garagelogo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Framework\Functional\Templates\list_delta_1605_1.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -429,6 +444,7 @@
     <Content Include="Framework\Functional\Templates\list_add.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\composedlook_add_2.xml" />
     <Content Include="Framework\Functional\Templates\contenttype_delta_1.xml">
       <SubType>Designer</SubType>
     </Content>
