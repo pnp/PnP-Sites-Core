@@ -336,6 +336,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
     <Compile Include="Framework\Functional\ListTests.cs" />
+    <Compile Include="Framework\Functional\ComposedLookTest.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
     <Compile Include="Framework\Functional\FeatureTests.cs" />
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
     <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
     <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
@@ -429,6 +431,7 @@
     <Content Include="Framework\Functional\Templates\list_add.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\composedlook_add.xml" />
     <Content Include="Framework\Functional\Templates\contenttype_delta_1.xml">
       <SubType>Designer</SubType>
     </Content>
