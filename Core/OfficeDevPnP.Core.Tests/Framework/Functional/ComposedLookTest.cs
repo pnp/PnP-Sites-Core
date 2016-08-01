@@ -22,10 +22,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ComposedLookTest()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326/sub";
         }
         #endregion
+
         #region Test setup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
@@ -48,20 +49,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                var result = TestProvisioningTemplate(cc, "composedlook_add.xml", Handlers.ComposedLook);
+                // Add supporting files
+                TestProvisioningTemplate(cc, "composedlook_files.xml", Handlers.Files);
+
+                var result = TestProvisioningTemplate(cc, "composedlook_add_1.xml", Handlers.ComposedLook);
                 ComposedLookValidator composedLookVal = new ComposedLookValidator();
                 Assert.IsTrue(composedLookVal.Validate(result.SourceTemplate.ComposedLook, result.TargetTemplate.ComposedLook));
+
+                var result2 = TestProvisioningTemplate(cc, "composedlook_add_2.xml", Handlers.ComposedLook);
+                Assert.IsTrue(composedLookVal.Validate(result2.SourceTemplate.ComposedLook, result2.TargetTemplate.ComposedLook));
             }
         }
 
         [TestMethod]
         public void WebComposedLookTest()
         {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                // Add supporting files
+                TestProvisioningTemplate(cc, "composedlook_files.xml", Handlers.Files);
+            }
+
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
             {
-                var result = TestProvisioningTemplate(cc, "composedlook_add.xml", Handlers.ComposedLook);
+                var result = TestProvisioningTemplate(cc, "composedlook_add_1.xml", Handlers.ComposedLook);
                 ComposedLookValidator composedLookVal = new ComposedLookValidator();
                 Assert.IsTrue(composedLookVal.Validate(result.SourceTemplate.ComposedLook, result.TargetTemplate.ComposedLook));
+
+                var result2 = TestProvisioningTemplate(cc, "composedlook_add_2.xml", Handlers.ComposedLook);
+                Assert.IsTrue(composedLookVal.Validate(result2.SourceTemplate.ComposedLook, result2.TargetTemplate.ComposedLook));
             }
         }
 

@@ -16,9 +16,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             if (!source.BackgroundFile.Trim().ToLower().Equals(target.BackgroundFile.Trim().ToLower())) { return false; }
 
-            if (!source.ColorFile.Trim().ToLower().Replace("{sitecollection}", "").Equals(target.ColorFile.Trim().ToLower())) { return false; }
+            if (!source.ColorFile.Trim().ToLower().Equals(target.ColorFile.Trim().ToLower())) { return false; }
 
-            if (!source.FontFile.Trim().ToLower().Replace("{sitecollection}", "").Equals(target.FontFile.Trim().ToLower())) { return false; }
+            if (!source.FontFile.Trim().ToLower().Equals(target.FontFile.Trim().ToLower())) { return false; }
 
             if (!source.Name.Trim().ToLower().Equals(target.Name.Trim().ToLower())) { return false; }
 
