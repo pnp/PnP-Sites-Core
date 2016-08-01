@@ -342,6 +342,7 @@
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+    <Compile Include="Framework\Functional\SearchsettingTest.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
     <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
@@ -349,6 +350,7 @@
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FieldValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\SearchsettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ValidateXmlEventArgs.cs" />
     <Compile Include="Framework\Functional\Validators\ValidateEventArgs.cs" />
     <Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
@@ -477,6 +479,8 @@
     <Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
     <Content Include="Framework\Functional\Templates\customaction_add.xml" />
     <Content Include="Framework\Functional\Templates\feature_base.xml" />
+    <Content Include="Framework\Functional\Templates\searchsettings_site_add .xml" />
+    <Content Include="Framework\Functional\Templates\searchsettings_web_add.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
