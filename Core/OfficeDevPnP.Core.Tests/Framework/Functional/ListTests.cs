@@ -79,6 +79,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Delta lists
                 var result2 = TestProvisioningTemplate(cc, "list_delta_1605_1.xml", Handlers.Lists);
                 ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                lv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
             }
 
@@ -133,6 +134,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 // Delta lists
                 var result2 = TestProvisioningTemplate(cc, "list_delta_1605_1.xml", Handlers.Lists);
                 ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                lv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
             }
         }

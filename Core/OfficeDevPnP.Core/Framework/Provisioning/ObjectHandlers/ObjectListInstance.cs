@@ -851,6 +851,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 
+                if (templateList.ForceCheckout != existingList.ForceCheckout)
+                {
+                    existingList.ForceCheckout = templateList.ForceCheckout;
+                    isDirty = true;
+                }
+
                 if (templateList.EnableVersioning)
                 {
                     if (existingList.EnableVersioning != templateList.EnableVersioning)
@@ -907,12 +913,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     isDirty = true;
                                 }
                             }
-                        }
-
-                        if (templateList.ForceCheckout != existingList.ForceCheckout)
-                        {
-                            existingList.ForceCheckout = templateList.ForceCheckout;
-                            isDirty = true;
                         }
                     }
                 }
