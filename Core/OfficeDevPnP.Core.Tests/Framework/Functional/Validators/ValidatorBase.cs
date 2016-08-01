@@ -189,7 +189,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                             var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
                             if (!equalNodes.Success)
                             {
-                                    return false;
+                                Console.WriteLine(string.Format("Source XML:{0}", sourceXml.ToString()));
+                                Console.WriteLine(string.Format("Target XML:{0}", targetXml.ToString()));
+                                return false;
                             }
                         }
 
@@ -215,7 +217,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return ctXml.ToString(SaveOptions.DisableFormatting);
         }
 
-        internal bool ValidateSecurity(XElement sourceObject, XElement targetObject)
+        internal bool ValidateSecurityXml(XElement sourceObject, XElement targetObject)
         {
             XNamespace ns = SchemaVersion;
 
@@ -262,7 +264,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         return false;
                     }
                 }
-
             }
 
             return true;
@@ -302,6 +303,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             return true;
         }
+
+        public bool ValidateDataRowsCSOM(ClientContext context, DataRow dataRow, ListItem item)
+        {
+            context.Load(item);
+            context.ExecuteQueryRetry();
+
+            // Validate item values
+            foreach(var dataValue in dataRow.Values)
+            {
+                if (!item[dataValue.Key].ToString().Equals(dataValue.Value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            // Validate security
+            if (dataRow.Security != null)
+            {
+                if (!ValidateSecurityCSOM(context, dataRow.Security, item))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Helper methods

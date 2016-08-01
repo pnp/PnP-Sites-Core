@@ -26,7 +26,7 @@ Base template: goal is to verify that all list properties and elements work as e
                Views (e)               
                Fields (e)               
                FieldRefs (e)               
-               -DataRows (e)               
+               DataRows (e)               
                Folders (e)               
                FieldDefaults (e)               
                Security (e)
@@ -172,6 +172,27 @@ Base template: goal is to verify that all list properties and elements work as e
           <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
         </pnp:BreakRoleInheritance>
       </pnp:Security>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_16" TemplateType="100" Url="Lists/LI_16">
+      <pnp:Fields>
+        <Field ID="{382382B6-A8E2-4944-9546-07CB108F8459}" Type="Text" Name="FLD_LI_16_1" DisplayName="Fld LI 16 1" Description="Fld LI 16 1" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{873175B2-39CF-4550-AB3D-38B2AB1BE7D1}" Type="Text" Name="FLD_LI_16_2" DisplayName="Fld LI 16 2" Description="Fld LI 16 2" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+      <pnp:DataRows>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_16_1">val 1</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_16_2">val 1</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_16_1">val 2</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_16_2">val 2</pnp:DataValue>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:DataRow>
+      </pnp:DataRows>
     </pnp:ListInstance>
 
     <!-- Feature based: create promoted links list 

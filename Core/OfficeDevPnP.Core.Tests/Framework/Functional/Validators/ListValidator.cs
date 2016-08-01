@@ -346,14 +346,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                 if (sourceFolderSecurity != null && sourceFolderSecurity.Any())
                                 {
                                     // convert XML in ObjectSecurity object
-                                    ObjectSecurity targetFolderSecurityElement = new ObjectSecurity();
-                                    targetFolderSecurityElement.ClearSubscopes = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("ClearSubscopes").Value.ToBoolean();
-                                    targetFolderSecurityElement.CopyRoleAssignments = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("CopyRoleAssignments").Value.ToBoolean();
+                                    ObjectSecurity sourceFolderSecurityElement = new ObjectSecurity();
+                                    sourceFolderSecurityElement.ClearSubscopes = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("ClearSubscopes").Value.ToBoolean();
+                                    sourceFolderSecurityElement.CopyRoleAssignments = sourceFolderSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("CopyRoleAssignments").Value.ToBoolean();
 
                                     var sourceRoleAssignments = folder.Descendants(ns + "RoleAssignment");
                                     foreach (var sourceRoleAssignment in sourceRoleAssignments)
                                     {
-                                        targetFolderSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
+                                        sourceFolderSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
                                             { Principal = sourceRoleAssignment.Attribute("Principal").Value,
                                               RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
                                         });
@@ -365,7 +365,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                     cc.ExecuteQueryRetry();
 
                                     // use CSOM to verify security settings
-                                    if (ValidateSecurityCSOM(this.cc, targetFolderSecurityElement, currentFolderItem))
+                                    if (ValidateSecurityCSOM(this.cc, sourceFolderSecurityElement, currentFolderItem))
                                     {
                                         sourceFolderSecurity.Remove();
                                     }
@@ -381,12 +381,84 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
+            // DataRows handling
+            var sourceDataRows = sourceObject.Descendants(ns + "DataRow");
+            if (sourceDataRows != null && sourceDataRows.Any())
+            {
+                bool dataRowsValidated = true;
+
+                var list = this.cc.Web.GetListByUrl(sourceObject.Attribute("Url").Value);
+                if (list != null)
+                {
+                    int dataRowCount = 0;
+                    foreach (var sourceDataRow in sourceDataRows)
+                    {
+                        // Convert XML in DataRow object
+                        DataRow sourceDataRowElement = null;
+                        Dictionary<string, string> values = new Dictionary<string, string>();
+                        foreach (var dataValue in sourceDataRow.Descendants(ns + "DataValue"))
+                        {
+                            values.Add(dataValue.Attribute("FieldName").Value, dataValue.Value);
+                        }
+
+                        ObjectSecurity sourceDataRowSecurityElement = null;
+                        var sourceDataRowSecurity = sourceDataRow.Descendants(ns + "Security");
+                        if (sourceDataRowSecurity != null && sourceDataRowSecurity.Any())
+                        {
+                            // convert XML in ObjectSecurity object
+                            sourceDataRowSecurityElement = new ObjectSecurity();
+                            sourceDataRowSecurityElement.ClearSubscopes = sourceDataRowSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("ClearSubscopes").Value.ToBoolean();
+                            sourceDataRowSecurityElement.CopyRoleAssignments = sourceDataRowSecurity.Descendants(ns + "BreakRoleInheritance").First().Attribute("CopyRoleAssignments").Value.ToBoolean();
+
+                            var sourceRoleAssignments = sourceDataRowSecurity.Descendants(ns + "RoleAssignment");
+                            foreach (var sourceRoleAssignment in sourceRoleAssignments)
+                            {
+                                sourceDataRowSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
+                                {
+                                    Principal = sourceRoleAssignment.Attribute("Principal").Value,
+                                    RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
+                                });
+                            }
+                        }
+
+                        if (sourceDataRowSecurityElement != null)
+                        {
+                            sourceDataRowElement = new DataRow(values, sourceDataRowSecurityElement);
+                        }
+                        else
+                        {
+                            sourceDataRowElement = new DataRow(values);
+                        }
+
+                        dataRowCount++;
+                        ListItem itemToValidate = null;
+                        try
+                        {
+                            itemToValidate = list.GetItemById(dataRowCount);
+                        }
+                        catch
+                        { }
+
+                        if (itemToValidate == null || !ValidateDataRowsCSOM(cc, sourceDataRowElement, itemToValidate))
+                        {
+                            dataRowsValidated = false;
+                        }
+                    }
+                }
+
+                // If all datarows are validated then we can drop 
+                if (dataRowsValidated)
+                {
+                    sourceObject.Descendants(ns + "DataRows").First().Remove();
+                }
+            }
+
             // Security handling
             var sourceSecurity = sourceObject.Descendants(ns + "Security");
             if (sourceSecurity != null && sourceSecurity.Any())
             {
                 var targetSecurity = targetObject.Descendants(ns + "Security");
-                if (ValidateSecurity(sourceSecurity.First(), targetSecurity.First()))
+                if (ValidateSecurityXml(sourceSecurity.First(), targetSecurity.First()))
                 {
                     sourceSecurity.Remove();
                     targetSecurity.Remove();
@@ -394,6 +466,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
         }
+
         #endregion
     }
 }

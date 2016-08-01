@@ -13,9 +13,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ListTests()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c127d4e0-b703-48e6-ad68-453351618a34";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c127d4e0-b703-48e6-ad68-453351618a34/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326/sub";
         }
         #endregion
 
@@ -63,7 +63,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #endregion
 
         #region Web test cases
-        // No need to have these as the engine is blocking creation and extraction of content types at web level
+        [TestMethod]
+        public void WebListAddingTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                // Add supporting files needed during add
+                TestProvisioningTemplate(cc, "list_supporting_data_1.xml", Handlers.Fields | Handlers.ContentTypes);
+            }
+
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                // Add lists
+                var result = TestProvisioningTemplate(cc, "list_add.xml", Handlers.Lists);
+                ListInstanceValidator lv = new ListInstanceValidator(cc);
+                Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
+
+                // Add supporting files needed during delta testing
+                TestProvisioningTemplate(cc, "list_supporting_data_2.xml", Handlers.Files);
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
+            }
+
+        }
         #endregion
 
         #region Validation event handlers

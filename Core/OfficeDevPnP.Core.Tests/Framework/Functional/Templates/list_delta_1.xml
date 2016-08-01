@@ -20,7 +20,7 @@ Base template: goal is to verify that delta handling of all list properties and 
                ContentTypeBindings (e)               
                Fields (e)               
                FieldRefs (e)               
-               -DataRows (e)               
+               DataRows (e)             (not tested since it's identical to add...one can add new rows only)
                Folders (e)               
                Security (e)
 
