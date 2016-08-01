@@ -72,6 +72,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             Dictionary<string, string[]> parserSettings = new Dictionary<string, string[]>();
             parserSettings.Add("SchemaXml", null);
             bool isListsMatch = ValidateObjectsXML(sourceLists, targetLists, "SchemaXml", new List<string> { "Title" }, tokenParser, parserSettings);
+
+            // Use CustomAction validator to validate the custom actions on the list
+            var sourceListsWithUserCustomActions = sourceCollection.Where(p => p.UserCustomActions.Any() == true);
+            foreach(ListInstance list in sourceListsWithUserCustomActions)
+            {
+                var targetList = targetCollection.Where(p => p.Title == list.Title).FirstOrDefault();
+                if (!CustomActionValidator.ValidateCustomActions(list.UserCustomActions, targetList.UserCustomActions, tokenParser))
+                {
+                    isListsMatch = false;
+                    break;
+                }
+            }
+
             Console.WriteLine("-- Lists validation " + isListsMatch);
             return isListsMatch;
         }
@@ -465,6 +478,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
+            // CustomAction handling
+            var sourceCustomActions = sourceObject.Descendants(ns + "UserCustomActions");
+            if (sourceCustomActions != null && sourceCustomActions.Any())
+            {
+                // delete custom actions since we validate these latter on
+                var targetCustomActions = targetObject.Descendants(ns + "UserCustomActions");
+
+                sourceCustomActions.Remove();
+                if (targetCustomActions != null && targetCustomActions.Any())
+                {
+                    targetCustomActions.Remove();
+                }
+            }
         }
 
         #endregion

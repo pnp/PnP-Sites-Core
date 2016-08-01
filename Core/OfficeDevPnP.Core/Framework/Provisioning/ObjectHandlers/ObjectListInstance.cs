@@ -966,6 +966,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 userCustomAction.RegistrationType = UserCustomActionRegistrationType.List;
                                 userCustomAction.RegistrationId = existingList.Id.ToString("B").ToUpper();
                                 ObjectCustomActions.UpdateCustomAction(parser, scope, userCustomAction, existingCustomAction);
+                                // Blank out these values again to avoid inconsistent domain model data
+                                userCustomAction.RegistrationType = UserCustomActionRegistrationType.None;
+                                userCustomAction.RegistrationId = null;
                             }
                         }
                     }
@@ -1151,7 +1154,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableAttachments = list.EnableAttachments;
             }
 
-            createdList.EnableModeration = list.EnableModeration;
+            createdList.EnableModeration = list.EnableModeration;           
+            createdList.ForceCheckout = list.ForceCheckout;
 
             // Done for all other lists than for Survey - With Surveys versioning configuration will cause an exception
             if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
@@ -1187,7 +1191,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Only supported on Document Libraries
                         createdList.EnableMinorVersions = list.EnableMinorVersions;
                         createdList.DraftVersionVisibility = (DraftVisibilityType)list.DraftVersionVisibility;
-                        createdList.ForceCheckout = list.ForceCheckout;
 
                         if (list.EnableMinorVersions)
                         {

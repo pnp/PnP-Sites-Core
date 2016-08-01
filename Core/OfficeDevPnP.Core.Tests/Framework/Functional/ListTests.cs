@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Linq;
@@ -60,6 +61,28 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
             
         }
+
+        [TestMethod]
+        public void SiteCollection1605ListAddingTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                // Add lists
+                var result = TestProvisioningTemplate(cc, "list_add_1605.xml", Handlers.Lists);
+                ListInstanceValidator lv = new ListInstanceValidator(cc);
+                lv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1605_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
+            }
+
+        }
         #endregion
 
         #region Web test cases
@@ -92,6 +115,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
 
         }
+
+        [TestMethod]
+        public void Web1605ListAddingTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                // Add lists
+                var result = TestProvisioningTemplate(cc, "list_add_1605.xml", Handlers.Lists);
+                ListInstanceValidator lv = new ListInstanceValidator(cc);
+                lv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1605_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
+            }
+        }
         #endregion
 
         #region Validation event handlers
@@ -100,16 +144,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Helper methods
         private void DeleteLists(ClientContext cc)
         {
-            // delete lists from root web and sub web
             DeleteListsImplementation(cc);
-
-            using (ClientContext cc2 = cc.Clone(centralSubSiteUrl))
-            {
-                DeleteListsImplementation(cc2);
-            }
-
-            // Drop the created content types
-            //DeleteContentTypes(cc);
         }
 
         private static void DeleteListsImplementation(ClientContext cc)
