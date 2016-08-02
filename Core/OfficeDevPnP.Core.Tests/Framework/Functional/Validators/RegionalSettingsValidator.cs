@@ -37,14 +37,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         #endregion
 
         #region Validation logic
-        public bool Validate(Core.Framework.Provisioning.Model.RegionalSettings sourceRegionalsettings, Core.Framework.Provisioning.Model.RegionalSettings targetRegionalSettings, TokenParser tokenParser)
+        public bool Validate(Core.Framework.Provisioning.Model.RegionalSettings sourceRegionalSettings, Core.Framework.Provisioning.Model.RegionalSettings targetRegionalSettings, TokenParser tokenParser)
         {
             ProvisioningTemplate sourcePt = new ProvisioningTemplate();
-            sourcePt.RegionalSettings = sourceRegionalsettings;
+            sourcePt.RegionalSettings = sourceRegionalSettings;
             var sourceXml = ExtractElementXml(sourcePt);
 
             ProvisioningTemplate targetPt = new ProvisioningTemplate();
-            targetPt.RegionalSettings = sourceRegionalsettings;
+            targetPt.RegionalSettings = targetRegionalSettings;
             var targetXml = ExtractElementXml(targetPt);
 
             return ValidateObjectXML(sourceXml, targetXml, null, null, null);

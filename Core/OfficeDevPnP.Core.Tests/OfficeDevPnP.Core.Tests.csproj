@@ -342,6 +342,8 @@
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+    <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
+    <Compile Include="Framework\Functional\WebSettingsTests.cs" />
     <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
     <Compile Include="Framework\Functional\SearchSettingTests.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
@@ -421,6 +423,10 @@
     </None>
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+    <Content Include="Framework\Functional\Templates\garage.css" />
+    <Content Include="Framework\Functional\Templates\websettings_files.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\composedlook_files.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -481,6 +487,7 @@
     <Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
     <Content Include="Framework\Functional\Templates\customaction_add.xml" />
     <Content Include="Framework\Functional\Templates\feature_base.xml" />
+    <Content Include="Framework\Functional\Templates\websettings_add.xml" />
     <Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />

@@ -218,7 +218,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         string[] parserExceptions;
                         parsedProperties.TryGetValue(property, out parserExceptions);
                         sourceXml.Attribute(property).Value = tokenParser.ParseString(sourceXml.Attribute(property).Value, parserExceptions);
-                        targetXml.Attribute(property).Value = tokenParser.ParseString(targetXml.Attribute(property).Value, parserExceptions);
+                        if (targetXml.Attribute(property) != null)
+                        {
+                            targetXml.Attribute(property).Value = tokenParser.ParseString(targetXml.Attribute(property).Value, parserExceptions);
+                        }
                     }
                 }
             }
