@@ -230,25 +230,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 var targetRoleAssignments = targetObject.Descendants(ns + "RoleAssignment");
 
                 // Verify the number of role assignments
-                if (copyRoleAssignments)
+                if (sourceRoleAssignments.Count() > targetRoleAssignments.Count())
                 {
-                    // we've copied the 3 default assignments to this securable object. The number of RoleAssignments in target now should be 3 + the added amount from source
-                    if (sourceRoleAssignments.Count() + 3 != targetRoleAssignments.Count())
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    // we've not copied the default assignments to this securable object. The number of RoleAssignments in target now should be equal or more to the amount from source
-                    if (sourceRoleAssignments.Count() > targetRoleAssignments.Count())
-                    {
-                        return false;
-                    }
+                    return false;
                 }
 
                 // verify the added ones appear in target
-                foreach(var sourceRoleAssignment in sourceRoleAssignments)
+                foreach (var sourceRoleAssignment in sourceRoleAssignments)
                 {
                     var targetRoleAssignment = targetRoleAssignments.Where(p => p.Attribute("Principal").Value == sourceRoleAssignment.Attribute("Principal").Value);
 

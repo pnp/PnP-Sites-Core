@@ -93,6 +93,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
+            #region Property handling
             // Base property handling
             // Drop list properties if they're not provided in the source XML
             string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID", "EnableAttachments" };
@@ -124,7 +125,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 DropAttribute(sourceObject, "MaxVersionLimit");
             }
 #endif
-            // Contenttype handling
+            #endregion
+
+            #region Contenttype handling
             // If RemoveExistingContentTypes is set then remove the attribute from source since on target we don't add this. 
             var contentTypeBindings = targetObject.Descendants(ns + "ContentTypeBinding");
             bool removeExistingContentTypes = false;
@@ -167,8 +170,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
+            #endregion
 
-            // FieldRef handling
+            #region FieldRef handling
             var fieldRefs = sourceObject.Descendants(ns + "FieldRef");
             if (fieldRefs != null && fieldRefs.Any())
             {
@@ -213,9 +217,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
+            #endregion
 
-            // Field handling
+            #region Field handling
             var targetFields = targetObject.Descendants("Field");
+            var sourceFields = sourceObject.Descendants("Field");
             if (targetFields != null && targetFields.Any())
             {
                 foreach (var targetField in targetFields.ToList())
@@ -229,9 +235,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     DropAttribute(targetField, "ColName");
                     DropAttribute(targetField, "RowOrdinal");
                     DropAttribute(targetField, "Version");
+
+                    // If target field does not exist in source then drop it (SPO can add additional fields e.g. _IsRecord field refering the _ComplianceFlags field)
+                    if (sourceFields != null && sourceFields.Any())
+                    {
+                        var sourceField = sourceFields.Where(p => p.Attribute("ID").Value.Equals(targetField.Attribute("ID").Value)).First();
+                        if (sourceField == null)
+                        {
+                            targetField.Remove();
+                        }
+                    }
                 }
             }
-            var sourceFields = sourceObject.Descendants("Field");
             if (sourceFields != null && sourceFields.Any())
             {
                 foreach (var sourceField in sourceFields.ToList())
@@ -240,8 +255,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     UpperCaseAttribute(sourceField, "ID");
                 }
             }
+            #endregion
 
-            // View handling
+            #region View handling
             var sourceViews = sourceObject.Descendants("View");
             var targetViews = targetObject.Descendants("View");
 
@@ -279,10 +295,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         targetObject.Descendants(ns + "Views").Remove();
                     }
                 }
-
             }
+            #endregion
 
-            // FieldDefaults handling
+            #region FieldDefaults handling
             var sourceFieldDefaults = sourceObject.Descendants(ns + "FieldDefault");
             if (sourceFieldDefaults != null && sourceFieldDefaults.Any())
             {
@@ -330,8 +346,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetField.Descendants("Default").First().Remove();
                 }
             }
+            #endregion
 
-            // Folder handling
+            #region Folder handling
             // Folders are not extracted, so manual validation needed
             var sourceFolders = sourceObject.Descendants(ns + "Folders");
             if (sourceFolders != null && sourceFolders.Any())
@@ -393,8 +410,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
+            #endregion
 
-            // DataRows handling
+            #region DataRows handling
             var sourceDataRows = sourceObject.Descendants(ns + "DataRow");
             if (sourceDataRows != null && sourceDataRows.Any())
             {
@@ -465,8 +483,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     sourceObject.Descendants(ns + "DataRows").First().Remove();
                 }
             }
+            #endregion
 
-            // Security handling
+            #region Security handling
             var sourceSecurity = sourceObject.Descendants(ns + "Security");
             if (sourceSecurity != null && sourceSecurity.Any())
             {
@@ -477,8 +496,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetSecurity.Remove();
                 }
             }
+            #endregion
 
-            // CustomAction handling
+            #region CustomAction handling
             var sourceCustomActions = sourceObject.Descendants(ns + "UserCustomActions");
             if (sourceCustomActions != null && sourceCustomActions.Any())
             {
@@ -491,6 +511,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetCustomActions.Remove();
                 }
             }
+            #endregion
         }
 
         #endregion
