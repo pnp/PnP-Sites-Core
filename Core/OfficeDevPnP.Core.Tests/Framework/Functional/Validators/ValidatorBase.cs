@@ -203,6 +203,57 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return sourceCount == targetCount;
         }
 
+        public virtual bool ValidateObjectXML(string source, string target, List<string> properties, TokenParser tokenParser = null, Dictionary<string, string[]> parsedProperties = null) 
+        {
+            XElement sourceXml = XElement.Parse(source);
+            XElement targetXml = XElement.Parse(target);
+
+            if (tokenParser != null && parsedProperties != null)
+            {
+                // Run token parser over provided list of properties
+                foreach (var property in properties)
+                {
+                    if (sourceXml.Attribute(property) != null)
+                    {
+                        string[] parserExceptions;
+                        parsedProperties.TryGetValue(property, out parserExceptions);
+                        sourceXml.Attribute(property).Value = tokenParser.ParseString(sourceXml.Attribute(property).Value, parserExceptions);
+                        targetXml.Attribute(property).Value = tokenParser.ParseString(targetXml.Attribute(property).Value, parserExceptions);
+                    }
+                }
+            }
+
+            // call virtual override method, consuming validators can add fixed validation logic if needed
+            OverrideXmlData(sourceXml, targetXml);
+
+            // call event handler, validator instances can add additional validation behaviour if needed, including forcing an IsEqual
+            ValidateXmlEventArgs e = null;
+            if (ValidateXmlEvent != null)
+            {
+                e = new ValidateXmlEventArgs(sourceXml, targetXml);
+                ValidateXmlEvent(this, e);
+            }
+
+            if (e != null && e.IsEqual)
+            {
+                // Do nothing since we've declared equality in the event handler
+            }
+            else
+            {
+                // Not using XNode.DeepEquals anymore since it requires that the attributes in both XML's are ordered the same
+                //var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
+                var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
+                if (!equalNodes.Success)
+                {
+                    Console.WriteLine(string.Format("Source XML:{0}", sourceXml.ToString()));
+                    Console.WriteLine(string.Format("Target XML:{0}", targetXml.ToString()));
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         internal virtual void OverrideXmlData(XElement sourceObject, XElement targetObject)
         {
 

@@ -342,8 +342,10 @@
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+    <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
     <Compile Include="Framework\Functional\SearchSettingTests.cs" />
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
+    <Compile Include="Framework\Functional\Validators\RegionalSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SearchSettingValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
@@ -479,6 +481,7 @@
     <Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
     <Content Include="Framework\Functional\Templates\customaction_add.xml" />
     <Content Include="Framework\Functional\Templates\feature_base.xml" />
+    <Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
     <Content Include="Resources\EditForm.aspx" />
