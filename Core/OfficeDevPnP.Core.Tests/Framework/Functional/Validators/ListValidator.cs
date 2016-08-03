@@ -222,6 +222,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #region Field handling
             var targetFields = targetObject.Descendants("Field");
             var sourceFields = sourceObject.Descendants("Field");
+
+            if (sourceFields != null && sourceFields.Any())
+            {
+                foreach (var sourceField in sourceFields.ToList())
+                {
+                    // Ensure both target and source using the same casing
+                    UpperCaseAttribute(sourceField, "ID");
+                }
+            }
+
             if (targetFields != null && targetFields.Any())
             {
                 foreach (var targetField in targetFields.ToList())
@@ -239,20 +249,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     // If target field does not exist in source then drop it (SPO can add additional fields e.g. _IsRecord field refering the _ComplianceFlags field)
                     if (sourceFields != null && sourceFields.Any())
                     {
-                        var sourceField = sourceFields.Where(p => p.Attribute("ID").Value.Equals(targetField.Attribute("ID").Value)).First();
-                        if (sourceField == null)
-                        {
+                        if (!sourceFields.Where(p => p.Attribute("ID").Value.Equals(targetField.Attribute("ID").Value)).Any())
+                        { 
                             targetField.Remove();
                         }
-                    }
-                }
-            }
-            if (sourceFields != null && sourceFields.Any())
-            {
-                foreach (var sourceField in sourceFields.ToList())
-                {
-                    // Ensure both target and source using the same casing
-                    UpperCaseAttribute(sourceField, "ID");
+                    }                    
                 }
             }
             #endregion
