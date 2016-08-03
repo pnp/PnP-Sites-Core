@@ -72,6 +72,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 DropAttribute(targetObject, "MasterPageUrl");
                 DropAttribute(targetObject, "CustomMasterPageUrl");
             }
+
+#if ONPREMISES
+            // we don't support NoCrawl and RequestAccessEmail in on-premises so drop them from source and target
+            DropAttribute(sourceObject, "NoCrawl");
+            DropAttribute(targetObject, "NoCrawl");
+            DropAttribute(sourceObject, "RequestAccessEmail");
+            DropAttribute(targetObject, "RequestAccessEmail");
+#endif
+
         }
         #endregion
 
@@ -94,6 +103,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             return true;
         }
-        #endregion
+#endregion
     }
 }
