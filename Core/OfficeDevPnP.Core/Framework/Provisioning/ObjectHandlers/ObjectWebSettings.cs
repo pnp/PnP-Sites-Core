@@ -28,8 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.NoCrawl,
                     w => w.RequestAccessEmail,
 #endif
-                    w => w.Title,
-                    w => w.Description,
+                    //w => w.Title,
+                    //w => w.Description,
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
@@ -42,8 +42,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 #endif
-                webSettings.Title = Tokenize(web.Title, web.Url);
-                webSettings.Description = Tokenize(web.Description, web.Url);
+                // We're not extracting Title and Description
+                //webSettings.Title = Tokenize(web.Title, web.Url);
+                //webSettings.Description = Tokenize(web.Description, web.Url);
                 webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
                 webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
                 webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);

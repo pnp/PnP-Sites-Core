@@ -58,6 +58,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
+            // the engine is not extracting title and description, only allows to set them
+            DropAttribute(sourceObject, "Title");
+            DropAttribute(sourceObject, "Description");
+
             // master pages are extracted relative to the root site without token...e.g. /_catalogs/MasterPage/oslo.master.
             // given we can use tokens in the template we do a manual comparison and drop the MasterPageUrl and CustomMasterPageUrl attributes when ok
             if (ValidateMasterPage(sourceObject.Attribute("MasterPageUrl").Value, targetObject.Attribute("MasterPageUrl").Value) &&
