@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public SearchSettingTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_83c723ec-8bf4-4659-a281-a3ce56fdcb51";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_83c723ec-8bf4-4659-a281-a3ce56fdcb51/sub";
         }
         #endregion
 
@@ -39,6 +39,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public static void ClassCleanup()
         {
             ClassCleanupBase();
+        }
+
+        [TestInitialize()]
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Test that require search settings are not supported in app-only.");
+            }
         }
         #endregion
 
