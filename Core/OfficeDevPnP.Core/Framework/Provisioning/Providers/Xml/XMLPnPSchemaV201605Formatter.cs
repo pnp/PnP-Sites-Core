@@ -915,6 +915,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         SiteCollectionTermGroup = grp.SiteCollectionTermGroup,
+                         SiteCollectionTermGroupSpecified = grp.SiteCollectionTermGroup,
                          Contributors = (from c in grp.Contributors
                                          select new V201605.User { Name = c.Name }).ToArray(),
                          Managers = (from m in grp.Managers
@@ -1943,10 +1945,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             {
                                 Description = termSet.Description,
                             }),
-                        (from c in termGroup.Contributors
-                         select new Model.User { Name = c.Name }).ToArray(),
-                        (from m in termGroup.Managers
-                         select new Model.User { Name = m.Name }).ToArray()
+                        termGroup.SiteCollectionTermGroup,
+                        termGroup.Contributors != null ? (from c in termGroup.Contributors
+                         select new Model.User { Name = c.Name }).ToArray() : null,
+                        termGroup.Managers != null ? (from m in termGroup.Managers
+                         select new Model.User { Name = m.Name }).ToArray() : null
                         )
                     {
                         Description = termGroup.Description,

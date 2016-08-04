@@ -34,6 +34,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string Description { get; set; }
 
         /// <summary>
+        /// Is this a site collection term group
+        /// </summary>
+        public bool SiteCollectionTermGroup { get; set; } = false;
+
+        /// <summary>
         /// List of TermGroup Contributors
         /// </summary>
         public UserCollection Contributors
@@ -71,13 +76,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._managers = new UserCollection(this.ParentTemplate);
         }
 
-        public TermGroup(Guid id, string name, List<TermSet> termSets, 
+        public TermGroup(Guid id, string name, List<TermSet> termSets,
+            bool siteCollectionTermGroup = false,
             IEnumerable<User> contributors = null, 
             IEnumerable<User> managers = null):
             this()
         {
             this.Id = id;
             this.Name = name;
+            this.SiteCollectionTermGroup = siteCollectionTermGroup;
             this.TermSets.AddRange(termSets);
             this.Contributors.AddRange(contributors);
             this.Managers.AddRange(managers);

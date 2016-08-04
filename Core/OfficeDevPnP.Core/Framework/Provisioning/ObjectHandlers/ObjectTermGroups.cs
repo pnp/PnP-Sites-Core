@@ -33,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             tset => tset.Id)));
                 web.Context.ExecuteQueryRetry();
 
+                SiteCollectionTermGroupNameToken siteCollectionTermGroupNameToken = new SiteCollectionTermGroupNameToken(web);
                 foreach (var modelTermGroup in template.TermGroups)
                 {
                     #region Group
@@ -43,7 +44,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         g => g.Id == modelTermGroup.Id || g.Name == modelTermGroup.Name);
                     if (group == null)
                     {
-                        if (modelTermGroup.Name == "Site Collection")
+                        if (modelTermGroup.Name == "Site Collection" || 
+                            parser.ParseString(modelTermGroup.Name) == siteCollectionTermGroupNameToken.GetReplaceValue() ||
+                            modelTermGroup.SiteCollectionTermGroup)
                         {
                             var site = (web.Context as ClientContext).Site;
                             group = termStore.GetSiteCollectionGroup(site, true);
@@ -120,6 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id, modelTermSet.Language ?? termStore.DefaultLanguage);
                             parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
                             newTermSet = true;
+                            set.Description = modelTermSet.Description;
                             set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
                             set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
                             foreach (var property in modelTermSet.Properties)
@@ -238,7 +242,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 term.Owner = modelTerm.Owner;
             }
-
+            
             term.IsAvailableForTagging = modelTerm.IsAvailableForTagging;
 
             if (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any())
@@ -274,10 +278,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+
             termStore.CommitAll();
 
             web.Context.Load(term);
             web.Context.ExecuteQueryRetry();
+
+            // Deprecate term if needed
+            if (modelTerm.IsDeprecated != term.IsDeprecated)
+            {
+                term.Deprecate(modelTerm.IsDeprecated);
+                web.Context.ExecuteQueryRetry();
+            }
+
 
             parser = this.CreateChildTerms(web, modelTerm, term, termStore, parser, scope);
             return Tuple.Create(modelTerm.Id, parser);
@@ -363,6 +376,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!modelTerm.IsReused) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
             if (modelTerm.Id == Guid.Empty) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+
+            // Since we're reusing terms ensure the previous terms are committed
+            termStore.CommitAll();
+            web.Context.ExecuteQueryRetry();
 
             // Try to retrieve a matching term from the website also marked from re-use.  
             var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
@@ -456,7 +473,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var propertyBagKey = string.Format("SiteCollectionGroupId{0}", termStore.Id);
 
-                    var siteCollectionTermGroupId = web.GetPropertyBagValueString(propertyBagKey, "");
+                    // Ensure to grab the property from the rootweb
+                    var site = (web.Context as ClientContext).Site;
+                    web.Context.Load(site, s => s.RootWeb);
+                    web.Context.ExecuteQueryRetry();
+
+                    var siteCollectionTermGroupId = site.RootWeb.GetPropertyBagValueString(propertyBagKey, "");
 
                     Guid termGroupGuid = Guid.Empty;
                     Guid.TryParse(siteCollectionTermGroupId, out termGroupGuid);
@@ -480,7 +502,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 tg => tg.Name,
                                 tg => tg.Id,
                                 tg => tg.Description,
-                                tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.CustomSortOrder));
+                                tg => tg.TermSets.IncludeWithDefaultProperties(ts => ts.Description, ts => ts.CustomSortOrder));
 
                             web.Context.ExecuteQueryRetry();
 
@@ -496,7 +518,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             Name = isSiteCollectionTermGroup ? "{sitecollectiontermgroupname}" : termGroup.Name,
                             Id = isSiteCollectionTermGroup ? Guid.Empty : termGroup.Id,
-                            Description = termGroup.Description
+                            Description = termGroup.Description,
+                            SiteCollectionTermGroup = isSiteCollectionTermGroup
                         };
 
                         #if !ONPREMISES

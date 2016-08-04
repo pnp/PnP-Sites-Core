@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify the delta behavior + 201605 added functionality
+               -Add of new term groups, term sets and terms ==> no term update or deletion is supported
+               -Option to deprecate terms + reuse them
+-->
+
+<pnp:ProvisioningTemplate ID="termgroup_delta_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">  
+  <pnp:TermGroups>    
+    <!-- tenant/farm term group -->
+    <pnp:TermGroup Name="TG_2">
+      <pnp:TermSets>
+        <!-- Add basic term set -->
+        <pnp:TermSet Name="TS_2_3" >
+          <pnp:Terms>
+            <pnp:Term Name="TS_2_3_1" />
+            <pnp:Term Name="TS_2_3_2" />
+          </pnp:Terms>
+        </pnp:TermSet>
+        <!--Add terms to existing complex term set -->
+        <pnp:TermSet Name="TS_2_2" Description="TS_2_2 description" IsAvailableForTagging="true" IsOpenForTermCreation="true" ID="{681CF986-4143-4BEA-B242-65A219D69DC1}">
+          <pnp:CustomProperties>
+            <pnp:Property Key="TS_2_2_P1" Value="TS_2_1"/>
+            <pnp:Property Key="TS_2_2_P2" Value="TS_2_2"/>
+          </pnp:CustomProperties>
+          <pnp:Terms>
+            <!-- Term available for tagging -->
+            <pnp:Term Name="TS_2_2_6" Description="TS_2_2_6 desc" ID="{A7228335-8975-4117-BA35-8620EE721377}" IsAvailableForTagging="true">
+              <pnp:Terms>
+                <pnp:Term Name="TS_2_2_6_1" CustomSortOrder="1" />
+                <pnp:Term Name="TS_2_2_6_2" CustomSortOrder="2" />
+                <pnp:Term Name="TS_2_2_6_3" CustomSortOrder="3" />
+              </pnp:Terms>
+            </pnp:Term>
+            <pnp:Term Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" />
+            <!-- Deprecated term-->
+            <pnp:Term Name="TS_2_2_8" ID="{C4A1EC3E-2DA4-4D90-990C-12EA9842F77E}" IsDeprecated="true"/>
+          </pnp:Terms>          
+        </pnp:TermSet>
+        <pnp:TermSet Name="TS_2_4" ID="{B279D248-73A6-42AD-9AF4-A6D5A19DB750}">
+          <pnp:Terms>
+            <!-- Term reuse requires the ID of the term to match an already created term id + specify the IsReused flag -->
+            <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>
+    </pnp:TermGroup>
+    <!-- site collection term group -->
+    <!-- Setting description on the site collection term group is not supported -->
+    <pnp:TermGroup Name="{sitecollectiontermgroupname}" SiteCollectionTermGroup="true" >
+      <!-- Add new term to existing termset-->
+      <pnp:TermSets>        
+        <pnp:TermSet Name="TS_3_1">
+          <pnp:Terms>
+            <pnp:Term Name="TS_3_C" />
+          </pnp:Terms>
+        </pnp:TermSet>
+        <!-- Add new termset to existing term group-->
+        <pnp:TermSet Name="TS_3_2">
+          <pnp:Terms>
+            <pnp:Term Name="TS_3_2_A" />
+            <pnp:Term Name="TS_3_2_B" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>  
+    </pnp:TermGroup>
+  </pnp:TermGroups>
+</pnp:ProvisioningTemplate>
