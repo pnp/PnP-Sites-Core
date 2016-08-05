@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public WebSettingsTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_01efe7c1-e516-4a84-905d-d2763cfed349";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_01efe7c1-e516-4a84-905d-d2763cfed349/sub";
         }
         #endregion
 
@@ -59,6 +59,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 Assert.IsTrue(wv.Validate(result.SourceTemplate.WebSettings, result.TargetTemplate.WebSettings, result.TargetTokenParser));
             }
         }
+
+        /// <summary>
+        /// Site Auditsettings Test
+        /// </summary>
+        [TestMethod]
+        public void SiteCollectionAuditSettingsTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                var result = TestProvisioningTemplate(cc, "auditsettings_add.xml", Handlers.AuditSettings);
+                AuditSettingsValidator av = new AuditSettingsValidator();
+                Assert.IsTrue(av.Validate(result.SourceTemplate.AuditSettings, result.TargetTemplate.AuditSettings, result.TargetTokenParser));
+            }
+        }
         #endregion
 
         #region Web test cases
@@ -81,6 +95,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 Assert.IsTrue(wv.Validate(result.SourceTemplate.WebSettings, result.TargetTemplate.WebSettings, result.TargetTokenParser));
             }
         }
+
+        // Audit settings are only possible on site collection level, hence no test at web level!
         #endregion
     }
 }

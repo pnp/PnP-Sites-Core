@@ -344,6 +344,7 @@
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
     <Compile Include="Framework\Functional\LanguageTests.cs" />
     <Compile Include="Framework\Functional\TermGroupTests.cs" />
@@ -436,6 +437,7 @@
     <Content Include="Framework\Functional\Templates\garage.css" />
     <Content Include="Framework\Functional\Templates\languagesettings_delta.xml" />
     <Content Include="Framework\Functional\Templates\languagesettings_add.xml" />
+    <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\websettings_files.xml">
       <SubType>Designer</SubType>
     </Content>

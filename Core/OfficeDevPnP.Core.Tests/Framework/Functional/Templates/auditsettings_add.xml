@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="auditsettings_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:AuditSettings TrimAuditLog="true" AuditLogTrimmingRetention="4">
+    <pnp:Audit AuditFlag="All"/>    
+  </pnp:AuditSettings>
+</pnp:ProvisioningTemplate>
