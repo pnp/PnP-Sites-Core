@@ -24,8 +24,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public LocalizationTest()
         {
             //debugMode = true;
-            centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
+            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
         }
         #endregion
 
@@ -33,13 +33,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            //ClassInitBase(context);
+            ClassInitBase(context);
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            //ClassCleanupBase();
+            ClassCleanupBase();
         }
         #endregion
 
