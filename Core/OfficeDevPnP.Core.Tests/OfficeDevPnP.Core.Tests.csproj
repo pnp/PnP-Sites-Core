@@ -343,8 +343,10 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
     <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
     <Compile Include="Framework\Functional\LanguageTests.cs" />
     <Compile Include="Framework\Functional\TermGroupTests.cs" />
@@ -427,6 +429,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\HelloWorldApp.app" />
+    <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
     <Content Include="Framework\Functional\Templates\termgroup_add.xml">
       <SubType>Designer</SubType>
@@ -541,8 +544,8 @@
     <Content Include="Resources\UpdateTermSet.csv" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Framework\Functional\Templates\core.nl-nl.resx" />
     <EmbeddedResource Include="Framework\Functional\Templates\core.en-us.resx" />
-    <EmbeddedResource Include="Framework\Functional\Templates\core.it-it.resx" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>

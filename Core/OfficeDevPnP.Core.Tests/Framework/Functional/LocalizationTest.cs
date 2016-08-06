@@ -23,9 +23,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public LocalizationTest()
         {
-            //debugMode = true;
-            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            debugMode = true;
+            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812";
+            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812/sub";
         }
         #endregion
 
@@ -58,7 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
                 ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions ;
                 
-                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.CustomActions, null, ptci);
+                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
                 LocalizationValidator Validator = new LocalizationValidator();
                 Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
             }
@@ -79,13 +79,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
                 ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions;
                 
-                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.CustomActions, null, ptci);
+                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
                 LocalizationValidator Validator = new LocalizationValidator();
                 Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
             }
-
         }
 
+        #region Helper methods
         private void CleanUpTestData(ClientContext cc)
         {
             DeleteLists(cc);
@@ -180,5 +180,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 }
             }
         }
+        #endregion
     }
 }

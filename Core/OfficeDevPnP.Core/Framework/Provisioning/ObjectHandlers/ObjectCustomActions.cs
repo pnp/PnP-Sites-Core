@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var customActionEntity = new CustomActionEntity()
                     {
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
-                        Description = customAction.Description,
+                        Description = parser.ParseString(customAction.Description),
                         Group = customAction.Group,
                         ImageUrl = parser.ParseString(customAction.ImageUrl),
                         Location = customAction.Location,
@@ -88,7 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ScriptBlock = parser.ParseString(customAction.ScriptBlock),
                         ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"),
                         Sequence = customAction.Sequence,
-                        Title = customAction.Title,
+                        Title = parser.ParseString(customAction.Title),
                         Url = parser.ParseString(customAction.Url)
                     };
 

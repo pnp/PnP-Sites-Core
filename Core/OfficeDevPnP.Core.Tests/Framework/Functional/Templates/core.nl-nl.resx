@@ -118,75 +118,75 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="CT_1" xml:space="preserve">
-    <value>ContentType One</value>
+    <value>ContentType Een</value>
   </data>
   <data name="CT_1_Description" xml:space="preserve">
-    <value>Contenttype One Descrizione</value>
+    <value>ContentType Een Omschrijving</value>
   </data>
   <data name="CT_2" xml:space="preserve">
-    <value>ContentType Due</value>
-  </data>
-  <data name="CT_2_Description" xml:space="preserve">
-    <value>ContentType Due Descrizione</value>
+    <value>ContentType Twee</value>
   </data>
   <data name="Fld_CT_1" xml:space="preserve">
-    <value>Campo One</value>
-  </data>
-  <data name="FLD_CT_1_Description" xml:space="preserve">
-    <value>Campo One Descrizione</value>
+    <value>Field Een</value>
   </data>
   <data name="Fld_CT_2" xml:space="preserve">
-    <value>Campo Due</value>
-  </data>
-  <data name="FLD_CT_2_Description" xml:space="preserve">
-    <value>Campo Due Descrizione</value>
+    <value>Field Twee</value>
   </data>
   <data name="FLD_LI_1" xml:space="preserve">
-    <value>Elenco campi Un DisplayName</value>
+    <value>List Field Een naam</value>
   </data>
   <data name="FLD_LI_1_Description" xml:space="preserve">
-    <value>Elenco campi One Descrizione</value>
+    <value>List Field Een omschrijving</value>
   </data>
   <data name="FLD_LI_2" xml:space="preserve">
-    <value>Elenco campi Seconda DisplayName</value>
+    <value>List Field Twee naam</value>
   </data>
   <data name="FLD_LI_2_Description" xml:space="preserve">
-    <value>Elenco campi seconda descrizione</value>
+    <value>List Field Twee omschrijving</value>
+  </data>
+  <data name="FLD_CT_1_Description" xml:space="preserve">
+    <value>Field Een omschrijving</value>
+  </data>
+  <data name="FLD_CT_2_Description" xml:space="preserve">
+    <value>Field Twee omschrijving</value>
   </data>
   <data name="LI_1" xml:space="preserve">
-    <value>lista One</value>
+    <value>List Een</value>
   </data>
   <data name="LI_1_Description" xml:space="preserve">
-    <value>Lista One Descrizione</value>
+    <value>List Een omschrijving</value>
   </data>
   <data name="LI_2" xml:space="preserve">
-    <value>lista Due</value>
+    <value>List Twee</value>
   </data>
   <data name="LI_2_Description" xml:space="preserve">
-    <value>Lista Due Descrizione</value>
+    <value>List Twee omschrijving</value>
+  </data>
+  <data name="CT_2_Description" xml:space="preserve">
+    <value>ContentType Twee omschrijving</value>
   </data>
   <data name="LI_3" xml:space="preserve">
-    <value>lista Tre</value>
+    <value>List Drie</value>
   </data>
   <data name="LI_3_Description" xml:space="preserve">
-    <value>Lista Tre Descrizione</value>
+    <value>List Drie omschrijving</value>
   </data>
   <data name="SiteSettings_SiteTasks_Description" xml:space="preserve">
-    <value>Impostazioni sito SiteTasks Descrizione</value>
+    <value>Site Settings SiteTasks omschrijving</value>
   </data>
   <data name="SiteSettings_SiteTasks_Title" xml:space="preserve">
-    <value>Impostazioni sito SiteTasks Titolo</value>
+    <value>Site Settings SiteTasks Titel</value>
   </data>
-  <data name="StandardMenu_SiteActions_Description1" xml:space="preserve">
-    <value>SiteActions menu standard Descrizione</value>
+  <data name="StandardMenu_SiteActions_Description" xml:space="preserve">
+    <value>Standard Menu SiteActions omschrijving</value>
   </data>
   <data name="StandardMenu_SiteActions_Title" xml:space="preserve">
-    <value>Menu standard SiteActions Titolo</value>
+    <value>Standard Menu SiteActions Titel</value>
   </data>
-  <data name="SubSiteSettings_SiteTasks_Description1" xml:space="preserve">
-    <value>Sotto Impostazioni sito SiteTasks Descrizione</value>
+  <data name="SubSiteSettings_SiteTasks_Description" xml:space="preserve">
+    <value>Sub Site Settings SiteTasks omschrijving</value>
   </data>
   <data name="SubSiteSettings_SiteTasks_Title" xml:space="preserve">
-    <value>Sotto Impostazioni sito SiteTasks Titolo</value>
+    <value>Sub Site Settings SiteTasks Titel</value>
   </data>
 </root>

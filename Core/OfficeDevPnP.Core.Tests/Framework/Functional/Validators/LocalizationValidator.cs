@@ -25,13 +25,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             bool isValid = false;
 
             #region SiteFields
-            isValid = ValidateSiteFields(ptSource.SiteFields, ptTarget.SiteFields, sParser, tParser);
-            if (!isValid) { return false; }
+            if (ptTarget.SiteFields.Count > 0)
+            {
+                isValid = ValidateSiteFields(ptSource.SiteFields, ptTarget.SiteFields, sParser, tParser);
+                if (!isValid) { return false; }
+            }
             #endregion
 
             #region ContentTypes
-            isValid = ValidateContentTypes(ptSource.ContentTypes, ptTarget.ContentTypes, sParser, tParser);
-            if (!isValid) { return false; }
+            if (ptTarget.ContentTypes.Count > 0)
+            {
+                isValid = ValidateContentTypes(ptSource.ContentTypes, ptTarget.ContentTypes, sParser, tParser);
+                if (!isValid) { return false; }
+            }
             #endregion
 
             #region ListInstances
@@ -39,10 +45,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (!isValid) { return false; }
             #endregion
 
-            //#region Cusotm Action
-            isValid = ValidateCustomActions(ptSource.CustomActions, ptTarget.CustomActions, sParser, tParser);
+            #region Custom Action
+            isValid = ValidateCustomActions(ptSource.CustomActions, ptTarget.CustomActions, sParser, tParser, ptTarget.SiteFields.Count > 0);
             if (!isValid) { return false; }
-            //#endregion
+            #endregion
 
             return isValid;
         }
@@ -147,10 +153,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         #endregion
 
         #region CustomActions
-        private bool ValidateCustomActions(CustomActions srcCustomActions, CustomActions targetCustomActions, TokenParser sParser, TokenParser tParser)
+        private bool ValidateCustomActions(CustomActions srcCustomActions, CustomActions targetCustomActions, TokenParser sParser, TokenParser tParser, bool rootSite)
         {
-            List<Localization> sCustomActions = LoadCustomActions(srcCustomActions);
-            List<Localization> tCustomActions = LoadCustomActions(targetCustomActions);
+            List<Localization> sCustomActions = LoadCustomActions(srcCustomActions, rootSite);
+            List<Localization> tCustomActions = LoadCustomActions(targetCustomActions, rootSite);
 
             if (sCustomActions.Count > 0)
             {
@@ -160,15 +166,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return true;
         }
 
-        private List<Localization> LoadCustomActions(CustomActions customActions)
+        private List<Localization> LoadCustomActions(CustomActions customActions, bool rootSite)
         {
             List<Localization> locCustomActions = new List<Localization>();
 
-            foreach (CustomAction action in customActions.SiteCustomActions)
+            if (rootSite)
             {
-                locCustomActions.Add(new Localization(action.Name, action.Title, action.Description));
+                foreach (CustomAction action in customActions.SiteCustomActions)
+                {
+                    locCustomActions.Add(new Localization(action.Name, action.Title, action.Description));
+                }
             }
-
             foreach (CustomAction action in customActions.WebCustomActions)
             {
                 locCustomActions.Add(new Localization(action.Name, action.Title, action.Description));

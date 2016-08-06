@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.4.1605.0, Culture=neutral, PublicKeyToken=3751622786b357c2" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Preferences Author="PnP test team" />
   <pnp:Localizations>
     <pnp:Localization LCID="1033" Name="core" ResourceFile="core.en-us.resx" />
-    <pnp:Localization LCID="1040" Name="core" ResourceFile="core.it-it.resx" />
+    <pnp:Localization LCID="1043" Name="core" ResourceFile="core.nl-nl.resx" />
   </pnp:Localizations>
   <pnp:Templates ID="CONTAINER-TEMPLATE-83E844EE7F75442EB12C340DF9BBFF8F">
-    <pnp:ProvisioningTemplate ID="TEMPLATE-83E844EE7F75442EB12C340DF9BBFF8F" Version="1">
+    <pnp:ProvisioningTemplate ID="localization_add">
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033"/>
-        <pnp:SupportedUILanguage LCID="1040"/>
+        <pnp:SupportedUILanguage LCID="1043"/>
       </pnp:SupportedUILanguages>
 
       <pnp:SiteFields>
