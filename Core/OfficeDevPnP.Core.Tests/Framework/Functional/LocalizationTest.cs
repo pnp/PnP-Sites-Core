@@ -23,9 +23,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public LocalizationTest()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812/sub";
         }
         #endregion
 
