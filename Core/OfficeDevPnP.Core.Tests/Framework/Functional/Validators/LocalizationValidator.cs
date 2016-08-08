@@ -45,11 +45,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (!isValid) { return false; }
             #endregion
 
+#if !ONPREMISES
             #region Custom Action
             isValid = ValidateCustomActions(ptSource.CustomActions, ptTarget.CustomActions, sParser, tParser, ptTarget.SiteFields.Count > 0);
             if (!isValid) { return false; }
             #endregion
-
+#endif
             return isValid;
         }
     

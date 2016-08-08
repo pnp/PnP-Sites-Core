@@ -138,7 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
 
-#if !ONPREMISES
+#if !SP2013
                                 var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
 
                                 if (siteField != null && siteField.SchemaXml.ContainsResourceToken())
@@ -589,7 +589,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
                 bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -674,7 +674,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingField.UpdateAndPushChanges(true);
                         web.Context.ExecuteQueryRetry();
                         bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -767,7 +767,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.Views,
                 l => l.DocumentTemplateUrl,
                 l => l.RootFolder
-#if !ONPREMISES
+#if !SP2013
 , l => l.MajorWithMinorVersionsLimit
 , l => l.MajorVersionLimit
 #endif
@@ -836,7 +836,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
-#if !ONPREMISES
+#if !SP2013
                 if (templateList.Title.ContainsResourceToken())
                 {
                     if (existingList.TitleResource.SetUserResourceValue(templateList.Title, parser))
@@ -864,7 +864,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.EnableVersioning = templateList.EnableVersioning;
                         isDirty = true;
                     }
-#if !ONPREMISES
+#if !SP2013
                     if (existingList.MajorVersionLimit != templateList.MaxVersionLimit)
                     {
                         existingList.MajorVersionLimit = templateList.MaxVersionLimit;
@@ -1132,7 +1132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList, l => l.BaseTemplate);
             web.Context.ExecuteQueryRetry();
 
-#if !ONPREMISES
+#if !SP2013
             if (list.Title.ContainsResourceToken())
             {
                 createdList.TitleResource.SetUserResourceValue(list.Title, parser);
@@ -1163,7 +1163,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableVersioning = list.EnableVersioning;
                 if (list.EnableVersioning)
                 {
-#if !ONPREMISES
+#if !SP2013
                     createdList.MajorVersionLimit = list.MaxVersionLimit;
 #endif
                     // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true

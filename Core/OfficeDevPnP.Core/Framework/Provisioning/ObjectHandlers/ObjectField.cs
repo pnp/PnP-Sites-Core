@@ -128,7 +128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
 
                         bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -207,7 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
 
                 bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);

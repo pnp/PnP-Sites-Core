@@ -14,6 +14,7 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !SP2013    
     /// <summary>
     /// Test cases for the provisioning engine Publishing functionality
     /// </summary>
@@ -182,4 +183,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion
     }
+#endif
 }
