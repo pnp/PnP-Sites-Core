@@ -10,6 +10,7 @@ using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
+#if !SP2013
     class LocalizationValidator : ValidatorBase
     {
         #region construction
@@ -20,6 +21,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             // XPathQuery = "/pnp:Templates/pnp:ProvisioningTemplate/pnp:ContentTypes/pnp:ContentType";
         }
         #endregion
+
         public bool Validate(ProvisioningTemplate ptSource, ProvisioningTemplate ptTarget, TokenParser sParser, TokenParser tParser)
         {
             bool isValid = false;
@@ -92,7 +94,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             return element.Attribute(attribute) != null ? element.Attribute(attribute).Value : "";
         }
-
         #endregion
 
         #region ContenType Tests
@@ -120,11 +121,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             return loc;
         }
-
         #endregion
 
-        #region ListInstances
-        
+        #region ListInstances        
         public bool ValidateListInstances(ListInstanceCollection sElements, ListInstanceCollection tElements, TokenParser sParser, TokenParser tParser)
         {
             List<Localization> sColl = LoadListInstances(sElements);
@@ -184,8 +183,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
             return locCustomActions;
-        }      
-
+        }     
         #endregion
 
         public class Localization {
@@ -278,4 +276,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return isValid;
         }
     }
+#endif
 }
