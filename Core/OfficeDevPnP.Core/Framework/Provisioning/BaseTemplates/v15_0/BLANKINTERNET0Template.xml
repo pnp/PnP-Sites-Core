@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.5.1606.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BLANKINTERNET0template">
-    <pnp:ProvisioningTemplate ID="BLANKINTERNET0template" Version="1">
+    <pnp:ProvisioningTemplate ID="BLANKINTERNET0template" Version="1" BaseSiteTemplate="BLANKINTERNET#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
-      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
+      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
@@ -69,7 +69,7 @@
         <pnp:PropertyBagEntry Key="__NoMobileMapping3794dd2923194721bcc64cb5137b9c72" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NoMobileMapping49227f0979ae4899b019af238612c3a3" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security>
+      <pnp:Security ClearSubscopes="false">
         <pnp:AdditionalOwners>
           <pnp:User Name="i:0#.w|pnp\pnpadmin" />
         </pnp:AdditionalOwners>
@@ -155,6 +155,14 @@
           </pnp:RoleDefinitions>
         </pnp:Permissions>
       </pnp:Security>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{termsetid:Site Collection - portal2013.pnp.com-sites-TemplateBLANKINTERNET0:Site Navigation}" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{termsetid:Site Collection - portal2013.pnp.com-sites-TemplateBLANKINTERNET0:Site Navigation}" />
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
       <pnp:SiteFields>
         <Field Type="Note" DisplayName="Wiki Categories_0" StaticName="e1a5b98cdd71426dacb6e478c7a5882f" Name="e1a5b98cdd71426dacb6e478c7a5882f" ID="{f863c21f-5fdb-4a91-bb0c-5ae889190dd7}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{49227f09-79ae-4899-b019-af238612c3a3}" />
         <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{49227f09-79ae-4899-b019-af238612c3a3}" />
@@ -756,6 +764,7 @@
             <pnp:FieldRef ID="b510aac1-bba3-4652-ab70-2d756c29540f" Name="PublishingAssociatedContentType" />
             <pnp:FieldRef ID="d211d750-4fe6-4d92-90e8-eb16dff196c8" Name="PublishingAssociatedVariations" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/NewPageLayout.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B" Name="Html Page Layout" Description="Build a SharePoint page layout - a template for authored page data within a master page - using only HTML.   SharePoint will allow you to embed common components and will create and update a functional page layout automatically." Group="Publishing Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -779,6 +788,7 @@
             <pnp:FieldRef ID="8bf5c77a-8a02-47a1-b361-9bf3da831b56" Name="HtmlDesignStatusAndPreview" />
             <pnp:FieldRef ID="b98612e2-3bda-4485-a510-2cfc4cbb99c8" Name="HtmlDesignPreviewUrl" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreateNewHtml.aspx?Mode=PL" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101000F1C8B9E0EB4BE489F09807B2C53288F" Name="System Master Page" Description="System Master Page is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to master pages in the page layouts gallery and master page gallery, update the Master Page content type template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -815,6 +825,7 @@
             <pnp:FieldRef ID="7581e709-5d87-42e7-9fe6-698ef5e86dd3" Name="PublishingHidden" />
             <pnp:FieldRef ID="cc10b158-50b4-4f02-8f3a-b9b6c3102628" Name="DefaultCssFile" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="PublishingMasterTemplate.master" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A" Name="Html Master Page" Description="Build a SharePoint master page - a frame shared by site pages holding a header, footer, CSS, and other elements - using only HTML.  SharePoint will allow you to embed common components and will create and update a functional master page automatically." Group="Publishing Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -837,6 +848,7 @@
             <pnp:FieldRef ID="8bf5c77a-8a02-47a1-b361-9bf3da831b56" Name="HtmlDesignStatusAndPreview" />
             <pnp:FieldRef ID="b98612e2-3bda-4485-a510-2cfc4cbb99c8" Name="HtmlDesignPreviewUrl" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreateNewHtml.aspx?Mode=MP" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101002039C03B61C64EC4A04F5361F3851066" Name="Display Template" Description="Base Content Type containing common Display Template columns. Use one of Control, Group, Item or Filter Display Template content types to create a display type. " Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -973,6 +985,7 @@
             <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" />
             <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/Upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00291D173ECE694D56B19D111489C4369D" Name="Video Rendition" Description="Upload a video file." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1007,6 +1020,7 @@
             <pnp:FieldRef ID="fd7ef3c2-486e-40cd-b651-6be6d1abbe25" Name="VideoRenditionLabel" />
             <pnp:FieldRef ID="cf42542f-df94-4136-a0ac-29326fccd565" Name="VideoRenditionBitRate" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/UploadEx.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" Name="Audio" Description="Upload an audio file." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1037,6 +1051,7 @@
             <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" />
             <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/UploadEx.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Name="Image" Description="Upload an image." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1068,6 +1083,7 @@
             <pnp:FieldRef ID="a5d2f824-bc53-422e-87fd-765939d863a5" Name="ImageCreateDate" />
             <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/Upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C5033D6CFB8447359FB795C8A73A2B19" Name="Design File" Description="HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1134,6 +1150,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D" Name="Article Page" Description="Article Page is a system content type template created by the Publishing Resources feature. It is the associated content type template for the default page layouts used to create article pages in sites that have the Publishing feature enabled." Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1170,6 +1187,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4D22B1CDC3DE08CFFB9C" Name="Enterprise Wiki Page" Description="Enterprise Wiki Page is the default content type for the Enterprise Wiki site template. Provides a basic content area as well as ratings and categories." Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1208,6 +1226,7 @@
             <pnp:FieldRef ID="8f6b6dd8-9357-4019-8172-966fcd502ed2" Name="TaxCatchAllLabel" Hidden="true" />
             <pnp:FieldRef ID="e1a5b98c-dd71-426d-acb6-e478c7a5882f" Name="Wiki_x0020_Page_x0020_Categories" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4D22B1CDC3DE08CFFB9C0055EF50AAFF2E4BADA437E4BAE09A30F8" Name="Project Page" Description="Project Page is a content type included with the Enterprise Wiki site template. Provides some basic information to describe a project including a project status and a contact name." Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1248,6 +1267,7 @@
             <pnp:FieldRef ID="8f6b6dd8-9357-4019-8172-966fcd502ed2" Name="TaxCatchAllLabel" Hidden="true" />
             <pnp:FieldRef ID="e1a5b98c-dd71-426d-acb6-e478c7a5882f" Name="Wiki_x0020_Page_x0020_Categories" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4" Name="Welcome Page" Description="Welcome Page is a system content type template created by the Publishing Resources feature. It is the associated content type template for the default page layout used to create welcome pages in sites that have the Publishing feature enabled." Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1281,6 +1301,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C" Name="Error Page" Description="Error Page is a system content type template created by the Publishing Resources feature. It is the associated content type template for the default page layouts used to create error pages in sites that have the Publishing feature enabled." Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1310,6 +1331,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900B46186789C3140CC85BE610336E86BBB" Name="Catalog-Item Reuse" Description="The Catalog Item Reuse content type is best if you want to create article pages that can be easily reused or republished across your site collections. " Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1341,6 +1363,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799" Name="Redirect Page" Description="Redirect Page is a system content type template created by the Publishing Resources feature. It is the associated content type template for the redirect page layout" Group="Page Layout Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1371,6 +1394,7 @@
             <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" />
             <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/CreatePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100E8711F0F931646FA949751442A907B22" Name="Translation Package" Description="Translation Package is a system content type template created by the Translation feature, and it cannot be modified." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1430,6 +1454,7 @@
             <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" />
             <pnp:FieldRef ID="8e334549-c2bd-4110-9f61-672971be6504" Name="UIVersion" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0108003365C4474CAE8C42BCE396314E88E51F" Name="Workflow Task (SharePoint 2013)" Description="Create a SharePoint 2013 Workflow Task" Group="List Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1756,7 +1781,7 @@
             <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Report_x0020_Description" DisplayName="Report Description" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
@@ -1840,7 +1865,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -1947,7 +1972,7 @@
             <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" DisplayName="People In Video" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D" />
@@ -2110,7 +2135,7 @@
             <pnp:FieldRef ID="890e9d41-5a0e-4988-87bf-0fb9d80f60df" Name="ReusableText" DisplayName="Reusable Text" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="{site}/SiteCollectionDocuments/Forms/template.dotx" TemplateType="101" Url="SiteCollectionDocuments" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="{site}/SiteCollectionDocuments/Forms/template.dotx" TemplateType="101" Url="SiteCollectionDocuments" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
@@ -2137,7 +2162,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -2256,7 +2281,7 @@
             </pnp:BreakRoleInheritance>
           </pnp:Security>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
+        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />

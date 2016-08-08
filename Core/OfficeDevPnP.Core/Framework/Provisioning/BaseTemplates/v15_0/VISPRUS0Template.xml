@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.5.1606.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-VISPRUS0template">
-    <pnp:ProvisioningTemplate ID="VISPRUS0template" Version="1">
+    <pnp:ProvisioningTemplate ID="VISPRUS0template" Version="1" BaseSiteTemplate="VISPRUS#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
-      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="None" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
+      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
@@ -24,7 +24,7 @@
         <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security>
+      <pnp:Security ClearSubscopes="false">
         <pnp:Permissions>
           <pnp:RoleDefinitions>
             <pnp:RoleDefinition Name="View Only" Description="Can view pages, list items, and documents. Document types with server-side file handlers can be viewed in the browser but not downloaded.">
@@ -1018,6 +1018,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="basflo_u.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101000BFB10333B1841C0B8F7503DDA55CC42" Name="Cross Functional Flowchart (Metric)" Description=" " Group="Document Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1035,6 +1036,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="xfunc_m.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101002039C03B61C64EC4A04F5361F3851066" Name="Display Template" Description="Base Content Type containing common Display Template columns. Use one of Control, Group, Item or Filter Display Template content types to create a display type. " Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1088,6 +1090,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="xfunc_u.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x01010058DDEB47312E4967BFC1576B96E8C3D4" Name="Report" Description="" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1105,6 +1108,7 @@
             <pnp:FieldRef ID="d8921da7-c09b-4a06-b644-dffebf73c736" Name="ReportCategory" />
             <pnp:FieldRef ID="bf80df9c-32dc-4257-bcf9-08c2ee6ca1b1" Name="ReportStatus" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/CreateWorkbook.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009DA5ABD378794CE39113F611AACA4E08" Name="Basic Flowchart (Metric)" Description=" " Group="Document Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1122,6 +1126,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="basflo_m.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100A2E3C117A0C5482FAEE3D57C48CB042F" Name="Web Part Page with Status List" Description="Create a page that displays Status Indicators and Excel workbooks." Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1135,6 +1140,7 @@
             <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" />
             <pnp:FieldRef ID="2a16b911-b094-46e6-a7cd-227eea3effdb" Name="ReportDescription" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/spnewdashboard.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C5033D6CFB8447359FB795C8A73A2B19" Name="Design File" Description="HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1164,6 +1170,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="bpmn_u.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100D7EBB8F02E244A078DEF146C98C98163" Name="BPMN Diagram (Metric)" Description=" " Group="Document Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1181,6 +1188,7 @@
             <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" />
             <pnp:FieldRef ID="173f76c8-aebd-446a-9bc9-769a2bd2c18f" Name="Last_x0020_Modified" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="bpmn_m.vstx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100F8EF98760CBA4A94994F13BA881038FA" Name="InfoPath Form Template" Description="A Microsoft InfoPath Form Template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1215,6 +1223,7 @@
             <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" />
             <pnp:FieldRef ID="8e334549-c2bd-4110-9f61-672971be6504" Name="UIVersion" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="/_layouts/15/upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0108003365C4474CAE8C42BCE396314E88E51F" Name="Workflow Task (SharePoint 2013)" Description="Create a SharePoint 2013 Workflow Task" Group="List Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
@@ -1406,7 +1415,7 @@
             <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Process Diagrams" Description="Share a process with the team by adding it to this document library." DocumentTemplate="{site}/Processes/Forms/basflo_m.vst" TemplateType="506" Url="Processes" EnableVersioning="true" EnableMinorVersions="true" EnableModeration="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="7e0aabee-b92b-4368-8742-21ab16453d02" ContentTypesEnabled="true" EnableAttachments="false">
+        <pnp:ListInstance Title="Process Diagrams" Description="Share a process with the team by adding it to this document library." DocumentTemplate="{site}/Processes/Forms/basflo_m.vst" TemplateType="506" Url="Processes" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" EnableModeration="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="7e0aabee-b92b-4368-8742-21ab16453d02" ContentTypesEnabled="true" EnableAttachments="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101" />
