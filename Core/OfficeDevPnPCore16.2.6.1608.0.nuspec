@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>OfficeDevPnPCore16</id>
-        <version>2.5.1606.2</version>
+        <version>2.6.1608.0</version>
         <title>OfficeDevPnP.Core.Online</title>
         <authors>Office 365 Developer Patterns &amp; Practices</authors>
         <owners>Microsoft Office Developer Patterns &amp; Practices</owners>
@@ -10,12 +10,11 @@
         <projectUrl>http://aka.ms/OfficeDevPnP</projectUrl>
         <iconUrl>http://i.imgur.com/6MWZgWW.png</iconUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <description>[DEPRECATED - Please use the SharePointPnPCoreOnline package] Core CSOM extension methods for SharePoint Online app model development. Will increase productivity of the developers by abstracting complex operations.</description>
-        <summary>[DEPRECATED - Please use the SharePointPnPCoreOnline package] Core CSOM extension methods for SharePoint app model development against SharePoint Online</summary>
-        <releaseNotes>[DEPRECATED - Please use the SharePointPnPCoreOnline package]</releaseNotes>
+        <description>[DEPRECATED - Please use the SharePointPnPCoreOnline package. Assemblies will be dropped in September] Core CSOM extension methods for SharePoint Online app model development. Will increase productivity of the developers by abstracting complex operations.</description>
+        <summary>[DEPRECATED - Please use the SharePointPnPCoreOnline package. Assemblies will be dropped in September] Core CSOM extension methods for SharePoint app model development against SharePoint Online</summary>
+        <releaseNotes>[DEPRECATED - Please use the SharePointPnPCoreOnline package. Assemblies will be dropped in September]</releaseNotes>
         <copyright>Copyright 2016</copyright>
         <tags>Office AppModel FTCtoCAM Office365</tags>
-        <serviceable>false</serviceable>
         <dependencies>
             <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.2" />
             <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.2" />
