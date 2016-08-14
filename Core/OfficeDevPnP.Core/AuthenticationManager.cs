@@ -118,8 +118,9 @@ namespace OfficeDevPnP.Core
         /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="icon">Optional icon to use for the popup form</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetWebLoginClientContext(string siteUrl)
+        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null)
         {
             var cookies = new CookieContainer();
             var siteUri = new Uri(siteUrl);
@@ -127,10 +128,16 @@ namespace OfficeDevPnP.Core
             var thread = new Thread(() =>
             {
                 var form = new System.Windows.Forms.Form();
-                var browser = new System.Windows.Forms.WebBrowser();
+                if (icon != null)
+                {
+                    form.Icon = icon;
+                }
+                var browser = new System.Windows.Forms.WebBrowser
+                {
+                    ScriptErrorsSuppressed = true,
+                    Dock = DockStyle.Fill
+                };
 
-                browser.ScriptErrorsSuppressed = true;
-                browser.Dock = DockStyle.Fill;
 
                 form.SuspendLayout();
                 form.Width = 900;
