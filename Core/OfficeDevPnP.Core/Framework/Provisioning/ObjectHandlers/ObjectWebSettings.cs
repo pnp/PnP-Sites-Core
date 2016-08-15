@@ -229,7 +229,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.CustomMasterUrl = customMasterUrl;
                     }
-                    web.Title = parser.ParseString(webSettings.Title);
+                    if (!string.IsNullOrEmpty(parser.ParseString(webSettings.Title)))
+                    {
+                        web.Title = parser.ParseString(webSettings.Title);
+                    }
                     web.Description = parser.ParseString(webSettings.Description);
                     web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
