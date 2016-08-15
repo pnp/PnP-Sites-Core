@@ -551,6 +551,10 @@ namespace Microsoft.SharePoint.Client
                     siteEntity.LastContentModifiedDate = prop.LastContentModifiedDate;
                     siteEntity.StorageUsage = prop.StorageUsage;
                     siteEntity.WebsCount = prop.WebsCount;
+                    var lockState = SiteLockState.Unlock;
+                    if (Enum.TryParse(prop.LockState, out lockState)) {
+                        siteEntity.LockState = lockState;
+                    }
                     sites.Add(siteEntity);
                 }
 
