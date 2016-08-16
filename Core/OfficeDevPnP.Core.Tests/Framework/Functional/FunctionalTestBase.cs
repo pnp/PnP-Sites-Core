@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                     foreach(var site in sites)
                     {
-                        if (site.Url.Contains(sitecollectionNamePrefix))
+                        if (site.Url.ToLower().Contains(sitecollectionNamePrefix.ToLower()))
                         {
                             tenant.DeleteSiteCollection(site.Url);
                         }
