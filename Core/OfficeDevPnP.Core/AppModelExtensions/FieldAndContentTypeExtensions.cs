@@ -1453,7 +1453,7 @@ namespace Microsoft.SharePoint.Client
             // Get list instances
             var list = web.GetListByTitle(listTitle);
             // Get content type instance
-            var contentType = GetContentTypeByName(web, contentTypeName);
+            var contentType = GetContentTypeByName(list, contentTypeName);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
 
