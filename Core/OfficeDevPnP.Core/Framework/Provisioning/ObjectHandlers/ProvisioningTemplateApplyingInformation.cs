@@ -12,7 +12,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     public delegate void ProvisioningProgressDelegate(string message, int step, int total);
 
     public delegate void ProvisioningMessagesDelegate(string message, ProvisioningMessageType messageType);
-    public partial class ProvisioningTemplateApplyingInformation
+
+	[Flags]
+	public enum CustomAssemblyBindingPolicy
+	{
+		None = 0x0,
+		Signed = 0x1,
+		StrongName = 0x2,
+		WeakName = 0x4
+	}
+
+	public partial class ProvisioningTemplateApplyingInformation
     {
         private Handlers handlersToProcess = Handlers.All;
 
@@ -35,5 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 handlersToProcess = value;
             }
         }
-    }
+
+		public CustomAssemblyBindingPolicy CustomAssemblyBinding { get; set; } = CustomAssemblyBindingPolicy.None;
+	}
 }

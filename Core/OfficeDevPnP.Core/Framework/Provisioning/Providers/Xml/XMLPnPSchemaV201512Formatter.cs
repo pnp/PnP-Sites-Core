@@ -1853,17 +1853,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     if (!String.IsNullOrEmpty(provider.HandlerType))
                     {
-						var handlerType = _provider != null ?
-							Extensibility.ExtensibilityManager.GetType(provider.HandlerType, _provider.Connector) :
-							Type.GetType(provider.HandlerType, false);
-						if (handlerType != null)
+						var handlerType = Extensibility.ExtensibilityManager.ParseTypeName(provider.HandlerType);
+						if (handlerType?.Item1 != null && handlerType?.Item2 != null)
                         {
                             result.ExtensibilityHandlers.Add(
                                 new Model.ExtensibilityHandler
                                 {
-                                    Assembly = handlerType.Assembly.FullName,
-                                    Type = handlerType.FullName,
-                                    Configuration = provider.Configuration != null ? provider.Configuration.ToProviderConfiguration() : null,
+									Assembly = handlerType.Item2.FullName,
+									Type = handlerType.Item1,
+									Configuration = provider.Configuration != null ? provider.Configuration.ToProviderConfiguration() : null,
                                     Enabled = provider.Enabled,
                                 });
                         }
