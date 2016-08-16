@@ -7,7 +7,6 @@ using System.Xml;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
-using Utility = OfficeDevPnP.Core.Utilities.Utility;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 
@@ -1457,5 +1456,123 @@ namespace Microsoft.SharePoint.Client
             folder.Update();
             web.Context.ExecuteQueryRetry();
         }
+
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Web
+        /// </summary>
+        /// <param name="web">The Web to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
+        {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+
+            var linkUrl = string.Empty;
+
+            if (!string.IsNullOrEmpty(infrastructureUrl))
+            {
+                using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                {
+                    var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+                    // Check if the file is there, if so, don't upload it.
+                    if (targetFolder.GetFile("SP-Responsive-UI.js") == null)
+                    {
+                        linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                            CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                    }
+
+                    // Check if the file is there, if so, don't upload it.
+                    if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
+                    {
+                        UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                            CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                    }
+                }
+            }
+            else
+            {
+                var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+
+                linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+            }
+
+            // Deactive mobile feature
+            web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
+            if (!string.IsNullOrEmpty(linkUrl))
+            {
+                web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+            }
+        }
+
+        private static string UploadStringAsFile(Web web, Folder folder, string contents, string fileName)
+        {
+            var url = string.Empty;
+            var targetFile = folder.GetFile(fileName);
+            var checkedOut = false;
+            if (targetFile != null)
+            {
+                CheckOutIfNeeded(web, targetFile);
+            }
+            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(contents)))
+            {
+                var file = folder.UploadFile(fileName, stream, true);
+                checkedOut = CheckOutIfNeeded(web, file);
+                if (checkedOut)
+                {
+                    file.CheckIn("", CheckinType.MajorCheckIn);
+                    web.Context.ExecuteQueryRetry();
+                }
+                file.EnsureProperty(f => f.ServerRelativeUrl);
+                url = file.ServerRelativeUrl;
+            }
+            return url;
+        }
+
+        /// <summary>
+        /// Disables the Responsive UI on a Classic SharePoint Web
+        /// </summary>
+        /// <param name="web"></param>
+        public static void DisableReponsiveUI(this Web web)
+        {
+            try
+            {
+                web.DeleteJsLink("PnPResponsiveUI");
+            }
+            catch
+            {
+                // Swallow exception as responsive UI might not be active.
+            }
+        }
+
+        private static bool CheckOutIfNeeded(Web web, File targetFile)
+        {
+            var checkedOut = false;
+            try
+            {
+                web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
+                web.Context.ExecuteQueryRetry();
+                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
+                    && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
+                    && targetFile.ListItemAllFields.ParentList.ForceCheckout)
+                {
+                    if (targetFile.CheckOutType == CheckOutType.None)
+                    {
+                        targetFile.CheckOut();
+                    }
+                    checkedOut = true;
+                }
+            }
+            catch (ServerException ex)
+            {
+                // Handling the exception stating the "The object specified does not belong to a list."
+                if (ex.ServerErrorCode != -2146232832)
+                {
+                    throw;
+                }
+            }
+            return checkedOut;
+        }
+
+
     }
 }

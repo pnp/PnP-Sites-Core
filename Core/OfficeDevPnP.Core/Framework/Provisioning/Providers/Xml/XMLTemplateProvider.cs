@@ -15,7 +15,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// </summary>
     public abstract class XMLTemplateProvider : TemplateProviderBase
     {
-
         #region Constructor
         protected XMLTemplateProvider()
             : base()
@@ -49,14 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 if (file.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    // Load it from a File Stream
-                    Stream stream = this.Connector.GetFileStream(file);
-
                     ProvisioningTemplate provisioningTemplate;
                     try
                     {
-                        // And convert it into a ProvisioningTemplate
-                        provisioningTemplate = formatter.ToProvisioningTemplate(stream);
+                        // Use the GetTemplate method to share the same logic
+                        provisioningTemplate = this.GetTemplate(file, formatter);
                     }
                     catch (ApplicationException)
                     {
@@ -77,16 +73,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public override ProvisioningTemplate GetTemplate(string uri)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, null, formatter));
+            return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, ITemplateProviderExtension[] extensions = null)
+        {
+            return (this.GetTemplate(uri, null, null, extensions));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, identifier, formatter));
+            return (this.GetTemplate(uri, identifier, null));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, ITemplateFormatter formatter)
@@ -96,11 +93,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter)
         {
+            return (this.GetTemplate(uri, identifier, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
             if (String.IsNullOrEmpty(uri))
             {
                 throw new ArgumentException("uri");
             }
-            
+
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+                formatter.Initialize(this);
+            }
+
             // Get the XML document from a File Stream
             Stream stream = this.Connector.GetFileStream(uri);
 
@@ -109,11 +117,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ApplicationException(string.Format(CoreResources.Provisioning_Formatter_Invalid_Template_URI, uri));
             }
 
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
             //Resolve xml includes if any
             stream = ResolveXIncludes(stream);
 
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
 
             // Store the identifier of this template, is needed for latter save operation
             this.Uri = uri;
@@ -123,27 +137,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public override void Save(ProvisioningTemplate template)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            this.Save(template, formatter);
+            this.Save(template, (ITemplateProviderExtension[])null);
+        }
+
+        public override void Save(ProvisioningTemplate template, ITemplateProviderExtension[] extensions = null)
+        {
+            this.Save(template, null, extensions);
         }
 
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException("template");
-            }
+            this.Save(template, formatter, null);
+        }
 
-            SaveToConnector(template, this.Uri, formatter);
+        public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
+            this.SaveAs(template, this.Uri, formatter, extensions);
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            this.SaveAs(template, uri, formatter);
+            this.SaveAs(template, uri, (ITemplateProviderExtension[])null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateProviderExtension[] extensions)
+        {
+            this.SaveAs(template, uri, null, extensions);
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
+        {
+            this.SaveAs(template, uri, formatter, null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions)
         {
             if (template == null)
             {
@@ -155,7 +182,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ArgumentException("uri");
             }
 
-            SaveToConnector(template, uri, formatter);
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+            }
+
+            SaveToConnector(template, uri, formatter, extensions);
         }
 
         public override void Delete(string uri)
@@ -171,24 +203,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         #endregion
 
         #region Helper methods
-
-        private void SaveToConnector(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
-        {
-            if (String.IsNullOrEmpty(template.Id))
-            {
-                template.Id = Path.GetFileNameWithoutExtension(uri);
-            }
-
-            using (var stream = formatter.ToFormattedTemplate(template))
-            {
-                this.Connector.SaveFileStream(uri, stream);
-            }
-
-            if (this.Connector is ICommitableFileConnector)
-            {
-                ((ICommitableFileConnector)this.Connector).Commit();
-            }
-        }
 
         private Stream ResolveXIncludes(Stream stream)
         {

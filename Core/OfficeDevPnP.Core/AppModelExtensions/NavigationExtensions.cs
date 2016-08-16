@@ -390,12 +390,12 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web.ParentWeb, pw => pw.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
 
-            StandardNavigationSettings targeNavigationSettings =
+            StandardNavigationSettings targetNavigationSettings =
                 navigationKind == ManagedNavigationKind.Current ?
                 navigationSettings.CurrentNavigation : navigationSettings.GlobalNavigation;
 
-            if (targeNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
-                (web.ParentWeb.ServerObjectIsNull.HasValue && !web.ParentWeb.ServerObjectIsNull.Value))
+            if (targetNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
+                !web.ParentWeb.ServerObjectIsNull())
             {
                 Uri currentWebUri = new Uri(web.Url);
                 Uri parentWebUri = new Uri(String.Format("{0}://{1}{2}", currentWebUri.Scheme, currentWebUri.Host, web.ParentWeb.ServerRelativeUrl));
@@ -407,7 +407,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                result = targeNavigationSettings.Source == StandardNavigationSource.TaxonomyProvider;
+                result = targetNavigationSettings.Source == StandardNavigationSource.TaxonomyProvider;
             }
 
             return (result);
@@ -449,14 +449,15 @@ namespace Microsoft.SharePoint.Client
         /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node</param>
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>
+        /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
 
-        public static void AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false)
+        public static void AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
             NavigationNodeCreationInformation node = new NavigationNodeCreationInformation
             {
-                AsLastNode = true,
+                AsLastNode = asLastNode,
                 Title = nodeTitle,
                 Url = nodeUri != null ? nodeUri.OriginalString : string.Empty,
                 IsExternal = isExternal

@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// <summary>
     /// Defines a PnP OpenXML package file
     /// </summary>
-    public class PnPPackage : IDisposable
+    public partial class PnPPackage : IDisposable
     {
         #region Constant strings
 
@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public const string R_PROVISIONINGTEMPLATE_MANIFEST = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/manifest";
         public const string R_PROVISIONINGTEMPLATE_BODY = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/body";
         public const string R_PROVISIONINGTEMPLATE_PROPERTIES = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/properties";
+        public const string R_PROVISIONINGTEMPLATE_FILES_MAP = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/files.map";
 
         // supporting files
         public const string R_PROVISIONINGTEMPLATE_FILES_ORIGIN = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/files.origin";
@@ -30,6 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public const string CT_PROVISIONINGTEMPLATE_MANIFEST = "application/pnpprovisioningtemplate.manifest";
         public const string CT_PROVISIONINGTEMPLATE_BODY = "application/pnpprovisioningtemplate.body";
         public const string CT_PROVISIONINGTEMPLATE_PROPERTIES = "application/pnpprovisioningtemplate.properties";
+        public const string CT_PROVISIONINGTEMPLATE_FILES_MAP = "application/pnpprovisioningtemplate.files.map";
         public const string CT_ORIGIN = "application/pnpprovisioningtemplate.origin";
         public const string CT_FILE = "application/unknown";
 
@@ -38,6 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
         public static string U_DIR_PROVISIONINGTEMPLATE = "/ProvisioningTemplate/";
         public static string U_PROVISIONINGTEMPLATE_PROPERTIES = U_DIR_PROVISIONINGTEMPLATE + "props.xml";
+        public static string U_PROVISIONINGTEMPLATE_FILES_MAP = U_DIR_PROVISIONINGTEMPLATE + "files-map.xml";
         public static string U_FILES_ORIGIN = "/files.origin";
         public static string U_DIR_FILES = "/Files/";
 
@@ -92,6 +95,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             set
             {
                 PackagePart propsPart = EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_PROPERTIES, CT_PROVISIONINGTEMPLATE_PROPERTIES, U_PROVISIONINGTEMPLATE_PROPERTIES, ManifestPart);
+                SetXamlSerializedPackagePartValue(value, propsPart);
+            }
+        }
+
+        /// <summary>
+        /// The File Map for files stored in the OpenXML file
+        /// </summary>
+        public PnPFilesMap FilesMap
+        {
+            get
+            {
+                PackagePart propsPart = GetSinglePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_MAP, ManifestPart);
+                return GetXamlSerializedPackagePartValue<PnPFilesMap>(propsPart);
+            }
+            set
+            {
+                PackagePart propsPart = EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_MAP, CT_PROVISIONINGTEMPLATE_FILES_MAP, U_PROVISIONINGTEMPLATE_FILES_MAP, ManifestPart);
                 SetXamlSerializedPackagePartValue(value, propsPart);
             }
         }
@@ -166,11 +186,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
-        public void AddFile(string fileName, string folder, Byte[] value)
+
+        public void AddFile(string fileName, Byte[] value)
         {
             fileName = fileName.TrimStart('/');
-            folder = !String.IsNullOrEmpty(folder) ? (folder.TrimStart('/').TrimEnd('/') + "/") : String.Empty;
-            string uriStr = U_DIR_FILES + folder + fileName;
+            string uriStr = U_DIR_FILES + fileName;
             PackagePart part = CreatePackagePart(R_PROVISIONINGTEMPLATE_FILE, CT_FILE, uriStr, FilesOriginPart);
             SetPackagePartValue(value, part);
         }
@@ -194,6 +214,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
             // Files origin
             EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_ORIGIN, CT_ORIGIN, U_FILES_ORIGIN, ManifestPart);
+
+            // Files map
+            EnsurePackagePartWithRelationshipType(R_PROVISIONINGTEMPLATE_FILES_MAP, CT_PROVISIONINGTEMPLATE_FILES_MAP, U_PROVISIONINGTEMPLATE_FILES_MAP, ManifestPart);
         }
 
         private PackagePart EnsurePackagePartWithRelationshipType(string relType, string contentType, string uriStr, PackagePart parent)

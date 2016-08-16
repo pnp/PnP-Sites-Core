@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all list properties and elements work as expected. 
+               
+               Possible specific 201605 Lists delta attributes are:
+               ForceCheckout
+               UserCustomActions (e)
+-->
+
+<pnp:ProvisioningTemplate ID="list_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Lists>
+    <!-- Attributes: ForceCheckout -->
+    <pnp:ListInstance Title="LI_40" TemplateType="101" Url="LI_40" ForceCheckout="false" />
+    <!-- Elements: UserCustomActions -->
+    <pnp:ListInstance Title="LI_41" TemplateType="101" Url="LI_41">
+      <pnp:UserCustomActions>
+        <!-- check removal -->
+        <pnp:CustomAction Name="LI41_CA_1" Description="ca 1" Title ="CA 1 Title" Location="CommandUI.Ribbon" Enabled="true" Remove="true">
+          <pnp:CommandUIExtension>
+            <CommandUIDefinitions>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
+                  Command="OfficeDevPnP.Cmd.DownloadAll"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                  LabelText="Download All"
+                  Description="Download all files separately"
+                  ToolTipTitle="Download All"
+                  ToolTipDescription="Download all files separately"
+                  TemplateAlias="o1"
+                  Sequence="15"/>
+              </CommandUIDefinition>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
+                  Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                  LabelText="Download All as Zip"
+                  Description="Download all files as single Zip"
+                  ToolTipTitle="Download All as Zip"
+                  ToolTipDescription="Download all files as single Zip archive"
+                  TemplateAlias="o1"
+                  Sequence="20" />
+              </CommandUIDefinition>
+            </CommandUIDefinitions>
+            <CommandUIHandlers>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAll"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAll');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAll');"/>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAllAsZip');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAllAsZip');"/>
+            </CommandUIHandlers>
+          </pnp:CommandUIExtension>
+        </pnp:CustomAction>
+        <!-- Check update -->
+        <pnp:CustomAction Name="LI41_CA_2" Description="ca 2 updated" Title ="CA 2 Title updated" Location="CommandUI.Ribbon" Enabled="true">
+          <pnp:CommandUIExtension>
+            <CommandUIDefinitions>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
+                  Command="OfficeDevPnP.Cmd.DownloadAll"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                  LabelText="Download All"
+                  Description="Download all files separately"
+                  ToolTipTitle="Download All"
+                  ToolTipDescription="Download all files separately"
+                  TemplateAlias="o1"
+                  Sequence="15"/>
+              </CommandUIDefinition>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
+                  Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                  LabelText="Download All as Zip"
+                  Description="Download all files as single Zip"
+                  ToolTipTitle="Download All as Zip"
+                  ToolTipDescription="Download all files as single Zip archive"
+                  TemplateAlias="o1"
+                  Sequence="20" />
+              </CommandUIDefinition>
+            </CommandUIDefinitions>
+            <CommandUIHandlers>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAll"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAll');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAll');"/>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAllAsZip');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAllAsZip');"/>
+            </CommandUIHandlers>
+          </pnp:CommandUIExtension>
+        </pnp:CustomAction>
+        <!-- Check add -->
+        <pnp:CustomAction Name="LI41_CA_3" Description="ca 3" Title ="CA 3" Location="CommandUI.Ribbon" Enabled="true">
+          <pnp:CommandUIExtension>
+            <CommandUIDefinitions>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
+                  Command="OfficeDevPnP.Cmd.DownloadAll"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                  LabelText="Download All"
+                  Description="Download all files separately"
+                  ToolTipTitle="Download All"
+                  ToolTipDescription="Download all files separately"
+                  TemplateAlias="o1"
+                  Sequence="15"/>
+              </CommandUIDefinition>
+              <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                <Button
+                  Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
+                  Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                  LabelText="Download All as Zip"
+                  Description="Download all files as single Zip"
+                  ToolTipTitle="Download All as Zip"
+                  ToolTipDescription="Download all files as single Zip archive"
+                  TemplateAlias="o1"
+                  Sequence="20" />
+              </CommandUIDefinition>
+            </CommandUIDefinitions>
+            <CommandUIHandlers>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAll"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAll');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAll');"/>
+              <CommandUIHandler
+                Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
+                CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAllAsZip');"
+                EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAllAsZip');"/>
+            </CommandUIHandlers>
+          </pnp:CommandUIExtension>
+        </pnp:CustomAction>
+      </pnp:UserCustomActions>
+    </pnp:ListInstance>
+  </pnp:Lists>
+</pnp:ProvisioningTemplate>

@@ -14,13 +14,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                TaxonomySession session = TaxonomySession.GetTaxonomySession(Web.Context);
-                var termStore = session.GetDefaultSiteCollectionTermStore();
-                Web.Context.Load(termStore, t => t.Id);
-                Web.Context.ExecuteQueryRetry();
-                if (termStore != null)
+                this.Web.EnsureProperty(w => w.Url);
+                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
                 {
-                    CacheValue = termStore.Id.ToString();
+                    TaxonomySession session = TaxonomySession.GetTaxonomySession(context);
+                    var termStore = session.GetDefaultSiteCollectionTermStore();
+                    context.Load(termStore, t => t.Id);
+                    context.ExecuteQueryRetry();
+                    if (termStore != null)
+                    {
+                        CacheValue = termStore.Id.ToString();
+                    }
                 }
             }
             return CacheValue;

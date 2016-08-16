@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+supporting template: add elements needed in lists tests
+-->
+
+<pnp:ProvisioningTemplate ID="list_supporting_data_2" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Files>
+    <pnp:File Src="ct1document.docx" Folder="LI_1/Forms" Overwrite="true" />
+  </pnp:Files>
+</pnp:ProvisioningTemplate>

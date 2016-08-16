@@ -61,6 +61,12 @@ namespace OfficeDevPnP.Core.Entities
             set;
         }
 
+        public SiteLockState LockState
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Site quota in MB
         /// </summary>

@@ -663,5 +663,24 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
         #endregion
 
+        #region Responsive tests
+        [TestMethod]
+        public void CanEnableResponsiveDesignTest()
+        {
+            using (var context = TestCommon.CreateClientContext())
+            {
+                context.Web.EnableResponsiveUI();
+            }
+        }
+
+        [TestMethod]
+        public void CanDisableResponsiveDesignTest()
+        {
+            using (var context = TestCommon.CreateClientContext())
+            {
+                context.Web.DisableReponsiveUI();
+            }
+        }
+        #endregion
     }
 }

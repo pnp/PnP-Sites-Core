@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System.Xml.XPath;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -127,7 +128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
 
                         bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                         if (originalFieldXml.ContainsResourceToken())
                         {
                             var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -148,7 +149,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (isDirty)
                         {
                             existingField.Update();
-                            web.Context.ExecuteQuery();
+                            web.Context.ExecuteQueryRetry();
                         }
                         if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(existingField.DefaultValue))
                         {
@@ -199,11 +200,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (IsFieldXmlValid(fieldXml, parser, web.Context))
             {
                 var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
-                web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue);
+                web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title);
                 web.Context.ExecuteQueryRetry();
 
+                // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
+                parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
+
                 bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013
                 if (originalFieldXml.ContainsResourceToken())
                 {
                     var originalFieldElement = XElement.Parse(originalFieldXml);
@@ -224,7 +228,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (isDirty)
                 {
                     field.Update();
-                    web.Context.ExecuteQuery();
+                    web.Context.ExecuteQueryRetry();
                 }
 
                 if ((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(field.DefaultValue))
@@ -399,19 +403,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (creationInfo.PersistMultiLanguageResources)
                         {
 #if !SP2013
-                            var fieldElement = XElement.Parse(fieldXml);
-                            if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                            // only persist language values for fields we actually will keep...no point in spending time on this is we clean the field afterwards
+                            bool persistLanguages = true;
+                            if (creationInfo.BaseTemplate != null)
                             {
-                                var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("DisplayName", fieldTitle);
-                            }
-                            if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
-                            {
-                                var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
-                                fieldElement.SetAttributeValue("Description", fieldDescription);
+                                int index = creationInfo.BaseTemplate.SiteFields.FindIndex(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
+
+                                if (index > -1)
+                                {
+                                    persistLanguages = false;
+                                }
                             }
 
-                            fieldXml = fieldElement.ToString();
+                            if (persistLanguages)
+                            {
+                                var fieldElement = XElement.Parse(fieldXml);
+                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                    fieldElement.SetAttributeValue("DisplayName", fieldTitle);
+                                }
+                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                                {
+                                    var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                    fieldElement.SetAttributeValue("Description", fieldDescription);
+                                }
+
+                                fieldXml = fieldElement.ToString();
+                            }
 #endif
                         }
 

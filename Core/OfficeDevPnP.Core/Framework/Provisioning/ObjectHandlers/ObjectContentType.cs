@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
                 isDirty = true;
             }
-#if !ONPREMISES
+#if !SP2013
             if (templateContentType.Name.ContainsResourceToken())
             {
                 existingContentType.NameResource.SetUserResourceValue(templateContentType.Name, parser);
@@ -262,21 +262,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;
-            if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+            
+            if (templateContentType.DocumentSetTemplate == null)
             {
-                createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                // Only apply a document template when the contenttype is not a document set
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                {
+                    createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                }
             }
-            if (!String.IsNullOrEmpty(templateContentType.NewFormUrl))
+
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
             {
-                createdCT.NewFormUrl = templateContentType.NewFormUrl;
+                createdCT.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
             }
-            if (!String.IsNullOrEmpty(templateContentType.EditFormUrl))
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
             {
-                createdCT.EditFormUrl = templateContentType.EditFormUrl;
+                createdCT.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
             }
-            if (!String.IsNullOrEmpty(templateContentType.DisplayFormUrl))
+            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
             {
-                createdCT.DisplayFormUrl = templateContentType.DisplayFormUrl;
+                createdCT.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
             }
 
             createdCT.Update(true);
@@ -289,17 +295,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate documentSetTemplate =
                     Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, createdCT);
 
+                // Load the collections to allow for deletion scenarions
+                web.Context.Load(documentSetTemplate, d => d.AllowedContentTypes, d => d.DefaultDocuments, d => d.SharedFields, d => d.WelcomePageFields);
+                web.Context.ExecuteQueryRetry();
+
                 if (!String.IsNullOrEmpty(templateContentType.DocumentSetTemplate.WelcomePage))
                 {
                     // TODO: Customize the WelcomePage of the DocumentSet
                 }
 
+                // Add additional content types to the set of allowed content types
+                bool hasDefaultDocumentContentTypeInTemplate = false;
                 foreach (String ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                 {
                     Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
                     if (ct != null)
                     {
+                        if (ct.Id.StringValue.Equals("0x0101", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            hasDefaultDocumentContentTypeInTemplate = true;
+                        }
+
                         documentSetTemplate.AllowedContentTypes.Add(ct.Id);
+                    }
+                }
+                // If the default document content type (0x0101) is not in our definition then remove it
+                if (!hasDefaultDocumentContentTypeInTemplate)
+                {
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == "0x0101");
+                    if (ct != null)
+                    {
+                        documentSetTemplate.AllowedContentTypes.Remove(ct.Id);
                     }
                 }
 
@@ -377,6 +403,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!BuiltInContentTypeId.Contains(ct.StringId))
                 {
+                    string ctDocumentTemplate = null;
+                    if (!String.IsNullOrEmpty(ct.DocumentTemplate))
+                    {
+                        if (!ct.DocumentTemplate.StartsWith("_cts/"))
+                        {
+                            ctDocumentTemplate = ct.DocumentTemplate;
+                        }
+                    }
+
                     ContentType newCT = new ContentType
                         (ct.StringId,
                         ct.Name,
@@ -385,7 +420,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ct.Sealed,
                         ct.Hidden,
                         ct.ReadOnly,
-                        ct.DocumentTemplate,
+                        ctDocumentTemplate,
                         false,
                             (from fieldLink in ct.FieldLinks.AsEnumerable<FieldLink>()
                              select new FieldRef(fieldLink.Name)

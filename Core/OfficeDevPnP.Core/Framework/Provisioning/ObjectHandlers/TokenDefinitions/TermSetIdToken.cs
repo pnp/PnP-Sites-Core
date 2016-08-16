@@ -1,5 +1,6 @@
 using Microsoft.SharePoint.Client;
 using System;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -7,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private readonly string _value = null;
         public TermSetIdToken(Web web, string groupName, string termsetName, Guid id)
-            : base(web, string.Format("{{termsetid:{0}:{1}}}", groupName, termsetName))
+            : base(web, string.Format("{{termsetid:{0}:{1}}}", Regex.Escape(groupName), Regex.Escape(termsetName)))
         {
             _value = id.ToString();
         }

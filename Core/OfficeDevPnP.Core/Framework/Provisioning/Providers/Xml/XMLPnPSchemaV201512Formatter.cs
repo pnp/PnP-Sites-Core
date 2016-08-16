@@ -440,6 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
+                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate {  TargetName = ct.DocumentTemplate } : null,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201512.DocumentSetTemplate
                              {
@@ -645,7 +646,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
-                             Rights = customAction.Rights.FromBasePermissionsToString(),
+                             Rights = customAction.Rights.FromBasePermissionsToStringV201512(),
                              RegistrationId = customAction.RegistrationId,
                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
                              RegistrationTypeSpecified = true,
@@ -679,7 +680,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
-                             Rights = customAction.Rights.FromBasePermissionsToString(),
+                             Rights = customAction.Rights.FromBasePermissionsToStringV201512(),
                              RegistrationId = customAction.RegistrationId,
                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
                              RegistrationTypeSpecified = true,
@@ -823,6 +824,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         SiteCollectionTermGroup = grp.SiteCollectionTermGroup,
+                         SiteCollectionTermGroupSpecified = grp.SiteCollectionTermGroup,
                          TermSets = (
                             from termSet in grp.TermSets
                             select new V201512.TermSet
@@ -1560,7 +1563,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
-                            Rights = customAction.Rights.ToBasePermissions(),
+                            Rights = customAction.Rights.ToBasePermissionsV201512(),
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             RegistrationId = customAction.RegistrationId,
@@ -1585,7 +1588,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
-                            Rights = customAction.Rights.ToBasePermissions(),
+                            Rights = customAction.Rights.ToBasePermissionsV201512(),
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             RegistrationId = customAction.RegistrationId,
@@ -1710,7 +1713,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 termSet.CustomProperties != null ? termSet.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null)
                             {
                                 Description = termSet.Description,
-                            })
+                            }),
+                        termGroup.SiteCollectionTermGroup
                         )
                     {
                         Description = termGroup.Description,
@@ -2273,7 +2277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
-        public static string FromBasePermissionsToString(this BasePermissions basePermissions)
+        public static string FromBasePermissionsToStringV201512(this BasePermissions basePermissions)
         {
             List<string> permissions = new List<string>();
             foreach (var pk in (PermissionKind[])Enum.GetValues(typeof(PermissionKind)))
@@ -2286,7 +2290,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return string.Join(",", permissions.ToArray());
         }
             
-        public static BasePermissions ToBasePermissions(this string basePermissionString)
+        public static BasePermissions ToBasePermissionsV201512(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
 

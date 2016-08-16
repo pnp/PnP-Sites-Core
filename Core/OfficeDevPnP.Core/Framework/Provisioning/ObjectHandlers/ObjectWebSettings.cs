@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.NoCrawl,
                     w => w.RequestAccessEmail,
 #endif
+                    //w => w.Title,
+                    //w => w.Description,
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
@@ -40,6 +42,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 #endif
+                // We're not extracting Title and Description
+                //webSettings.Title = Tokenize(web.Title, web.Url);
+                //webSettings.Description = Tokenize(web.Description, web.Url);
                 webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
                 webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
                 webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
@@ -195,22 +200,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.WebSettings != null)
                 {
+                    web.EnsureProperty(w => w.HasUniqueRoleAssignments);
+
                     var webSettings = template.WebSettings;
 #if !ONPREMISES
                     web.NoCrawl = webSettings.NoCrawl;
 
-                    web.EnsureProperty(w => w.HasUniqueRoleAssignments);
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
-                    String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
-                    {
-                        requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
-                    }
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue))
-                    {
-                        web.RequestAccessEmail = requestAccessEmailValue;
-                    }
+                        String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
+                        {
+                            requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
+                        }
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue))
+                        {
+                            web.RequestAccessEmail = requestAccessEmailValue;
+                        }
                     }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
@@ -222,6 +228,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!string.IsNullOrEmpty(customMasterUrl))
                     {
                         web.CustomMasterUrl = customMasterUrl;
+                    }
+                    if (!string.IsNullOrEmpty(parser.ParseString(webSettings.Title)))
+                    {
+                        web.Title = parser.ParseString(webSettings.Title);
                     }
                     web.Description = parser.ParseString(webSettings.Description);
                     web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);

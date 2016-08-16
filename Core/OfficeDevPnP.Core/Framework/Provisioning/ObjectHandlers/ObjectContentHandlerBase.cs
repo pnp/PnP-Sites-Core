@@ -176,11 +176,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     folderPath = folderPath.Replace(u.PathAndQuery, "");
                 }
 
+                String container = folderPath.Trim('/').Replace("%20", " ").Replace("/", "\\");
+                String persistenceFileName = (decodeFileName ? HttpUtility.UrlDecode(fileName) : fileName).Replace("%20", " ");
+
                 using (Stream s = connector.GetFileStream(fileName, folderPath))
                 {
                     if (s != null)
                     {
-                        creationInfo.FileConnector.SaveFileStream(decodeFileName ? HttpUtility.UrlDecode(fileName) : fileName, s);
+                        creationInfo.FileConnector.SaveFileStream(
+                            persistenceFileName, container, s);
                     }
                 }
             }

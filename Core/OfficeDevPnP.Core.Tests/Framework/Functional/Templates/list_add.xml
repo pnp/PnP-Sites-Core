@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all list properties and elements work as expected. 
+               
+               Possible Lists attributes are:
+               Title                (*) (parsed only for resource, resource)
+               Description              (parsed only for resource, resource)
+               DocumentTemplate         (parsed, tested via delta_1 handling as once first needs to have the library present before a file can be copied to the forms folder)
+               OnQuickLaunch
+               TemplateType         (*)
+               Url                  (*)
+               EnableVersioning
+               EnableMinorVersions
+               EnableModeration
+               MinorVersionLimit
+               MaxVersionLimit
+               DraftVersionVisibility   
+               RemoveExistingContentTypes
+               TemplateFeatureID
+               ContentTypesEnabled
+               Hidden
+               EnableAttachments
+               EnableFolderCreation               
+               ContentTypeBindings (e)               
+               Views (e)               
+               Fields (e)               
+               FieldRefs (e)               
+               DataRows (e)               
+               Folders (e)               
+               FieldDefaults (e)               
+               Security (e)
+               
+               Possible ContentTypeBinding attributes are:
+               ContentTypeID        (*)
+               Default
+               
+               Possible FieldRef attributes are:
+               ID                   (*)
+               DisplayName
+               Hidden 
+               Required
+               Name                     (informative, not actually used)
+
+               Possible Field attributes are:
+               ID                   (*)
+               Type                 (*)
+               Name                 (*)
+               Many other...see field tests
+
+               Possible FieldDefault attributes are:
+               FieldName            (*)
+               Node value is default value to be set
+-->
+
+<pnp:ProvisioningTemplate ID="list_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Lists>
+    <!-- Document Libraries-->
+    <!-- Minimal attributes: Title, TemplateType, Url -->
+    <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" />
+    <!-- Test other attributes: Description, EnableModeration, OnQuickLaunch,
+                                EnableFolderCreation (not for discussionboards and events)
+                                EnableVersionining (not for survey), MaxVersionLimit
+                                EnableMinorVersions, MinorVersionLimit (only for doc libraries)
+                                DraftVersionVisibility (can be set to 0, 1, 2   only 2 when EnableModeration = true)
+    -->
+    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" Description="LI 2 description" 
+                      EnableMinorVersions="true" MinorVersionLimit="10" EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2" 
+                      EnableFolderCreation="true"  OnQuickLaunch="true" EnableModeration="true" />
+    <!-- Test other attributes: Hidden -->
+    <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="true" />
+    <!-- Test other attributes: ContentTypesEnabled, RemoveExistingContentTypes 
+                                ContentTypeBinding element with ContentTypeID and Default properties
+      -->
+    <pnp:ListInstance Title="LI_4" TemplateType="101" Url="LI_4" ContentTypesEnabled="true" RemoveExistingContentTypes="true" EnableFolderCreation="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true"/>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_5" TemplateType="101" Url="LI_5" ContentTypesEnabled="true" RemoveExistingContentTypes="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name 
+              Folder element with Name attribute 
+              Security element on Folder element -->
+    <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6" EnableFolderCreation="true">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6" Hidden="false" Required="true" Name="Informative"/>
+        <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden ="true" />
+      </pnp:FieldRefs>
+      <pnp:Folders>
+        <pnp:Folder Name="F1">
+          <pnp:Folder Name="F1.1" />
+        </pnp:Folder>
+        <pnp:Folder Name="F2">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Folder>
+      </pnp:Folders>
+    </pnp:ListInstance>
+    <!-- Test Fields and FieldDefaults element -->
+    <pnp:ListInstance Title="LI_7" TemplateType="101" Url="LI_7">
+      <pnp:Fields>
+        <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1" Description="Fld LI 7 1" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2" Description="Fld LI 7 2" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+      <pnp:FieldDefaults>
+        <pnp:FieldDefault FieldName="FLD_LI_7_1">default Fld LI 7 1 value</pnp:FieldDefault>
+      </pnp:FieldDefaults>
+    </pnp:ListInstance>
+
+    <!-- Lists -->
+    <!-- Minimal attributes Title, TemplateType, Url -->
+    <pnp:ListInstance Title="LI_10" TemplateType="100" Url="Lists/LI_10" />
+    <!-- Test other attributes: Description, EnableModeration, OnQuickLaunch
+                                EnableFolderCreation (not for discussionboards and events)
+                                EnableVersionining (not for survey), MaxVersionLimit
+                                DraftVersionVisibility (can be set to 0, 1, 2   only 2 when EnableModeration = true)
+    -->
+    <pnp:ListInstance Title="LI_11" TemplateType="100" Url="Lists/LI_11" Description="LI 11 description"
+                      EnableVersioning="true" MaxVersionLimit="10" DraftVersionVisibility="2"
+                      EnableFolderCreation="true" OnQuickLaunch="true" EnableModeration="true" />
+    <!-- Minimal attributes Hidden, 
+                            EnableAttachments (not for doc libs or surveys -->
+    <pnp:ListInstance Title="LI_12" TemplateType="100" Url="Lists/LI_12" Hidden="true" EnableAttachments="true"/>
+    <pnp:ListInstance Title="LI_13" TemplateType="100" Url="Lists/LI_13" >
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x010076029D9059824413B137EA0A9B5FAAA0" Default="true"/>
+      </pnp:ContentTypeBindings>
+      <pnp:Views RemoveExistingViews="true">
+        <View Name="{7459362D-A5B4-4605-8762-9A0B8E00038D}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="LI_13_View_1" Url="{site}/Lists/LI_13/LI_13_View_1.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=43" >
+          <Query>
+            <OrderBy>
+              <FieldRef Name="FLD_CT_1" />
+            </OrderBy>
+          </Query>
+          <ViewFields>
+            <FieldRef Name="DocIcon" />
+            <FieldRef Name="LinkTitle" />
+            <FieldRef Name="FLD_CT_1" />
+          </ViewFields>
+          <RowLimit Paged="TRUE" >
+            30
+          </RowLimit>
+          <Aggregations Value="Off" />
+          <JSLink>
+            clienttemplates.js
+          </JSLink>
+          <XslLink Default="TRUE" >
+            main.xsl
+          </XslLink>
+          <Toolbar Type="Standard" />
+        </View>  
+      </pnp:Views>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_14" TemplateType="100" Url="Lists/LI_14">
+      <pnp:Security>        
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_15" TemplateType="100" Url="Lists/LI_15">
+      <pnp:Security>
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="false">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_16" TemplateType="100" Url="Lists/LI_16">
+      <pnp:Fields>
+        <Field ID="{382382B6-A8E2-4944-9546-07CB108F8459}" Type="Text" Name="FLD_LI_16_1" DisplayName="Fld LI 16 1" Description="Fld LI 16 1" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{873175B2-39CF-4550-AB3D-38B2AB1BE7D1}" Type="Text" Name="FLD_LI_16_2" DisplayName="Fld LI 16 2" Description="Fld LI 16 2" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+      <pnp:DataRows>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_16_1">val 1</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_16_2">val 1</pnp:DataValue>
+        </pnp:DataRow>
+        <pnp:DataRow>
+          <pnp:DataValue FieldName="FLD_LI_16_1">val 2</pnp:DataValue>
+          <pnp:DataValue FieldName="FLD_LI_16_2">val 2</pnp:DataValue>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:DataRow>
+      </pnp:DataRows>
+    </pnp:ListInstance>
+
+    <!-- Feature based: create promoted links list 
+         TemplateFeatureID 
+         EnableFolderCreation needs to be false for a promoted links list
+    -->    
+    <pnp:ListInstance Title="LI_20" TemplateType="170" Url="Lists/LI_20" TemplateFeatureID="192efa95-e50c-475e-87ab-361cede5dd7f" EnableFolderCreation="false"/>
+
+  </pnp:Lists>
+</pnp:ProvisioningTemplate>

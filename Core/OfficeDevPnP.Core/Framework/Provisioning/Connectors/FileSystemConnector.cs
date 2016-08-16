@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {
@@ -75,6 +76,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             foreach (string file in Directory.EnumerateFiles(path, "*.*"))
             {
                 result.Add(Path.GetFileName(file));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                container = "";
+            }
+
+            List<string> result = new List<string>();
+
+            string path = ConstructPath("", container);
+
+            foreach (string folder in Directory.EnumerateDirectories(path))
+            {
+                result.Add(folder.Substring(path.Length + 1));
             }
 
             return result;
@@ -286,11 +320,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 string filePath = ConstructPath(fileName, container);
 
-                MemoryStream stream = new MemoryStream();
+                MemoryStream stream;
                 using (FileStream fileStream = File.OpenRead(filePath))
                 {
-                    stream.SetLength(fileStream.Length);
-                    fileStream.Read(stream.GetBuffer(), 0, (int)fileStream.Length);
+                    stream = fileStream.ToMemoryStream();
                 }
 
                 Log.Info(Constants.LOGGING_SOURCE, CoreResources.Provisioning_Connectors_FileSystem_FileRetrieved, fileName, container);

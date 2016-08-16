@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
@@ -14,21 +10,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
     public class ConnectorOpenXmlTests
     {
         private const string packageFileName = "TestTemplate.pnp";
+        private const string packageFileNameBackwardsCompatibility = "TestTemplateOriginal.pnp";
 
         #region Test initialize and cleanup
 
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
+            OpenXMLSaveTemplateInternal();
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
             // File system setup
-            if (System.IO.File.Exists(@".\Resources\Templates\TestTemplate.pnp"))
+            if (File.Exists(String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory)
+                    + @"\Templates\TestTemplate.pnp"))
             {
-                System.IO.File.Delete(@".\Resources\Templates\TestTemplate.pnp");
+                System.IO.File.Delete(String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory)
+                    + @"\Templates\TestTemplate.pnp");
             }
         }
 
@@ -42,14 +44,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
         [TestMethod]
         public void OpenXMLSaveTemplate()
         {
-            OpenXMLSaveTemplateInternal();
             Boolean checkFileExistence = File.Exists(String.Format(@"{0}\..\..\Resources",
                     AppDomain.CurrentDomain.BaseDirectory)
                     + @"\Templates\TestTemplate.pnp");
             Assert.IsTrue(checkFileExistence);
         }
 
-        private void OpenXMLSaveTemplateInternal()
+        private static void OpenXMLSaveTemplateInternal()
         {
             var fileSystemConnector = new FileSystemConnector(
                     String.Format(@"{0}\..\..\Resources",
@@ -71,16 +72,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
         }
 
         [TestMethod]
-        public void OpenXMLLoadTemplate()
+        public void OpenXMLLoadTemplateOriginal()
         {
             var fileSystemConnector = new FileSystemConnector(
                     String.Format(@"{0}\..\..\Resources",
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            var openXMLConnector = new OpenXMLConnector(packageFileName,
-                fileSystemConnector);
-
+            var openXMLConnector = new OpenXMLConnector(packageFileNameBackwardsCompatibility, fileSystemConnector);
             var templateFile = openXMLConnector.GetFileStream("ProvisioningSchema-2015-12-FullSample-02.xml");
 
             XMLPnPSchemaV201512Formatter formatter = new XMLPnPSchemaV201512Formatter();
@@ -91,15 +90,37 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             var image1 = openXMLConnector.GetFileStream("garagelogo.png", "Images");
             Assert.IsNotNull(image1);
 
-            var image2 = openXMLConnector.GetFileStream("garagelogo.png", "Images");
+            var image2 = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
+            Assert.IsNotNull(image2);
+        }
+
+
+        [TestMethod]
+        public void OpenXMLLoadTemplate()
+        {
+            var fileSystemConnector = new FileSystemConnector(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var openXMLConnector = new OpenXMLConnector(packageFileName, fileSystemConnector);
+            var templateFile = openXMLConnector.GetFileStream("ProvisioningSchema-2015-12-FullSample-02.xml");
+
+            XMLPnPSchemaV201512Formatter formatter = new XMLPnPSchemaV201512Formatter();
+            Boolean checkTemplate = formatter.IsValid(templateFile);
+
+            Assert.IsTrue(checkTemplate);
+
+            var image1 = openXMLConnector.GetFileStream("garagelogo.png", "Images");
+            Assert.IsNotNull(image1);
+
+            var image2 = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
             Assert.IsNotNull(image2);
         }
 
         [TestMethod]
         public void OpenXMLDeleteFileFromTemplate()
         {
-            OpenXMLSaveTemplateInternal();
-
             var fileSystemConnector = new FileSystemConnector(
                     String.Format(@"{0}\..\..\Resources",
                     AppDomain.CurrentDomain.BaseDirectory),
@@ -123,6 +144,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
         }
 
+        [TestMethod]
+        public void OpenXMLGetFileFromTemplate()
+        {
+            var fileSystemConnector = new FileSystemConnector(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var openXMLConnector = new OpenXMLConnector(packageFileName, fileSystemConnector);
+            var file = openXMLConnector.GetFile("garagebg.jpg");
+            Assert.IsNull(file);
+            file = openXMLConnector.GetFile("garagebg.jpg", "Images");
+            Assert.IsNotNull(file);
+            Stream stream = openXMLConnector.GetFileStream("garagebg.jpg");
+            Assert.IsNull(stream);
+            stream = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
+            Assert.IsNotNull(stream.Length > 0);
+        }
         #endregion
     }
 }

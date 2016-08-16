@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._fieldRefs = new FieldRefCollection(this.ParentTemplate);
             this._dataRows = new DataRowCollection(this.ParentTemplate);
             this._folders = new FolderCollection(this.ParentTemplate);
+            this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
@@ -35,7 +36,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : 
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) :
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, folders, null)
+        {
+        }
+
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) : 
             this()
         {
             this.ContentTypeBindings.AddRange(contentTypeBindings);
@@ -52,6 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Security = security;
             }
             this.Folders.AddRange(folders);
+            this.UserCustomActions.AddRange(userCustomActions);
         }
 
         #endregion
@@ -67,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private FolderCollection _folders;
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
+        private CustomActionCollection _userCustomActions;
         #endregion
 
         #region Properties
@@ -150,6 +159,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets whether to hide the list
         /// </summary>
         public bool Hidden { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to force checkout of documents in the library
+        /// </summary>
+        public bool ForceCheckout { get; set; } = false;
 
         /// <summary>
         /// Gets or sets whether attachments are enabled. Defaults to true.
@@ -245,13 +259,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._folders = value; }
         }
 
+        /// <summary>
+        /// Defines a collection of user custom actions that 
+        /// will be provisioned into the target list/library
+        /// </summary>
+        public CustomActionCollection UserCustomActions
+        {
+            get { return this._userCustomActions; }
+            private set { this._userCustomActions = value; }
+        }
+
         #endregion
 
         #region Comparison code
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -262,6 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.OnQuickLaunch.GetHashCode(),
                 this.EnableAttachments.GetHashCode(),
                 this.EnableFolderCreation.GetHashCode(),
+                this.ForceCheckout.GetHashCode(),
                 this.RemoveExistingContentTypes.GetHashCode(),
                 this.TemplateType.GetHashCode(),
                 (this.Title != null ? this.Title.GetHashCode() : 0),
@@ -276,7 +301,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
-                this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -308,6 +334,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.OnQuickLaunch == other.OnQuickLaunch &&
                 this.EnableAttachments == other.EnableAttachments &&
                 this.EnableFolderCreation == other.EnableFolderCreation &&
+                this.ForceCheckout == other.ForceCheckout &&
                 this.RemoveExistingContentTypes == other.RemoveExistingContentTypes &&
                 this.TemplateType == other.TemplateType &&
                 this.Title == other.Title &&
@@ -320,7 +347,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldRefs.DeepEquals(other.FieldRefs) &&
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
-                this.Folders.DeepEquals(other.Folders)
+                this.Folders.DeepEquals(other.Folders) &&
+                this.UserCustomActions.DeepEquals(other.UserCustomActions)
                 );
         }
 

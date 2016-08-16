@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Delta template: Goal is to verify that all properties that can be updated are updated. Please keep this XML up to date if additional properties are added.
+                This template verifies the system property update behaviour
+-->
+
+<pnp:ProvisioningTemplate ID="propertybag_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:PropertyBagEntries>
+
+    <!-- PropertyBag properties that can be updated via delta handling:
+         Value (*) (parsed)
+         -->
+    
+    <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value ="nl-nl" Overwrite="true" />
+    <pnp:PropertyBagEntry Key="vti_extenderversion" Value ="{sitename}" Overwrite="false" />
+  </pnp:PropertyBagEntries>
+</pnp:ProvisioningTemplate>

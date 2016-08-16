@@ -183,6 +183,41 @@ namespace Microsoft.SharePoint.Client
             return web.GetPropertyBagValueString("SRCH_ENH_FTR_URL_SITE", string.Empty);
         }
 
+        /// <summary>
+        /// Sets the search results page url on current web (Site Settings -> Search --> Search Settings)
+        /// </summary>
+        /// <param name="web">SharePoint current web</param>
+        /// <param name="searchCenterUrl">Search results page url</param>
+        public static void SetWebSearchCenterUrl(this Web web, string searchCenterUrl)
+        {
+            if (searchCenterUrl == null)
+            {
+                throw new ArgumentNullException("searchCenterUrl");
+            }
+
+            if (!string.IsNullOrEmpty(searchCenterUrl))
+            {
+                // Set search results page url
+                web.SetPropertyBagValue("SRCH_SB_SET_WEB", "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
+            }
+            else
+            {
+                // When search results page url is blank remove the property (like the SharePoint UI does)
+                web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
+            }
+        }
+
+        /// <summary>
+        /// Get the search results page url for the web (Site Settings -> Search --> Search Settings)
+        /// </summary>
+        /// <param name="web">SharePoint site - current web</param>
+        /// <returns>Search results page url for web</returns>
+        public static string GetWebSearchCenterUrl(this Web web)
+        {
+            // Get search results page url of the current web
+            return web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+        }
+
 
     }
 }

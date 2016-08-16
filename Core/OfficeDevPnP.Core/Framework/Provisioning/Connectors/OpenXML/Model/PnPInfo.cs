@@ -26,5 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model
         /// Files contained in the PnP OpenXML file
         /// </summary>
         public List<PnPFileInfo> Files { get; set; } = new List<PnPFileInfo>();
+
+        /// <summary>
+        /// Defines the mapping between original file names and OpenXML file names
+        /// </summary>
+        public PnPFilesMap FilesMap { get; set; }
     }
 }

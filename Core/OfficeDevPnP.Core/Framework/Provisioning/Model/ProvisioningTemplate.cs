@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
     {
-        #region Private Members
+        #region Private Fields
 
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private LocalizationCollection _localizations;
@@ -26,8 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ComposedLook _composedLook;
         private Features _features;
         private SiteSecurity _siteSecurity;
+        private Navigation _navigation;
         private CustomActions _customActions;
         private FileCollection _files;
+        private DirectoryCollection _directories;
         private ExtensibilityHandlerCollection _extensibilityHandlers;
         private PageCollection _pages;
         private TermGroupCollection _termGroups;
@@ -68,6 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._customActions.ParentTemplate = this;
 
             this._files = new FileCollection(this);
+            this._directories = new DirectoryCollection(this);
             this._providers = new ProviderCollection(this); // Deprecated
             this._extensibilityHandlers = new ExtensibilityHandlerCollection(this);
             this._pages = new PageCollection(this);
@@ -144,6 +147,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// The Navigation configurations of the Provisioning Template
+        /// </summary>
+        public Navigation Navigation
+        {
+            get { return this._navigation; }
+            set
+            {
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = null;
+                }
+                this._navigation = value;
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets a collection of fields 
         /// </summary>
         public FieldCollection SiteFields
@@ -214,6 +237,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._files; }
             private set { this._files = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of directories from which upload files for the template
+        /// </summary>
+        public DirectoryCollection Directories
+        {
+            get { return this._directories; }
+            private set { this._directories = value; }
         }
 
         /// <summary>
@@ -307,7 +339,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SupportedUILanguageCollection SupportedUILanguages
         {
             get { return this._supportedUILanguages; }
-            private set { this._supportedUILanguages = value; }
+            internal set { this._supportedUILanguages = value; }
         }
 
         /// <summary>
@@ -358,9 +390,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// The Search Settings for the Provisioning Template
+        /// The Site Collection level Search Settings for the Provisioning Template
         /// </summary>
-        public String SearchSettings { get; set; }
+        public String SiteSearchSettings { get; set; }
+
+        /// <summary>
+        /// The Web level Search Settings for the Provisioning Template
+        /// </summary>
+        public String WebSearchSettings { get; set; }
 
         /// <summary>
         /// Defines the SharePoint Add-ins to provision
@@ -414,6 +451,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The Description of the Provisioning Template
         /// </summary>
         public String Description { get; set; }
+
+        /// <summary>
+        /// The Base SiteTemplate of the Provisioning Template
+        /// </summary>
+        public String BaseSiteTemplate { get; set; }
 
         public FileConnectorBase Connector
         {
@@ -516,6 +558,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+
         /// <summary>
         /// Serializes a template to XML
         /// </summary>

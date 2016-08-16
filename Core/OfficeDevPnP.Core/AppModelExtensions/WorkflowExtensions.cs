@@ -173,7 +173,7 @@ namespace Microsoft.SharePoint.Client
             return subscriptionResult.Value;
         }
 
-      
+
 
         /// <summary>
         /// Deletes the subscription
@@ -222,7 +222,7 @@ namespace Microsoft.SharePoint.Client
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
             var deploymentService = servicesManager.GetWorkflowDeploymentService();
-            
+
             var definition = deploymentService.GetDefinition(id);
             web.Context.Load(definition);
             web.Context.ExecuteQueryRetry();
@@ -251,7 +251,7 @@ namespace Microsoft.SharePoint.Client
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
             var deploymentService = servicesManager.GetWorkflowDeploymentService();
-            
+
             WorkflowDefinition def = new WorkflowDefinition(web.Context);
             def.AssociationUrl = definition.AssociationUrl;
             def.Description = definition.Description;
@@ -261,7 +261,7 @@ namespace Microsoft.SharePoint.Client
             def.Id = definition.Id != Guid.Empty ? definition.Id : Guid.NewGuid();
             foreach (var prop in definition.Properties)
             {
-                def.SetProperty(prop.Key,prop.Value);
+                def.SetProperty(prop.Key, prop.Value);
             }
             def.RequiresAssociationForm = definition.RequiresAssociationForm;
             def.RequiresInitiationForm = definition.RequiresInitiationForm;
@@ -384,6 +384,134 @@ namespace Microsoft.SharePoint.Client
             var workflowInstanceService = servicesManager.GetWorkflowInstanceService();
             workflowInstanceService.PublishCustomEvent(instance, eventName, payload);
             clientContext.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Starts a new instance of a workflow definition against the current web site
+        /// </summary>
+        /// <param name="web">The target web site</param>
+        /// <param name="subscriptionName">The name of the workflow subscription to start</param>
+        /// <param name="payload">Any input argument for the workflow instance</param>
+        /// <returns>The ID of the just started workflow instance</returns>
+        public static Guid StartWorkflowInstance(this Web web, String subscriptionName, IDictionary<String, Object> payload)
+        {
+            var clientContext = web.Context as ClientContext;
+            var servicesManager = new WorkflowServicesManager(clientContext, clientContext.Web);
+
+            var workflowSubscriptionService = servicesManager.GetWorkflowSubscriptionService();
+            var subscriptions = workflowSubscriptionService.EnumerateSubscriptions();
+
+            clientContext.Load(subscriptions, subs => subs.Where(sub => sub.Name == subscriptionName));
+            clientContext.ExecuteQueryRetry();
+
+            var subscription = subscriptions.FirstOrDefault();
+            if (subscription != null)
+            {
+                return (StartWorkflowInstance(web, subscription.Id, payload));
+            }
+            else
+            {
+                return (Guid.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Starts a new instance of a workflow definition against the current web site
+        /// </summary>
+        /// <param name="web">The target web site</param>
+        /// <param name="subscriptionId">The ID of the workflow subscription to start</param>
+        /// <param name="payload">Any input argument for the workflow instance</param>
+        /// <returns>The ID of the just started workflow instance</returns>
+        public static Guid StartWorkflowInstance(this Web web, Guid subscriptionId, IDictionary<String, Object> payload)
+        {
+            Guid result = Guid.Empty;
+
+            var clientContext = web.Context as ClientContext;
+            var servicesManager = new WorkflowServicesManager(clientContext, clientContext.Web);
+
+            var workflowSubscriptionService = servicesManager.GetWorkflowSubscriptionService();
+            var subscriptions = workflowSubscriptionService.EnumerateSubscriptions();
+
+            clientContext.Load(subscriptions, subs => subs.Where(sub => sub.Id == subscriptionId));
+            clientContext.ExecuteQueryRetry();
+
+            var subscription = subscriptions.FirstOrDefault();
+            if (subscription != null)
+            {
+                var workflowInstanceService = servicesManager.GetWorkflowInstanceService();
+                var startAction = workflowInstanceService.StartWorkflow(subscription, payload);
+                clientContext.ExecuteQueryRetry();
+
+                result = startAction.Value;
+            }
+
+            return (result);
+        }
+
+        /// <summary>
+        /// Starts a new instance of a workflow definition against the current item
+        /// </summary>
+        /// <param name="item">The target item</param>
+        /// <param name="subscriptionName">The name of the workflow subscription to start</param>
+        /// <param name="payload">Any input argument for the workflow instance</param>
+        /// <returns>The ID of the just started workflow instance</returns>
+        public static Guid StartWorkflowInstance(this ListItem item, String subscriptionName, IDictionary<String, Object> payload)
+        {
+            var parentList = item.EnsureProperty(i => i.ParentList);
+
+            var clientContext = item.Context as ClientContext;
+            var servicesManager = new WorkflowServicesManager(clientContext, clientContext.Web);
+
+            var workflowSubscriptionService = servicesManager.GetWorkflowSubscriptionService();
+            var subscriptions = workflowSubscriptionService.EnumerateSubscriptionsByList(parentList.Id);
+
+            clientContext.Load(subscriptions, subs => subs.Where(sub => sub.Name == subscriptionName));
+            clientContext.ExecuteQueryRetry();
+
+            var subscription = subscriptions.FirstOrDefault();
+            if (subscription != null)
+            {
+                return (StartWorkflowInstance(item, subscription.Id, payload));
+            }
+            else
+            {
+                return (Guid.Empty);
+            }
+        }
+
+        /// <summary>
+        /// Starts a new instance of a workflow definition against the current item
+        /// </summary>
+        /// <param name="item">The target item</param>
+        /// <param name="subscriptionId">The ID of the workflow subscription to start</param>
+        /// <param name="payload">Any input argument for the workflow instance</param>
+        /// <returns>The ID of the just started workflow instance</returns>
+        public static Guid StartWorkflowInstance(this ListItem item, Guid subscriptionId, IDictionary<String, Object> payload)
+        {
+            Guid result = Guid.Empty;
+
+            var parentList = item.EnsureProperty(i => i.ParentList);
+
+            var clientContext = item.Context as ClientContext;
+            var servicesManager = new WorkflowServicesManager(clientContext, clientContext.Web);
+
+            var workflowSubscriptionService = servicesManager.GetWorkflowSubscriptionService();
+            var subscriptions = workflowSubscriptionService.EnumerateSubscriptionsByList(parentList.Id);
+
+            clientContext.Load(subscriptions, subs => subs.Where(sub => sub.Id == subscriptionId));
+            clientContext.ExecuteQueryRetry();
+
+            var subscription = subscriptions.FirstOrDefault();
+            if (subscription != null)
+            {
+                var workflowInstanceService = servicesManager.GetWorkflowInstanceService();
+                var startAction = workflowInstanceService.StartWorkflowOnListItem(subscription, item.Id, payload);
+                clientContext.ExecuteQueryRetry();
+
+                result = startAction.Value;
+            }
+
+            return (result);
         }
 
         #endregion
