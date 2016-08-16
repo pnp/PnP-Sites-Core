@@ -343,9 +343,13 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\SecurityTests.cs" />
+    <Compile Include="Framework\Functional\SitePolicyTests.cs" />
     <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
     <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
     <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
     <Compile Include="Framework\Functional\LanguageTests.cs" />
@@ -431,6 +435,8 @@
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+    <Content Include="Framework\Functional\Templates\security_add.xml" />
+    <Content Include="Framework\Functional\Templates\sitepolicy_add.xml" />
     <Content Include="Framework\Functional\Templates\termgroup_add.xml">
       <SubType>Designer</SubType>
     </Content>
