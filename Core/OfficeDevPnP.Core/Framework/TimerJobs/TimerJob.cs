@@ -1229,6 +1229,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
             }
 
+            // Clear the used authentication managers
+            this.authenticationManagers.Clear();
+
             // Step 2 (optional): If the job wants to run at sub site level then we'll need to resolve all sub sites
             if (expandSubSites)
             {
@@ -1440,8 +1443,21 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
             else
             {
+                ClientContext ccEnumerate = null;
                 //Good, we can use search for user profile and tenant API enumeration for regular sites
-                var ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+#if !ONPREMISES
+                if (AuthenticationType == AuthenticationType.AppOnly)
+                {
+                    // with the proper tenant scoped permissions one can do search with app-only in SPO
+                    ccEnumerate = GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.realm, this.clientId, this.clientSecret);
+                }
+                else
+                {
+                    ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                }
+#else
+                    ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+#endif
                 Tenant tenant = new Tenant(ccEnumerate);
                 SiteEnumeration.Instance.ResolveSite(tenant, site, resolvedSites);
             }
@@ -1513,9 +1529,16 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <returns>The tenant admin site</returns>
         private string GetTenantAdminSite(string site)
         {
-            Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
-            string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
-            return String.Format("https://{0}-admin.sharepoint.com", tenantName);
+            if (!String.IsNullOrEmpty(this.tenantAdminSite))
+            {
+                return this.tenantAdminSite;
+            }
+            else
+            {
+                Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
+                string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
+                return String.Format("https://{0}-admin.sharepoint.com", tenantName);
+            }
         }
 
         /// <summary>
