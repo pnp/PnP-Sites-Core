@@ -939,7 +939,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         }
 #endregion
 
-#region Site scope methods and attributes
+        #region Site scope methods and attributes
         /// <summary>
         /// Does the timerjob need to fire as well for every sub site in the site?
         /// </summary>
@@ -1402,6 +1402,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
             else
             {
+#if !ONPREMISES
                 if (AuthenticationType == AuthenticationType.Office365)
                 {
                     return GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(site, username, password);
@@ -1410,7 +1411,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
                 }
-#if !ONPREMISES
                 else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
                 {
                     if (this.certificate != null)
@@ -1421,6 +1421,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     {
                         return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
                     }
+                }
+#else
+                if (AuthenticationType == AuthenticationType.NetworkCredentials)
+                {
+                    return GetAuthenticationManager(site).GetNetworkCredentialAuthenticatedContext(site, username, password, domain);
+                }
+                else if (AuthenticationType == AuthenticationType.AppOnly)
+                {
+                    return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
                 }
 #endif
             }
@@ -1455,11 +1464,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
                 }
-#else
-                    ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
-#endif
                 Tenant tenant = new Tenant(ccEnumerate);
                 SiteEnumeration.Instance.ResolveSite(tenant, site, resolvedSites);
+#else
+                ccEnumerate = GetAuthenticationManager(site).GetNetworkCredentialAuthenticatedContext(GetTopLevelSite(site.Replace("*", "")), EnumerationUser, EnumerationPassword, EnumerationDomain);
+                SiteEnumeration.Instance.ResolveSite(ccEnumerate, site, resolvedSites);
+#endif
             }
         }
 
@@ -1493,9 +1503,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 yield return currentUrl;
             }
         }
-#endregion
+        #endregion
 
-#region Helper methods
+        #region Helper methods
         /// <summary>
         /// Verifies if the passed Url has a valid structure
         /// </summary>
@@ -1666,6 +1676,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return false;
             }
         }
-#endregion
+        #endregion
     }
 }
