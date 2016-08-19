@@ -1283,7 +1283,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to delete the content type from</param>
         /// <param name="contentTypeName">Name of the content type to delete</param>
-        internal static void DeleteContentTypeByName(this Web web, string contentTypeName)
+        public static void DeleteContentTypeByName(this Web web, string contentTypeName)
         {
             var contentTypes = web.Context.LoadQuery(web.ContentTypes.Where(c => c.Name == contentTypeName));
             web.Context.ExecuteQueryRetry();
@@ -1305,7 +1305,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to delete the content type from</param>
         /// <param name="contentTypeId">Id of the content type to delete</param>
-        internal static void DeleteContentTypeById(this Web web, string contentTypeId)
+        public static void DeleteContentTypeById(this Web web, string contentTypeId)
         {
             var contentType = GetContentTypeById(web, contentTypeId);
             if (contentType == null)
