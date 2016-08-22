@@ -1199,6 +1199,13 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="IsVisible" type="xsd:boolean" use="optional" default="true">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Defines whether the Navigation Node for the Structural Navigation is visible or not.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:complexType>
   
   <xsd:complexType name="Features">
