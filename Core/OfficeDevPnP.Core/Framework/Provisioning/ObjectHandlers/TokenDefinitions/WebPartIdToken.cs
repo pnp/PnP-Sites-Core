@@ -1,5 +1,6 @@
 using Microsoft.SharePoint.Client;
 using System;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -7,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private string _webpartId = null;
         public WebPartIdToken(Web web, string name, Guid webpartid)
-            : base(web, string.Format("{{webpartid:{0}}}", name))
+            : base(web, string.Format("{{webpartid:{0}}}", Regex.Escape(name)))
         {
             _webpartId = webpartid.ToString();
         }

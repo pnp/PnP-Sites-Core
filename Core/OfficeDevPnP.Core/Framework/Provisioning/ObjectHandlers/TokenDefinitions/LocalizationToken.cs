@@ -2,6 +2,7 @@ using Microsoft.SharePoint.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -9,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private List<ResourceEntry> _resourceEntries;
         public LocalizationToken(Web web, string key, List<ResourceEntry> resourceEntries)
-            : base(web, string.Format("{{loc:{0}}}", key), string.Format("{{localize:{0}}}", key), string.Format("{{localization:{0}}}", key), string.Format("{{resource:{0}}}", key), string.Format("{{res:{0}}}", key))
+            : base(web, string.Format("{{loc:{0}}}", Regex.Escape(key)), string.Format("{{localize:{0}}}", Regex.Escape(key)), string.Format("{{localization:{0}}}", Regex.Escape(key)), string.Format("{{resource:{0}}}", Regex.Escape(key)), string.Format("{{res:{0}}}", Regex.Escape(key)))
         {
             _resourceEntries = resourceEntries;
         }

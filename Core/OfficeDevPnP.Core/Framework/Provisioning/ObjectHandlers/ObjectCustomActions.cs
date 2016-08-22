@@ -165,7 +165,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 // Required to allow for a delta action to blank out the CommandUIExtension attribute
-                existingCustomAction.CommandUIExtension = null;
+                if (existingCustomAction.CommandUIExtension != null)
+                {
+                    scope.LogPropertyUpdate("CommandUIExtension");
+                    existingCustomAction.CommandUIExtension = null;
+                    isDirty = true;
+                }
             }
 
             if (existingCustomAction.Description != customAction.Description)
