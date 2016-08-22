@@ -24,6 +24,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region Constructors
 
         /// <summary>
+        /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
+        /// </summary>
+        /// <param name="packageStream"></param>
+        public OpenXMLConnector(Stream packageStream): base()
+        {
+            if (packageStream == null)
+            {
+                throw new ArgumentNullException("package");
+            }
+
+            if (!packageStream.CanRead)
+            {
+                throw new ArgumentException("package");
+            }
+
+            // If the .PNP package exists unpack it into PnP OpenXML package info object
+            MemoryStream ms = packageStream.ToMemoryStream();
+            this.pnpInfo = ms.UnpackTemplate();
+        }
+
+        /// <summary>
         /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
         /// </summary>
         /// <param name="packageFileName">The name of the .PNP package file. If the .PNP extension is missing, it will be added</param>
