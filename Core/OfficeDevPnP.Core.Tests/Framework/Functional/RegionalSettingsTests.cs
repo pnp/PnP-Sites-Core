@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public RegionalSettingsTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_98a9f94f-acf6-4940-aef9-e2f2dc0e3d45/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_23939b71-a69c-4d57-a818-5448a1cdaf28";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_23939b71-a69c-4d57-a818-5448a1cdaf28/sub";
         }
         #endregion
 
@@ -54,6 +54,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 var result = TestProvisioningTemplate(cc, "regionalsettings_add.xml", Handlers.RegionalSettings);
                 RegionalSettingsValidator rv = new RegionalSettingsValidator();
                 Assert.IsTrue(rv.Validate(result.SourceTemplate.RegionalSettings, result.TargetTemplate.RegionalSettings, result.TargetTokenParser));
+
+                var result2 = TestProvisioningTemplate(cc, "regionalsettings_delta_1.xml", Handlers.RegionalSettings);
+                RegionalSettingsValidator rv2 = new RegionalSettingsValidator();
+                Assert.IsTrue(rv2.Validate(result2.SourceTemplate.RegionalSettings, result2.TargetTemplate.RegionalSettings, result2.TargetTokenParser));
             }
         }
         #endregion
@@ -70,6 +74,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 var result = TestProvisioningTemplate(cc, "regionalsettings_add.xml", Handlers.RegionalSettings);
                 RegionalSettingsValidator rv = new RegionalSettingsValidator();
                 Assert.IsTrue(rv.Validate(result.SourceTemplate.RegionalSettings, result.TargetTemplate.RegionalSettings, result.TargetTokenParser));
+
+                var result2 = TestProvisioningTemplate(cc, "regionalsettings_delta_1.xml", Handlers.RegionalSettings);
+                RegionalSettingsValidator rv2 = new RegionalSettingsValidator();
+                Assert.IsTrue(rv2.Validate(result2.SourceTemplate.RegionalSettings, result2.TargetTemplate.RegionalSettings, result2.TargetTokenParser));
             }
         }
         #endregion

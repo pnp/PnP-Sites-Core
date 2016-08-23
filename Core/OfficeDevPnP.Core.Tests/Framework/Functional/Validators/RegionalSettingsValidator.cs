@@ -54,6 +54,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
+            if (sourceObject.Attribute("CalendarType").Value.ToLower() == "none")
+            {
+                DropAttribute(sourceObject, "CalendarType");
+                DropAttribute(targetObject, "CalendarType");
+            }
+
         }
 
         #endregion
