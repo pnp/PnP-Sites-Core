@@ -126,6 +126,48 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry not set with correct value");
         }
 
+        /// <summary>
+        /// This is probably not a very relevant use case, but this would not have worked with the previous implementation of SetPropertyBagValue 
+        /// when using reflection to clear client data. The property (key2) would not have been pushed to the server and an exception would have been
+        /// thrown when refreshing the properties with clientContext.Load(props) and clientContext.ExecuteQueryRetry();
+        /// </summary>
+        [TestMethod()]
+        public void SetPropertyBagValueWhenAllPropertiesModifiedTest()
+        {            
+            string key2 = _key + "_modified";
+            clientContext.Web.AllProperties[key2] = _value_string;
+            clientContext.Web.SetPropertyBagValue(_key, _value_string);
+
+            var props = clientContext.Web.AllProperties;
+            clientContext.Load(props);
+            clientContext.ExecuteQueryRetry();
+            Assert.IsTrue(props.FieldValues.ContainsKey(key2), "Entry using AllProperties directly not added");
+            Assert.IsTrue(props.FieldValues.ContainsKey(_key), "Entry using SetPropertyBagValue not added");
+            Assert.AreEqual(_value_string, props.FieldValues[key2] as string, "Entry using AllProperties directly not set with correct value");
+            Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry using SetPropertyBagValue not set with correct value");
+        }
+
+        [TestMethod()]
+        public void SetPropertyBagValueHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            clientContext.Web.SetPropertyBagValue(_key, _value_string);
+
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server.
+
+            clientContext.Load(props);
+            clientContext.ExecuteQueryRetry();
+
+            Assert.IsTrue(props.FieldValues.ContainsKey(_key), "Entry not added");
+            Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry not set with correct value");
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
         [TestMethod()]
         public void SetPropertyBagValueMultipleRunsTest()
         {
@@ -210,6 +252,32 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
+        public void GetPropertyBagValueHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+
+            props[_key] = _value_string;
+            web.Update();
+
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            var stringValue = web.GetPropertyBagValueString(_key, _value_string);
+
+            Assert.IsInstanceOfType(stringValue, typeof(string), "No string value returned");
+            Assert.AreEqual(_value_string, stringValue, "Incorrect value returned");
+
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server
+
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
+        [TestMethod()]
         public void PropertyBagContainsKeyTest()
         {
             var web = clientContext.Web;
@@ -224,6 +292,30 @@ namespace Microsoft.SharePoint.Client.Tests
 
             Assert.IsTrue(web.PropertyBagContainsKey(_key));
         }
+
+        [TestMethod()]
+        public void PropertyBagContainsKeyHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+            web.Context.ExecuteQueryRetry();
+
+            props[_key] = _value_string;
+            web.Update();
+
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsTrue(web.PropertyBagContainsKey(_key));
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server
+
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
 
         [TestMethod()]
         public void GetIndexedPropertyBagKeysTest()
