@@ -337,12 +337,24 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             List existingList = results.FirstOrDefault();
 
-            if (existingList != null)
+            return results.Any();
+        }
+
+        public static bool ListExists(this Web web, Uri siteRelativeUrlPath)
+        {
+            if (siteRelativeUrlPath == null)
             {
-                return true;
+                throw new ArgumentNullException("siteRelativeUrlPath");
             }
 
-            return false;
+            ListCollection lists = web.Lists;
+            web.Context.Load(web, obj => obj.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+
+            var listResult = web.GetList(UrlUtility.Combine(web.ServerRelativeUrl, siteRelativeUrlPath.ToString()));
+            web.Context.ExecuteQueryRetry();
+
+            return listResult != null;
         }
 
         /// <summary>
