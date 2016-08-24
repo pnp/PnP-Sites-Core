@@ -340,6 +340,12 @@ namespace Microsoft.SharePoint.Client
             return results.Any();
         }
 
+        /// <summary>
+        /// Checks if list exists on the particular site based on the list's site relative path.
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="siteRelativeUrlPath">Site relative path of the list</param>
+        /// <returns>True if the list exists</returns>
         public static bool ListExists(this Web web, Uri siteRelativeUrlPath)
         {
             if (siteRelativeUrlPath == null)
