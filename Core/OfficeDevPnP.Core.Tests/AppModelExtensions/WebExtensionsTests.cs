@@ -126,27 +126,6 @@ namespace Microsoft.SharePoint.Client.Tests
             Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry not set with correct value");
         }
 
-        /// <summary>
-        /// This is probably not a very relevant use case, but this would not have worked with the previous implementation of SetPropertyBagValue 
-        /// when using reflection to clear client data. The property (key2) would not have been pushed to the server and an exception would have been
-        /// thrown when refreshing the properties with clientContext.Load(props) and clientContext.ExecuteQueryRetry();
-        /// </summary>
-        [TestMethod()]
-        public void SetPropertyBagValueWhenAllPropertiesModifiedTest()
-        {            
-            string key2 = _key + "_modified";
-            clientContext.Web.AllProperties[key2] = _value_string;
-            clientContext.Web.SetPropertyBagValue(_key, _value_string);
-
-            var props = clientContext.Web.AllProperties;
-            clientContext.Load(props);
-            clientContext.ExecuteQueryRetry();
-            Assert.IsTrue(props.FieldValues.ContainsKey(key2), "Entry using AllProperties directly not added");
-            Assert.IsTrue(props.FieldValues.ContainsKey(_key), "Entry using SetPropertyBagValue not added");
-            Assert.AreEqual(_value_string, props.FieldValues[key2] as string, "Entry using AllProperties directly not set with correct value");
-            Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry using SetPropertyBagValue not set with correct value");
-        }
-
         [TestMethod()]
         public void SetPropertyBagValueHandlesLocalPropertyCacheTest()
         {
