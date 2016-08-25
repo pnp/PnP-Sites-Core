@@ -346,7 +346,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             //Set term local properties as this is a newly reused or pinned term hierarchy with children.
                             SetTermLocalProperties(modelTerm, parser, termTerm);
-                            parser = CreateChildTerms(web, modelTermTerm, term, termStore, parser, scope, true);
+                            parser = CreateChildTerms(web, modelTermTerm, termTerm, termStore, parser, scope, true);
                         }
                     }
                     else
