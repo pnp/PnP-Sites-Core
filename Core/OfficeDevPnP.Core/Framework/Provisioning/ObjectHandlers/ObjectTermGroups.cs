@@ -205,7 +205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
+        private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, T parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TermSetItem
         {
             // If the term is a re-used term try to re-use before trying to create. 
             if (modelTerm.IsReused)
@@ -224,16 +224,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.Id = Guid.NewGuid();
             }
 
-            if (parent is Term)
-            {
-                var languages = termStore.DefaultLanguage;
-                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+            term = parent.CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
 
-            }
-            else
-            {
-                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
-            }
             if (!String.IsNullOrEmpty(modelTerm.Description))
             {
                 term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
@@ -245,38 +237,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             
             term.IsAvailableForTagging = modelTerm.IsAvailableForTagging;
 
-            if (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any())
+            if (modelTerm.Labels.Any())
             {
-                if (modelTerm.Labels.Any())
-                {
-                    foreach (var label in modelTerm.Labels)
-                    {
-                        if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
-                        {
-                            var l = term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
-                        }
-                        else
-                        {
-                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
-                            WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
-                        }
-                    }
-                }
+                CreateTermLabels(modelTerm, termStore, parser, scope, term);
+            }
 
-                if (modelTerm.Properties.Any())
-                {
-                    foreach (var property in modelTerm.Properties)
-                    {
-                        term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
-                    }
-                }
-                if (modelTerm.LocalProperties.Any())
-                {
-                    foreach (var property in modelTerm.LocalProperties)
-                    {
-                        term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
-                    }
-                }
+            if (modelTerm.Properties.Any())
+            {
+                SetTermProperties(modelTerm, parser, term);
+            }
+
+            if (modelTerm.LocalProperties.Any())
+            {
+                SetTermLocalProperties(modelTerm, parser, term);
             }
 
             termStore.CommitAll();
@@ -292,10 +265,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
 
-            parser = this.CreateChildTerms(web, modelTerm, term, termStore, parser, scope);
+            parser = this.CreateChildTerms(web, modelTerm, term, termStore, parser, scope, false);
             return Tuple.Create(modelTerm.Id, parser);
         }
 
+        private void CreateTermLabels(Model.Term modelTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope, Term term)
+        {
+            foreach (var label in modelTerm.Labels)
+            {
+                if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
+                {
+                    var l = term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
+                }
+                else
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
+                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
+                }
+            }
+        }
+
+        private static void SetTermProperties(Model.Term modelTerm, TokenParser parser, Term term)
+        {
+            foreach (var property in modelTerm.Properties)
+            {
+                term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+            }
+        }
+
+        private static void SetTermLocalProperties(Model.Term modelTerm, TokenParser parser, Term term)
+        {
+            foreach (var property in modelTerm.LocalProperties)
+            {
+                term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+            }
+        }
 
         /// <summary>
         /// Creates child terms for the current model term if any exist
@@ -306,8 +310,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="termStore"></param>
         /// <param name="parser"></param>
         /// <param name="scope"></param>
+        /// <param name="newReusedHierarchy"></param>
         /// <returns>Updated parser object</returns>
-        private TokenParser CreateChildTerms(Web web, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        private TokenParser CreateChildTerms(Web web, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope, bool newReusedHierarchy)
         {
             if (modelTerm.Terms.Any())
             {
@@ -336,6 +341,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             modelTermTerm.Id = termTerm.Id;
+                        }
+                        if (termTerm != null && newReusedHierarchy)
+                        {
+                            //Set term local properties as this is a newly reused or pinned term hierarchy with children.
+                            SetTermLocalProperties(modelTerm, parser, termTerm);
+                            parser = CreateChildTerms(web, modelTermTerm, term, termStore, parser, scope, true);
                         }
                     }
                     else
@@ -372,9 +383,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="parser"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        private TryReuseTermResult TryReuseTerm(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        private TryReuseTermResult TryReuseTerm(Web web, Model.Term modelTerm, TermSetItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         {
             if (!modelTerm.IsReused) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
+            if (modelTerm.IsPinned && !modelTerm.IsPinnedRoot) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
             if (modelTerm.Id == Guid.Empty) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
 
             // Since we're reusing terms ensure the previous terms are committed
@@ -419,13 +431,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // Reuse term
                 Term createdTerm = null;
-                if (parent is TermSet)
+
+                if (modelTerm.IsPinnedRoot)
                 {
-                    createdTerm = ((TermSet)parent).ReuseTerm(preExistingTerm, false);
+                    createdTerm = parent.ReuseTermWithPinning(preExistingTerm);
                 }
-                else if (parent is Term)
+                else
                 {
-                    createdTerm = ((Term)parent).ReuseTerm(preExistingTerm, false);
+                    createdTerm = parent.ReuseTerm(preExistingTerm, modelTerm.ReuseChildren);
                 }
 
                 if (modelTerm.IsSourceTerm)
@@ -433,12 +446,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     preExistingTerm.ReassignSourceTerm(createdTerm);
                 }
 
+                if (!modelTerm.IsPinned)
+                {
+                    if (modelTerm.Labels.Any())
+                    {
+                        CreateTermLabels(modelTerm, termStore, parser, scope, createdTerm);
+                    }
+
+                    if (modelTerm.Properties.Any())
+                    {
+                        SetTermProperties(modelTerm, parser, createdTerm);
+                    }
+                }
+
+                if (modelTerm.LocalProperties.Any())
+                {
+                    SetTermLocalProperties(modelTerm, parser, createdTerm);
+                }
+
                 termStore.CommitAll();
                 web.Context.Load(createdTerm);
                 web.Context.ExecuteQueryRetry();
 
                 // Create any child terms
-                parser = this.CreateChildTerms(web, modelTerm, createdTerm, termStore, parser, scope);
+                parser = this.CreateChildTerms(web, modelTerm, createdTerm, termStore, parser, scope, true);
 
                 // Return true, because our TryReuseTerm attempt succeeded!
                 return new TryReuseTermResult() { Success = true, UpdatedParser = parser };
@@ -614,6 +645,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.Name = term.Name;
                 modelTerm.IsAvailableForTagging = term.IsAvailableForTagging;
                 modelTerm.IsReused = term.IsReused;
+                modelTerm.IsPinned = term.IsPinned;
+                modelTerm.IsPinnedRoot = term.IsPinnedRoot;
                 modelTerm.IsSourceTerm = term.IsSourceTerm;
                 modelTerm.SourceTermId = (term.SourceTerm != null) ? term.SourceTerm.Id : Guid.Empty;
                 modelTerm.IsDeprecated = term.IsDeprecated;
