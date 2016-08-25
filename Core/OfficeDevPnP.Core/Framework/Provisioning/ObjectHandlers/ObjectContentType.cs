@@ -465,7 +465,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 #endif
-                }
+                
 
                     // If the Content Type is a DocumentSet
                     if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||
