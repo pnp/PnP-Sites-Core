@@ -259,6 +259,9 @@ namespace Microsoft.SharePoint.Client
         public static bool WebExistsByTitle(this Web parentWeb, string title)
         {
             bool exists = false;
+            
+            parentWeb.Context.Load(parentWeb.Webs);
+            parentWeb.Context.ExecuteQueryRetry();
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
             if (subWeb != null)
