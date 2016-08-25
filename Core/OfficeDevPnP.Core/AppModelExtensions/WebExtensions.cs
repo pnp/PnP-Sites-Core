@@ -260,8 +260,7 @@ namespace Microsoft.SharePoint.Client
         {
             bool exists = false;
             
-            parentWeb.Context.Load(parentWeb.Webs);
-            parentWeb.Context.ExecuteQueryRetry();
+            parentWeb.EnsureProperty(p => p.Webs);
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
             if (subWeb != null)
