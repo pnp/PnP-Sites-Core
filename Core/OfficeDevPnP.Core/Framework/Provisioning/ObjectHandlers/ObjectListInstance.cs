@@ -126,12 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (field == null)
                                 {
                                     // log missing referenced field
-                                    this.WriteWarning(
-                                        string.Format("The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.",
-                                                      listInfo.TemplateList.Title,
-                                                      fieldRef.Name,
-                                                      fieldRef.Id),
-                                        ProvisioningMessageType.Error);
+                                    this.WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
 
                                     // move onto next field reference
                                     continue;

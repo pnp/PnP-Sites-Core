@@ -1346,6 +1346,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_ {
