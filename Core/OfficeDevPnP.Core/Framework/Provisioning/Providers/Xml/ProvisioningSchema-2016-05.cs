@@ -2470,8 +2470,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         public Security() {
             this.breakRoleInheritanceField = false;
             this.copyRoleAssignmentsField = false;
+            this.clearSubscopesField = false;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public User[] AdditionalAdministrators {
@@ -2563,6 +2564,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
         public bool ClearSubscopes {
             get {
                 return this.clearSubscopesField;
