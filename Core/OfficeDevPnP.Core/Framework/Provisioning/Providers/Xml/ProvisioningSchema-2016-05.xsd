@@ -1013,7 +1013,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="ClearSubscopes" type="xsd:boolean" use="required">
+    <xsd:attribute name="ClearSubscopes" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           Defines whether to clear subscopes or not while breaking role inheritance, optional attribute.
