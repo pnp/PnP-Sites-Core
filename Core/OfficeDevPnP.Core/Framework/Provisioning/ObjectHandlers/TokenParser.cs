@@ -203,6 +203,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new RoleDefinitionToken(web, roleDef));
             }
 
+            // Groups
+            web.EnsureProperty(w => w.SiteGroups.Include(g => g.Title, g => g.Id));
+            foreach (var siteGroup in web.SiteGroups)
+            {
+                _tokens.Add(new GroupIdToken(web, siteGroup.Title, siteGroup.Id));
+            }
+            web.EnsureProperty(w => w.AssociatedVisitorGroup).EnsureProperties(g => g.Id, g => g.Title);
+            web.EnsureProperty(w => w.AssociatedMemberGroup).EnsureProperties(g => g.Id, g => g.Title);
+            web.EnsureProperty(w => w.AssociatedOwnerGroup).EnsureProperties(g => g.Id, g => g.Title);
+
+            if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+            {
+                _tokens.Add(new GroupIdToken(web, "associatedvisitorgroup", web.AssociatedVisitorGroup.Id));
+            }
+            if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+            {
+                _tokens.Add(new GroupIdToken(web, "associatedmembergroup", web.AssociatedMemberGroup.Id));
+            }
+            if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+            {
+                _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
+            }
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
