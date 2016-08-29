@@ -1505,7 +1505,7 @@ namespace Microsoft.SharePoint.Client
         {
             // Get list instances
             var list = web.GetListByTitle(listTitle);
-            var contentType = GetContentTypeById(web, contentTypeId);
+            var contentType = GetContentTypeById(list, contentTypeId);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }
@@ -1520,7 +1520,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
                 throw new ArgumentNullException("contentTypeId");
-            var contentType = GetContentTypeById(web, contentTypeId);
+            var contentType = GetContentTypeById(list, contentTypeId);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }
