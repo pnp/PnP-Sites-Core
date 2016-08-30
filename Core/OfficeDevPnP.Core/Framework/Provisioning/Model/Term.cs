@@ -25,6 +25,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Owner { get; set; }
         public Boolean IsAvailableForTagging { get; set; }
         public Boolean IsReused { get; set; }
+        public Boolean IsPinned { get; set; }
+        public Boolean IsPinnedRoot { get; set; }
+        public Boolean ReuseChildren { get; set; }
         public Boolean IsSourceTerm { get; set; }
         public Guid SourceTermId { get; set; }
         public Boolean IsDeprecated { get; set; }
