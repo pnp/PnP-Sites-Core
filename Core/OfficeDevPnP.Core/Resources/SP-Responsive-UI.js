@@ -36,13 +36,10 @@ PnPResponsiveApp.setUpToggling = function () {
     topNavClone.attr('id', topNavClone.attr('id') + "_mobileClone");
     topNav.addClass('no-mobile');
     $('#sideNavBox').append(topNavClone);
-    var sideNavToggle = $('<button>');
-    sideNavToggle.attr('id', 'navbar-toggle')
-    sideNavToggle.addClass('mobile-only');
-	sideNavToggle.addClass('burger');
-    sideNavToggle.attr('type', 'button');
-	sideNavToggle.html("<span></span>");
-    sideNavToggle.click(function() { 
+
+    var sideNavToggle = $('<button id="navbar-toggle" class="mobile-only burger" type="button"><span></span></button>');
+    sideNavToggle.click(function (event) {
+        event.preventDefault();
         $("body").toggleClass('shownav');
         $(this).toggleClass('selected');
     });
@@ -66,19 +63,22 @@ PnPResponsiveApp.init = function () {
             }
 
             PnPResponsiveApp.setUpToggling();
-			PnPResponsiveApp.responsivizeSettings();
-			
-			// also listen for dynamic page change to Settings page
-			window.onhashchange = function () { PnPResponsiveApp.responsivizeSettings(); };
-			
-			// extend/override some SP native functions to fix resizing quirks
-			var originalResizeFunction = FixRibbonAndWorkspaceDimensions;
-			FixRibbonAndWorkspaceDimensions = function() {
-				// let sharepoint do its thing
-				originalResizeFunction();
-				// fix the body container width
-				$("#s4-bodyContainer").width($("#s4-workspace").width() );
-			}
+            PnPResponsiveApp.responsivizeSettings();
+
+            // also listen for dynamic page change to Settings page
+            window.onhashchange = function () {
+                PnPResponsiveApp.responsivizeSettings();
+            };
+
+            // extend/override some SP native functions to fix resizing quirks
+            var FixRibbonAndWorkspaceDimensions = function () {
+                // let SharePoint do its thing
+                originalResizeFunction();
+                // fix the body container width
+                $("#s4-bodyContainer").width($("#s4-workspace").width());
+            };
+            var originalResizeFunction = FixRibbonAndWorkspaceDimensions;
+
         });
     }
 };
