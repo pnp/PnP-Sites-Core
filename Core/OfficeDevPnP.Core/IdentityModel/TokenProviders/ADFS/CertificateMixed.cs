@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
         private GenericXmlSecurityToken RequestToken(string serialNumber, Uri certificateMixed, string relyingPartyIdentifier)
         {
             GenericXmlSecurityToken genericToken = null;
-            using (var factory = new WSTrustChannelFactory(new UserNameWSTrustBinding(SecurityMode.TransportWithMessageCredential), new EndpointAddress(certificateMixed)))
+            using (var factory = new WSTrustChannelFactory(new CertificateWSTrustBinding(SecurityMode.TransportWithMessageCredential), new EndpointAddress(certificateMixed)))
             {
                 factory.TrustVersion = TrustVersion.WSTrust13;
                 // Hookup the user and password 
