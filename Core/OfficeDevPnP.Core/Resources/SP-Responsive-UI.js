@@ -1,4 +1,6 @@
 /* PnP SharePoint - Responsiveness */
+(function () {
+    "use strict";
 var PnPResponsiveApp = PnPResponsiveApp || {};
 
 PnPResponsiveApp.responsivizeSettings = function () {
@@ -116,3 +118,4 @@ function addViewport() {
 loadScript("//code.jquery.com/jquery-1.12.0.min.js", function() {
     PnPResponsiveApp.init();
 });
+}());
