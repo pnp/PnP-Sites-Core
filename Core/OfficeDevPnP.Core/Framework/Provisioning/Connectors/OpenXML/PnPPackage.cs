@@ -141,18 +141,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         /// <summary>
         /// The Files of the package
         /// </summary>
-        public IDictionary<String, PnPPackageFileItem> Files
+        public IDictionary<String, PnPPackageFileItem> Files 
         {
             get
             {
                 Dictionary<String, PnPPackageFileItem> result = new Dictionary<String, PnPPackageFileItem>();
+				var map = FilesMap.Map;
                 List<PackagePart> fileParts = GetAllPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
                 foreach (PackagePart p in fileParts)
                 {
-                    String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
-                    String folder = fileName.LastIndexOf('/') >= 0 ?
-                        fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
-                    fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
+                    String fileName = Path.GetFileName(p.Uri.ToString());
+					var originalName = map[fileName];
+					String folder = Path.GetDirectoryName(originalName);
                     Byte[] content = ReadPackagePartBytes(p);
 
                     result[fileName] = new PnPPackageFileItem

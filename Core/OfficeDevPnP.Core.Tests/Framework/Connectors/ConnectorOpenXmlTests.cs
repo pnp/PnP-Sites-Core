@@ -158,6 +158,38 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             stream = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
             Assert.IsNotNull(stream.Length > 0);
         }
-        #endregion
-    }
+
+		[TestMethod]
+		public void OpenXMLGetFilesFromFolder()
+		{
+			var fileSystemConnector = new FileSystemConnector(
+					String.Format(@"{0}\..\..\Resources",
+					AppDomain.CurrentDomain.BaseDirectory),
+					"Templates");
+
+			var openXMLConnector = new OpenXMLConnector(packageFileName,
+				fileSystemConnector,
+				"OfficeDevPnP Automated Test");
+
+			SaveFileInPackage(fileSystemConnector.Parameters[FileConnectorBase.CONNECTIONSTRING] + @"\garagelogo.png", "Images", openXMLConnector);
+
+			if (openXMLConnector is ICommitableFileConnector)
+			{
+				((ICommitableFileConnector)openXMLConnector).Commit();
+			}
+
+			openXMLConnector = new OpenXMLConnector(packageFileName,
+				fileSystemConnector,
+				"OfficeDevPnP Automated Test");
+
+
+			var folders = openXMLConnector.GetFolders();
+			Assert.IsTrue(folders.Count > 0);
+			Assert.IsTrue(folders.Exists(s => string.Equals(s, "Images", StringComparison.OrdinalIgnoreCase)));
+			var files = openXMLConnector.GetFiles("Images");
+			Assert.IsTrue(files.Count > 0);
+		}
+
+		#endregion
+	}
 }
