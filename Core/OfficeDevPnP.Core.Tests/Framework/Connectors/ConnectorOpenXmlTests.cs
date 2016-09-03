@@ -172,6 +172,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 				"OfficeDevPnP Automated Test");
 
 			SaveFileInPackage(fileSystemConnector.Parameters[FileConnectorBase.CONNECTIONSTRING] + @"\garagelogo.png", "Images", openXMLConnector);
+			SaveFileInPackage(fileSystemConnector.Parameters[FileConnectorBase.CONNECTIONSTRING] + @"\garagelogo.png", "Images\\Test", openXMLConnector);
+			SaveFileInPackage(fileSystemConnector.Parameters[FileConnectorBase.CONNECTIONSTRING] + @"\garagebg.jpg", "Images/Test", openXMLConnector);
 
 			if (openXMLConnector is ICommitableFileConnector)
 			{
@@ -188,6 +190,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 			Assert.IsTrue(folders.Exists(s => string.Equals(s, "Images", StringComparison.OrdinalIgnoreCase)));
 			var files = openXMLConnector.GetFiles("Images");
 			Assert.IsTrue(files.Count > 0);
+
+			files = openXMLConnector.GetFiles("Images\\Test");
+			Assert.IsTrue(files.Count == 2);
+
+			files = openXMLConnector.GetFiles("Images/Test");
+			Assert.IsTrue(files.Count == 2);
+
 		}
 
 		#endregion
