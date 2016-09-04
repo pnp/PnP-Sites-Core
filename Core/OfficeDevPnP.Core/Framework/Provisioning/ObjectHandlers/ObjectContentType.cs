@@ -463,9 +463,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
                             }
                         }
-                    }
 #endif
-                
+                    }
 
                     // If the Content Type is a DocumentSet
                     if (Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, ct).Value ||
