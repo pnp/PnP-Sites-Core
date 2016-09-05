@@ -285,7 +285,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 container = "";
             }
 
-            if (stream == null)
+			container = container.Replace(@"\", "/").Trim('/');
+
+			if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
