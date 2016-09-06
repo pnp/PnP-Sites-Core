@@ -508,10 +508,30 @@ namespace Microsoft.SharePoint.Client
                 {
                     var createPath = string.Join("/", childFolderNames, 0, currentCount);
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_CreateFolder0Under12, createPath, locationType, rootUrl);
-
-                    nextFolder = folderCollection.Add(folderName);
-                    folderCollection.Context.Load(nextFolder);
-                    folderCollection.Context.ExecuteQueryRetry();
+                    if (locationType == "List")
+                    {
+                        createPath = createPath.Substring(0, createPath.Length - folderName.Length).TrimEnd('/');
+                        var listUrl =
+                            containingList.EnsureProperty(f => f.RootFolder).EnsureProperty(r => r.ServerRelativeUrl);
+                        ListItemCreationInformation newFolderInfo = new ListItemCreationInformation();
+                        newFolderInfo.UnderlyingObjectType = FileSystemObjectType.Folder;
+                        newFolderInfo.LeafName = folderName;
+                        newFolderInfo.FolderUrl = UrlUtility.Combine(listUrl, createPath);
+                        ListItem newFolderItem = containingList.AddItem(newFolderInfo);
+                        newFolderItem["Title"] = folderName;
+                        newFolderItem.Update();
+                        containingList.Context.Load(newFolderItem);
+                        containingList.Context.ExecuteQueryRetry();
+                        nextFolder = web.GetFolderByServerRelativeUrl(newFolderItem["FileRef"] as string);
+                        containingList.Context.Load(nextFolder);
+                        containingList.Context.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        nextFolder = folderCollection.Add(folderName);
+                        folderCollection.Context.Load(nextFolder);
+                        folderCollection.Context.ExecuteQueryRetry();
+                    }
                 }
 
                 currentFolder = nextFolder;
