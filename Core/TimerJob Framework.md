@@ -460,3 +460,4 @@ void SiteGovernanceJob_TimerJobRun(object o, TimerJobRunEventArgs e)
 }
 ```
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/timerjobframework" /> 

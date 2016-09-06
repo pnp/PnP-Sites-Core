@@ -267,3 +267,4 @@ All code should be version independent, meaning that code should not assume that
 # Multilingual support #
 The Core component code cannot assume that the code is executed against the English language. Hardcoded references to library names are not acceptable for the Core component implementation, like assuming that publishing site has a "Pages" library.
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/readme" /> 
