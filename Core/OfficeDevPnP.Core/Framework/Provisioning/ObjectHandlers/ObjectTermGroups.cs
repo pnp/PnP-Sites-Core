@@ -238,7 +238,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private Tuple<Guid, TokenParser> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent,
             TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
-            // If the term is a re-used term try to re-use before trying to create. 
+            // If the term is a re-used term and the term is not a source term, skip for now and create later
             if (modelTerm.IsReused && !modelTerm.IsSourceTerm)
             {
                 this.reusedTerms.Add(new ReusedTerm()
@@ -249,15 +249,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
                 return null;
             }
-            //if (modelTerm.IsReused && modelTerm.IsSourceTerm)
-            //{
-            //    var result = TryReuseTerm(web, modelTerm, parent, termStore, parser, scope);
-            //    if (result.Success)
-            //    {
-            //        return (Tuple.Create(modelTerm.Id, result.UpdatedParser));
-            //    }
-            //}
-
+          
             // Create new term
             Term term;
             if (modelTerm.Id == Guid.Empty)
@@ -274,11 +266,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
             }
-            if (!String.IsNullOrEmpty(modelTerm.Description))
+            if (!string.IsNullOrEmpty(modelTerm.Description))
             {
                 term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
             }
-            if (!String.IsNullOrEmpty(modelTerm.Owner))
+            if (!string.IsNullOrEmpty(modelTerm.Owner))
             {
                 term.Owner = modelTerm.Owner;
             }
