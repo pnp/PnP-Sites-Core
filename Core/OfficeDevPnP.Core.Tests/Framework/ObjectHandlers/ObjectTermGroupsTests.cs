@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     {
 
         private Guid _termSetGuid;
+        private Guid _additionalTermSetGuid;
         private Guid _termGroupGuid;
 
         [TestInitialize]
@@ -26,6 +27,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 _termSetGuid = Guid.NewGuid();
                 _termGroupGuid = Guid.NewGuid();
+                _additionalTermSetGuid = Guid.NewGuid();
             }
             else
             {
@@ -45,8 +47,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                         TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
                         var store = session.GetDefaultSiteCollectionTermStore();
-                        var termSet = store.GetTermSet(_termSetGuid);
-                        termSet.DeleteObject();
+                        var termSet1 = store.GetTermSet(_termSetGuid);
+                        var termSet2 = store.GetTermSet(_additionalTermSetGuid);
+
+                        termSet1.DeleteObject();
+                        termSet2.DeleteObject();
 
                         if (_termGroupGuid != Guid.Empty)
                         {
@@ -165,6 +170,80 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsTrue(template.TermGroups.Any());
                 Assert.IsInstanceOfType(template.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
+            }
+
+
+        }
+
+        [TestMethod]
+        public void CanProvisionReusableTerms()
+        {
+            var template = new ProvisioningTemplate();
+
+            TermGroup termGroup = new TermGroup(_termGroupGuid, "TestProvisioningGroup", null);
+
+            List<TermSet> termSets = new List<TermSet>();
+
+            TermSet termSet1 = new TermSet(_termSetGuid, "TestProvisioningTermSet1", null, true, false, null, null);
+            TermSet termSet2 = new TermSet(_additionalTermSetGuid, "TestProvisioningTermSet2", null, true, false, null, null);
+
+            var sourceTerm = new Term(Guid.NewGuid(), "Source Term 1", null, null, null, null, null)
+            {
+                IsReused = true,
+                IsSourceTerm = true
+            };
+
+
+            var reusedTerm = new Term(sourceTerm.Id, "Source Term 1", null, null, null, null, null)
+            {
+                IsReused = true,
+                SourceTermId = sourceTerm.Id
+            };
+
+
+            termSet1.Terms.Add(reusedTerm);
+            termSet2.Terms.Add(sourceTerm);
+
+            termSets.Add(termSet1);
+            termSets.Add(termSet2);
+
+            termGroup.TermSets.AddRange(termSets);
+
+            template.TermGroups.Add(termGroup);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+
+                var parser = new TokenParser(ctx.Web, template);
+
+                new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+
+                var store = session.GetDefaultKeywordsTermStore();
+                var group = store.GetGroup(_termGroupGuid);
+                var set2 = store.GetTermSet(_additionalTermSetGuid);
+
+                ctx.Load(group);
+                ctx.Load(set2, s => s.Terms);
+                ctx.ExecuteQueryRetry();
+
+                var createdSourceTerm = set2.GetTerm(sourceTerm.Id);
+                ctx.Load(createdSourceTerm);
+                ctx.ExecuteQueryRetry();
+
+                Assert.IsTrue(createdSourceTerm.IsSourceTerm);
+                Assert.IsTrue(createdSourceTerm.IsReused);
+
+                var set1 = store.GetTermSet(_termSetGuid);
+                ctx.Load(set1, s => s.Terms);
+                ctx.ExecuteQueryRetry();
+
+                var createdReusedTerm = set1.GetTerm(reusedTerm.Id);
+                ctx.Load(createdReusedTerm, c => c.SourceTerm, c => c.IsReused);
+                ctx.ExecuteQueryRetry();
+                Assert.IsTrue(createdReusedTerm.SourceTerm.Id == sourceTerm.Id);
+                Assert.IsTrue(createdReusedTerm.IsReused);
             }
 
 
