@@ -118,9 +118,8 @@ namespace OfficeDevPnP.Core
         /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
-        /// <param name="icon">Optional icon to use for the popup form</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null)
+        public ClientContext GetWebLoginClientContext(string siteUrl)
         {
             var cookies = new CookieContainer();
             var siteUri = new Uri(siteUrl);
@@ -128,16 +127,10 @@ namespace OfficeDevPnP.Core
             var thread = new Thread(() =>
             {
                 var form = new System.Windows.Forms.Form();
-                if (icon != null)
-                {
-                    form.Icon = icon;
-                }
-                var browser = new System.Windows.Forms.WebBrowser
-                {
-                    ScriptErrorsSuppressed = true,
-                    Dock = DockStyle.Fill
-                };
+                var browser = new System.Windows.Forms.WebBrowser();
 
+                browser.ScriptErrorsSuppressed = true;
+                browser.Dock = DockStyle.Fill;
 
                 form.SuspendLayout();
                 form.Width = 900;
@@ -437,7 +430,7 @@ namespace OfficeDevPnP.Core
         {
 
             ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.ExecutingWebRequest += delegate(object oSender, WebRequestEventArgs webRequestEventArgs)
+            clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
             {
                 if (fedAuth != null)
                 {
@@ -478,6 +471,46 @@ namespace OfficeDevPnP.Core
         {
             fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, String.Format("{0}\\{1}", domain, user), password, new Uri(String.Format("https://{0}/adfs/services/trust/13/usernamemixed", sts)), idpId, logonTokenCacheExpirationWindow);
         }
+
+
+
+
+        public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+            {
+                if (fedAuth != null)
+                {
+                    Cookie fedAuthCookie = fedAuth.GetCookies(new Uri(siteUrl))["FedAuth"];
+                    // If cookie is expired a new fedAuth cookie needs to be requested
+                    if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now)
+                    {
+                        fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                    }
+                }
+                else
+                {
+                    fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                }
+
+                if (fedAuth == null)
+                {
+                    throw new Exception("No fedAuth cookie acquired");
+                }
+
+                webRequestEventArgs.WebRequestExecutor.WebRequest.CookieContainer = fedAuth;
+            };
+            return clientContext;
+        }
+
+        public void RefreshADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(string.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+
+        }
+
+
 
         /// <summary>
         /// Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
