@@ -12,3 +12,5 @@ We will be updating the package during monthly master merges with the latest com
 
 ![](http://blogs.msdn.com/cfs-filesystemfile.ashx/__key/communityserver-blogs-components-weblogfiles/00-00-00-81-08-metablogapi/3223.image_5F00_46062CD9.png)
 
+
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/nuget" /> 
