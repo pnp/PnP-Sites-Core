@@ -41,7 +41,7 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
         <pnp:TermSet Name="TS_2_4" ID="{B279D248-73A6-42AD-9AF4-A6D5A19DB750}">
           <pnp:Terms>
             <!-- Term reuse requires the ID of the term to match an already created term id + specify the IsReused flag -->
-            <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" />
+            <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" IsSourceTerm="false" />
           </pnp:Terms>
         </pnp:TermSet>
       </pnp:TermSets>
