@@ -206,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ProvisionStructuralNavigation(web, structuralNavigation, parser, true);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, Boolean currentNavigation)
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation)
         {
             // Determine the target structural navigation
             var navigationType = currentNavigation ?
@@ -228,14 +228,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 );
         }
 
-        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, String parentNodeTitle = null)
+        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, string parentNodeTitle = null)
         {
             foreach (var node in nodes)
             {
                 web.AddNavigationNode(
-                    node.Title,
+                    parser.ParseString(node.Title),
                     new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
-                    parentNodeTitle,
+                    parser.ParseString(parentNodeTitle),
                     navigationType,
                     node.IsExternal);
 
@@ -244,7 +244,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser,
                     navigationType, 
                     node.NavigationNodes, 
-                    node.Title);
+                    parser.ParseString(node.Title));
             }
         }
 
