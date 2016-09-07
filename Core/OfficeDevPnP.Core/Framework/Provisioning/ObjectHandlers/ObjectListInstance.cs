@@ -1592,8 +1592,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
+        private List<string> SpecialFields => new List<string>() {"LikedBy"};
+
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
-        {
+        {  
             Microsoft.SharePoint.Client.FieldCollection siteColumns = null;
             if (web.IsSubSite())
             {
@@ -1610,7 +1612,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
             }
 
-            foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden))
+            foreach (var field in siteList.Fields.AsEnumerable().Where(field => !field.Hidden || SpecialFields.Contains(field.InternalName)))
             {
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
                 if (siteColumn != null)
