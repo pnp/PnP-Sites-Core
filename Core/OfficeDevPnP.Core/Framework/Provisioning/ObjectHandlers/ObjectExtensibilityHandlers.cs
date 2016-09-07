@@ -36,8 +36,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 handler.Configuration = parser.ParseString(handler.Configuration);
                             }
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_, handler.Assembly);
-                            var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, handler, template);
-                            if (_providedTokens != null)
+							var _providedTokens = _extManager.ExecuteTokenProviderCallOut(context, handler, template, applyingInformation);
+							if (_providedTokens != null)
                             {
                                 foreach (var token in _providedTokens)
                                 {
