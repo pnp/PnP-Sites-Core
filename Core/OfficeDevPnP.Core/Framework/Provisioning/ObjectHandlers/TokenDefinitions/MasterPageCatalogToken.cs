@@ -16,7 +16,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 this.Web.EnsureProperty(w => w.Url);
                 using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
                 {
-                    var catalog = context.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                    List catalog;
+                    // Check if the current web is a sub-site
+                    if (Web.IsSubSite())
+                    {
+                        // Master page URL needs to be retrieved from the rootweb
+                        var rootWeb = (Web.Context as ClientContext).Site.RootWeb;
+                        catalog = rootWeb.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                    }
+                    else
+                    {
+                        catalog = Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                    }
+
                     context.Load(catalog, c => c.RootFolder.ServerRelativeUrl);
                     context.ExecuteQueryRetry();
                     CacheValue = catalog.RootFolder.ServerRelativeUrl;
