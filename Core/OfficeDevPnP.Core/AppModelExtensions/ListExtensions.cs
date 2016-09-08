@@ -1167,9 +1167,10 @@ namespace Microsoft.SharePoint.Client
                                 xDefaultValue.SetValue(fieldString);
                                 xATag.Add(xDefaultValue);
                             }
-                            xMetadataDefaults.Add(xATag);
+                            
                             values.Remove(defaultColumnValueInSamePath);
                         }
+                        xMetadataDefaults.Add(xATag);
                     }
 
                     var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
