@@ -825,10 +825,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ContentTypesEnabled = templateList.ContentTypesEnabled;
                     isDirty = true;
                 }
-                if (existingList.BaseTemplate != (int)ListTemplateType.Survey && existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary)
+                if (existingList.BaseTemplate != (int)ListTemplateType.Survey && 
+                    existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && 
+                    existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
                 {
                     // https://msdn.microsoft.com/EN-US/library/microsoft.sharepoint.splist.enableattachments.aspx
-                    // The EnableAttachments property does not apply to any list that has a base type of Survey or DocumentLibrary.
+                    // The EnableAttachments property does not apply to any list that has a base type of Survey, DocumentLibrary or PictureLibrary.
                     // If you set this property to true for either type of list, it throws an SPException.
                     if (templateList.EnableAttachments != existingList.EnableAttachments)
                     {
@@ -1155,9 +1157,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.DocumentTemplateUrl = parser.ParseString(list.DocumentTemplate);
             }
 
-            // EnableAttachments are not supported for DocumentLibraries and Surveys
+            // EnableAttachments are not supported for DocumentLibraries, Survey and PictureLibraries
             // TODO: the user should be warned
-            if (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && createdList.BaseTemplate != (int)ListTemplateType.Survey)
+            if (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && 
+                createdList.BaseTemplate != (int)ListTemplateType.Survey &&
+                createdList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
             {
                 createdList.EnableAttachments = list.EnableAttachments;
             }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.7.1609.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BICENTERSITE0template">
     <pnp:ProvisioningTemplate ID="BICENTERSITE0template" Version="1" BaseSiteTemplate="BICENTERSITE#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/Default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -67,7 +67,7 @@
         <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="461cdf16-ab0e-4446-9eb7-e2cb8cc07288" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security ClearSubscopes="false">
+      <pnp:Security>
         <pnp:AdditionalOwners>
           <pnp:User Name="i:0#.w|pnp\pnpadmin" />
         </pnp:AdditionalOwners>

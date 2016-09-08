@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.7.1609.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-STS0template">
     <pnp:ProvisioningTemplate ID="STS0template" Version="1" BaseSiteTemplate="STS#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -74,7 +74,7 @@
         <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="3c76ae82-ef7a-43fe-b31f-55295d51ebd0" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security ClearSubscopes="false">
+      <pnp:Security>
         <pnp:AdditionalOwners>
           <pnp:User Name="SHAREPOINT\system" />
         </pnp:AdditionalOwners>
@@ -2812,6 +2812,7 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="790722e8-f13c-4f84-90b2-36161bfe7873" Name="j33b1bc20532487296f1bbbdead35a56" Hidden="true" DisplayName="HashTags_0" />
             <pnp:FieldRef ID="6e4d832b-f610-41a8-b3e0-239608efda41" Name="LikesCount" DisplayName="Number of Likes" />
+            <pnp:FieldRef ID="2cdcd5eb-846d-4f4d-9aaf-73e8e73c7312" Name="LikedBy" Hidden="true" DisplayName="Liked By" />
             <pnp:FieldRef ID="333b1bc2-0532-4872-96f1-bbbdead35a56" Name="HashTags" DisplayName="HashTags" />
           </pnp:FieldRefs>
         </pnp:ListInstance>

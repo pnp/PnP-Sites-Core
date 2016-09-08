@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.7.1609.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BLANKINTERNET0template">
     <pnp:ProvisioningTemplate ID="BLANKINTERNET0template" Version="1" BaseSiteTemplate="BLANKINTERNET#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -69,7 +69,7 @@
         <pnp:PropertyBagEntry Key="__NoMobileMapping3794dd2923194721bcc64cb5137b9c72" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NoMobileMapping49227f0979ae4899b019af238612c3a3" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security ClearSubscopes="false">
+      <pnp:Security>
         <pnp:AdditionalOwners>
           <pnp:User Name="i:0#.w|pnp\pnpadmin" />
         </pnp:AdditionalOwners>

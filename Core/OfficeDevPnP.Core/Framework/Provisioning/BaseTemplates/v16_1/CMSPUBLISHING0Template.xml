@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.7.1609.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-CMSPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="CMSPUBLISHING0template" Version="1" BaseSiteTemplate="BLANKINTERNET#0">
       <pnp:WebSettings RequestAccessEmail="someone@example.com" NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -15,19 +15,19 @@
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__PageLayouts" Value="__inherit" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;96e12885-f388-4c80-bfd6-45889d590b77&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="2b3bccec-9427-476b-8c68-434c35e8fe4c" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;cc59535a-39ac-4051-8b1c-d568929c69df&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="3a0a050b-19a1-4a72-bfbc-50e70f6e91be" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3;6;7;8;9;10;11" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__PagesListId" Value="aed59a08-decb-4c4c-920e-6889f213f76d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="6318272d-265c-4383-ba71-84600da2dc1c" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NewPageUrlToken" Value="__inherit" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsThemedCssFolderUrl" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__ImagesListId" Value="0e5efba4-dd4d-4659-a9e8-f39d37075541" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="d23cb6b5-c173-48ec-bed9-2fa16e25714c" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.5528" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.5625" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__WebTemplates" Value="&lt;webtemplates&gt;&lt;lcid id=&quot;all&quot;&gt;&lt;webtemplate name=&quot;CMSPUBLISHING#0&quot; /&gt;&lt;webtemplate name=&quot;BLANKINTERNET#2&quot; /&gt;&lt;webtemplate name=&quot;ENTERWIKI#0&quot; /&gt;&lt;webtemplate name=&quot;SRCHCEN#0&quot; /&gt;&lt;/lcid&gt;&lt;/webtemplates&gt;" Overwrite="false" />
@@ -51,7 +51,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{DD670C54-737C-40D2-A97D-BF4DE9E43388}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=43">
+            <View Name="{92DC43D6-DA4F-41C9-93BE-5A8D7283DF22}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -86,7 +86,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{DD749E40-E130-41F6-B75F-9735BD6B9B0B}" Type="HTML" DisplayName="All Assets" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=43">
+            <View Name="{F9849523-FC16-4DC4-8F44-EBBFB550F2A3}" Type="HTML" DisplayName="All Assets" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -119,7 +119,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{6BD6849A-6F3E-4955-BED8-304C9898C29B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=43">
+            <View Name="{D4957D9D-5635-4B35-9DF3-25C197B76D3B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -191,7 +191,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{5CDD5AA7-9AFC-4A56-AFAD-1A14EF2CEE95}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=43">
+            <View Name="{D79E7452-86FF-46CD-8C1E-93DF2E4939AD}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -240,7 +240,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x012004" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{29464E12-6FBF-4A5C-9893-6F5ED9E74769}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{A2973352-065E-4344-8A5B-1D544F0A4373}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -259,7 +259,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{393337EE-785A-42C5-B114-DC9DED164B12}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{D037DAD0-DB3E-4C28-B126-08F21ADD910D}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -284,7 +284,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{B17FB313-0DF9-44D9-A834-A9FC6EF11164}" Type="HTML" DisplayName="Due Today" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{3B5533F1-6768-4181-9898-4FC9DB1643BF}" Type="HTML" DisplayName="Due Today" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -309,7 +309,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{3FE5F9DA-9810-417E-AEF7-2F13A8E2026E}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{6C293BC4-FF81-4801-9681-9808A7413E41}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Neq>
@@ -333,7 +333,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{E2AA5EA6-D8D5-45A0-957A-9B17532E929B}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{3BF65BAD-4BEE-45B3-92E1-5E07763EF324}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="AssignedTo" />
@@ -352,7 +352,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{AC796BD5-FC0A-4FF2-851E-4C3388CBC7CC}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=43">
+            <View Name="{3023308D-F95E-4E2C-9BCC-BAAFA4634893}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateCMSPUBLISHING0/templateCMSPUBLISHING0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Membership Type="CurrentUserGroups">
@@ -413,16 +413,16 @@
         </pnp:WebFeatures>
       </pnp:Features>
       <pnp:Files>
-        <pnp:File Src="oslo.master" Folder="{masterpagecatalog}" Overwrite="true">
-          <pnp:Properties>
-            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
-            <pnp:Property Key="DefaultCssFile" Value="osloapp.css" />
-          </pnp:Properties>
-        </pnp:File>
         <pnp:File Src="seattle.master" Folder="{masterpagecatalog}" Overwrite="true">
           <pnp:Properties>
             <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
             <pnp:Property Key="DefaultCssFile" Value="corev15app.css" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="oslo.master" Folder="{masterpagecatalog}" Overwrite="true">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="DefaultCssFile" Value="osloapp.css" />
           </pnp:Properties>
         </pnp:File>
       </pnp:Files>
