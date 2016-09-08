@@ -1472,7 +1472,7 @@ namespace Microsoft.SharePoint.Client
             // Get list instances
             var list = web.GetListByTitle(listTitle);
             // Get content type instance
-            var contentType = GetContentTypeByName(web, contentTypeName);
+            var contentType = GetContentTypeByName(web, contentTypeName,true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
 
@@ -1489,7 +1489,7 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(contentTypeName))
                 throw new ArgumentNullException("contentTypeName");
             // Get content type instance
-            var contentType = GetContentTypeByName(web, contentTypeName);
+            var contentType = GetContentTypeByName(web, contentTypeName,true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
 
@@ -1505,7 +1505,7 @@ namespace Microsoft.SharePoint.Client
         {
             // Get list instances
             var list = web.GetListByTitle(listTitle);
-            var contentType = GetContentTypeById(web, contentTypeId);
+            var contentType = GetContentTypeById(web, contentTypeId,true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }
@@ -1520,7 +1520,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
                 throw new ArgumentNullException("contentTypeId");
-            var contentType = GetContentTypeById(web, contentTypeId);
+            var contentType = GetContentTypeById(web, contentTypeId,true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }
