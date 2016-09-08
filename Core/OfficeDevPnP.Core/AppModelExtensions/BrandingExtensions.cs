@@ -1474,10 +1474,16 @@ namespace Microsoft.SharePoint.Client
                 {
                     var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
                     // Check if the file is there, if so, don't upload it.
-                    if (targetFolder.GetFile("SP-Responsive-UI.js") == null)
+                    var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
+                    if (jsFile == null)
                     {
                         linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
                             CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                    }
+                    else
+                    {
+                        jsFile.EnsureProperty(f => f.ServerRelativeUrl);
+                        linkUrl = jsFile.ServerRelativeUrl;
                     }
 
                     // Check if the file is there, if so, don't upload it.
