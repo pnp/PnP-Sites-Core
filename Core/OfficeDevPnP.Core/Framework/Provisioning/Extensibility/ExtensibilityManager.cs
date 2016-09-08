@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template)
+        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, ExtensibilityHandler provider, ProvisioningTemplate template)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteTokenProviderCallOut";
 
