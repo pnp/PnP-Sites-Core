@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                     if (Web.IsSubSite())
                     {
                         // Master page URL needs to be retrieved from the rootweb
-                        var rootWeb = (context as ClientContext).Site.RootWeb;
+                        var rootWeb = context.Site.RootWeb;
                         catalog = rootWeb.GetCatalog((int)ListTemplateType.MasterPageCatalog);
                     }
                     else
