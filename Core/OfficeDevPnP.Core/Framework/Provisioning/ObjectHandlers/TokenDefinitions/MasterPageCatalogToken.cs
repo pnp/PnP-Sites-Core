@@ -21,12 +21,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                     if (Web.IsSubSite())
                     {
                         // Master page URL needs to be retrieved from the rootweb
-                        var rootWeb = (Web.Context as ClientContext).Site.RootWeb;
+                        var rootWeb = (context as ClientContext).Site.RootWeb;
                         catalog = rootWeb.GetCatalog((int)ListTemplateType.MasterPageCatalog);
                     }
                     else
                     {
-                        catalog = Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                        catalog = context.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
                     }
 
                     context.Load(catalog, c => c.RootFolder.ServerRelativeUrl);
