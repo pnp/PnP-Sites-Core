@@ -164,7 +164,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Parameters.Add("MOCKPARAM", "MOCKPARAMVALUE");
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
@@ -192,7 +192,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
@@ -219,7 +219,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
