@@ -558,6 +558,42 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Find files in the list, Can be slow.
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="match">a wildcard pattern to match</param>
+        /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
+        public static List<File> FindFiles(List list, string match)
+        {
+            Folder rootFolder = list.RootFolder;
+            list.Context.Load(rootFolder);
+            list.Context.ExecuteQuery();
+
+            match = WildcardToRegex(match);
+            List<File> files = new List<File>();
+
+            ParseFiles(rootFolder, match, list.Context as ClientContext, ref files);
+
+            return files;
+        }
+
+        /// <summary>
+        /// Find files in a specific folder
+        /// </summary>
+        /// <param name="folder">The folder to process</param>
+        /// <param name="match">a wildcard pattern to match</param>
+        /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
+        public static List<File> FindFiles(Folder folder, string match)
+        {
+            match = WildcardToRegex(match);
+            List<File> files = new List<File>();
+
+            ParseFiles(folder, match, folder.Context as ClientContext, ref files);
+
+            return files;
+        }
+
+        /// <summary>
         /// Checks if the folder exists at the top level of the web site.
         /// </summary>
         /// <param name="web">Web to check for the named folder</param>
