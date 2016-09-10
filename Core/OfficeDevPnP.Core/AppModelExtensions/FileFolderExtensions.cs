@@ -449,7 +449,7 @@ namespace Microsoft.SharePoint.Client
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
-            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder, l => l.BaseTemplate));
+            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder));
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
