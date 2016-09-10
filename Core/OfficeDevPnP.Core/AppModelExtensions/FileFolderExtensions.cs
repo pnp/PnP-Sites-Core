@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
@@ -146,9 +147,9 @@ namespace Microsoft.SharePoint.Client
         public static Folder ConvertFolderToDocumentSet(this List list, string folderName)
         {
             var folder = list.RootFolder.ResolveSubFolder(folderName);
-            if(folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
-            
-            return ConvertFolderToDocumentSetImplementation(list, folder);        
+            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+
+            return ConvertFolderToDocumentSetImplementation(list, folder);
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace Microsoft.SharePoint.Client
         /// </para>
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, Folder folder)
-        {                        
+        {
             return ConvertFolderToDocumentSetImplementation(list, folder);
         }
 
@@ -443,19 +444,21 @@ namespace Microsoft.SharePoint.Client
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
             }
-            
+
             var folderServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, webRelativeUrl, "/");
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
-            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder)); 
+            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder));
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
+
             foreach (var list in listCollection)
             {
-                if (folderServerRelativeUrl.StartsWith(UrlUtility.Combine(list.RootFolder.ServerRelativeUrl,"/"), StringComparison.InvariantCultureIgnoreCase))
+                if (folderServerRelativeUrl.StartsWith(UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, "/"), StringComparison.InvariantCultureIgnoreCase))
                 {
+                    // Load fields from the list
                     containingList = list;
                     break;
                 }
@@ -468,14 +471,23 @@ namespace Microsoft.SharePoint.Client
             if (containingList == null)
             {
                 locationType = "Web";
-                currentFolder = web.RootFolder;
-                web.Context.Load(currentFolder);
-                web.Context.ExecuteQueryRetry();
+                currentFolder = web.EnsureProperty(w => w.RootFolder);
             }
             else
             {
-                locationType = "List";
-                currentFolder = containingList.RootFolder;
+                var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
+                web.Context.ExecuteQueryRetry();
+                if (titleField.Any())
+                {
+                    locationType = "List";
+                    currentFolder = containingList.RootFolder;
+                }
+                else
+                {
+                    // Treat the list a normal folder structure
+                    locationType = "Web";
+                    currentFolder = web.EnsureProperty(w => w.RootFolder);
+                }
             }
 
             rootUrl = currentFolder.ServerRelativeUrl;
@@ -522,7 +534,7 @@ namespace Microsoft.SharePoint.Client
                         newFolderItem.Update();
                         containingList.Context.Load(newFolderItem);
                         containingList.Context.ExecuteQueryRetry();
-                        nextFolder = web.GetFolderByServerRelativeUrl(newFolderItem["FileRef"] as string);
+                        nextFolder = web.GetFolderByServerRelativeUrl(UrlUtility.Combine(listUrl, createPath, folderName));
                         containingList.Context.Load(nextFolder);
                         containingList.Context.ExecuteQueryRetry();
                     }
