@@ -475,21 +475,11 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
-                web.Context.ExecuteQueryRetry();
-                if (titleField.Any())
-                {
-                    locationType = "List";
-                    currentFolder = containingList.RootFolder;
-                }
-                else
-                {
-                    // Treat the list a normal folder structure
-                    locationType = "Web";
-                    currentFolder = web.EnsureProperty(w => w.RootFolder);
-                }
+                locationType = "List";
+                currentFolder = containingList.RootFolder;
             }
 
+            currentFolder.EnsureProperty(f => f.ServerRelativeUrl);
             rootUrl = currentFolder.ServerRelativeUrl;
 
             // Get remaining parts of the path and split
@@ -530,7 +520,14 @@ namespace Microsoft.SharePoint.Client
                         newFolderInfo.LeafName = folderName;
                         newFolderInfo.FolderUrl = UrlUtility.Combine(listUrl, createPath);
                         ListItem newFolderItem = containingList.AddItem(newFolderInfo);
-                        newFolderItem["Title"] = folderName;
+
+                        var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
+                        web.Context.ExecuteQueryRetry();
+                        if (titleField.Any())
+                        {
+                            newFolderItem["Title"] = folderName;
+                        }
+
                         newFolderItem.Update();
                         containingList.Context.Load(newFolderItem);
                         containingList.Context.ExecuteQueryRetry();
