@@ -335,6 +335,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\FilesTests.cs" />
     <Compile Include="Framework\Functional\ListTests.cs" />
     <Compile Include="Framework\Functional\ComposedLookTest.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
@@ -343,17 +344,21 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\PagesTests.cs" />
     <Compile Include="Framework\Functional\SecurityTests.cs" />
     <Compile Include="Framework\Functional\SitePolicyTests.cs" />
     <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
     <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
     <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
     <Compile Include="Framework\Functional\LanguageTests.cs" />
     <Compile Include="Framework\Functional\TermGroupTests.cs" />
+    <Compile Include="Framework\Functional\Validators\WorkflowValidator.cs" />
     <Compile Include="Framework\Functional\WebSettingsTests.cs" />
     <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
     <Compile Include="Framework\Functional\SearchSettingTests.cs" />
@@ -373,6 +378,7 @@
     <Compile Include="Framework\Functional\PropertyBagTests.cs" />
     <Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
     <Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
+    <Compile Include="Framework\Functional\WorkflowsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
@@ -435,6 +441,8 @@
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+    <Content Include="Framework\Functional\Templates\files_add.xml" />
+    <Content Include="Framework\Functional\Templates\pages_add.xml" />
     <Content Include="Framework\Functional\Templates\security_add.xml" />
     <Content Include="Framework\Functional\Templates\sitepolicy_add.xml" />
     <Content Include="Framework\Functional\Templates\termgroup_add.xml">
@@ -516,6 +524,7 @@
     <Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
+    <Content Include="Framework\Functional\Templates\workflows_add.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
