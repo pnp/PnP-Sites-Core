@@ -387,32 +387,40 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         private string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
-            string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
-
-            string siteOwnerLogin = ConfigurationManager.AppSettings["SPOUserName"];
-            if (TestCommon.AppOnlyTesting())
+            try
             {
-                using (var clientContext = TestCommon.CreateClientContext())
+                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
+
+                string siteOwnerLogin = ConfigurationManager.AppSettings["SPOUserName"];
+                if (TestCommon.AppOnlyTesting())
                 {
-                    List<UserEntity> admins = clientContext.Web.GetAdministrators();
-                    siteOwnerLogin = admins[0].LoginName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[2];
+                    using (var clientContext = TestCommon.CreateClientContext())
+                    {
+                        List<UserEntity> admins = clientContext.Web.GetAdministrators();
+                        siteOwnerLogin = admins[0].LoginName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries)[2];
+                    }
                 }
+
+                SiteEntity siteToCreate = new SiteEntity()
+                {
+                    Url = siteToCreateUrl,
+                    Template = "STS#0",
+                    Title = "Test",
+                    Description = "Test site collection",
+                    SiteOwnerLogin = siteOwnerLogin,
+                };
+
+                Console.WriteLine(String.Format("!!Before creating site collection {0}", siteToCreateUrl));
+                tenant.CreateSiteCollection(siteToCreate, false, true);
+                Console.WriteLine(String.Format("!!Site collection created {0}", siteToCreateUrl));
+                return siteToCreateUrl;
             }
-
-            SiteEntity siteToCreate = new SiteEntity()
+            catch (Exception ex)
             {
-                Url = siteToCreateUrl,
-                Template = "STS#0",
-                Title = "Test",
-                Description = "Test site collection",
-                SiteOwnerLogin = siteOwnerLogin,
-            };
-
-            Console.WriteLine(String.Format("!!Before creating site collection {0}", siteToCreateUrl));
-            tenant.CreateSiteCollection(siteToCreate, false, true);
-            Console.WriteLine(String.Format("!!Site collection created {0}", siteToCreateUrl));
-            return siteToCreateUrl;
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
         #endregion
     }
