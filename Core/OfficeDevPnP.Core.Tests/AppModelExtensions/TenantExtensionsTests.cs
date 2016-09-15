@@ -319,52 +319,60 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         [Timeout(45 * 60 * 1000)]
         public void SetSiteLockStateTest()
         {
-            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            try
             {
-                tenantContext.RequestTimeout = Timeout.Infinite;
-
-                var tenant = new Tenant(tenantContext);
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
-                string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
-
-                Console.WriteLine("SetSiteLockStateTest: step 1");
-                if (!tenant.SiteExists(siteToCreateUrl))
+                using (var tenantContext = TestCommon.CreateTenantClientContext())
                 {
-                    siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
-                    Console.WriteLine("SetSiteLockStateTest: step 1.1");
-                    var siteExists = tenant.SiteExists(siteToCreateUrl);
-                    Console.WriteLine("SetSiteLockStateTest: step 1.2");
-                    Assert.IsTrue(siteExists, "Site collection creation failed");
+                    tenantContext.RequestTimeout = Timeout.Infinite;
+
+                    var tenant = new Tenant(tenantContext);
+                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
+
+                    Console.WriteLine("SetSiteLockStateTest: step 1");
+                    if (!tenant.SiteExists(siteToCreateUrl))
+                    {
+                        siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
+                        Console.WriteLine("SetSiteLockStateTest: step 1.1");
+                        var siteExists = tenant.SiteExists(siteToCreateUrl);
+                        Console.WriteLine("SetSiteLockStateTest: step 1.2");
+                        Assert.IsTrue(siteExists, "Site collection creation failed");
+                    }
+
+                    Console.WriteLine("SetSiteLockStateTest: step 2");
+                    // Set Lockstate NoAccess test
+                    tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.NoAccess, true);
+
+                    Console.WriteLine("SetSiteLockStateTest: step 2.1");
+                    var siteProperties = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
+                    Console.WriteLine("SetSiteLockStateTest: step 2.1");
+                    tenantContext.Load(siteProperties);
+                    tenantContext.ExecuteQueryRetry();
+                    Assert.IsTrue(siteProperties.LockState == SiteLockState.NoAccess.ToString(), "LockState wasn't set to NoAccess");
+
+                    // Set Lockstate NoAccess test
+                    Console.WriteLine("SetSiteLockStateTest: step 3");
+                    tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.Unlock, true);
+                    Console.WriteLine("SetSiteLockStateTest: step 3.1");
+                    var siteProperties2 = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
+                    Console.WriteLine("SetSiteLockStateTest: step 3.2");
+                    tenantContext.Load(siteProperties2);
+                    tenantContext.ExecuteQueryRetry();
+                    Assert.IsTrue(siteProperties2.LockState == SiteLockState.Unlock.ToString(), "LockState wasn't set to UnLock");
+
+                    //Delete site collection, also
+                    Console.WriteLine("SetSiteLockStateTest: step 4");
+                    tenant.DeleteSiteCollection(siteToCreateUrl, false);
+                    Console.WriteLine("SetSiteLockStateTest: step 4.1");
+                    var siteExists2 = tenant.SiteExists(siteToCreateUrl);
+                    Console.WriteLine("SetSiteLockStateTest: step 4.2");
+                    Assert.IsFalse(siteExists2, "Site collection deletion, including from recycle bin, failed");
                 }
-
-                Console.WriteLine("SetSiteLockStateTest: step 2");
-                // Set Lockstate NoAccess test
-                tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.NoAccess, true);
-
-                Console.WriteLine("SetSiteLockStateTest: step 2.1");
-                var siteProperties = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
-                Console.WriteLine("SetSiteLockStateTest: step 2.1");
-                tenantContext.Load(siteProperties);
-                tenantContext.ExecuteQueryRetry();
-                Assert.IsTrue(siteProperties.LockState == SiteLockState.NoAccess.ToString(), "LockState wasn't set to NoAccess");
-
-                // Set Lockstate NoAccess test
-                Console.WriteLine("SetSiteLockStateTest: step 3");
-                tenant.SetSiteLockState(siteToCreateUrl, SiteLockState.Unlock, true);
-                Console.WriteLine("SetSiteLockStateTest: step 3.1");
-                var siteProperties2 = tenant.GetSitePropertiesByUrl(siteToCreateUrl, true);
-                Console.WriteLine("SetSiteLockStateTest: step 3.2");
-                tenantContext.Load(siteProperties2);
-                tenantContext.ExecuteQueryRetry();
-                Assert.IsTrue(siteProperties2.LockState == SiteLockState.Unlock.ToString(), "LockState wasn't set to UnLock");
-
-                //Delete site collection, also
-                Console.WriteLine("SetSiteLockStateTest: step 4");
-                tenant.DeleteSiteCollection(siteToCreateUrl, false);
-                Console.WriteLine("SetSiteLockStateTest: step 4.1");
-                var siteExists2 = tenant.SiteExists(siteToCreateUrl);
-                Console.WriteLine("SetSiteLockStateTest: step 4.2");
-                Assert.IsFalse(siteExists2, "Site collection deletion, including from recycle bin, failed");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw;
             }
         }
         #endregion
