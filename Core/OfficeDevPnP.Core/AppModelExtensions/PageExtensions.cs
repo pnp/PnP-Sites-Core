@@ -12,10 +12,13 @@ using System.Linq;
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Web.UI.WebControls.WebParts;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Utilities.WebParts;
+using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
+using WebPart = Microsoft.SharePoint.Client.WebParts.WebPart;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -381,6 +384,7 @@ namespace Microsoft.SharePoint.Client
 
             if (id != Guid.Empty)
             {
+#if ONPREMISES
                 var uri = new Uri(web.Context.Url);
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
                 var hostUri = uri.Host;
@@ -388,9 +392,8 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
                 var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
 
-#if ONPREMISES
                 request.Credentials = web.Context.Credentials;
-#else
+
                 var credentials = web.Context.Credentials as SharePointOnlineCredentials;
                 var authCookieValue = credentials.GetAuthenticationCookie(uri);
 
@@ -405,7 +408,7 @@ namespace Microsoft.SharePoint.Client
                 };
                 request.CookieContainer = new CookieContainer();
                 request.CookieContainer.Add(fedAuth);
-#endif
+
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
@@ -413,19 +416,59 @@ namespace Microsoft.SharePoint.Client
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     webPartXml = reader.ReadToEnd();
                 }
-            }
+            
+#else
 
+                var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+
+                var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
+
+                var query =
+                    web.Context.LoadQuery(
+                        limitedWebPartManager.WebParts.IncludeWithDefaultProperties(w => w.Id, w => w.ZoneId,
+                                w => w.WebPart, w => w.WebPart.Title, w => w.WebPart.Properties, w => w.WebPart.Hidden)
+                            .Where(w => w.Id == id));
+
+                web.Context.ExecuteQueryRetry();
+
+                if (query.Any())
+                {
+                    wp = query.First();
+
+                    var exportMode = (WebPartExportMode)Enum.Parse(typeof(WebPartExportMode), wp.WebPart.Properties["ExportMode"].ToString());
+                    var changed = false;
+                    if (exportMode != WebPartExportMode.All)
+                    {
+                        wp.WebPart.Properties["ExportMode"] = WebPartExportMode.All;
+                        wp.SaveWebPartChanges();
+                        web.Context.ExecuteQueryRetry();
+                        changed = true;
+                    }
+
+                    var result = limitedWebPartManager.ExportWebPart(id);
+                    web.Context.ExecuteQueryRetry();
+                    webPartXml = result.Value;
+
+                    if (changed)
+                    {
+                        wp.WebPart.Properties["ExportMode"] = exportMode;
+                        wp.SaveWebPartChanges();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+#endif
+            }
             return webPartXml;
         }
 
-                /// <summary>
-                /// Applies a layout to a wiki page
-                /// </summary>
-                /// <param name="web">Site to be processed - can be root web or sub site</param>
-                /// <param name="layout">Wiki page layout to be applied</param>
-                /// <param name="serverRelativePageUrl"></param>
-                /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
-                /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
+        /// <summary>
+        /// Applies a layout to a wiki page
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="layout">Wiki page layout to be applied</param>
+        /// <param name="serverRelativePageUrl"></param>
+        /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
         public static void AddLayoutToWikiPage(this Web web, WikiPageLayout layout, string serverRelativePageUrl)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
@@ -980,11 +1023,11 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentNullException">Thrown when key or serverRelativePageUrl is null</exception>
         public static void SetWebPartProperty(this Web web, string key, bool value, Guid id, string serverRelativePageUrl)
         {
-            SetWebPartPropertyInternal(web,key,value,id,serverRelativePageUrl);
+            SetWebPartPropertyInternal(web, key, value, id, serverRelativePageUrl);
         }
 
-	    private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
-	    {
+        private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
+        {
             var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
             var oWebPartDefinition = limitedWebPartManager.ImportWebPart(webPart.WebPartXml);
 
@@ -992,10 +1035,10 @@ namespace Microsoft.SharePoint.Client
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
 
-	        WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
+            WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
 
             return wpdNew;
-	    }
+        }
 
         private static void SetWebPartPropertyInternal(this Web web, string key, object value, Guid id, string serverRelativePageUrl)
         {
@@ -1104,7 +1147,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="schedule">Defines whether to define a schedule or not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when key or pageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentException">Thrown when key or pageName is null</exception>
-        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null, 
+        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null,
             bool publish = false, Folder folder = null,
             DateTime? startDate = null, DateTime? endDate = null, Boolean schedule = false)
         {
@@ -1148,7 +1191,7 @@ namespace Microsoft.SharePoint.Client
             // Configure the publishing page
             var pageInformation = new PublishingPageInformation
             {
-                Name = !pageName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ? 
+                Name = !pageName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ?
                     string.Format("{0}.aspx", pageName) : pageName,
                 PageLayoutListItem = pageLayoutItem,
             };
@@ -1207,8 +1250,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="showInGlobalNavigation">Defines whether the navigation item has to be shown in the Global Navigation, optional and default to true.</param>
         /// <param name="showInCurrentNavigation">Defines whether the navigation item has to be shown in the Current Navigation, optional and default to true.</param>
         /// <returns>The simple link URL just created.</returns>
-        public static String AddNavigationFriendlyUrl(this PublishingPage page, Web web, 
-            String navigationTitle, String friendlyUrlSegment, NavigationTermSetItem editableParent, 
+        public static String AddNavigationFriendlyUrl(this PublishingPage page, Web web,
+            String navigationTitle, String friendlyUrlSegment, NavigationTermSetItem editableParent,
             Boolean showInGlobalNavigation = true, Boolean showInCurrentNavigation = true)
         {
             // Add the Friendly URL
