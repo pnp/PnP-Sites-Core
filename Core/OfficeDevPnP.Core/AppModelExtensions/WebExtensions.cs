@@ -68,7 +68,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
@@ -102,7 +102,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             var deleted = false;
@@ -179,7 +179,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
@@ -204,7 +204,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
@@ -277,7 +277,9 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True is sub site, false otherwise</returns>
         public static bool IsSubSite(this Web web)
         {
-            Site site = (web.Context as ClientContext).Site;
+            if (web == null) throw new ArgumentNullException(nameof(web));
+
+            var site = (web.Context as ClientContext).Site;
             var rootWeb = site.EnsureProperty(s => s.RootWeb);
 
             web.EnsureProperty(w => w.Id);
@@ -287,10 +289,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool IsPublishingWeb(this Web web)
@@ -419,7 +418,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+            Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
             site.Context.ExecuteQueryRetry();
 
 
@@ -429,7 +428,7 @@ namespace Microsoft.SharePoint.Client
             // NOTE: The lines below (in OfficeDev PnP) wipe/clear all items in the composed looks aka design catalog (_catalogs/design, list template 124).
             // The solution package should be loaded into the solutions catalog (_catalogs/solutions, list template 121).
 
-            Microsoft.SharePoint.Client.Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
+            Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
             site.Context.ExecuteQueryRetry();
 
             // Remove package from rootfolder
@@ -477,7 +476,7 @@ namespace Microsoft.SharePoint.Client
                     MinorVersion = minorVersion
                 };
 
-                Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+                Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
                 site.Context.ExecuteQueryRetry();
             }
         }
@@ -860,13 +859,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static IEnumerable<string> GetIndexedPropertyBagKeys(this Web web)
         {
-            List<string> keys = new List<string>();
+            var keys = new List<string>();
 
             if (web.PropertyBagContainsKey(INDEXED_PROPERTY_KEY))
             {
-                foreach (string key in web.GetPropertyBagValueString(INDEXED_PROPERTY_KEY, "").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var key in web.GetPropertyBagValueString(INDEXED_PROPERTY_KEY, "").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    byte[] bytes = Convert.FromBase64String(key);
+                    var bytes = Convert.FromBase64String(key);
                     keys.Add(Encoding.Unicode.GetString(bytes));
                 }
             }
@@ -882,7 +881,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns True if succeeded</returns>
         public static bool AddIndexedPropertyBagKey(this Web web, string key)
         {
-            bool result = false;
+            var result = false;
             var keys = GetIndexedPropertyBagKeys(web).ToList();
             if (!keys.Contains(key))
             {
@@ -901,7 +900,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns True if succeeded</returns>
         public static bool RemoveIndexedPropertyBagKey(this Web web, string key)
         {
-            bool result = false;
+            var result = false;
             var keys = GetIndexedPropertyBagKeys(web).ToList();
             if (key.Contains(key))
             {

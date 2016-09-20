@@ -286,7 +286,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             FieldCollection fields = null;
@@ -507,7 +507,7 @@ namespace Microsoft.SharePoint.Client
 
                 if (fieldNode != null)
                 {
-                    string id = string.Empty;
+                    var id = string.Empty;
                     if (fieldNode.Attribute("ID") != null)
                     {
                         id = fieldNode.Attribute("ID").Value;
@@ -934,12 +934,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (baseContentTypeId == null)
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(baseContentTypeId));
             }
 
             if (string.IsNullOrWhiteSpace(baseContentTypeId))
             {
-                throw new ArgumentException("Content type must be provided and cannot be empty.", "contentTypeId");
+                throw new ArgumentException("Content type must be provided and cannot be empty.", nameof(baseContentTypeId));
             }
 
             return BestMatchContentTypeIdImplementation(list, baseContentTypeId);
@@ -985,7 +985,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
 
             ContentTypeCollection ctCol;
@@ -1022,7 +1022,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
@@ -1045,12 +1045,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(listTitle))
             {
-                throw new ArgumentNullException("listTitle");
+                throw new ArgumentNullException(nameof(listTitle));
             }
 
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
 
             var list = web.GetListByTitle(listTitle);
@@ -1067,7 +1067,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
 
             list.EnsureProperty(l => l.ContentTypesEnabled);
@@ -1096,12 +1096,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(listTitle))
             {
-                throw new ArgumentNullException("listTitle");
+                throw new ArgumentNullException(nameof(listTitle));
             }
 
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             var list = web.GetListByTitle(listTitle);
@@ -1118,7 +1118,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             var ctCol = list.ContentTypes;
@@ -1281,15 +1281,15 @@ namespace Microsoft.SharePoint.Client
 
             var contentTypes = web.ContentTypes;
 
-            var newCt = new ContentTypeCreationInformation();
-
-
-            // Set the properties for the content type
-            newCt.Name = name;
-            newCt.Id = id;
-            newCt.Description = description;
-            newCt.Group = group;
-            newCt.ParentContentType = parentContentType;
+            var newCt = new ContentTypeCreationInformation
+            {
+                Name = name,
+                Id = id,
+                Description = description,
+                Group = @group,
+                ParentContentType = parentContentType
+            };
+            
             var myContentType = contentTypes.Add(newCt);
             web.Context.ExecuteQueryRetry();
 
@@ -1349,7 +1349,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
@@ -1370,7 +1370,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
@@ -1398,7 +1398,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             var ctCol = list.ContentTypes;
@@ -1418,7 +1418,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
 
             var ctCol = list.ContentTypes;
@@ -1447,7 +1447,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             }
             var ctx = contentTypes.Context;
             contentTypes.EnsureProperties(c => c.Include(ct => ct.Id));
@@ -1487,7 +1487,7 @@ namespace Microsoft.SharePoint.Client
         public static void RemoveContentTypeFromListByName(this Web web, List list, string contentTypeName)
         {
             if (string.IsNullOrEmpty(contentTypeName))
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             // Get content type instance
             var contentType = GetContentTypeByName(web, contentTypeName,true);
             // Remove content type from list
@@ -1519,7 +1519,7 @@ namespace Microsoft.SharePoint.Client
         public static void RemoveContentTypeFromListById(this Web web, List list, string contentTypeId)
         {
             if (string.IsNullOrEmpty(contentTypeId))
-                throw new ArgumentNullException("contentTypeId");
+                throw new ArgumentNullException(nameof(contentTypeId));
             var contentType = GetContentTypeById(web, contentTypeId,true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
@@ -1534,7 +1534,7 @@ namespace Microsoft.SharePoint.Client
         public static void RemoveContentTypeFromList(this Web web, List list, ContentType contentType)
         {
             if (contentType == null)
-                throw new ArgumentNullException("contentType");
+                throw new ArgumentNullException(nameof(contentType));
 
             if (!list.ContentTypeExistsByName(contentType.Name))
                 return;
@@ -1643,7 +1643,7 @@ namespace Microsoft.SharePoint.Client
 
             // Casting throws "Specified method is not supported" when using in v15
             // var ctCol = listContentTypes.Cast<ContentType>().ToList();
-            List<ContentType> ctCol = new List<ContentType>();
+            var ctCol = new List<ContentType>();
             foreach (ContentType ct in listContentTypes)
             {
                 ctCol.Add(ct);

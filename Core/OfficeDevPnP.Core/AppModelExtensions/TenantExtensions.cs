@@ -331,8 +331,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if deleted</returns>
         public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true)
         {
-            bool ret = false;
-            SpoOperation op = tenant.RemoveDeletedSite(siteFullUrl);
+            var ret = false;
+            var op = tenant.RemoveDeletedSite(siteFullUrl);
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
 
@@ -369,7 +369,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The Guid of a site collection or an Guid.Empty if the Site does not exist</returns>
         public static Guid GetSiteGuidByUrl(this Tenant tenant, Uri siteFullUrl)
         {
-            Guid siteGuid = Guid.Empty;
+            var siteGuid = Guid.Empty;
 
             Site site = null;
             site = tenant.GetSiteByUrl(siteFullUrl.OriginalString);
@@ -575,7 +575,7 @@ namespace Microsoft.SharePoint.Client
 
             // get all user profiles
             var userProfileResult = svcClient.GetUserProfileByIndex(-1);
-            var profileCount = svcClient.GetUserProfileCount();
+            //var profileCount = svcClient.GetUserProfileCount();
 
             while (int.Parse(userProfileResult.NextValue) != -1)
             {
@@ -589,10 +589,12 @@ namespace Microsoft.SharePoint.Client
                         var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
                         var url = personalSpaceProperty.Values[0].Value as string;
                         var name = nameProperty.Values[0].Value as string;
-                        SiteEntity siteEntity = new SiteEntity();
-                        siteEntity.Url = url;
-                        siteEntity.Title = name;
-                        siteEntity.SiteOwnerLogin = usernameProperty.Values[0].Value as string;
+                        var siteEntity = new SiteEntity
+                        {
+                            Url = url,
+                            Title = name,
+                            SiteOwnerLogin = usernameProperty.Values[0].Value as string
+                        };
                         sites.Add(siteEntity);
                     }
                 }
