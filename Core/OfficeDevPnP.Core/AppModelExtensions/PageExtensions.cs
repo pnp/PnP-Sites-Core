@@ -369,28 +369,25 @@ namespace Microsoft.SharePoint.Client
 
             string webPartXml = null;
 
-            Guid id = Guid.Empty;
-
-            var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
-            if (wp != null)
-            {
-                id = wp.Id;
-            }
-            else
-            {
-                return null;
-            }
-
-
-            if (id != Guid.Empty)
+            if (webPartId != Guid.Empty)
             {
 #if ONPREMISES
+                Guid id = Guid.Empty;
+
+                var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
+                if (wp != null)
+                {
+                    id = wp.Id;
+                }
+                else
+                {
+                    return null;
+                }
                 var uri = new Uri(web.Context.Url);
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
-                var hostUri = uri.Host;
-                var webUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativeUrl);
-                var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
-                var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
+                var webUrl = $"{uri.Scheme}://{uri.Host}{serverRelativeUrl}";
+                var pageUrl = $"{uri.Scheme}://{uri.Host}{serverRelativePageUrl}";
+                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
                 request.Credentials = web.Context.Credentials;
 
@@ -416,7 +413,7 @@ namespace Microsoft.SharePoint.Client
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     webPartXml = reader.ReadToEnd();
                 }
-            
+
 #else
 
                 var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
@@ -427,13 +424,13 @@ namespace Microsoft.SharePoint.Client
                     web.Context.LoadQuery(
                         limitedWebPartManager.WebParts.IncludeWithDefaultProperties(w => w.Id, w => w.ZoneId,
                                 w => w.WebPart, w => w.WebPart.Title, w => w.WebPart.Properties, w => w.WebPart.Hidden)
-                            .Where(w => w.Id == id));
+                            .Where(w => w.Id == webPartId));
 
                 web.Context.ExecuteQueryRetry();
 
                 if (query.Any())
                 {
-                    wp = query.First();
+                    var wp = query.First();
 
                     var exportMode = (WebPartExportMode)Enum.Parse(typeof(WebPartExportMode), wp.WebPart.Properties["ExportMode"].ToString());
                     var changed = false;
@@ -445,7 +442,7 @@ namespace Microsoft.SharePoint.Client
                         changed = true;
                     }
 
-                    var result = limitedWebPartManager.ExportWebPart(id);
+                    var result = limitedWebPartManager.ExportWebPart(wp.Id);
                     web.Context.ExecuteQueryRetry();
                     webPartXml = result.Value;
 
