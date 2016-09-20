@@ -484,7 +484,7 @@ namespace Microsoft.SharePoint.Client
 
             // Get remaining parts of the path and split
             var folderRootRelativeUrl = folderServerRelativeUrl.Substring(currentFolder.ServerRelativeUrl.Length);
-            var childFolderNames = folderRootRelativeUrl.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var childFolderNames = folderRootRelativeUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             var currentCount = 0;
 
             foreach (var folderName in childFolderNames)
@@ -995,12 +995,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (serverFile == null)
             {
-                throw new ArgumentNullException("serverFile");
+                throw new ArgumentNullException(nameof(serverFile));
             }
 
             if (localStream == null)
             {
-                throw new ArgumentNullException("localStream");
+                throw new ArgumentNullException(nameof(localStream));
             }
 
             byte[] serverHash = null;

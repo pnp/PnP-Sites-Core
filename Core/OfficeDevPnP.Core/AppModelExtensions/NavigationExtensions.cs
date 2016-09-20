@@ -38,7 +38,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static AreaNavigationEntity GetNavigationSettings(this Web web)
         {
-            AreaNavigationEntity nav = new AreaNavigationEntity();
+            var nav = new AreaNavigationEntity();
 
             //Read all the properties of the web
             web.Context.Load(web, w => w.AllProperties);
@@ -76,7 +76,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else if (node.Attribute("Name").Value.Equals("GlobalNavigationTaxonomyProvider", StringComparison.InvariantCulture))
                     {
-                        bool managedNavigation = true;
+                        var managedNavigation = true;
                         if (node.Attribute("Disabled") != null)
                         {
                             if (bool.TryParse(node.Attribute("Disabled").Value, out managedNavigation))
@@ -92,13 +92,13 @@ namespace Microsoft.SharePoint.Client
             // Only read the other values that make sense when not using managed navigation
             if (!nav.CurrentNavigation.ManagedNavigation)
             {
-                int currentNavigationIncludeTypes = web.AllProperties.GetPropertyAsInt(CurrentNavigationIncludeTypes);
+                var currentNavigationIncludeTypes = web.AllProperties.GetPropertyAsInt(CurrentNavigationIncludeTypes);
                 if (currentNavigationIncludeTypes > -1)
                 {
                     MapFromNavigationIncludeTypes(nav.CurrentNavigation, currentNavigationIncludeTypes);
                 }
 
-                int currentDynamicChildLimit = web.AllProperties.GetPropertyAsInt(CurrentDynamicChildLimit);
+                var currentDynamicChildLimit = web.AllProperties.GetPropertyAsInt(CurrentDynamicChildLimit);
                 if (currentDynamicChildLimit > -1)
                 {
                     nav.CurrentNavigation.MaxDynamicItems = currentDynamicChildLimit;
@@ -107,8 +107,8 @@ namespace Microsoft.SharePoint.Client
                 // For the current navigation there's an option to show the sites siblings in structural navigation
                 if (web.IsSubSite())
                 {
-                    bool showSiblings = false;
-                    string navigationShowSiblings = web.AllProperties.GetPropertyAsString(NavigationShowSiblings);
+                    var showSiblings = false;
+                    var navigationShowSiblings = web.AllProperties.GetPropertyAsString(NavigationShowSiblings);
                     if (bool.TryParse(navigationShowSiblings, out showSiblings))
                     {
                         nav.CurrentNavigation.ShowSiblings = showSiblings;
@@ -118,13 +118,13 @@ namespace Microsoft.SharePoint.Client
 
             if (!nav.GlobalNavigation.ManagedNavigation)
             {
-                int globalNavigationIncludeTypes = web.AllProperties.GetPropertyAsInt(GlobalNavigationIncludeTypes);
+                var globalNavigationIncludeTypes = web.AllProperties.GetPropertyAsInt(GlobalNavigationIncludeTypes);
                 if (globalNavigationIncludeTypes > -1)
                 {
                     MapFromNavigationIncludeTypes(nav.GlobalNavigation, globalNavigationIncludeTypes);
                 }
 
-                int globalDynamicChildLimit = web.AllProperties.GetPropertyAsInt(GlobalDynamicChildLimit);
+                var globalDynamicChildLimit = web.AllProperties.GetPropertyAsInt(GlobalDynamicChildLimit);
                 if (globalDynamicChildLimit > -1)
                 {
                     nav.GlobalNavigation.MaxDynamicItems = globalDynamicChildLimit;
@@ -132,22 +132,22 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Read the sorting value 
-            int navigationOrderingMethod = web.AllProperties.GetPropertyAsInt(NavigationOrderingMethod);
+            var navigationOrderingMethod = web.AllProperties.GetPropertyAsInt(NavigationOrderingMethod);
             if (navigationOrderingMethod > -1)
             {
                 nav.Sorting = (StructuralNavigationSorting)navigationOrderingMethod;
             }
 
             // Read the sort by value
-            int navigationAutomaticSortingMethod = web.AllProperties.GetPropertyAsInt(NavigationAutomaticSortingMethod);
+            var navigationAutomaticSortingMethod = web.AllProperties.GetPropertyAsInt(NavigationAutomaticSortingMethod);
             if (navigationAutomaticSortingMethod > -1)
             {
                 nav.SortBy = (StructuralNavigationSortBy)navigationAutomaticSortingMethod;
             }
 
             // Read the ordering setting
-            bool navigationSortAscending = true;
-            string navProp = web.AllProperties.GetPropertyAsString(NavigationSortAscending);
+            var navigationSortAscending = true;
+            var navProp = web.AllProperties.GetPropertyAsString(NavigationSortAscending);
 
             if (bool.TryParse(navProp, out navigationSortAscending))
             {
@@ -174,26 +174,26 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Use publishing CSOM API to switch between managed metadata and structural navigation
-            TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+            var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
             web.Context.Load(taxonomySession);
             web.Context.ExecuteQueryRetry();
-            Microsoft.SharePoint.Client.Publishing.Navigation.WebNavigationSettings webNav = new Publishing.Navigation.WebNavigationSettings(web.Context, web);
+            var webNav = new WebNavigationSettings(web.Context, web);
             if (!navigationSettings.GlobalNavigation.ManagedNavigation)
             {
-                webNav.GlobalNavigation.Source = Publishing.Navigation.StandardNavigationSource.PortalProvider;
+                webNav.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
             }
             else
             {
-                webNav.GlobalNavigation.Source = Publishing.Navigation.StandardNavigationSource.TaxonomyProvider;
+                webNav.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
             }
 
             if (!navigationSettings.CurrentNavigation.ManagedNavigation)
             {
-                webNav.CurrentNavigation.Source = Publishing.Navigation.StandardNavigationSource.PortalProvider;
+                webNav.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
             }
             else
             {
-                webNav.CurrentNavigation.Source = Publishing.Navigation.StandardNavigationSource.TaxonomyProvider;
+                webNav.CurrentNavigation.Source = StandardNavigationSource.TaxonomyProvider;
             }
             webNav.Update(taxonomySession);
             web.Context.ExecuteQueryRetry();
@@ -204,14 +204,14 @@ namespace Microsoft.SharePoint.Client
 
             if (!navigationSettings.GlobalNavigation.ManagedNavigation)
             {
-                int globalNavigationIncludeType = MapToNavigationIncludeTypes(navigationSettings.GlobalNavigation);
+                var globalNavigationIncludeType = MapToNavigationIncludeTypes(navigationSettings.GlobalNavigation);
                 web.AllProperties[GlobalNavigationIncludeTypes] = globalNavigationIncludeType;
                 web.AllProperties[GlobalDynamicChildLimit] = navigationSettings.GlobalNavigation.MaxDynamicItems;
             }
 
             if (!navigationSettings.CurrentNavigation.ManagedNavigation)
             {
-                int currentNavigationIncludeType = MapToNavigationIncludeTypes(navigationSettings.CurrentNavigation);
+                var currentNavigationIncludeType = MapToNavigationIncludeTypes(navigationSettings.CurrentNavigation);
                 web.AllProperties[CurrentNavigationIncludeTypes] = currentNavigationIncludeType;
                 web.AllProperties[CurrentDynamicChildLimit] = navigationSettings.CurrentNavigation.MaxDynamicItems;
 
@@ -307,7 +307,7 @@ namespace Microsoft.SharePoint.Client
 
         private static bool ArePublishingFeaturesActivated(PropertyValues props)
         {
-            bool activated = false;
+            var activated = false;
 
             if (bool.TryParse(props.GetPropertyAsString(PublishingFeatureActivated), out activated))
             {
@@ -360,7 +360,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (!web.IsManagedNavigationEnabled(navigationKind))
             {
-                throw new ApplicationException(String.Format("The current web is not using the Taxonomy provider for {0} Navigation.", navigationKind));
+                throw new ApplicationException($"The current web is not using the Taxonomy provider for {navigationKind} Navigation.");
             }
 
             switch (navigationKind)
@@ -382,25 +382,25 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The target web.</param>
         /// <param name="navigationKind">The kind of navigation (Current or Global).</param>
         /// <returns>A boolean result of the test.</returns>
-        public static Boolean IsManagedNavigationEnabled(this Web web, ManagedNavigationKind navigationKind)
+        public static bool IsManagedNavigationEnabled(this Web web, ManagedNavigationKind navigationKind)
         {
-            Boolean result = false;
+            var result = false;
             var navigationSettings = new WebNavigationSettings(web.Context, web);
             web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
             web.Context.Load(web.ParentWeb, pw => pw.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
 
-            StandardNavigationSettings targetNavigationSettings =
+            var targetNavigationSettings =
                 navigationKind == ManagedNavigationKind.Current ?
                 navigationSettings.CurrentNavigation : navigationSettings.GlobalNavigation;
 
             if (targetNavigationSettings.Source == StandardNavigationSource.InheritFromParentWeb &&
                 !web.ParentWeb.ServerObjectIsNull())
             {
-                Uri currentWebUri = new Uri(web.Url);
-                Uri parentWebUri = new Uri(String.Format("{0}://{1}{2}", currentWebUri.Scheme, currentWebUri.Host, web.ParentWeb.ServerRelativeUrl));
+                var currentWebUri = new Uri(web.Url);
+                var parentWebUri = new Uri($"{currentWebUri.Scheme}://{currentWebUri.Host}{web.ParentWeb.ServerRelativeUrl}");
 
-                using (ClientContext parentContext = web.Context.Clone(parentWebUri))
+                using (var parentContext = web.Context.Clone(parentWebUri))
                 {
                     result = IsManagedNavigationEnabled(parentContext.Web, navigationKind);
                 }
@@ -414,22 +414,22 @@ namespace Microsoft.SharePoint.Client
         }
 
         private static NavigationTermSet GetEditableNavigationTermSetByProviderName(
-            Web web, ClientRuntimeContext context, String providerName)
+            Web web, ClientRuntimeContext context, string providerName)
         {
             // Get the current taxonomy session and update cache, just in case
-            TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
+            var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
             taxonomySession.UpdateCache();
 
             context.ExecuteQueryRetry();
 
             // Retrieve the Navigation TermSet for the current web
-            NavigationTermSet navigationTermSet = TaxonomyNavigation.GetTermSetForWeb(web.Context,
+            var navigationTermSet = TaxonomyNavigation.GetTermSetForWeb(web.Context,
                 web, providerName, true);
             context.Load(navigationTermSet);
             context.ExecuteQueryRetry();
 
             // Retrieve an editable TermSet for the current target navigation
-            NavigationTermSet editableNavigationTermSet = navigationTermSet.GetAsEditable(taxonomySession);
+            var editableNavigationTermSet = navigationTermSet.GetAsEditable(taxonomySession);
             context.Load(editableNavigationTermSet);
             context.ExecuteQueryRetry();
 
@@ -455,7 +455,7 @@ namespace Microsoft.SharePoint.Client
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
-            NavigationNodeCreationInformation node = new NavigationNodeCreationInformation
+            var node = new NavigationNodeCreationInformation
             {
                 AsLastNode = asLastNode,
                 Title = nodeTitle,
@@ -473,11 +473,8 @@ namespace Microsoft.SharePoint.Client
                         quickLaunch.Add(node);
                         return;
                     }
-                    NavigationNode parentNode = quickLaunch.SingleOrDefault(n => n.Title == parentNodeTitle);
-                    if (parentNode != null)
-                    {
-                        parentNode.Children.Add(node);
-                    }
+                    var parentNode = quickLaunch.SingleOrDefault(n => n.Title == parentNodeTitle);
+                    parentNode?.Children.Add(node);
                 }
                 else if (navigationType == NavigationType.TopNavigationBar)
                 {
@@ -485,10 +482,7 @@ namespace Microsoft.SharePoint.Client
                     if (!string.IsNullOrEmpty(parentNodeTitle))
                     {
                         var parentNode = topLink.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        if (parentNode != null)
-                        {
-                            parentNode.Children.Add(node);
-                        }
+                        parentNode?.Children.Add(node);
                     }
                     else
                     {
@@ -566,16 +560,13 @@ namespace Microsoft.SharePoint.Client
                 }
                 else if (navigationType == NavigationType.SearchNav)
                 {
-                    NavigationNodeCollection nodeCollection = web.LoadSearchNavigation();
+                    var nodeCollection = web.LoadSearchNavigation();
                     deleteNode = nodeCollection.SingleOrDefault(n => n.Title == nodeTitle);
                 }
             }
             finally
             {
-                if (deleteNode != null)
-                {
-                    deleteNode.DeleteObject();
-                }
+                deleteNode?.DeleteObject();
                 web.Context.ExecuteQueryRetry();
             }
         }
@@ -593,7 +584,7 @@ namespace Microsoft.SharePoint.Client
                 web.Context.ExecuteQueryRetry();
 
                 var quickLaunch = web.Navigation.QuickLaunch;
-                for (int i = quickLaunch.Count - 1; i >= 0; i--)
+                for (var i = quickLaunch.Count - 1; i >= 0; i--)
                 {
                     quickLaunch[i].DeleteObject();
                 }
@@ -604,7 +595,7 @@ namespace Microsoft.SharePoint.Client
                 web.Context.Load(web, w => w.Navigation.TopNavigationBar);
                 web.Context.ExecuteQueryRetry();
                 var topNavigation = web.Navigation.TopNavigationBar;
-                for (int i = topNavigation.Count - 1; i >= 0; i--)
+                for (var i = topNavigation.Count - 1; i >= 0; i--)
                 {
                     topNavigation[i].DeleteObject();
                 }
@@ -613,7 +604,7 @@ namespace Microsoft.SharePoint.Client
             else if (navigationType == NavigationType.SearchNav)
             {
                 var searchNavigation = web.LoadSearchNavigation();
-                for (int i = searchNavigation.Count - 1; i >= 0; i--)
+                for (var i = searchNavigation.Count - 1; i >= 0; i--)
                 {
                     searchNavigation[i].DeleteObject();
                 }
@@ -889,12 +880,12 @@ namespace Microsoft.SharePoint.Client
         public static bool CustomActionExists(this Web web, string name)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             web.Context.Load(web.UserCustomActions);
             web.Context.ExecuteQueryRetry();
 
-            var customActions = web.UserCustomActions.AsEnumerable<UserCustomAction>();
+            var customActions = web.UserCustomActions.AsEnumerable();
             foreach (var customAction in customActions)
             {
                 var customActionName = customAction.Name;
@@ -916,12 +907,12 @@ namespace Microsoft.SharePoint.Client
         public static bool CustomActionExists(this Site site, string name)
         {
             if (string.IsNullOrEmpty(name))
-                throw new ArgumentNullException("name");
+                throw new ArgumentNullException(nameof(name));
 
             site.Context.Load(site.UserCustomActions);
             site.Context.ExecuteQueryRetry();
 
-            var customActions = site.UserCustomActions.AsEnumerable<UserCustomAction>();
+            var customActions = site.UserCustomActions.AsEnumerable();
             foreach (var customAction in customActions)
             {
                 var customActionName = customAction.Name;
@@ -949,6 +940,6 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Global Navigation
         /// </summary>
-        Global,
+        Global
     }
 }
