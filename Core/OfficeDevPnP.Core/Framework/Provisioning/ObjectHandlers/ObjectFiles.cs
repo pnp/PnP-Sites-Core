@@ -47,14 +47,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var file in template.Files.Union(directoryFiles))
                 {
-                    var folderName = parser.ParseString(file.Folder);
+                    var webToUpload = web;
 
-                    if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+                    var folderName = parser.ParseString(template.Files.First().Folder);
+
+                    if (folderName.ToLower().StartsWith((webToUpload.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = folderName.Substring(webToUpload.ServerRelativeUrl.Length);
+                    }
+                    else if (folderName.ToLower().StartsWith((context.Site.RootWeb.ServerRelativeUrl.ToLower())))
+                    {
+                        folderName = folderName.Substring(context.Site.RootWeb.ServerRelativeUrl.Length);
+                        webToUpload = context.Site.RootWeb;
                     }
 
-                    var folder = web.EnsureFolderPath(folderName);
+                    var folder = webToUpload.EnsureFolderPath(folderName);
 
                     File targetFile = null;
 
@@ -451,6 +458,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     directory.Src += @"\" + folder;
                     directory.Folder += @"\" + folder;
+                    result.AddRange(directory.GetDirectoryFiles(metadataProperties));
+                }
+            }
+
+            if (directory.Recursive)
+            {
+                var subFolders = directory.ParentTemplate.Connector.GetFolders(directory.Src);
+                var src = directory.Src;
+                var folder = directory.Folder;
+                foreach (var subFolder in subFolders)
+                {
+                    directory.Src = src + @"\" + subFolder;
+                    directory.Folder = folder + @"\" + subFolder;
                     result.AddRange(directory.GetDirectoryFiles(metadataProperties));
                 }
             }
