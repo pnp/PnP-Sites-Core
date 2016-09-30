@@ -527,11 +527,11 @@ namespace Microsoft.SharePoint.Client
             var sites = new List<SiteEntity>();
             SPOSitePropertiesEnumerable props = null;
 
-            //while (props == null || props.NextStartIndexFromSharePoint != null)
-            while (props == null || props.NextStartIndex > -1)
+            while (props == null || props.NextStartIndexFromSharePoint != null)
+            //while (props == null || props.NextStartIndex > -1)
             {
-                //props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
-                props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
+                props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
+                //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
 
