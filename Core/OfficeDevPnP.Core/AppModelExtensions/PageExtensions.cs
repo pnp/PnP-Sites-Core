@@ -385,22 +385,6 @@ namespace Microsoft.SharePoint.Client
 
                 request.Credentials = web.Context.Credentials;
 
-                var credentials = web.Context.Credentials as SharePointOnlineCredentials;
-                var authCookieValue = credentials.GetAuthenticationCookie(uri);
-
-                var fedAuth = new Cookie()
-                {
-                    Name = "SPOIDCRL",
-                    Value = authCookieValue.TrimStart("SPOIDCRL=".ToCharArray()),
-                    Path = "/",
-                    Secure = true,
-                    HttpOnly = true,
-                    Domain = uri.Host
-                };
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.Add(fedAuth);
-
-
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
                 {
