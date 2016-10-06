@@ -1142,7 +1142,18 @@ namespace Microsoft.SharePoint.Client
             {
                 title = pageName;
             }
-
+            //Allow users to specify the filename as a relativepath within the pages library ie: folder/page.aspx would provision
+            //a new publishing page within /Pages/folder/ named page.aspx
+            if(pageName.Contains("/") && folder == null) {
+                var context = web.Context as ClientContext;
+                
+                //The page name includes a relative path. Generate a Folder object, then we can put the page into the correct folder.
+                var folderName = pageName.Substring(0, pageName.LastIndexOf("/")-1);
+                folder = web.EnsureFolder(folderName); 
+                context.ExecuteQueryRetry(); 
+                //grab the last bit, (the proper page name
+                pageName = pageName.Substring(pageName.LastIndexOf("/")+1);
+            }
             // Fix page name, if needed
             pageName = pageName.ReplaceInvalidUrlChars("-");
 
