@@ -595,8 +595,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template.Security.AdditionalMembers.Any() ||
                     template.Security.AdditionalOwners.Any() ||
                     template.Security.AdditionalVisitors.Any() ||
-                    template.Security.SiteGroups.Any()) &&
-                    !web.IsSubSite();
+                    template.Security.SiteGroups.Any() ||
+                    template.Security.SiteSecurityPermissions.RoleAssignments.Any() ||
+                    template.Security.SiteSecurityPermissions.RoleDefinitions.Any());
             }
 
             return _willProvision.Value;
