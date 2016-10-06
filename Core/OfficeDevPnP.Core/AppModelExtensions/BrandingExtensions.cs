@@ -1509,7 +1509,15 @@ namespace Microsoft.SharePoint.Client
             web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
             if (!string.IsNullOrEmpty(linkUrl))
             {
-                web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                if (web.IsSubSite())
+                {
+                    web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                }
+                else
+                {
+                    var site = (web.Context as ClientContext).Site;
+                    site.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                }
             }
         }
 
@@ -1545,7 +1553,15 @@ namespace Microsoft.SharePoint.Client
         {
             try
             {
-                web.DeleteJsLink("PnPResponsiveUI");
+                if (web.IsSubSite())
+                {
+                    web.DeleteJsLink("PnPResponsiveUI");
+                }
+                else
+                {
+                    var site = (web.Context as ClientContext).Site;
+                    site.DeleteJsLink("PnPResponsiveUI");
+                }
             }
             catch
             {
