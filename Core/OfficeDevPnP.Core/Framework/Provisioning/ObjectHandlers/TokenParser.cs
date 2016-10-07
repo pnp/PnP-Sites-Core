@@ -95,9 +95,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Add ContentTypes
-            web.Context.Load(web.ContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
+            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
             web.Context.ExecuteQueryRetry();
-            foreach (var ct in web.ContentTypes)
+            foreach (var ct in web.AvailableContentTypes)
             {
                 _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
             }
