@@ -4,20 +4,20 @@ using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class ContentTypeIdToken : TokenDefinition
+    internal class GroupIdToken : TokenDefinition
     {
-        private string _contentTypeId = null;
-        public ContentTypeIdToken(Web web, string name, string contenttypeid)
-            : base(web, string.Format("{{contenttypeid:{0}}}", Regex.Escape(name)))
+        private readonly int _groupId = 0;
+        public GroupIdToken(Web web, string name, int groupId)
+            : base(web, string.Format("{{groupid:{0}}}", Regex.Escape(name)))
         {
-            _contentTypeId = contenttypeid;
+            _groupId = groupId;
         }
 
         public override string GetReplaceValue()
         {
             if (string.IsNullOrEmpty(CacheValue))
             {
-                CacheValue = _contentTypeId;
+                CacheValue = _groupId.ToString();
             }
             return CacheValue;
         }

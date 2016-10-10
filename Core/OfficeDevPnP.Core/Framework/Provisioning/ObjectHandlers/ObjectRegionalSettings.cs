@@ -67,10 +67,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;
                     isDirty = true;
                 }
-                if (web.RegionalSettings.CalendarType != (short)template.RegionalSettings.CalendarType)
+                if (template.RegionalSettings.CalendarType != CalendarType.None)
                 {
-                    web.RegionalSettings.CalendarType = (short)template.RegionalSettings.CalendarType;
-                    isDirty = true;
+                    if (web.RegionalSettings.CalendarType != (short)template.RegionalSettings.CalendarType)
+                    {
+                        web.RegionalSettings.CalendarType = (short)template.RegionalSettings.CalendarType;
+                        isDirty = true;
+                    }
                 }
                 if (web.RegionalSettings.Collation != Convert.ToInt16(template.RegionalSettings.Collation))
                 {

@@ -970,4 +970,10 @@
   <data name="Provisioning_Asymmetric_Base_Templates" xml:space="preserve">
     <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template.</value>
   </data>
+  <data name="ListExtensions_GetWebRelativeUrl" xml:space="preserve">
+    <value>Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference" xml:space="preserve">
+    <value>The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.</value>
+  </data>
 </root>

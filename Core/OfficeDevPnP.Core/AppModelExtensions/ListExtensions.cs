@@ -20,6 +20,11 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class ListExtensions
     {
+        /// <summary>
+        /// The common URL delimiters
+        /// </summary>
+        private static readonly char[] UrlDelimiters = { '\\', '/' };
+
         #region Event Receivers
 
         /// <summary>
@@ -337,12 +342,30 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             List existingList = results.FirstOrDefault();
 
-            if (existingList != null)
+            return results.Any();
+        }
+
+        /// <summary>
+        /// Checks if list exists on the particular site based on the list's site relative path.
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="siteRelativeUrlPath">Site relative path of the list</param>
+        /// <returns>True if the list exists</returns>
+        public static bool ListExists(this Web web, Uri siteRelativeUrlPath)
+        {
+            if (siteRelativeUrlPath == null)
             {
-                return true;
+                throw new ArgumentNullException("siteRelativeUrlPath");
             }
 
-            return false;
+            ListCollection lists = web.Lists;
+            web.Context.Load(web, obj => obj.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+
+            var listResult = web.GetList(UrlUtility.Combine(web.ServerRelativeUrl, siteRelativeUrlPath.ToString()));
+            web.Context.ExecuteQueryRetry();
+
+            return listResult != null;
         }
 
         /// <summary>
@@ -756,6 +779,41 @@ namespace Microsoft.SharePoint.Client
             }
 
             return web.GetListByUrl(pagesLibraryName) ?? web.GetListByTitle(pagesLibraryName);
+        }
+
+        /// <summary>
+        /// Gets the web relative URL.
+        /// Allow users to get the web relative URL of a list.  
+        /// This is useful when exporting lists as it can then be used as a parameter to Web.GetListByUrl().
+        /// </summary>
+        /// <param name="list">The list to export the URL of.</param>
+        /// <returns>The web relative URL of the list.</returns>
+        public static string GetWebRelativeUrl(this List list)
+        {
+            list.EnsureProperties(l => l.RootFolder, l => l.ParentWebUrl);
+            return GetWebRelativeUrl(list.RootFolder.ServerRelativeUrl, list.ParentWebUrl);
+        }
+
+        /// <summary>
+        /// Gets the web relative URL.
+        /// </summary>
+        /// <param name="listRootFolderServerRelativeUrl">The list root folder server relative URL.</param>
+        /// <param name="parentWebServerRelativeUrl">The parent web server relative URL.</param>
+        /// <returns>The web relative URL.</returns>
+        /// <exception cref="Exception">Cannot establish web relative URL from the list root folder URI and the parent web URI.</exception>
+        private static string GetWebRelativeUrl(string listRootFolderServerRelativeUrl, string parentWebServerRelativeUrl)
+        {
+            var sanitisedListRootFolderServerRelativeUrl = listRootFolderServerRelativeUrl.Trim(UrlDelimiters);
+            var sanitisedParentWebServerRelativeUrl = parentWebServerRelativeUrl.Trim(UrlDelimiters);
+
+            if (!sanitisedListRootFolderServerRelativeUrl.StartsWith(sanitisedParentWebServerRelativeUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new Exception(String.Format(CoreResources.ListExtensions_GetWebRelativeUrl, listRootFolderServerRelativeUrl, parentWebServerRelativeUrl));
+            }
+
+            var listWebRelativeUrl = sanitisedListRootFolderServerRelativeUrl.Substring(sanitisedParentWebServerRelativeUrl.Length);
+
+            return listWebRelativeUrl.Trim(UrlDelimiters);
         }
 
         #region List Permissions

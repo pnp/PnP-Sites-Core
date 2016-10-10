@@ -306,6 +306,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
@@ -604,6 +605,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
@@ -700,6 +702,11 @@
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Processors\PassThroughProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Schema\WebPart.v3.cs" />
+    <Compile Include="Utilities\WebParts\WebPartPostProcessorFactory.cs" />
+    <Compile Include="Utilities\WebParts\Processors\XsltWebPartPostProcessor.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -759,6 +766,9 @@
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Utilities\WebParts\Schema\WebPart.v3.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="Web References\UPAWebService\ContactData.datasource">
       <DependentUpon>Reference.map</DependentUpon>

@@ -1013,7 +1013,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="ClearSubscopes" type="xsd:boolean" use="required">
+    <xsd:attribute name="ClearSubscopes" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           Defines whether to clear subscopes or not while breaking role inheritance, optional attribute.
@@ -1196,6 +1196,13 @@
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
           Defines whether the Navigation Node for the Structural Navigation targets an External resource.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="IsVisible" type="xsd:boolean" use="optional" default="true">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Defines whether the Navigation Node for the Structural Navigation is visible or not.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

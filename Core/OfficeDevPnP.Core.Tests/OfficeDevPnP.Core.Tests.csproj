@@ -403,6 +403,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="TestCommon.cs" />
+    <Compile Include="Utilities\WebParts\WebPartPostProcessorFactoryTests.cs" />
+    <Compile Include="Utilities\WebParts\XsltWebPartPostProcessorTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
@@ -431,6 +433,7 @@
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+    <Content Include="Framework\Functional\Templates\regionalsettings_delta_1.xml" />
     <Content Include="Framework\Functional\Templates\termgroup_add.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -538,8 +541,8 @@
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />
     <Content Include="Resources\TestDefault.aspx">
-      <SubType>ASPXCodeBehind</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Resources\UpdateTermSet.csv" />
   </ItemGroup>

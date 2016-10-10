@@ -259,6 +259,8 @@ namespace Microsoft.SharePoint.Client
         public static bool WebExistsByTitle(this Web parentWeb, string title)
         {
             bool exists = false;
+            
+            parentWeb.EnsureProperty(p => p.Webs);
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
             if (subWeb != null)
@@ -821,7 +823,7 @@ namespace Microsoft.SharePoint.Client
         public static bool PropertyBagContainsKey(this Web web, string key)
         {
             web.AllProperties.ClearObjectData();
-            
+
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();

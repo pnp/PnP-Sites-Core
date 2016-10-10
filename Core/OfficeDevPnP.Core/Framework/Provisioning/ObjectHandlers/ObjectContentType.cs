@@ -257,7 +257,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //template. The order can be different if the new Content Type inherits from another Content Type.
             //In this case the new Content Type has all field of the original Content Type and missing fields 
             //will be added at the end. To fix this issue we ordering the fields once more.
-            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => fld.Name).ToArray());
+
+            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
 
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
@@ -439,13 +440,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
-                        if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                        // only persist language values for content types we actually will keep...no point in spending time on this is we clean the field afterwards
+                        bool persistLanguages = true;
+                        if (creationInfo.BaseTemplate != null)
                         {
-                            newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
+                            int index = creationInfo.BaseTemplate.ContentTypes.FindIndex(c => c.Id.Equals(ct.StringId));
+
+                            if (index > -1)
+                            {
+                                persistLanguages = false;
+                            }
                         }
-                        if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
+
+                        if (persistLanguages)
                         {
-                            newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                            if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                            {
+                                newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
+                            }
+                            if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
+                            {
+                                newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                            }
                         }
 #endif
                     }
