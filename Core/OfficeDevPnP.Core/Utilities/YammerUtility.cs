@@ -1,9 +1,9 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using OfficeDevPnP.Core.Entities;
 
 namespace OfficeDevPnP.Core.Utilities
 {
@@ -296,6 +296,7 @@ namespace OfficeDevPnP.Core.Utilities
             string json = null;
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             request.Method = "POST";
+            request.ContentLength = 0;
             request.Headers.Add("Authorization", "Bearer" + " " + accessToken);
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {
