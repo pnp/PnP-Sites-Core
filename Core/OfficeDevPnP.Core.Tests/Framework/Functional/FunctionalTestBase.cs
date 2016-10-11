@@ -48,9 +48,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     var tenant = new Tenant(tenantContext);
                     centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
 
-                    // Add delay to avoid race conditions
-                    Thread.Sleep(30 * 1000);
-
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
                 }

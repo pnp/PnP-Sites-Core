@@ -61,6 +61,9 @@ namespace Microsoft.SharePoint.Client
                 WaitForIsComplete(tenant, op);
             }
 
+            // Add delay to avoid race conditions
+            Thread.Sleep(30 * 1000);
+
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
             Guid siteGuid = Guid.Empty;
             if (wait)
