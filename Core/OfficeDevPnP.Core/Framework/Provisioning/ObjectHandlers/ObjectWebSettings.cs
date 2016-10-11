@@ -229,19 +229,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.CustomMasterUrl = customMasterUrl;
                     }
-                    if (!string.IsNullOrEmpty(parser.ParseString(webSettings.Title)))
+                    if (webSettings.Title != null)
                     {
                         web.Title = parser.ParseString(webSettings.Title);
                     }
-                    web.Description = parser.ParseString(webSettings.Description);
-                    web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    if (webSettings.Description != null)
+                    {
+                        web.Description = parser.ParseString(webSettings.Description);
+                    }
+                    if (webSettings.SiteLogo != null)
+                    {
+                        web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
                     {
                         web.RootFolder.WelcomePage = welcomePage;
                         web.RootFolder.Update();
                     }
-                    web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    if (webSettings.AlternateCSS != null)
+                    {
+                        web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    }
 
                     web.Update();
                     web.Context.ExecuteQueryRetry();
