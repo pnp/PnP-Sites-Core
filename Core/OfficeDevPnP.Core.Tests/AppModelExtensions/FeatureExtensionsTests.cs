@@ -13,6 +13,8 @@ namespace Microsoft.SharePoint.Client.Tests
     {
         const string TEST_CATEGORY = "Feature Extensions";
         private ClientContext clientContext;
+        private Guid publishingSiteFeatureId = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
+        private Guid publishingWebFeatureId = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
         private Guid sp2007WorkflowSiteFeatureId = new Guid("c845ed8d-9ce5-448c-bd3e-ea71350ce45b");
         private Guid contentOrganizerWebFeatureId = new Guid("7ad5272a-2694-4349-953e-ea5ef290e97c");
 
@@ -55,6 +57,31 @@ namespace Microsoft.SharePoint.Client.Tests
             clientContext.Web.DeactivateFeature(contentOrganizerWebFeatureId);
 
             Assert.IsFalse(clientContext.Web.IsFeatureActive(contentOrganizerWebFeatureId));
+        }
+
+        [TestMethod()]
+        public void PublishingFeatureTest()
+        {
+            // First deactivate if it was still active
+            clientContext.Web.DeactivateFeature(publishingWebFeatureId);
+            Assert.IsFalse(clientContext.Web.IsFeatureActive(publishingWebFeatureId));
+
+            clientContext.Site.DeactivateFeature(publishingSiteFeatureId);
+            Assert.IsFalse(clientContext.Site.IsFeatureActive(publishingSiteFeatureId));
+
+            // Activate
+            clientContext.Site.ActivateFeature(publishingSiteFeatureId);
+            Assert.IsTrue(clientContext.Site.IsFeatureActive(publishingSiteFeatureId));
+
+            clientContext.Web.ActivateFeature(publishingWebFeatureId);
+            Assert.IsTrue(clientContext.Web.IsFeatureActive(publishingWebFeatureId));
+
+            // Finally deactivate again
+            clientContext.Web.DeactivateFeature(publishingWebFeatureId);
+            Assert.IsFalse(clientContext.Web.IsFeatureActive(publishingWebFeatureId));
+
+            clientContext.Site.DeactivateFeature(publishingSiteFeatureId);
+            Assert.IsFalse(clientContext.Site.IsFeatureActive(publishingSiteFeatureId));
         }
 
         [TestMethod()]

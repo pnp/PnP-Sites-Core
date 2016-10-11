@@ -2,6 +2,8 @@
 using System.Linq;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -16,10 +18,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to be processed - can be root web or sub web</param>
         /// <param name="featureID">ID of the feature to activate</param>
         /// <param name="sandboxed">Set to true if the feature is defined in a sandboxed solution</param>
-        public static void ActivateFeature(this Web web, Guid featureID, bool sandboxed = false)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        public static void ActivateFeature(this Web web, Guid featureID, bool sandboxed = false, int pollingIntervalSeconds = 5)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
-            web.ProcessFeature(featureID, true, sandboxed);
+            web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
         }
 
         /// <summary>
@@ -28,10 +31,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">Site to be processed</param>
         /// <param name="featureID">ID of the feature to activate</param>
         /// <param name="sandboxed">Set to true if the feature is defined in a sandboxed solution</param>
-        public static void ActivateFeature(this Site site, Guid featureID, bool sandboxed = false)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        public static void ActivateFeature(this Site site, Guid featureID, bool sandboxed = false, int pollingIntervalSeconds = 5)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
-            site.ProcessFeature(featureID, true, sandboxed);
+            site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
         }
 
         /// <summary>
@@ -39,10 +43,11 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed - can be root web or sub web</param>
         /// <param name="featureID">ID of the feature to deactivate</param>
-        public static void DeactivateFeature(this Web web, Guid featureID)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        public static void DeactivateFeature(this Web web, Guid featureID, int pollingIntervalSeconds = 5)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
-            web.ProcessFeature(featureID, false, false);
+            web.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
         }
 
         /// <summary>
@@ -50,10 +55,11 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">Site to be processed</param>
         /// <param name="featureID">ID of the feature to deactivate</param>
-        public static void DeactivateFeature(this Site site, Guid featureID)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        public static void DeactivateFeature(this Site site, Guid featureID, int pollingIntervalSeconds = 5)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
-            site.ProcessFeature(featureID, false, false);
+            site.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
         }
 
         /// <summary>
@@ -111,9 +117,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="featureID">ID of the feature to activate/deactivate</param>
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="sandboxed">Set to true if the feature is defined in a sandboxed solution</param>
-        private static void ProcessFeature(this Site site, Guid featureID, bool activate, bool sandboxed)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        private static void ProcessFeature(this Site site, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 5)
         {
-            ProcessFeatureInternal(site.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm);
+            ProcessFeatureInternal(site.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm,pollingIntervalSeconds);
         }
 
         /// <summary>
@@ -123,10 +130,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="featureID">ID of the feature to activate/deactivate</param>
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="sandboxed">True to specify that the feature is defined in a sandboxed solution</param>
-        private static void ProcessFeature(this Web web, Guid featureID, bool activate, bool sandboxed)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        private static void ProcessFeature(this Web web, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 5)
         {
-            ProcessFeatureInternal(web.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm);
+            ProcessFeatureInternal(web.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm, pollingIntervalSeconds);
         }
+
 
         /// <summary>
         /// Activates or deactivates a site collection or web scoped feature
@@ -135,37 +144,48 @@ namespace Microsoft.SharePoint.Client
         /// <param name="featureID">ID of the feature to activate/deactivate</param>
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="scope">Scope of the feature definition</param>
-        private static void ProcessFeatureInternal(FeatureCollection features, Guid featureID, bool activate, FeatureDefinitionScope scope)
+        /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
+        private static void ProcessFeatureInternal(FeatureCollection features, Guid featureID, bool activate, FeatureDefinitionScope scope, int pollingIntervalSeconds = 5)
         {
-            features.Context.Load(features);
-            features.Context.ExecuteQueryRetry();
-
-            // The original number of active features...use this to track if the feature activation went OK
-            var oldCount = features.Count();
-
             if (activate)
             {
-                // GetById does not seem to work for site scoped features...if (clientSiteFeatures.GetById(featureID) == null)
-
-                // FeatureDefinitionScope defines how the features have been deployed. All OOB features are farm deployed
+                // Feature enabling can take a long time, especially in case of the publishing feature...so let's make it more reliable
+                bool cancel = false;
                 features.Add(featureID, true, scope);
-                features.Context.ExecuteQueryRetry();
 
-                // retry logic needed to make this more bulletproof :-(
-                features.Context.Load(features);
-                features.Context.ExecuteQueryRetry();
-
-                var tries = 0;
-                var currentCount = features.Count();
-                while (currentCount <= oldCount && tries < 5)
+                if (pollingIntervalSeconds < 2)
                 {
-                    tries++;
-                    features.Add(featureID, true, scope);
-                    features.Context.ExecuteQueryRetry();
-                    features.Context.Load(features);
-                    features.Context.ExecuteQueryRetry();
-                    currentCount = features.Count();
+                    pollingIntervalSeconds = 2;
                 }
+
+                // Kick off a thread that checks for the feature activation to be complete
+                Task.Run(() =>
+                {
+                    while (!cancel)
+                    {
+                        Thread.Sleep(TimeSpan.FromSeconds(pollingIntervalSeconds));
+
+                        if (!cancel)
+                        {
+                            cancel = IsFeatureActiveInternal(features, featureID);
+                            Console.WriteLine("Feature with id {1} was {0}", cancel, featureID);
+                        }
+                    }
+                });
+
+                // Kick off a thread that enables the feature
+                Task.Run(() =>
+                {
+                    try
+                    {
+                        features.Context.ExecuteQueryRetry();
+                        Console.WriteLine("Feature activation for {0} returned success", featureID);
+                    }
+                    finally
+                    {
+                        cancel = true;
+                    }
+                }).Wait();
             }
             else
             {
@@ -180,6 +200,5 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-
     }
 }
