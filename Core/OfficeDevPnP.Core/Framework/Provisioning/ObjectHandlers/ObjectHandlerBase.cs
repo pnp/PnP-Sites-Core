@@ -58,15 +58,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var formulaString = formula.Value;
                 if (formulaString != null)
                 {
-                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    // Remove duplicates and sort descending
+                    var fieldRefs = schemaElement.Descendants("FieldRef").GroupBy(f => f.Attribute("Name").Value, (key, group) => group.FirstOrDefault()).OrderByDescending(f => f.Attribute("Name").Value);
                     foreach (var fieldRef in fieldRefs)
                     {
+                        var fieldID = fieldRef.Attribute("ID").Value;
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
-                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldID));
                     }
+                    foreach (var fieldRef in fieldRefs)
+                    {
+                        var fieldID = fieldRef.Attribute("ID").Value;
+                        var fieldInternalName = fieldRef.Attribute("Name").Value;
+                        formulaString = formulaString.Replace(fieldID, fieldInternalName);
+                    }
+
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
-
                 }
                 formula.Value = formulaString;
             }
