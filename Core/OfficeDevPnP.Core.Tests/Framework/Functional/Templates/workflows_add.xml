@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="security_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Workflows>
+    <pnp:WorkflowDefinitions>
+      <pnp:WorkflowDefinition Id="{72756D8D-2F0C-4DA0-83BB-4E496E60F443}"
+          DisplayName="Sample-Workflow-Definition2"
+          Description="This is a sample Workflow Definition"
+          DraftVersion="1"
+          InitiationUrl=""
+          AssociationUrl=""
+          Published="true"
+          RequiresInitiationForm="false"
+          RequiresAssociationForm="false"
+          RestrictToType="List"
+          RestrictToScope="{listid:List Three}"
+          XamlPath="workflow.xaml">
+        <pnp:FormField />
+      </pnp:WorkflowDefinition>
+    </pnp:WorkflowDefinitions>
+    <pnp:WorkflowSubscriptions>
+      <pnp:WorkflowSubscription
+        DefinitionId="{72756D8D-2F0C-4DA0-83BB-4E496E60F443}"
+        ListId="{listid:List Three}"
+        Enabled="true"
+        EventSourceId="{listid:List Three}"
+        ItemAddedEvent="true" ItemUpdatedEvent="false" WorkflowStartEvent="true"
+        ManualStartBypassesActivationLimit="false"
+        Name="Sample Workflow" StatusFieldName="SampleWorkflowStatus" ParentContentTypeId="">
+        <pnp:PropertyDefinitions>
+          <pnp:PropertyDefinition Key="StatusColumnCreated" Value="0" />
+          <pnp:PropertyDefinition Key="WSPublishState" Value="1" />
+          <pnp:PropertyDefinition Key="StatusFieldName" Value="SampleWorkflowStatus" />
+        </pnp:PropertyDefinitions>
+      </pnp:WorkflowSubscription>
+    </pnp:WorkflowSubscriptions>
+
+  </pnp:Workflows>
+</pnp:ProvisioningTemplate>
+
+

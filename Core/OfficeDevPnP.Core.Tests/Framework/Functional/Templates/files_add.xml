@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="security_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Files>
+    <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="default.aspx" Folder="SitePages" Overwrite="true">
+      <pnp:Security>
+        <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+          <pnp:RoleAssignment Principal="Power Users" RoleDefinition="Full Control"/>
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:File>
+    <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" />
+    <pnp:File Src="fontscheme002.spfont" Folder="_catalogs/Theme/15" Overwrite="true" />
+
+  </pnp:Files>
+</pnp:ProvisioningTemplate>
+
+

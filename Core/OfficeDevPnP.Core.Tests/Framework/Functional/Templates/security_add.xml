@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="security_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Security ClearSubscopes="false" >
+    <pnp:AdditionalAdministrators>
+      <pnp:User Name="user@contoso.com"/>
+      <pnp:User Name="U_SHAREPOINT_ADMINS" />
+    </pnp:AdditionalAdministrators>
+    <pnp:AdditionalOwners>
+      <pnp:User Name="user@contoso.com"/>
+      <pnp:User Name="U_SHAREPOINT_ADMINS" />
+    </pnp:AdditionalOwners>
+    <pnp:AdditionalMembers>
+      <pnp:User Name="user1@contoso.com"/>
+      <pnp:User Name="user2@contoso.com"/>
+    </pnp:AdditionalMembers>
+    <pnp:AdditionalVisitors>
+      <pnp:User Name="user1@contoso.com"/>
+      <pnp:User Name="user2@contoso.com"/>
+    </pnp:AdditionalVisitors>
+    <pnp:SiteGroups>
+      <pnp:SiteGroup
+          Title="Power Users"
+          Description="Group of Power Users"
+          Owner="user@contoso.com">
+        <pnp:Members>
+          <pnp:User Name="user1@contoso.com"/>
+          <pnp:User Name="user2@contoso.com"/>
+        </pnp:Members>
+      </pnp:SiteGroup>
+    <pnp:SiteGroup
+          Title="OfficeDevPnP Core Team"
+          Description="Group of OfficeDevPnP Core Team"
+          Owner="user@contoso.com">
+        <pnp:Members>
+          <pnp:User Name="user1@contoso.com"/>
+          <pnp:User Name="user2@contoso.com"/>
+        </pnp:Members>
+      </pnp:SiteGroup>
+    </pnp:SiteGroups>
+    <pnp:Permissions>
+      <pnp:RoleDefinitions>
+        <pnp:RoleDefinition Name="Manage List Items" Description="Allows a user to manage list items">
+          <pnp:Permissions>
+            <pnp:Permission>ViewListItems</pnp:Permission>
+            <pnp:Permission>AddListItems</pnp:Permission>
+            <pnp:Permission>EditListItems</pnp:Permission>
+            <pnp:Permission>DeleteListItems</pnp:Permission>
+          </pnp:Permissions>
+        </pnp:RoleDefinition>
+      <pnp:RoleDefinition Name="Add List Items" Description="Allows a user to Add list items">
+          <pnp:Permissions>
+            <pnp:Permission>ViewListItems</pnp:Permission>
+            <pnp:Permission>AddListItems</pnp:Permission>
+          </pnp:Permissions>
+        </pnp:RoleDefinition>
+      </pnp:RoleDefinitions>
+      <pnp:RoleAssignments>
+        <pnp:RoleAssignment Principal="Power Users" RoleDefinition="Manage List Items"/>
+        <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Manage List Items"/>
+        <pnp:RoleAssignment Principal="user@contoso.com" RoleDefinition="Full Control"/>
+        <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Add List Items"/>
+      
+      </pnp:RoleAssignments>
+    </pnp:Permissions>
+  </pnp:Security>
+</pnp:ProvisioningTemplate>
+
+
