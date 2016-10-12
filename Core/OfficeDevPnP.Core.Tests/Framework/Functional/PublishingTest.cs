@@ -22,8 +22,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public PublishingTest()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/TestPnPSC_12345_11371b1e-a0d8-4b89-826e-37d0273cebdb";
-            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/TestPnPSC_12345_11371b1e-a0d8-4b89-826e-37d0273cebdb/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741/sub";
         }
         #endregion
 
