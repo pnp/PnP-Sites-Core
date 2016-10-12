@@ -47,8 +47,8 @@ namespace OfficeDevPnP.Core
         /// <param name="delay"></param>
         public PnPClientContext(string url, int retryCount = 10, int delay = 500) : base(url)
         {
-            this.RetryCount = retryCount;
-            this.Delay = delay;
+            RetryCount = retryCount;
+            Delay = delay;
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace OfficeDevPnP.Core
         /// <param name="delay"></param>
         public PnPClientContext(Uri uri, int retryCount = 10, int delay = 500) : base(uri)
         {
-            this.RetryCount = retryCount;
-            this.Delay = delay;
+            RetryCount = retryCount;
+            Delay = delay;
         }
 
         /// <summary>
@@ -86,14 +86,16 @@ namespace OfficeDevPnP.Core
         {
             if (siteUri == null)
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUri));
             }
 
-            PnPClientContext clonedClientContext = new PnPClientContext(siteUri);
-            clonedClientContext.RetryCount = this.RetryCount;
-            clonedClientContext.Delay = this.Delay;
+            var clonedClientContext = new PnPClientContext(siteUri)
+            {
+                RetryCount = this.RetryCount,
+                Delay = this.Delay,
+                AuthenticationMode = this.AuthenticationMode
+            };
 
-            clonedClientContext.AuthenticationMode = this.AuthenticationMode;
 
             // In case of using networkcredentials in on premises or SharePointOnlineCredentials in Office 365
             if (this.Credentials != null)
@@ -103,15 +105,15 @@ namespace OfficeDevPnP.Core
             else
             {
                 //Take over the form digest handling setting
-                clonedClientContext.FormDigestHandlingEnabled = (this as ClientContext).FormDigestHandlingEnabled;
+                clonedClientContext.FormDigestHandlingEnabled = this.FormDigestHandlingEnabled;
 
                 // In case of app only or SAML
                 clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
                 {
                     // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
                     // the new delegate method
-                    MethodInfo methodInfo = this.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
-                    object[] parametersArray = new object[] { webRequestEventArgs };
+                    var methodInfo = this.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                    var parametersArray = new object[] { webRequestEventArgs };
                     methodInfo.Invoke(this, parametersArray);
                 };
             }

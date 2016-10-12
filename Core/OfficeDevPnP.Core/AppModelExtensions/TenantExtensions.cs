@@ -331,8 +331,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if deleted</returns>
         public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true)
         {
-            bool ret = false;
-            SpoOperation op = tenant.RemoveDeletedSite(siteFullUrl);
+            var ret = false;
+            var op = tenant.RemoveDeletedSite(siteFullUrl);
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
 
@@ -369,7 +369,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The Guid of a site collection or an Guid.Empty if the Site does not exist</returns>
         public static Guid GetSiteGuidByUrl(this Tenant tenant, Uri siteFullUrl)
         {
-            Guid siteGuid = Guid.Empty;
+            var siteGuid = Guid.Empty;
 
             Site site = null;
             site = tenant.GetSiteByUrl(siteFullUrl.OriginalString);
@@ -515,22 +515,23 @@ namespace Microsoft.SharePoint.Client
 
         #region Site enumeration
         /// <summary>
-        /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. EndIndex is the maximum number based on chunkcs of 300.
+        /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
         /// </summary>
         /// <param name="tenant">Tenant object to operate against</param>
-        /// <param name="startIndex">Start getting site collections from this index. Defaults to 0</param>
-        /// <param name="endIndex">The index of the last site. Defaults to 100.000</param>
+        /// <param name="startIndex">Not relevant anymore</param>
+        /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
         /// <returns>An IList of SiteEntity objects</returns>
-        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 100000, bool includeDetail = true)
+        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true)
         {
             var sites = new List<SiteEntity>();
+            SPOSitePropertiesEnumerable props = null;
 
-            // O365 Tenant Site Collection limit is 500.000 (https://support.office.com/en-us/article/SharePoint-Online-software-boundaries-and-limits-8f34ff47-b749-408b-abc0-b605e1f6d498?CTT=1&CorrelationId=1928c530-fc12-4134-ada5-8ed2c2ec01fc&ui=en-US&rs=en-US&ad=US), 
-            // but let's limit to 100.000. Note that GetSiteProperties returns 300 per request.
-            for (int i = startIndex; i < endIndex; i += 300)
+            while (props == null || props.NextStartIndexFromSharePoint != null)
+            //while (props == null || props.NextStartIndex > -1)
             {
-                var props = tenant.GetSiteProperties(i, includeDetail);
+                props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
+                //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
 
@@ -557,8 +558,6 @@ namespace Microsoft.SharePoint.Client
                     }
                     sites.Add(siteEntity);
                 }
-
-                if (props.Count < 300) break; //exit for loop if there are no more site collections
             }
 
             return sites;
@@ -576,7 +575,7 @@ namespace Microsoft.SharePoint.Client
 
             // get all user profiles
             var userProfileResult = svcClient.GetUserProfileByIndex(-1);
-            var profileCount = svcClient.GetUserProfileCount();
+            //var profileCount = svcClient.GetUserProfileCount();
 
             while (int.Parse(userProfileResult.NextValue) != -1)
             {
@@ -590,10 +589,12 @@ namespace Microsoft.SharePoint.Client
                         var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
                         var url = personalSpaceProperty.Values[0].Value as string;
                         var name = nameProperty.Values[0].Value as string;
-                        SiteEntity siteEntity = new SiteEntity();
-                        siteEntity.Url = url;
-                        siteEntity.Title = name;
-                        siteEntity.SiteOwnerLogin = usernameProperty.Values[0].Value as string;
+                        var siteEntity = new SiteEntity
+                        {
+                            Url = url,
+                            Title = name,
+                            SiteOwnerLogin = usernameProperty.Values[0].Value as string
+                        };
                         sites.Add(siteEntity);
                     }
                 }

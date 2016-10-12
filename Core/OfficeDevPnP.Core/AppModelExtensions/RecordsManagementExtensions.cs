@@ -67,17 +67,17 @@ namespace Microsoft.SharePoint.Client
             {
                 return false;
             }
-            
+
             return true;
         }
-        
+
         /// <summary>
         /// Activate the in place records management feature
         /// </summary>
         /// <param name="site">Site collection to operate on</param>
         public static void ActivateInPlaceRecordsManagementFeature(this Site site)
         {
-            site.ActivateFeature(new Guid(INPLACE_RECORDS_MANAGEMENT_FEATURE_ID));            
+            site.ActivateFeature(new Guid(INPLACE_RECORDS_MANAGEMENT_FEATURE_ID));
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">Site collection to operate on</param>
         public static void DisableInPlaceRecordsManagementFeature(this Site site)
         {
-            site.DeactivateFeature(new Guid(INPLACE_RECORDS_MANAGEMENT_FEATURE_ID)); 
+            site.DeactivateFeature(new Guid(INPLACE_RECORDS_MANAGEMENT_FEATURE_ID));
         }
 
         /// <summary>
@@ -136,12 +136,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if records management is allowed in all places, false otherwise</returns>
         public static bool GetManualRecordDeclarationInAllLocations(this Site site)
         {
-            string manualDeclare = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_DECLARATION_DEFAULT, "");
+            var manualDeclare = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_DECLARATION_DEFAULT, "");
 
-            if (!String.IsNullOrEmpty(manualDeclare))
+            if (!string.IsNullOrEmpty(manualDeclare))
             {
-                bool manual = false;
-                if (Boolean.TryParse(manualDeclare, out manual))
+                var manual = false;
+                if (bool.TryParse(manualDeclare, out manual))
                 {
                     return manual;
                 }
@@ -185,20 +185,20 @@ namespace Microsoft.SharePoint.Client
         /// <returns><see cref="EcmSiteRecordRestrictions"/> enum that defines the current restrictions</returns>
         public static EcmSiteRecordRestrictions GetRecordRestrictions(this Site site)
         {
-            EcmSiteRecordRestrictions result = EcmSiteRecordRestrictions.None;
-            result = result.Remove<EcmSiteRecordRestrictions>(EcmSiteRecordRestrictions.None);
+            var result = EcmSiteRecordRestrictions.None;
+            result = result.Remove(EcmSiteRecordRestrictions.None);
 
-            string restrictionString = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_RESTRICTIONS, "");
+            var restrictionString = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_RESTRICTIONS, "");
 
-            if (!String.IsNullOrEmpty(restrictionString))
+            if (!string.IsNullOrEmpty(restrictionString))
             {
-                string[] restrictions = restrictionString.Split(new string[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
+                var restrictions = restrictionString.Split(new[] { ", " }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string restriction in restrictions)
                 {
                     EcmSiteRecordRestrictions value;
-                    if (Enum.TryParse<EcmSiteRecordRestrictions>(restriction, out value))
+                    if (Enum.TryParse(restriction, out value))
                     {
-                        result = result.Include<EcmSiteRecordRestrictions>(value);                        
+                        result = result.Include(value);
                     }
                 }
 
@@ -206,7 +206,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             //Throw exception as apparently in place records management has not yet been setup.
-            throw new Exception("No ECM_SITE_RECORD_RESTRICTIONS setting defined"); 
+            throw new Exception("No ECM_SITE_RECORD_RESTRICTIONS setting defined");
         }
 
         /// <summary>
@@ -228,17 +228,17 @@ namespace Microsoft.SharePoint.Client
         {
             string by = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_DECLARATION_BY, "");
 
-            if (!String.IsNullOrEmpty(by))
+            if (!string.IsNullOrEmpty(by))
             {
                 EcmRecordDeclarationBy result;
-                if (Enum.TryParse<EcmRecordDeclarationBy>(by, out result))
+                if (Enum.TryParse(by, out result))
                 {
                     return result;
                 }
             }
 
             //Throw exception as apparently in place records management has not yet been setup.
-            throw new Exception("No ECM_SITE_RECORD_DECLARATION_BY setting defined");            
+            throw new Exception("No ECM_SITE_RECORD_DECLARATION_BY setting defined");
         }
 
         /// <summary>
@@ -259,12 +259,12 @@ namespace Microsoft.SharePoint.Client
 
         public static EcmRecordDeclarationBy GetRecordUnDeclarationBy(this Site site)
         {
-            string by = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_UNDECLARATION_BY, "");
+            var by = site.RootWeb.GetPropertyBagValueString(ECM_SITE_RECORD_UNDECLARATION_BY, "");
 
-            if (!String.IsNullOrEmpty(by))
+            if (!string.IsNullOrEmpty(by))
             {
                 EcmRecordDeclarationBy result;
-                if (Enum.TryParse<EcmRecordDeclarationBy>(by, out result))
+                if (Enum.TryParse(by, out result))
                 {
                     return result;
                 }
@@ -283,24 +283,18 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if in place records management settings are active for this list</returns>
         public static bool IsListRecordSettingDefined(this List list)
         {
-            string useListSpecific = list.GetPropertyBagValueString(ECM_IPR_LIST_USE_LIST_SPECIFIC, "");
+            var useListSpecific = list.GetPropertyBagValueString(ECM_IPR_LIST_USE_LIST_SPECIFIC, "");
 
-            if (!String.IsNullOrEmpty(useListSpecific))
+            if (!string.IsNullOrEmpty(useListSpecific))
             {
-                bool listSpecific = false;
-                if (Boolean.TryParse(useListSpecific, out listSpecific))
+                var listSpecific = false;
+                if (bool.TryParse(useListSpecific, out listSpecific))
                 {
                     return listSpecific;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
                 return false;
             }
+            return false;
         }
 
         /// <summary>
@@ -327,7 +321,7 @@ namespace Microsoft.SharePoint.Client
                 list.SetPropertyBagValue(ECM_ALLOW_MANUAL_DECLARATION, true.ToString());
                 //Set the property that dictates custom list record settings to true
                 list.SetPropertyBagValue(ECM_IPR_LIST_USE_LIST_SPECIFIC, true.ToString());
-            } 
+            }
             else if (settings == EcmListManualRecordDeclaration.NeverAllowManualDeclaration)
             {
                 list.SetPropertyBagValue(ECM_ALLOW_MANUAL_DECLARATION, false.ToString());
@@ -336,7 +330,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                throw new ArgumentOutOfRangeException("settings");
+                throw new ArgumentOutOfRangeException(nameof(settings));
             }
         }
 
@@ -347,33 +341,27 @@ namespace Microsoft.SharePoint.Client
         /// <returns><see cref="EcmListManualRecordDeclaration"/> enum that defines the manual in place record declaration settings for this list</returns>
         public static EcmListManualRecordDeclaration GetListManualRecordDeclaration(this List list)
         {
-            string useListSpecific = list.GetPropertyBagValueString(ECM_IPR_LIST_USE_LIST_SPECIFIC, "");
+            var useListSpecific = list.GetPropertyBagValueString(ECM_IPR_LIST_USE_LIST_SPECIFIC, "");
 
-            if (!String.IsNullOrEmpty(useListSpecific))
+            if (!string.IsNullOrEmpty(useListSpecific))
             {
-                bool listSpecific = false;
-                if (Boolean.TryParse(useListSpecific, out listSpecific))
+                var listSpecific = false;
+                if (bool.TryParse(useListSpecific, out listSpecific))
                 {
-                   if (!listSpecific)
-                   {
-                       return EcmListManualRecordDeclaration.UseSiteCollectionDefaults;
-                   }
-                   else
-                   {
-                       string manualDeclararion = list.GetPropertyBagValueString(ECM_ALLOW_MANUAL_DECLARATION, "");
-                       bool manual = false;
-                       if (Boolean.TryParse(manualDeclararion, out manual))
-                       {
-                           if (manual)
-                           {
-                               return EcmListManualRecordDeclaration.AlwaysAllowManualDeclaration;
-                           }
-                           else
-                           {
-                               return EcmListManualRecordDeclaration.NeverAllowManualDeclaration;
-                           }
-                       }
-                   }
+                    if (!listSpecific)
+                    {
+                        return EcmListManualRecordDeclaration.UseSiteCollectionDefaults;
+                    }
+                    var manualDeclararion = list.GetPropertyBagValueString(ECM_ALLOW_MANUAL_DECLARATION, "");
+                    var manual = false;
+                    if (bool.TryParse(manualDeclararion, out manual))
+                    {
+                        if (manual)
+                        {
+                            return EcmListManualRecordDeclaration.AlwaysAllowManualDeclaration;
+                        }
+                        return EcmListManualRecordDeclaration.NeverAllowManualDeclaration;
+                    }
                 }
             }
 
@@ -389,8 +377,8 @@ namespace Microsoft.SharePoint.Client
         public static void SetListAutoRecordDeclaration(this List list, bool autoDeclareRecords)
         {
             //Determine the SharePoint version based on the loaded CSOM library
-            Assembly asm = Assembly.GetAssembly(typeof(Site));
-            int sharePointVersion = asm.GetName().Version.Major;
+            var asm = Assembly.GetAssembly(typeof(Site));
+            var sharePointVersion = asm.GetName().Version.Major;
 
             if (autoDeclareRecords)
             {
@@ -408,7 +396,7 @@ namespace Microsoft.SharePoint.Client
 
                 // Track changes to see if an list.Update is needed
                 bool eventReceiverAdded = false;
-                
+
                 //ItemUpdating receiver
                 EventReceiverDefinitionCreationInformation newEventReceiver = CreateECMRecordEventReceiverDefinition(EventReceiverType.ItemUpdating, 1000, sharePointVersion);
                 if (!ContainsECMRecordEventReceiver(newEventReceiver, currentEventReceivers))
@@ -451,7 +439,7 @@ namespace Microsoft.SharePoint.Client
                     list.EventReceivers.Add(newEventReceiver);
                     eventReceiverAdded = true;
                 }
-                                
+
                 if (eventReceiverAdded)
                 {
                     list.Update();
@@ -476,12 +464,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if auto record declaration is active, false otherwise</returns>
         public static bool GetListAutoRecordDeclaration(this List list)
         {
-            string autoDeclare = list.GetPropertyBagValueString(ECM_AUTO_DECLARE_RECORDS, "");
+            var autoDeclare = list.GetPropertyBagValueString(ECM_AUTO_DECLARE_RECORDS, "");
 
-            if (!String.IsNullOrEmpty(autoDeclare))
+            if (!string.IsNullOrEmpty(autoDeclare))
             {
-                bool auto = false;
-                if (Boolean.TryParse(autoDeclare, out auto))
+                var auto = false;
+                if (bool.TryParse(autoDeclare, out auto))
                 {
                     return auto;
                 }
@@ -495,7 +483,8 @@ namespace Microsoft.SharePoint.Client
             return new EventReceiverDefinitionCreationInformation()
             {
                 EventType = eventType,
-                ReceiverAssembly = String.Format("Microsoft.Office.Policy, Version={0}.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c", sharePointVersion),
+                ReceiverAssembly =
+                    $"Microsoft.Office.Policy, Version={sharePointVersion}.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c",
                 ReceiverClass = "Microsoft.Office.RecordsManagement.Internal.HoldEventReceiver",
                 ReceiverName = "ECM_RecordEventReceiver",
                 ReceiverUrl = "",
@@ -506,7 +495,7 @@ namespace Microsoft.SharePoint.Client
 
         private static bool ContainsECMRecordEventReceiver(EventReceiverDefinitionCreationInformation receiverToAdd, List<EventReceiverDefinition> currentEventReceivers)
         {
-            foreach(EventReceiverDefinition eventReceiver in currentEventReceivers)
+            foreach (var eventReceiver in currentEventReceivers)
             {
                 if (eventReceiver.EventType.Equals(receiverToAdd.EventType) &&
                     eventReceiver.ReceiverAssembly.Equals(receiverToAdd.ReceiverAssembly) &&

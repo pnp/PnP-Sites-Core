@@ -240,7 +240,7 @@ namespace Microsoft.SharePoint.Client
             }
             catch
             {
-
+                // ignored
             }
 
             return pnpMethod;

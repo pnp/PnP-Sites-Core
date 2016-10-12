@@ -755,6 +755,16 @@ Field exists in content type
 > ##### Return value
 > True if exists, false otherwise
 
+#### FieldExistsByNameInContentType(Microsoft.SharePoint.Client.ContentType,System.String)
+Checks if a field exists in a content type by id
+> ##### Parameters
+> **contentType:** The content type to check
+
+> **fieldName:** The name of the field to look for
+
+> ##### Return value
+> True if field exists in content type, otherwise false
+
 #### SetJsLinkCustomizations(Microsoft.SharePoint.Client.Field,System.String)
 Adds jsLink to a field.
 > ##### Parameters
@@ -2033,6 +2043,10 @@ Class that holds deprecated generic list creation and manipulation methods
             
 Class that provides generic list creation and manipulation methods
         
+### Fields
+
+#### UrlDelimiters
+The common URL delimiters
 ### Methods
 
 
@@ -2212,6 +2226,16 @@ Checks if list exists on the particular site based on the list Title property.
 
 > **System.ArgumentNullException:** listTitle is null
 
+
+#### ListExists(Microsoft.SharePoint.Client.Web,System.Uri)
+Checks if list exists on the particular site based on the list's site relative path.
+> ##### Parameters
+> **web:** Site to be processed - can be root web or sub site
+
+> **siteRelativeUrlPath:** Site relative path of the list
+
+> ##### Return value
+> True if the list exists
 
 #### ListExists(Microsoft.SharePoint.Client.Web,System.Guid)
 Checks if list exists on the particular site based on the list id property.
@@ -2409,6 +2433,27 @@ Gets the publishing pages library of the web based on site language
 > The publishing pages library. Returns null if library was not found.
 > ##### Exceptions
 > **System.InvalidOperationException:** Could not load pages library URL name from 'cmscore' resources file.
+
+
+#### GetWebRelativeUrl(Microsoft.SharePoint.Client.List)
+Gets the web relative URL. Allow users to get the web relative URL of a list. This is useful when exporting lists as it can then be used as a parameter to Web.GetListByUrl().
+> ##### Parameters
+> **list:** The list to export the URL of.
+
+> ##### Return value
+> The web relative URL of the list.
+
+#### GetWebRelativeUrl(System.String,System.String)
+Gets the web relative URL.
+> ##### Parameters
+> **listRootFolderServerRelativeUrl:** The list root folder server relative URL.
+
+> **parentWebServerRelativeUrl:** The parent web server relative URL.
+
+> ##### Return value
+> The web relative URL.
+> ##### Exceptions
+> **System.Exception:** Cannot establish web relative URL from the list root folder URI and the parent web URI.
 
 
 #### SetListPermission(Microsoft.SharePoint.Client.List,OfficeDevPnP.Core.Enums.BuiltInIdentity,Microsoft.SharePoint.Client.RoleType)
@@ -3044,6 +3089,25 @@ Sets a web part property
 
 
 #### SetWebPartProperty(Microsoft.SharePoint.Client.Web,System.String,System.Int32,System.Guid,System.String)
+Sets a web part property
+> ##### Parameters
+> **web:** The web to process
+
+> **key:** The key to update
+
+> **value:** The value to set
+
+> **id:** The id of the webpart
+
+> **serverRelativePageUrl:** 
+
+> ##### Exceptions
+> **System.ArgumentException:** Thrown when key or serverRelativePageUrl is a zero-length string or contains only white space
+
+> **System.ArgumentNullException:** Thrown when key or serverRelativePageUrl is null
+
+
+#### SetWebPartProperty(Microsoft.SharePoint.Client.Web,System.String,System.Boolean,System.Guid,System.String)
 Sets a web part property
 > ##### Parameters
 > **web:** The web to process
@@ -5596,10 +5660,12 @@ Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext obj
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetWebLoginClientContext(System.String)
+#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
 Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **icon:** Optional icon to use for the popup form
 
 > ##### Return value
 > ClientContext to be used by CSOM code
@@ -6135,580 +6201,584 @@ Compares to instances of IEnumerable<T>
 
 ## Core.CoreResources
             
-Classe di risorse fortemente tipizzata per la ricerca di stringhe localizzate e così via.
+A strongly-typed resource class, for looking up localized strings, etc.
         
 ### Properties
 
 #### ResourceManager
-Restituisce l'istanza di ResourceManager nella cache utilizzata da questa classe.
+Returns the cached ResourceManager instance used by this class.
 #### Culture
-Esegue l'override della proprietà CurrentUICulture del thread corrente per tutte le ricerche di risorse eseguite utilizzando questa classe di risorse fortemente tipizzata.
+Overrides the current thread's CurrentUICulture property for all resource lookups using this strongly typed resource class.
 #### AuthenticationManager_GetContext
-Cerca una stringa localizzata simile a Getting authentication context for '{0}'.
+Looks up a localized string similar to Getting authentication context for '{0}'.
 #### AuthenticationManager_TenantUser
-Cerca una stringa localizzata simile a Tenant user '{0}'.
+Looks up a localized string similar to Tenant user '{0}'.
 #### AuthenticationManger_ProblemDeterminingTokenLease
-Cerca una stringa localizzata simile a Could not determine lease for appOnlyAccessToken. Error = {0}.
+Looks up a localized string similar to Could not determine lease for appOnlyAccessToken. Error = {0}.
 #### BrandingExtension_ApplyTheme
-Cerca una stringa localizzata simile a Applying theme '{0}' in '{1}'.
+Looks up a localized string similar to Applying theme '{0}' in '{1}'.
 #### BrandingExtension_ComposedLookMissing
-Cerca una stringa localizzata simile a Composed look '{0}' not found..
+Looks up a localized string similar to Composed look '{0}' not found..
 #### BrandingExtension_CreateComposedLook
-Cerca una stringa localizzata simile a Creating composed look '{0}' in '{1}'.
+Looks up a localized string similar to Creating composed look '{0}' in '{1}'.
 #### BrandingExtension_DeployMasterPage
-Cerca una stringa localizzata simile a Deploying masterpage '{0}' to '{1}'..
+Looks up a localized string similar to Deploying masterpage '{0}' to '{1}'..
 #### BrandingExtension_DeployPageLayout
-Cerca una stringa localizzata simile a Deploying page layout '{0}' to '{1}'..
+Looks up a localized string similar to Deploying page layout '{0}' to '{1}'..
 #### BrandingExtension_DeployTheme
-Cerca una stringa localizzata simile a Deploying theme '{0}' to '{1}'.
+Looks up a localized string similar to Deploying theme '{0}' to '{1}'.
 #### BrandingExtension_SetCustomMasterUrl
-Cerca una stringa localizzata simile a Setting custom master URL '{0}' in '{1}'..
+Looks up a localized string similar to Setting custom master URL '{0}' in '{1}'..
 #### BrandingExtension_SetMasterUrl
-Cerca una stringa localizzata simile a Setting master URL '{0}' in '{1}'..
+Looks up a localized string similar to Setting master URL '{0}' in '{1}'..
 #### BrandingExtension_UpdateComposedLook
-Cerca una stringa localizzata simile a Updating composed look '{0}' in '{1}'.
+Looks up a localized string similar to Updating composed look '{0}' in '{1}'.
 #### BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_
-Cerca una stringa localizzata simile a Destination file name is required..
+Looks up a localized string similar to Destination file name is required..
 #### BrandingExtensions_UploadThemeFile_Source_file_path_is_required_
-Cerca una stringa localizzata simile a Source file path is required..
+Looks up a localized string similar to Source file path is required..
 #### BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Cerca una stringa localizzata simile a The argument must be a single file name and cannot contain path characters..
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
 #### ClientContextExtensions_Clone_Url_of_the_site_is_required_
-Cerca una stringa localizzata simile a Url of the site is required..
+Looks up a localized string similar to Url of the site is required..
 #### ClientContextExtensions_ExecuteQueryRetry
-Cerca una stringa localizzata simile a CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
+Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
 #### Exception_Message_EmptyString_Arg
-Cerca una stringa localizzata simile a The passed argument is a zero-length string or contains only whitespace..
+Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
 #### FeatureExtensions_ActivateSiteCollectionFeature
-Cerca una stringa localizzata simile a Activating feature {0} in site collection..
+Looks up a localized string similar to Activating feature {0} in site collection..
 #### FeatureExtensions_ActivateWebFeature
-Cerca una stringa localizzata simile a Activating feature {0} in web..
+Looks up a localized string similar to Activating feature {0} in web..
 #### FeatureExtensions_DeactivateSiteCollectionFeature
-Cerca una stringa localizzata simile a Deactivating feature {0} in site collection..
+Looks up a localized string similar to Deactivating feature {0} in site collection..
 #### FeatureExtensions_DeactivateWebFeature
-Cerca una stringa localizzata simile a Deactivating feature {0} in web..
+Looks up a localized string similar to Deactivating feature {0} in web..
 #### FeatureExtensions_FeatureActivationProblem
-Cerca una stringa localizzata simile a Problem with activation for feature id {0}. Error = {1}.
+Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
 #### FieldAndContentTypeExtensions_AddField0ToContentType1
-Cerca una stringa localizzata simile a Adding field ({0}) to content type ({1})..
+Looks up a localized string similar to Adding field ({0}) to content type ({1})..
 #### FieldAndContentTypeExtensions_ContentType01AlreadyExists
-Cerca una stringa localizzata simile a Content type '{0}' ({1}) already exists; no changes made..
+Looks up a localized string similar to Content type '{0}' ({1}) already exists; no changes made..
 #### FieldAndContentTypeExtensions_CreateContentType01
-Cerca una stringa localizzata simile a Creating content type '{0}' ({1})..
+Looks up a localized string similar to Creating content type '{0}' ({1})..
 #### FieldAndContentTypeExtensions_CreateDocumentSet
-Cerca una stringa localizzata simile a Creating document set '{0}'..
+Looks up a localized string similar to Creating document set '{0}'..
 #### FieldAndContentTypeExtensions_CreateField01
-Cerca una stringa localizzata simile a Creating field '{0}' ({1})..
+Looks up a localized string similar to Creating field '{0}' ({1})..
 #### FieldAndContentTypeExtensions_CreateFieldBase
-Cerca una stringa localizzata simile a New Field as XML: {0}.
+Looks up a localized string similar to New Field as XML: {0}.
 #### FieldAndContentTypeExtensions_DeleteContentTypeById
-Cerca una stringa localizzata simile a Could not find content type with id: {0}.
+Looks up a localized string similar to Could not find content type with id: {0}.
 #### FieldAndContentTypeExtensions_DeleteContentTypeByName
-Cerca una stringa localizzata simile a Could not find content type with name: {0}.
+Looks up a localized string similar to Could not find content type with name: {0}.
 #### FieldAndContentTypeExtensions_Field01AlreadyExists
-Cerca una stringa localizzata simile a Field '{0}' ({1}) already exists; no changes made..
+Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
 #### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_
-Cerca una stringa localizzata simile a The argument must be a single document set name and cannot contain path characters..
+Looks up a localized string similar to The argument must be a single document set name and cannot contain path characters..
 #### FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_
-Cerca una stringa localizzata simile a The argument must be a single folder name and cannot contain path characters..
+Looks up a localized string similar to The argument must be a single folder name and cannot contain path characters..
 #### FileFolderExtensions_CreateFolder0Under12
-Cerca una stringa localizzata simile a Creating folder '{0}' under {1} '{2}'..
+Looks up a localized string similar to Creating folder '{0}' under {1} '{2}'..
 #### FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_
-Cerca una stringa localizzata simile a Folder URL is required..
+Looks up a localized string similar to Folder URL is required..
 #### FileFolderExtensions_FolderMissing
-Cerca una stringa localizzata simile a Target folder does not exist in the web. Web: {0}, Folder: {1}.
+Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
 #### FileFolderExtensions_LibraryMissing
-Cerca una stringa localizzata simile a Target library does not exist in the web. Web: {0}, List: {1}.
+Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
 #### FileFolderExtensions_UpdateFile0Properties1
-Cerca una stringa localizzata simile a Update file '{0}', change properties: {1}..
+Looks up a localized string similar to Update file '{0}', change properties: {1}..
 #### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
-Cerca una stringa localizzata simile a Destination file name is required..
+Looks up a localized string similar to Destination file name is required..
 #### FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Cerca una stringa localizzata simile a The argument must be a single file name and cannot contain path characters..
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
 #### FileFolderExtensions_UploadFile0ToFolder1
-Cerca una stringa localizzata simile a Uploading file '{0}' to folder '{1}'..
+Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
 #### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Cerca una stringa localizzata simile a The argument must be a single file name and cannot contain path characters..
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
 #### ListExtensions_CreateList0Template12
-Cerca una stringa localizzata simile a Creating list '{0}' from template {1}{2}..
+Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
+#### ListExtensions_GetWebRelativeUrl
+Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
 #### LoggingUtility_MessageWithException
-Cerca una stringa localizzata simile a {0}; EXCEPTION: {{{1}}}.
+Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
 #### MailUtility_SendException
-Cerca una stringa localizzata simile a Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
+Looks up a localized string similar to Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
 #### MailUtility_SendExceptionRethrow0
-Cerca una stringa localizzata simile a Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
+Looks up a localized string similar to Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
 #### MailUtility_SendFailed
-Cerca una stringa localizzata simile a Mail message could not be sent. Send completed with error {0}..
+Looks up a localized string similar to Mail message could not be sent. Send completed with error {0}..
 #### MailUtility_SendMailCancelled
-Cerca una stringa localizzata simile a Mail message was canceled..
+Looks up a localized string similar to Mail message was canceled..
 #### PnPMonitoredScope_Code_execution_ended
-Cerca una stringa localizzata simile a Code execution scope ended.
+Looks up a localized string similar to Code execution scope ended.
 #### PnPMonitoredScope_Code_execution_started
-Cerca una stringa localizzata simile a Code execution scope started.
+Looks up a localized string similar to Code execution scope started.
 #### PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_
-Cerca una stringa localizzata simile a Updating property {0}.
+Looks up a localized string similar to Updating property {0}.
 #### Provisioning_Asymmetric_Base_Templates
-Cerca una stringa localizzata simile a The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
 #### Provisioning_Connectors_Azure_FailedToInitialize
-Cerca una stringa localizzata simile a Could not initialize AzureStorageConnector. Error = {0}.
+Looks up a localized string similar to Could not initialize AzureStorageConnector. Error = {0}.
 #### Provisioning_Connectors_Azure_FileDeleted
-Cerca una stringa localizzata simile a File {0} was deleted from Azure storage container {1}.
+Looks up a localized string similar to File {0} was deleted from Azure storage container {1}.
 #### Provisioning_Connectors_Azure_FileDeleteFailed
-Cerca una stringa localizzata simile a File {0} was not deleted from Azure storage container {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1}. Error = {2}.
 #### Provisioning_Connectors_Azure_FileDeleteNotFound
-Cerca una stringa localizzata simile a File {0} was not deleted from Azure storage container {1} because it was not available.
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1} because it was not available.
 #### Provisioning_Connectors_Azure_FileNotFound
-Cerca una stringa localizzata simile a File {0} not found in Azure storage container {1}. Exception = {2}.
+Looks up a localized string similar to File {0} not found in Azure storage container {1}. Exception = {2}.
 #### Provisioning_Connectors_Azure_FileRetrieved
-Cerca una stringa localizzata simile a File {0} retrieved from Azure storage container {1}.
+Looks up a localized string similar to File {0} retrieved from Azure storage container {1}.
 #### Provisioning_Connectors_Azure_FileSaved
-Cerca una stringa localizzata simile a File {0} saved to Azure storage container {1}.
+Looks up a localized string similar to File {0} saved to Azure storage container {1}.
 #### Provisioning_Connectors_Azure_FileSaveFailed
-Cerca una stringa localizzata simile a File {0} was not saved to Azure storage container {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not saved to Azure storage container {1}. Error = {2}.
 #### Provisioning_Connectors_FileSystem_FileDeleted
-Cerca una stringa localizzata simile a File {0} deleted from folder {1}.
+Looks up a localized string similar to File {0} deleted from folder {1}.
 #### Provisioning_Connectors_FileSystem_FileDeleteFailed
-Cerca una stringa localizzata simile a File {0} was not deleted from folder {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
 #### Provisioning_Connectors_FileSystem_FileDeleteNotFound
-Cerca una stringa localizzata simile a File {0} was not deleted from folder {1} because it was not available.
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
 #### Provisioning_Connectors_FileSystem_FileNotFound
-Cerca una stringa localizzata simile a File {0} not found in directory {1}. Exception = {2}.
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
 #### Provisioning_Connectors_FileSystem_FileRetrieved
-Cerca una stringa localizzata simile a File {0} retrieved from folder {1}.
+Looks up a localized string similar to File {0} retrieved from folder {1}.
 #### Provisioning_Connectors_FileSystem_FileSaved
-Cerca una stringa localizzata simile a File {0} saved to folder {1}.
+Looks up a localized string similar to File {0} saved to folder {1}.
 #### Provisioning_Connectors_FileSystem_FileSaveFailed
-Cerca una stringa localizzata simile a File {0} was not saved to folder {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
 #### Provisioning_Connectors_OpenXML_FileDeleted
-Cerca una stringa localizzata simile a File {0} deleted from folder {1}.
+Looks up a localized string similar to File {0} deleted from folder {1}.
 #### Provisioning_Connectors_OpenXML_FileDeleteFailed
-Cerca una stringa localizzata simile a File {0} was not deleted from folder {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
 #### Provisioning_Connectors_OpenXML_FileDeleteNotFound
-Cerca una stringa localizzata simile a File {0} was not deleted from folder {1} because it was not available.
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
 #### Provisioning_Connectors_OpenXML_FileNotFound
-Cerca una stringa localizzata simile a File {0} not found in directory {1}. Exception = {2}.
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
 #### Provisioning_Connectors_OpenXML_FileRetrieved
-Cerca una stringa localizzata simile a File {0} retrieved from folder {1}.
+Looks up a localized string similar to File {0} retrieved from folder {1}.
 #### Provisioning_Connectors_OpenXML_FileSaved
-Cerca una stringa localizzata simile a File {0} saved to folder {1}.
+Looks up a localized string similar to File {0} saved to folder {1}.
 #### Provisioning_Connectors_OpenXML_FileSaveFailed
-Cerca una stringa localizzata simile a File {0} was not saved to folder {1}. Error = {2}.
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
 #### Provisioning_Connectors_SharePoint_FileDeleted
-Cerca una stringa localizzata simile a File {0} deleted from site {1}, library {2}.
+Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
 #### Provisioning_Connectors_SharePoint_FileDeleteFailed
-Cerca una stringa localizzata simile a File {0} was not deleted from site {1}, library {2}. Error = {3}.
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2}. Error = {3}.
 #### Provisioning_Connectors_SharePoint_FileDeleteNotFound
-Cerca una stringa localizzata simile a File {0} was not deleted from site {1}, library {2} because it was not available.
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2} because it was not available.
 #### Provisioning_Connectors_SharePoint_FileNotFound
-Cerca una stringa localizzata simile a File {0} not found in site {1}, library {2}. Exception = {3}.
+Looks up a localized string similar to File {0} not found in site {1}, library {2}. Exception = {3}.
 #### Provisioning_Connectors_SharePoint_FileRetrieved
-Cerca una stringa localizzata simile a File {0} found in site {1}, library {2}.
+Looks up a localized string similar to File {0} found in site {1}, library {2}.
 #### Provisioning_Connectors_SharePoint_FileSaved
-Cerca una stringa localizzata simile a File {0} saved to site {1}, library {2}.
+Looks up a localized string similar to File {0} saved to site {1}, library {2}.
 #### Provisioning_Connectors_SharePoint_FileSaveFailed
-Cerca una stringa localizzata simile a File {0} was not saved to site {1}, library {2}. Error = {3}.
+Looks up a localized string similar to File {0} was not saved to site {1}, library {2}. Error = {3}.
 #### Provisioning_Extensibility_Pipeline_BeforeInvocation
-Cerca una stringa localizzata simile a Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
+Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
 #### Provisioning_Extensibility_Pipeline_ClientCtxNull
-Cerca una stringa localizzata simile a ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
+Looks up a localized string similar to ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
 #### Provisioning_Extensibility_Pipeline_Exception
-Cerca una stringa localizzata simile a There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
+Looks up a localized string similar to There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
 #### Provisioning_Extensibility_Pipeline_Missing_AssemblyName
-Cerca una stringa localizzata simile a Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
+Looks up a localized string similar to Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
 #### Provisioning_Extensibility_Pipeline_Missing_TypeName
-Cerca una stringa localizzata simile a Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
+Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
 #### Provisioning_Extensibility_Pipeline_Success
-Cerca una stringa localizzata simile a Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
+Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
 #### Provisioning_Formatter_Invalid_Template_URI
-Cerca una stringa localizzata simile a The Provisioning Template URI {0} is not valid..
+Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
 #### Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_
-Cerca una stringa localizzata simile a Downloading asset: {0}.
+Looks up a localized string similar to Downloading asset: {0}.
 #### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize
-Cerca una stringa localizzata simile a Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
+Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
 #### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector
-Cerca una stringa localizzata simile a Creating SharePointConnector.
+Looks up a localized string similar to Creating SharePointConnector.
 #### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look
-Cerca una stringa localizzata simile a Retrieving current composed look.
+Looks up a localized string similar to Retrieving current composed look.
 #### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag
-Cerca una stringa localizzata simile a Using Composed Look Information from Property Bag.
+Looks up a localized string similar to Using Composed Look Information from Property Bag.
 #### Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_
-Cerca una stringa localizzata simile a Adding content type to template: {0} - {1}.
+Looks up a localized string similar to Adding content type to template: {0} - {1}.
 #### Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type
-Cerca una stringa localizzata simile a Adding field {0} to content type.
+Looks up a localized string similar to Adding field {0} to content type.
 #### Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_
-Cerca una stringa localizzata simile a Context web is subweb. Skipping content types..
+Looks up a localized string similar to Context web is subweb. Skipping content types..
 #### Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_
-Cerca una stringa localizzata simile a Creating new Content Type: {0} - {1}.
+Looks up a localized string similar to Creating new Content Type: {0} - {1}.
 #### Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold
-Cerca una stringa localizzata simile a Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
 #### Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type
-Cerca una stringa localizzata simile a Field {0} exists in content type.
+Looks up a localized string similar to Field {0} exists in content type.
 #### Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request
-Cerca una stringa localizzata simile a Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
 #### Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_
-Cerca una stringa localizzata simile a Recreating existing Content Type: {0} - {1}.
+Looks up a localized string similar to Recreating existing Content Type: {0} - {1}.
 #### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
-Cerca una stringa localizzata simile a Updating existing Content Type: {0} - {1}.
+Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
 #### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
-Cerca una stringa localizzata simile a Adding custom action '{0}' to scope Site.
+Looks up a localized string similar to Adding custom action '{0}' to scope Site.
 #### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
-Cerca una stringa localizzata simile a Adding custom action '{0}' to scope Web.
+Looks up a localized string similar to Adding custom action '{0}' to scope Web.
 #### Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template
-Cerca una stringa localizzata simile a Adding site scoped custom action '{0}' to template.
+Looks up a localized string similar to Adding site scoped custom action '{0}' to template.
 #### Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template
-Cerca una stringa localizzata simile a Adding web scoped custom action '{0}' to template.
+Looks up a localized string similar to Adding web scoped custom action '{0}' to template.
 #### Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Cerca una stringa localizzata simile a Removing site scoped custom action '{0}' from template because already available in base template.
+Looks up a localized string similar to Removing site scoped custom action '{0}' from template because already available in base template.
 #### Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Cerca una stringa localizzata simile a Removing web scoped custom action '{0}' from template because already available in base template.
+Looks up a localized string similar to Removing web scoped custom action '{0}' from template because already available in base template.
 #### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_
-Cerca una stringa localizzata simile a Calling extensibility callout {0}.
+Looks up a localized string similar to Calling extensibility callout {0}.
 #### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_
-Cerca una stringa localizzata simile a Calling extensibility tokenprovider callout {0}.
+Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
 #### Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_
-Cerca una stringa localizzata simile a Extensibility callout failed: {0} : {1}.
+Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_
-Cerca una stringa localizzata simile a Extensibility tokenprovider callout failed: {0} : {1}.
+Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_Extraction
-Cerca una stringa localizzata simile a Extraction.
+Looks up a localized string similar to Extraction.
 #### Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_
-Cerca una stringa localizzata simile a Activating {0} scoped feature {1}.
+Looks up a localized string similar to Activating {0} scoped feature {1}.
 #### Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_
-Cerca una stringa localizzata simile a Deactivating {0} scoped feature {1}.
+Looks up a localized string similar to Deactivating {0} scoped feature {1}.
 #### Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_
-Cerca una stringa localizzata simile a Adding field {0} failed: {1} : {2}.
+Looks up a localized string similar to Adding field {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site
-Cerca una stringa localizzata simile a Adding field {0} to site.
+Looks up a localized string similar to Adding field {0} to site.
 #### Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns
-Cerca una stringa localizzata simile a Context web is subweb, skipping site columns.
+Looks up a localized string similar to Context web is subweb, skipping site columns.
 #### Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_
-Cerca una stringa localizzata simile a Field {0} ({1}) exists but is of different type. Skipping field..
+Looks up a localized string similar to Field {0} ({1}) exists but is of different type. Skipping field..
 #### Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_
-Cerca una stringa localizzata simile a Updating field {0} failed: {1} : {2}.
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site
-Cerca una stringa localizzata simile a Updating field {0} in site.
+Looks up a localized string similar to Updating field {0} in site.
 #### Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page
-Cerca una stringa localizzata simile a Adding webpart '{0}' to page.
+Looks up a localized string similar to Adding webpart '{0}' to page.
 #### Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_
-Cerca una stringa localizzata simile a Uploading and overwriting existing file {0}.
+Looks up a localized string similar to Uploading and overwriting existing file {0}.
 #### Provisioning_ObjectHandlers_Files_Uploading_file__0_
-Cerca una stringa localizzata simile a Uploading file {0}.
+Looks up a localized string similar to Uploading file {0}.
 #### Provisioning_ObjectHandlers_FinishExtraction
-Cerca una stringa localizzata simile a FINISH - Template Extraction.
+Looks up a localized string similar to FINISH - Template Extraction.
 #### Provisioning_ObjectHandlers_FinishProvisioning
-Cerca una stringa localizzata simile a FINISH - Provisioning.
+Looks up a localized string similar to FINISH - Provisioning.
 #### Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_
-Cerca una stringa localizzata simile a Adding list: {0} - {1}.
+Looks up a localized string similar to Adding list: {0} - {1}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_field__0_
-Cerca una stringa localizzata simile a Creating field {0}.
+Looks up a localized string similar to Creating field {0}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_
-Cerca una stringa localizzata simile a Creating field {0} failed: {1} : {2}.
+Looks up a localized string similar to Creating field {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_list__0_
-Cerca una stringa localizzata simile a Creating list {0}.
+Looks up a localized string similar to Creating list {0}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_
-Cerca una stringa localizzata simile a Creating list {0} failed: {1} : {2}.
+Looks up a localized string similar to Creating list {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_view__0_
-Cerca una stringa localizzata simile a Creating view {0}.
+Looks up a localized string similar to Creating view {0}.
 #### Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_
-Cerca una stringa localizzata simile a Creating view failed: {0} : {1}.
+Looks up a localized string similar to Creating view failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true
-Cerca una stringa localizzata simile a DraftVersionVisibility not applied because EnableModeration is not set to true.
+Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
 #### Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_
-Cerca una stringa localizzata simile a Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
+Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
 #### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
-Cerca una stringa localizzata simile a Field schema has no ID attribute: {0}.
+Looks up a localized string similar to Field schema has no ID attribute: {0}.
 #### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
-Cerca una stringa localizzata simile a Folder '{0}' already exists in parent folder '{1}'..
+Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
 #### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
-Cerca una stringa localizzata simile a ID for field is not a valid Guid: {0}.
+Looks up a localized string similar to ID for field is not a valid Guid: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference
+Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
 #### Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_
-Cerca una stringa localizzata simile a List {0} ({1}, {2}) exists but is of a different type. Skipping list..
+Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
 #### Provisioning_ObjectHandlers_ListInstances_Updating_field__0_
-Cerca una stringa localizzata simile a Updating field {0}.
+Looks up a localized string similar to Updating field {0}.
 #### Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_
-Cerca una stringa localizzata simile a Updating field {0} failed: {1} : {2}.
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_ListInstances_Updating_list__0_
-Cerca una stringa localizzata simile a Updating list {0}.
+Looks up a localized string similar to Updating list {0}.
 #### Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_
-Cerca una stringa localizzata simile a Updating list {0} failed: {1} : {2}.
+Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows
-Cerca una stringa localizzata simile a Data Rows.
+Looks up a localized string similar to Data Rows.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
-Cerca una stringa localizzata simile a Creating list item {0}.
+Looks up a localized string similar to Creating list item {0}.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
-Cerca una stringa localizzata simile a Creating listitem failed: {0} : {1}.
+Looks up a localized string similar to Creating listitem failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
-Cerca una stringa localizzata simile a Processing data rows for {0}.
+Looks up a localized string similar to Processing data rows for {0}.
 #### Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0
-Cerca una stringa localizzata simile a Unable to find lookup list with Id: {0}.
+Looks up a localized string similar to Unable to find lookup list with Id: {0}.
 #### Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_
-Cerca una stringa localizzata simile a Processing lookup fields failed: {0} : {1}.
+Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing
-Cerca una stringa localizzata simile a Context web does not have the publishing features enabled, skipping navigation settings.
+Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
 #### Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation
-Cerca una stringa localizzata simile a Missing Current Managed Navigation settings in the current template.
+Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
 #### Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation
-Cerca una stringa localizzata simile a Missing Current Structural Navigation settings in the current template.
+Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
 #### Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation
-Cerca una stringa localizzata simile a Missing Global Managed Navigation settings in the current template.
+Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
 #### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
-Cerca una stringa localizzata simile a Missing Global Structural Navigation settings in the current template.
+Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
 #### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
-Cerca una stringa localizzata simile a Creating new page {0}.
+Looks up a localized string similar to Creating new page {0}.
 #### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
-Cerca una stringa localizzata simile a Creating new page {0} failed: {1} : {2}.
+Looks up a localized string similar to Creating new page {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_
-Cerca una stringa localizzata simile a Overwriting existing page {0}.
+Looks up a localized string similar to Overwriting existing page {0}.
 #### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_
-Cerca una stringa localizzata simile a Overwriting existing page {0} failed: {1} : {2}.
+Looks up a localized string similar to Overwriting existing page {0} failed: {1} : {2}.
 #### Provisioning_ObjectHandlers_PersistTemplateInformation
-Cerca una stringa localizzata simile a Persist Template Information.
+Looks up a localized string similar to Persist Template Information.
 #### Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_
-Cerca una stringa localizzata simile a Creating new propertybag entry {0} with value {1}{2}.
+Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
 #### Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_
-Cerca una stringa localizzata simile a Overwriting existing propertybag entry {0} with value {1}.
+Looks up a localized string similar to Overwriting existing propertybag entry {0} with value {1}.
 #### Provisioning_ObjectHandlers_Provisioning
-Cerca una stringa localizzata simile a Provisioning.
+Looks up a localized string similar to Provisioning.
 #### Provisioning_ObjectHandlers_RetrieveTemplateInfo
-Cerca una stringa localizzata simile a Retrieve Template Info.
+Looks up a localized string similar to Retrieve Template Info.
 #### Provisioning_ObjectHandlers_SitePolicy_PolicyAdded
-Cerca una stringa localizzata simile a Site policy '{0}' applied to site.
+Looks up a localized string similar to Site policy '{0}' applied to site.
 #### Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound
-Cerca una stringa localizzata simile a Site policy '{0}' not found.
+Looks up a localized string similar to Site policy '{0}' not found.
 #### Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_
-Cerca una stringa localizzata simile a Add users failed for group '{0}': {1} : {2}.
+Looks up a localized string similar to Add users failed for group '{0}': {1} : {2}.
 #### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
-Cerca una stringa localizzata simile a Context web is subweb, skipping site security provisioning.
+Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
 #### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
-Cerca una stringa localizzata simile a Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
 #### Provisioning_Providers_XML_InvalidFileFormat
-Cerca una stringa localizzata simile a Cannot process XML file {0}..
+Looks up a localized string similar to Cannot process XML file {0}..
 #### ProvisioningExtensions_ErrorProvisioningModule0File1
-Cerca una stringa localizzata simile a Error provisioning module '{0}' file '{1}'. Error = {2}.
+Looks up a localized string similar to Error provisioning module '{0}' file '{1}'. Error = {2}.
 #### ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required
-Cerca una stringa localizzata simile a Path to the element file is required.
+Looks up a localized string similar to Path to the element file is required.
 #### ProvisioningExtensions_ProvisionElementFile0
-Cerca una stringa localizzata simile a Provisioning Elements file '{0}'..
+Looks up a localized string similar to Provisioning Elements file '{0}'..
 #### ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__
-Cerca una stringa localizzata simile a Expected element 'Elements'..
+Looks up a localized string similar to Expected element 'Elements'..
 #### ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__
-Cerca una stringa localizzata simile a Expected element 'File'..
+Looks up a localized string similar to Expected element 'File'..
 #### ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__
-Cerca una stringa localizzata simile a Expected element 'Module'..
+Looks up a localized string similar to Expected element 'Module'..
 #### SecurityExtensions_Error_VisitingSecurableObject
-Cerca una stringa localizzata simile a Something wrong happened while visiting securable object: {0}, details: {1}.
+Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
 #### SecurityExtensions_Info_VisitingSecurableObject
-Cerca una stringa localizzata simile a Visiting securable object: {0}.
+Looks up a localized string similar to Visiting securable object: {0}.
 #### SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects
-Cerca una stringa localizzata simile a Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
+Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
 #### Service_RegistrationFailed
-Cerca una stringa localizzata simile a Service registration for {0} using endpoint {1} and cachekey {2} failed..
+Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
 #### Services_AccessDenied
-Cerca una stringa localizzata simile a Service requestor is not registered: access denied.
+Looks up a localized string similar to Service requestor is not registered: access denied.
 #### Services_CookieWithCachKeyNotFound
-Cerca una stringa localizzata simile a The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
+Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
 #### Services_Registered
-Cerca una stringa localizzata simile a Service {0} has been registered for endpoint {1} using cachekey {2}..
+Looks up a localized string similar to Service {0} has been registered for endpoint {1} using cachekey {2}..
 #### Services_TokenRefreshed
-Cerca una stringa localizzata simile a Token for cachekey {0} and hostweburl {1} has been refreshed..
+Looks up a localized string similar to Token for cachekey {0} and hostweburl {1} has been refreshed..
 #### SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true
-Cerca una stringa localizzata simile a OverwriteSystemPropertyBagValues is to true.
+Looks up a localized string similar to OverwriteSystemPropertyBagValues is to true.
 #### SiteToTemplateConversion_Base_template_available___0_
-Cerca una stringa localizzata simile a Base template available: {0}.
+Looks up a localized string similar to Base template available: {0}.
 #### SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true
-Cerca una stringa localizzata simile a IncludeAllTermGroups is set to true.
+Looks up a localized string similar to IncludeAllTermGroups is set to true.
 #### SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true
-Cerca una stringa localizzata simile a IncludeSiteCollectionTermGroup is set to true.
+Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
 #### SiteToTemplateConversion_MessagesDelegate_registered
-Cerca una stringa localizzata simile a MessagesDelegate registered.
+Looks up a localized string similar to MessagesDelegate registered.
 #### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
-Cerca una stringa localizzata simile a PersistBrandingFiles is set to true.
+Looks up a localized string similar to PersistBrandingFiles is set to true.
 #### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
-Cerca una stringa localizzata simile a PersistComposedLookFiles is set to true.
+Looks up a localized string similar to PersistComposedLookFiles is set to true.
 #### SiteToTemplateConversion_ProgressDelegate_registered
-Cerca una stringa localizzata simile a ProgressDelegate registered.
+Looks up a localized string similar to ProgressDelegate registered.
 #### SP_Responsive_UI
-Cerca una stringa localizzata simile a /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $(".ms-siteSettings-root . [stringa troncata]";.
+Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $(".ms-siteSettings-root . [rest of string was truncated]";.
 #### TaxonomyExtension_CreateTerm01UnderParent2
-Cerca una stringa localizzata simile a Creating term '{0}|{1}' under parent '{2}'..
+Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
 #### TaxonomyExtension_CreateTermGroup0InStore1
-Cerca una stringa localizzata simile a Creating term group '{0}' in term store '{1}'..
+Looks up a localized string similar to Creating term group '{0}' in term store '{1}'..
 #### TaxonomyExtension_CreateTermSet0InGroup1
-Cerca una stringa localizzata simile a Creating term set '{0}' in term group '{1}'..
+Looks up a localized string similar to Creating term set '{0}' in term group '{1}'..
 #### TaxonomyExtension_DeleteTerm01
-Cerca una stringa localizzata simile a Deleting term '{0}|{1}'..
+Looks up a localized string similar to Deleting term '{0}|{1}'..
 #### TaxonomyExtension_ExceptionUpdateDescriptionGroup01
-Cerca una stringa localizzata simile a Error setting description for term group '{0}' ({1}). Error = {2}.
+Looks up a localized string similar to Error setting description for term group '{0}' ({1}). Error = {2}.
 #### TaxonomyExtension_ExceptionUpdateDescriptionSet01
-Cerca una stringa localizzata simile a Error setting description for term set '{0}' ({1}). Error = {2}.
+Looks up a localized string similar to Error setting description for term set '{0}' ({1}). Error = {2}.
 #### TaxonomyExtension_ImportErrorDeleteId0Line1
-Cerca una stringa localizzata simile a Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
+Looks up a localized string similar to Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
 #### TaxonomyExtension_ImportErrorDescription0Line1
-Cerca una stringa localizzata simile a Error encountered during import. The description '{0}' on line {1} is not valid..
+Looks up a localized string similar to Error encountered during import. The description '{0}' on line {1} is not valid..
 #### TaxonomyExtension_ImportErrorName0Line1
-Cerca una stringa localizzata simile a Error encountered during import. The name '{0}' is not valid on line {1}..
+Looks up a localized string similar to Error encountered during import. The name '{0}' is not valid on line {1}..
 #### TaxonomyExtension_ImportErrorTaggingLine0
-Cerca una stringa localizzata simile a Error encountered during import. The available for tagging entry on line {0} is not valid..
+Looks up a localized string similar to Error encountered during import. The available for tagging entry on line {0} is not valid..
 #### TaxonomyExtension_ImportTermSet
-Cerca una stringa localizzata simile a Importing term set from file stream..
+Looks up a localized string similar to Importing term set from file stream..
 #### TaxonomyExtension_TermGroup0Id1DoesNotMatchSpecifiedId2
-Cerca una stringa localizzata simile a Term group '{0}' ID ({1}) does not match specified ID ({2})..
+Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
 #### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
-Cerca una stringa localizzata simile a Term set '{0}' ID ({1}) does not match specified ID ({2})..
+Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
 #### TaxonomyExtensions_Field_Is_Not_Multivalues
-Cerca una stringa localizzata simile a The taxonomy field {0} does not support multiple values..
+Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
 #### TaxonomyExtensions_ImportTermSet_File_path_is_required_
-Cerca una stringa localizzata simile a File path is required..
+Looks up a localized string similar to File path is required..
 #### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
-Cerca una stringa localizzata simile a Invalid CSV format; was expecting a comma in the first (header) line..
+Looks up a localized string similar to Invalid CSV format; was expecting a comma in the first (header) line..
 #### TenantExtensions_ClosedContextWarning
-Cerca una stringa localizzata simile a ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
+Looks up a localized string similar to ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
 #### TenantExtensions_SetLockState
-Cerca una stringa localizzata simile a SetSiteLockState: Current: {0} Target: {1}.
+Looks up a localized string similar to SetSiteLockState: Current: {0} Target: {1}.
 #### TenantExtensions_UnknownExceptionAccessingSite
-Cerca una stringa localizzata simile a Could not determine if site exists in tenant. Error = {0}.
+Looks up a localized string similar to Could not determine if site exists in tenant. Error = {0}.
 #### TimerJob_AddSite_Done
-Cerca una stringa localizzata simile a Site {0} url/wildcard added.
+Looks up a localized string similar to Site {0} url/wildcard added.
 #### TimerJob_AddSite_InvalidUrl
-Cerca una stringa localizzata simile a Site url ({0}) contains invalid characters.
+Looks up a localized string similar to Site url ({0}) contains invalid characters.
 #### TimerJob_Authentication_AppOnly
-Cerca una stringa localizzata simile a Timer job authentication set to type App-Only with clientId {0}.
+Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
 #### TimerJob_Authentication_AzureADAppOnly
-Cerca una stringa localizzata simile a Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
+Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
 #### TimerJob_Authentication_Network
-Cerca una stringa localizzata simile a Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
+Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
 #### TimerJob_Authentication_O365
-Cerca una stringa localizzata simile a Timer job authentication set to type Office 365 with user {0}.
+Looks up a localized string similar to Timer job authentication set to type Office 365 with user {0}.
 #### TimerJob_Authentication_RetrieveFromCredMan
-Cerca una stringa localizzata simile a Retrieving credetials with name {0} from the Windows Credential Manager.
+Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
 #### TimerJob_Authentication_RetrieveFromCredManFailed
-Cerca una stringa localizzata simile a Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
+Looks up a localized string similar to Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
 #### TimerJob_Authentication_TenantAdmin
-Cerca una stringa localizzata simile a Tenant admin site set to {0}..
+Looks up a localized string similar to Tenant admin site set to {0}..
 #### TimerJob_ClearAddedSites
-Cerca una stringa localizzata simile a All added sites are cleared.
+Looks up a localized string similar to All added sites are cleared.
 #### TimerJob_Clone
-Cerca una stringa localizzata simile a Timer job {0} settings cloned to timer job {0}.
+Looks up a localized string similar to Timer job {0} settings cloned to timer job {0}.
 #### TimerJob_Constructor
-Cerca una stringa localizzata simile a Timer job constructed with name {0}, version {1}.
+Looks up a localized string similar to Timer job constructed with name {0}, version {1}.
 #### TimerJob_DoWork_Done
-Cerca una stringa localizzata simile a Work for site {0} done.
+Looks up a localized string similar to Work for site {0} done.
 #### TimerJob_DoWork_NoEventHandler
-Cerca una stringa localizzata simile a No event receiver connected to the TimerJobRun event.
+Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
 #### TimerJob_DoWork_Start
-Cerca una stringa localizzata simile a Doing work for site {0}.
+Looks up a localized string similar to Doing work for site {0}.
 #### TimerJob_Enumeration_Network
-Cerca una stringa localizzata simile a Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
+Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
 #### TimerJob_Enumeration_NoDomain
-Cerca una stringa localizzata simile a No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
+Looks up a localized string similar to No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
 #### TimerJob_Enumeration_NoPassword
-Cerca una stringa localizzata simile a No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+Looks up a localized string similar to No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
 #### TimerJob_Enumeration_NoUser
-Cerca una stringa localizzata simile a No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+Looks up a localized string similar to No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
 #### TimerJob_Enumeration_O365
-Cerca una stringa localizzata simile a Enumeration credentials specified for Office 365 enumeration with user {0}.
+Looks up a localized string similar to Enumeration credentials specified for Office 365 enumeration with user {0}.
 #### TimerJob_ExpandSite_EatException
-Cerca una stringa localizzata simile a Eating exception {0} for site {1}.
+Looks up a localized string similar to Eating exception {0} for site {1}.
 #### TimerJob_ExpandSubSites
-Cerca una stringa localizzata simile a ExpandSubSites set to {0}.
+Looks up a localized string similar to ExpandSubSites set to {0}.
 #### TimerJob_ManageState
-Cerca una stringa localizzata simile a Manage state set to {0}.
+Looks up a localized string similar to Manage state set to {0}.
 #### TimerJob_MaxThread1
-Cerca una stringa localizzata simile a If you only want 1 thread then set the UseThreading property to false.
+Looks up a localized string similar to If you only want 1 thread then set the UseThreading property to false.
 #### TimerJob_MaxThread100
-Cerca una stringa localizzata simile a You cannot use more than 100 threads.
+Looks up a localized string similar to You cannot use more than 100 threads.
 #### TimerJob_MaxThreadLessThan1
-Cerca una stringa localizzata simile a Number of threads must be between 2 and 100.
+Looks up a localized string similar to Number of threads must be between 2 and 100.
 #### TimerJob_MaxThreadSet
-Cerca una stringa localizzata simile a MaximumThreads set to {0}.
+Looks up a localized string similar to MaximumThreads set to {0}.
 #### TimerJob_OnTimerJobRun_CallEventHandler
-Cerca una stringa localizzata simile a Calling the eventhandler for site {0}.
+Looks up a localized string similar to Calling the eventhandler for site {0}.
 #### TimerJob_OnTimerJobRun_CallEventHandlerDone
-Cerca una stringa localizzata simile a Eventhandler called for site {0}.
+Looks up a localized string similar to Eventhandler called for site {0}.
 #### TimerJob_OnTimerJobRun_Error
-Cerca una stringa localizzata simile a Error during timerjob execution of site {0}. Exception message = {1}.
+Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
 #### TimerJob_OnTimerJobRun_PrevRunRead
-Cerca una stringa localizzata simile a Timerjob for site {1}, PreviousRun = {0}.
+Looks up a localized string similar to Timerjob for site {1}, PreviousRun = {0}.
 #### TimerJob_OnTimerJobRun_PrevRunSet
-Cerca una stringa localizzata simile a Set Timerjob for site {1}, PreviousRun to {0}.
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRun to {0}.
 #### TimerJob_OnTimerJobRun_PrevRunSuccessRead
-Cerca una stringa localizzata simile a Timerjob for site {1}, PreviousRunSuccessful = {0}.
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunSuccessful = {0}.
 #### TimerJob_OnTimerJobRun_PrevRunSuccessSet
-Cerca una stringa localizzata simile a Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
 #### TimerJob_OnTimerJobRun_PrevRunVersionRead
-Cerca una stringa localizzata simile a Timerjob for site {1}, PreviousRunVersion = {0}.
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunVersion = {0}.
 #### TimerJob_OnTimerJobRun_PrevRunVersionSet
-Cerca una stringa localizzata simile a Set Timerjob for site {1}, PreviousRunVersion to {0}.
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunVersion to {0}.
 #### TimerJob_OnTimerJobRun_PropertiesRead
-Cerca una stringa localizzata simile a Timerjob properties read using key {0} for site {1}.
+Looks up a localized string similar to Timerjob properties read using key {0} for site {1}.
 #### TimerJob_OnTimerJobRun_PropertiesSet
-Cerca una stringa localizzata simile a Timerjob properties written using key {0} for site {1}.
+Looks up a localized string similar to Timerjob properties written using key {0} for site {1}.
 #### TimerJob_Realm
-Cerca una stringa localizzata simile a Realm set to {0}.
+Looks up a localized string similar to Realm set to {0}.
 #### TimerJob_ResolveSites_Done
-Cerca una stringa localizzata simile a Resolving sites done, sub sites have been expanded.
+Looks up a localized string similar to Resolving sites done, sub sites have been expanded.
 #### TimerJob_ResolveSites_DoneNoExpansionNeeded
-Cerca una stringa localizzata simile a Resolving sites done, no expansion needed.
+Looks up a localized string similar to Resolving sites done, no expansion needed.
 #### TimerJob_ResolveSites_LaunchThreadPerBatch
-Cerca una stringa localizzata simile a Expand subsites by launching a thread for each of the {0} work batches.
+Looks up a localized string similar to Expand subsites by launching a thread for each of the {0} work batches.
 #### TimerJob_ResolveSites_ResolveSite
-Cerca una stringa localizzata simile a Resolving wildcard site {0}.
+Looks up a localized string similar to Resolving wildcard site {0}.
 #### TimerJob_ResolveSites_ResolveSiteDone
-Cerca una stringa localizzata simile a Done resolving wildcard site {0}.
+Looks up a localized string similar to Done resolving wildcard site {0}.
 #### TimerJob_ResolveSites_SequentialExpandDone
-Cerca una stringa localizzata simile a Done sequentially expanding all sites.
+Looks up a localized string similar to Done sequentially expanding all sites.
 #### TimerJob_ResolveSites_Started
-Cerca una stringa localizzata simile a Resolving sites started.
+Looks up a localized string similar to Resolving sites started.
 #### TimerJob_ResolveSites_StartSequentialExpand
-Cerca una stringa localizzata simile a Start sequentially expanding all sites.
+Looks up a localized string similar to Start sequentially expanding all sites.
 #### TimerJob_ResolveSites_ThreadLaunched
-Cerca una stringa localizzata simile a Thread started to expand a batch of {0} sites.
+Looks up a localized string similar to Thread started to expand a batch of {0} sites.
 #### TimerJob_ResolveSites_ThreadsAreDone
-Cerca una stringa localizzata simile a Done waiting for all site expanding threads.
+Looks up a localized string similar to Done waiting for all site expanding threads.
 #### TimerJob_Run_AfterResolveAddedSites
-Cerca una stringa localizzata simile a After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
 #### TimerJob_Run_AfterUpdateAddedSites
-Cerca una stringa localizzata simile a After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
 #### TimerJob_Run_BeforeResolveAddedSites
-Cerca una stringa localizzata simile a Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
 #### TimerJob_Run_BeforeStartWorkBatches
-Cerca una stringa localizzata simile a Ready to start a thread for each of the {0} work batches.
+Looks up a localized string similar to Ready to start a thread for each of the {0} work batches.
 #### TimerJob_Run_BeforeUpdateAddedSites
-Cerca una stringa localizzata simile a Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
 #### TimerJob_Run_Done
-Cerca una stringa localizzata simile a Run of timer job has ended.
+Looks up a localized string similar to Run of timer job has ended.
 #### TimerJob_Run_DoneProcessingWorkBatches
-Cerca una stringa localizzata simile a Done processing the {0} work batches.
+Looks up a localized string similar to Done processing the {0} work batches.
 #### TimerJob_Run_NoSites
-Cerca una stringa localizzata simile a Job does not have sites to process, bailing out.
+Looks up a localized string similar to Job does not have sites to process, bailing out.
 #### TimerJob_Run_ProcessSequentially
-Cerca una stringa localizzata simile a Ready to process each of the {0} sites in a sequential manner.
+Looks up a localized string similar to Ready to process each of the {0} sites in a sequential manner.
 #### TimerJob_Run_ProcessSequentiallyDone
-Cerca una stringa localizzata simile a Done with sequentially processing each of the {0} sites.
+Looks up a localized string similar to Done with sequentially processing each of the {0} sites.
 #### TimerJob_Run_Started
-Cerca una stringa localizzata simile a Run of timer job has started.
+Looks up a localized string similar to Run of timer job has started.
 #### TimerJob_Run_ThreadLaunched
-Cerca una stringa localizzata simile a Thread launched for processing {0} sites.
+Looks up a localized string similar to Thread launched for processing {0} sites.
 #### TimerJob_SharePointVersion
-Cerca una stringa localizzata simile a SharePointVersion set to {0}.
+Looks up a localized string similar to SharePointVersion set to {0}.
 #### TimerJob_SharePointVersion_Versions
-Cerca una stringa localizzata simile a SharePoint version must be 15 or 16.
+Looks up a localized string similar to SharePoint version must be 15 or 16.
 #### TimerJob_UseThreading
-Cerca una stringa localizzata simile a UseThreading set to {0}.
+Looks up a localized string similar to UseThreading set to {0}.
 #### WebExtensions_CreateWeb
-Cerca una stringa localizzata simile a Creating web '{0}' with template '{1}'..
+Looks up a localized string similar to Creating web '{0}' with template '{1}'..
 #### WebExtensions_DeleteWeb
-Cerca una stringa localizzata simile a Deleting web '{0}'..
+Looks up a localized string similar to Deleting web '{0}'..
 #### WebExtensions_InstallSolution
-Cerca una stringa localizzata simile a Installing sandbox solution '{0}' to '{1}'..
+Looks up a localized string similar to Installing sandbox solution '{0}' to '{1}'..
 #### WebExtensions_RemoveAppInstance
-Cerca una stringa localizzata simile a Removing app '{0}' instance {1}..
+Looks up a localized string similar to Removing app '{0}' instance {1}..
 #### WebExtensions_RequestAccessEmailLimitExceeded
-Cerca una stringa localizzata simile a Request access email addresses exceed 255 characters. Skipping: {0}.
+Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
 #### WebExtensions_SiteSearchUnhandledException
-Cerca una stringa localizzata simile a Site search error. Error = {0}.
+Looks up a localized string similar to Site search error. Error = {0}.
 #### WebExtensions_UninstallSolution
-Cerca una stringa localizzata simile a Removing sandbox solution '{0}'..
+Looks up a localized string similar to Removing sandbox solution '{0}'..
 
 ## Core.Framework.Provisioning.Connectors.AzureStorageConnector
             
@@ -7051,6 +7121,12 @@ Interface for File Connectors
 Connector that stores all the files into a unique .PNP OpenXML package
         
 ### Methods
+
+
+#### Constructor
+OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
+> ##### Parameters
+> **packageStream:** 
 
 
 #### Constructor
@@ -7399,7 +7475,7 @@ Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not 
 > **System.ArgumentNullException:** ClientContext is Null>
 
 
-#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.Provider,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
 Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
 > ##### Parameters
 > **ctx:** Authenticated ClientContext that is passed to the custom provider.
@@ -14356,6 +14432,8 @@ The default namespace prefix of the target XML Namespace
 
 #### IsExternal
 
+#### IsVisible
+
 
 ## Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning
             
@@ -15562,6 +15640,8 @@ The default namespace prefix of the target XML Namespace
 #### 
 
 ### Properties
+
+#### 
 
 #### 
 
@@ -17484,6 +17564,152 @@ Returns cookie contents as a string
 
 > ##### Return value
 > 
+
+## Core.Utilities.WebParts.Processors.PassThroughProcessor
+            
+Default processor when others are not resolved
+        
+
+## Core.Utilities.WebParts.Processors.XsltWebPartPostProcessor
+            
+Updates view for XsltListViewWebPart using schema definition provided Instead of using default view for XsltListViewWebPart, it tries to resolve view from schema and updates hidden view created by XsltListViewWebPart
+        
+
+## Core.Utilities.WebParts.Schema.WebParts
+            
+
+        
+### Properties
+
+#### WebPart
+
+
+## Core.Utilities.WebParts.Schema.WebPart
+            
+
+        
+### Properties
+
+#### 
+
+#### MetaData
+
+#### Data
+
+#### 
+
+#### 
+
+#### 
+
+#### 
+
+#### 
+
+#### 
+
+
+## Core.Utilities.WebParts.Schema.WebPartMetaData
+            
+
+        
+### Properties
+
+#### Type
+
+#### ImportErrorMessage
+
+#### 
+
+#### 
+
+
+## Core.Utilities.WebParts.Schema.WebPartMetaDataType
+            
+
+        
+### Properties
+
+#### Name
+
+#### Src
+
+
+## Core.Utilities.WebParts.Schema.WebPartData
+            
+
+        
+### Properties
+
+#### Properties
+
+#### GenericWebPartProperties
+
+
+## Core.Utilities.WebParts.Schema.PropertyContainerType
+            
+
+        
+### Properties
+
+#### Property
+
+#### PropertySpecified
+Gets a value indicating whether the Property collection is empty.
+#### Ipersonalizable
+
+#### IpersonalizableSpecified
+Gets a value indicating whether the Ipersonalizable collection is empty.
+#### 
+
+#### 
+Gets a value indicating whether the Property collection is empty.
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the class.
+
+#### Constructor
+Initializes a new instance of the class.
+
+## Core.Utilities.WebParts.Schema.PropertyType
+            
+
+        
+### Properties
+
+#### Value
+Gets or sets the text value.
+#### Name
+
+#### Type
+
+#### Null
+
+#### NullSpecified
+Gets or sets a value indicating whether the Null property is specified.
+
+## Core.Utilities.WebParts.Schema.PropertyContainerTypeIpersonalizable
+            
+
+        
+### Properties
+
+#### Property
+
+#### PropertySpecified
+Gets a value indicating whether the Property collection is empty.
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the class.
+
+## Core.Utilities.WebParts.WebPartPostProcessorFactory
+            
+Creates by parsing web part schema xml
+        
 
 ## Core.Utilities.CAML
             

@@ -101,6 +101,20 @@ namespace OfficeDevPnP.Core.Tests
                 return ConfigurationManager.AppSettings["TestAutomationDatabaseConnectionString"];
             }
         }
+        public static String AzureADCertPfxPassword
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["AzureADCertPfxPassword"];
+            }
+        }
+        public static String AzureADClientId
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["AzureADClientId"];
+            }
+        }
         #endregion
 
         #region Methods

@@ -32,8 +32,8 @@ namespace Microsoft.SharePoint.Client
         public static string ResolvePeoplePickerValueForEmail(this Web web, string emailAddress)
         {
             ClientPeoplePickerQueryParameters param = new ClientPeoplePickerQueryParameters();
-            param.PrincipalSource = Microsoft.SharePoint.Client.Utilities.PrincipalSource.All;
-            param.PrincipalType = Microsoft.SharePoint.Client.Utilities.PrincipalType.All;
+            param.PrincipalSource = Utilities.PrincipalSource.All;
+            param.PrincipalType = Utilities.PrincipalType.All;
             param.MaximumEntitySuggestions = 30;
             param.QueryString = emailAddress;
             param.AllowEmailAddresses = true;
@@ -74,7 +74,7 @@ namespace Microsoft.SharePoint.Client
                 default:
                     break;
             }
-            ClientResult<string> result = Microsoft.SharePoint.Client.Web.CreateAnonymousLink(web.Context, urlToDocument, isEditLink);
+            var result = Web.CreateAnonymousLink(web.Context, urlToDocument, isEditLink);
             web.Context.ExecuteQueryRetry();
 
             // return anonymous link to caller
@@ -113,9 +113,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Get the link
-            ClientResult<string> result =
-                            Microsoft.SharePoint.Client.Web.CreateAnonymousLinkWithExpiration(
-                                web.Context, urlToDocument, isEditLink, expirationTimeAsString);
+            var result = Web.CreateAnonymousLinkWithExpiration(web.Context, urlToDocument, isEditLink, expirationTimeAsString);
             web.Context.ExecuteQueryRetry();
 
             // Return anonymous link to caller
@@ -159,13 +157,13 @@ namespace Microsoft.SharePoint.Client
                                         string emailBody = "Document shared for you.", bool useSimplifiedRoles = true)
         {
 
-            int groupId = 0;            // Set groupId to 0 for external share
-            bool propageAcl = false;    // Not relevant for external accounts
+            var groupId = 0;            // Set groupId to 0 for external share
+            var propageAcl = false;    // Not relevant for external accounts
             string emailSubject = null; // Not relevant, since we can't change subject
-            bool includedAnonymousLinkInEmail = false;  // Check if this has any meaning in first place
+            var includedAnonymousLinkInEmail = false;  // Check if this has any meaning in first place
 
             // Set role value accordingly based on requested share option - These are constant in the server side code.
-            string roleValue = "";
+            var roleValue = "";
             switch (shareOption)
             {
                 case ExternalSharingDocumentOption.Edit:
@@ -178,7 +176,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Share the document, send email and return the result value
-            SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, urlToDocument,
+            var result = Web.ShareObject(web.Context, urlToDocument,
                                                         peoplePickerInput, roleValue, groupId, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, emailSubject,
                                                         emailBody, useSimplifiedRoles);
@@ -195,7 +193,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="urlToDocument">Full URL to the file which is shared</param>
         public static SharingResult UnshareDocument(this Web web, string urlToDocument)
         {
-            SharingResult result = Microsoft.SharePoint.Client.Web.UnshareObject(web.Context, urlToDocument);
+            var result = Web.UnshareObject(web.Context, urlToDocument);
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
 
@@ -213,8 +211,7 @@ namespace Microsoft.SharePoint.Client
         public static ObjectSharingSettings GetObjectSharingSettingsForDocument(this Web web, string urlToDocument, bool useSimplifiedPolicies = true)
         {
             // Group value for this query is always 0.
-            ObjectSharingSettings info =
-                Microsoft.SharePoint.Client.Web.GetObjectSharingSettings(web.Context, urlToDocument, 0, useSimplifiedPolicies);
+            var info = Web.GetObjectSharingSettings(web.Context, urlToDocument, 0, useSimplifiedPolicies);
             web.Context.Load(info);
             web.Context.Load(info.ObjectSharingInformation);
             web.Context.Load(info.ObjectSharingInformation.SharedWithUsersCollection);
@@ -238,8 +235,7 @@ namespace Microsoft.SharePoint.Client
                 web.Context.ExecuteQueryRetry();
             }
 
-            ObjectSharingSettings info =
-                Microsoft.SharePoint.Client.Web.GetObjectSharingSettings(web.Context, web.Url, 0, useSimplifiedPolicies);
+            ObjectSharingSettings info = Web.GetObjectSharingSettings(web.Context, web.Url, 0, useSimplifiedPolicies);
             web.Context.Load(info);
             web.Context.Load(info.ObjectSharingInformation);
             web.Context.Load(info.ObjectSharingInformation.SharedWithUsersCollection);
@@ -300,7 +296,7 @@ namespace Microsoft.SharePoint.Client
             bool propageAcl = false; // Not relevant for external accounts
             bool includedAnonymousLinkInEmail = false; // Not when site is shared
 
-            SharingResult result = Microsoft.SharePoint.Client.Web.ShareObject(web.Context, web.Url, peoplePickerInput,
+            var result = Web.ShareObject(web.Context, web.Url, peoplePickerInput,
                                                         roleValue, 0, propageAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, null,
                                                         emailBody, useSimplifiedRoles);

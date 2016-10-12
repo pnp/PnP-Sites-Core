@@ -444,7 +444,6 @@
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageFormatException.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageHelper.cs" />
     <Compile Include="Framework\Provisioning\Connectors\SharePointConnector.cs" />
-    <Compile Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\PnPPackage.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\ExtensibilityManager.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\IProvisioningExtensibilityProvider.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ComposedLook.deprecated.cs" />
@@ -678,6 +677,8 @@
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
     <Compile Include="AppModelExtensions\PnPClientContext.cs" />
+    <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
@@ -897,7 +898,9 @@
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TFSBaseBuildYear>2014</TFSBaseBuildYear>

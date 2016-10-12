@@ -346,9 +346,10 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The uploaded file, with at least the ServerRelativeUrl property available</returns>
         public static File UploadThemeFile(this Web web, string fileName, string localFilePath, string themeFolderVersion = "15")
         {
-            if (fileName == null) { throw new ArgumentNullException("fileName"); }
+            if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
             if (string.IsNullOrWhiteSpace(fileName)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_, "fileName"); }
-            if (localFilePath == null) { throw new ArgumentNullException("localFilePath"); }
+            if (localFilePath == null) { throw new ArgumentNullException(nameof(localFilePath)); }
+            if (themeFolderVersion == null) throw new ArgumentNullException(nameof(themeFolderVersion));
             if (string.IsNullOrWhiteSpace(localFilePath)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Source_file_path_is_required_, "localFilePath"); }
 
             using (var localStream = new FileStream(localFilePath, FileMode.Open))
@@ -426,7 +427,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(sourceFilePath))
             {
-                throw new ArgumentNullException("sourceFilePath");
+                throw new ArgumentNullException(nameof(sourceFilePath));
             }
 
             if (!System.IO.File.Exists(sourceFilePath))
@@ -508,7 +509,7 @@ namespace Microsoft.SharePoint.Client
         public static File DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
-                throw new ArgumentNullException("sourceFilePath");
+                throw new ArgumentNullException(nameof(sourceFilePath));
 
             if (!System.IO.File.Exists(sourceFilePath))
                 throw new FileNotFoundException("File for param sourceFilePath not found.", sourceFilePath);
@@ -708,7 +709,7 @@ namespace Microsoft.SharePoint.Client
         private static string GetLocalizedCurrentValue(this Web web)
         {
             web.EnsureProperties(w => w.Language);
-            ClientResult<string> currentTranslated = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
+            ClientResult<string> currentTranslated = Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
             web.Context.ExecuteQueryRetry();
             return currentTranslated.Value;
         }
@@ -734,7 +735,7 @@ namespace Microsoft.SharePoint.Client
         public static ThemeEntity GetComposedLook(this Web web, string composedLookName)
         {
             // List of OOB composed looks
-            List<string> defaultComposedLooks = new List<string>(new string[] { "Orange", "Sea Monster", "Green", "Lime", "Nature", "Blossom", "Sketch", "City", "Orbit", "Grey", "Characters", "Office", "Breeze", "Immerse", "Red", "Purple", "Wood" });
+            List<string> defaultComposedLooks = new List<string>(new[] { "Orange", "Sea Monster", "Green", "Lime", "Nature", "Blossom", "Sketch", "City", "Orbit", "Grey", "Characters", "Office", "Breeze", "Immerse", "Red", "Purple", "Wood" });
 
             // ThemeEntity object that will be 
             ThemeEntity theme = null;
@@ -764,9 +765,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web, w => w.Url);
             web.Context.ExecuteQueryRetry();
 
-            string siteCollectionUrl = "";
-            string subSitePath = "";
-            using (ClientContext cc = web.Context.Clone(web.Url))
+            var siteCollectionUrl = "";
+            var subSitePath = "";
+            using (var cc = web.Context.Clone(web.Url))
             {
                 cc.Load(cc.Site, s => s.Url);
                 cc.ExecuteQueryRetry();
@@ -856,7 +857,7 @@ namespace Microsoft.SharePoint.Client
                     web.IsUsingOfficeTheme())
                 {
                     theme.Name = "Office";
-                    theme.MasterPage = String.Format("{0}/_catalogs/masterpage/seattle.master", subSitePath);
+                    theme.MasterPage = $"{subSitePath}/_catalogs/masterpage/seattle.master";
                     theme.Theme = "/_catalogs/theme/15/palette001.spcolor";
                     theme.IsCustomComposedLook = false;
                 }
@@ -867,7 +868,7 @@ namespace Microsoft.SharePoint.Client
 
                     //first loop avoids comparing with "current" entry in order to detect oob themes
                     //if no match then the second run includes "current"
-                    for (int i = 0; i < 2; i++)
+                    for (var i = 0; i < 2; i++)
                     {
                         if (themeMatched)
                         {
@@ -932,7 +933,7 @@ namespace Microsoft.SharePoint.Client
                         if (!web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
-                            for (int i = themes.Count; i-- > 0;)
+                            for (var i = themes.Count; i-- > 0;)
                             {
                                 var themeItem = themes[i];
                                 if (themeItem["Name"] != null && customComposedLooks.Contains(themeItem["Name"] as string))
@@ -973,13 +974,13 @@ namespace Microsoft.SharePoint.Client
                 return theme;
             }
 
-            String designPreviewThemedCssFolderUrl = web.GetPropertyBagValueString("DesignPreviewThemedCssFolderUrl", null);
+            var designPreviewThemedCssFolderUrl = web.GetPropertyBagValueString("DesignPreviewThemedCssFolderUrl", null);
 
             // If name still is "Current" and there isn't a PreviewThemedCssFolderUrl 
             // property in the property bag then we can't correctly determine the set 
             // composed look...so return null
             if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase)
-                && String.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
+                && string.IsNullOrEmpty(designPreviewThemedCssFolderUrl))
             {
                 return null;
             }
@@ -1017,7 +1018,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         private static bool IsMatchingTheme(ThemeEntity theme, string masterPageUrl, string themeUrl, string fontUrl)
         {
-            bool themeUrlHasValue = false, fontUrlHasValue = false;
+            var themeUrlHasValue = false;
+            var fontUrlHasValue = false;
 
             //Is Masterpage Url meaningful for compare?
             var masterPageUrlHasValue = !string.IsNullOrEmpty(theme.MasterPage);
@@ -1081,16 +1083,16 @@ namespace Microsoft.SharePoint.Client
         {
             try
             {
-                ThemeInfo ti = web.ThemeInfo;
+                var ti = web.ThemeInfo;
                 web.Context.Load(ti);
                 var accentText = ti.GetThemeShadeByName("AccentText");
                 var backgroundOverlay = ti.GetThemeShadeByName("BackgroundOverlay");
                 var bodyText = ti.GetThemeShadeByName("BodyText");
                 web.Context.ExecuteQueryRetry();
 
-                string accentTextRGB = accentText.Value.Substring(2);
-                string backgroundOverlayARGB = backgroundOverlay.Value.Substring(2);
-                string bodyTextRGB = bodyText.Value.Substring(2);
+                var accentTextRGB = accentText.Value.Substring(2);
+                var backgroundOverlayARGB = backgroundOverlay.Value.Substring(2);
+                var bodyTextRGB = bodyText.Value.Substring(2);
 
                 if (accentTextRGB.Equals("0072C6") &&
                     backgroundOverlayARGB.Equals("FFFFFF") &&
@@ -1126,10 +1128,10 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException("pageLayoutName");
             }
 
-            string pageLayoutFolder = System.IO.Path.GetDirectoryName(pageLayoutName);
-            string pageLayoutNameWithoutPath = System.IO.Path.GetFileNameWithoutExtension(pageLayoutName);
+            var pageLayoutFolder = Path.GetDirectoryName(pageLayoutName);
+            var pageLayoutNameWithoutPath = Path.GetFileNameWithoutExtension(pageLayoutName);
 
-            if (!String.IsNullOrEmpty(pageLayoutFolder))
+            if (!string.IsNullOrEmpty(pageLayoutFolder))
             {
                 // strip trailing /
                 pageLayoutFolder = pageLayoutFolder.Replace("\\", "/");
@@ -1138,17 +1140,18 @@ namespace Microsoft.SharePoint.Client
                     pageLayoutFolder = pageLayoutFolder.Substring(1);
                 }
 
-                pageLayoutNameWithoutPath = String.Format("{0}/{1}", pageLayoutFolder, pageLayoutNameWithoutPath);
+                pageLayoutNameWithoutPath = $"{pageLayoutFolder}/{pageLayoutNameWithoutPath}";
             }
 
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             web.Context.Load(masterPageGallery, x => x.RootFolder.ServerRelativeUrl);
             web.Context.ExecuteQueryRetry();
 
-            var fileRefValue = string.Format("{0}/{1}{2}", masterPageGallery.RootFolder.ServerRelativeUrl, pageLayoutNameWithoutPath, ".aspx");
+            var fileRefValue = $"{masterPageGallery.RootFolder.ServerRelativeUrl}/{pageLayoutNameWithoutPath}.aspx";
             var query = new CamlQuery();
             // Use query Scope='RecursiveAll' to iterate through sub folders of Master page library because we might have file in folder hierarchy
-            query.ViewXml = string.Format("<View Scope='RecursiveAll'><Query><Where><Eq><FieldRef Name='FileRef'/><Value Type='Text'>{0}</Value></Eq></Where></Query></View>", fileRefValue);
+            query.ViewXml =
+                $"<View Scope='RecursiveAll'><Query><Where><Eq><FieldRef Name='FileRef'/><Value Type='Text'>{fileRefValue}</Value></Eq></Where></Query></View>";
             var galleryItems = masterPageGallery.GetItems(query);
             web.Context.Load(masterPageGallery);
             web.Context.Load(galleryItems);
@@ -1166,7 +1169,7 @@ namespace Microsoft.SharePoint.Client
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
-            if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException("masterPageServerRelativeUrl"); }
+            if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException(nameof(masterPageServerRelativeUrl)); }
 
             var websToUpdate = new List<Web>();
             web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
@@ -1223,7 +1226,7 @@ namespace Microsoft.SharePoint.Client
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetCustomMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
-            if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException("masterPageServerRelativeUrl"); }
+            if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException(nameof(masterPageServerRelativeUrl)); }
 
             var websToUpdate = new List<Web>();
             web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
@@ -1248,7 +1251,7 @@ namespace Microsoft.SharePoint.Client
                     foreach (var childWeb in websCollection)
                     {
                         var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
-                        bool inheritTheme = false;
+                        var inheritTheme = false;
                         if (!string.IsNullOrEmpty(inheritThemeProperty))
                         {
                             inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
@@ -1279,10 +1282,10 @@ namespace Microsoft.SharePoint.Client
         public static void SetDefaultPageLayoutForSite(this Web web, Web rootWeb, string pageLayoutName)
         {
             if (rootWeb == null)
-                throw new ArgumentNullException("rootWeb");
+                throw new ArgumentNullException(nameof(rootWeb));
 
             if (string.IsNullOrEmpty(pageLayoutName))
-                throw new ArgumentNullException("pageLayoutName");
+                throw new ArgumentNullException(nameof(pageLayoutName));
 
             // Save to property bag as the default page layout for the site
             XmlDocument xd = new XmlDocument();
@@ -1293,24 +1296,24 @@ namespace Microsoft.SharePoint.Client
         private static XmlNode CreateXmlNodeFromPageLayout(XmlDocument xd, Web web, Web rootWeb, string pageLayoutName)
         {
             if (xd == null)
-                throw new ArgumentNullException("xd");
+                throw new ArgumentNullException(nameof(xd));
 
             if (web == null)
-                throw new ArgumentNullException("web");
+                throw new ArgumentNullException(nameof(web));
 
             if (rootWeb == null)
-                throw new ArgumentNullException("rootWeb");
+                throw new ArgumentNullException(nameof(rootWeb));
 
             if (string.IsNullOrEmpty(pageLayoutName))
-                throw new ArgumentNullException("pageLayoutName");
+                throw new ArgumentNullException(nameof(pageLayoutName));
 
-            ListItem pageLayout = rootWeb.GetPageLayoutListItemByName(pageLayoutName);
+            var pageLayout = rootWeb.GetPageLayoutListItemByName(pageLayoutName);
 
             // Parse the right styled xml for the layout - <layout guid="944ea6be-f287-42c6-aa11-3fd75ab1ee9e" url="_catalogs/masterpage/ArticleLeft.aspx" />
             XmlNode xmlNode = xd.CreateElement("layout");
-            XmlAttribute xmlAttribute = xd.CreateAttribute("guid");
+            var xmlAttribute = xd.CreateAttribute("guid");
             xmlAttribute.Value = pageLayout["UniqueId"].ToString();
-            XmlAttribute xmlAttribute2 = xd.CreateAttribute("url");
+            var xmlAttribute2 = xd.CreateAttribute("url");
             // Get relative URL to the particular site collection
             xmlAttribute2.Value = SolveSiteRelativeUrl(rootWeb, pageLayout["FileRef"].ToString());
             xmlNode.Attributes.SetNamedItem(xmlAttribute);
@@ -1321,10 +1324,10 @@ namespace Microsoft.SharePoint.Client
         private static string SolveSiteRelativeUrl(Web web, string url)
         {
             if (web == null)
-                throw new ArgumentNullException("web");
+                throw new ArgumentNullException(nameof(web));
 
             if (string.IsNullOrEmpty(url))
-                throw new ArgumentNullException("url");
+                throw new ArgumentNullException(nameof(url));
 
             web.EnsureProperties(w => w.ServerRelativeUrl);
 
@@ -1362,7 +1365,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="pageLayouts">The page layouts to make available</param>
         public static void SetAvailablePageLayouts(this Web web, Web rootWeb, IEnumerable<string> pageLayouts)
         {
-            XmlDocument xd = new XmlDocument();
+            var xd = new XmlDocument();
             XmlNode xmlNode = xd.CreateElement("pagelayouts");
             xd.AppendChild(xmlNode);
             foreach (var item in pageLayouts)
@@ -1380,9 +1383,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="availableTemplates">List of <see cref="WebTemplateEntity"/> objects that define the templates that are allowed</param>
         public static void SetAvailableWebTemplates(this Web web, List<WebTemplateEntity> availableTemplates)
         {
-            string propertyValue = string.Empty;
+            var propertyValue = string.Empty;
 
-            LanguageTemplateHash languages = new LanguageTemplateHash();
+            var languages = new LanguageTemplateHash();
             foreach (var item in availableTemplates)
             {
                 AddTemplateToCollection(languages, item);
@@ -1390,20 +1393,20 @@ namespace Microsoft.SharePoint.Client
 
             if (availableTemplates.Count > 0)
             {
-                XmlDocument xd = new XmlDocument();
+                var xd = new XmlDocument();
                 XmlNode xmlNode = xd.CreateElement("webtemplates");
                 xd.AppendChild(xmlNode);
                 foreach (var language in languages)
                 {
-                    XmlNode xmlLcidNode = xmlNode.AppendChild(xd.CreateElement("lcid"));
-                    XmlAttribute xmlAttribute = xd.CreateAttribute("id");
+                    var xmlLcidNode = xmlNode.AppendChild(xd.CreateElement("lcid"));
+                    var xmlAttribute = xd.CreateAttribute("id");
                     xmlAttribute.Value = language.Key;
                     xmlLcidNode.Attributes.SetNamedItem(xmlAttribute);
 
                     foreach (string item in language.Value)
                     {
-                        XmlNode xmlWTNode = xmlLcidNode.AppendChild(xd.CreateElement("webtemplate"));
-                        XmlAttribute xmlAttributeName = xd.CreateAttribute("name");
+                        var xmlWTNode = xmlLcidNode.AppendChild(xd.CreateElement("webtemplate"));
+                        var xmlAttributeName = xd.CreateAttribute("name");
                         xmlAttributeName.Value = item;
                         xmlWTNode.Attributes.SetNamedItem(xmlAttributeName);
                     }
@@ -1427,7 +1430,7 @@ namespace Microsoft.SharePoint.Client
 
         private static void AddTemplateToCollection(LanguageTemplateHash languages, WebTemplateEntity item)
         {
-            string key = string.Empty;
+            var key = string.Empty;
             if (string.IsNullOrEmpty(item.LanguageCode))
             {
                 key = "all";
@@ -1451,7 +1454,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="rootFolderRelativePath">The path relative to the root folder of the site, e.g. SitePages/Home.aspx</param>
         public static void SetHomePage(this Web web, string rootFolderRelativePath)
         {
-            Folder folder = web.RootFolder;
+            var folder = web.RootFolder;
             folder.WelcomePage = rootFolderRelativePath;
             folder.Update();
             web.Context.ExecuteQueryRetry();
@@ -1464,49 +1467,101 @@ namespace Microsoft.SharePoint.Client
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
         public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            EnableResponsiveUIImplementation(web, infrastructureUrl);
+        }
 
-            var linkUrl = string.Empty;
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Site
+        /// </summary>
+        /// <param name="site">The Site to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        public static void EnableResponsiveUI(this Site site, string infrastructureUrl = null)
+        {
+            EnableResponsiveUIImplementation(site, infrastructureUrl);
+        }
 
-            if (!string.IsNullOrEmpty(infrastructureUrl))
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Web or Site
+        /// </summary>
+        /// <param name="clientObject">The Web or Site to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        private static void EnableResponsiveUIImplementation(ClientObject clientObject, string infrastructureUrl = null)
+        {
+            // Double-check that we are targeting a Web or a Site
+            if (clientObject is Web || clientObject is Site)
             {
-                using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                Web web = null;
+                Site site = null;
+
+                // If the target is a Web
+                if (clientObject is Web)
                 {
-                    var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
-                    // Check if the file is there, if so, don't upload it.
-                    var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
-                    if (jsFile == null)
+                    // Get it
+                    web = ((Web)clientObject);
+                }
+                else
+                {
+                    // Otherwise get both the Site and the Web
+                    site = ((Site)clientObject);
+                    web = site.EnsureProperty(s => s.RootWeb);
+                }
+
+                if (web != null)
+                {
+                    web.EnsureProperty(w => w.ServerRelativeUrl);
+
+                    var linkUrl = string.Empty;
+
+                    if (!string.IsNullOrEmpty(infrastructureUrl))
                     {
-                        linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                            CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                        using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                        {
+                            var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+                            // Check if the file is there, if so, don't upload it.
+                            var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
+                            if (jsFile == null)
+                            {
+                                linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                    CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                            }
+                            else
+                            {
+                                jsFile.EnsureProperty(f => f.ServerRelativeUrl);
+                                linkUrl = jsFile.ServerRelativeUrl;
+                            }
+
+                            // Check if the file is there, if so, don't upload it.
+                            if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
+                            {
+                                UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                    CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                            }
+                        }
                     }
                     else
                     {
-                        jsFile.EnsureProperty(f => f.ServerRelativeUrl);
-                        linkUrl = jsFile.ServerRelativeUrl;
+                        var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+
+                        linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                        UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
                     }
 
-                    // Check if the file is there, if so, don't upload it.
-                    if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
+                    // Deactive mobile feature
+                    web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
+                    if (!string.IsNullOrEmpty(linkUrl))
                     {
-                        UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                            CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                        if (site != null)
+                        {
+                            // If we have the Site enable the responsive UI site-wide
+                            site.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                        }
+                        else
+                        {
+                            // Otherwise just target the Web
+                            web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                        }
                     }
                 }
-            }
-            else
-            {
-                var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
-
-                linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
-                UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
-            }
-
-            // Deactive mobile feature
-            web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
-            if (!string.IsNullOrEmpty(linkUrl))
-            {
-                web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
             }
         }
 
@@ -1537,12 +1592,28 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">The Web to disable the Responsive UI on</param>
         public static void DisableReponsiveUI(this Web web)
         {
             try
             {
                 web.DeleteJsLink("PnPResponsiveUI");
+            }
+            catch
+            {
+                // Swallow exception as responsive UI might not be active.
+            }
+        }
+
+        /// <summary>
+        /// Disables the Responsive UI on a Classic SharePoint Site
+        /// </summary>
+        /// <param name="site">The Site to disable the Responsive UI on</param>
+        public static void DisableReponsiveUI(this Site site)
+        {
+            try
+            {
+                site.DeleteJsLink("PnPResponsiveUI");
             }
             catch
             {

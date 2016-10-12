@@ -16,9 +16,17 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core
 {
+    public enum AzureEnvironment
+    {
+        Production=0,
+        PPE=1
+    }
+
+
     /// <summary>
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
+    /// 
     public class AuthenticationManager
     {
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
@@ -329,11 +337,11 @@ namespace OfficeDevPnP.Core
         /// <param name="storeLocation">The location of the store for the certificate</param>
         /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
         /// <returns></returns>
-        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint)
+        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var cert = Utilities.X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
 
-            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert);
+            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
 
         /// <summary>
@@ -345,11 +353,11 @@ namespace OfficeDevPnP.Core
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
         /// <returns></returns>
-        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword)
+        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var certPassword = Utilities.EncryptionUtility.ToSecureString(certificatePassword);
 
-            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, certificatePath, certPassword);
+            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, certificatePath, certPassword, environment);
         }
 
         /// <summary>
@@ -361,7 +369,7 @@ namespace OfficeDevPnP.Core
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
         /// <returns></returns>
-        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, SecureString certificatePassword)
+        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, SecureString certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var certfile = System.IO.File.OpenRead(certificatePath);
             var certificateBytes = new byte[certfile.Length];
@@ -373,7 +381,7 @@ namespace OfficeDevPnP.Core
                 X509KeyStorageFlags.MachineKeySet |
                 X509KeyStorageFlags.PersistKeySet);
 
-            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert);
+            return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
 
         /// <summary>
@@ -383,13 +391,20 @@ namespace OfficeDevPnP.Core
         /// <param name="clientId">The Azure AD Application Client ID</param>
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificate"></param>
+        /// <param name="environment"></param>
         /// <returns></returns>
-        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate)
+        public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
 
             var clientContext = new ClientContext(siteUrl);
 
             var authority = string.Format(CultureInfo.InvariantCulture, "https://login.windows.net/{0}/", tenant);
+
+            if (environment == AzureEnvironment.PPE)
+            {
+                //windows-ppe.net
+                authority = string.Format(CultureInfo.InvariantCulture, "https://login.windows-ppe.net/{0}/", tenant);
+            }
 
             var authContext = new AuthenticationContext(authority);
 
@@ -437,7 +452,7 @@ namespace OfficeDevPnP.Core
         {
 
             ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.ExecutingWebRequest += delegate(object oSender, WebRequestEventArgs webRequestEventArgs)
+            clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
             {
                 if (fedAuth != null)
                 {
@@ -478,6 +493,46 @@ namespace OfficeDevPnP.Core
         {
             fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, String.Format("{0}\\{1}", domain, user), password, new Uri(String.Format("https://{0}/adfs/services/trust/13/usernamemixed", sts)), idpId, logonTokenCacheExpirationWindow);
         }
+
+
+
+
+        public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+            {
+                if (fedAuth != null)
+                {
+                    Cookie fedAuthCookie = fedAuth.GetCookies(new Uri(siteUrl))["FedAuth"];
+                    // If cookie is expired a new fedAuth cookie needs to be requested
+                    if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now)
+                    {
+                        fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                    }
+                }
+                else
+                {
+                    fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                }
+
+                if (fedAuth == null)
+                {
+                    throw new Exception("No fedAuth cookie acquired");
+                }
+
+                webRequestEventArgs.WebRequestExecutor.WebRequest.CookieContainer = fedAuth;
+            };
+            return clientContext;
+        }
+
+        public void RefreshADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(string.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+
+        }
+
+
 
         /// <summary>
         /// Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires

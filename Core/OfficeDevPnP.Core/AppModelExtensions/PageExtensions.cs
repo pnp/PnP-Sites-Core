@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.SharePoint.Client.Publishing;
-using Microsoft.SharePoint.Client.Utilities;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using System.Linq;
 using System.Net;
-using System.IO;
 using System.Text;
+using System.Web.UI.WebControls.WebParts;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
-using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Utilities.WebParts;
+using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -47,11 +47,11 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
             web.Context.Load(file, f => f.ListItemAllFields);
 
@@ -72,14 +72,14 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
-            LimitedWebPartManager limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
-            IEnumerable<WebPartDefinition> query = null;
+            IEnumerable<WebPartDefinition> query;
 
 #if ONPREMISES
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
@@ -111,14 +111,14 @@ namespace Microsoft.SharePoint.Client
         {
             if (webPart == null)
             {
-                throw new ArgumentNullException("webPart");
+                throw new ArgumentNullException(nameof(webPart));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
@@ -144,13 +144,13 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (webPart == null)
             {
-                throw new ArgumentNullException("webPart");
+                throw new ArgumentNullException(nameof(webPart));
             }
 
             var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
@@ -183,20 +183,20 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(folder))
             {
                 throw (folder == null)
-                  ? new ArgumentNullException("folder")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "folder");
+                  ? new ArgumentNullException(nameof(folder))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(folder));
             }
 
             if (webPart == null)
             {
-                throw new ArgumentNullException("webPart");
+                throw new ArgumentNullException(nameof(webPart));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
@@ -227,13 +227,13 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (webPart == null)
             {
-                throw new ArgumentNullException("webPart");
+                throw new ArgumentNullException(nameof(webPart));
             }
 
             File webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
@@ -297,29 +297,26 @@ namespace Microsoft.SharePoint.Client
             //</div>
 
             // Close all BR tags
-            Regex brRegex = new Regex("<br>", RegexOptions.IgnoreCase);
+            var brRegex = new Regex("<br>", RegexOptions.IgnoreCase);
 
             wikiField = brRegex.Replace(wikiField, "<br/>");
 
-            XmlDocument xd = new XmlDocument();
+            var xd = new XmlDocument();
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
             // Sometimes the wikifield content seems to be surrounded by an additional div? 
-            XmlElement layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement;
-            if (layoutsTable == null)
-            {
-                layoutsTable = xd.SelectSingleNode("div/table") as XmlElement;
-            }
+            var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement ??
+                               xd.SelectSingleNode("div/table") as XmlElement;
 
-            XmlElement layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
+            var layoutsZoneInner = layoutsTable.SelectSingleNode($"tbody/tr[{row}]/td[{col}]/div/div") as XmlElement;
             // - space element
-            XmlElement space = xd.CreateElement("p");
-            XmlText text = xd.CreateTextNode(" ");
+            var space = xd.CreateElement("p");
+            var text = xd.CreateTextNode(" ");
             space.AppendChild(text);
 
             // - wpBoxDiv
-            XmlElement wpBoxDiv = xd.CreateElement("div");
+            var wpBoxDiv = xd.CreateElement("div");
             layoutsZoneInner.AppendChild(wpBoxDiv);
 
             if (addSpace)
@@ -327,14 +324,14 @@ namespace Microsoft.SharePoint.Client
                 layoutsZoneInner.AppendChild(space);
             }
 
-            XmlAttribute attribute = xd.CreateAttribute("class");
+            var attribute = xd.CreateAttribute("class");
             wpBoxDiv.Attributes.Append(attribute);
             attribute.Value = "ms-rtestate-read ms-rte-wpbox";
             attribute = xd.CreateAttribute("contentEditable");
             wpBoxDiv.Attributes.Append(attribute);
             attribute.Value = "false";
             // - div1
-            XmlElement div1 = xd.CreateElement("div");
+            var div1 = xd.CreateElement("div");
             wpBoxDiv.AppendChild(div1);
             div1.IsEmpty = false;
             attribute = xd.CreateAttribute("class");
@@ -344,7 +341,7 @@ namespace Microsoft.SharePoint.Client
             div1.Attributes.Append(attribute);
             attribute.Value = "div_" + wpdNew.Id.ToString("D");
             // - div2
-            XmlElement div2 = xd.CreateElement("div");
+            var div2 = xd.CreateElement("div");
             wpBoxDiv.AppendChild(div2);
             div2.IsEmpty = false;
             attribute = xd.CreateAttribute("style");
@@ -354,7 +351,7 @@ namespace Microsoft.SharePoint.Client
             div2.Attributes.Append(attribute);
             attribute.Value = "vid_" + wpdNew.Id.ToString("D");
 
-            ListItem listItem = webPartPage.ListItemAllFields;
+            var listItem = webPartPage.ListItemAllFields;
             listItem["WikiField"] = xd.OuterXml;
             listItem.Update();
             web.Context.ExecuteQueryRetry();
@@ -366,46 +363,27 @@ namespace Microsoft.SharePoint.Client
 
             string webPartXml = null;
 
-            Guid id = Guid.Empty;
-
-            var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
-            if (wp != null)
+            if (webPartId != Guid.Empty)
             {
-                id = wp.Id;
-            }
-            else
-            {
-                return null;
-            }
+#if ONPREMISES
+                Guid id = Guid.Empty;
 
-
-            if (id != Guid.Empty)
-            {
+                var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
+                if (wp != null)
+                {
+                    id = wp.Id;
+                }
+                else
+                {
+                    return null;
+                }
                 var uri = new Uri(web.Context.Url);
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
-                var hostUri = uri.Host;
-                var webUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativeUrl);
-                var pageUrl = string.Format("{0}://{1}{2}", uri.Scheme, uri.Host, serverRelativePageUrl);
-                var request = (HttpWebRequest)WebRequest.Create(string.Format("{0}/_vti_bin/exportwp.aspx?pageurl={1}&guidstring={2}", webUrl, pageUrl, id.ToString()));
+                var webUrl = $"{uri.Scheme}://{uri.Host}{serverRelativeUrl}";
+                var pageUrl = $"{uri.Scheme}://{uri.Host}{serverRelativePageUrl}";
+                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
-#if ONPREMISES
                 request.Credentials = web.Context.Credentials;
-#else
-                var credentials = web.Context.Credentials as SharePointOnlineCredentials;
-                var authCookieValue = credentials.GetAuthenticationCookie(uri);
-
-                Cookie fedAuth = new Cookie()
-                {
-                    Name = "SPOIDCRL",
-                    Value = authCookieValue.TrimStart("SPOIDCRL=".ToCharArray()),
-                    Path = "/",
-                    Secure = true,
-                    HttpOnly = true,
-                    Domain = uri.Host
-                };
-                request.CookieContainer = new CookieContainer();
-                request.CookieContainer.Add(fedAuth);
-#endif
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
@@ -413,19 +391,59 @@ namespace Microsoft.SharePoint.Client
                     StreamReader reader = new StreamReader(stream, Encoding.UTF8);
                     webPartXml = reader.ReadToEnd();
                 }
-            }
 
+#else
+
+                var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+
+                var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
+
+                var query =
+                    web.Context.LoadQuery(
+                        limitedWebPartManager.WebParts.IncludeWithDefaultProperties(w => w.Id, w => w.ZoneId,
+                                w => w.WebPart, w => w.WebPart.Title, w => w.WebPart.Properties, w => w.WebPart.Hidden)
+                            .Where(w => w.Id == webPartId));
+
+                web.Context.ExecuteQueryRetry();
+
+                if (query.Any())
+                {
+                    var wp = query.First();
+
+                    var exportMode = (WebPartExportMode)Enum.Parse(typeof(WebPartExportMode), wp.WebPart.Properties["ExportMode"].ToString());
+                    var changed = false;
+                    if (exportMode != WebPartExportMode.All)
+                    {
+                        wp.WebPart.Properties["ExportMode"] = WebPartExportMode.All;
+                        wp.SaveWebPartChanges();
+                        web.Context.ExecuteQueryRetry();
+                        changed = true;
+                    }
+
+                    var result = limitedWebPartManager.ExportWebPart(wp.Id);
+                    web.Context.ExecuteQueryRetry();
+                    webPartXml = result.Value;
+
+                    if (changed)
+                    {
+                        wp.WebPart.Properties["ExportMode"] = exportMode;
+                        wp.SaveWebPartChanges();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+#endif
+            }
             return webPartXml;
         }
 
-                /// <summary>
-                /// Applies a layout to a wiki page
-                /// </summary>
-                /// <param name="web">Site to be processed - can be root web or sub site</param>
-                /// <param name="layout">Wiki page layout to be applied</param>
-                /// <param name="serverRelativePageUrl"></param>
-                /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
-                /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
+        /// <summary>
+        /// Applies a layout to a wiki page
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="layout">Wiki page layout to be applied</param>
+        /// <param name="serverRelativePageUrl"></param>
+        /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
         public static void AddLayoutToWikiPage(this Web web, WikiPageLayout layout, string serverRelativePageUrl)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
@@ -435,7 +453,7 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
             }
 
-            string html = "";
+            var html = "";
             switch (layout)
             {
                 case WikiPageLayout.OneColumn:
@@ -483,18 +501,18 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(folder))
             {
                 throw (folder == null)
-                  ? new ArgumentNullException("folder")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "folder");
+                  ? new ArgumentNullException(nameof(folder))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(folder));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
-            string html = "";
+            var html = "";
             switch (layout)
             {
                 case WikiPageLayout.OneColumn:
@@ -542,22 +560,22 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(folder))
             {
                 throw (folder == null)
-                  ? new ArgumentNullException("folder")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "folder");
+                  ? new ArgumentNullException(nameof(folder))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(folder));
             }
 
             if (string.IsNullOrEmpty(html))
             {
                 throw (html == null)
-                  ? new ArgumentNullException("html")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "html");
+                  ? new ArgumentNullException(nameof(html))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(html));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
@@ -586,23 +604,23 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (string.IsNullOrEmpty(html))
             {
                 throw (html == null)
-                  ? new ArgumentNullException("html")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "html");
+                  ? new ArgumentNullException(nameof(html))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(html));
             }
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
             web.Context.Load(file, f => f.ListItemAllFields);
             web.Context.ExecuteQueryRetry();
 
-            ListItem item = file.ListItemAllFields;
+            var item = file.ListItemAllFields;
 
             item["WikiField"] = html;
 
@@ -627,22 +645,22 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(folder))
             {
                 throw (folder == null)
-                  ? new ArgumentNullException("folder")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "folder");
+                  ? new ArgumentNullException(nameof(folder))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(folder));
             }
 
             if (string.IsNullOrEmpty(html))
             {
                 throw (html == null)
-                  ? new ArgumentNullException("html")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "html");
+                  ? new ArgumentNullException(nameof(html))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(html));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
@@ -674,40 +692,40 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (string.IsNullOrEmpty(html))
             {
                 throw (html == null)
-                  ? new ArgumentNullException("html")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "html");
+                  ? new ArgumentNullException(nameof(html))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(html));
             }
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
             web.Context.Load(file, f => f.ListItemAllFields);
             web.Context.ExecuteQueryRetry();
 
-            ListItem item = file.ListItemAllFields;
+            var item = file.ListItemAllFields;
 
-            string wikiField = (string)item["WikiField"];
+            var wikiField = (string)item["WikiField"];
 
-            XmlDocument xd = new XmlDocument();
+            var xd = new XmlDocument();
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
             // Sometimes the wikifield content seems to be surrounded by an additional div? 
-            XmlElement layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement;
+            var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement;
             if (layoutsTable == null)
             {
                 layoutsTable = xd.SelectSingleNode("div/table") as XmlElement;
             }
 
             // Add the html content
-            XmlElement layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
-            XmlText text = xd.CreateTextNode("!!123456789!!");
+            var layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
+            var text = xd.CreateTextNode("!!123456789!!");
             layoutsZoneInner.AppendChild(text);
 
             item["WikiField"] = xd.OuterXml.Replace("!!123456789!!", html);
@@ -729,22 +747,22 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(folder))
             {
                 throw (folder == null)
-                  ? new ArgumentNullException("folder")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "folder");
+                  ? new ArgumentNullException(nameof(folder))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(folder));
             }
 
             if (string.IsNullOrEmpty(title))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("title")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "title");
+                  ? new ArgumentNullException(nameof(title))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(title));
             }
 
             if (string.IsNullOrEmpty(page))
             {
                 throw (page == null)
-                  ? new ArgumentNullException("page")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "page");
+                  ? new ArgumentNullException(nameof(page))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(page));
             }
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
@@ -794,15 +812,15 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(webPartPage);
             web.Context.ExecuteQueryRetry();
 
-            LimitedWebPartManager limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
             web.Context.Load(limitedWebPartManager.WebParts, wps => wps.Include(wp => wp.WebPart.Title));
             web.Context.ExecuteQueryRetry();
 
             if (limitedWebPartManager.WebParts.Count >= 0)
             {
-                for (int i = 0; i < limitedWebPartManager.WebParts.Count; i++)
+                for (var i = 0; i < limitedWebPartManager.WebParts.Count; i++)
                 {
-                    WebPart oWebPart = limitedWebPartManager.WebParts[i].WebPart;
+                    var oWebPart = limitedWebPartManager.WebParts[i].WebPart;
                     if (oWebPart.Title.Equals(title, StringComparison.InvariantCultureIgnoreCase))
                     {
                         limitedWebPartManager.WebParts[i].DeleteWebPart();
@@ -880,15 +898,15 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(wikiPageLibraryName))
             {
                 throw (wikiPageLibraryName == null)
-                  ? new ArgumentNullException("wikiPageLibraryName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "wikiPageLibraryName");
+                  ? new ArgumentNullException(nameof(wikiPageLibraryName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(wikiPageLibraryName));
             }
 
             if (string.IsNullOrEmpty(wikiPageName))
             {
                 throw (wikiPageName == null)
-                  ? new ArgumentNullException("wikiPageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "wikiPageName");
+                  ? new ArgumentNullException(nameof(wikiPageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(wikiPageName));
             }
 
             wikiPageUrl = "";
@@ -923,13 +941,13 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
-            string folderName = serverRelativePageUrl.Substring(0, serverRelativePageUrl.LastIndexOf("/"));
-            Folder folder = web.GetFolderByServerRelativeUrl(folderName);
-            File file = folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
+            var folderName = serverRelativePageUrl.Substring(0, serverRelativePageUrl.LastIndexOf("/", StringComparison.Ordinal));
+            var folder = web.GetFolderByServerRelativeUrl(folderName);
+            folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
 
             web.Context.ExecuteQueryRetry();
             if (html != null)
@@ -980,11 +998,11 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentNullException">Thrown when key or serverRelativePageUrl is null</exception>
         public static void SetWebPartProperty(this Web web, string key, bool value, Guid id, string serverRelativePageUrl)
         {
-            SetWebPartPropertyInternal(web,key,value,id,serverRelativePageUrl);
+            SetWebPartPropertyInternal(web, key, value, id, serverRelativePageUrl);
         }
 
-	    private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
-	    {
+        private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
+        {
             var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
             var oWebPartDefinition = limitedWebPartManager.ImportWebPart(webPart.WebPartXml);
 
@@ -992,41 +1010,41 @@ namespace Microsoft.SharePoint.Client
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
 
-	        WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
+            WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
 
             return wpdNew;
-	    }
+        }
 
         private static void SetWebPartPropertyInternal(this Web web, string key, object value, Guid id, string serverRelativePageUrl)
         {
             if (string.IsNullOrEmpty(key))
             {
                 throw (key == null)
-                  ? new ArgumentNullException("key")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "key");
+                  ? new ArgumentNullException(nameof(key))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(key));
             }
 
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
-            ClientContext context = web.Context as ClientContext;
+            var context = web.Context as ClientContext;
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
             context.Load(file);
             context.ExecuteQueryRetry();
 
-            LimitedWebPartManager wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            var wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
             context.Load(wpm.WebParts);
 
             context.ExecuteQueryRetry();
 
-            WebPartDefinition def = wpm.WebParts.GetById(id);
+            var def = wpm.WebParts.GetById(id);
 
             context.Load(def);
             context.ExecuteQueryRetry();
@@ -1069,20 +1087,20 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
-            ClientContext context = web.Context as ClientContext;
+            var context = web.Context as ClientContext;
 
-            File file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+            var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
             context.Load(file);
             context.ExecuteQueryRetry();
 
-            LimitedWebPartManager wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            var wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
-            WebPartDefinition def = wpm.WebParts.GetById(id);
+            var def = wpm.WebParts.GetById(id);
 
             context.Load(def.WebPart.Properties);
             context.ExecuteQueryRetry();
@@ -1104,21 +1122,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="schedule">Defines whether to define a schedule or not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when key or pageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentException">Thrown when key or pageName is null</exception>
-        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null, 
+        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null,
             bool publish = false, Folder folder = null,
             DateTime? startDate = null, DateTime? endDate = null, Boolean schedule = false)
         {
             if (string.IsNullOrEmpty(pageName))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("pageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "pageName");
+                  ? new ArgumentNullException(nameof(pageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(pageName));
             }
             if (string.IsNullOrEmpty(pageTemplateName))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("pageTemplateName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "pageTemplateName");
+                  ? new ArgumentNullException(nameof(pageTemplateName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(pageTemplateName));
             }
             if (string.IsNullOrEmpty(title))
             {
@@ -1128,29 +1146,27 @@ namespace Microsoft.SharePoint.Client
             // Fix page name, if needed
             pageName = pageName.ReplaceInvalidUrlChars("-");
 
-            ClientContext context = web.Context as ClientContext;
-            Site site = context.Site;
+            var context = web.Context as ClientContext;
+            var site = context.Site;
             context.Load(site, s => s.ServerRelativeUrl);
             context.ExecuteQueryRetry();
 
             // Load reference Page Layout
-            File pageFromPageLayout = context.Site.RootWeb.GetFileByServerRelativeUrl(String.Format("{0}_catalogs/masterpage/{1}.aspx",
-                UrlUtility.EnsureTrailingSlash(site.ServerRelativeUrl),
-                pageTemplateName));
-            ListItem pageLayoutItem = pageFromPageLayout.ListItemAllFields;
+            var pageFromPageLayout = context.Site.RootWeb.GetFileByServerRelativeUrl($"{UrlUtility.EnsureTrailingSlash(site.ServerRelativeUrl)}_catalogs/masterpage/{pageTemplateName}.aspx");
+            var pageLayoutItem = pageFromPageLayout.ListItemAllFields;
             context.Load(pageLayoutItem);
             context.ExecuteQueryRetry();
 
             // Create the publishing page
-            PublishingWeb publishingWeb = PublishingWeb.GetPublishingWeb(context, web);
+            var publishingWeb = PublishingWeb.GetPublishingWeb(context, web);
             context.Load(publishingWeb);
 
             // Configure the publishing page
             var pageInformation = new PublishingPageInformation
             {
-                Name = !pageName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ? 
-                    string.Format("{0}.aspx", pageName) : pageName,
-                PageLayoutListItem = pageLayoutItem,
+                Name = !pageName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ?
+                    $"{pageName}.aspx" : pageName,
+                PageLayoutListItem = pageLayoutItem
             };
 
             // Handle target folder, if any
@@ -1158,13 +1174,13 @@ namespace Microsoft.SharePoint.Client
             {
                 pageInformation.Folder = folder;
             }
-            PublishingPage page = publishingWeb.AddPublishingPage(pageInformation);
+            var page = publishingWeb.AddPublishingPage(pageInformation);
 
             // Get parent list of item, this way we can handle all languages
-            List pagesLibrary = page.ListItem.ParentList;
+            var pagesLibrary = page.ListItem.ParentList;
             context.Load(pagesLibrary);
             context.ExecuteQueryRetry();
-            ListItem pageItem = page.ListItem;
+            var pageItem = page.ListItem;
             pageItem["Title"] = title;
             pageItem.Update();
 
@@ -1173,23 +1189,23 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             if (pageItem.File.CheckOutType != CheckOutType.None)
             {
-                pageItem.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
+                pageItem.File.CheckIn(string.Empty, CheckinType.MajorCheckIn);
             }
 
             // Publish the page, if required
             if (publish)
             {
-                pageItem.File.Publish(String.Empty);
+                pageItem.File.Publish(string.Empty);
                 if (pagesLibrary.EnableModeration)
                 {
-                    pageItem.File.Approve(String.Empty);
+                    pageItem.File.Approve(string.Empty);
 
                     // Setup scheduling, if required
                     if (schedule && startDate.HasValue)
                     {
                         page.StartDate = startDate.Value;
-                        page.EndDate = endDate.HasValue ? endDate.Value : new DateTime(2050, 01, 01);
-                        page.Schedule(String.Empty);
+                        page.EndDate = endDate ?? new DateTime(2050, 01, 01);
+                        page.Schedule(string.Empty);
                     }
                 }
             }
@@ -1207,9 +1223,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="showInGlobalNavigation">Defines whether the navigation item has to be shown in the Global Navigation, optional and default to true.</param>
         /// <param name="showInCurrentNavigation">Defines whether the navigation item has to be shown in the Current Navigation, optional and default to true.</param>
         /// <returns>The simple link URL just created.</returns>
-        public static String AddNavigationFriendlyUrl(this PublishingPage page, Web web, 
-            String navigationTitle, String friendlyUrlSegment, NavigationTermSetItem editableParent, 
-            Boolean showInGlobalNavigation = true, Boolean showInCurrentNavigation = true)
+        public static string AddNavigationFriendlyUrl(this PublishingPage page, Web web,
+            string navigationTitle, string friendlyUrlSegment, NavigationTermSetItem editableParent,
+            bool showInGlobalNavigation = true, bool showInCurrentNavigation = true)
         {
             // Add the Friendly URL
             var friendlyUrl = page.AddFriendlyUrl(friendlyUrlSegment, editableParent, true);
@@ -1219,16 +1235,16 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             // Configure the friendly URL Title
-            NavigationTerm friendlyUrlTerm = editableParent.Terms
+            var friendlyUrlTerm = editableParent.Terms
                 .FirstOrDefault(t => t.FriendlyUrlSegment.Value == friendlyUrlSegment);
             if (friendlyUrlTerm != null)
             {
                 // Assign term label for taxonomy equal to navigation item title
-                Term friendlyUrlBackingTerm = friendlyUrlTerm.GetTaxonomyTerm();
+                var friendlyUrlBackingTerm = friendlyUrlTerm.GetTaxonomyTerm();
                 web.Context.Load(friendlyUrlBackingTerm, t => t.Labels);
                 web.Context.ExecuteQueryRetry();
 
-                Label defaultLabel = friendlyUrlBackingTerm.Labels.FirstOrDefault(l => l.IsDefaultForLanguage);
+                var defaultLabel = friendlyUrlBackingTerm.Labels.FirstOrDefault(l => l.IsDefaultForLanguage);
                 if (defaultLabel != null)
                 {
                     defaultLabel.Value = navigationTitle;
@@ -1287,33 +1303,35 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(fileLeafRef))
             {
                 throw (fileLeafRef == null)
-                  ? new ArgumentNullException("fileLeafRef")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "fileLeafRef");
+                  ? new ArgumentNullException(nameof(fileLeafRef))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(fileLeafRef));
             }
 
             var context = web.Context as ClientContext;
-            List pages = web.GetPagesLibrary();
+            var pages = web.GetPagesLibrary();
             // Get the language agnostic "Pages" library name         
             context.Load(pages, p => p.RootFolder, p => p.ItemCount);
             context.ExecuteQueryRetry();
 
             if (pages != null && pages.ItemCount > 0)
             {
-                CamlQuery camlQuery = new CamlQuery();
-                camlQuery.FolderServerRelativeUrl = folder != null ? folder.ServerRelativeUrl : pages.RootFolder.ServerRelativeUrl;
-                camlQuery.ViewXml = string.Format(@"<View Scope='RecursiveAll'>  
-                                                        <Query> 
-                                                           <Where><Eq><FieldRef Name='FileLeafRef' /><Value Type='Text'>{0}</Value></Eq></Where> 
-                                                        </Query> 
-                                                    </View>", fileLeafRef);
+                var camlQuery = new CamlQuery
+                {
+                    FolderServerRelativeUrl = folder != null ? folder.ServerRelativeUrl : pages.RootFolder.ServerRelativeUrl,
+                    ViewXml = $@"<View Scope='RecursiveAll'>  
+                                    <Query> 
+                                        <Where><Eq><FieldRef Name='FileLeafRef' /><Value Type='Text'>{fileLeafRef}</Value></Eq></Where> 
+                                    </Query> 
+                                </View>"
+                };
 
-                ListItemCollection listItems = pages.GetItems(camlQuery);
+                var listItems = pages.GetItems(camlQuery);
                 context.Load(listItems);
                 context.ExecuteQueryRetry();
 
                 if (listItems.Count > 0)
                 {
-                    PublishingPage page = PublishingPage.GetPublishingPage(context, listItems[0]);
+                    var page = PublishingPage.GetPublishingPage(context, listItems[0]);
                     context.Load(page);
                     context.ExecuteQueryRetry();
                     return page;

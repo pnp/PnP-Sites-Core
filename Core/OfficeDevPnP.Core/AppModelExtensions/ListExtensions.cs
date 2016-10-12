@@ -284,13 +284,13 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "contentTypeName");
             }
 
-            ContentTypeCollection _cts = list.ContentTypes;
+            var _cts = list.ContentTypes;
             list.Context.Load(_cts);
 
-            IEnumerable<ContentType> _results = list.Context.LoadQuery<ContentType>(_cts.Where(item => item.Name == contentTypeName));
+            var _results = list.Context.LoadQuery<ContentType>(_cts.Where(item => item.Name == contentTypeName));
             list.Context.ExecuteQueryRetry();
 
-            ContentType _ct = _results.FirstOrDefault();
+            var _ct = _results.FirstOrDefault();
             if (_ct != null)
             {
                 _ct.DeleteObject();
@@ -337,10 +337,10 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
             }
 
-            ListCollection lists = web.Lists;
-            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Where(list => list.Title == listTitle));
+            var lists = web.Lists;
+            var results = web.Context.LoadQuery(lists.Where(list => list.Title == listTitle));
             web.Context.ExecuteQueryRetry();
-            List existingList = results.FirstOrDefault();
+            //var existingList = results.FirstOrDefault();
 
             return results.Any();
         }
@@ -355,12 +355,10 @@ namespace Microsoft.SharePoint.Client
         {
             if (siteRelativeUrlPath == null)
             {
-                throw new ArgumentNullException("siteRelativeUrlPath");
+                throw new ArgumentNullException(nameof(siteRelativeUrlPath));
             }
 
-            ListCollection lists = web.Lists;
-            web.Context.Load(web, obj => obj.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
+            web.EnsureProperty(w => w.ServerRelativeUrl);
 
             var listResult = web.GetList(UrlUtility.Combine(web.ServerRelativeUrl, siteRelativeUrlPath.ToString()));
             web.Context.ExecuteQueryRetry();
@@ -380,13 +378,13 @@ namespace Microsoft.SharePoint.Client
         {
             if (id == Guid.Empty)
             {
-                throw new ArgumentException("id");
+                throw new ArgumentException(nameof(id));
             }
 
-            ListCollection lists = web.Lists;
-            IEnumerable<List> results = web.Context.LoadQuery<List>(lists.Where(list => list.Id == id));
+            var lists = web.Lists;
+            var results = web.Context.LoadQuery(lists.Where(list => list.Id == id));
             web.Context.ExecuteQueryRetry();
-            List existingList = results.FirstOrDefault();
+            var existingList = results.FirstOrDefault();
 
             if (existingList != null)
             {
@@ -587,15 +585,15 @@ namespace Microsoft.SharePoint.Client
             list.Context.Load(listForm, nf => nf.ServerRelativeUrl);
             list.Context.ExecuteQueryRetry();
 
-            Microsoft.SharePoint.Client.File file = list.ParentWeb.GetFileByServerRelativeUrl(listForm.ServerRelativeUrl);
-            LimitedWebPartManager wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            var file = list.ParentWeb.GetFileByServerRelativeUrl(listForm.ServerRelativeUrl);
+            var wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
             list.Context.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title));
             list.Context.ExecuteQueryRetry();
 
             // Set the JS link for all web parts
-            foreach (WebPartDefinition wpd in wpm.WebParts)
+            foreach (var wpd in wpm.WebParts)
             {
-                WebPart wp = wpd.WebPart;
+                var wp = wpd.WebPart;
                 wp.Properties["JSLink"] = jslink;
                 wpd.SaveWebPartChanges();
 
@@ -682,11 +680,11 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listName))
             {
                 throw (listName == null)
-                  ? new ArgumentNullException("listName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listName");
+                  ? new ArgumentNullException(nameof(listName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
             }
 
-            List listToQuery = web.Lists.GetByTitle(listName);
+            var listToQuery = web.Lists.GetByTitle(listName);
             web.Context.Load(listToQuery, l => l.Id);
             web.Context.ExecuteQueryRetry();
 
@@ -706,8 +704,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listTitle))
             {
                 throw (listTitle == null)
-                  ? new ArgumentNullException("listTitle")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "listTitle");
+                  ? new ArgumentNullException(nameof(listTitle))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
 
             var lists = web.Context.LoadQuery(web.Lists).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
@@ -724,7 +722,7 @@ namespace Microsoft.SharePoint.Client
         public static List GetListByUrl(this Web web, string webRelativeUrl)
         {
             if (string.IsNullOrEmpty(webRelativeUrl))
-                throw new ArgumentNullException("webRelativeUrl");
+                throw new ArgumentNullException(nameof(webRelativeUrl));
 
             if (!web.IsObjectPropertyInstantiated("ServerRelativeUrl"))
             {
@@ -764,12 +762,12 @@ namespace Microsoft.SharePoint.Client
         /// </exception>
         public static List GetPagesLibrary(this Web web)
         {
-            if (web == null) throw new ArgumentNullException("web");
+            if (web == null) throw new ArgumentNullException(nameof(web));
 
             var context = web.Context;
             int language = (int)web.EnsureProperty(w => w.Language);
 
-            var result = Microsoft.SharePoint.Client.Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
+            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
             context.ExecuteQueryRetry();
             string pagesLibraryName = result.Value;
 
@@ -808,7 +806,7 @@ namespace Microsoft.SharePoint.Client
 
             if (!sanitisedListRootFolderServerRelativeUrl.StartsWith(sanitisedParentWebServerRelativeUrl, StringComparison.OrdinalIgnoreCase))
             {
-                throw new Exception(String.Format(CoreResources.ListExtensions_GetWebRelativeUrl, listRootFolderServerRelativeUrl, parentWebServerRelativeUrl));
+                throw new Exception(string.Format(CoreResources.ListExtensions_GetWebRelativeUrl, listRootFolderServerRelativeUrl, parentWebServerRelativeUrl));
             }
 
             var listWebRelativeUrl = sanitisedListRootFolderServerRelativeUrl.Substring(sanitisedParentWebServerRelativeUrl.Length);
@@ -829,7 +827,7 @@ namespace Microsoft.SharePoint.Client
             Principal permissionEntity = null;
 
             // Get the web for list
-            Web web = list.ParentWeb;
+            var web = list.ParentWeb;
             list.Context.Load(web);
             list.Context.ExecuteQueryRetry();
 
@@ -842,7 +840,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
-                        string userIdentity = string.Format("c:0-.f|rolemanager|spo-grid-all-users/{0}", web.GetAuthenticationRealm());
+                        string userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                         permissionEntity = web.EnsureUser(userIdentity);
                         break;
                     }
@@ -860,7 +858,7 @@ namespace Microsoft.SharePoint.Client
         public static void SetListPermission(this List list, Principal principal, RoleType roleType)
         {
             // Get the web for list
-            Web web = list.ParentWeb;
+            var web = list.ParentWeb;
             list.Context.Load(web);
             list.Context.ExecuteQueryRetry();
 
@@ -868,8 +866,8 @@ namespace Microsoft.SharePoint.Client
             list.BreakRoleInheritance(true, false);
 
             // Get role type
-            RoleDefinition roleDefinition = web.RoleDefinitions.GetByType(roleType);
-            RoleDefinitionBindingCollection rdbColl = new RoleDefinitionBindingCollection(web.Context);
+            var roleDefinition = web.RoleDefinitions.GetByType(roleType);
+            var rdbColl = new RoleDefinitionBindingCollection(web.Context);
             rdbColl.Add(roleDefinition);
 
             // Set custom permission to the list
@@ -890,12 +888,12 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXMLFile(this Web web, string listUrl, string filePath)
         {
             if (string.IsNullOrEmpty(listUrl))
-                throw new ArgumentNullException("listUrl");
+                throw new ArgumentNullException(nameof(listUrl));
 
             if (string.IsNullOrEmpty(filePath))
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
 
-            XmlDocument xd = new XmlDocument();
+            var xd = new XmlDocument();
             xd.Load(filePath);
             CreateViewsFromXML(web, listUrl, xd);
         }
@@ -909,10 +907,10 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXMLString(this Web web, string listUrl, string xmlString)
         {
             if (string.IsNullOrEmpty(listUrl))
-                throw new ArgumentNullException("listUrl");
+                throw new ArgumentNullException(nameof(listUrl));
 
             if (string.IsNullOrEmpty(xmlString))
-                throw new ArgumentNullException("xmlString");
+                throw new ArgumentNullException(nameof(xmlString));
 
             XmlDocument xd = new XmlDocument();
             xd.LoadXml(xmlString);
@@ -928,10 +926,10 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXML(this Web web, string listUrl, XmlDocument xmlDoc)
         {
             if (string.IsNullOrEmpty(listUrl))
-                throw new ArgumentNullException("listUrl");
+                throw new ArgumentNullException(nameof(listUrl));
 
             if (xmlDoc == null)
-                throw new ArgumentNullException("xmlDoc");
+                throw new ArgumentNullException(nameof(xmlDoc));
 
             // Get instances to the list
             List list = web.GetList(listUrl);
@@ -950,7 +948,7 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXMLFile(this List list, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
-                throw new ArgumentNullException("filePath");
+                throw new ArgumentNullException(nameof(filePath));
 
             if (!System.IO.File.Exists(filePath))
                 throw new FileNotFoundException(filePath);
@@ -968,7 +966,7 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXMLString(this List list, string xmlString)
         {
             if (string.IsNullOrEmpty(xmlString))
-                throw new ArgumentNullException("xmlString");
+                throw new ArgumentNullException(nameof(xmlString));
 
             XmlDocument xd = new XmlDocument();
             xd.LoadXml(xmlString);
@@ -983,13 +981,13 @@ namespace Microsoft.SharePoint.Client
         public static void CreateViewsFromXML(this List list, XmlDocument xmlDoc)
         {
             if (xmlDoc == null)
-                throw new ArgumentNullException("xmlDoc");
+                throw new ArgumentNullException(nameof(xmlDoc));
 
             // Convert base type to string value used in the xml structure
-            string listType = list.BaseType.ToString();
+            var listType = list.BaseType.ToString();
             // Get only relevant list views for matching base list type
-            XmlNodeList listViews = xmlDoc.SelectNodes("ListViews/List[@Type='" + listType + "']/View");
-            int count = listViews.Count;
+            var listViews = xmlDoc.SelectNodes("ListViews/List[@Type='" + listType + "']/View");
+
             foreach (XmlNode view in listViews)
             {
                 string name = view.Attributes["Name"].Value;
@@ -1027,22 +1025,24 @@ namespace Microsoft.SharePoint.Client
                                       bool paged = false)
         {
             if (string.IsNullOrEmpty(viewName))
-                throw new ArgumentNullException("viewName");
+                throw new ArgumentNullException(nameof(viewName));
 
-            ViewCreationInformation viewCreationInformation = new ViewCreationInformation();
-            viewCreationInformation.Title = viewName;
-            viewCreationInformation.ViewTypeKind = viewType;
-            viewCreationInformation.RowLimit = rowLimit;
-            viewCreationInformation.ViewFields = viewFields;
-            viewCreationInformation.PersonalView = personal;
-            viewCreationInformation.SetAsDefaultView = setAsDefault;
-            viewCreationInformation.Paged = paged;
+            var viewCreationInformation = new ViewCreationInformation
+            {
+                Title = viewName,
+                ViewTypeKind = viewType,
+                RowLimit = rowLimit,
+                ViewFields = viewFields,
+                PersonalView = personal,
+                SetAsDefaultView = setAsDefault,
+                Paged = paged
+            };
             if (!string.IsNullOrEmpty(query))
             {
                 viewCreationInformation.Query = query;
             }
 
-            View view = list.Views.Add(viewCreationInformation);
+            var view = list.Views.Add(viewCreationInformation);
             list.Context.Load(view);
             list.Context.ExecuteQueryRetry();
 
@@ -1167,7 +1167,7 @@ namespace Microsoft.SharePoint.Client
                                 xDefaultValue.SetValue(fieldString);
                                 xATag.Add(xDefaultValue);
                             }
-                            
+
                             values.Remove(defaultColumnValueInSamePath);
                         }
                         xMetadataDefaults.Add(xATag);
@@ -1286,7 +1286,7 @@ namespace Microsoft.SharePoint.Client
                                 if (field.FieldTypeKind == FieldType.Text)
                                 {
                                     var textValue = defaultValue.Value;
-                                    DefaultColumnTextValue defaultColumnTextValue = new DefaultColumnTextValue()
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
                                     {
                                         FieldInternalName = fieldName,
                                         FolderRelativePath = href,
@@ -1300,7 +1300,7 @@ namespace Microsoft.SharePoint.Client
 
                                     var terms = termsIdentifier.Split(new string[] { ";#" }, StringSplitOptions.None);
 
-                                    List<Term> existingTerms = new List<Term>();
+                                    var existingTerms = new List<Term>();
                                     for (int q = 1; q < terms.Length; q++)
                                     {
                                         var termIdString = terms[q].Split(new char[] { '|' })[1];
@@ -1311,7 +1311,7 @@ namespace Microsoft.SharePoint.Client
                                         q++; // Skip one
                                     }
 
-                                    DefaultColumnTermValue defaultColumnTermValue = new DefaultColumnTermValue()
+                                    var defaultColumnTermValue = new DefaultColumnTermValue()
                                     {
                                         FieldInternalName = fieldName,
                                         FolderRelativePath = href,
@@ -1326,7 +1326,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
 
-                List<IDefaultColumnValue> termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
+                var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
 
                 list.SetDefaultColumnValuesImplementation(termsList);
             }
@@ -1348,9 +1348,9 @@ namespace Microsoft.SharePoint.Client
             {
                 if (ReferenceEquals(defaultValue, null)) return 0;
 
-                int hashFolder = defaultValue.FolderRelativePath == null ? 0 : defaultValue.FolderRelativePath.GetHashCode();
+                var hashFolder = defaultValue.FolderRelativePath?.GetHashCode() ?? 0;
 
-                int hashFieldInternalName = defaultValue.FieldInternalName.GetHashCode();
+                var hashFieldInternalName = defaultValue.FieldInternalName.GetHashCode();
 
                 return hashFolder ^ hashFieldInternalName;
             }
