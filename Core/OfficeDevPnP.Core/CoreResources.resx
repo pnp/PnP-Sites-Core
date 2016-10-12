@@ -976,4 +976,10 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference" xml:space="preserve">
     <value>The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.</value>
   </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActivationState" xml:space="preserve">
+    <value>Activation state for feature with id {1}  was {0}.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActive" xml:space="preserve">
+    <value>Feature activation for {0} returned success.</value>
+  </data>
 </root>

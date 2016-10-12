@@ -269,6 +269,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Activation state for feature with id {1}  was {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActivationState {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActivationState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feature activation for {0} returned success..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActive {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding field ({0}) to content type ({1})..
         /// </summary>
         internal static string FieldAndContentTypeExtensions_AddField0ToContentType1 {
