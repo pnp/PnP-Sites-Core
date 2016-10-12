@@ -347,8 +347,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title));
                 web.Context.ExecuteQueryRetry();
 
-                var taxTextFieldsToMoveUp = new List<Guid>();
-
                 foreach (var field in existingFields)
                 {
                     if (!BuiltInFieldId.Contains(field.Id))
@@ -382,11 +380,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
-                            var taxField = (TaxonomyField)field;
-                            web.Context.Load(taxField, tf => tf.TextField, tf => tf.Id);
-                            web.Context.ExecuteQueryRetry();
-                            taxTextFieldsToMoveUp.Add(taxField.TextField);
-
                             fieldXml = TokenizeTaxonomyField(web, element);
                         }
 
@@ -437,13 +430,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         template.SiteFields.Add(new Field() { SchemaXml = fieldXml });
                     }
                 }
-                // move hidden taxonomy text fields to the top of the list
-                foreach (var textFieldId in taxTextFieldsToMoveUp)
-                {
-                    var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
-                    template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
-                    template.SiteFields.Insert(0, field);
-                }
+                
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
