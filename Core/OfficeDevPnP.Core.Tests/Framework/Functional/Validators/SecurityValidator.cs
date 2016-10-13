@@ -123,7 +123,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             foreach (var item in coll)
             {
                 name = item.Attribute(attributeName).Value;
-                if (name.Contains("|"))
+                if (name.Contains("|") && !name.StartsWith("c:"))
                 {
                     item.Attribute(attributeName).Value = name.Substring(name.LastIndexOf(("|")) + 1);
                 }
@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     cc.Web.Context.Load(existingUser);
                     cc.Web.Context.ExecuteQuery();
                     loginName = existingUser.LoginName;
-                    if (loginName.Contains("|"))
+                    if (loginName.Contains("|") && !name.StartsWith("c:"))
                     {
                         loginName= loginName.Substring(loginName.LastIndexOf(("|")) + 1);
                     }

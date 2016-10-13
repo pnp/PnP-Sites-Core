@@ -24,8 +24,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public SecurityTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401/sub";
         }
         #endregion
 
@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Security Test
         /// </summary>
         [TestMethod]
-        public void SecurityTest()
+        public void SiteCollectionSecurityTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {

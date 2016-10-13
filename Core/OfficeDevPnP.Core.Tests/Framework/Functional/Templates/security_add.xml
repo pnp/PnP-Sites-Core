@@ -2,38 +2,24 @@
 <pnp:ProvisioningTemplate ID="security_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
   <pnp:Security ClearSubscopes="false" >
     <pnp:AdditionalAdministrators>
-      <pnp:User Name="user@contoso.com"/>
-      <pnp:User Name="U_SHAREPOINT_ADMINS" />
+      <pnp:User Name="c:0(.s|true" />
     </pnp:AdditionalAdministrators>
     <pnp:AdditionalOwners>
-      <pnp:User Name="user@contoso.com"/>
-      <pnp:User Name="U_SHAREPOINT_ADMINS" />
+      <pnp:User Name="c:0(.s|true" />
     </pnp:AdditionalOwners>
     <pnp:AdditionalMembers>
-      <pnp:User Name="user1@contoso.com"/>
-      <pnp:User Name="user2@contoso.com"/>
+      <pnp:User Name="c:0(.s|true" />
     </pnp:AdditionalMembers>
     <pnp:AdditionalVisitors>
-      <pnp:User Name="user1@contoso.com"/>
-      <pnp:User Name="user2@contoso.com"/>
+      <pnp:User Name="c:0(.s|true" />
     </pnp:AdditionalVisitors>
     <pnp:SiteGroups>
       <pnp:SiteGroup
           Title="Power Users"
           Description="Group of Power Users"
-          Owner="user@contoso.com">
+          Owner="Power Users">
         <pnp:Members>
-          <pnp:User Name="user1@contoso.com"/>
-          <pnp:User Name="user2@contoso.com"/>
-        </pnp:Members>
-      </pnp:SiteGroup>
-    <pnp:SiteGroup
-          Title="OfficeDevPnP Core Team"
-          Description="Group of OfficeDevPnP Core Team"
-          Owner="user@contoso.com">
-        <pnp:Members>
-          <pnp:User Name="user1@contoso.com"/>
-          <pnp:User Name="user2@contoso.com"/>
+          <pnp:User Name="c:0(.s|true"/>
         </pnp:Members>
       </pnp:SiteGroup>
     </pnp:SiteGroups>
@@ -56,10 +42,7 @@
       </pnp:RoleDefinitions>
       <pnp:RoleAssignments>
         <pnp:RoleAssignment Principal="Power Users" RoleDefinition="Manage List Items"/>
-        <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Manage List Items"/>
-        <pnp:RoleAssignment Principal="user@contoso.com" RoleDefinition="Full Control"/>
-        <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Add List Items"/>
-      
+        <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Manage List Items"/>
       </pnp:RoleAssignments>
     </pnp:Permissions>
   </pnp:Security>
