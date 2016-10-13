@@ -14,15 +14,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     [TestClass]
     public class SitePolicyValidator : ValidatorBase
     {
-        private TokenParser tParser;
-        public class SerializedSecurity
-        {
-            public string SchemaXml { get; set; }
-        }
         public SitePolicyValidator() : base()
         {
             // optionally override schema version
-            SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+            //SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
         }
 
         public bool Validate(string source, string target, TokenParser parser)

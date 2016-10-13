@@ -24,8 +24,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public SitePolicyTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            //centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8/sub";
         }
         #endregion
 
@@ -52,8 +52,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                
                 var result = TestProvisioningTemplate(cc, "sitepolicy_add.xml", Handlers.SitePolicy);
                 SitePolicyValidator spv= new SitePolicyValidator();
                 Assert.IsTrue(spv.Validate(result.SourceTemplate.SitePolicy, result.TargetTemplate.SitePolicy,result.TargetTokenParser));
