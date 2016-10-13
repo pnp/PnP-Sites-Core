@@ -18,8 +18,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public WorkflowsTests()
         {
             //debugMode = true;
-            centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401/sub";
         }
         #endregion
 
@@ -27,13 +27,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            //ClassInitBase(context);
+            ClassInitBase(context);
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            //ClassCleanupBase();
+            ClassCleanupBase();
         }
         #endregion
 
@@ -41,21 +41,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// <summary>
         /// WorkflowsTests Test
         /// </summary>
-        [TestMethod]
-        public void WorkflowsTest()
-        {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = Handlers.Workflows;
-                ptci.FileConnector= new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+        //[TestMethod]
+        //public void SiteCollectionWorkflowsTest()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+        //    {
+        //        //ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+        //        //ptci.HandlersToProcess = Handlers.Workflows;
+        //        //ptci.FileConnector= new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
 
 
-                var result = TestProvisioningTemplate(cc, "workflows_add.xml", Handlers.Workflows,null,ptci);
-                WorkflowValidator wv = new WorkflowValidator();
-                Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows,result.TargetTemplate.Workflows,result.TargetTokenParser));
-            }
-        }
+        //        var result = TestProvisioningTemplate(cc, "workflows_add.xml", Handlers.Workflows);
+        //        WorkflowValidator wv = new WorkflowValidator();
+        //        Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows,result.TargetTemplate.Workflows,result.TargetTokenParser));
+        //    }
+        //}
         #endregion
     }
 }

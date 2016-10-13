@@ -17,8 +17,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public PagesTests()
         {
             //debugMode = true;
-            centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401/sub";
         }
         #endregion
 
@@ -26,13 +26,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            //ClassInitBase(context);
+            ClassInitBase(context);
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            //ClassCleanupBase();
+            ClassCleanupBase();
         }
         #endregion
 
@@ -41,16 +41,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PagesTest Test
         /// </summary>
         [TestMethod]
-        public void PagesTest()
+        public void SiteCollectionPagesTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = Handlers.Pages;
-
-                var result = TestProvisioningTemplate(cc, "pages_add.xml", Handlers.Pages, null, ptci);
+                var result = TestProvisioningTemplate(cc, "pages_add.xml", Handlers.Pages);
                 PagesValidator pv = new PagesValidator();
                 Assert.IsTrue(pv.Validate(result.SourceTemplate.Pages,cc));
+            }
+        }
+        #endregion
+
+        #region Web test cases
+        /// <summary>
+        /// PagesTest Test
+        /// </summary>
+        [TestMethod]
+        public void WebPagesTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                var result = TestProvisioningTemplate(cc, "pages_add.xml", Handlers.Pages);
+                PagesValidator pv = new PagesValidator();
+                Assert.IsTrue(pv.Validate(result.SourceTemplate.Pages, cc));
             }
         }
         #endregion
