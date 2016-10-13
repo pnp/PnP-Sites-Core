@@ -572,12 +572,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">The list to process</param>
         /// <param name="match">a wildcard pattern to match</param>
         /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
-        public static List<File> FindFiles(List list, string match)
+        public static List<File> FindFiles(this List list, string match)
         {
-            Folder rootFolder = list.RootFolder;
-            list.Context.Load(rootFolder);
-            list.Context.ExecuteQuery();
-
+            Folder rootFolder = list.EnsureProperty(l => l.RootFolder);
+            
             match = WildcardToRegex(match);
             List<File> files = new List<File>();
 
@@ -592,7 +590,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="folder">The folder to process</param>
         /// <param name="match">a wildcard pattern to match</param>
         /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
-        public static List<File> FindFiles(Folder folder, string match)
+        public static List<File> FindFiles(this Folder folder, string match)
         {
             match = WildcardToRegex(match);
             List<File> files = new List<File>();
