@@ -215,6 +215,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_ExecuteQueryRetryException {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_ExecuteQueryRetryException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
         /// </summary>
         internal static string Exception_Message_EmptyString_Arg {

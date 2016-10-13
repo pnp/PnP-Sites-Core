@@ -985,4 +985,7 @@
   <data name="FeatureExtensions_ProcessFeatureInternal_FeatureException" xml:space="preserve">
     <value>Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}.</value>
   </data>
+  <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
+    <value>ExecuteQuery threw following exception: {0}.</value>
+  </data>
 </root>
