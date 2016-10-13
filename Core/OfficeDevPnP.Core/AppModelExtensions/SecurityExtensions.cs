@@ -1092,9 +1092,12 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(group);
             web.Context.Load(users);
             web.Context.ExecuteQueryRetry();
-            if (group != null)
+
+            if (users.AreItemsAvailable)
             {
-                result = users.Any(u => u.LoginName.Contains(userLoginName));
+                result = users.Any(u => 
+                  u.LoginName.ToLowerInvariant().Contains(userLoginName.ToLowerInvariant())
+                );
             }
 
             return result;
