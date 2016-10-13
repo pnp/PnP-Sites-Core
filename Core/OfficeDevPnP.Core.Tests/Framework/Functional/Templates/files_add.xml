@@ -1,16 +1,33 @@
 <?xml version="1.0"?>
-<pnp:ProvisioningTemplate ID="security_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+<!--
+Base template: goal is to verify that all files properties and elements work as expected. 
+               
+               Possible Files attributes are:
+               Src          (*)      
+               Folder       (*)       
+               Overwrite         
+               Level
+               
+               
+
+-->
+<pnp:ProvisioningTemplate ID="files_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
   <pnp:Files>
     <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" />
-    <pnp:File Src="default.aspx" Folder="SitePages" Overwrite="true">
+    <!-- Apply Security to the file -->
+    <pnp:File Src="files_add.xml" Folder="SitePages" Overwrite="true">
       <pnp:Security>
-        <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
-          <pnp:RoleAssignment Principal="Power Users" RoleDefinition="Full Control"/>
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
         </pnp:BreakRoleInheritance>
       </pnp:Security>
     </pnp:File>
+    <!-- Write file into sub folder with spaces -->
+    <pnp:File Src="garage.css" Folder="SiteAssets/this%20is%20a%20sub%20folder/sub" Overwrite="true" />
+    <!-- Write files to catalogs gallery -->
     <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" />
-    <pnp:File Src="fontscheme002.spfont" Folder="_catalogs/Theme/15" Overwrite="true" />
+    <!-- Check that Overwrite property works -->
+    <pnp:File Src="oslo.preview" Folder="_catalogs/masterpage" Overwrite="false" />
 
   </pnp:Files>
 </pnp:ProvisioningTemplate>

@@ -345,7 +345,10 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\PagesTests.cs" />
     <Compile Include="Framework\Functional\PublishingTest.cs" />
+    <Compile Include="Framework\Functional\SecurityTests.cs" />
+    <Compile Include="Framework\Functional\SitePolicyTests.cs" />
     <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
@@ -432,6 +435,10 @@
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\oslo.preview">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

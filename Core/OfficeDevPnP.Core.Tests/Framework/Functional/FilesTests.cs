@@ -16,9 +16,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public FilesTests()
         {
-            //debugMode = true;
-            centralSiteCollectionUrl = "https://crtlab2.sharepoint.com/sites/source2";
-            centralSubSiteUrl = "https://crtlab2.sharepoint.com/sites/source2/sub2";
+            debugMode = true;
+            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8";
+            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8/sub";
         }
         #endregion
 
@@ -26,13 +26,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            //ClassInitBase(context);
+            ClassInitBase(context);
         }
 
         [ClassCleanup()]
         public static void ClassCleanup()
         {
-            //ClassCleanupBase();
+            ClassCleanupBase();
         }
         #endregion
 
@@ -41,20 +41,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// FilesTest Test
         /// </summary>
         [TestMethod]
-        public void FilesTest()
+        public void SiteCollectionFilesTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = Handlers.Files;
-
-                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files, null, ptci);
+                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files);
                 FilesValidator fv = new FilesValidator();
                 Assert.IsTrue(fv.Validate(result.SourceTemplate.Files,cc));
-
-
             }
         }
         #endregion
+
+        #region Web test cases
+        /// <summary>
+        /// FilesTest Test
+        /// </summary>
+        [TestMethod]
+        public void WebFilesTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files);
+                FilesValidator fv = new FilesValidator();
+                Assert.IsTrue(fv.Validate(result.SourceTemplate.Files, cc));
+            }
+        }
+        #endregion
+
+        #region Helper methods
+
+        #endregion
+
     }
 }

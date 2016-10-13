@@ -498,7 +498,7 @@ namespace Microsoft.SharePoint.Client
                 Folder nextFolder = null;
                 foreach (Folder existingFolder in folderCollection)
                 {
-                    if (string.Equals(existingFolder.Name, folderName, StringComparison.InvariantCultureIgnoreCase))
+                    if (string.Equals(existingFolder.Name, System.Net.WebUtility.UrlDecode(folderName), StringComparison.InvariantCultureIgnoreCase))
                     {
                         nextFolder = existingFolder;
                         break;

@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         public FilesValidator() : base()
         {
             // optionally override schema version
-            SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+            //SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
         }
 
         public bool Validate(FileCollection sourceFiles, Microsoft.SharePoint.Client.ClientContext ctx)
@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 string folderName = sf.Folder;
                 string fileUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName);
                 var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName));
-                ctx.Load(file, f => f.Exists);
+                ctx.Load(file, f => f.Exists, f => f.Length);
                 ctx.ExecuteQuery();
 
                 if (file.Exists)
@@ -53,19 +53,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
                     }
                     #endregion
-                    #region Webparts validation
-                    if (sf.WebParts.Count > 0)
+
+                    #region Overwrite validation
+                    if (sf.Overwrite == false)
                     {
-                        WebpartValidator wpv = new WebpartValidator();
-                        bool isWepartMatch = wpv.Validate(ctx, sf, file);
-                        if (!isWepartMatch)
+                        // lookup the original added file size...should be different from the one we retrieved from SharePoint since we opted to NOT overwrite
+                        var files = System.IO.Directory.GetFiles(@".\framework\functional\templates");
+                        foreach (var f in files)
                         {
-                            return false;
+                            if (f.Contains(sf.Src))
+                            {
+                                if (new System.IO.FileInfo(f).Length == file.Length)
+                                {
+                                    return false;
+                                }
+                            }
                         }
                     }
                     #endregion
                 }
+                else
+                {
+                    return false;
+                }
             }
+
             return true;
         }
     }
