@@ -287,6 +287,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureException {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding field ({0}) to content type ({1})..
         /// </summary>
         internal static string FieldAndContentTypeExtensions_AddField0ToContentType1 {

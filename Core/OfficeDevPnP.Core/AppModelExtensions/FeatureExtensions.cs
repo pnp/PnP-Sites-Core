@@ -181,6 +181,10 @@ namespace Microsoft.SharePoint.Client
                         features.Context.ExecuteQueryRetry();
                         Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActive, featureID);
                     }
+                    catch(Exception ex)
+                    {
+                        Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureException, ex.ToString());
+                    }
                     finally
                     {
                         cancel = true;

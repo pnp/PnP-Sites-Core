@@ -982,4 +982,7 @@
   <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActive" xml:space="preserve">
     <value>Feature activation for {0} returned success.</value>
   </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureException" xml:space="preserve">
+    <value>Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}.</value>
+  </data>
 </root>
