@@ -16,9 +16,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public FilesTests()
         {
-            debugMode = true;
-            centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8";
-            centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8/sub";
+            //debugMode = true;
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8/sub";
         }
         #endregion
 
@@ -67,10 +67,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
         }
         #endregion
-
-        #region Helper methods
-
-        #endregion
-
     }
 }
