@@ -1329,16 +1329,13 @@ namespace Microsoft.SharePoint.Client
                     var groupPath = string.Format("{0}{1}", groupName, (includeId) ? string.Format(";#{0}", term.TermSet.Group.Id.ToString()) : "");
                     var termsetPath = string.Format("{0}{1}", termsetName, (includeId) ? string.Format(";#{0}", term.TermSet.Id.ToString()) : "");
                     var termPath = string.Format("{0}{1}", termName, (includeId) ? string.Format(";#{0}", term.Id.ToString()) : "");
-                    termsString.Add(string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter));
+                    var termFullPath = string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter);
+                    termsString.Add(termFullPath);
 
                     if (term.TermsCount > 0)
                     {
-                        var subTermPath = string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter);
-
-                        termsString.AddRange(ParseSubTerms(subTermPath, term, includeId, delimiter, clientContext));
+                        termsString.AddRange(ParseSubTerms(termFullPath, term, includeId, delimiter, clientContext));
                     }
-
-                    termsString.Add(string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter));
                 }
             }
 
@@ -1377,18 +1374,17 @@ namespace Microsoft.SharePoint.Client
                     foreach (var set in termSets)
                     {
                         var setName = DenormalizeName(set.Name);
-                        var termsetPath = string.Format("{0}{3}{1}{2}", groupPath, setName, (includeId) ? string.Format(";#{0}", set.Id.ToString()) : "", delimiter);
+                        var termsetPath = string.Format("{0}{1}", setName, (includeId) ? string.Format(";#{0}", set.Id.ToString()) : "", delimiter);
                         foreach (var term in set.Terms)
                         {
                             var termName = DenormalizeName(term.Name);
-                            var termPath = string.Format("{0}{3}{1}{2}", termsetPath, termName, (includeId) ? string.Format(";#{0}", term.Id.ToString()) : "", delimiter);
-                            termsString.Add(termPath);
+                            var termPath = string.Format("{0}{1}", termName, (includeId) ? string.Format(";#{0}", term.Id.ToString()) : "", delimiter);
+                            var termFullPath = string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter);
+                            termsString.Add(termFullPath);
 
                             if (term.TermsCount > 0)
                             {
-                                var subTermPath = string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter);
-
-                                termsString.AddRange(ParseSubTerms(subTermPath, term, includeId, delimiter, clientContext));
+                                termsString.AddRange(ParseSubTerms(termFullPath, term, includeId, delimiter, clientContext));
                             }
                         }
                     }
@@ -1414,7 +1410,7 @@ namespace Microsoft.SharePoint.Client
 
                 items.Add(termPath);
 
-                if (term.TermsCount > 0)
+                if (subTerm.TermsCount > 0)
                 {
                     items.AddRange(ParseSubTerms(termPath, subTerm, includeId, delimiter, clientContext));
                 }
