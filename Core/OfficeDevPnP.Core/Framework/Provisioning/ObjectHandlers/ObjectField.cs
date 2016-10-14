@@ -203,9 +203,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title);
                 web.Context.ExecuteQueryRetry();
 
-                // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
-                parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
-
                 bool isDirty = false;
 #if !SP2013
                 if (originalFieldXml.ContainsResourceToken())
@@ -236,7 +233,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var taxField = web.Context.CastTo<TaxonomyField>(field);
                     ValidateTaxonomyFieldDefaultValue(taxField);
                 }
-
             }
             else
             {
@@ -246,8 +242,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
             }
         }
-
-       
 
         private static void ValidateTaxonomyFieldDefaultValue(TaxonomyField field)
         {
