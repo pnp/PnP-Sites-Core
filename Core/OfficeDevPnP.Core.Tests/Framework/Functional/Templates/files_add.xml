@@ -23,7 +23,7 @@ Base template: goal is to verify that all files properties and elements work as 
       </pnp:Security>
     </pnp:File>
     <!-- Write file into sub folder with spaces -->
-    <pnp:File Src="garage.css" Folder="SiteAssets/this%20is%20a%20sub%20folder/sub" Overwrite="true" />
+    <pnp:File Src="garage.css" Folder="SiteAssets/this is a sub folder/sub" Overwrite="true" />
     <!-- Write files to catalogs gallery -->
     <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" />
     <!-- Check that Overwrite property works -->
