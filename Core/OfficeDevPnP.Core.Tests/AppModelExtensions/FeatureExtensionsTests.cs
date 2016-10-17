@@ -272,7 +272,7 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(System.AggregateException))]
+        [ExpectedException(typeof(Microsoft.SharePoint.Client.ServerException))]
         public void ActivateFakeFeatureTest()
         {
             // Test
