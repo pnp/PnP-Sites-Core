@@ -538,7 +538,7 @@
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\publishing_add.xml" />
-    <Content Include="Framework\Functional\Templates\workflows_add.xml" />
+    <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -597,7 +597,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\Functional\Templates\workflow.xaml">
+    <None Include="Framework\Functional\Templates\PnPworkflow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </None>

@@ -53,7 +53,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #endregion
 
             #region "properties"
-            DeleteTargetIfNotExistsInSource_Properties(sourceObject, targetObject, "Property", "Key");
+            // Properties are too different, no point in trying to validate as they're also not an indication of engine WF deployment success or not
+            var WFproperties = sourceObject.Descendants(ns + "Properties");
+            if (WFproperties != null)
+            {
+                WFproperties.Remove();
+            }
+            WFproperties = targetObject.Descendants(ns + "Properties");
+            if (WFproperties != null)
+            {
+                WFproperties.Remove();
+            }
+            var WFPropertyDefinitions = sourceObject.Descendants(ns + "PropertyDefinitions");
+            if (WFPropertyDefinitions != null)
+            {
+                WFPropertyDefinitions.Remove();
+            }
+            WFPropertyDefinitions = targetObject.Descendants(ns + "PropertyDefinitions");
+            if (WFPropertyDefinitions != null)
+            {
+                WFPropertyDefinitions.Remove();
+            }
+
+            RemoveAttribute(sourceObject, "WorkflowSubscription", "StatusFieldName");
+            RemoveAttribute(targetObject, "WorkflowSubscription", "StatusFieldName");
+
             #endregion
 
             #region removing xaml path attribute 
@@ -72,8 +96,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     tProperties.Remove();
                 }
             }
-            //RemoveAttribute(targetObject, "WorkflowDefinition", "RestrictToScope");
-            //RemoveAttribute(sourceObject, "WorkflowDefinition", "RestrictToScope");
             #endregion
 
 

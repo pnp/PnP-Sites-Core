@@ -18,8 +18,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public WorkflowsTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_60453ae9-a218-436e-9231-cb9da3c4fdd3";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_60453ae9-a218-436e-9231-cb9da3c4fdd3/sub";
         }
         #endregion
 
@@ -41,21 +41,42 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// <summary>
         /// WorkflowsTests Test
         /// </summary>
-        //[TestMethod]
-        //public void SiteCollectionWorkflowsTest()
-        //{
-        //    using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-        //    {
-        //        //ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-        //        //ptci.HandlersToProcess = Handlers.Workflows;
-        //        //ptci.FileConnector= new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+        [TestMethod]
+        public void SiteCollectionWorkflowsTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                ptci.HandlersToProcess = Handlers.Lists | Handlers.Workflows;
+                ptci.FileConnector= new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
 
 
-        //        var result = TestProvisioningTemplate(cc, "workflows_add.xml", Handlers.Workflows);
-        //        WorkflowValidator wv = new WorkflowValidator();
-        //        Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows,result.TargetTemplate.Workflows,result.TargetTokenParser));
-        //    }
-        //}
+                var result = TestProvisioningTemplate(cc, "workflows_add_1605.xml", Handlers.Lists | Handlers.Workflows, null, ptci);
+                WorkflowValidator wv = new WorkflowValidator();
+                Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows, result.TargetTemplate.Workflows, result.TargetTokenParser));
+            }
+        }
+        #endregion
+
+        #region Web test cases
+        /// <summary>
+        /// WorkflowsTests Test
+        /// </summary>
+        [TestMethod]
+        public void WebWorkflowsTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                ptci.HandlersToProcess = Handlers.Lists | Handlers.Workflows;
+                ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+
+
+                var result = TestProvisioningTemplate(cc, "workflows_add_1605.xml", Handlers.Lists | Handlers.Workflows, null, ptci);
+                WorkflowValidator wv = new WorkflowValidator();
+                Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows, result.TargetTemplate.Workflows, result.TargetTokenParser));
+            }
+        }
         #endregion
     }
 }
