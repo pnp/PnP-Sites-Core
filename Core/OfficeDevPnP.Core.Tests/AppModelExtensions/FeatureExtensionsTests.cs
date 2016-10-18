@@ -272,13 +272,20 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(Microsoft.SharePoint.Client.ServerException))]
         public void ActivateFakeFeatureTest()
         {
-            // Test
-            clientContext.Site.ActivateFeature(FakeFeatureId);
+            try
+            {
+                // Test
+                clientContext.Site.ActivateFeature(FakeFeatureId);
+                // We should not get here since we expect an error to be thrown
+                Assert.IsFalse(true);
+            }
+            catch
+            {
+                Assert.IsFalse(false);
+            }
 
-            Assert.IsFalse(clientContext.Site.IsFeatureActive(FakeFeatureId));
         }
 
         [TestMethod()]
