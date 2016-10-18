@@ -4,6 +4,7 @@ using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
+using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -89,15 +90,29 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="features">FeatureCollection to check in</param>
         /// <param name="featureID">ID of the feature to check</param>
+        /// <param name="noRetry">Use regular ExecuteQuery</param>
         /// <returns>True if active, false otherwise</returns>
-        private static bool IsFeatureActiveInternal(FeatureCollection features, Guid featureID)
+        private static bool IsFeatureActiveInternal(FeatureCollection features, Guid featureID, bool noRetry=false)
         {
             var featureIsActive = false;
 
             features.ClearObjectData();
 
             features.Context.Load(features);
-            features.Context.ExecuteQueryRetry();
+            if (noRetry)
+            {
+                string clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:ProcessFeatureInternal";
+                if (clientTag.Length > 32)
+                {
+                    clientTag = clientTag.Substring(0, 32);
+                }
+                features.Context.ClientTag = clientTag;
+                features.Context.ExecuteQuery();
+            }
+            else
+            {
+                features.Context.ExecuteQueryRetry();
+            }
 
             var iprFeature = features.GetById(featureID);
             iprFeature.EnsureProperties(f => f.DefinitionId);
@@ -136,7 +151,6 @@ namespace Microsoft.SharePoint.Client
             ProcessFeatureInternal(web.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm, pollingIntervalSeconds);
         }
 
-
         /// <summary>
         /// Activates or deactivates a site collection or web scoped feature
         /// </summary>
@@ -150,7 +164,6 @@ namespace Microsoft.SharePoint.Client
             if (activate)
             {
                 // Feature enabling can take a long time, especially in case of the publishing feature...so let's make it more reliable
-                bool cancel = false;
                 features.Add(featureID, true, scope);
 
                 if (pollingIntervalSeconds < 5)
@@ -158,38 +171,44 @@ namespace Microsoft.SharePoint.Client
                     pollingIntervalSeconds = 5;
                 }
 
-                // Kick off a thread that checks for the feature activation to be complete
-                Task.Run(() =>
+                try
                 {
-                    while (!cancel)
+                    string clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:ProcessFeatureInternal";
+                    if (clientTag.Length > 32)
                     {
-                        Thread.Sleep(TimeSpan.FromSeconds(pollingIntervalSeconds));
+                        clientTag = clientTag.Substring(0, 32);
+                    }
+                    features.Context.ClientTag = clientTag;
+                    features.Context.ExecuteQuery();
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActive, featureID);
+                }
+                catch (Exception ex)
+                {
+                    Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureException, ex.ToString());
 
-                        if (!cancel)
+                    // Don't wait for a "feature not found" exception, which is the typical exception we'll see
+                    if (ex.HResult != -2146233088)
+                    {
+                        int retryAttempts = 10;
+                        int retryCount = 0;
+
+                        // wait and keep checking if the feature is active
+                        while (retryAttempts > retryCount)
                         {
-                            cancel = IsFeatureActiveInternal(features, featureID);
-                            Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActivationState, cancel, featureID);
+                            Thread.Sleep(TimeSpan.FromSeconds(pollingIntervalSeconds));
+                            if (IsFeatureActiveInternal(features, featureID, true))
+                            {
+                                retryCount = retryAttempts;
+                                Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActivationState, true, featureID);
+                            }
+                            else
+                            {
+                                retryCount++;
+                                Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActivationState, false, featureID);
+                            }
                         }
                     }
-                });
-
-                // Kick off a thread that enables the feature
-                Task.Run(() =>
-                {
-                    try
-                    {
-                        features.Context.ExecuteQueryRetry();
-                        Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActive, featureID);
-                    }
-                    catch(Exception ex)
-                    {
-                        Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureException, ex.ToString());
-                    }
-                    finally
-                    {
-                        cancel = true;
-                    }
-                }).Wait();
+                }
             }
             else
             {
