@@ -11,6 +11,7 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     [TestClass]
     public class WorkflowsTests : FunctionalTestBase
     {
@@ -79,4 +80,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion
     }
+#endif
 }
