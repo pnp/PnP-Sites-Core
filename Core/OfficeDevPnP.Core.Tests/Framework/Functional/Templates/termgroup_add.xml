@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all the term properties work as expected. 
+-->
+
+<pnp:ProvisioningTemplate ID="termgroup_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">  
+  <pnp:TermGroups>    
+    <!-- tenant/farm term group -->
+    <pnp:TermGroup Name="TG_2">
+      <pnp:TermSets>
+        <!-- Basic term set -->
+        <pnp:TermSet Name="TS_2_1" >
+          <pnp:Terms>
+            <!-- Terms with custom sort ordering-->
+            <pnp:Term Name="TS_2_1_1" CustomSortOrder="5" />
+            <pnp:Term Name="TS_2_1_2" CustomSortOrder="4" />
+            <pnp:Term Name="TS_2_1_3" CustomSortOrder="3" />
+            <pnp:Term Name="TS_2_1_4" CustomSortOrder="2" />
+            <pnp:Term Name="TS_2_1_5" CustomSortOrder="1" />
+          </pnp:Terms>
+        </pnp:TermSet>
+        <!-- Complex term set -->
+        <pnp:TermSet Name="TS_2_2" Description="TS_2_2 description" IsAvailableForTagging="true" IsOpenForTermCreation="true" ID="{681CF986-4143-4BEA-B242-65A219D69DC1}" >
+          <pnp:CustomProperties>
+            <pnp:Property Key="TS_2_2_P1" Value="TS_2_1"/>
+            <pnp:Property Key="TS_2_2_P2" Value="TS_2_2"/>
+          </pnp:CustomProperties>
+          <pnp:Terms>
+            <!-- Term available for tagging -->
+            <pnp:Term Name="TS_2_2_1" Description="Monday desc" ID="{ADF2182F-93E2-4528-A1F1-71559404D08A}" IsAvailableForTagging="true">
+              <pnp:Terms>
+                <pnp:Term Name="TS_2_2_1_1" />
+                <pnp:Term Name="TS_2_2_1_2" />
+                <pnp:Term Name="TS_2_2_1_3" />
+              </pnp:Terms>
+            </pnp:Term>
+            <pnp:Term Name="TS_2_2_2" ID="{84D06779-971D-4D9B-9F97-BCD2360384B1}">
+              <pnp:CustomProperties>
+                <pnp:Property Key="TS_2_2_2_P1" Value="TS_2_2_2"/>
+              </pnp:CustomProperties>
+              <pnp:LocalCustomProperties>
+                <pnp:Property Key="TS_2_2_2_P1_Local" Value="TS_2_2_2"/>
+              </pnp:LocalCustomProperties>
+              <pnp:Labels>
+                <pnp:Label Language="1033" Value="TS_2_2_2_L1_1033"/>
+                <pnp:Label Language="1033" Value="TS_2_2_2_L2_1033"/>
+                <pnp:Label IsDefaultForLanguage="true" Language="1043" Value="TS_2_2_2_L1_1043"/>
+                <pnp:Label Language="1043" Value="TS_2_2_2_L2_1043"/>
+              </pnp:Labels>
+            </pnp:Term>
+            <pnp:Term Name="TS_2_2_3" ID="{BFA6F7CD-FB5A-4FCA-A9A2-2CCCE10C7CE1}" />
+            <pnp:Term Name="TS_2_2_4" ID="{565CC81B-1F3A-440A-A599-48D9DC7A5C62}" />
+            <pnp:Term Name="TS_2_2_5" ID="{228D65D3-AAE9-4A3C-B3C0-61C9E79EA2A9}" />
+          </pnp:Terms>          
+        </pnp:TermSet>
+        <pnp:TermSet Name="TS_2_5" Language="1043" >
+          <pnp:Terms>
+            <!-- setting language on term is not yet working...to be investigated -->
+            <pnp:Term Name="TS_2_5_1_NL">
+              <pnp:Labels>
+                <pnp:Label Language="1043" IsDefaultForLanguage="true" Value="TS_2_5_1_NL"/>
+                <pnp:Label Language="1043" Value="TS_2_5_2_NL"/>
+              </pnp:Labels>
+            </pnp:Term>
+            <pnp:Term Name="TS_2_5_2" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>
+    </pnp:TermGroup>
+    <!-- site collection term group -->
+    <!-- Setting description on the site collection term group is not supported -->
+    <pnp:TermGroup Name="{sitecollectiontermgroupname}" SiteCollectionTermGroup="true" >
+      <pnp:TermSets>
+        <pnp:TermSet Name="TS_3_1">
+          <pnp:Terms>
+            <pnp:Term Name="TS_3_A" />
+            <pnp:Term Name="TS_3_B" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>  
+    </pnp:TermGroup>
+  </pnp:TermGroups>
+</pnp:ProvisioningTemplate>

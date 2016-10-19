@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Preferences Author="PnP test team" />
+  <pnp:Localizations>
+    <pnp:Localization LCID="1033" Name="core" ResourceFile="core.en-us.resx" />
+    <pnp:Localization LCID="1043" Name="core" ResourceFile="core.nl-nl.resx" />
+  </pnp:Localizations>
+  <pnp:Templates ID="CONTAINER-TEMPLATE-83E844EE7F75442EB12C340DF9BBFF8F">
+    <pnp:ProvisioningTemplate ID="localization_add">
+      <pnp:SupportedUILanguages>
+        <pnp:SupportedUILanguage LCID="1033"/>
+        <pnp:SupportedUILanguage LCID="1043"/>
+      </pnp:SupportedUILanguages>
+
+      <pnp:SiteFields>
+        <Field ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"  Description="{res:FLD_CT_1_Description}" Type="Text" Name="FLD_CT_1" DisplayName="{res:Fld_CT_1}" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Description="{res:FLD_CT_2_Description}" Type="Text" Name="FLD_CT_2" DisplayName="{res:Fld_CT_2}" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
+
+      <!-- Test content types -->
+      <pnp:ContentTypes>
+        <!-- Document content types 0x0101 -->
+        <!-- Simple one -->
+        <pnp:ContentType ID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"  Name="{res:CT_1}" Description="{res:CT_1_Description}" Group="PnP Localization Demo">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
+          </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct1document.docx"/>
+        </pnp:ContentType>
+        <!-- Bare minimum -->
+        <pnp:ContentType ID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Name="{res:CT_2}" Description="{res:CT_2_Description}" Group="PnP Localization Demo" />
+      </pnp:ContentTypes>
+
+      <pnp:Lists>
+        <!-- Test FieldRef element with: ID, DisplayName, Hidden, Required, Name 
+              Folder element with Name attribute 
+              Security element on Folder element -->
+        <pnp:ListInstance Title="{res:LI_1}" Description="{res:LI_1_Description}" TemplateType="101" Url="LI_1" EnableFolderCreation="true">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" />
+            <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="LI_2" Description="{res:LI_2_Description}" TemplateType="100" Url="Lists/LI_2">
+          <pnp:Fields>
+            <Field ID="{382382B6-A8E2-4944-9546-07CB108F8459}" Type="Text" Name="FLD_LI_1" DisplayName="{res:FLD_LI_1}" Description="{res:FLD_LI_1_Description}" MaxLength="255" AllowDeletion="TRUE" />
+            <Field ID="{873175B2-39CF-4550-AB3D-38B2AB1BE7D1}" Type="Text" Name="FLD_LI_2" DisplayName="{res:FLD_LI_2}" Description="{res:FLD_LI_2_Description}" MaxLength="255" AllowDeletion="TRUE" />
+          </pnp:Fields>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="{res:LI_3}" Description="{res:LI_3_Description}" TemplateType="100" Url="Lists/LI_3">
+        </pnp:ListInstance>
+      </pnp:Lists>
+
+      <pnp:CustomActions>
+        <pnp:SiteCustomActions>
+          <!--Must have deployed the Provider Hosted App, for Rights see Microsoft.SharePoint.Client.PermissionKind -->
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="{res:SiteSettings_SiteTasks_Description}" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="{res:SiteSettings_SiteTasks_Title}" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="{res:StandardMenu_SiteActions_Description}" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="{res:StandardMenu_SiteActions_Title}" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+        </pnp:SiteCustomActions>
+        <pnp:WebCustomActions>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="{res:SubSiteSettings_SiteTasks_Description}" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="{res:SubSiteSettings_SiteTasks_Title}" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+        </pnp:WebCustomActions>
+      </pnp:CustomActions>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

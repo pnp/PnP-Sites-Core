@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+supporting template: add files needed in WebSettings tests                
+-->
+
+<pnp:ProvisioningTemplate ID="websettings_files" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Files>
+    <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="garage.css" Folder="SiteAssets" Overwrite="true" />
+  </pnp:Files>
+</pnp:ProvisioningTemplate>
