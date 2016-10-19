@@ -36,6 +36,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
+
+        [TestInitialize()]
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            if (new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Contains("spoppe.com")) 
+            {
+                Assert.Inconclusive("Test that require workflow can't be running on edog.");
+            }
+        }
         #endregion
 
         #region Site collection test cases
