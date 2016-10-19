@@ -47,14 +47,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var file in template.Files.Union(directoryFiles))
                 {
-                    var folderName = parser.ParseString(file.Folder);
+                    var webToUpload = web;
 
-                    if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+                    var folderName = parser.ParseString(template.Files.First().Folder);
+
+                    if (folderName.ToLower().StartsWith((webToUpload.ServerRelativeUrl.ToLower())))
                     {
-                        folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                        folderName = folderName.Substring(webToUpload.ServerRelativeUrl.Length);
+                    }
+                    else if (folderName.ToLower().StartsWith((context.Site.RootWeb.ServerRelativeUrl.ToLower())))
+                    {
+                        folderName = folderName.Substring(context.Site.RootWeb.ServerRelativeUrl.Length);
+                        webToUpload = context.Site.RootWeb;
                     }
 
-                    var folder = web.EnsureFolderPath(folderName);
+                    var folder = webToUpload.EnsureFolderPath(folderName);
 
                     File targetFile = null;
 
@@ -398,7 +405,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             Dictionary<String, Dictionary<String, String>> result = null;
 
-            if (directory.MetadataMappingFile != null)
+            if (!string.IsNullOrEmpty(directory.MetadataMappingFile))
             {
                 var metadataPropertiesStream = directory.ParentTemplate.Connector.GetFileStream(directory.MetadataMappingFile);
                 if (metadataPropertiesStream != null)
@@ -421,7 +428,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var files = directory.ParentTemplate.Connector.GetFiles(directory.Src);
 
-            if (!String.IsNullOrEmpty(directory.IncludedExtensions))
+            if (!String.IsNullOrEmpty(directory.IncludedExtensions) && directory.IncludedExtensions != "*.*")
             {
                 var includedExtensions = directory.IncludedExtensions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => includedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
@@ -451,6 +458,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     directory.Src += @"\" + folder;
                     directory.Folder += @"\" + folder;
+                    result.AddRange(directory.GetDirectoryFiles(metadataProperties));
+                }
+            }
+
+            if (directory.Recursive)
+            {
+                var subFolders = directory.ParentTemplate.Connector.GetFolders(directory.Src);
+                var src = directory.Src;
+                var folder = directory.Folder;
+                foreach (var subFolder in subFolders)
+                {
+                    directory.Src = src + @"\" + subFolder;
+                    directory.Folder = folder + @"\" + subFolder;
                     result.AddRange(directory.GetDirectoryFiles(metadataProperties));
                 }
             }

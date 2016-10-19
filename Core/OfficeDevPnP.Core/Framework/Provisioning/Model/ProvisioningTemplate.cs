@@ -339,7 +339,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SupportedUILanguageCollection SupportedUILanguages
         {
             get { return this._supportedUILanguages; }
-            private set { this._supportedUILanguages = value; }
+            internal set { this._supportedUILanguages = value; }
         }
 
         /// <summary>
@@ -558,6 +558,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+
         /// <summary>
         /// Serializes a template to XML
         /// </summary>

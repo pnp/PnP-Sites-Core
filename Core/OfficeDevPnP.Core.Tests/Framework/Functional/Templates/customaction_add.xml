@@ -20,7 +20,6 @@ Base template: Goal is to verify that all custom action properties work as expec
                Rights
                Enabled
 
-Non functional properties: Enabled
 -->
 
 <pnp:ProvisioningTemplate ID="customaction_base" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
@@ -28,6 +27,7 @@ Non functional properties: Enabled
     <pnp:SiteCustomActions>
       <pnp:CustomAction Name="CA_1" Description="ca 1" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="CA 1 Title" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={sitename}" Rights="31" Enabled="true"/>
       <pnp:CustomAction Name="CA_2" Description="ca 2" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="CA 2 Title" Sequence="1100" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+      <pnp:CustomAction Name="CA_5" Description="ca 5" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="CA 5 Title" Sequence="1100" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="false"/>
       <pnp:CustomAction Name="CA_3" Description="ca 3" Title ="CA 3 Title" ImageUrl="~sitecollection/SiteAssets/icons/image.png" Location="CommandUI.Ribbon" RegistrationId="101" RegistrationType="List" Enabled="true">
         <pnp:CommandUIExtension>
           <CommandUIDefinitions>

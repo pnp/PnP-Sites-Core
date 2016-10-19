@@ -206,7 +206,7 @@ namespace Microsoft.SharePoint.Client
 
         internal static void ClearObjectData(this ClientObject clientObject)
         {
-            PropertyInfo info_ClientObject_ObjectData = typeof(ClientObject)
+            var info_ClientObject_ObjectData = typeof(ClientObject)
                 .GetProperty("ObjectData", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);

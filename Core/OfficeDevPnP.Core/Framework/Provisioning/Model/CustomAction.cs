@@ -58,7 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string Url { get; set; }
 
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.

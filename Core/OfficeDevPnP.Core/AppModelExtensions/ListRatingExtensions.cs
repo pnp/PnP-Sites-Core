@@ -150,8 +150,8 @@ namespace Microsoft.SharePoint.Client
         {
             try
             {
-                FieldCollection listFields = list.Fields;
-                Field field = listFields.GetById(fieldId);
+                var listFields = list.Fields;
+                var field = listFields.GetById(fieldId);
                 field.DeleteObject();
                 _library.Context.ExecuteQueryRetry();
             }

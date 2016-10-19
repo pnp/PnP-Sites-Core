@@ -33,6 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template.Id = String.Format("TEMPLATE-{0:N}", Guid.NewGuid()).ToUpper();
                 template.Version = 1;
 
+                template.BaseSiteTemplate = web.GetBaseTemplateId();
+
                 // Retrieve original Template ID and remove it from Property Bag Entries
                 int provisioningTemplateIdIndex = template.PropertyBagEntries.FindIndex(f => f.Key.Equals("_PnP_ProvisioningTemplateId"));
                 if (provisioningTemplateIdIndex > -1)

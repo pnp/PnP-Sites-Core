@@ -2470,8 +2470,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         public Security() {
             this.breakRoleInheritanceField = false;
             this.copyRoleAssignmentsField = false;
+            this.clearSubscopesField = false;
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public User[] AdditionalAdministrators {
@@ -2563,6 +2564,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
         public bool ClearSubscopes {
             get {
                 return this.clearSubscopesField;
@@ -3121,9 +3123,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
         private string urlField;
         
         private bool isExternalField;
+
+        private bool isVisibleField;
         
         public NavigationNode() {
             this.isExternalField = false;
+            this.isVisibleField = true;
         }
         
         /// <remarks/>
@@ -3170,8 +3175,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
                 this.isExternalField = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool IsVisible
+        {
+            get
+            {
+                return this.isVisibleField;
+            }
+            set
+            {
+                this.isVisibleField = value;
+            }
+        }
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
     [System.SerializableAttribute()]

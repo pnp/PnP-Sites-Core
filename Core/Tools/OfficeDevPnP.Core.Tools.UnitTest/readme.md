@@ -85,3 +85,4 @@ The build script requires git to be present, hence git needs to be installed. Th
 ## Create a scheduled task ##
 Final step is creating a scheduled task that executes the created bat file on a regular basis.
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/tools/OfficeDevPnP.Core.Tools.UnitTest" /> 

@@ -41,11 +41,12 @@ namespace Microsoft.SharePoint.Client
 
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
         {
-
+            var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
             {
                 retryCount = (clientContext as PnPClientContext).RetryCount;
                 delay = (clientContext as PnPClientContext).Delay;
+                clientTag = (clientContext as PnPClientContext).ClientTag;
             }
 
             int retryAttempts = 0;
@@ -61,9 +62,11 @@ namespace Microsoft.SharePoint.Client
             {
                 try
                 {
-                    // If the customer is not using the clienttag then fill with the PnP Core library tag
                     // ClientTag property is limited to 32 chars
-                    string clientTag = String.Format("{0}:{1}", PnPCoreUtilities.PnPCoreVersionTag, GetCallingPnPMethod());
+                    if (string.IsNullOrEmpty(clientTag))
+                    {
+                        clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:{GetCallingPnPMethod()}";
+                    }
                     if (clientTag.Length > 32)
                     {
                         clientTag = clientTag.Substring(0, 32);
@@ -225,7 +228,7 @@ namespace Microsoft.SharePoint.Client
                     if (frame.GetMethod().Name.Equals("ExecuteQueryRetry"))
                     {
                         var method = t.GetFrame(i + 1).GetMethod();
-                        
+
                         // Only return the calling method in case ExecuteQueryRetry was called from inside the PnP core library
                         if (method.Module.Name.Equals("OfficeDevPnP.Core.dll", StringComparison.InvariantCultureIgnoreCase))
                         {
@@ -237,7 +240,7 @@ namespace Microsoft.SharePoint.Client
             }
             catch
             {
-
+                // ignored
             }
 
             return pnpMethod;

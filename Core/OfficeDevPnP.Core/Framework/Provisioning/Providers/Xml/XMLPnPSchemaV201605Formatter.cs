@@ -622,7 +622,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Folders = list.Folders.Count > 0 ?
                          (from folder in list.Folders
                           select folder.FromTemplateToSchemaFolderV201605()).ToArray() : null,
-                     }).ToArray();
+                         UserCustomActions = list.UserCustomActions.Count > 0 ?
+                         (from customAction in list.UserCustomActions
+                          select new V201605.CustomAction
+                          {
+                              CommandUIExtension = new CustomActionCommandUIExtension
+                              {
+                                  Any = customAction.CommandUIExtension != null ?
+                                     (from x in customAction.CommandUIExtension.Elements() select x.ToXmlElement()).ToArray() : null,
+                              },
+                              Description = customAction.Description,
+                              Enabled = customAction.Enabled,
+                              Group = customAction.Group,
+                              ImageUrl = customAction.ImageUrl,
+                              Location = customAction.Location,
+                              Name = customAction.Name,
+                              Rights = customAction.Rights.FromBasePermissionsToStringV201605(),
+                              RegistrationId = customAction.RegistrationId,
+                              RegistrationType = (RegistrationType)Enum.Parse(typeof(RegistrationType), customAction.RegistrationType.ToString(), true),
+                              RegistrationTypeSpecified = true,
+                              Remove = customAction.Remove,
+                              ScriptBlock = customAction.ScriptBlock,
+                              ScriptSrc = customAction.ScriptSrc,
+                              Sequence = customAction.Sequence,
+                              SequenceSpecified = true,
+                              Title = customAction.Title,
+                              Url = customAction.Url,
+                          }).ToArray() : null,
+                        }).ToArray();
             }
             else
             {
@@ -888,6 +915,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         SiteCollectionTermGroup = grp.SiteCollectionTermGroup,
+                         SiteCollectionTermGroupSpecified = grp.SiteCollectionTermGroup,
                          Contributors = (from c in grp.Contributors
                                          select new V201605.User { Name = c.Name }).ToArray(),
                          Managers = (from m in grp.Managers
@@ -1639,7 +1668,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         list.Security.FromSchemaToTemplateObjectSecurityV201605(),
                         (list.Folders != null ?
                             (new List<Model.Folder>(from folder in list.Folders
-                                                    select folder.FromSchemaToTemplateFolderV201605())) : null)
+                                                    select folder.FromSchemaToTemplateFolderV201605())) : null),
+                        (list.UserCustomActions != null ?
+                            (new List<Model.CustomAction>(
+                                from customAction in list.UserCustomActions
+                                select new Model.CustomAction
+                                {
+                                    CommandUIExtension = (customAction.CommandUIExtension != null && customAction.CommandUIExtension.Any != null) ?
+                                        (new XElement("CommandUIExtension", from x in customAction.CommandUIExtension.Any select x.ToXElement())) : null,
+                                    Description = customAction.Description,
+                                    Enabled = customAction.Enabled,
+                                    Group = customAction.Group,
+                                    ImageUrl = customAction.ImageUrl,
+                                    Location = customAction.Location,
+                                    Name = customAction.Name,
+                                    Rights = customAction.Rights.ToBasePermissionsV201605(),
+                                    ScriptBlock = customAction.ScriptBlock,
+                                    ScriptSrc = customAction.ScriptSrc,
+                                    RegistrationId = customAction.RegistrationId,
+                                    RegistrationType = (UserCustomActionRegistrationType)Enum.Parse(typeof(UserCustomActionRegistrationType), customAction.RegistrationType.ToString(), true),
+                                    Remove = customAction.Remove,
+                                    Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
+                                    Title = customAction.Title,
+                                    Url = customAction.Url,
+                                })) : null)
                         )
                     {
                         ContentTypesEnabled = list.ContentTypesEnabled,
@@ -1893,10 +1945,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             {
                                 Description = termSet.Description,
                             }),
-                        (from c in termGroup.Contributors
-                         select new Model.User { Name = c.Name }).ToArray(),
-                        (from m in termGroup.Managers
-                         select new Model.User { Name = m.Name }).ToArray()
+                        termGroup.SiteCollectionTermGroup,
+                        termGroup.Contributors != null ? (from c in termGroup.Contributors
+                         select new Model.User { Name = c.Name }).ToArray() : null,
+                        termGroup.Managers != null ? (from m in termGroup.Managers
+                         select new Model.User { Name = m.Name }).ToArray() : null
                         )
                     {
                         Description = termGroup.Description,
@@ -2081,6 +2134,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     LanguageSpecified = term.Language.HasValue,
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
                     IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsDeprecated = term.IsDeprecated,
+                    IsReused = term.IsReused,
+                    IsSourceTerm = term.IsSourceTerm,
+                    SourceTermId = term.SourceTermId != Guid.Empty ? term.SourceTermId.ToString() : null,
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new V201605.TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201605() } : null,
                     CustomProperties = term.Properties.Count > 0 ?
@@ -2135,6 +2192,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     CustomSortOrder = term.CustomSortOrder,
                     IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsReused = term.IsReused,
+                    IsSourceTerm = term.IsSourceTerm,
+                    SourceTermId = !String.IsNullOrEmpty(term.SourceTermId) ? new Guid(term.SourceTermId) : Guid.Empty,
+                    IsDeprecated = term.IsDeprecated,
                     Owner = term.Owner,
                 }
                 );

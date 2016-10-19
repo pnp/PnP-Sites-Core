@@ -19,7 +19,7 @@ namespace Microsoft.SharePoint.Client {
         /// <returns>True if a policy has been applied, false otherwise</returns>
         public static bool HasSitePolicyApplied(this Web web)
         {
-            ClientResult<bool> hasSitePolicyApplied = ProjectPolicy.DoesProjectHavePolicy(web.Context, web);
+            var hasSitePolicyApplied = ProjectPolicy.DoesProjectHavePolicy(web.Context, web);
             web.Context.ExecuteQueryRetry();
             return hasSitePolicyApplied.Value;
         }
@@ -33,7 +33,7 @@ namespace Microsoft.SharePoint.Client {
         {
             if (web.HasSitePolicyApplied())
             {
-                ClientResult<DateTime> expirationDate = ProjectPolicy.GetProjectExpirationDate(web.Context, web);
+                var expirationDate = ProjectPolicy.GetProjectExpirationDate(web.Context, web);
                 web.Context.ExecuteQueryRetry();
                 return expirationDate.Value;
             }
@@ -52,7 +52,7 @@ namespace Microsoft.SharePoint.Client {
         {
             if (web.HasSitePolicyApplied())
             {
-                ClientResult<DateTime> closeDate = ProjectPolicy.GetProjectCloseDate(web.Context, web);
+                var closeDate = ProjectPolicy.GetProjectCloseDate(web.Context, web);
                 web.Context.ExecuteQueryRetry();
                 return closeDate.Value;
             }
@@ -69,11 +69,11 @@ namespace Microsoft.SharePoint.Client {
         /// <returns>A list of <see cref="SitePolicyEntity"/> objects</returns>
         public static List<SitePolicyEntity> GetSitePolicies(this Web web)
         {
-            ClientObjectList<ProjectPolicy> sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
+            var sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
             web.Context.Load(sitePolicies);
             web.Context.ExecuteQueryRetry();
 
-            List<SitePolicyEntity> policies = new List<SitePolicyEntity>();
+            var policies = new List<SitePolicyEntity>();
 
             if (sitePolicies != null && sitePolicies.Count > 0)
             {
@@ -102,7 +102,7 @@ namespace Microsoft.SharePoint.Client {
         {
             if (web.HasSitePolicyApplied())
             {
-                ProjectPolicy policy = ProjectPolicy.GetCurrentlyAppliedProjectPolicyOnWeb(web.Context, web);
+                var policy = ProjectPolicy.GetCurrentlyAppliedProjectPolicyOnWeb(web.Context, web);
                 web.Context.Load(policy,
                              p => p.Name,
                              p => p.Description,
@@ -133,11 +133,11 @@ namespace Microsoft.SharePoint.Client {
         /// <returns>A <see cref="SitePolicyEntity"/> object holding the fetched policy</returns>
         public static SitePolicyEntity GetSitePolicyByName(this Web web, string sitePolicy)
         {
-            List<SitePolicyEntity> policies = web.GetSitePolicies();
+            var policies = web.GetSitePolicies();
 
             if (policies.Count > 0)
             {
-                SitePolicyEntity policy = policies.FirstOrDefault(p => p.Name == sitePolicy);
+                var policy = policies.FirstOrDefault(p => p.Name == sitePolicy);
                 return policy;
             }
             else
@@ -154,15 +154,15 @@ namespace Microsoft.SharePoint.Client {
         /// <returns>True if applied, false otherwise</returns>
         public static bool ApplySitePolicy(this Web web, string sitePolicy)
         {
-            bool result = false;
+            var result = false;
             
-            ClientObjectList<ProjectPolicy> sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
+            var sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
             web.Context.Load(sitePolicies);
             web.Context.ExecuteQueryRetry();
 
             if (sitePolicies != null && sitePolicies.Count > 0)
             {
-                ProjectPolicy policyToApply = sitePolicies.FirstOrDefault(p => p.Name == sitePolicy);
+                var policyToApply = sitePolicies.FirstOrDefault(p => p.Name == sitePolicy);
                                 
                 if (policyToApply != null)
                 {

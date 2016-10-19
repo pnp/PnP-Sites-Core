@@ -27,9 +27,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 Model.RegionalSettings settings = new Model.RegionalSettings();
 
-
                 settings.AdjustHijriDays = web.RegionalSettings.AdjustHijriDays;
                 settings.AlternateCalendarType = (CalendarType)web.RegionalSettings.AlternateCalendarType;
+                settings.CalendarType = (CalendarType)web.RegionalSettings.CalendarType;
                 settings.Collation = web.RegionalSettings.Collation;
                 settings.FirstDayOfWeek = (DayOfWeek)web.RegionalSettings.FirstDayOfWeek;
                 settings.FirstWeekOfYear = web.RegionalSettings.FirstWeekOfYear;
@@ -66,6 +66,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;
                     isDirty = true;
+                }
+                if (template.RegionalSettings.CalendarType != CalendarType.None)
+                {
+                    if (web.RegionalSettings.CalendarType != (short)template.RegionalSettings.CalendarType)
+                    {
+                        web.RegionalSettings.CalendarType = (short)template.RegionalSettings.CalendarType;
+                        isDirty = true;
+                    }
                 }
                 if (web.RegionalSettings.Collation != Convert.ToInt16(template.RegionalSettings.Collation))
                 {

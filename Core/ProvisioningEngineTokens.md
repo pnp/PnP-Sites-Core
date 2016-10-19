@@ -25,3 +25,5 @@ Below all the supported tokens are listed:
 |{currentuserfullname}|{currentuserfullname}|Test User|Will return the full name of the user|
 |{currentuserloginname}|{currentuserloginname}|i:0#.f&#124;membership&#124;testuser@domain.com|Will return the login name of the user|
 |{guid}|{guid}|f17b152f-029c-4288-b4c8-d11101f05cb1|Will return a new guid|
+
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/provisioningenginetokens" /> 

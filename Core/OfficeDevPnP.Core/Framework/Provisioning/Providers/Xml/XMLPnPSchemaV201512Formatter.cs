@@ -824,6 +824,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = grp.Name,
                          ID = grp.Id != Guid.Empty ? grp.Id.ToString() : null,
                          Description = grp.Description,
+                         SiteCollectionTermGroup = grp.SiteCollectionTermGroup,
+                         SiteCollectionTermGroupSpecified = grp.SiteCollectionTermGroup,
                          TermSets = (
                             from termSet in grp.TermSets
                             select new V201512.TermSet
@@ -1711,7 +1713,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 termSet.CustomProperties != null ? termSet.CustomProperties.ToDictionary(k => k.Key, v => v.Value) : null)
                             {
                                 Description = termSet.Description,
-                            })
+                            }),
+                        termGroup.SiteCollectionTermGroup
                         )
                     {
                         Description = termGroup.Description,

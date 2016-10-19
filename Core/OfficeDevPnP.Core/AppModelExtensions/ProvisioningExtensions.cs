@@ -45,7 +45,7 @@ namespace Microsoft.SharePoint.Client
         public static void ProvisionElementXml(this Web web, string baseFolder, XElement elementsXml)
         {
             // TODO: Maybe some sort of stream provider for resolving references (instead of baseFolder)
-            if (elementsXml == null) { throw new ArgumentNullException("elementsXml"); }
+            if (elementsXml == null) { throw new ArgumentNullException(nameof(elementsXml)); }
             if (elementsXml.Name != XName.Get("Elements", SharePointNamespaceName))
             {
                 throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__, "xml");
@@ -70,10 +70,10 @@ namespace Microsoft.SharePoint.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         static void ProvisionModuleInternal(this Web web, string baseFolder, XElement moduleXml)
         {
-            if (moduleXml == null) { throw new ArgumentNullException("module"); }
+            if (moduleXml == null) { throw new ArgumentNullException(nameof(moduleXml)); }
             if (moduleXml.Name != XName.Get("Module", SharePointNamespaceName))
             {
-                throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__, "module");
+                throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__, nameof(moduleXml));
             }
 
             var name = moduleXml.Attribute("Name").Value;
@@ -111,10 +111,10 @@ namespace Microsoft.SharePoint.Client
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         static File ProvisionFileInternal(this Web web, string baseUrl, string baseFolder, XElement fileXml, bool useWebDav = true)
         {
-            if (fileXml == null) { throw new ArgumentNullException("fileXml"); }
+            if (fileXml == null) { throw new ArgumentNullException(nameof(fileXml)); }
             if (fileXml.Name != XName.Get("File", SharePointNamespaceName))
             {
-                throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__, "file");
+                throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__, nameof(fileXml));
             }
 
             var fileUrl = fileXml.Attribute("Url").Value;
@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client
             var replaceContent = string.Equals(fileXml.Attribute("ReplaceContent").Value, "true", StringComparison.InvariantCultureIgnoreCase);
             var fileLevel = fileXml.Attribute("Level").Value;
             FileLevel level;
-            if (!Enum.TryParse<FileLevel>(fileLevel, out level))
+            if (!Enum.TryParse(fileLevel, out level))
             {
                 level = FileLevel.Published;
             }

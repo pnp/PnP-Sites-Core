@@ -155,6 +155,100 @@ namespace Microsoft.SharePoint.Client.Tests
         }
         #endregion
 
+        #region List Existence tests
+        [TestMethod]
+        public void ListExistsByGuidTest()
+        {
+            var listName = "samplelist_" + DateTime.Now.ToFileTime();
+            var listGuid = Guid.NewGuid();
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+
+                var list = clientContext.Web.CreateList(
+                    ListTemplateType.GenericList,
+                    listName,
+                    false);
+
+
+                clientContext.Load<List>(list, l => l.Id);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.IsNotNull(list);
+                Assert.IsTrue(clientContext.Web.ListExists(list.Id));
+
+                //Delete List
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ListExistsWithEmtpyTitleParameterTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                clientContext.Web.ListExists(string.Empty);
+            }
+        }
+
+        [TestMethod]
+        public void ListExistsByTitleTest()
+        {
+            var listName = "samplelist_" + DateTime.Now.ToFileTime();
+            var listGuid = Guid.NewGuid();
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+
+                var list = clientContext.Web.CreateList(
+                    ListTemplateType.GenericList,
+                    listName,
+                    false);
+
+                Assert.IsNotNull(list);
+                Assert.IsTrue(clientContext.Web.ListExists(listName));
+
+                //Delete List
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ListExistsByUrlPathIsNullParamTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                clientContext.Web.ListExists((Uri)null);
+            }
+        }
+
+        [TestMethod]
+        public void ListExistsByUrlPathParamTest()
+        {
+            var listName = "samplelist_" + DateTime.Now.ToFileTime();
+            var siteRelativePath = $"Lists/{listName}";
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var list = clientContext.Web.CreateList(
+                    ListTemplateType.GenericList,
+                    listName,
+                    false);
+
+                Assert.IsNotNull(list);
+                Assert.IsTrue(clientContext.Web.ListExists(new Uri(siteRelativePath,UriKind.Relative)));
+
+                //Delete List
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+        }
+        #endregion  
+
         #region Get Lists/Library tests
 
         public void GetPagesLibraryTest()

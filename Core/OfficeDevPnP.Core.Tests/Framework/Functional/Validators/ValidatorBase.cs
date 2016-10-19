@@ -24,6 +24,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
     /// </summary>
     public class ValidatorBase
     {
+        #region Variables
+        internal ClientContext cc = null;
+        #endregion
+
         #region Events
         public event ValidateEventHandler ValidateEvent;
         public event ValidateXmlEventHandler ValidateXmlEvent;
@@ -140,7 +144,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 XElement sourceXml = XElement.Parse(sourceXmlString);
                 string sourceKeyValue = sourceXml.Attribute(key).Value;
 
-                foreach(var tElem in tElements)
+                foreach (var tElem in tElements)
                 {
                     string targetXmlString = tElem.GetType().GetProperty(XmlPropertyName).GetValue(tElem).ToString();
 
@@ -160,12 +164,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (sourceKeyValue.Equals(targetKeyValue, StringComparison.InvariantCultureIgnoreCase))
                     {
                         targetCount++;
-                        
+
                         // compare XML's
 
                         // call virtual override method, consuming validators can add fixed validation logic if needed
                         OverrideXmlData(sourceXml, targetXml);
-                        
+
                         // call event handler, validator instances can add additional validation behaviour if needed, including forcing an IsEqual
                         ValidateXmlEventArgs e = null;
                         if (ValidateXmlEvent != null)
@@ -185,6 +189,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                             var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
                             if (!equalNodes.Success)
                             {
+                                Console.WriteLine(string.Format("Source XML:{0}", sourceXml.ToString()));
+                                Console.WriteLine(string.Format("Target XML:{0}", targetXml.ToString()));
                                 return false;
                             }
                         }
@@ -195,6 +201,60 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
             return sourceCount == targetCount;
+        }
+
+        public virtual bool ValidateObjectXML(string source, string target, List<string> properties, TokenParser tokenParser = null, Dictionary<string, string[]> parsedProperties = null) 
+        {
+            XElement sourceXml = XElement.Parse(source);
+            XElement targetXml = XElement.Parse(target);
+
+            if (tokenParser != null && parsedProperties != null)
+            {
+                // Run token parser over provided list of properties
+                foreach (var property in properties)
+                {
+                    if (sourceXml.Attribute(property) != null)
+                    {
+                        string[] parserExceptions;
+                        parsedProperties.TryGetValue(property, out parserExceptions);
+                        sourceXml.Attribute(property).Value = tokenParser.ParseString(sourceXml.Attribute(property).Value, parserExceptions);
+                        if (targetXml.Attribute(property) != null)
+                        {
+                            targetXml.Attribute(property).Value = tokenParser.ParseString(targetXml.Attribute(property).Value, parserExceptions);
+                        }
+                    }
+                }
+            }
+
+            // call virtual override method, consuming validators can add fixed validation logic if needed
+            OverrideXmlData(sourceXml, targetXml);
+
+            // call event handler, validator instances can add additional validation behaviour if needed, including forcing an IsEqual
+            ValidateXmlEventArgs e = null;
+            if (ValidateXmlEvent != null)
+            {
+                e = new ValidateXmlEventArgs(sourceXml, targetXml);
+                ValidateXmlEvent(this, e);
+            }
+
+            if (e != null && e.IsEqual)
+            {
+                // Do nothing since we've declared equality in the event handler
+            }
+            else
+            {
+                // Not using XNode.DeepEquals anymore since it requires that the attributes in both XML's are ordered the same
+                //var equalNodes = XNode.DeepEquals(sourceXml, targetXml);
+                var equalNodes = XmlComparer.AreEqual(sourceXml, targetXml);
+                if (!equalNodes.Success)
+                {
+                    Console.WriteLine(string.Format("Source XML:{0}", sourceXml.ToString()));
+                    Console.WriteLine(string.Format("Target XML:{0}", targetXml.ToString()));
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         internal virtual void OverrideXmlData(XElement sourceObject, XElement targetObject)
@@ -211,21 +271,61 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return ctXml.ToString(SaveOptions.DisableFormatting);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="security"></param>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool ValidateSecurity(ClientContext context, ObjectSecurity security, SecurableObject item)
+        internal bool ValidateSecurityXml(XElement sourceObject, XElement targetObject)
         {
-            int dataRowRoleAssignmentCount = security.RoleAssignments.Count;
+            XNamespace ns = SchemaVersion;
+
+            var sourceBreakRoleInheritance = sourceObject.Descendants(ns + "BreakRoleInheritance");
+            if (sourceBreakRoleInheritance != null && sourceBreakRoleInheritance.Any())
+            {
+                bool copyRoleAssignments = sourceBreakRoleInheritance.First().Attribute("CopyRoleAssignments").Value.ToBoolean();
+
+                var sourceRoleAssignments = sourceObject.Descendants(ns + "RoleAssignment");
+                var targetRoleAssignments = targetObject.Descendants(ns + "RoleAssignment");
+
+                // Verify the number of role assignments
+                if (sourceRoleAssignments.Count() > targetRoleAssignments.Count())
+                {
+                    return false;
+                }
+
+                // verify the added ones appear in target
+                foreach (var sourceRoleAssignment in sourceRoleAssignments)
+                {
+                    var targetRoleAssignment = targetRoleAssignments.Where(p => p.Attribute("Principal").Value == sourceRoleAssignment.Attribute("Principal").Value);
+
+                    if (targetRoleAssignment != null && targetRoleAssignment.Any())
+                    {
+                        if (!sourceRoleAssignment.Attribute("RoleDefinition").Value.Equals(targetRoleAssignment.First().Attribute("RoleDefinition").Value, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Verify that the target securable item has the needed security settings
+        /// </summary>
+        /// <param name="context">Client context object</param>
+        /// <param name="security">Security template model</param>
+        /// <param name="item">Securable item</param>
+        /// <returns></returns>
+        public bool ValidateSecurityCSOM(ClientContext context, ObjectSecurity security, SecurableObject item)
+        {
+            int roleAssignmentCount = security.RoleAssignments.Count;
             int roleCount = 0;
 
             IEnumerable roles = context.LoadQuery(item.RoleAssignments.Include(roleAsg => roleAsg.Member,
                 roleAsg => roleAsg.RoleDefinitionBindings.Include(roleDef => roleDef.Name)));
-            context.ExecuteQuery();
+            context.ExecuteQueryRetry();
 
             foreach (var s in security.RoleAssignments)
             {
@@ -238,13 +338,40 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 }
             }
 
-            if (dataRowRoleAssignmentCount != roleCount)
+            if (roleAssignmentCount != roleCount)
             {
                 return false;
             }
 
             return true;
         }
+
+        public bool ValidateDataRowsCSOM(ClientContext context, DataRow dataRow, ListItem item)
+        {
+            context.Load(item);
+            context.ExecuteQueryRetry();
+
+            // Validate item values
+            foreach(var dataValue in dataRow.Values)
+            {
+                if (!item[dataValue.Key].ToString().Equals(dataValue.Value, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            // Validate security
+            if (dataRow.Security != null)
+            {
+                if (!ValidateSecurityCSOM(context, dataRow.Security, item))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         #endregion
 
         #region Helper methods

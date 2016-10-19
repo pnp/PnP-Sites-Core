@@ -107,7 +107,7 @@ public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, st
 public ClientContext GetADFSUserNameMixedAuthenticatedContext(string siteUrl, string user, string password, string domain, string sts, string idpId)
 ```
 
-Go here to learn more about the [ADFS usernamemixed authentication](https://github.com/OfficeDev/PnP/blob/dev/OfficeDevPnP.Core/SAML%20authentication.md).
+Go here to learn more about the [ADFS usernamemixed authentication](https://github.com/OfficeDev/PnP-Sites-Core/blob/master/Core/SAML%20authentication.md).
 
 # Compiling for SharePoint 2013 #
 SharePoint 2013 depends on version 15 client assemblies, SharePoint 2016 depends on 16 client assemblies whereas Office 365 (SharePoint Online) uses version 16.1 client assemblies. The PnP core solution foresees support for this. The solution contains 6 configurations:
@@ -267,3 +267,4 @@ All code should be version independent, meaning that code should not assume that
 # Multilingual support #
 The Core component code cannot assume that the code is executed against the English language. Hardcoded references to library names are not acceptable for the Core component implementation, like assuming that publishing site has a "Pages" library.
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/readme" /> 

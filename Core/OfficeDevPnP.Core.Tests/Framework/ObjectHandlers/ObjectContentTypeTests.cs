@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
+using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -24,11 +25,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var ct = ctx.Web.GetContentTypeByName("Test Content Type");
+                //var field = ctx.Web.Fields.GetByInternalNameOrTitle("TestField");
                 if (ct != null)
                 {
                     ct.DeleteObject();
                     ctx.ExecuteQueryRetry();
                 }
+                ctx.Web.RemoveFieldByInternalName("PnPTestField");
+
             }
         }
 
@@ -63,6 +67,54 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var ct = ctx.Web.GetContentTypeByName("Test Content Type");
 
                 Assert.IsNotNull(ct);
+
+            }
+        }
+
+        [TestMethod]
+        public void FieldUsingTokensAreCorrectlyOrdered()
+        {
+            var template = new ProvisioningTemplate();
+
+            template.Parameters.Add("TestFieldPrefix","PnP");
+            
+
+            var contentType = new ContentType
+            {
+                Id = "0x010100503B9E20E5455344BFAC2292DC6FE805",
+                Name = "Test Content Type",
+                Group = "PnP",
+                Description = "Test Description",
+                Overwrite = true,
+                Hidden = false
+            };
+
+            var nonOobField = new Field
+            {
+                SchemaXml = "<Field ID=\"{dd6b7dae-1281-458d-a66c-01b0c7b7930b}\" Name=\"{parameter:TestFieldPrefix}TestField\" DisplayName=\"TestField\" Type=\"Note\" Group=\"PnP\" Description=\"\" />"
+            };
+            template.SiteFields.Add(nonOobField);
+
+            contentType.FieldRefs.Add(new FieldRef("{parameter:TestFieldPrefix}TestField")
+            {
+                Id= new Guid("{dd6b7dae-1281-458d-a66c-01b0c7b7930b}")
+            });
+
+            contentType.FieldRefs.Add(new FieldRef("AssignedTo")
+            {
+                Id = BuiltInFieldId.AssignedTo
+            });
+            template.ContentTypes.Add(contentType);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                TokenParser parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                var ct = ctx.Web.GetContentTypeByName("Test Content Type");
+                ct.EnsureProperty(x => x.FieldLinks);
+                Assert.AreEqual(ct.FieldLinks[0].Id, template.ContentTypes.First().FieldRefs[0].Id);
+                Assert.AreEqual(ct.FieldLinks[1].Id, template.ContentTypes.First().FieldRefs[1].Id);
 
             }
 

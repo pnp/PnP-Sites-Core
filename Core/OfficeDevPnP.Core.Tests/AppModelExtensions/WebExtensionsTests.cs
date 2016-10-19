@@ -127,6 +127,27 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
+        public void SetPropertyBagValueHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            clientContext.Web.SetPropertyBagValue(_key, _value_string);
+
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server.
+
+            clientContext.Load(props);
+            clientContext.ExecuteQueryRetry();
+
+            Assert.IsTrue(props.FieldValues.ContainsKey(_key), "Entry not added");
+            Assert.AreEqual(_value_string, props.FieldValues[_key] as string, "Entry not set with correct value");
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
+        [TestMethod()]
         public void SetPropertyBagValueMultipleRunsTest()
         {
             string key2 = _key + "_multiple";
@@ -210,6 +231,32 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
+        public void GetPropertyBagValueHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+
+            props[_key] = _value_string;
+            web.Update();
+
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            var stringValue = web.GetPropertyBagValueString(_key, _value_string);
+
+            Assert.IsInstanceOfType(stringValue, typeof(string), "No string value returned");
+            Assert.AreEqual(_value_string, stringValue, "Incorrect value returned");
+
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server
+
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
+        [TestMethod()]
         public void PropertyBagContainsKeyTest()
         {
             var web = clientContext.Web;
@@ -224,6 +271,30 @@ namespace Microsoft.SharePoint.Client.Tests
 
             Assert.IsTrue(web.PropertyBagContainsKey(_key));
         }
+
+        [TestMethod()]
+        public void PropertyBagContainsKeyHandlesLocalPropertyCacheTest()
+        {
+            var web = clientContext.Web;
+            var props = web.AllProperties;
+            string noUpdateKey = _key + "_NoUpdate_" + DateTime.Now.ToFileTime();
+            web.Context.ExecuteQueryRetry();
+
+            props[_key] = _value_string;
+            web.Update();
+
+            props[noUpdateKey] = "This key is never added to the server because no web.Update() is called. This leads to future client caching issues if Web.AllProperties.RefreshLoad() or web.Context.Load(web.AllProperties) are called.";
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsTrue(web.PropertyBagContainsKey(_key));
+            props.FieldValues.Remove(noUpdateKey); // Need to remove this key before refreshing from server
+
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+
+            Assert.IsFalse(props.FieldValues.ContainsKey(noUpdateKey), "The key '" + noUpdateKey + "' should not exist on the server");
+        }
+
 
         [TestMethod()]
         public void GetIndexedPropertyBagKeysTest()

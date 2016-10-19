@@ -2,7 +2,6 @@
 using System.Linq;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
-using System.Reflection;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -87,14 +86,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if active, false otherwise</returns>
         private static bool IsFeatureActiveInternal(FeatureCollection features, Guid featureID)
         {
-            bool featureIsActive = false;
+            var featureIsActive = false;
 
             features.ClearObjectData();
 
             features.Context.Load(features);
             features.Context.ExecuteQueryRetry();
 
-            Feature iprFeature = features.GetById(featureID);
+            var iprFeature = features.GetById(featureID);
             iprFeature.EnsureProperties(f => f.DefinitionId);
 
             if (iprFeature != null && iprFeature.IsPropertyAvailable("DefinitionId") && !iprFeature.ServerObjectIsNull.Value && iprFeature.DefinitionId.Equals(featureID))
@@ -103,15 +102,6 @@ namespace Microsoft.SharePoint.Client
             }
 
             return featureIsActive;
-        }
-
-        private static void ClearObjectData(ClientObject clientObject)
-        {
-            PropertyInfo info_ClientObject_ObjectData = typeof(ClientObject)
-                .GetProperty("ObjectData", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var objectData = (ClientObjectData)info_ClientObject_ObjectData.GetValue(clientObject, new object[0]);
-            objectData.MethodReturnObjects.Clear();
         }
 
         /// <summary>
@@ -151,7 +141,7 @@ namespace Microsoft.SharePoint.Client
             features.Context.ExecuteQueryRetry();
 
             // The original number of active features...use this to track if the feature activation went OK
-            int oldCount = features.Count();
+            var oldCount = features.Count();
 
             if (activate)
             {
@@ -165,8 +155,8 @@ namespace Microsoft.SharePoint.Client
                 features.Context.Load(features);
                 features.Context.ExecuteQueryRetry();
 
-                int tries = 0;
-                int currentCount = features.Count();
+                var tries = 0;
+                var currentCount = features.Count();
                 while (currentCount <= oldCount && tries < 5)
                 {
                     tries++;

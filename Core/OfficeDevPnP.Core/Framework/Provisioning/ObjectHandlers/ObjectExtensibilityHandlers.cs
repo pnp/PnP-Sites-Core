@@ -25,7 +25,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var context = web.Context as ClientContext;
-                foreach (var handler in template.ExtensibilityHandlers.Union(template.Providers).OfType<Provider>())
+
+                var handlers = applyingInformation != null ?
+                    template.ExtensibilityHandlers.Union(applyingInformation.ExtensibilityHandlers) :
+                    template.ExtensibilityHandlers;
+
+                foreach (var handler in handlers)
                 {
                     if (handler.Enabled)
                     {

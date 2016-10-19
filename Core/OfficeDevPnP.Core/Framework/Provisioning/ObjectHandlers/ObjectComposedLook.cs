@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         String.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                     {
                         // Apply OOB theme
-                        web.SetComposedLookByUrl(template.ComposedLook.Name);
+                        web.SetComposedLookByUrl(template.ComposedLook.Name, "", "", "");
                     }
                     else
                     {
@@ -62,13 +62,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         web.CreateComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
                         web.SetComposedLookByUrl(template.ComposedLook.Name, colorFile, fontFile, backgroundFile, masterUrl);
-
-                        var composedLookJson = JsonConvert.SerializeObject(template.ComposedLook);
-
-                        web.SetPropertyBagValue("_PnP_ProvisioningTemplateComposedLookInfo", composedLookJson);
                     }
 
                     // Persist composed look info in property bag
+                    var composedLookJson = JsonConvert.SerializeObject(template.ComposedLook);
+                    web.SetPropertyBagValue("_PnP_ProvisioningTemplateComposedLookInfo", composedLookJson);
 
                 }
             }
@@ -106,7 +104,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     try
                     {
                         var composedLook = JsonConvert.DeserializeObject<ComposedLook>(web.GetPropertyBagValueString("_PnP_ProvisioningTemplateComposedLookInfo", ""));
-                        if (composedLook.Name == null || composedLook.BackgroundFile == null || composedLook.FontFile == null)
+                        if (composedLook.Name == null)
                         {
                             scope.LogError(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize);
                             throw new JsonSerializationException();

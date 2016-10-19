@@ -30,6 +30,17 @@ namespace Microsoft.SharePoint.Client
         #region Web (site) query, creation and deletion
 
         /// <summary>
+        /// Returns the Base Template ID for the current web
+        /// </summary>
+        /// <param name="parentWeb">The parent Web (site) to get the base template from</param>
+        /// <returns>The Base Template ID for the current web</returns>
+        public static String GetBaseTemplateId(this Web parentWeb)
+        {
+            parentWeb.EnsureProperties(w => w.WebTemplate, w => w.Configuration);
+            return ($"{parentWeb.WebTemplate}#{parentWeb.Configuration}");
+        }
+
+        /// <summary>
         /// Adds a new child Web (site) to a parent Web.
         /// </summary>
         /// <param name="parentWeb">The parent Web (site) to create under</param>
@@ -57,7 +68,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
@@ -91,7 +102,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             var deleted = false;
@@ -168,7 +179,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
@@ -193,7 +204,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (leafUrl.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", "leafUrl");
+                throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
             parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
@@ -248,6 +259,8 @@ namespace Microsoft.SharePoint.Client
         public static bool WebExistsByTitle(this Web parentWeb, string title)
         {
             bool exists = false;
+            
+            parentWeb.EnsureProperty(p => p.Webs);
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
             if (subWeb != null)
@@ -264,7 +277,9 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True is sub site, false otherwise</returns>
         public static bool IsSubSite(this Web web)
         {
-            Site site = (web.Context as ClientContext).Site;
+            if (web == null) throw new ArgumentNullException(nameof(web));
+
+            var site = (web.Context as ClientContext).Site;
             var rootWeb = site.EnsureProperty(s => s.RootWeb);
 
             web.EnsureProperty(w => w.Id);
@@ -274,10 +289,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         public static bool IsPublishingWeb(this Web web)
@@ -406,7 +418,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+            Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
             site.Context.ExecuteQueryRetry();
 
 
@@ -416,7 +428,7 @@ namespace Microsoft.SharePoint.Client
             // NOTE: The lines below (in OfficeDev PnP) wipe/clear all items in the composed looks aka design catalog (_catalogs/design, list template 124).
             // The solution package should be loaded into the solutions catalog (_catalogs/solutions, list template 121).
 
-            Microsoft.SharePoint.Client.Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
+            Publishing.DesignPackage.Install(site.Context, site, packageInfo, packageServerRelativeUrl);
             site.Context.ExecuteQueryRetry();
 
             // Remove package from rootfolder
@@ -464,7 +476,7 @@ namespace Microsoft.SharePoint.Client
                     MinorVersion = minorVersion
                 };
 
-                Microsoft.SharePoint.Client.Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+                Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
                 site.Context.ExecuteQueryRetry();
             }
         }
@@ -810,7 +822,7 @@ namespace Microsoft.SharePoint.Client
         public static bool PropertyBagContainsKey(this Web web, string key)
         {
             web.AllProperties.ClearObjectData();
-            
+
             var props = web.AllProperties;
             web.Context.Load(props);
             web.Context.ExecuteQueryRetry();
@@ -847,13 +859,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static IEnumerable<string> GetIndexedPropertyBagKeys(this Web web)
         {
-            List<string> keys = new List<string>();
+            var keys = new List<string>();
 
             if (web.PropertyBagContainsKey(INDEXED_PROPERTY_KEY))
             {
-                foreach (string key in web.GetPropertyBagValueString(INDEXED_PROPERTY_KEY, "").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                foreach (var key in web.GetPropertyBagValueString(INDEXED_PROPERTY_KEY, "").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
                 {
-                    byte[] bytes = Convert.FromBase64String(key);
+                    var bytes = Convert.FromBase64String(key);
                     keys.Add(Encoding.Unicode.GetString(bytes));
                 }
             }
@@ -869,7 +881,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns True if succeeded</returns>
         public static bool AddIndexedPropertyBagKey(this Web web, string key)
         {
-            bool result = false;
+            var result = false;
             var keys = GetIndexedPropertyBagKeys(web).ToList();
             if (!keys.Contains(key))
             {
@@ -888,7 +900,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns True if succeeded</returns>
         public static bool RemoveIndexedPropertyBagKey(this Web web, string key)
         {
-            bool result = false;
+            var result = false;
             var keys = GetIndexedPropertyBagKeys(web).ToList();
             if (key.Contains(key))
             {
@@ -1137,8 +1149,8 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#region Request Access
-#if !ONPREMISES
+        #region Request Access
+        #if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1218,7 +1230,7 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-    #endif
-    #endregion
+        #endif
+        #endregion
     }
 }

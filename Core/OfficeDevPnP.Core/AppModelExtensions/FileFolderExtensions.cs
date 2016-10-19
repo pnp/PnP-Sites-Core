@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
@@ -146,9 +147,9 @@ namespace Microsoft.SharePoint.Client
         public static Folder ConvertFolderToDocumentSet(this List list, string folderName)
         {
             var folder = list.RootFolder.ResolveSubFolder(folderName);
-            if(folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
-            
-            return ConvertFolderToDocumentSetImplementation(list, folder);        
+            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+
+            return ConvertFolderToDocumentSetImplementation(list, folder);
         }
 
         /// <summary>
@@ -163,7 +164,7 @@ namespace Microsoft.SharePoint.Client
         /// </para>
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, Folder folder)
-        {                        
+        {
             return ConvertFolderToDocumentSetImplementation(list, folder);
         }
 
@@ -443,19 +444,21 @@ namespace Microsoft.SharePoint.Client
                 web.Context.Load(web, w => w.ServerRelativeUrl);
                 web.Context.ExecuteQueryRetry();
             }
-            
+
             var folderServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, webRelativeUrl, "/");
 
             // Check if folder is inside a list
             var listCollection = web.Lists;
-            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder)); 
+            web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder));
             web.Context.ExecuteQueryRetry();
 
             List containingList = null;
+
             foreach (var list in listCollection)
             {
-                if (folderServerRelativeUrl.StartsWith(UrlUtility.Combine(list.RootFolder.ServerRelativeUrl,"/"), StringComparison.InvariantCultureIgnoreCase))
+                if (folderServerRelativeUrl.StartsWith(UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, "/"), StringComparison.InvariantCultureIgnoreCase))
                 {
+                    // Load fields from the list
                     containingList = list;
                     break;
                 }
@@ -468,9 +471,7 @@ namespace Microsoft.SharePoint.Client
             if (containingList == null)
             {
                 locationType = "Web";
-                currentFolder = web.RootFolder;
-                web.Context.Load(currentFolder);
-                web.Context.ExecuteQueryRetry();
+                currentFolder = web.EnsureProperty(w => w.RootFolder);
             }
             else
             {
@@ -478,11 +479,12 @@ namespace Microsoft.SharePoint.Client
                 currentFolder = containingList.RootFolder;
             }
 
+            currentFolder.EnsureProperty(f => f.ServerRelativeUrl);
             rootUrl = currentFolder.ServerRelativeUrl;
 
             // Get remaining parts of the path and split
             var folderRootRelativeUrl = folderServerRelativeUrl.Substring(currentFolder.ServerRelativeUrl.Length);
-            var childFolderNames = folderRootRelativeUrl.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            var childFolderNames = folderRootRelativeUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
             var currentCount = 0;
 
             foreach (var folderName in childFolderNames)
@@ -508,10 +510,37 @@ namespace Microsoft.SharePoint.Client
                 {
                     var createPath = string.Join("/", childFolderNames, 0, currentCount);
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_CreateFolder0Under12, createPath, locationType, rootUrl);
+                    if (locationType == "List")
+                    {
+                        createPath = createPath.Substring(0, createPath.Length - folderName.Length).TrimEnd('/');
+                        var listUrl =
+                            containingList.EnsureProperty(f => f.RootFolder).EnsureProperty(r => r.ServerRelativeUrl);
+                        ListItemCreationInformation newFolderInfo = new ListItemCreationInformation();
+                        newFolderInfo.UnderlyingObjectType = FileSystemObjectType.Folder;
+                        newFolderInfo.LeafName = folderName;
+                        newFolderInfo.FolderUrl = UrlUtility.Combine(listUrl, createPath);
+                        ListItem newFolderItem = containingList.AddItem(newFolderInfo);
 
-                    nextFolder = folderCollection.Add(folderName);
-                    folderCollection.Context.Load(nextFolder);
-                    folderCollection.Context.ExecuteQueryRetry();
+                        var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
+                        web.Context.ExecuteQueryRetry();
+                        if (titleField.Any())
+                        {
+                            newFolderItem["Title"] = folderName;
+                        }
+
+                        newFolderItem.Update();
+                        containingList.Context.Load(newFolderItem);
+                        containingList.Context.ExecuteQueryRetry();
+                        nextFolder = web.GetFolderByServerRelativeUrl(UrlUtility.Combine(listUrl, createPath, folderName));
+                        containingList.Context.Load(nextFolder);
+                        containingList.Context.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        nextFolder = folderCollection.Add(folderName);
+                        folderCollection.Context.Load(nextFolder);
+                        folderCollection.Context.ExecuteQueryRetry();
+                    }
                 }
 
                 currentFolder = nextFolder;
@@ -966,12 +995,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (serverFile == null)
             {
-                throw new ArgumentNullException("serverFile");
+                throw new ArgumentNullException(nameof(serverFile));
             }
 
             if (localStream == null)
             {
-                throw new ArgumentNullException("localStream");
+                throw new ArgumentNullException(nameof(localStream));
             }
 
             byte[] serverHash = null;

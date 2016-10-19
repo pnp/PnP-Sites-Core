@@ -6,6 +6,8 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using User = OfficeDevPnP.Core.Framework.Provisioning.Model.User;
 using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Utilities;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using RoleDefinition = Microsoft.SharePoint.Client.RoleDefinition;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -21,15 +23,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // Changed by Paolo Pialorsi to embrace the new sub-site attributes for break role inheritance and copy role assignments
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
-                if (web.IsSubSite() && !template.Security.BreakRoleInheritance)
-                {
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
-                    return parser;
-                }
+                //if (web.IsSubSite() && !template.Security.BreakRoleInheritance)
+                //{
+                //    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning);
+                //    return parser;
+                //}
 
                 if (web.IsSubSite() && template.Security.BreakRoleInheritance)
                 {
                     web.BreakRoleInheritance(template.Security.CopyRoleAssignments, template.Security.ClearSubscopes);
+                    web.Update();
+                    web.Context.ExecuteQueryRetry();
                 }
 
                 var siteSecurity = template.Security;
@@ -47,20 +51,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope);
+                    AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope);
+                    AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope);
+                    AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
 
                 foreach (var siteGroup in siteSecurity.SiteGroups)
                 {
-                    Group group = null;
+                    Group group;
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
                     web.Context.ExecuteQueryRetry();
 
@@ -90,7 +94,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         }
                         group.Update();
+                        web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
+                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
                     }
                     else
                     {
@@ -150,19 +156,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (group != null && siteGroup.Members.Any())
                     {
-                        AddUserToGroup(web, group, siteGroup.Members, scope);
+                        AddUserToGroup(web, group, siteGroup.Members, scope, parser);
                     }
                 }
 
                 foreach (var admin in siteSecurity.AdditionalAdministrators)
                 {
-                    var user = web.EnsureUser(admin.Name);
+                    var parsedAdminName = parser.ParseString(admin.Name);
+                    var user = web.EnsureUser(parsedAdminName);
                     user.IsSiteAdmin = true;
                     user.Update();
                     web.Context.ExecuteQueryRetry();
                 }
 
-                if (siteSecurity.SiteSecurityPermissions != null)
+                if (!web.IsSubSite() && siteSecurity.SiteSecurityPermissions != null) // Only manage permissions levels on sitecol level
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -171,7 +178,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var templateRoleDefinition in siteSecurity.SiteSecurityPermissions.RoleDefinitions)
                         {
-                            var siteRoleDefinition = existingRoleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
+                            var roleDefinitions = existingRoleDefinitions as RoleDefinition[] ?? existingRoleDefinitions.ToArray();
+                            var siteRoleDefinition = roleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
                             if (siteRoleDefinition == null)
                             {
                                 scope.LogDebug("Creation role definition {0}", parser.ParseString(templateRoleDefinition.Name));
@@ -217,39 +225,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
+                }
 
-                    var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
-                    var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
-                    web.Context.ExecuteQueryRetry();
+                // Role Assignments can be managed in sub site.
+                var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
+                var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+                web.Context.ExecuteQueryRetry();
 
-                    if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
+                if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
+                {
+                    foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                     {
-                        foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
+                        Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+                        if (principal == null)
                         {
-                            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
-                            if (principal == null)
-                            {
-                                principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
-                            }
-
-                            var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
-
-                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
-
-                            if (roleDefinition != null)
-                            {
-                                roleDefinitionBindingCollection.Add(roleDefinition);
-                            }
-                            web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
-                            web.Context.ExecuteQueryRetry();
+                            principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
                         }
+
+                        var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
+
+                        var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
+
+                        if (roleDefinition != null)
+                        {
+                            roleDefinitionBindingCollection.Add(roleDefinition);
+                        }
+                        web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
             }
             return parser;
         }
 
-        private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope)
+        private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope, TokenParser parser)
         {
             if (members.Any())
             {
@@ -258,8 +267,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var user in members)
                     {
-                        scope.LogDebug("Adding user {0}", user.Name);
-                        var existingUser = web.EnsureUser(user.Name);
+                        var parsedUserName = parser.ParseString(user.Name);
+                        scope.LogDebug("Adding user {0}", parsedUserName);
+                        var existingUser = web.EnsureUser(parsedUserName);
                         group.Users.AddUser(existingUser);
 
                     }
@@ -370,8 +380,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     web.Context.ExecuteQueryRetry();
 
+                    if (web.IsSubSite())
+                    {
+                        WriteWarning("You are requesting to export sitegroups from a subweb. Notice that ALL sitegroups from the site collection are included in the result.", ProvisioningMessageType.Warning);
+                    }
                     foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
+                       
                         scope.LogDebug("Processing group {0}", group.Title);
                         var siteGroup = new SiteGroup()
                         {
@@ -399,34 +414,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (web.HasUniqueRoleAssignments)
                 {
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
-
-                    foreach (var webRoleDefinition in webRoleDefinitions)
+                    if (!web.IsSubSite())
                     {
-                        if (webRoleDefinition.RoleTypeKind == RoleType.None)
+                        foreach (var webRoleDefinition in webRoleDefinitions)
                         {
-                            scope.LogDebug("Processing custom role definition {0}", webRoleDefinition.Name);
-                            var modelRoleDefinitions = new Model.RoleDefinition();
-
-                            modelRoleDefinitions.Description = webRoleDefinition.Description;
-                            modelRoleDefinitions.Name = webRoleDefinition.Name;
-                            var permissions = new List<PermissionKind>();
-
-                            foreach (var permissionKey in permissionKeys)
+                            if (webRoleDefinition.RoleTypeKind == RoleType.None)
                             {
-                                var permissionKind = (PermissionKind)Enum.Parse(typeof(PermissionKind), permissionKey);
-                                if (webRoleDefinition.BasePermissions.Has(permissionKind))
+                                scope.LogDebug("Processing custom role definition {0}", webRoleDefinition.Name);
+                                var modelRoleDefinitions = new Model.RoleDefinition();
+
+                                modelRoleDefinitions.Description = webRoleDefinition.Description;
+                                modelRoleDefinitions.Name = webRoleDefinition.Name;
+
+                                foreach (var permissionKey in permissionKeys)
                                 {
-                                    modelRoleDefinitions.Permissions.Add(permissionKind);
+                                    var permissionKind =
+                                        (PermissionKind) Enum.Parse(typeof(PermissionKind), permissionKey);
+                                    if (webRoleDefinition.BasePermissions.Has(permissionKind))
+                                    {
+                                        modelRoleDefinitions.Permissions.Add(permissionKind);
+                                    }
                                 }
+                                siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
                             }
-                            siteSecurity.SiteSecurityPermissions.RoleDefinitions.Add(modelRoleDefinitions);
-                        }
-                        else
-                        {
-                            scope.LogDebug("Skipping OOTB role definition {0}", webRoleDefinition.Name);
+                            else
+                            {
+                                scope.LogDebug("Skipping OOTB role definition {0}", webRoleDefinition.Name);
+                            }
                         }
                     }
-
                     var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments.Include(
                         r => r.RoleDefinitionBindings.Include(
                             rd => rd.Name,
@@ -470,9 +486,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-
-                    template.Security = siteSecurity;
                 }
+
+                template.Security = siteSecurity;
+               
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
@@ -587,11 +604,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!_willProvision.HasValue)
             {
                 _willProvision = (template.Security.AdditionalAdministrators.Any() ||
-                    template.Security.AdditionalMembers.Any() ||
-                    template.Security.AdditionalOwners.Any() ||
-                    template.Security.AdditionalVisitors.Any() ||
-                    template.Security.SiteGroups.Any()) &&
-                    !web.IsSubSite();
+                                  template.Security.AdditionalMembers.Any() ||
+                                  template.Security.AdditionalOwners.Any() ||
+                                  template.Security.AdditionalVisitors.Any() ||
+                                  template.Security.SiteGroups.Any());
+                if (_willProvision == true)
+                {
+                    // if not subweb and site inheritance is not broken
+                    if (web.IsSubSite() && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
+                    {
+                        _willProvision = false;
+                    }
+                }
             }
 
             return _willProvision.Value;
@@ -602,7 +626,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = !web.IsSubSite();
+                if (web.IsSubSite() && web.EnsureProperty(w => w.HasUniqueRoleAssignments))
+                {
+                    _willExtract = true;
+                }
+                else
+                {
+                    _willExtract = !web.IsSubSite();
+                }
             }
             return _willExtract.Value;
         }
