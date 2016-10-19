@@ -101,6 +101,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
                         throw;
                     }
                 }

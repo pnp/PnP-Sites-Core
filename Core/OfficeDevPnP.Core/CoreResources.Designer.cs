@@ -206,11 +206,20 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
+        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
         /// </summary>
         internal static string ClientContextExtensions_ExecuteQueryRetry {
             get {
                 return ResourceManager.GetString("ClientContextExtensions_ExecuteQueryRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_ExecuteQueryRetryException {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_ExecuteQueryRetryException", resourceCulture);
             }
         }
         
@@ -265,6 +274,33 @@ namespace OfficeDevPnP.Core {
         internal static string FeatureExtensions_FeatureActivationProblem {
             get {
                 return ResourceManager.GetString("FeatureExtensions_FeatureActivationProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activation state for feature with id {1}  was {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActivationState {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActivationState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feature activation for {0} returned success..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActive {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureException {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureException", resourceCulture);
             }
         }
         

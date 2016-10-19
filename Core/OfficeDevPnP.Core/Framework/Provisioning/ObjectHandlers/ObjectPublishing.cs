@@ -324,22 +324,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.SetAvailableWebTemplates(availableWebTemplates);
                 }
-
-                // Set allowed page layouts
-                var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
-                if (availablePageLayouts.Any())
-                {
-                    web.SetAvailablePageLayouts(site.RootWeb, availablePageLayouts);
-                }
-
-                // Set default page layout, if any
-                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
-                if (defaultPageLayout != null)
-                {
-                    web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
-                }
-
-                if (template.Publishing.DesignPackage != null)
+				
+				if (template.Publishing.DesignPackage != null)
                 {
                     var package = template.Publishing.DesignPackage;
 
@@ -355,7 +341,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     scope.LogDebug("Installing design package");
                     site.InstallSolution(package.PackageGuid, tempFileName, package.MajorVersion, package.MinorVersion);
                     System.IO.File.Delete(tempFileName);
+	            }
+                // Set allowed page layouts
+                var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
+                if (availablePageLayouts.Any())
+                {
+                    web.SetAvailablePageLayouts(site.RootWeb, availablePageLayouts);
                 }
+
+                // Set default page layout, if any
+                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
+                if (defaultPageLayout != null)
+                {
+                    web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
+                }
+
+                
                 return parser;
             }
         }

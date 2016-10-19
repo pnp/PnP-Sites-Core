@@ -919,7 +919,7 @@
     <value>Could not find content type with id: {0}</value>
   </data>
   <data name="ClientContextExtensions_ExecuteQueryRetry" xml:space="preserve">
-    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.</value>
+    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
   </data>
   <data name="Provisioning_Connectors_OpenXML_FileDeleted" xml:space="preserve">
     <value>File {0} deleted from folder {1}</value>
@@ -975,5 +975,17 @@
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference" xml:space="preserve">
     <value>The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActivationState" xml:space="preserve">
+    <value>Activation state for feature with id {1}  was {0}.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActive" xml:space="preserve">
+    <value>Feature activation for {0} returned success.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureException" xml:space="preserve">
+    <value>Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}.</value>
+  </data>
+  <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
+    <value>ExecuteQuery threw following exception: {0}.</value>
   </data>
 </root>

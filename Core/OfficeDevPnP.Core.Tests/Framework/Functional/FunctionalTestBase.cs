@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -270,6 +271,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             };
 
             tenant.CreateSiteCollection(siteToCreate);
+
+            // Create the default groups
+            using (ClientContext cc = new ClientContext(siteToCreateUrl))
+            {
+                var owners = cc.Web.AddGroup("Test Owners", "", true, false);
+                var members = cc.Web.AddGroup("Test Members", "", true, false);
+                var visitors = cc.Web.AddGroup("Test Visitors", "", true, true);
+
+                cc.Web.AssociateDefaultGroups(owners, members, visitors);
+            }
+
             return siteToCreateUrl;
         }
 

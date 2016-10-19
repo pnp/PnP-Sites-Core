@@ -56,15 +56,18 @@ namespace Microsoft.SharePoint.Client
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
 
-            if (wait)
-            {
-                WaitForIsComplete(tenant, op);
-            }
-
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
             Guid siteGuid = Guid.Empty;
+
             if (wait)
             {
+                // Let's poll for site collection creation completion
+                WaitForIsComplete(tenant, op);
+
+                // Add delay to avoid race conditions
+                Thread.Sleep(30 * 1000);
+
+                // Return site guid of created site collection
                 siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
             }
             return siteGuid;

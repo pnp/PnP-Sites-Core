@@ -336,6 +336,7 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\FilesTests.cs" />
     <Compile Include="Framework\Functional\ListTests.cs" />
     <Compile Include="Framework\Functional\ComposedLookTest.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
@@ -344,13 +345,22 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\PagesTests.cs" />
+    <Compile Include="Framework\Functional\PublishingTest.cs" />
+    <Compile Include="Framework\Functional\SecurityTests.cs" />
+    <Compile Include="Framework\Functional\SitePolicyTests.cs" />
     <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
     <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
     <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
     <Compile Include="Framework\Functional\LanguageTests.cs" />
     <Compile Include="Framework\Functional\TermGroupTests.cs" />
+    <Compile Include="Framework\Functional\Validators\WorkflowValidator.cs" />
     <Compile Include="Framework\Functional\WebSettingsTests.cs" />
     <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
     <Compile Include="Framework\Functional\SearchSettingTests.cs" />
@@ -363,6 +373,7 @@
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FieldValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\PublishingValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ValidateXmlEventArgs.cs" />
     <Compile Include="Framework\Functional\Validators\ValidateEventArgs.cs" />
     <Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
@@ -370,6 +381,7 @@
     <Compile Include="Framework\Functional\PropertyBagTests.cs" />
     <Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
     <Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
+    <Compile Include="Framework\Functional\WorkflowsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
@@ -423,6 +435,11 @@
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\oslo.preview">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
+    <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -437,6 +454,10 @@
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
     <Content Include="Framework\Functional\Templates\regionalsettings_delta_1.xml" />
+    <Content Include="Framework\Functional\Templates\files_add.xml" />
+    <Content Include="Framework\Functional\Templates\pages_add.xml" />
+    <Content Include="Framework\Functional\Templates\security_add.xml" />
+    <Content Include="Framework\Functional\Templates\sitepolicy_add.xml" />
     <Content Include="Framework\Functional\Templates\termgroup_add.xml">
       <SubType>Designer</SubType>
     </Content>
@@ -516,6 +537,8 @@
     <Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
+    <Content Include="Framework\Functional\Templates\publishing_add.xml" />
+    <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -573,7 +596,12 @@
       <SubType>ASPXCodeBehind</SubType>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Framework\Functional\Templates\PnPworkflow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

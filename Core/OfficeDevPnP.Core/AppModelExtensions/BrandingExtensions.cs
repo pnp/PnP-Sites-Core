@@ -1467,49 +1467,101 @@ namespace Microsoft.SharePoint.Client
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
         public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            EnableResponsiveUIImplementation(web, infrastructureUrl);
+        }
 
-            var linkUrl = string.Empty;
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Site
+        /// </summary>
+        /// <param name="site">The Site to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        public static void EnableResponsiveUI(this Site site, string infrastructureUrl = null)
+        {
+            EnableResponsiveUIImplementation(site, infrastructureUrl);
+        }
 
-            if (!string.IsNullOrEmpty(infrastructureUrl))
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Web or Site
+        /// </summary>
+        /// <param name="clientObject">The Web or Site to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        private static void EnableResponsiveUIImplementation(ClientObject clientObject, string infrastructureUrl = null)
+        {
+            // Double-check that we are targeting a Web or a Site
+            if (clientObject is Web || clientObject is Site)
             {
-                using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                Web web = null;
+                Site site = null;
+
+                // If the target is a Web
+                if (clientObject is Web)
                 {
-                    var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
-                    // Check if the file is there, if so, don't upload it.
-                    var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
-                    if (jsFile == null)
+                    // Get it
+                    web = ((Web)clientObject);
+                }
+                else
+                {
+                    // Otherwise get both the Site and the Web
+                    site = ((Site)clientObject);
+                    web = site.EnsureProperty(s => s.RootWeb);
+                }
+
+                if (web != null)
+                {
+                    web.EnsureProperty(w => w.ServerRelativeUrl);
+
+                    var linkUrl = string.Empty;
+
+                    if (!string.IsNullOrEmpty(infrastructureUrl))
                     {
-                        linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                            CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                        using (var infrastructureContext = web.Context.Clone(infrastructureUrl))
+                        {
+                            var targetFolder = infrastructureContext.Web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+                            // Check if the file is there, if so, don't upload it.
+                            var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
+                            if (jsFile == null)
+                            {
+                                linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                    CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                            }
+                            else
+                            {
+                                jsFile.EnsureProperty(f => f.ServerRelativeUrl);
+                                linkUrl = jsFile.ServerRelativeUrl;
+                            }
+
+                            // Check if the file is there, if so, don't upload it.
+                            if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
+                            {
+                                UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                    CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                            }
+                        }
                     }
                     else
                     {
-                        jsFile.EnsureProperty(f => f.ServerRelativeUrl);
-                        linkUrl = jsFile.ServerRelativeUrl;
+                        var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
+
+                        linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                        UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
                     }
 
-                    // Check if the file is there, if so, don't upload it.
-                    if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
+                    // Deactive mobile feature
+                    web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
+                    if (!string.IsNullOrEmpty(linkUrl))
                     {
-                        UploadStringAsFile(infrastructureContext.Web, targetFolder,
-                            CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                        if (site != null)
+                        {
+                            // If we have the Site enable the responsive UI site-wide
+                            site.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                        }
+                        else
+                        {
+                            // Otherwise just target the Web
+                            web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
+                        }
                     }
                 }
-            }
-            else
-            {
-                var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
-
-                linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
-                UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
-            }
-
-            // Deactive mobile feature
-            web.DeactivateFeature(new Guid("d95c97f3-e528-4da2-ae9f-32b3535fbb59"));
-            if (!string.IsNullOrEmpty(linkUrl))
-            {
-                web.AddJsLink("PnPResponsiveUI", linkUrl, 0);
             }
         }
 
@@ -1540,12 +1592,28 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">The Web to disable the Responsive UI on</param>
         public static void DisableReponsiveUI(this Web web)
         {
             try
             {
                 web.DeleteJsLink("PnPResponsiveUI");
+            }
+            catch
+            {
+                // Swallow exception as responsive UI might not be active.
+            }
+        }
+
+        /// <summary>
+        /// Disables the Responsive UI on a Classic SharePoint Site
+        /// </summary>
+        /// <param name="site">The Site to disable the Responsive UI on</param>
+        public static void DisableReponsiveUI(this Site site)
+        {
+            try
+            {
+                site.DeleteJsLink("PnPResponsiveUI");
             }
             catch
             {
