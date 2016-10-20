@@ -773,7 +773,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverRelativeUrl">The server relative url to the file</param>
         /// <param name="localPath">The local folder</param>
         /// <param name="localFileName">The local filename. If null the filename of the file on the server will be used</param>
-        public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null)
+        /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
+        public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string,bool> fileExistsCallBack = null)
         {
             var clientContext = web.Context as ClientContext;
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
@@ -793,10 +794,25 @@ namespace Microsoft.SharePoint.Client
             {
                 fileOut = Path.Combine(localPath, file.Name);
             }
+            var doSave = false;
 
-            using (Stream fileStream = new FileStream(fileOut, FileMode.Create))
+            if (fileExistsCallBack != null)
             {
-                CopyStream(stream.Value, fileStream);
+                if (System.IO.File.Exists(fileOut))
+                {
+                    doSave = fileExistsCallBack(fileOut);
+                }
+            }
+            else
+            {
+                doSave = true;
+            }
+            if (doSave)
+            {
+                using (Stream fileStream = new FileStream(fileOut, FileMode.Create))
+                {
+                    CopyStream(stream.Value, fileStream);
+                }
             }
         }
 
@@ -950,7 +966,7 @@ namespace Microsoft.SharePoint.Client
             var file = folder.Files.GetByUrl(serverRelativeUrl);
             folder.Context.Load(file);
             folder.Context.ExecuteQueryRetry();
-
+            
             return file;
         }
 
@@ -980,7 +996,7 @@ namespace Microsoft.SharePoint.Client
                 var context = folder.Context as ClientContext;
 
                 var web = context.Web;
-
+                
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
                 folder.Context.Load(file);
                 folder.Context.ExecuteQueryRetry();
