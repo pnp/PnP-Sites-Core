@@ -225,32 +225,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
+                }
 
-                    var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
-                    var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
-                    web.Context.ExecuteQueryRetry();
+                // Role Assignments can be managed in sub site.
+                var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
+                var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+                web.Context.ExecuteQueryRetry();
 
-                    if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
+                if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
+                {
+                    foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                     {
-                        foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
+                        Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+                        if (principal == null)
                         {
-                            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
-                            if (principal == null)
-                            {
-                                principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
-                            }
-
-                            var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
-
-                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
-
-                            if (roleDefinition != null)
-                            {
-                                roleDefinitionBindingCollection.Add(roleDefinition);
-                            }
-                            web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
-                            web.Context.ExecuteQueryRetry();
+                            principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
                         }
+
+                        var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
+
+                        var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
+
+                        if (roleDefinition != null)
+                        {
+                            roleDefinitionBindingCollection.Add(roleDefinition);
+                        }
+                        web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
             }
