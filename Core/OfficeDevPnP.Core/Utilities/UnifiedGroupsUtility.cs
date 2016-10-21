@@ -154,7 +154,7 @@ namespace OfficeDevPnP.Core.Utilities
                     MailNickname = mailNickname,
                     MailEnabled = true,
                     SecurityEnabled = false,
-                    GroupTypes = new List<string> { "Unified" },
+                    GroupTypes = new List<string> { "Unified" },  
                 };
 
                 var retry = false;
@@ -362,6 +362,156 @@ namespace OfficeDevPnP.Core.Utilities
                 } while (retry && retryCount > 0);
 
             }).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Get an Office 365 Group (i.e. Unified Group) by Id
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken,
+            int retryCount = 10, int delay = 500)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException("groupId");
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException("accessToken");
+            }
+
+            // Use a synchronous model to invoke the asynchronous process
+            var result = Task.Run(async () =>
+            {
+                UnifiedGroupEntity group = null;
+
+                var graphClient = CreateGraphClient(accessToken);
+
+                var retry = false;
+
+                do
+                {
+                    try
+                    {
+                        var g = await graphClient.Groups[groupId].Request().GetAsync();
+
+                        group = new UnifiedGroupEntity
+                        {
+                            GroupId = g.Id,
+                            DisplayName = g.DisplayName,
+                            Description = g.Description,
+                            Mail = g.Mail,
+                            MailNickname = g.MailNickname,
+                            SiteUrl = GetUnifiedGroupSiteUrl(groupId, accessToken),
+                        };
+
+                    }
+                    catch (ServiceException ex)
+                    {
+                        Console.WriteLine(ex.Error);
+                        if (ex.IsMatch(GraphErrorCode.AccessDenied.ToString()))
+                        {
+                            Console.WriteLine("Access Denied! Fix your permissions ...");
+                        }
+                        else if (ex.IsMatch(GraphErrorCode.ThrottledRequest.ToString()))
+                        {
+                            // We've got throttled, let's retry
+                            Thread.Sleep(TimeSpan.FromMilliseconds(delay));
+                            retryCount--;
+                            delay = delay * 2;
+                            retry = true;
+                        }
+                    }
+                } while (retry && retryCount > 0);
+
+                return (group);
+
+            }).GetAwaiter().GetResult();
+
+            return (result);
+        }
+
+        /// <summary>
+        /// Get an Office 365 Group (i.e. Unified Group) by Display Name
+        /// </summary>
+        /// <param name="displayName">The DisplayName of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        public static UnifiedGroupEntity GetUnifiedGroupByDisplayName(String displayName, String accessToken,
+            int retryCount = 10, int delay = 500)
+        {
+            if (String.IsNullOrEmpty(displayName))
+            {
+                throw new ArgumentNullException("displayName");
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException("accessToken");
+            }
+
+            // Use a synchronous model to invoke the asynchronous process
+            var result = Task.Run(async () =>
+            {
+                UnifiedGroupEntity group = null;
+
+                var graphClient = CreateGraphClient(accessToken);
+
+                var retry = false;
+
+                do
+                {
+                    try
+                    {
+                        var groups = await graphClient.Groups
+                            .Request()
+                            .Filter($"DisplayName contains '{displayName}'")
+                            .Top(1)
+                            .GetAsync();
+
+                        if (groups != null)
+                        {
+                            var g = groups.FirstOrDefault();
+
+                            group = new UnifiedGroupEntity
+                            {
+                                GroupId = g.Id,
+                                DisplayName = g.DisplayName,
+                                Description = g.Description,
+                                Mail = g.Mail,
+                                MailNickname = g.MailNickname,
+                                SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken),
+                            };
+                        }
+                    }
+                    catch (ServiceException ex)
+                    {
+                        Console.WriteLine(ex.Error);
+                        if (ex.IsMatch(GraphErrorCode.AccessDenied.ToString()))
+                        {
+                            Console.WriteLine("Access Denied! Fix your permissions ...");
+                        }
+                        else if (ex.IsMatch(GraphErrorCode.ThrottledRequest.ToString()))
+                        {
+                            // We've got throttled, let's retry
+                            Thread.Sleep(TimeSpan.FromMilliseconds(delay));
+                            retryCount--;
+                            delay = delay * 2;
+                            retry = true;
+                        }
+                    }
+                } while (retry && retryCount > 0);
+
+                return (group);
+
+            }).GetAwaiter().GetResult();
+
+            return (result);
         }
 
         /// <summary>
