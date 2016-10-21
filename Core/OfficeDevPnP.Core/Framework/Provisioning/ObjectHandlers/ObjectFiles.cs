@@ -119,11 +119,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
 
-                        if (checkedOut)
-                        {
-                            targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        //OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel string values map to Microsoft.SharePoint.Client.FileLevel
+                        targetFile.PublishFileToLevel((Microsoft.SharePoint.Client.FileLevel)Enum.Parse(typeof(Microsoft.SharePoint.Client.FileLevel), file.Level.ToString()));
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
                         if (file.Security != null &&
