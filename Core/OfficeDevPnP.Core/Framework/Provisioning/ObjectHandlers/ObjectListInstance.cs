@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var fieldRef in listInfo.TemplateList.FieldRefs)
                             {
-                                var field = rootWeb.GetFieldById<Field>(fieldRef.Id);
+                                var field = rootWeb.GetFieldById(fieldRef.Id);
                                 if (field == null)
                                 {
                                     // log missing referenced field
@@ -552,6 +552,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             element.SetAttributeValue("AllowDeletion", "TRUE");
 
+            var calculatedField = field as FieldCalculated;
+            if(calculatedField != null)
+            {
+                if (element.Element("Formula") != null)
+                {
+                    element.Element("Formula").Value = calculatedField.Formula;
+                }
+            }
+
             field.SchemaXml = element.ToString();
 
             var createdField = listInfo.SiteList.Fields.Add(field);
@@ -674,6 +683,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingFieldElement.Add(element);
                         }
 
+                        if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var fieldRefsElement = GetElement(existingFieldElement.Elements(), "FieldRefs");
+                            if (fieldRefsElement != null)
+                            {
+                                fieldRefsElement.Remove();
+                            }
+                        }
+
                         if (existingFieldElement.Attribute("Version") != null)
                         {
                             existingFieldElement.Attributes("Version").Remove();
@@ -727,6 +745,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return field;
+        }
+
+        private XElement GetElement(IEnumerable<XElement> elements, string elementName)
+        {
+            foreach (XElement element in elements)
+            {
+                if (element.Name.LocalName == elementName)
+                {
+                    return element;
+                }
+            }
+            return null;
         }
 
         private static XElement PrepareField(XElement fieldElement)

@@ -118,6 +118,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingFieldElement.Add(element);
                         }
 
+                        if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var fieldRefsElement = GetElement(existingFieldElement.Elements(), "FieldRefs");
+                            if (fieldRefsElement != null)
+                            {
+                                fieldRefsElement.Remove();
+                            }
+                        }
+
                         if (existingFieldElement.Attribute("Version") != null)
                         {
                             existingFieldElement.Attributes("Version").Remove();
@@ -173,6 +182,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+        }
+
+        private static XElement GetElement(IEnumerable<XElement> elements, string elementName)
+        {
+            foreach (XElement element in elements)
+            {
+                if (element.Name.LocalName == elementName)
+                {
+                    return element;
+                }
+            }
+            return null;
         }
 
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
@@ -348,6 +369,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 var taxTextFieldsToMoveUp = new List<Guid>();
+                var calculatedFieldsToMoveDown = new List<Guid>();
 
                 foreach (var field in existingFields)
                 {
@@ -399,6 +421,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (element.Attribute("Type").Value == "Calculated")
                         {
                             fieldXml = TokenizeFieldFormula(fieldXml);
+                            calculatedFieldsToMoveDown.Add(field.Id);
                         }
                         if (creationInfo.PersistMultiLanguageResources)
                         {
@@ -443,6 +466,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.Insert(0, field);
+                }
+                // move calculated fields to the bottom of the list
+                // this will not be sufficient in the case of a calculated field is referencing another calculated field
+                foreach (var calculatedFieldId in calculatedFieldsToMoveDown)
+                {
+                    var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(calculatedFieldId));
+                    template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(calculatedFieldId));
+                    template.SiteFields.Add(field);
                 }
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
