@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
                         {
-                            var fieldRefsElement = GetElement(existingFieldElement.Elements(), "FieldRefs");
+                            var fieldRefsElement = existingFieldElement.Descendants("FieldRefs").FirstOrDefault();
                             if (fieldRefsElement != null)
                             {
                                 fieldRefsElement.Remove();
@@ -184,16 +184,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static XElement GetElement(IEnumerable<XElement> elements, string elementName)
+        /// <summary>
+        /// Tokenizes calculated fieldXml to use tokens for field references
+        /// </summary>
+        /// <param name="fields">the field collection that the field is contained within</param>
+        /// <param name="field">the field to tokenize</param>
+        /// <param name="fieldXml">the xml to tokenize</param>
+        /// <returns></returns>
+        internal static string TokenizeFieldFormula(Microsoft.SharePoint.Client.FieldCollection fields, FieldCalculated field, string fieldXml)
         {
-            foreach (XElement element in elements)
+            var schemaElement = XElement.Parse(fieldXml);
+
+            var formulaElement = schemaElement.Descendants("Formula").FirstOrDefault();
+
+            if (formulaElement != null)
             {
-                if (element.Name.LocalName == elementName)
+                field.EnsureProperty(f => f.Formula);
+
+                var formulastring = field.Formula;
+
+                if (formulastring != null)
                 {
-                    return element;
+                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    foreach (var fieldRef in fieldRefs)
+                    {
+                        var fieldInternalName = fieldRef.Attribute("Name").Value;
+                        var referencedField = fields.GetFieldByInternalName(fieldInternalName);
+                        formulastring = formulastring.Replace(string.Format("[{0}]", referencedField.Title), string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                    }
+                    var fieldRefParent = schemaElement.Descendants("FieldRefs");
+                    fieldRefParent.Remove();
+
+                    formulaElement.Value = formulastring;
                 }
             }
-            return null;
+            return schemaElement.ToString();
         }
 
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
@@ -420,7 +445,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         if (element.Attribute("Type").Value == "Calculated")
                         {
-                            fieldXml = TokenizeFieldFormula(fieldXml);
+                            fieldXml = TokenizeFieldFormula(web.Fields, (FieldCalculated)field, fieldXml);
                             calculatedFieldsToMoveDown.Add(field.Id);
                         }
                         if (creationInfo.PersistMultiLanguageResources)

@@ -269,7 +269,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to be processed. Columns assoc in lists are defined on web or rootweb.</param>
         /// <param name="fieldId">Guid for the field ID</param>
-        /// <returns>Field of type TField</returns>
+        /// <returns>Field</returns>
         public static Field GetFieldById(this List list, Guid fieldId)
         {
             var fields = list.Context.LoadQuery(list.Fields.Where(f => f.Id == fieldId));
@@ -285,6 +285,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fields">FieldCollection to be processed.</param>
         /// <param name="internalName">Guid for the field ID</param>
         /// <returns>Field of type TField</returns>
+        [Obsolete("Use GetFieldByInternalName instead. This method returns field based on StaticName. This could lead to unexpected results due to StaticName property not necessarily being unique within a field collection. (https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spfield.staticname.aspx)")]
         public static TField GetFieldByName<TField>(this FieldCollection fields, string internalName) where TField : Field
         {
             var field = fields.GetFieldByName(internalName);
@@ -296,7 +297,8 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="fields">FieldCollection to be processed.</param>
         /// <param name="internalName">Guid for the field ID</param>
-        /// <returns>Field of type TField</returns>
+        /// <returns>Field</returns>
+        [Obsolete("Use GetFieldByInternalName instead. This method returns field based on StaticName. This could lead to unexpected results due to StaticName property not necessarily being unique within a field collection. (https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spfield.staticname.aspx)")]
         public static Field GetFieldByName(this FieldCollection fields, string internalName)
         {
             if (!fields.ServerObjectIsNull.HasValue ||
@@ -307,6 +309,36 @@ namespace Microsoft.SharePoint.Client
             }
 
             return fields.FirstOrDefault(f => f.StaticName == internalName);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <typeparam name="TField">The selected field type to return.</typeparam>
+        /// <param name="fields">FieldCollection to be processed.</param>
+        /// <param name="internalName">Internal name of the field</param>
+        /// <returns>Field of type TField</returns>
+        public static TField GetFieldByInternalName<TField>(this FieldCollection fields, string internalName) where TField : Field
+        {
+            var field = fields.GetFieldByInternalName(internalName);
+            return field == null ? null : fields.Context.CastTo<TField>(field);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <param name="fields">FieldCollection to be processed.</param>
+        /// <param name="internalName">Internal name of the field</param>
+        /// <returns>Field</returns>
+        public static Field GetFieldByInternalName(this FieldCollection fields, string internalName)
+        {
+            if (!fields.ServerObjectIsNull.HasValue ||
+                fields.ServerObjectIsNull.Value)
+            {
+                fields.Context.Load(fields);
+                fields.Context.ExecuteQueryRetry();
+            }
+            return fields.FirstOrDefault(f => f.InternalName == internalName);
         }
 
         /// <summary>

@@ -685,7 +685,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
                         {
-                            var fieldRefsElement = GetElement(existingFieldElement.Elements(), "FieldRefs");
+                            var fieldRefsElement = existingFieldElement.Descendants("FieldRefs").FirstOrDefault();
                             if (fieldRefsElement != null)
                             {
                                 fieldRefsElement.Remove();
@@ -745,18 +745,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return field;
-        }
-
-        private XElement GetElement(IEnumerable<XElement> elements, string elementName)
-        {
-            foreach (XElement element in elements)
-            {
-                if (element.Name.LocalName == elementName)
-                {
-                    return element;
-                }
-            }
-            return null;
         }
 
         private static XElement PrepareField(XElement fieldElement)
@@ -1740,7 +1728,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (fieldElement.Attribute("Type").Value == "Calculated")
                     {
-                        schemaXml = TokenizeFieldFormula(schemaXml);
+                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
                     }
 
                     if (creationInfo.PersistMultiLanguageResources)
