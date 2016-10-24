@@ -380,7 +380,8 @@
     <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
     <Compile Include="AppModelExtensions\TenantExtensions.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
-    <Compile Include="Utilities\UnifiedGroupsUtility.cs" />
+    <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
+    <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
     <Compile Include="AppModelExtensions\VariationExtensions.cs" />
     <Compile Include="AppModelExtensions\WorkflowExtensions.cs" />
     <Compile Include="AuthenticationManager.cs" />
