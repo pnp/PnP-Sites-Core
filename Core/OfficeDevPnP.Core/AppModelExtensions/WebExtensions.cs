@@ -327,6 +327,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if noscript, false otherwise</returns>
         public static bool IsNoScriptSite(this Web web)
         {
+#if !ONPREMISES
             string[] NoScriptSiteTemplates = new string[] { "GROUP" };
             web.EnsureProperties(w => w.WebTemplate, w => w.NoCrawl);
 
@@ -360,6 +361,9 @@ namespace Microsoft.SharePoint.Client
             }
 
             return false;
+#else
+            return false;
+#endif
         }
 
         private static string UploadStringAsFile(Web web, Folder folder, string contents, string fileName)
@@ -452,9 +456,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-        #endregion
+#endregion
 
-        #region Apps and sandbox solutions
+#region Apps and sandbox solutions
 
         /// <summary>
         /// Returns all app instances
@@ -596,9 +600,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
-        #region Site retrieval via search
+#region Site retrieval via search
         /// <summary>
         /// Returns all my site site collections
         /// </summary>
@@ -746,9 +750,9 @@ namespace Microsoft.SharePoint.Client
 
             return totalRows;
         }
-        #endregion
+#endregion
 
-        #region Web (site) Property Bag Modifiers
+#region Web (site) Property Bag Modifiers
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -1033,9 +1037,9 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region Search
+#region Search
 
         /// <summary>
         /// Queues a web for a full crawl the next incremental crawl
@@ -1050,9 +1054,9 @@ namespace Microsoft.SharePoint.Client
             }
             web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
         }
-        #endregion
+#endregion
 
-        #region Events
+#region Events
 
 
         /// <summary>
@@ -1167,9 +1171,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
-        #region Localization
+#region Localization
 #if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
@@ -1193,9 +1197,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 #endif
-        #endregion
+#endregion
 
-        #region TemplateHandling
+#region TemplateHandling
 
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
@@ -1234,9 +1238,9 @@ namespace Microsoft.SharePoint.Client
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
 
-        #endregion
+#endregion
 
-        #region Output Cache
+#region Output Cache
 
         /// <summary>
         /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
@@ -1262,10 +1266,10 @@ namespace Microsoft.SharePoint.Client
             web.SetPropertyBagValue("EnableDebuggingOutput", debugCacheInformation.ToString());
         }
 
-        #endregion
+#endregion
 
-        #region Request Access
-        #if !ONPREMISES
+#region Request Access
+#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1345,7 +1349,7 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-        #endif
-        #endregion
+#endif
+#endregion
     }
 }

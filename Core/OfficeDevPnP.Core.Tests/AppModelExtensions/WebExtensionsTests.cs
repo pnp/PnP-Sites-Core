@@ -51,8 +51,8 @@ namespace Microsoft.SharePoint.Client.Tests
 
             // Implement cleanup mechanism that cleans test stranglers + also cleans up the NoMobileMapping key that's generated per created sub site
             List<string> keysToDelete = new List<string>(10);
-            foreach(var prop in props.FieldValues)
-            {                
+            foreach (var prop in props.FieldValues)
+            {
                 if (prop.Key.StartsWith("TEST_KEY_", StringComparison.InvariantCultureIgnoreCase) ||
                     prop.Key.StartsWith("TEST_VALUE_", StringComparison.InvariantCultureIgnoreCase) ||
                     prop.Key.StartsWith("__NoMobileMapping", StringComparison.InvariantCultureIgnoreCase))
@@ -393,6 +393,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region NoScript tests
+#if !ONPREMISES
         [TestMethod]
         public void IsNoScriptSiteTest()
         {
@@ -450,6 +451,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
+#endif
         #endregion
 
         #region App instance tests
