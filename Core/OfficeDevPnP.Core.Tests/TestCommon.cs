@@ -115,6 +115,20 @@ namespace OfficeDevPnP.Core.Tests
                 return ConfigurationManager.AppSettings["AzureADClientId"];
             }
         }
+        public static String NoScriptSite
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["NoScriptSite"];
+            }
+        }
+        public static String ScriptSite
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["ScriptSite"];
+            }
+        }
         #endregion
 
         #region Methods

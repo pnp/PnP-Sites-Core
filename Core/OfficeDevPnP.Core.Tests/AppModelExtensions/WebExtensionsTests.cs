@@ -381,7 +381,6 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region Provisioning Tests
-
         [TestMethod]
         public void GetProvisioningTemplateTest()
         {
@@ -390,6 +389,66 @@ namespace Microsoft.SharePoint.Client.Tests
                 var template = clientContext.Web.GetProvisioningTemplate();
                 Assert.IsInstanceOfType(template, typeof(ProvisioningTemplate));
             }
+        }
+        #endregion
+
+        #region NoScript tests
+        [TestMethod]
+        public void IsNoScriptSiteTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.NoScriptSite))
+            {
+                Assert.Inconclusive("The NoScriptSite key was not set, test can't be executed.");
+            }
+
+            string devSiteUrl = TestCommon.DevSiteUrl;
+            string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, TestCommon.NoScriptSite);
+
+            using (var clientContext = TestCommon.CreateClientContext(siteToCreateUrl))
+            {
+                var isNoScriptSite = clientContext.Web.IsNoScriptSite();
+                Assert.IsTrue(isNoScriptSite);
+
+                isNoScriptSite = clientContext.Site.IsNoScriptSite();
+                Assert.IsTrue(isNoScriptSite);
+            }
+        }
+
+        [TestMethod]
+        public void IsScriptSiteTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.ScriptSite))
+            {
+                Assert.Inconclusive("The ScriptSite key was not set, test can't be executed.");
+            }
+
+            string devSiteUrl = TestCommon.DevSiteUrl;
+            string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, TestCommon.ScriptSite);
+
+            using (var clientContext = TestCommon.CreateClientContext(siteToCreateUrl))
+            {
+                var isNoScriptSite = clientContext.Web.IsNoScriptSite();
+                Assert.IsFalse(isNoScriptSite);
+
+                isNoScriptSite = clientContext.Site.IsNoScriptSite();
+                Assert.IsFalse(isNoScriptSite);
+            }
+        }
+
+
+        private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
+        {
+            Uri u = new Uri(devSiteUrl);
+            string host = String.Format("{0}://{1}", u.Scheme, u.DnsSafeHost);
+
+            string path = u.AbsolutePath;
+            if (path.EndsWith("/"))
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+            path = path.Substring(0, path.LastIndexOf('/'));
+
+            return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
         #endregion
 
