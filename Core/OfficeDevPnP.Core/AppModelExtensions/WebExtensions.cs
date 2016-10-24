@@ -83,7 +83,11 @@ namespace Microsoft.SharePoint.Client
             };
 
             Web newWeb = parentWeb.Webs.Add(creationInfo);
-            newWeb.Navigation.UseShared = inheritNavigation;
+
+            if (!parentWeb.IsNoScriptSite())
+            {
+                newWeb.Navigation.UseShared = inheritNavigation;
+            }
             newWeb.Update();
 
             parentWeb.Context.ExecuteQueryRetry();
