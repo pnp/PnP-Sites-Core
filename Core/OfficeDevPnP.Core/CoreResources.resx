@@ -988,4 +988,7 @@
   <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
     <value>ExecuteQuery threw following exception: {0}.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Files_SkipFileUpload" xml:space="preserve">
+    <value>Skipping upload of file '{0}' to '{1}'.</value>
+  </data>
 </root>

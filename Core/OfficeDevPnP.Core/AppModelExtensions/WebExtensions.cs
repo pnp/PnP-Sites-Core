@@ -333,7 +333,7 @@ namespace Microsoft.SharePoint.Client
         {
 #if !ONPREMISES
             string[] NoScriptSiteTemplates = new string[] { "GROUP" };
-            web.EnsureProperties(w => w.WebTemplate, w => w.NoCrawl);
+            web.EnsureProperties(w => w.WebTemplate);
 
             if (NoScriptSiteTemplates.Contains(web.WebTemplate))
             {

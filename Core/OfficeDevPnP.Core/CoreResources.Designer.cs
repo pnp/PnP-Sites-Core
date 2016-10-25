@@ -1236,6 +1236,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping upload of file &apos;{0}&apos; to &apos;{1}&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Files_SkipFileUpload {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Files_SkipFileUpload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uploading and overwriting existing file {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_ {
