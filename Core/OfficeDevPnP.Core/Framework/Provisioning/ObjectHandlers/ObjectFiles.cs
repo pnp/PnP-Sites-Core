@@ -119,8 +119,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
 
-                        //OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel string values map to Microsoft.SharePoint.Client.FileLevel
-                        targetFile.PublishFileToLevel((Microsoft.SharePoint.Client.FileLevel)Enum.Parse(typeof(Microsoft.SharePoint.Client.FileLevel), file.Level.ToString()));
+                        switch (file.Level)
+                        {
+                            case Model.FileLevel.Published:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Published);
+                                    break;
+                                }
+                            case Model.FileLevel.Draft:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Draft);
+                                    break;
+                                }
+                            default:
+                                {
+                                    if (checkedOut)
+                                    {
+                                        targetFile.CheckIn("", CheckinType.MajorCheckIn);
+                                        web.Context.ExecuteQueryRetry();
+                                    }
+                                    break;
+                                }
+                        }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
                         if (file.Security != null &&
@@ -200,14 +220,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var propertyName = kvp.Key;
                     var propertyValue = kvp.Value;
-                    
+
                     var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
                     targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
 
                     // Changed by PaoloPia because there are fields like PublishingPageLayout
                     // which are marked as read-only, but have to be overwritten while uploading
                     // a publishing page file and which in reality can still be written
-                    if (!targetField.ReadOnlyField || WriteableReadOnlyFields.Contains(propertyName.ToLower())) 
+                    if (!targetField.ReadOnlyField || WriteableReadOnlyFields.Contains(propertyName.ToLower()))
                     {
                         switch (propertyName.ToUpperInvariant())
                         {
@@ -363,14 +383,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
                 fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
             }
-            
+
             // add the default provided container (if any)
             if (!String.IsNullOrEmpty(container))
             {
                 if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
                 {
                     container = String.Format(@"{0}\{1}", template.Connector.GetContainer(), container);
-                }               
+                }
             }
             else
             {
@@ -411,7 +431,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (result);
         }
 
-        internal static List<Model.File> GetDirectoryFiles(this Model.Directory directory, 
+        internal static List<Model.File> GetDirectoryFiles(this Model.Directory directory,
             Dictionary<String, Dictionary<String, String>> metadataProperties = null)
         {
             var result = new List<Model.File>();
