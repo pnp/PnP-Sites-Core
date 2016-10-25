@@ -296,7 +296,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var view in list.Views)
                         {
 
-                            CreateView(web, view, existingViews, createdList, scope);
+                            CreateView(web, view, existingViews, createdList, scope, parser);
 
                         }
 
@@ -350,7 +350,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope)
+        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser)
         {
             try
             {
@@ -362,8 +362,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
                 }
 
+                var viewTitle = parser.ParseString(displayNameElement.Value);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
-                var existingView = existingViews.FirstOrDefault(v => v.Title == displayNameElement.Value);
+                var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
 
                 if (existingView != null)
                 {
@@ -371,7 +372,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQueryRetry();
                 }
 
-                var viewTitle = displayNameElement.Value;
 
                 // Type
                 var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";

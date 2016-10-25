@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 						{
 							scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
 							// Retrieve the target list
-							var list = web.Lists.GetByTitle(listInstance.Title);
+							var list = web.Lists.GetByTitle(parser.ParseString(listInstance.Title));
 							web.Context.Load(list);
 
 							// Retrieve the fields' types from the list
