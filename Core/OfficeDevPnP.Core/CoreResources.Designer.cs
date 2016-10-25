@@ -489,6 +489,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+        /// </summary>
+        internal static string GraphExtensions_SendAsyncRetry {
+            get {
+                return ResourceManager.GetString("GraphExtensions_SendAsyncRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SendAsync threw following exception: {0}..
+        /// </summary>
+        internal static string GraphExtensions_SendAsyncRetryException {
+            get {
+                return ResourceManager.GetString("GraphExtensions_SendAsyncRetryException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating list &apos;{0}&apos; from template {1}{2}..
         /// </summary>
         internal static string ListExtensions_CreateList0Template12 {
