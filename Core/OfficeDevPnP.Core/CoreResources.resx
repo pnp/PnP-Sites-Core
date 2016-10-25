@@ -997,4 +997,7 @@
   <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
     <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions" xml:space="preserve">
+    <value>Skip adding/updating custom actions because the site has "noscript" enabled.</value>
+  </data>
 </root>

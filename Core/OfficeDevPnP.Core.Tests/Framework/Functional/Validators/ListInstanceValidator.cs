@@ -26,15 +26,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class ListInstanceValidator : ValidatorBase
     {
+        private bool isNoScriptSite = false;
+
         #region construction        
-        public ListInstanceValidator() : base()
+        public ListInstanceValidator(Web web) : base()
         {
             // optionally override schema version
             SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
             XPathQuery = "/pnp:Templates/pnp:ProvisioningTemplate/pnp:Lists/pnp:ListInstance";
+
+            // Check if this is not a noscript site as we're not allowed to update some properties
+            isNoScriptSite = web.IsNoScriptSite();
         }
 
-        public ListInstanceValidator(ClientContext cc) : this()
+        public ListInstanceValidator(ClientContext cc) : this(cc.Web)
         {
             this.cc = cc;
         }
@@ -74,14 +79,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             bool isListsMatch = ValidateObjectsXML(sourceLists, targetLists, "SchemaXml", new List<string> { "Title" }, tokenParser, parserSettings);
 
             // Use CustomAction validator to validate the custom actions on the list
-            var sourceListsWithUserCustomActions = sourceCollection.Where(p => p.UserCustomActions.Any() == true);
-            foreach(ListInstance list in sourceListsWithUserCustomActions)
+            if (!isNoScriptSite)
             {
-                var targetList = targetCollection.Where(p => p.Title == list.Title).FirstOrDefault();
-                if (!CustomActionValidator.ValidateCustomActions(list.UserCustomActions, targetList.UserCustomActions, tokenParser))
+                var sourceListsWithUserCustomActions = sourceCollection.Where(p => p.UserCustomActions.Any() == true);
+                foreach (ListInstance list in sourceListsWithUserCustomActions)
                 {
-                    isListsMatch = false;
-                    break;
+                    var targetList = targetCollection.Where(p => p.Title == list.Title).FirstOrDefault();
+                    if (!CustomActionValidator.ValidateCustomActions(list.UserCustomActions, targetList.UserCustomActions, tokenParser))
+                    {
+                        isListsMatch = false;
+                        break;
+                    }
                 }
             }
 

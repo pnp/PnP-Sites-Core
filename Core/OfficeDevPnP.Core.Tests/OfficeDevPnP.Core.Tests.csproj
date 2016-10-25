@@ -367,7 +367,7 @@
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
     <Compile Include="Framework\Functional\Validators\RegionalSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SearchSettingValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ListInstanceValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
     <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
