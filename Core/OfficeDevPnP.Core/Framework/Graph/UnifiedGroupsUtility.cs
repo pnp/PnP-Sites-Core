@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         }
                     }
                 }
- 
+
                 return (siteUrl);
 
             }).GetAwaiter().GetResult();
@@ -122,7 +122,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             // Use a synchronous model to invoke the asynchronous process
-            result = Task.Run(async () => {
+            result = Task.Run(async () =>
+            {
 
                 var group = new UnifiedGroupEntity();
 
@@ -136,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     MailNickname = mailNickname,
                     MailEnabled = true,
                     SecurityEnabled = false,
-                    GroupTypes = new List<string> { "Unified" },  
+                    GroupTypes = new List<string> { "Unified" },
                 };
 
                 Microsoft.Graph.Group addedGroup = null;
@@ -276,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static void DeleteUnifiedGroup(String groupId, String accessToken, 
+        public static void DeleteUnifiedGroup(String groupId, String accessToken,
             int retryCount = 10, int delay = 500)
         {
             if (String.IsNullOrEmpty(groupId))
@@ -346,72 +347,19 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
-        /// Get an Office 365 Group (i.e. Unified Group) by Display Name
-        /// </summary>
-        /// <param name="displayName">The DisplayName of the Office 365 Group</param>
-        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
-        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
-        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static UnifiedGroupEntity GetUnifiedGroupByDisplayName(String displayName, String accessToken,
-            int retryCount = 10, int delay = 500)
-        {
-            if (String.IsNullOrEmpty(displayName))
-            {
-                throw new ArgumentNullException("displayName");
-            }
-
-            if (String.IsNullOrEmpty(accessToken))
-            {
-                throw new ArgumentNullException("accessToken");
-            }
-
-            // Use a synchronous model to invoke the asynchronous process
-            var result = Task.Run(async () =>
-            {
-                UnifiedGroupEntity group = null;
-
-                var graphClient = CreateGraphClient(accessToken, retryCount, delay);
-
-                var groups = await graphClient.Groups
-                    .Request()
-                    .Filter($"groupTypes/any(grp: grp eq 'Unified') and startswith(DisplayName,'{displayName}')")
-                    .Top(1)
-                    .GetAsync();
-
-                if (groups != null)
-                {
-                    var g = groups.FirstOrDefault();
-
-                    group = new UnifiedGroupEntity
-                    {
-                        GroupId = g.Id,
-                        DisplayName = g.DisplayName,
-                        Description = g.Description,
-                        Mail = g.Mail,
-                        MailNickname = g.MailNickname,
-                        SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken),
-                    };
-                }
-
-                return (group);
-
-            }).GetAwaiter().GetResult();
-
-            return (result);
-        }
-
-        /// <summary>
         /// Returns all the Office 365 Groups in the current Tenant based on a startIndex. IncludeSite adds additional properties about the Modern SharePoint Site backing the group
         /// </summary>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="displayName">The DisplayName of the Office 365 Group</param>
         /// <param name="startIndex">Not relevant anymore</param>
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>An IList of SiteEntity objects</returns>
-        public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken, 
-            int startIndex = 0, int endIndex = 500000, bool includeSite = true,
+        public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
+            String displayName = null,
+            int startIndex = 0, int endIndex = 999, bool includeSite = true,
             int retryCount = 10, int delay = 500)
         {
             if (String.IsNullOrEmpty(accessToken))
@@ -428,9 +376,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                 var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
+                // Apply the DisplayName filter, if any
+                var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and startswith(DisplayName,'{displayName}')" : String.Empty;
+
                 var pagedGroups = await graphClient.Groups
                     .Request()
-                    .Filter("groupTypes/any(grp: grp eq 'Unified')")
+                    .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}")
                     .Top(endIndex)
                     .GetAsync();
 
