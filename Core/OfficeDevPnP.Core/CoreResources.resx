@@ -988,4 +988,10 @@
   <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
     <value>ExecuteQuery threw following exception: {0}.</value>
   </data>
+  <data name="GraphExtensions_SendAsyncRetry" xml:space="preserve">
+    <value>Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
+    <value>SendAsync threw following exception: {0}.</value>
+  </data>
 </root>
