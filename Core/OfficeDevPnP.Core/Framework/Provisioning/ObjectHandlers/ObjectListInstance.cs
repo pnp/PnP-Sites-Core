@@ -325,11 +325,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
                         web.Context.ExecuteQueryRetry();
                         total = list.Views.Count;
-                        var currentViewIndex = 0;
                         foreach (var view in list.Views)
                         {
-                            currentViewIndex++;
-                            parser = CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
+
+                            CreateView(web, view, existingViews, createdList, scope, parser);
 
                         }
                     }
@@ -410,7 +409,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private TokenParser CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
+        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser)
         {
             try
             {
@@ -420,8 +419,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
                 }
-                WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{currentViewIndex}|{total}", ProvisioningMessageType.Progress);
+                WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{total}", ProvisioningMessageType.Progress);
+                var viewTitle = parser.ParseString(displayNameElement.Value);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
+                var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
 
 
                 var viewTitle = parser.ParseString(displayNameElement.Value);
