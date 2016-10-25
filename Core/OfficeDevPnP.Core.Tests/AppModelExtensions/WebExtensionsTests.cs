@@ -51,8 +51,8 @@ namespace Microsoft.SharePoint.Client.Tests
 
             // Implement cleanup mechanism that cleans test stranglers + also cleans up the NoMobileMapping key that's generated per created sub site
             List<string> keysToDelete = new List<string>(10);
-            foreach(var prop in props.FieldValues)
-            {                
+            foreach (var prop in props.FieldValues)
+            {
                 if (prop.Key.StartsWith("TEST_KEY_", StringComparison.InvariantCultureIgnoreCase) ||
                     prop.Key.StartsWith("TEST_VALUE_", StringComparison.InvariantCultureIgnoreCase) ||
                     prop.Key.StartsWith("__NoMobileMapping", StringComparison.InvariantCultureIgnoreCase))
@@ -381,7 +381,6 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region Provisioning Tests
-
         [TestMethod]
         public void GetProvisioningTemplateTest()
         {
@@ -391,6 +390,68 @@ namespace Microsoft.SharePoint.Client.Tests
                 Assert.IsInstanceOfType(template, typeof(ProvisioningTemplate));
             }
         }
+        #endregion
+
+        #region NoScript tests
+#if !ONPREMISES
+        [TestMethod]
+        public void IsNoScriptSiteTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.NoScriptSite))
+            {
+                Assert.Inconclusive("The NoScriptSite key was not set, test can't be executed.");
+            }
+
+            string devSiteUrl = TestCommon.DevSiteUrl;
+            string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, TestCommon.NoScriptSite);
+
+            using (var clientContext = TestCommon.CreateClientContext(siteToCreateUrl))
+            {
+                var isNoScriptSite = clientContext.Web.IsNoScriptSite();
+                Assert.IsTrue(isNoScriptSite);
+
+                isNoScriptSite = clientContext.Site.IsNoScriptSite();
+                Assert.IsTrue(isNoScriptSite);
+            }
+        }
+
+        [TestMethod]
+        public void IsScriptSiteTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.ScriptSite))
+            {
+                Assert.Inconclusive("The ScriptSite key was not set, test can't be executed.");
+            }
+
+            string devSiteUrl = TestCommon.DevSiteUrl;
+            string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, TestCommon.ScriptSite);
+
+            using (var clientContext = TestCommon.CreateClientContext(siteToCreateUrl))
+            {
+                var isNoScriptSite = clientContext.Web.IsNoScriptSite();
+                Assert.IsFalse(isNoScriptSite);
+
+                isNoScriptSite = clientContext.Site.IsNoScriptSite();
+                Assert.IsFalse(isNoScriptSite);
+            }
+        }
+
+
+        private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
+        {
+            Uri u = new Uri(devSiteUrl);
+            string host = String.Format("{0}://{1}", u.Scheme, u.DnsSafeHost);
+
+            string path = u.AbsolutePath;
+            if (path.EndsWith("/"))
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+            path = path.Substring(0, path.LastIndexOf('/'));
+
+            return string.Format("{0}{1}/{2}", host, path, siteCollection);
+        }
+#endif
         #endregion
 
         #region App instance tests

@@ -414,6 +414,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="storageWarningLevel"></param>
         /// <param name="userCodeMaximumLevel"></param>
         /// <param name="userCodeWarningLevel"></param>
+        /// <param name="noScriptSite"></param>
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
             bool? allowSelfServiceUpgrade = null,
@@ -421,7 +422,8 @@ namespace Microsoft.SharePoint.Client
             long? storageMaximumLevel = null,
             long? storageWarningLevel = null,
             double? userCodeMaximumLevel = null,
-            double? userCodeWarningLevel = null
+            double? userCodeWarningLevel = null,
+            bool? noScriptSite = null
             )
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
@@ -443,6 +445,8 @@ namespace Microsoft.SharePoint.Client
                     siteProps.UserCodeWarningLevel = userCodeWarningLevel.Value;
                 if (title != null)
                     siteProps.Title = title;
+                if (noScriptSite != null)
+                    siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
 
                 siteProps.Update();
                 tenant.Context.ExecuteQueryRetry();
