@@ -991,4 +991,10 @@
   <data name="Provisioning_ObjectHandlers_Files_SkipFileUpload" xml:space="preserve">
     <value>Skipping upload of file '{0}' to '{1}'.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls" xml:space="preserve">
+    <value>Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
+    <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
+  </data>
 </root>

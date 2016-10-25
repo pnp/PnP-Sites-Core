@@ -14,8 +14,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ContentTypeTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_e37310cc-5d7a-43aa-a71b-419773241e46";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_e37310cc-5d7a-43aa-a71b-419773241e46/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333/sub";
         }
         #endregion
 
@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 
                 // Add content types
                 var result = TestProvisioningTemplate(cc, "contenttype_add.xml", Handlers.ContentTypes | Handlers.Fields);
-                ContentTypeValidator cv = new ContentTypeValidator();
+                ContentTypeValidator cv = new ContentTypeValidator(cc.Web);
                 Assert.IsTrue(cv.Validate(result.SourceTemplate.ContentTypes, result.TargetTemplate.ContentTypes, result.TargetTokenParser));
 
                 // change content types
