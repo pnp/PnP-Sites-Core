@@ -148,6 +148,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
 
+                    // Just to add a short delay :-) ...
+                    Thread.Sleep(TimeSpan.FromSeconds(1));
+
                     if (addedGroup != null)
                     {
                         group.DisplayName = addedGroup.DisplayName;
@@ -351,6 +354,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="displayName">The DisplayName of the Office 365 Group</param>
+        /// <param name="mailNickname">The MailNickname of the Office 365 Group</param>
         /// <param name="startIndex">Not relevant anymore</param>
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
@@ -358,7 +362,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
-            String displayName = null,
+            String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
             int retryCount = 10, int delay = 500)
         {
@@ -378,10 +382,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                 // Apply the DisplayName filter, if any
                 var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and startswith(DisplayName,'{displayName}')" : String.Empty;
+                var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and startswith(MailNickname,'{mailNickname}')" : String.Empty;
 
                 var pagedGroups = await graphClient.Groups
                     .Request()
-                    .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}")
+                    .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}{mailNicknameFilter}")
                     .Top(endIndex)
                     .GetAsync();
 
