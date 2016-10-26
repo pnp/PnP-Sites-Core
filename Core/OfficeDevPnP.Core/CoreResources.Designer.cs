@@ -1142,6 +1142,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Custom action &apos;{0}&apos; was not added/updated because the site was configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Calling extensibility callout {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_ {

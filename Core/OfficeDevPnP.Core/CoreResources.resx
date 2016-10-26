@@ -1006,4 +1006,7 @@
   <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
     <value>SendAsync threw following exception: {0}.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript" xml:space="preserve">
+    <value>Custom action '{0}' was not added/updated because the site was configured for noscript.</value>
+  </data>
 </root>

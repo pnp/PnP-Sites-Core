@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System;
 using System.Collections;
@@ -9,8 +10,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
     public class CustomActionValidator: ValidatorBase
     {
-        public static bool Validate(CustomActions sourceCustomActions, CustomActions targetCustomActions, TokenParser tokenParser)
+
+        public static bool Validate(CustomActions sourceCustomActions, CustomActions targetCustomActions, TokenParser tokenParser, Web web)
         {
+
+            if (web.IsNoScriptSite())
+            {
+                Console.WriteLine("Skipping validation of custom actions due to noscript site.");
+                return true;
+            }
+
             Console.WriteLine("Custom Action validation started...");
 
             bool isSiteCustomActionsMatch = false;
