@@ -1638,6 +1638,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipped adding web parts to page &apos;{0}&apos; because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Pages_SkipAddingWebParts {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Pages_SkipAddingWebParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Persist Template Information.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_PersistTemplateInformation {
