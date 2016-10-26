@@ -305,12 +305,11 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by uploading an aspx file to the style library library 
-        /// and see if it fails with access denied indicating no script is turned on.
-        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
-        /// Important: if the user running this method does not have at least "write" permissions to the style library then the site  is also
-        ///            marked as "noscript". Because the user then in most cases anyhow does not have permissions to modify the site this is an 
-        ///            acceptable "bug" for now. Let's get a real CSOM method for this which can replace below logic            
+        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// 
+        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US 
+        /// for the effects of NoScript
+        /// 
         /// </summary>
         /// <param name="site">site to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -320,12 +319,11 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by uploading an aspx file to the style library library 
-        /// and see if it fails with access denied indicating no script is turned on.
-        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
-        /// Important: if the user running this method does not have at least "write" permissions to the style library then the site  is also
-        ///            marked as "noscript". Because the user then in most cases anyhow does not have permissions to modify the site this is an 
-        ///            acceptable "bug" for now. Let's get a real CSOM method for this which can replace below logic            
+        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// 
+        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US 
+        /// for the effects of NoScript
+        /// 
         /// </summary>
         /// <param name="web">Web to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -333,94 +331,23 @@ namespace Microsoft.SharePoint.Client
         {
 #if !ONPREMISES
             string[] NoScriptSiteTemplates = new string[] { "GROUP" };
-            web.EnsureProperties(w => w.WebTemplate);
+            web.EnsureProperties(w => w.WebTemplate, w => w.EffectiveBasePermissions);
+
+            // Definition of no-script is not having the AddAndCustomizePages permission
+            if (!web.EffectiveBasePermissions.Has(PermissionKind.AddAndCustomizePages))
+            {
+                return true;
+            }
 
             if (NoScriptSiteTemplates.Contains(web.WebTemplate))
             {
                 return true;
-            }
-            else
-            {
-                try
-                {
-                    // Detection logic needed... uploading an aspx file to the style library library fails with access denied in case of no script turned on   
-                    // See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
-                    // Important: if the user running this method does not have at least "write" permissions to the style library then the site  is also
-                    //            marked as "noscript". Because the user then in most cases anyhow does not have permissions to modify the site this is an 
-                    //            acceptable "bug" for now. Let's get a real CSOM method for this which can replace below logic            
-                    var targetFolder = web.EnsureFolderPath("Style Library");
-                    var fileUrl = UploadStringAsFile(web, targetFolder, "<%@ Page%>", "Dummy.aspx");
-                    // Cleanup the file we uploaded
-                    var file = web.GetFileByUrl(fileUrl);
-                    file.DeleteObject();
-                    web.Context.ExecuteQueryRetry();
-                }
-                catch (Exception ex)
-                {
-                    if (ex.HResult == -2146233088)
-                    {
-                        return true;
-                    }
-                }
             }
 
             return false;
 #else
             return false;
 #endif
-        }
-
-        private static string UploadStringAsFile(Web web, Folder folder, string contents, string fileName)
-        {
-            var url = string.Empty;
-            var targetFile = folder.GetFile(fileName);
-            var checkedOut = false;
-            if (targetFile != null)
-            {
-                CheckOutIfNeeded(web, targetFile);
-            }
-            using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(contents)))
-            {
-                var file = folder.UploadFile(fileName, stream, true);
-                checkedOut = CheckOutIfNeeded(web, file);
-                if (checkedOut)
-                {
-                    file.CheckIn("", CheckinType.MajorCheckIn);
-                    web.Context.ExecuteQueryRetry();
-                }
-                file.EnsureProperty(f => f.ServerRelativeUrl);
-                url = file.ServerRelativeUrl;
-            }
-            return url;
-        }
-
-        private static bool CheckOutIfNeeded(Web web, File targetFile)
-        {
-            var checkedOut = false;
-            try
-            {
-                web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
-                web.Context.ExecuteQueryRetry();
-                if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
-                    && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
-                    && targetFile.ListItemAllFields.ParentList.ForceCheckout)
-                {
-                    if (targetFile.CheckOutType == CheckOutType.None)
-                    {
-                        targetFile.CheckOut();
-                    }
-                    checkedOut = true;
-                }
-            }
-            catch (ServerException ex)
-            {
-                // Handling the exception stating the "The object specified does not belong to a list."
-                if (ex.ServerErrorCode != -2146232832)
-                {
-                    throw;
-                }
-            }
-            return checkedOut;
         }
 
         private static bool IsCannotGetSiteException(Exception ex)
