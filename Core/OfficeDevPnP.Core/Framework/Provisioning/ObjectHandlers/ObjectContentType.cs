@@ -30,6 +30,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return parser;
                 }
 
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks,
                                                                                          c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));
                 web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
@@ -45,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (existingCT == null)
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
                         if (newCT != null)
                         {
                             existingCTs.Add(newCT);
@@ -59,7 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             existingCT.DeleteObject();
                             web.Context.ExecuteQueryRetry();
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, existingCTs, existingFields);
+                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -68,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                            UpdateContentType(web, existingCT, ct, parser, scope);
+                            UpdateContentType(web, existingCT, ct, parser, scope, isNoScriptSite);
                         }
                     }
                 }
@@ -77,7 +80,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope)
+        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             var isDirty = false;
             if (existingContentType.Hidden != templateContentType.Hidden)
@@ -124,24 +127,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
-            if (templateContentType.DisplayFormUrl != null && existingContentType.DisplayFormUrl != parser.ParseString(templateContentType.DisplayFormUrl))
+            if (!isNoScriptSite)
             {
-                scope.LogPropertyUpdate("DisplayFormUrl");
-                existingContentType.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
-                isDirty = true;
+                if (templateContentType.DisplayFormUrl != null && existingContentType.DisplayFormUrl != parser.ParseString(templateContentType.DisplayFormUrl))
+                {
+                    scope.LogPropertyUpdate("DisplayFormUrl");
+                    existingContentType.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
+                    isDirty = true;
+                }
+                if (templateContentType.EditFormUrl != null && existingContentType.EditFormUrl != parser.ParseString(templateContentType.EditFormUrl))
+                {
+                    scope.LogPropertyUpdate("EditFormUrl");
+                    existingContentType.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
+                    isDirty = true;
+                }
+                if (templateContentType.NewFormUrl != null && existingContentType.NewFormUrl != parser.ParseString(templateContentType.NewFormUrl))
+                {
+                    scope.LogPropertyUpdate("NewFormUrl");
+                    existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
+                    isDirty = true;
+                }
             }
-            if (templateContentType.EditFormUrl != null && existingContentType.EditFormUrl != parser.ParseString(templateContentType.EditFormUrl))
+            else
             {
-                scope.LogPropertyUpdate("EditFormUrl");
-                existingContentType.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
-                isDirty = true;
+                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
+                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
+                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+                {
+                    // log message
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls, existingContentType.Name);
+                }
             }
-            if (templateContentType.NewFormUrl != null && existingContentType.NewFormUrl != parser.ParseString(templateContentType.NewFormUrl))
-            {
-                scope.LogPropertyUpdate("NewFormUrl");
-                existingContentType.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
-                isDirty = true;
-            }
+
 #if !SP2013
             if (templateContentType.Name.ContainsResourceToken())
             {
@@ -224,8 +241,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector,
-            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null)
+        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector, PnPMonitoredScope scope,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null, bool isNoScriptSite = false)
         {
             var name = parser.ParseString(templateContentType.Name);
             var description = parser.ParseString(templateContentType.Description);
@@ -273,17 +290,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+            // Skipping updates of forms as we can't upload forms to noscript sites
+            if (!isNoScriptSite)
             {
-                createdCT.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
+                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+                {
+                    createdCT.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
+                }
+                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
+                {
+                    createdCT.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
+                }
+                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
+                {
+                    createdCT.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
+                }
             }
-            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
+            else
             {
-                createdCT.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
-            }
-            if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
-            {
-                createdCT.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
+                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
+                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
+                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)) )
+                {
+                    // log message
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls, name);
+                }
             }
 
             createdCT.Update(true);
@@ -330,15 +361,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                if (!isNoScriptSite)
                 {
-                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
-                    if (ct != null)
+                    foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
                     {
-                        using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                        if (ct != null)
                         {
-                            documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                            using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                            {
+                                documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                            }
                         }
+                    }
+                }
+                else
+                {
+                    if (templateContentType.DocumentSetTemplate.DefaultDocuments.Any())
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments, name);
                     }
                 }
 

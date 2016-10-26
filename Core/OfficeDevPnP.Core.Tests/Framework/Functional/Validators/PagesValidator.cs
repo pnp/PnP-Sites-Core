@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
                     #region  Page - Webparts
 
-                    if (sourcePage.WebParts.Count > 0)
+                    if (!ctx.Web.IsNoScriptSite() && sourcePage.WebParts.Count > 0)
                     {
                         LimitedWebPartManager wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
                         ctx.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title, wp => wp.WebPart.Properties));

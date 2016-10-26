@@ -21,6 +21,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class WebSettingsValidator : ValidatorBase
     {
+        private bool isNoScriptSite = false;
+
         #region construction        
         public WebSettingsValidator() : base()
         {
@@ -32,6 +34,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         public WebSettingsValidator(ClientContext cc) : this()
         {
             this.cc = cc;
+            isNoScriptSite = cc.Web.IsNoScriptSite();
         }
 
         #endregion
@@ -64,8 +67,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             // master pages are extracted relative to the root site without token...e.g. /_catalogs/MasterPage/oslo.master.
             // given we can use tokens in the template we do a manual comparison and drop the MasterPageUrl and CustomMasterPageUrl attributes when ok
-            if (ValidateMasterPage(sourceObject.Attribute("MasterPageUrl").Value, targetObject.Attribute("MasterPageUrl").Value) &&
-                ValidateMasterPage(sourceObject.Attribute("CustomMasterPageUrl").Value, targetObject.Attribute("CustomMasterPageUrl").Value))
+            if (isNoScriptSite ||
+                (ValidateMasterPage(sourceObject.Attribute("MasterPageUrl").Value, targetObject.Attribute("MasterPageUrl").Value) &&
+                ValidateMasterPage(sourceObject.Attribute("CustomMasterPageUrl").Value, targetObject.Attribute("CustomMasterPageUrl").Value)))
             {
                 DropAttribute(sourceObject, "MasterPageUrl");
                 DropAttribute(sourceObject, "CustomMasterPageUrl");
@@ -80,6 +84,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             DropAttribute(sourceObject, "RequestAccessEmail");
             DropAttribute(targetObject, "RequestAccessEmail");
 #endif
+
+            if (isNoScriptSite)
+            {
+                DropAttribute(sourceObject, "NoCrawl");
+                DropAttribute(targetObject, "NoCrawl");
+            }
 
         }
         #endregion

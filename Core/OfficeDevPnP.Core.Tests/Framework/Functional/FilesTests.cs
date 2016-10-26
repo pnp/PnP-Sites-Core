@@ -17,8 +17,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public FilesTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c89c25d3-4153-4464-8ad3-d0d6715fb6a8/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333/sub";
         }
         #endregion
 
@@ -45,7 +45,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
-                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files);
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files | Handlers.Lists);
                 FilesValidator fv = new FilesValidator();
                 Assert.IsTrue(fv.Validate(result.SourceTemplate.Files,cc));
             }
@@ -61,10 +64,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
             {
-                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files);
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files | Handlers.Lists);
                 FilesValidator fv = new FilesValidator();
                 Assert.IsTrue(fv.Validate(result.SourceTemplate.Files, cc));
             }
+        }
+        #endregion
+
+        #region Helper methods
+        private void DeleteLists(ClientContext cc)
+        {
+            DeleteListsImplementation(cc);
+        }
+
+        private static void DeleteListsImplementation(ClientContext cc)
+        {
+            cc.Load(cc.Web.Lists, f => f.Include(t => t.Title));
+            cc.ExecuteQueryRetry();
+
+            foreach (var list in cc.Web.Lists.ToList())
+            {
+                if (list.Title.StartsWith("LI_"))
+                {
+                    list.DeleteObject();
+                }
+            }
+            cc.ExecuteQueryRetry();
         }
         #endregion
     }

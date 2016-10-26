@@ -42,6 +42,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var processedLists = new List<ListInfo>();
 
+                    // Check if this is not a noscript site as we're not allowed to update some properties
+                    bool isNoScriptSite = web.IsNoScriptSite();
+
                     #region Lists
 
                     foreach (var templateList in template.Lists)
@@ -73,7 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             try
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
-                                var returnTuple = CreateList(web, templateList, parser, scope);
+                                var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
                                 var createdList = returnTuple.Item1;
                                 parser = returnTuple.Item2;
                                 processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
@@ -94,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
                                 var existingList = web.Lists[index];
-                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope);
+                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
                                 var updatedList = returnTuple.Item1;
                                 parser = returnTuple.Item2;
                                 if (updatedList != null)
@@ -758,7 +761,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return fieldElement;
         }
 
-        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope)
+        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -767,6 +770,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.Hidden,
                 l => l.ContentTypesEnabled,
                 l => l.EnableAttachments,
+                l => l.EnableVersioning,
                 l => l.EnableFolderCreation,
                 l => l.EnableModeration,
                 l => l.EnableMinorVersions,
@@ -774,7 +778,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.DraftVersionVisibility,
                 l => l.Views,
                 l => l.DocumentTemplateUrl,
-                l => l.RootFolder
+                l => l.RootFolder,
+                l => l.BaseType,
+                l => l.BaseTemplate
 #if !SP2013
 , l => l.MajorWithMinorVersionsLimit
 , l => l.MajorVersionLimit
@@ -943,52 +949,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 #region UserCustomActions
-                // Add any UserCustomActions
-                var existingUserCustomActions = existingList.UserCustomActions;
-                web.Context.Load(existingUserCustomActions);
-                web.Context.ExecuteQueryRetry();
-
-                foreach (CustomAction userCustomAction in templateList.UserCustomActions)
+                if (!isNoScriptSite)
                 {
-                    // Check for existing custom actions before adding (compare by custom action name)
-                    if (!existingUserCustomActions.AsEnumerable().Any(uca => uca.Name == userCustomAction.Name))
-                    {
-                        CreateListCustomAction(existingList, parser, userCustomAction);
-                        isDirty = true;
-                    }
-                    else
-                    {
-                        var existingCustomAction = existingUserCustomActions.AsEnumerable().FirstOrDefault(uca => uca.Name == userCustomAction.Name);
-                        if (existingCustomAction != null)
-                        {
-                            isDirty = true;
+                    // Add any UserCustomActions
+                    var existingUserCustomActions = existingList.UserCustomActions;
+                    web.Context.Load(existingUserCustomActions);
+                    web.Context.ExecuteQueryRetry();
 
-                            // If the custom action already exists
-                            if (userCustomAction.Remove)
+                    foreach (CustomAction userCustomAction in templateList.UserCustomActions)
+                    {
+                        // Check for existing custom actions before adding (compare by custom action name)
+                        if (!existingUserCustomActions.AsEnumerable().Any(uca => uca.Name == userCustomAction.Name))
+                        {
+                            CreateListCustomAction(existingList, parser, userCustomAction);
+                            isDirty = true;
+                        }
+                        else
+                        {
+                            var existingCustomAction = existingUserCustomActions.AsEnumerable().FirstOrDefault(uca => uca.Name == userCustomAction.Name);
+                            if (existingCustomAction != null)
                             {
-                                // And if we need to remove it, we simply delete it
-                                existingCustomAction.DeleteObject();
-                            }
-                            else
-                            {
-                                // Otherwise we update it, and before we force the target 
-                                // registration type and ID to avoid issues
-                                userCustomAction.RegistrationType = UserCustomActionRegistrationType.List;
-                                userCustomAction.RegistrationId = existingList.Id.ToString("B").ToUpper();
-                                ObjectCustomActions.UpdateCustomAction(parser, scope, userCustomAction, existingCustomAction);
-                                // Blank out these values again to avoid inconsistent domain model data
-                                userCustomAction.RegistrationType = UserCustomActionRegistrationType.None;
-                                userCustomAction.RegistrationId = null;
+                                isDirty = true;
+
+                                // If the custom action already exists
+                                if (userCustomAction.Remove)
+                                {
+                                    // And if we need to remove it, we simply delete it
+                                    existingCustomAction.DeleteObject();
+                                }
+                                else
+                                {
+                                    // Otherwise we update it, and before we force the target 
+                                    // registration type and ID to avoid issues
+                                    userCustomAction.RegistrationType = UserCustomActionRegistrationType.List;
+                                    userCustomAction.RegistrationId = existingList.Id.ToString("B").ToUpper();
+                                    ObjectCustomActions.UpdateCustomAction(parser, scope, userCustomAction, existingCustomAction);
+                                    // Blank out these values again to avoid inconsistent domain model data
+                                    userCustomAction.RegistrationType = UserCustomActionRegistrationType.None;
+                                    userCustomAction.RegistrationId = null;
+                                }
                             }
                         }
                     }
-                }
 
-                if (isDirty)
+                    if (isDirty)
+                    {
+                        existingList.Update();
+                        web.Context.ExecuteQueryRetry();
+                        isDirty = false;
+                    }
+                }
+                else
                 {
-                    existingList.Update();
-                    web.Context.ExecuteQueryRetry();
-                    isDirty = false;
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
                 #endregion
 
@@ -1090,7 +1103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             newUserCustomAction.Update();
         }
 
-        private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser, PnPMonitoredScope scope)
+        private Tuple<List, TokenParser> CreateList(Web web, ListInstance list, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             List createdList;
             if (list.Url.Equals("SiteAssets") && list.TemplateType == (int)ListTemplateType.DocumentLibrary)
@@ -1298,12 +1311,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add any custom action
             if (list.UserCustomActions.Any())
             {
-                foreach (var userCustomAction in list.UserCustomActions)
+                if (!isNoScriptSite)
                 {
-                    CreateListCustomAction(createdList, parser, userCustomAction);
-                }
+                    foreach (var userCustomAction in list.UserCustomActions)
+                    {
+                        CreateListCustomAction(createdList, parser, userCustomAction);
+                    }
 
-                web.Context.ExecuteQueryRetry();
+                    web.Context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
+                }
             }
 
             if (list.Security != null)

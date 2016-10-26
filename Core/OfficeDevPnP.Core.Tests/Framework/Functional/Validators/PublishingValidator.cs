@@ -9,7 +9,6 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
-    [TestClass]
     class PublishingValidator : ValidatorBase
     {
         public bool Validate(Publishing source, Publishing target, ClientContext clientContext)

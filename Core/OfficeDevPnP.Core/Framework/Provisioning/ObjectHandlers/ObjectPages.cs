@@ -26,6 +26,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder.WelcomePage);
 
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 foreach (var page in template.Pages)
                 {
                     var url = parser.ParseString(page.Url);
@@ -108,22 +111,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.WebParts != null & page.WebParts.Any())
                     {
-                        var existingWebParts = web.GetWebParts(url);
-
-                        foreach (var webpart in page.WebParts)
+                        if (!isNoScriptSite)
                         {
-                            if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                            var existingWebParts = web.GetWebParts(url);
+
+                            foreach (var webpart in page.WebParts)
                             {
-                                WebPartEntity wpEntity = new WebPartEntity();
-                                wpEntity.WebPartTitle = webpart.Title;
-                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
-                                web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                                {
+                                    WebPartEntity wpEntity = new WebPartEntity();
+                                    wpEntity.WebPartTitle = webpart.Title;
+                                    wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
+                                    web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
+                                }
+                            }
+                            var allWebParts = web.GetWebParts(url);
+                            foreach (var webpart in allWebParts)
+                            {
+                                parser.AddToken(new WebPartIdToken(web, webpart.WebPart.Title, webpart.Id));
                             }
                         }
-                        var allWebParts = web.GetWebParts(url);
-                        foreach (var webpart in allWebParts)
+                        else
                         {
-                            parser.AddToken(new WebPartIdToken(web, webpart.WebPart.Title, webpart.Id));
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Pages_SkipAddingWebParts, page.Url);
                         }
                     }
 

@@ -988,4 +988,40 @@
   <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
     <value>ExecuteQuery threw following exception: {0}.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Files_SkipFileUpload" xml:space="preserve">
+    <value>Skipping upload of file '{0}' to '{1}'.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls" xml:space="preserve">
+    <value>Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
+    <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions" xml:space="preserve">
+    <value>Skip adding/updating custom actions because the site has "noscript" enabled.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetry" xml:space="preserve">
+    <value>Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
+    <value>SendAsync threw following exception: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript" xml:space="preserve">
+    <value>Custom action '{0}' was not added/updated because the site was configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_SkipAddingWebParts" xml:space="preserve">
+    <value>Skipped adding web parts to page '{0}' because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention" xml:space="preserve">
+    <value>Audit log trimming retention is not set because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate" xml:space="preserve">
+    <value>Skipping custom master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate" xml:space="preserve">
+    <value>Skipping master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate" xml:space="preserve">
+    <value>Skipping NoCrawl update because the site is configured for noscript.</value>
+  </data>
 </root>
