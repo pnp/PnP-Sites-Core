@@ -1694,6 +1694,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skip provisioning of publishing settings because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Publishing_SkipProvisioning {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Publishing_SkipProvisioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieve Template Info.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_RetrieveTemplateInfo {

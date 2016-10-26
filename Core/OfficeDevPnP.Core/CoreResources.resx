@@ -1015,6 +1015,9 @@
   <data name="Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention" xml:space="preserve">
     <value>Audit log trimming retention is not set because the site is configured for noscript.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Publishing_SkipProvisioning" xml:space="preserve">
+    <value>Skip provisioning of publishing settings because the site is configured for noscript.</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate" xml:space="preserve">
     <value>Skipping custom master page update because the site is configured for noscript.</value>
   </data>

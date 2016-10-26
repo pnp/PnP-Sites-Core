@@ -289,6 +289,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var site = (web.Context as ClientContext).Site;
 
+                // Check if this is not a noscript site as publishing features are not supported
+                if (web.IsNoScriptSite())
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Publishing_SkipProvisioning);
+                    return parser;
+                }
+
                 var webFeatureActive = web.IsFeatureActive(PUBLISHING_FEATURE_WEB);
                 var siteFeatureActive = site.IsFeatureActive(PUBLISHING_FEATURE_SITE);
                 if (template.Publishing.AutoCheckRequirements == AutoCheckRequirementsOptions.SkipIfNotCompliant && !webFeatureActive)
