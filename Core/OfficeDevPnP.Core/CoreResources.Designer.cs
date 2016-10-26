@@ -930,6 +930,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading asset: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_ {
