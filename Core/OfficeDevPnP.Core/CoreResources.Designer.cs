@@ -1742,6 +1742,33 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping master page update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping NoCrawl update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cannot process XML file {0}..
         /// </summary>
         internal static string Provisioning_Providers_XML_InvalidFileFormat {

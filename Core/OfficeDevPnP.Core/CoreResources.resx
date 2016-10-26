@@ -1012,4 +1012,13 @@
   <data name="Provisioning_ObjectHandlers_Pages_SkipAddingWebParts" xml:space="preserve">
     <value>Skipped adding web parts to page '{0}' because the site is configured for noscript.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate" xml:space="preserve">
+    <value>Skipping custom master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate" xml:space="preserve">
+    <value>Skipping master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate" xml:space="preserve">
+    <value>Skipping NoCrawl update because the site is configured for noscript.</value>
+  </data>
 </root>
