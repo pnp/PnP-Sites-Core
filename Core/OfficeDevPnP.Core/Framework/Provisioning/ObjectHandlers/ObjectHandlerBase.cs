@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -58,15 +59,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var formulaString = formula.Value;
                 if (formulaString != null)
                 {
-                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    // Remove duplicate FieldRefs
+                    var fieldRefs = schemaElement.Descendants("FieldRef").GroupBy(f => f.Attribute("Name").Value, (key, group) => group.FirstOrDefault());
                     foreach (var fieldRef in fieldRefs)
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
-                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        formulaString = Regex.Replace(formulaString, $@"\b{fieldInternalName}\b", $"[{{fieldtitle:{fieldInternalName}}}]");
                     }
+
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
-
                 }
                 formula.Value = formulaString;
             }
