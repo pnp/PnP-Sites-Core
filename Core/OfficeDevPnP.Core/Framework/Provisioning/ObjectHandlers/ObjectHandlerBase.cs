@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
@@ -52,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var schemaElement = XElement.Parse(fieldXml);
             var formula = schemaElement.Descendants("Formula").FirstOrDefault();
-
+            var processedFields = new List<string>();
             if (formula != null)
             {
                 var formulaString = formula.Value;
@@ -62,7 +63,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var fieldRef in fieldRefs)
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
-                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        if (!processedFields.Contains(fieldInternalName))
+                        {
+                            formulaString = formulaString.Replace(fieldInternalName, $"[{{fieldtitle:{fieldInternalName}}}]");
+                            processedFields.Add(fieldInternalName);
+                        }
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
