@@ -1,6 +1,7 @@
 Thank you for reporting an issue or suggesting an enhancement. We appreciate your feedback - to help the team to understand your needs, please complete the below template to ensure we have the necessary details to assist you. If you have a actual question, we would ask you to use [SharePoint Developer Group](http://aka.ms/sppnp-community) at Microsoft Tech Community. Thanks!
 
-#### Which PnP repository to report the issue?
+#### Which PnP repository should you use to report the issue? 
+*Please navigate to the appropriate repository by clicking on the link below and create your issue there*
 - PnP Samples - https://github.com/OfficeDev/PnP
 - PnP Sites Core - https://github.com/OfficeDev/PnP-Sites-Core
 - PnP JS Core - https://github.com/OfficeDev/PnP-JS-Core
