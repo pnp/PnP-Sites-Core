@@ -1387,7 +1387,6 @@ namespace Microsoft.SharePoint.Client
                             if (term.TermsCount > 0)
                             {
                                 termsString.AddRange(ParseSubTerms(termPath, term, includeId, delimiter, clientContext));
-
                             }
                         }
                     }
