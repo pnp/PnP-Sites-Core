@@ -1283,7 +1283,7 @@ namespace Microsoft.SharePoint.Client
                                 var field = list.Fields.GetByInternalNameOrTitle(fieldName);
                                 clientContext.Load(field);
                                 clientContext.ExecuteQueryRetry();
-                                if (field.FieldTypeKind == FieldType.Text)
+                                if (field.FieldTypeKind == FieldType.Text || field.FieldTypeKind == FieldType.Choice ||field.FieldTypeKind == FieldType.MultiChoice)
                                 {
                                     var textValue = defaultValue.Value;
                                     var defaultColumnTextValue = new DefaultColumnTextValue()
