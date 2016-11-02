@@ -133,10 +133,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
 
-                        if (checkedOut)
+                        switch (file.Level)
                         {
-                            targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            case Model.FileLevel.Published:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Published);
+                                    break;
+                                }
+                            case Model.FileLevel.Draft:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Draft);
+                                    break;
+                                }
+                            default:
+                                {
+                                    if (checkedOut)
+                                    {
+                                        targetFile.CheckIn("", CheckinType.MajorCheckIn);
+                                        web.Context.ExecuteQueryRetry();
+                                    }
+                                    break;
+                                }
                         }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
