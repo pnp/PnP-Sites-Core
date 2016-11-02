@@ -270,8 +270,6 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_ApplyTheme, paletteServerRelativeUrl, web.ServerRelativeUrl);
 
-            web.EnsureProperties(w => w.WebTemplate, w => w.Configuration);
-
             if(!web.IsNoScriptSite())
             {
                 web.AllProperties[InheritTheme] = "False";
