@@ -149,7 +149,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
 
                     // Just to add a short delay :-) ...
-                    Thread.Sleep(TimeSpan.FromSeconds(1));
+                    Thread.Sleep(TimeSpan.FromSeconds(5));
 
                     if (addedGroup != null)
                     {
