@@ -553,6 +553,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.json" />
+    <None Include="Resources\Templates\TestTemplateOriginal.pnp" />
+    <None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
     <None Include="Resources\TestSolution.wsp" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />

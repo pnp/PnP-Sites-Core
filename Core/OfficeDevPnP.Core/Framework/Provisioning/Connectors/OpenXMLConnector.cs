@@ -125,9 +125,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
-
-            var result = (from file in this.pnpInfo.Files
-                          where file.Folder == container
+			container = container.Replace(@"\", @"/").Trim('/');
+			var result = (from file in this.pnpInfo.Files
+                          where string.Equals(file.Folder, container, StringComparison.OrdinalIgnoreCase)
                           select file.OriginalName).ToList();
 
             return result;
@@ -285,7 +285,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 container = "";
             }
 
-            if (stream == null)
+			container = container.Replace(@"\", "/").Trim('/');
+
+			if (stream == null)
             {
                 throw new ArgumentNullException("stream");
             }
@@ -405,9 +407,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         private PnPFileInfo GetFileFromInsidePackage(string fileName, string container)
         {
             string mappedPath = Path.Combine(container, fileName).Replace('\\', '/');
-            var file = (from item in pnpInfo.FilesMap.Map
-                        where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
-                        select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+			PnPFileInfo file = null;
+			if (pnpInfo.FilesMap != null)
+			{
+				 file = (from item in pnpInfo.FilesMap.Map
+						 where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
+						 select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+			}
             if (file != null) return file;
             return pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
         }
