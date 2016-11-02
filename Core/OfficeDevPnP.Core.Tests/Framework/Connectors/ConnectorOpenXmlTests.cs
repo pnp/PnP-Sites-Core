@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 			var image1 = openXMLConnector.GetFileStream("garagelogo.png", "Images");
 			Assert.IsNotNull(image1);
 
-			var image2 = openXMLConnector.GetFileStream("garagebg.jpg", "Images");
+			var image2 = openXMLConnector.GetFileStream("garagebg.jpg.jpg", "Images");
 			Assert.IsNotNull(image2);
 		}
 
