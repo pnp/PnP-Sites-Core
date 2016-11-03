@@ -1027,4 +1027,7 @@
   <data name="Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate" xml:space="preserve">
     <value>Skipping NoCrawl update because the site is configured for noscript.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck" xml:space="preserve">
+    <value>Skipping composed look handling because the site is marked as 'nosite'.</value>
+  </data>
 </root>

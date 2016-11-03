@@ -26,6 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Check if this is not a noscript site as themes and composed looks are not supported
                     if (web.IsNoScriptSite())
                     {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck);
                         return parser;
                     }
 

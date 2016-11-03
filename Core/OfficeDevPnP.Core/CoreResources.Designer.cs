@@ -988,6 +988,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping composed look handling because the site is marked as &apos;nosite&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding content type to template: {0} - {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_ {
