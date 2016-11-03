@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
-                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
+                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString(), isNoScriptSite:false);
 
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Helper methods
 #if !ONPREMISES
-        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
+        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
             try
             {
@@ -169,6 +169,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 };
 
                 tenant.CreateSiteCollection(siteToCreate, false, true);
+
+                if (isNoScriptSite)
+                {
+                    tenant.SetSiteProperties(siteToCreateUrl, noScriptSite: true);
+                }
+
                 return siteToCreateUrl;
             }
             catch (Exception ex)
@@ -246,7 +252,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             //return subWeb.Url;
         }
 #else
-        private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
+        private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
             string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
 
