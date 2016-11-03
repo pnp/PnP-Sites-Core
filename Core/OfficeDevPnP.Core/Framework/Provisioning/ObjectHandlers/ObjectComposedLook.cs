@@ -23,6 +23,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (template.ComposedLook != null &&
                     !template.ComposedLook.Equals(ComposedLook.Empty))
                 {
+                    // Check if this is not a noscript site as themes and composed looks are not supported
+                    if (web.IsNoScriptSite())
+                    {
+                        return parser;
+                    }
+
                     bool executeQueryNeeded = false;
                     if (executeQueryNeeded)
                     {
@@ -67,7 +73,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist composed look info in property bag
                     var composedLookJson = JsonConvert.SerializeObject(template.ComposedLook);
                     web.SetPropertyBagValue("_PnP_ProvisioningTemplateComposedLookInfo", composedLookJson);
-
                 }
             }
             return parser;
