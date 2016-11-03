@@ -1263,26 +1263,39 @@ namespace Microsoft.SharePoint.Client
             if (level == FileLevel.Draft || level == FileLevel.Published)
             {
                 var context = file.Context;
-                var parentList = file.ListItemAllFields.ParentList;
-                context.Load(parentList,
-                            l => l.EnableMinorVersions,
-                            l => l.EnableModeration,
-                            l => l.ForceCheckout);
 
+                bool normalFile = true;
                 var checkOutRequired = false;
+                if (normalFile)
+                {
+                    var parentList = file.ListItemAllFields.ParentList;
+                    context.Load(parentList,
+                                l => l.EnableMinorVersions,
+                                l => l.EnableModeration,
+                                l => l.ForceCheckout);
 
-                try
-                {
-                    context.ExecuteQueryRetry();
-                    checkOutRequired = parentList.ForceCheckout;
-                    publishingRequired = parentList.EnableMinorVersions; // minor versions implies that the file must be published
-                    approvalRequired = parentList.EnableModeration;
-                }
-                catch (ServerException ex)
-                {
-                    if (ex.Message != "The object specified does not belong to a list.")
+                    try
                     {
-                        throw;
+                        context.ExecuteQueryRetry();
+                        checkOutRequired = parentList.ForceCheckout;
+                        publishingRequired = parentList.EnableMinorVersions; // minor versions implies that the file must be published
+                        approvalRequired = parentList.EnableModeration;
+                    }
+                    catch (ServerException ex)
+                    {
+                        if (ex.Message != "The object specified does not belong to a list.")
+                        {
+                            if (ex.Message.StartsWith("Cannot invoke method or retrieve property from null object. Object returned by the following call stack is null.") &&
+                                ex.Message.Contains("ListItemAllFields"))
+                            {
+                                // E.g. custom display form aspx page being uploaded to the libraries Forms folder
+                                normalFile = false;
+                            }
+                            else
+                            {
+                                throw;
+                            }
+                        }
                     }
                 }
 
