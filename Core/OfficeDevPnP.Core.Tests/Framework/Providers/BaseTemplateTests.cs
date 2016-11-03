@@ -1,6 +1,8 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Framework.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -20,19 +22,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     [TestClass]
     public class BaseTemplateTests
     {
-
         protected class BaseTemplate
         {
-            public BaseTemplate(string template, string subSiteTemplate = "", string saveAsTemplate = "")
+            public BaseTemplate(string template, string subSiteTemplate = "", string saveAsTemplate = "", bool isGroup = false)
             {
                 Template = template;
                 SubSiteTemplate = subSiteTemplate;
                 SaveAsTemplate = saveAsTemplate;
+                IsGroup = isGroup;
             }
 
             public string Template { get; set; }
             public string SubSiteTemplate { get; set; }
             public string SaveAsTemplate { get; set; }
+            public bool IsGroup { get; set; }
         }
 
         [TestMethod]
@@ -63,6 +66,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             templates.Add(new BaseTemplate("DEV#0"));
             templates.Add(new BaseTemplate("OFFILE#1"));
 #if !ONPREMISES
+            templates.Add(new BaseTemplate("GROUP#0", isGroup: true));
             templates.Add(new BaseTemplate("EHS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "", "BLANKINTERNET#0"));
 #else
@@ -78,6 +82,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             templates.Add(new BaseTemplate("COMMUNITYPORTAL#0"));
             templates.Add(new BaseTemplate("SRCHCENTERLITE#0"));
             templates.Add(new BaseTemplate("VISPRUS#0"));
+
+            ProcessBaseTemplates(templates, deleteSites, createSites);
+        }
+
+
+        [TestMethod]
+        [Ignore]
+        public void ExtractSingleBaseTemplate2()
+        {
+            // use these flags to save time if the process failed after delete or create sites was done
+            bool deleteSites = true;
+            bool createSites = true;
+
+            List<BaseTemplate> templates = new List<BaseTemplate>(1);
+            templates.Add(new BaseTemplate("GROUP#0", isGroup: true));
 
             ProcessBaseTemplates(templates, deleteSites, createSites);
         }
@@ -100,7 +119,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                         try
                         {
                             Console.WriteLine("Deleting existing site {0}", siteUrl);
-                            tenant.DeleteSiteCollection(siteUrl, false);
+                            if (template.IsGroup)
+                            {
+                                // Do nothing for the time being since we don't allow group deletion using app-only context
+                            }
+                            else
+                            {
+                                tenant.DeleteSiteCollection(siteUrl, false);
+                            }
                         }
                         catch{ }
                     }
@@ -115,39 +141,46 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
                         Console.WriteLine("Creating site {0}", siteUrl);
 
-                        bool siteExists = false;
-                        if (template.SubSiteTemplate.Length > 0)
+                        if (template.IsGroup)
                         {
-                            siteExists = tenant.SiteExists(siteUrl);
+                            // Do nothing for the time being since we don't allow group creation using app-only context
                         }
-
-                        if (!siteExists)
+                        else
                         {
-                            tenant.CreateSiteCollection(new Entities.SiteEntity()
+                            bool siteExists = false;
+                            if (template.SubSiteTemplate.Length > 0)
                             {
-                                Lcid = 1033,
-                                TimeZoneId = 4,
-                                SiteOwnerLogin = (TestCommon.Credentials as SharePointOnlineCredentials).UserName,
-                                Title = "Template Site",
-                                Template = template.Template,
-                                Url = siteUrl,
-                            }, true, true);
-                        }
+                                siteExists = tenant.SiteExists(siteUrl);
+                            }
 
-                        if (template.SubSiteTemplate.Length > 0)
-                        {
-                            using (ClientContext ctx = TestCommon.CreateClientContext())
+                            if (!siteExists)
                             {
-                                using (var sitecolCtx = ctx.Clone(siteUrl))
+                                tenant.CreateSiteCollection(new Entities.SiteEntity()
                                 {
-                                    sitecolCtx.Web.Webs.Add(new WebCreationInformation()
+                                    Lcid = 1033,
+                                    TimeZoneId = 4,
+                                    SiteOwnerLogin = (TestCommon.Credentials as SharePointOnlineCredentials).UserName,
+                                    Title = "Template Site",
+                                    Template = template.Template,
+                                    Url = siteUrl,
+                                }, true, true);
+                            }
+
+                            if (template.SubSiteTemplate.Length > 0)
+                            {
+                                using (ClientContext ctx = TestCommon.CreateClientContext())
+                                {
+                                    using (var sitecolCtx = ctx.Clone(siteUrl))
                                     {
-                                        Title = string.Format("template{0}", template.SubSiteTemplate),
-                                        Language = 1033,
-                                        Url = string.Format("template{0}", template.SubSiteTemplate.Replace("#", "")),
-                                        UseSamePermissionsAsParentSite = true
-                                    });
-                                    sitecolCtx.ExecuteQueryRetry();
+                                        sitecolCtx.Web.Webs.Add(new WebCreationInformation()
+                                        {
+                                            Title = string.Format("template{0}", template.SubSiteTemplate),
+                                            Language = 1033,
+                                            Url = string.Format("template{0}", template.SubSiteTemplate.Replace("#", "")),
+                                            UseSamePermissionsAsParentSite = true
+                                        });
+                                        sitecolCtx.ExecuteQueryRetry();
+                                    }
                                 }
                             }
                         }
