@@ -73,7 +73,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     catch (Exception ex)
                     {
                         // eat all exceptions
-                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToDetailedString());
                     }
                 }
             }
@@ -371,7 +371,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }
@@ -426,7 +426,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }

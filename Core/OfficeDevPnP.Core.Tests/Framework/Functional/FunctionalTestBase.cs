@@ -89,54 +89,62 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Apply template and read the "result"
         public TestProvisioningTemplateResult TestProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess = Handlers.All, ProvisioningTemplateApplyingInformation ptai = null, ProvisioningTemplateCreationInformation ptci = null)
         {
-            // Read the template from XML and apply it
-            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-            ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
-
-            if (ptai == null)
+            try
             {
-                ptai = new ProvisioningTemplateApplyingInformation();
-                ptai.HandlersToProcess = handlersToProcess;
-            }
+                // Read the template from XML and apply it
+                XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+                ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
 
-            if (ptai.ProgressDelegate == null)
-            {
-                ptai.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                if (ptai == null)
                 {
-                    Console.WriteLine("Applying template - {0}/{1} - {2}", progress, total, message);
+                    ptai = new ProvisioningTemplateApplyingInformation();
+                    ptai.HandlersToProcess = handlersToProcess;
+                }
+
+                if (ptai.ProgressDelegate == null)
+                {
+                    ptai.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                    {
+                        Console.WriteLine("Applying template - {0}/{1} - {2}", progress, total, message);
+                    };
+                }
+
+                sourceTemplate.Connector = provider.Connector;
+
+                TokenParser sourceTokenParser = new TokenParser(cc.Web, sourceTemplate);
+
+                cc.Web.ApplyProvisioningTemplate(sourceTemplate, ptai);
+
+                // Read the site we applied the template to 
+                if (ptci == null)
+                {
+                    ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                    ptci.HandlersToProcess = handlersToProcess;
+                }
+
+                if (ptci.ProgressDelegate == null)
+                {
+                    ptci.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                    {
+                        Console.WriteLine("Getting template - {0}/{1} - {2}", progress, total, message);
+                    };
+                }
+
+                ProvisioningTemplate targetTemplate = cc.Web.GetProvisioningTemplate(ptci);
+
+                return new TestProvisioningTemplateResult()
+                {
+                    SourceTemplate = sourceTemplate,
+                    SourceTokenParser = sourceTokenParser,
+                    TargetTemplate = targetTemplate,
+                    TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
                 };
             }
-
-            sourceTemplate.Connector = provider.Connector;
-
-            TokenParser sourceTokenParser = new TokenParser(cc.Web, sourceTemplate);
-
-            cc.Web.ApplyProvisioningTemplate(sourceTemplate, ptai);
-
-            // Read the site we applied the template to 
-            if (ptci == null)
+            catch(Exception ex)
             {
-                ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = handlersToProcess;
+                Console.WriteLine(ex.ToDetailedString());
+                throw;
             }
-
-            if (ptci.ProgressDelegate == null)
-            {
-                ptci.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
-                {
-                    Console.WriteLine("Getting template - {0}/{1} - {2}", progress, total, message);
-                };
-            }
-
-            ProvisioningTemplate targetTemplate = cc.Web.GetProvisioningTemplate(ptci);
-
-            return new TestProvisioningTemplateResult()
-            {
-                SourceTemplate = sourceTemplate,
-                SourceTokenParser = sourceTokenParser,
-                TargetTemplate = targetTemplate,
-                TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
-            };
         }
         #endregion
 
@@ -179,7 +187,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }
@@ -218,7 +226,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     catch (Exception ex)
                     {
                         // eat all exceptions
-                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToDetailedString());
                     }
                 }
             }

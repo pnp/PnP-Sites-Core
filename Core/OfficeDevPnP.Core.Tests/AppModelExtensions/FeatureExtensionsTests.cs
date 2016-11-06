@@ -91,7 +91,7 @@ namespace Microsoft.SharePoint.Client.Tests
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }
@@ -130,7 +130,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     catch (Exception ex)
                     {
                         // eat all exceptions
-                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToDetailedString());
                     }
                 }
             }
