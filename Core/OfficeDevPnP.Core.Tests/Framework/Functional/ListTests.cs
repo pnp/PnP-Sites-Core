@@ -36,6 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -63,6 +64,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollection1605ListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -88,6 +90,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -118,6 +121,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void Web1605ListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

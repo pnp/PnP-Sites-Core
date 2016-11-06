@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// WorkflowsTests Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionWorkflowsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -75,6 +76,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// WorkflowsTests Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebWorkflowsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

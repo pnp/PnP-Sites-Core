@@ -48,6 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionsLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -69,6 +70,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

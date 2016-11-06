@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site LanguageSettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionLanguageSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -67,6 +68,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web WebSettings test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebLanguageSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

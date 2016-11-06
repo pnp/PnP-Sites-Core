@@ -34,6 +34,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionCustomActionAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -60,6 +61,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebCustomActionAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

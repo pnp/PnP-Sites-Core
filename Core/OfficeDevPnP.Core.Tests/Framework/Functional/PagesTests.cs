@@ -41,6 +41,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PagesTest Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPagesTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -57,6 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PagesTest Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebPagesTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

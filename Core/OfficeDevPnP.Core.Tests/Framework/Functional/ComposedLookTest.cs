@@ -45,6 +45,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site collection composed look test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionComposedLookTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -65,6 +66,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebComposedLookTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))

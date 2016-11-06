@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site WebSettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionWebSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -64,6 +65,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site Auditsettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionAuditSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -80,6 +82,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web WebSettings test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebWebSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))

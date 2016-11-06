@@ -46,6 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Design package publishing test in site collection
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPublishingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
