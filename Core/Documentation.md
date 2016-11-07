@@ -473,10 +473,32 @@ Enables the responsive UI of a classic SharePoint Web
 > **infrastructureUrl:** URL pointing to an infrastructure site
 
 
+#### EnableResponsiveUI(Microsoft.SharePoint.Client.Site,System.String)
+Enables the responsive UI of a classic SharePoint Site
+> ##### Parameters
+> **site:** The Site to activate the Responsive UI to
+
+> **infrastructureUrl:** URL pointing to an infrastructure site
+
+
+#### EnableResponsiveUIImplementation(Microsoft.SharePoint.Client.ClientObject,System.String)
+Enables the responsive UI of a classic SharePoint Web or Site
+> ##### Parameters
+> **clientObject:** The Web or Site to activate the Responsive UI to
+
+> **infrastructureUrl:** URL pointing to an infrastructure site
+
+
 #### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
 Disables the Responsive UI on a Classic SharePoint Web
 > ##### Parameters
-> **web:** 
+> **web:** The Web to disable the Responsive UI on
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Site)
+Disables the Responsive UI on a Classic SharePoint Site
+> ##### Parameters
+> **site:** The Site to disable the Responsive UI on
 
 
 ## SharePoint.Client.FeatureExtensions
@@ -488,7 +510,7 @@ Class that deals with feature activation and deactivation
 ### Methods
 
 
-#### ActivateFeature(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean)
+#### ActivateFeature(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean,System.Int32)
 Activates a site collection or site scoped feature
 > ##### Parameters
 > **web:** Web to be processed - can be root web or sub web
@@ -497,8 +519,10 @@ Activates a site collection or site scoped feature
 
 > **sandboxed:** Set to true if the feature is defined in a sandboxed solution
 
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
-#### ActivateFeature(Microsoft.SharePoint.Client.Site,System.Guid,System.Boolean)
+
+#### ActivateFeature(Microsoft.SharePoint.Client.Site,System.Guid,System.Boolean,System.Int32)
 Activates a site collection or site scoped feature
 > ##### Parameters
 > **site:** Site to be processed
@@ -507,21 +531,27 @@ Activates a site collection or site scoped feature
 
 > **sandboxed:** Set to true if the feature is defined in a sandboxed solution
 
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
-#### DeactivateFeature(Microsoft.SharePoint.Client.Web,System.Guid)
+
+#### DeactivateFeature(Microsoft.SharePoint.Client.Web,System.Guid,System.Int32)
 Deactivates a site collection or site scoped feature
 > ##### Parameters
 > **web:** Web to be processed - can be root web or sub web
 
 > **featureID:** ID of the feature to deactivate
 
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
-#### DeactivateFeature(Microsoft.SharePoint.Client.Site,System.Guid)
+
+#### DeactivateFeature(Microsoft.SharePoint.Client.Site,System.Guid,System.Int32)
 Deactivates a site collection or site scoped feature
 > ##### Parameters
 > **site:** Site to be processed
 
 > **featureID:** ID of the feature to deactivate
+
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
 
 #### IsFeatureActive(Microsoft.SharePoint.Client.Site,System.Guid)
@@ -554,7 +584,7 @@ Checks if a feature is active in the given FeatureCollection.
 > ##### Return value
 > True if active, false otherwise
 
-#### ProcessFeature(Microsoft.SharePoint.Client.Site,System.Guid,System.Boolean,System.Boolean)
+#### ProcessFeature(Microsoft.SharePoint.Client.Site,System.Guid,System.Boolean,System.Boolean,System.Int32)
 Activates or deactivates a site collection scoped feature
 > ##### Parameters
 > **site:** Site to be processed
@@ -565,8 +595,10 @@ Activates or deactivates a site collection scoped feature
 
 > **sandboxed:** Set to true if the feature is defined in a sandboxed solution
 
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
-#### ProcessFeature(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean,System.Boolean)
+
+#### ProcessFeature(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean,System.Boolean,System.Int32)
 Activates or deactivates a web scoped feature
 > ##### Parameters
 > **web:** Web to be processed - can be root web or sub web
@@ -577,8 +609,10 @@ Activates or deactivates a web scoped feature
 
 > **sandboxed:** True to specify that the feature is defined in a sandboxed solution
 
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
-#### ProcessFeatureInternal(Microsoft.SharePoint.Client.FeatureCollection,System.Guid,System.Boolean,Microsoft.SharePoint.Client.FeatureDefinitionScope)
+
+#### ProcessFeatureInternal(Microsoft.SharePoint.Client.FeatureCollection,System.Guid,System.Boolean,Microsoft.SharePoint.Client.FeatureDefinitionScope,System.Int32)
 Activates or deactivates a site collection or web scoped feature
 > ##### Parameters
 > **features:** Feature Collection which contains the feature
@@ -588,6 +622,8 @@ Activates or deactivates a site collection or web scoped feature
 > **activate:** True to activate, false to deactivate the feature
 
 > **scope:** Scope of the feature definition
+
+> **pollingIntervalSeconds:** The time in seconds between polls for "IsActive"
 
 
 ## SharePoint.Client.FieldAndContentTypeExtensions
@@ -4654,13 +4690,13 @@ Add a site collection administrator to a site collection
 
 
 #### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean)
-Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. EndIndex is the maximum number based on chunkcs of 300.
+Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object.
 > ##### Parameters
 > **tenant:** Tenant object to operate against
 
-> **startIndex:** Start getting site collections from this index. Defaults to 0
+> **startIndex:** Not relevant anymore
 
-> **endIndex:** The index of the last site. Defaults to 100.000
+> **endIndex:** Not relevant anymore
 
 > **includeDetail:** Option to return a limited set of data
 
@@ -5588,6 +5624,7 @@ Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020
 ## Core.AuthenticationManager
             
 This manager class can be used to obtain a SharePointContext object
+            
         
 ### Methods
 
@@ -5718,7 +5755,7 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > ##### Return value
 > 
 
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String)
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5736,7 +5773,7 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 > ##### Return value
 > 
 
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String)
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5752,7 +5789,7 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 > ##### Return value
 > 
 
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString)
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5768,7 +5805,7 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 > ##### Return value
 > 
 
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2)
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -5778,6 +5815,8 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 > **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
 
 > **certificate:** 
+
+> **environment:** 
 
 > ##### Return value
 > 
@@ -6242,7 +6281,9 @@ Looks up a localized string similar to The argument must be a single file name a
 #### ClientContextExtensions_Clone_Url_of_the_site_is_required_
 Looks up a localized string similar to Url of the site is required..
 #### ClientContextExtensions_ExecuteQueryRetry
-Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
+Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+#### ClientContextExtensions_ExecuteQueryRetryException
+Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
 #### Exception_Message_EmptyString_Arg
 Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
 #### FeatureExtensions_ActivateSiteCollectionFeature
@@ -6255,6 +6296,12 @@ Looks up a localized string similar to Deactivating feature {0} in site collecti
 Looks up a localized string similar to Deactivating feature {0} in web..
 #### FeatureExtensions_FeatureActivationProblem
 Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActivationState
+Looks up a localized string similar to Activation state for feature with id {1} was {0}..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActive
+Looks up a localized string similar to Feature activation for {0} returned success..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureException
+Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
 #### FieldAndContentTypeExtensions_AddField0ToContentType1
 Looks up a localized string similar to Adding field ({0}) to content type ({1})..
 #### FieldAndContentTypeExtensions_ContentType01AlreadyExists
@@ -7298,8 +7345,6 @@ Date and Time of creation for the PnP OpenXML file
 Name of the Generator (engine) of the PnP OpenXML file
 
 ## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackage
-            
-Defines a PnP OpenXML package file
             
 Defines a PnP OpenXML package file
         
@@ -17546,6 +17591,111 @@ Get all sites that match the passed query. Batching is done in batches of 500 as
 > ##### Return value
 > Total result rows of the query
 
+## Core.IdentityModel.TokenProviders.ADFS.CertificateMixed
+            
+ADFS Active authentication based on username + password. Uses the trust/13/usernamemixed ADFS endpoint.
+        
+### Methods
+
+
+#### GetFedAuthCookie(System.String,System.String,System.Uri,System.String,System.Int32)
+Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **serialNumber:** Serial Number of the Current User > My Certificate to use to authenticate
+
+> **certificateMixed:** Uri to the ADFS certificatemixed endpoint
+
+> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** 
+
+> ##### Return value
+> A cookiecontainer holding the FedAuth cookie
+
+#### RequestToken(System.String,System.Uri,System.String)
+Returns Generic XML Security Token from ADFS to generated FedAuth
+> ##### Parameters
+> **serialNumber:** Serial Number of Certificate from CurrentUSer > My Certificate
+
+> **certificateMixed:** ADFS Endpoint for Certificate Mixed Authentication
+
+> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
+
+> ##### Return value
+> 
+
+## Core.IdentityModel.TokenProviders.ADFS.BaseProvider
+            
+Base class for active SAML based authentication
+        
+### Methods
+
+
+#### TransformSamlTokenToFedAuth(System.String,System.String,System.String)
+Transforms the retrieved SAML token into a FedAuth cookie value by calling into the SharePoint STS
+> ##### Parameters
+> **samlToken:** SAML token obtained via active authentication to ADFS
+
+> **samlSite:** Url of the SAML secured SharePoint site
+
+> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
+
+> ##### Return value
+> The FedAuth cookie value
+
+#### WrapInSoapMessage(System.String,System.String)
+Wrap SAML token in RequestSecurityTokenResponse soap message
+> ##### Parameters
+> **stsResponse:** SAML token obtained via active authentication to ADFS
+
+> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
+
+> ##### Return value
+> RequestSecurityTokenResponse soap message
+
+#### SamlTokenExpiresOn(System.String)
+Returns the DateTime when then received saml token will expire
+> ##### Parameters
+> **stsResponse:** saml token
+
+> ##### Return value
+> DateTime holding the expiration date. Defaults to DateTime.MinValue if there's no valid datetime in the saml token
+
+#### SamlTokenlifeTime(System.String)
+Returns the SAML token life time
+> ##### Parameters
+> **stsResponse:** saml token
+
+> ##### Return value
+> TimeSpan holding the token lifetime. Defaults to TimeSpan.Zero is case of problems
+
+## Core.IdentityModel.TokenProviders.ADFS.UsernameMixed
+            
+ADFS Active authentication based on username + password. Uses the trust/13/usernamemixed ADFS endpoint.
+        
+### Methods
+
+
+#### GetFedAuthCookie(System.String,System.String,System.String,System.Uri,System.String,System.Int32)
+Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **userName:** Name of the user (e.g. domain\administrator)
+
+> **password:** Password of th user
+
+> **userNameMixed:** Uri to the ADFS usernamemixed endpoint
+
+> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** 
+
+> ##### Return value
+> A cookiecontainer holding the FedAuth cookie
+
 ## Core.Utilities.CookieReader
             
 WinInet.dll wrapper
@@ -18038,76 +18188,6 @@ Returns the certificate public key
 
 > ##### Return value
 > Public key of the certificate
-
-## Core.IdentityModel.TokenProviders.ADFS.BaseProvider
-            
-Base class for active SAML based authentication
-        
-### Methods
-
-
-#### TransformSamlTokenToFedAuth(System.String,System.String,System.String)
-Transforms the retrieved SAML token into a FedAuth cookie value by calling into the SharePoint STS
-> ##### Parameters
-> **samlToken:** SAML token obtained via active authentication to ADFS
-
-> **samlSite:** Url of the SAML secured SharePoint site
-
-> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
-
-> ##### Return value
-> The FedAuth cookie value
-
-#### WrapInSoapMessage(System.String,System.String)
-Wrap SAML token in RequestSecurityTokenResponse soap message
-> ##### Parameters
-> **stsResponse:** SAML token obtained via active authentication to ADFS
-
-> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
-
-> ##### Return value
-> RequestSecurityTokenResponse soap message
-
-#### SamlTokenExpiresOn(System.String)
-Returns the DateTime when then received saml token will expire
-> ##### Parameters
-> **stsResponse:** saml token
-
-> ##### Return value
-> DateTime holding the expiration date. Defaults to DateTime.MinValue if there's no valid datetime in the saml token
-
-#### SamlTokenlifeTime(System.String)
-Returns the SAML token life time
-> ##### Parameters
-> **stsResponse:** saml token
-
-> ##### Return value
-> TimeSpan holding the token lifetime. Defaults to TimeSpan.Zero is case of problems
-
-## Core.IdentityModel.TokenProviders.ADFS.UsernameMixed
-            
-ADFS Active authentication based on username + password. Uses the trust/13/usernamemixed ADFS endpoint.
-        
-### Methods
-
-
-#### GetFedAuthCookie(System.String,System.String,System.String,System.Uri,System.String,System.Int32)
-Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
-> ##### Parameters
-> **siteUrl:** Url of the SharePoint site that's secured via ADFS
-
-> **userName:** Name of the user (e.g. domain\administrator)
-
-> **password:** Password of th user
-
-> **userNameMixed:** Uri to the ADFS usernamemixed endpoint
-
-> **relyingPartyIdentifier:** Identifier of the ADFS relying party that we're hitting
-
-> **logonTokenCacheExpirationWindow:** 
-
-> ##### Return value
-> A cookiecontainer holding the FedAuth cookie
 
 ## Core.UPAWebService.UserProfileService
             
