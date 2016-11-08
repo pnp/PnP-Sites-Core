@@ -71,6 +71,8 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
+            bool isNoScript = parentWeb.IsNoScriptSite();
+
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
             WebCreationInformation creationInfo = new WebCreationInformation()
             {
@@ -84,7 +86,7 @@ namespace Microsoft.SharePoint.Client
 
             Web newWeb = parentWeb.Webs.Add(creationInfo);
 
-            if (!parentWeb.IsNoScriptSite())
+            if (!isNoScript)
             {
                 newWeb.Navigation.UseShared = inheritNavigation;
             }
