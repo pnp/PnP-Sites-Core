@@ -283,12 +283,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="displayName">The Display Name for the Office 365 Group</param>
         /// <param name="description">The Description for the Office 365 Group</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
-        /// <param name="updateSite">Defines whether to update the Modern Site backing the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>Declares whether the Office 365 Group has been updated or not</returns>
-        private static bool UpdateUnifiedGroup(string groupId,
+        public static bool UpdateUnifiedGroup(string groupId,
             string accessToken, int retryCount = 10, int delay = 500,
             string displayName = null, string description = null, Stream groupLogo = null)
         {
