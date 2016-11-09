@@ -1030,4 +1030,7 @@
   <data name="Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck" xml:space="preserve">
     <value>Skipping composed look handling because the site is marked as 'nosite'.</value>
   </data>
+  <data name="GraphExtensions_GroupLogoFileDoesNotExist" xml:space="preserve">
+    <value>The group logo file does not exist.</value>
+  </data>
 </root>

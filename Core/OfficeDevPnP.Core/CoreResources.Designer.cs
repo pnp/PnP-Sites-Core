@@ -489,6 +489,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The group logo file does not exist..
+        /// </summary>
+        internal static string GraphExtensions_GroupLogoFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("GraphExtensions_GroupLogoFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
         /// </summary>
         internal static string GraphExtensions_SendAsyncRetry {

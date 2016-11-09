@@ -7,6 +7,7 @@ using System.Threading;
 using Microsoft.Graph;
 using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -91,12 +92,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="owners">A list of UPNs for group owners, if any</param>
         /// <param name="members">A list of UPNs for group members, if any</param>
+        /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
-            string accessToken, string[] owners = null, string[] members = null,
+            string accessToken, string[] owners = null, string[] members = null, Stream groupLogo = null,
             bool isPrivate = false, int retryCount = 10, int delay = 500)
         {
             UnifiedGroupEntity result = null;
@@ -124,7 +126,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
             // Use a synchronous model to invoke the asynchronous process
             result = Task.Run(async () =>
             {
-
                 var group = new UnifiedGroupEntity();
 
                 var graphClient = CreateGraphClient(accessToken, retryCount, delay);
@@ -148,9 +149,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
 
-                    // Just to add a short delay :-) ...
-                    Thread.Sleep(TimeSpan.FromSeconds(5));
-
                     if (addedGroup != null)
                     {
                         group.DisplayName = addedGroup.DisplayName;
@@ -159,14 +157,35 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         group.Mail = addedGroup.Mail;
                         group.MailNickname = addedGroup.MailNickname;
 
-                        try
+                        int imageRetryCount = 10;
+
+                        while (imageRetryCount > 0 && groupLogo != null)
+                        {
+                            var groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, accessToken, groupLogo: groupLogo);
+
+                            // In case of failure retry up to 10 times, with 500ms delay in between
+                            if (!groupLogoUpdated)
+                            {
+                                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                                imageRetryCount--;
+                            }
+                        }
+
+                        int driveRetryCount = 10;
+
+                        while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
                         {
                             modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
+
+                            // In case of failure retry up to 10 times, with 500ms delay in between
+                            if (String.IsNullOrEmpty(modernSiteUrl))
+                            {
+                                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                                driveRetryCount--;
+                            }
                         }
-                        catch
-                        {
-                            // NOOP, we simply need to wakeup the OD4B/Site creation
-                        }
+
+                        group.SiteUrl = modernSiteUrl;
                     }
                 }
 
@@ -250,27 +269,142 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                 #endregion
 
-                int driveRetryCount = 10;
-
-                while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
-                {
-                    modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
-
-                    // In case of failure retry up to 10 times, with 500ms delay in between
-                    if (String.IsNullOrEmpty(modernSiteUrl))
-                    {
-                        Thread.Sleep(TimeSpan.FromMilliseconds(500));
-                        driveRetryCount--;
-                    }
-                }
-
-                group.SiteUrl = modernSiteUrl;
-
                 return (group);
 
             }).GetAwaiter().GetResult();
 
             return (result);
+        }
+
+        /// <summary>
+        /// Updates the logo of an Office 365 Group
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="displayName">The Display Name for the Office 365 Group</param>
+        /// <param name="description">The Description for the Office 365 Group</param>
+        /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
+        /// <param name="updateSite">Defines whether to update the Modern Site backing the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <returns>Declares whether the Office 365 Group has been updated or not</returns>
+        private static bool UpdateUnifiedGroup(string groupId,
+            string accessToken, int retryCount = 10, int delay = 500,
+            string displayName = null, string description = null, Stream groupLogo = null)
+        {
+            // Use a synchronous model to invoke the asynchronous process
+            var result = Task.Run(async () =>
+            {
+                var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                var groupToUpdate = await graphClient.Groups[groupId]
+                    .Request()
+                    .GetAsync();
+
+                #region Logic to update the group DisplayName and Description
+
+                var updateGroup = false;
+                var groupUpdated = false;
+
+                // Check if we have to update the DisplayName
+                if (!String.IsNullOrEmpty(displayName) && groupToUpdate.DisplayName != displayName)
+                {
+                    groupToUpdate.DisplayName = displayName;
+                    updateGroup = true;
+                }
+
+                // Check if we have to update the Description
+                if (!String.IsNullOrEmpty(description) && groupToUpdate.Description != description)
+                {
+                    groupToUpdate.Description = description;
+                    updateGroup = true;
+                }
+
+                // If the Group has to be updated, just do it
+                if (updateGroup)
+                {
+                    var updatedGroup = await graphClient.Groups[groupId]
+                        .Request()
+                        .UpdateAsync(groupToUpdate);
+
+                    groupUpdated = true;
+                }
+
+                #endregion
+
+                #region Logic to update the group Logo
+
+                var logoUpdated = false;
+
+                if (groupLogo != null)
+                {
+                    await graphClient.Groups[groupId].Photo.Content.Request().PutAsync(groupLogo);
+                    logoUpdated = true;
+                }
+
+                #endregion
+
+                // If any of the previous update actions has been completed
+                return (groupUpdated || logoUpdated);
+
+            }).GetAwaiter().GetResult();
+
+            return (result);
+        }
+
+        /// <summary>
+        /// Creates a new Office 365 Group (i.e. Unified Group) with its backing Modern SharePoint Site
+        /// </summary>
+        /// <param name="displayName">The Display Name for the Office 365 Group</param>
+        /// <param name="description">The Description for the Office 365 Group</param>
+        /// <param name="mailNickname">The Mail Nickname for the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="owners">A list of UPNs for group owners, if any</param>
+        /// <param name="members">A list of UPNs for group members, if any</param>
+        /// <param name="groupLogoPath">The path of the logo for the Office 365 Group</param>
+        /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <returns>The just created Office 365 Group</returns>
+        public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
+            string accessToken, string[] owners = null, string[] members = null, String groupLogoPath = null,
+            bool isPrivate = false, int retryCount = 10, int delay = 500)
+        {
+            if (!String.IsNullOrEmpty(groupLogoPath) && !System.IO.File.Exists(groupLogoPath))
+            {
+                throw new FileNotFoundException(CoreResources.GraphExtensions_GroupLogoFileDoesNotExist, groupLogoPath);
+            }
+
+            using (var groupLogoStream = new FileStream(groupLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                return (CreateUnifiedGroup(displayName, description,
+                    mailNickname, accessToken, owners, members,
+                    groupLogo: groupLogoStream, isPrivate: isPrivate,
+                    retryCount: retryCount, delay: delay));
+            }
+        }
+
+        /// <summary>
+        /// Creates a new Office 365 Group (i.e. Unified Group) with its backing Modern SharePoint Site
+        /// </summary>
+        /// <param name="displayName">The Display Name for the Office 365 Group</param>
+        /// <param name="description">The Description for the Office 365 Group</param>
+        /// <param name="mailNickname">The Mail Nickname for the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="owners">A list of UPNs for group owners, if any</param>
+        /// <param name="members">A list of UPNs for group members, if any</param>
+        /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <returns>The just created Office 365 Group</returns>
+        public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
+            string accessToken, string[] owners = null, string[] members = null,
+            bool isPrivate = false, int retryCount = 10, int delay = 500)
+        {
+            return (CreateUnifiedGroup(displayName, description,
+                mailNickname, accessToken, owners, members,
+                groupLogo: null, isPrivate: isPrivate,
+                retryCount: retryCount, delay: delay));
         }
 
         /// <summary>
