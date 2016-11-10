@@ -159,25 +159,45 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                         int imageRetryCount = retryCount;
 
-                        while (imageRetryCount > 0 && groupLogo != null)
+                        if (groupLogo != null)
                         {
-                            bool groupLogoUpdated = false;
+                            using (var memGroupLogo = new MemoryStream())
+                            {
+                                groupLogo.CopyTo(memGroupLogo);
 
-                            try
-                            {
-                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, 
-                                    accessToken, groupLogo: groupLogo);
-                            }
-                            catch
-                            {
-                                // Skip any exception and simply retry
-                            }
+                                while (imageRetryCount > 0)
+                                {
+                                    bool groupLogoUpdated = false;
+                                    memGroupLogo.Position = 0;
 
-                            // In case of failure retry up to 10 times, with 500ms delay in between
-                            if (!groupLogoUpdated)
-                            {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(delay));
-                                imageRetryCount--;
+                                    using (var tempGroupLogo = new MemoryStream())
+                                    {
+                                        memGroupLogo.CopyTo(tempGroupLogo);
+                                        tempGroupLogo.Position = 0;
+                                        
+                                        try
+                                        {
+                                            groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id,
+                                                accessToken, groupLogo: tempGroupLogo);
+                                        }
+                                        catch
+                                        {
+                                            // Skip any exception and simply retry
+                                        }
+                                    }
+
+                                    // In case of failure retry up to 10 times, with 500ms delay in between
+                                    if (!groupLogoUpdated)
+                                    {
+                                        // Pop up the delay for the group image
+                                        Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - imageRetryCount)));
+                                        imageRetryCount--;
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
                             }
                         }
 
@@ -197,7 +217,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             // In case of failure retry up to 10 times, with 500ms delay in between
                             if (String.IsNullOrEmpty(modernSiteUrl))
                             {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(delay));
+                                Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - driveRetryCount)));
                                 driveRetryCount--;
                             }
                         }
