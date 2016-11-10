@@ -157,30 +157,47 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         group.Mail = addedGroup.Mail;
                         group.MailNickname = addedGroup.MailNickname;
 
-                        int imageRetryCount = 10;
+                        int imageRetryCount = retryCount;
 
                         while (imageRetryCount > 0 && groupLogo != null)
                         {
-                            var groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, accessToken, groupLogo: groupLogo);
+                            bool groupLogoUpdated = false;
+
+                            try
+                            {
+                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, 
+                                    accessToken, groupLogo: groupLogo);
+                            }
+                            catch
+                            {
+                                // Skip any exception and simply retry
+                            }
 
                             // In case of failure retry up to 10 times, with 500ms delay in between
                             if (!groupLogoUpdated)
                             {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                                Thread.Sleep(TimeSpan.FromMilliseconds(delay));
                                 imageRetryCount--;
                             }
                         }
 
-                        int driveRetryCount = 10;
+                        int driveRetryCount = retryCount;
 
                         while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
                         {
-                            modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
+                            try
+                            {
+                                modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
+                            }
+                            catch
+                            {
+                                // Skip any exception and simply retry
+                            }
 
                             // In case of failure retry up to 10 times, with 500ms delay in between
                             if (String.IsNullOrEmpty(modernSiteUrl))
                             {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(500));
+                                Thread.Sleep(TimeSpan.FromMilliseconds(delay));
                                 driveRetryCount--;
                             }
                         }
@@ -373,12 +390,21 @@ namespace OfficeDevPnP.Core.Framework.Graph
             {
                 throw new FileNotFoundException(CoreResources.GraphExtensions_GroupLogoFileDoesNotExist, groupLogoPath);
             }
-
-            using (var groupLogoStream = new FileStream(groupLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            else if (!String.IsNullOrEmpty(groupLogoPath))
+            {
+                using (var groupLogoStream = new FileStream(groupLogoPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    return (CreateUnifiedGroup(displayName, description,
+                        mailNickname, accessToken, owners, members,
+                        groupLogo: groupLogoStream, isPrivate: isPrivate,
+                        retryCount: retryCount, delay: delay));
+                }
+            }
+            else
             {
                 return (CreateUnifiedGroup(displayName, description,
                     mailNickname, accessToken, owners, members,
-                    groupLogo: groupLogoStream, isPrivate: isPrivate,
+                    groupLogo: null, isPrivate: isPrivate,
                     retryCount: retryCount, delay: delay));
             }
         }
