@@ -53,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             this.AddParameter(CLIENTCONTEXT, clientContext);
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
@@ -82,6 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             List<string> result = new List<string>();
 
@@ -131,6 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             List<string> result = new List<string>();
 
@@ -183,6 +186,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new ArgumentException("fileName");
             }
 
+            if (container != null) { 
+                container = container.Replace('\\', '/');
+            }
+
             string result = null;
             MemoryStream stream = null;
             try
@@ -231,6 +238,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new ArgumentException("fileName");
             }
 
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             return GetFileFromStorage(fileName, container);
         }
 
@@ -252,6 +264,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="stream">Stream containing the file contents</param>
         public override void SaveFileStream(string fileName, string container, Stream stream)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -316,6 +333,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="container">Name of the container to delete the file from</param>
         public override void DeleteFile(string fileName, string container)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -346,6 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public override string GetFilenamePart(string fileName)
         {
+            fileName = fileName.Replace('\\', '/');
             if (fileName.IndexOf(@"/") != -1)
             {
                 var parts = fileName.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
