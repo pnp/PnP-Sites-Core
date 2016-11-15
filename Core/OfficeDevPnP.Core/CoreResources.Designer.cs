@@ -1545,6 +1545,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating listitem failed: {0} : {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_ {

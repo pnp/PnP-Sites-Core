@@ -1033,4 +1033,7 @@
   <data name="GraphExtensions_GroupLogoFileDoesNotExist" xml:space="preserve">
     <value>The group logo file does not exist.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate" xml:space="preserve">
+    <value>This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true.</value>
+  </data>
 </root>

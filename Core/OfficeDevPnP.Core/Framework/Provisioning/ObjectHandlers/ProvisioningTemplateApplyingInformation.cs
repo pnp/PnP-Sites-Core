@@ -25,6 +25,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 		/// </summary>
 		public bool OverwriteSystemPropertyBagValues { get; set; }
 
+        /// <summary>
+        /// If true then duplicate id errors when the same importing datarows simply generate a warning don't stop the engine. Reason for this is being able to apply the same template multiple times (Delta handling)
+        /// without that failing cause the same record is being added twice
+        /// </summary>
+        public bool IgnoreDuplicateDataRowErrors { get; set; }
+
         public Handlers HandlersToProcess
         {
             get
