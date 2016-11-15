@@ -38,12 +38,13 @@ Base template: Goal is to verify that delta handling of fields works. Field prop
     <!-- Calculated fields -->
     <!-- Updated elements: Formula and FieldRefs -->
     <Field ID="{00ecca45-2dc2-447a-b722-633fe69a4c6f}" Type="Calculated" Name="FLD_41" DisplayName="Fld 41" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
-      <Formula>=FLD_1+FLD_2+FLD_35</Formula>
+      <Formula>=[Fld 1]</Formula>
       <FieldRefs>
         <FieldRef Name="FLD_1" ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
-        <FieldRef Name="FLD_2" ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" />
-        <FieldRef Name="FLD_35" ID="{ebd16147-9087-4b80-b100-028193ee3d23}" />
       </FieldRefs>
+    </Field>
+    <Field ID="{b98e43a4-7038-43a3-8471-d986011a8570}" Type="Calculated" Name="FLD_42" DisplayName="Fld 42" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
+      <Formula>=[{fieldtitle:FLD_1}]</Formula>
     </Field>
     <!-- Taxonomy fields -->
     <!-- Updated elements: Default -->
