@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
                     var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName));
                     ctx.Load(file, f => f.Exists, f => f.Length);
-                    ctx.ExecuteQuery();
+                    ctx.ExecuteQueryRetry();
 
                     if (file.Exists)
                     {
@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                         if (sf.Security != null)
                         {
                             ctx.Load(file, f => f.ListItemAllFields);
-                            ctx.ExecuteQuery();
+                            ctx.ExecuteQueryRetry();
                             bool isSecurityMatch = ValidateSecurityCSOM(ctx, sf.Security, file.ListItemAllFields);
                             if (!isSecurityMatch)
                             {

@@ -8,6 +8,7 @@ using System.Xml;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Linq;
+using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
@@ -142,7 +143,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 {
                     var existingUser =cc.Web.EnsureUser(name);
                     cc.Web.Context.Load(existingUser);
-                    cc.Web.Context.ExecuteQuery();
+                    cc.Web.Context.ExecuteQueryRetry();
                     loginName = existingUser.LoginName;
                     if (loginName.Contains("|") && !name.StartsWith("c:"))
                     {
