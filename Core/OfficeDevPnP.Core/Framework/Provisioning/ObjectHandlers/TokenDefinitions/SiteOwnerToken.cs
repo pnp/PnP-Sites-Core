@@ -13,11 +13,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 		{
 			if (CacheValue == null)
 			{
-				var context = Web.Context as ClientContext;
-				var site = context.Site;
-				context.Load(site, s => s.Owner);
-				context.ExecuteQueryRetry();
-				CacheValue = site.Owner.LoginName;
+                this.Web.EnsureProperty(w => w.Url);
+                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
+                {
+                    var site = context.Site;
+                    context.Load(site, s => s.Owner);
+                    context.ExecuteQueryRetry();
+                    CacheValue = site.Owner.LoginName;
+                }
 			}
 			return CacheValue;
 		}
