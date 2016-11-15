@@ -49,6 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="fieldXml">the xml to tokenize</param>
         /// <returns></returns>
+        [Obsolete("Use ObjectField.TokenizeFieldFormula instead. This method produces incorrect tokenization results.")]
         protected string TokenizeFieldFormula(string fieldXml)
         {
             var schemaElement = XElement.Parse(fieldXml);

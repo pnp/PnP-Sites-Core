@@ -125,7 +125,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var fieldRef in listInfo.TemplateList.FieldRefs)
                             {
-                                var field = rootWeb.GetFieldById<Field>(fieldRef.Id);
+                                var field = rootWeb.GetFieldById(fieldRef.Id);
                                 if (field == null)
                                 {
                                     // log missing referenced field
@@ -554,6 +554,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             element.SetAttributeValue("AllowDeletion", "TRUE");
 
+            var calculatedField = field as FieldCalculated;
+            if(calculatedField != null)
+            {
+                if (element.Element("Formula") != null)
+                {
+                    element.Element("Formula").Value = calculatedField.Formula;
+                }
+            }
+
             field.SchemaXml = element.ToString();
 
             var createdField = listInfo.SiteList.Fields.Add(field);
@@ -674,6 +683,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 existingFieldElement.Element(element.Name).Remove();
                             }
                             existingFieldElement.Add(element);
+                        }
+
+                        if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var fieldRefsElement = existingFieldElement.Descendants("FieldRefs").FirstOrDefault();
+                            if (fieldRefsElement != null)
+                            {
+                                fieldRefsElement.Remove();
+                            }
                         }
 
                         if (existingFieldElement.Attribute("Version") != null)
@@ -1729,7 +1747,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (fieldElement.Attribute("Type").Value == "Calculated")
                     {
-                        schemaXml = TokenizeFieldFormula(schemaXml);
+                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
                     }
 
                     if (creationInfo.PersistMultiLanguageResources)

@@ -118,6 +118,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingFieldElement.Add(element);
                         }
 
+                        if (string.Equals(templateFieldElement.Attribute("Type").Value, "Calculated", StringComparison.OrdinalIgnoreCase))
+                        {
+                            var fieldRefsElement = existingFieldElement.Descendants("FieldRefs").FirstOrDefault();
+                            if (fieldRefsElement != null)
+                            {
+                                fieldRefsElement.Remove();
+                            }
+                        }
+
                         if (existingFieldElement.Attribute("Version") != null)
                         {
                             existingFieldElement.Attributes("Version").Remove();
@@ -173,6 +182,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+        }
+
+        /// <summary>
+        /// Tokenizes calculated fieldXml to use tokens for field references
+        /// </summary>
+        /// <param name="fields">the field collection that the field is contained within</param>
+        /// <param name="field">the field to tokenize</param>
+        /// <param name="fieldXml">the xml to tokenize</param>
+        /// <returns></returns>
+        internal static string TokenizeFieldFormula(Microsoft.SharePoint.Client.FieldCollection fields, FieldCalculated field, string fieldXml)
+        {
+            var schemaElement = XElement.Parse(fieldXml);
+
+            var formulaElement = schemaElement.Descendants("Formula").FirstOrDefault();
+
+            if (formulaElement != null)
+            {
+                field.EnsureProperty(f => f.Formula);
+
+                var formulastring = field.Formula;
+
+                if (formulastring != null)
+                {
+                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    foreach (var fieldRef in fieldRefs)
+                    {
+                        var fieldInternalName = fieldRef.Attribute("Name").Value;
+                        var referencedField = fields.GetFieldByInternalName(fieldInternalName);
+                        formulastring = formulastring.Replace(string.Format("[{0}]", referencedField.Title), string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                    }
+                    var fieldRefParent = schemaElement.Descendants("FieldRefs");
+                    fieldRefParent.Remove();
+
+                    formulaElement.Value = formulastring;
+                }
+            }
+            return schemaElement.ToString();
         }
 
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
@@ -348,6 +394,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 var taxTextFieldsToMoveUp = new List<Guid>();
+                var calculatedFieldsToMoveDown = new List<Guid>();
 
                 foreach (var field in existingFields)
                 {
@@ -398,7 +445,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         if (element.Attribute("Type").Value == "Calculated")
                         {
-                            fieldXml = TokenizeFieldFormula(fieldXml);
+                            fieldXml = TokenizeFieldFormula(web.Fields, (FieldCalculated)field, fieldXml);
+                            calculatedFieldsToMoveDown.Add(field.Id);
                         }
                         if (creationInfo.PersistMultiLanguageResources)
                         {
@@ -443,6 +491,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.Insert(0, field);
+                }
+                // move calculated fields to the bottom of the list
+                // this will not be sufficient in the case of a calculated field is referencing another calculated field
+                foreach (var calculatedFieldId in calculatedFieldsToMoveDown)
+                {
+                    var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(calculatedFieldId));
+                    template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(calculatedFieldId));
+                    template.SiteFields.Add(field);
                 }
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
