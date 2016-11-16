@@ -246,7 +246,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
                     string webUrlPathAndQuery = System.Web.HttpUtility.UrlDecode(uri.PathAndQuery);
-                    if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1 && (url.IndexOf("{masterpagecatalog}") == -1 ) && (url.IndexOf("{themecatalog}") ==-1))
                     {
                         result = (uri.PathAndQuery.Equals("/") && url.StartsWith(uri.PathAndQuery))
                             ? "{site}" + url // we need this for DocumentTemplate attribute of pnp:ListInstance also on a root site ("/") without managed path
