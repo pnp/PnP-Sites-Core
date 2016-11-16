@@ -442,6 +442,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Type {0} does not exist in target list!.
+        /// </summary>
+        internal static string FileFolderExtensions_SetFileProperties_Error {
+            get {
+                return ResourceManager.GetString("FileFolderExtensions_SetFileProperties_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update file &apos;{0}&apos;, change properties: {1}..
         /// </summary>
         internal static string FileFolderExtensions_UpdateFile0Properties1 {

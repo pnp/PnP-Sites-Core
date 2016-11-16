@@ -1159,8 +1159,8 @@ namespace Microsoft.SharePoint.Client
                                         changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
                                     }
                                     else
-                                    {
-                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
+                                    {            
+                                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_SetFileProperties_Error, propertyValue);
                                     }
                                 }
                                 break;

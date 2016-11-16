@@ -189,6 +189,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="url">the url to tokenize as String</param>
         /// <param name="webUrl">web url of the actual web as String</param>
+        /// <param name="web">Web being used</param>
         /// <returns>tokenized url as String</returns>
         protected string Tokenize(string url, string webUrl, Web web = null)
         {

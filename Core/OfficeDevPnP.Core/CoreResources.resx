@@ -1036,4 +1036,7 @@
   <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate" xml:space="preserve">
     <value>This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true.</value>
   </data>
+  <data name="FileFolderExtensions_SetFileProperties_Error" xml:space="preserve">
+    <value>Content Type {0} does not exist in target list!</value>
+  </data>
 </root>
