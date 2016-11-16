@@ -83,6 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
 
+#if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
                                 {
                                     var ci = new System.Globalization.CultureInfo(supportedlanguageId);
@@ -92,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (titleResource != null && titleResource.Value != null)
                                         parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
                                 }
-
+#endif
                                 parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                             }
                             catch (Exception ex)
@@ -123,9 +124,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region FieldRefs
+#region FieldRefs
 
                     foreach (var listInfo in processedLists)
                     {
@@ -196,9 +197,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+#endregion
 
-                    #region Fields
+#region Fields
 
                     foreach (var listInfo in processedLists)
                     {
@@ -269,9 +270,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
-                    #endregion
+#endregion
 
-                    #region Default Field Values
+#region Default Field Values
                     foreach (var listInfo in processedLists)
                     {
                         if (listInfo.TemplateList.FieldDefaults.Any())
@@ -285,9 +286,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    #endregion
+#endregion
 
-                    #region Views
+#region Views
 
                     foreach (var listInfo in processedLists)
                     {
@@ -324,9 +325,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         //}
                     }
 
-                    #endregion
+#endregion
 
-                    #region Folders
+#region Folders
 
                     // Folders are supported for document libraries and generic lists only
                     foreach (var list in processedLists)
@@ -348,7 +349,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+#endregion
 
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
@@ -975,7 +976,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                #region UserCustomActions
+#region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1030,7 +1031,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-                #endregion
+#endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
