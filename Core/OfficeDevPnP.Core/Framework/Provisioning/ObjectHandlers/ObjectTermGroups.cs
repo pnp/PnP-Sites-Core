@@ -249,7 +249,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
                 return null;
             }
-          
+
             // Create new term
             Term term;
             if (modelTerm.Id == Guid.Empty)
@@ -281,33 +281,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (modelTerm.Labels.Any())
                 {
-                    foreach (var label in modelTerm.Labels)
-                    {
-                        if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
-                        {
-                            term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
-                        }
-                        else
-                        {
-                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
-                            WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
-                        }
-                    }
+                    CreateTermLabels(modelTerm, termStore, parser, scope, term);
+                    //foreach (var label in modelTerm.Labels)
+                    //{
+                    //    if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
+                    //    {
+                    //        term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
+                    //    }
+                    //    else
+                    //    {
+                    //        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
+                    //        WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
+                    //    }
+                    //}
                 }
 
                 if (modelTerm.Properties.Any())
                 {
-                    foreach (var property in modelTerm.Properties)
-                    {
-                        term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
-                    }
+                    SetTermCustomProperties(modelTerm, parser, term);
+                    //foreach (var property in modelTerm.Properties)
+                    //{
+                    //    term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+                    //}
                 }
                 if (modelTerm.LocalProperties.Any())
                 {
-                    foreach (var property in modelTerm.LocalProperties)
-                    {
-                        term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
-                    }
+                    SetTermLocalCustomProperties(modelTerm, parser, term);
+                    //foreach (var property in modelTerm.LocalProperties)
+                    //{
+                    //    term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+                    //}
                 }
             }
 
@@ -328,6 +331,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(modelTerm.Id, parser);
         }
 
+
+        private void CreateTermLabels(Model.Term modelTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope, Term term)
+        {
+            foreach (var label in modelTerm.Labels)
+            {
+                if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
+                {
+                    term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
+                }
+                else
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language);
+                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_, label.Value, label.Language), ProvisioningMessageType.Warning);
+                }
+            }
+        }
+
+        private static void SetTermCustomProperties(Model.Term modelTerm, TokenParser parser, Term term)
+        {
+            foreach (var property in modelTerm.Properties)
+            {
+                term.SetCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+            }
+        }
+
+        private static void SetTermLocalCustomProperties(Model.Term modelTerm, TokenParser parser, Term term)
+        {
+            foreach (var property in modelTerm.LocalProperties)
+            {
+                term.SetLocalCustomProperty(parser.ParseString(property.Key), parser.ParseString(property.Value));
+            }
+        }
 
         /// <summary>
         /// Creates child terms for the current model term if any exist
@@ -463,6 +498,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (modelTerm.IsSourceTerm)
                 {
                     preExistingTerm.ReassignSourceTerm(createdTerm);
+                }
+
+                if (modelTerm.Labels.Any())
+                {
+                    CreateTermLabels(modelTerm, termStore, parser, scope, createdTerm);
+                }
+
+                if (modelTerm.Properties.Any())
+                {
+                    SetTermCustomProperties(modelTerm, parser, createdTerm);
+                }
+
+                if (modelTerm.LocalProperties.Any())
+                {
+                    SetTermLocalCustomProperties(modelTerm, parser, createdTerm);
                 }
 
                 termStore.CommitAll();
