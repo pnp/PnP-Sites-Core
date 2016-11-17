@@ -9,17 +9,17 @@ using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
+#if !SP2013
     internal static class WebPartLocalizationExtensions
     {
-        public static void LocalizeWebParts(this Page page, Web web, TokenParser parser)
+        internal static void LocalizeWebParts(this Page page, Web web, TokenParser parser)
         {
             var url = page.Url;
             var webParts = page.WebParts;
             LocalizeParts(web, parser, url, webParts);
         }
 
-
-        public static void LocalizeWebParts(this File file, Web web, TokenParser parser, Microsoft.SharePoint.Client.File targetFile)
+        internal static void LocalizeWebParts(this File file, Web web, TokenParser parser, Microsoft.SharePoint.Client.File targetFile)
         {
             var url = targetFile.ServerRelativeUrl;
             var webParts = file.WebParts;
@@ -32,7 +32,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             var allParts = web.GetWebParts(parser.ParseString(url)).ToList();
             foreach (var webPart in webParts)
             {
+#if !SP2016
                 var partOnPage = allParts.FirstOrDefault(w => w.ZoneId == webPart.Zone && w.WebPart.ZoneIndex == webPart.Order);
+#else
+                var partOnPage = allParts.FirstOrDefault(w => w.WebPart.ZoneIndex == webPart.Order);
+#endif
                 if (webPart.Title.ContainsResourceToken() && partOnPage != null)
                 {
                     var resourceValues = parser.GetResourceTokenResourceValues(webPart.Title);
@@ -50,4 +54,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             context.PendingRequest.RequestExecutor.WebRequest.Headers.Remove("Accept-Language");
         }
     }
-}
+#endif
+            }

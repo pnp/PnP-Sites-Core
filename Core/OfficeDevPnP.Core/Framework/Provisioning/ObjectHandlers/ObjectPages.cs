@@ -111,7 +111,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
 
+#if !SP2013
                     bool webPartsNeedLocalization = false;
+#endif
                     if (page.WebParts != null & page.WebParts.Any())
                     {
                         if (!isNoScriptSite)
@@ -120,22 +122,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var webPart in page.WebParts)
                             {
+#if SP2013
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
+#else
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
+#endif
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
                                     wpEntity.WebPartXml = parser.ParseString(webPart.Contents.Trim(new[] { '\n', ' ' }));
                                     var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
+#if !SP2013
                                     if (webPart.Title.ContainsResourceToken())
                                     {
                                         // update data based on where it was added - needed in order to localize wp title
+#if !SP2016
                                         wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
                                         webPart.Zone = wpd.ZoneId;
+#else
+                                        wpd.EnsureProperties(w => w.WebPart, w => w.WebPart.Properties);
+#endif
                                         webPart.Order = (uint)wpd.WebPart.ZoneIndex;
                                         webPartsNeedLocalization = true;
+                                   }
+#endif
                                     }
                                 }
-                            }
                             var allWebParts = web.GetWebParts(url);
                             foreach (var webpart in allWebParts)
                             {
@@ -148,10 +160,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+#if !SP2013
                     if (webPartsNeedLocalization)
                     {
                         page.LocalizeWebParts(web, parser);
                     }
+#endif
 
                     file = web.GetFileByServerRelativeUrl(url);
                     file.EnsureProperty(f => f.ListItemAllFields);

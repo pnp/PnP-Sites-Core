@@ -12,6 +12,9 @@ using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using OfficeDevPnP.Core.Utilities.WebParts;
 using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
+using System.Net;
+using System.IO;
+using System.Text;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -101,9 +104,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="webPart">Information about the web part to insert</param>
         /// <param name="page">Page to add the web part on</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when page is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when webPart or page is null</exception>
-        public static void AddWebPartToWebPartPage(this Web web, WebPartEntity webPart, string page)
+        public static WebPartDefinition AddWebPartToWebPartPage(this Web web, WebPartEntity webPart, string page)
         {
             if (webPart == null)
             {
@@ -124,7 +128,7 @@ namespace Microsoft.SharePoint.Client
             }
             var serverRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, page);
 
-            AddWebPartToWebPartPage(web, serverRelativeUrl, webPart);
+            return AddWebPartToWebPartPage(web, serverRelativeUrl, webPart);
         }
 
         /// <summary>
@@ -133,6 +137,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="serverRelativePageUrl">Page to add the web part on</param>
         /// <param name="webPart">Information about the web part to insert</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
         public static WebPartDefinition AddWebPartToWebPartPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart)
@@ -172,9 +177,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="row">Row of the wiki table that should hold the inserted web part</param>
         /// <param name="col">Column of the wiki table that should hold the inserted web part</param>
         /// <param name="addSpace">Does a blank line need to be added after the web part (to space web parts)</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when folder or page is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when folder, webPart or page is null</exception>
-        public static void AddWebPartToWikiPage(this Web web, string folder, WebPartEntity webPart, string page, int row, int col, bool addSpace)
+        public static WebPartDefinition AddWebPartToWikiPage(this Web web, string folder, WebPartEntity webPart, string page, int row, int col, bool addSpace)
         {
             if (string.IsNullOrEmpty(folder))
             {
@@ -203,7 +209,7 @@ namespace Microsoft.SharePoint.Client
 
             var webServerRelativeUrl = UrlUtility.EnsureTrailingSlash(web.ServerRelativeUrl);
             var serverRelativeUrl = UrlUtility.Combine(folder, page);
-            AddWebPartToWikiPage(web, webServerRelativeUrl + serverRelativeUrl, webPart, row, col, addSpace);
+            return AddWebPartToWikiPage(web, webServerRelativeUrl + serverRelativeUrl, webPart, row, col, addSpace);
         }
 
         /// <summary>
@@ -215,6 +221,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="row">Row of the wiki table that should hold the inserted web part</param>
         /// <param name="col">Column of the wiki table that should hold the inserted web part</param>
         /// <param name="addSpace">Does a blank line need to be added after the web part (to space web parts)</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Xml.XmlDocument.CreateTextNode(System.String)")]

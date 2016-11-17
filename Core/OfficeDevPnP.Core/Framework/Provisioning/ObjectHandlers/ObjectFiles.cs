@@ -106,7 +106,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             SetFileProperties(targetFile, transformedProperties, false);
                         }
 
+#if !SP2013
                         bool webPartsNeedLocalization = false;
+#endif
                         if (file.WebParts != null && file.WebParts.Any())
                         {
                             targetFile.EnsureProperties(f => f.ServerRelativeUrl);
@@ -115,7 +117,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var webPart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
+#if SP2013
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
+#else
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
+#endif
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webPart.Title);
                                     var wpEntity = new WebPartEntity();
@@ -124,22 +130,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     wpEntity.WebPartZone = webPart.Zone;
                                     wpEntity.WebPartIndex = (int)webPart.Order;
                                     var wpd = web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+#if !SP2013
                                     if (webPart.Title.ContainsResourceToken())
                                     {
                                         // update data based on where it was added - needed in order to localize wp title
+#if !SP2016
                                         wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
                                         webPart.Zone = wpd.ZoneId;
+#else
+                                        wpd.EnsureProperties(w => w.WebPart, w => w.WebPart.Properties);
+#endif
                                         webPart.Order = (uint)wpd.WebPart.ZoneIndex;
                                         webPartsNeedLocalization = true;
                                     }
-                                }
+#endif
+                                    }
                             }
                         }
 
+#if !SP2013
                         if (webPartsNeedLocalization)
                         {
                             file.LocalizeWebParts(web, parser, targetFile);
                         }
+#endif
 
                         switch (file.Level)
                         {

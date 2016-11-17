@@ -71,7 +71,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     }
                     catch { }
 
-                    // Use search based site collection retreival to delete the one's that are left over from failed test cases
+                    // Use search based site collection retrieval to delete the one's that are left over from failed test cases
                     CleanupAllTestSiteCollections(tenantContext);
 #endif
                 }
@@ -285,6 +285,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 Title = "Test",
                 Description = "Test site collection",
                 SiteOwnerLogin = siteOwnerLogin,
+                Lcid = 1033,
             };
 
             tenant.CreateSiteCollection(siteToCreate);

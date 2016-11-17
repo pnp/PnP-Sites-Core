@@ -68,6 +68,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             return isValid;
         }
 
+        #region WebParts
         public bool ValidateWebPartOnPages(ProvisioningTemplate template, TokenParser parser)
         {
             var web = cc.Web;
@@ -101,6 +102,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             web.Context.PendingRequest.RequestExecutor.WebRequest.Headers.Remove("Accept-Language");
             return allOk;
         }
+        #endregion
 
         #region SiteFields
         public bool ValidateSiteFields(Core.Framework.Provisioning.Model.FieldCollection sElements, Core.Framework.Provisioning.Model.FieldCollection tElements, TokenParser sParser, TokenParser tParser)
