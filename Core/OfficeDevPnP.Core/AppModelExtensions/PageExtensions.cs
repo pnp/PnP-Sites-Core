@@ -139,7 +139,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="webPart">Information about the web part to insert</param>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
-        public static void AddWebPartToWebPartPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart)
+        public static WebPartDefinition AddWebPartToWebPartPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
@@ -157,13 +157,13 @@ namespace Microsoft.SharePoint.Client
 
             if (webPartPage == null)
             {
-                return;
+                return null;
             }
 
             web.Context.Load(webPartPage);
             web.Context.ExecuteQueryRetry();
 
-            AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
+            return AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
         }
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Xml.XmlDocument.CreateTextNode(System.String)")]
-        public static void AddWebPartToWikiPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart, int row, int col, bool addSpace)
+        public static WebPartDefinition AddWebPartToWikiPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart, int row, int col, bool addSpace)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
@@ -240,7 +240,7 @@ namespace Microsoft.SharePoint.Client
 
             if (webPartPage == null)
             {
-                return;
+                return null;
             }
 
             web.Context.Load(webPartPage, wp => wp.ListItemAllFields);
@@ -356,6 +356,7 @@ namespace Microsoft.SharePoint.Client
             listItem.Update();
             web.Context.ExecuteQueryRetry();
 
+            return wpdNew;
         }
 
         public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
