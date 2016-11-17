@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.SharePoint.Client.Publishing;
@@ -9,9 +8,6 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Web.UI.WebControls.WebParts;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using OfficeDevPnP.Core.Utilities.WebParts;
