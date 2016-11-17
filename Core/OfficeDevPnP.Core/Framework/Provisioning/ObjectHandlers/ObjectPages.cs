@@ -117,10 +117,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var webpart in page.WebParts)
                             {
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webpart.Title)) == null)
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
-                                    wpEntity.WebPartTitle = webpart.Title;
+                                    wpEntity.WebPartTitle = parser.ParseString(webpart.Title);
                                     wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
                                     web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
                                 }
