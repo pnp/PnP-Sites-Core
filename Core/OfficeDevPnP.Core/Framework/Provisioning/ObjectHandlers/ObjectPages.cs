@@ -71,7 +71,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
                                 }
-                                else {
+                                else
+                                {
                                     web.AddLayoutToWikiPage(page.Layout, url);
                                 }
                             }
@@ -92,7 +93,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
                             }
-                            else {
+                            else
+                            {
                                 web.AddLayoutToWikiPage(page.Layout, url);
                             }
                         }
@@ -109,20 +111,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
 
+                    bool webPartsNeedLocalization = false;
                     if (page.WebParts != null & page.WebParts.Any())
                     {
                         if (!isNoScriptSite)
                         {
                             var existingWebParts = web.GetWebParts(url);
 
-                            foreach (var webpart in page.WebParts)
+                            foreach (var webPart in page.WebParts)
                             {
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
-                                    wpEntity.WebPartTitle = webpart.Title;
-                                    wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
-                                    web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
+                                    wpEntity.WebPartTitle = webPart.Title;
+                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents.Trim(new[] { '\n', ' ' }));
+                                    var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
+                                    if (webPart.Title.ContainsResourceToken())
+                                    {
+                                        // update data based on where it was added - needed in order to localize wp title
+                                        wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
+                                        webPart.Zone = wpd.ZoneId;
+                                        webPart.Order = (uint)wpd.WebPart.ZoneIndex;
+                                        webPartsNeedLocalization = true;
+                                    }
                                 }
                             }
                             var allWebParts = web.GetWebParts(url);
@@ -135,6 +146,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Pages_SkipAddingWebParts, page.Url);
                         }
+                    }
+
+                    if (webPartsNeedLocalization)
+                    {
+                        page.LocalizeWebParts(web, parser);
                     }
 
                     file = web.GetFileByServerRelativeUrl(url);
@@ -161,7 +177,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -179,7 +194,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
         {
-
             return template;
         }
 

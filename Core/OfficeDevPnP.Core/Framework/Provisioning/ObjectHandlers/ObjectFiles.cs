@@ -8,11 +8,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System;
 using System.Text.RegularExpressions;
-using Microsoft.SharePoint.Client.WebParts;
-using System.Xml.Linq;
 using System.Net;
-using System.Text;
-using System.Web;
 using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
@@ -70,11 +66,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var folder = web.EnsureFolderPath(folderName);
 
-                    File targetFile = null;
-
                     var checkedOut = false;
 
-                    targetFile = folder.GetFile(template.Connector.GetFilenamePart(file.Src));
+                    var targetFile = folder.GetFile(template.Connector.GetFilenamePart(file.Src));
 
                     if (targetFile != null)
                     {
@@ -112,25 +106,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             SetFileProperties(targetFile, transformedProperties, false);
                         }
 
+                        bool webPartsNeedLocalization = false;
                         if (file.WebParts != null && file.WebParts.Any())
                         {
                             targetFile.EnsureProperties(f => f.ServerRelativeUrl);
 
-                            var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl);
-                            foreach (var webpart in file.WebParts)
+                            var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl).ToList();
+                            foreach (var webPart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
                                 {
-                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webpart.Title);
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webPart.Title);
                                     var wpEntity = new WebPartEntity();
-                                    wpEntity.WebPartTitle = webpart.Title;
-                                    wpEntity.WebPartXml = parser.ParseString(webpart.Contents).Trim(new[] { '\n', ' ' });
-                                    wpEntity.WebPartZone = webpart.Zone;
-                                    wpEntity.WebPartIndex = (int)webpart.Order;
-                                    web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+                                    wpEntity.WebPartTitle = webPart.Title;
+                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents).Trim(new[] { '\n', ' ' });
+                                    wpEntity.WebPartZone = webPart.Zone;
+                                    wpEntity.WebPartIndex = (int)webPart.Order;
+                                    var wpd = web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
+                                    if (webPart.Title.ContainsResourceToken())
+                                    {
+                                        // update data based on where it was added - needed in order to localize wp title
+                                        wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
+                                        webPart.Zone = wpd.ZoneId;
+                                        webPart.Order = (uint)wpd.WebPart.ZoneIndex;
+                                        webPartsNeedLocalization = true;
+                                    }
                                 }
                             }
+                        }
+
+                        if (webPartsNeedLocalization)
+                        {
+                            file.LocalizeWebParts(web, parser, targetFile);
                         }
 
                         switch (file.Level)
