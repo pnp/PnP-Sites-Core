@@ -120,10 +120,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var webPart in page.WebParts)
                             {
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
-                                    wpEntity.WebPartTitle = webPart.Title;
+                                    wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
                                     wpEntity.WebPartXml = parser.ParseString(webPart.Contents.Trim(new[] { '\n', ' ' }));
                                     var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
                                     if (webPart.Title.ContainsResourceToken())
