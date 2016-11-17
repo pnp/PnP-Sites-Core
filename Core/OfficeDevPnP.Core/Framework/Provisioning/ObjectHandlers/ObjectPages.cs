@@ -122,11 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var webPart in page.WebParts)
                             {
-#if SP2013
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
-#else
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
-#endif
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);

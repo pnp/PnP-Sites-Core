@@ -117,11 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var webPart in file.WebParts)
                             {
                                 // check if the webpart is already set on the page
-#if SP2013
-                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webPart.Title) == null)
-#else
                                 if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
-#endif
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webPart.Title);
                                     var wpEntity = new WebPartEntity();
