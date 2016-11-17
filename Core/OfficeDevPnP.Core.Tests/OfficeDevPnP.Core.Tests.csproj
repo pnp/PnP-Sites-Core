@@ -439,6 +439,9 @@
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
