@@ -174,6 +174,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     Title = "Test",
                     Description = "Test site collection",
                     SiteOwnerLogin = siteOwnerLogin,
+                    Lcid = 1033,
+                    StorageMaximumLevel = 100,
+                    UserCodeMaximumLevel = 0
                 };
 
                 tenant.CreateSiteCollection(siteToCreate, false, true);
