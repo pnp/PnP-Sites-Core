@@ -1,4 +1,5 @@
 ﻿using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.UserProfiles;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
@@ -26,7 +27,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         }
         #endregion
 
-        public bool Validate(ProvisioningTemplate ptSource, ProvisioningTemplate ptTarget, TokenParser sParser, TokenParser tParser)
+        public bool Validate(ProvisioningTemplate ptSource, ProvisioningTemplate ptTarget, TokenParser sParser, TokenParser tParser, Web web)
         {
             bool isValid = false;
 
@@ -52,8 +53,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #endregion
 
             #region WebParts
-            isValid = ValidateWebPartOnPages(ptSource, sParser);
-            if (!isValid) { return false; }
+            if (CanUseAcceptLanguageHeaderForLocalization(web))
+            {
+                isValid = ValidateWebPartOnPages(ptSource, sParser);
+                if (!isValid) { return false; }
+            }
             #endregion
 
 #if !ONPREMISES
@@ -69,6 +73,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         }
 
         #region WebParts
+        private bool CanUseAcceptLanguageHeaderForLocalization(Web web)
+        {
+            if (web.Context.IsAppOnly())
+            {
+                return true;
+            }
+
+            var currentUser = web.EnsureProperty(w => w.CurrentUser);
+            PeopleManager peopleManager = new PeopleManager(web.Context);
+            var languageSettings = peopleManager.GetUserProfilePropertyFor(web.CurrentUser.LoginName, "SPS-MUILanguages");
+            web.Context.ExecuteQueryRetry();
+
+            if (languageSettings == null || String.IsNullOrEmpty(languageSettings.Value))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public bool ValidateWebPartOnPages(ProvisioningTemplate template, TokenParser parser)
         {
             var web = cc.Web;

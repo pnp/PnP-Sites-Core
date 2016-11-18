@@ -20,8 +20,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public LocalizationTest()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f/sub";
         }
         #endregion
 
@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 var result = TestProvisioningTemplate(cc, "localization_add.xml", ptci.HandlersToProcess, null, ptci);
                 LocalizationValidator validator = new LocalizationValidator(cc.Web);
-                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
+                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser, cc.Web));
             }
         }
         /// <summary>
@@ -74,11 +74,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions;
+                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files;
 
                 var result = TestProvisioningTemplate(cc, "localization_add.xml", ptci.HandlersToProcess, null, ptci);
                 LocalizationValidator validator = new LocalizationValidator(cc.Web);
-                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
+                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser, cc.Web));
             }
         }
 

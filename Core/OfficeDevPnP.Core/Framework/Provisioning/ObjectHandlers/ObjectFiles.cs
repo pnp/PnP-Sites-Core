@@ -147,7 +147,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013
                         if (webPartsNeedLocalization)
                         {
-                            file.LocalizeWebParts(web, parser, targetFile);
+                            file.LocalizeWebParts(web, parser, targetFile, scope);
                         }
 #endif
 

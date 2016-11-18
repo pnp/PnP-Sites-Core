@@ -939,6 +939,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping web part localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        /// </summary>
+        internal static string Provisioning_Extensions_WebPartLocalization_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_WebPartLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
         /// </summary>
         internal static string Provisioning_Formatter_Invalid_Template_URI {
