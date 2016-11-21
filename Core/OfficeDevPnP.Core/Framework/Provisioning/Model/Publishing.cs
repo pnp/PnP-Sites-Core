@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private DesignPackage _designPackage = null;
         private AvailableWebTemplateCollection _availableWebTemplates;
         private PageLayoutCollection _pageLayouts;
+        private PublishingPageCollection _publishingPages;
 
         #endregion
 
@@ -26,9 +27,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
+            this._publishingPages = new PublishingPageCollection(this.ParentTemplate);
         }
 
-        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null) 
+        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null, IEnumerable<PublishingPage> publishingPages = null) 
             : this()
         {
             this.AutoCheckRequirements = autoCheckRequirements;
@@ -39,6 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             this.AvailableWebTemplates.AddRange(availableWebTemplates);
             this.PageLayouts.AddRange(pageLayouts);
+            this.PublishingPages.AddRange(publishingPages);
         }
 
         #endregion
@@ -84,6 +87,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Defines the publishing pages 
+        /// </summary>
+        public PublishingPageCollection PublishingPages
+        {
+            get { return this._publishingPages; }
+            private set { this._publishingPages = value; }
+        }
+
+        /// <summary>
         /// Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site 
         /// </summary>
         public AutoCheckRequirementsOptions AutoCheckRequirements { get; set; }
@@ -94,11 +106,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}",
                 this.AutoCheckRequirements.GetHashCode(),
                 this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.DesignPackage != null ? this.DesignPackage.GetHashCode() : 0),
-                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.PublishingPages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -122,7 +135,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AutoCheckRequirements == other.AutoCheckRequirements &&
                 this.AvailableWebTemplates.DeepEquals(other.AvailableWebTemplates) &&
                 this.DesignPackage == other.DesignPackage &&
-                this.PageLayouts.DeepEquals(other.PageLayouts)
+                this.PageLayouts.DeepEquals(other.PageLayouts) &&
+                this.PublishingPages.DeepEquals(other.PublishingPages)
                 );
         }
 

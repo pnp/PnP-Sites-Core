@@ -1613,6 +1613,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping &apos;{0}&apos; as Overwrite is set to false.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Retrieve Template Info.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_RetrieveTemplateInfo {
