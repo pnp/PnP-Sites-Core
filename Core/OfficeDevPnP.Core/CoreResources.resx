@@ -1098,6 +1098,7 @@
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip" xml:space="preserve">
     <value>ListInstance {0} is a Style Library of a site with NoScript enabled and will be skipped</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false" xml:space="preserve">
     <value>Skipping '{0}' as Overwrite is set to false</value>
   </data>
