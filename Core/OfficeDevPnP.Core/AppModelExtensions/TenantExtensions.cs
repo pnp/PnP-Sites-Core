@@ -65,7 +65,7 @@ namespace Microsoft.SharePoint.Client
                 WaitForIsComplete(tenant, op);
 
                 // Add delay to avoid race conditions
-                Thread.Sleep(10 * 1000);
+                Thread.Sleep(20 * 1000);
 
                 // Return site guid of created site collection
                 siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
