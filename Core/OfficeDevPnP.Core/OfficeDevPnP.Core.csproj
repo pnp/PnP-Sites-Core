@@ -522,6 +522,9 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
+    <Compile Include="Framework\Provisioning\Model\PublishingPage.cs" />
+    <Compile Include="Framework\Provisioning\Model\PublishingPageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\PublishingPageWebPart.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignmentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleDefinition.cs" />
@@ -568,6 +571,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLocalization.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectNavigation.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPublishingPages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />
@@ -656,6 +660,9 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.cs">
       <DependentUpon>ProvisioningSchema-2015-12.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-12.cs">
+      <DependentUpon>ProvisioningSchema-2016-12.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.cs">
@@ -673,6 +680,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201503Formatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201612Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLTemplateProvider.cs" />
     <Compile Include="Framework\TimerJobs\Enums\AuthenticationType.cs" />
@@ -746,6 +754,7 @@
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -763,6 +772,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-12.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

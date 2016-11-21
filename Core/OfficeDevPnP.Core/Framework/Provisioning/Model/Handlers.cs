@@ -31,6 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         PageContents = 524288,
         WebSettings = 1048576,
         Navigation = 2097152,
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation
+        PublishingPages = 4194304,
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | PublishingPages
     }
 }
