@@ -259,8 +259,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 catch (Exception ex)
                                 {
-                                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
-                                    throw;
+                                   if (ex.GetType().Equals(typeof(ServerException)) &&(ex as ServerException).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPDuplicateValuesFoundException", StringComparison.InvariantCultureIgnoreCase) && applyingInformation.IgnoreDuplicateDataRowErrors){
+                                       scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate);
+                                       continue;
+                                    }else{
+                                        scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
+                                        throw;
+                                    }
                                 }
                             }
                         }
