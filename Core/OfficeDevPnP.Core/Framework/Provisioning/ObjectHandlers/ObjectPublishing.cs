@@ -362,8 +362,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
                 }
-
-                
                 return parser;
             }
         }
