@@ -1,4 +1,8 @@
 ﻿using System;
+<<<<<<< HEAD
+=======
+using System.Collections.Generic;
+>>>>>>> 1d680a0... Ability to provision publishing pages
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
@@ -84,7 +88,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         context.Load(pageFile, p => p.Name, p => p.CheckOutType);
                         context.ExecuteQueryRetry();
+<<<<<<< HEAD
                         pageFile.SetFileProperties(page.Properties, false);
+=======
+                        var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
+                        pageFile.SetFileProperties(parsedProperties, false);
+>>>>>>> 1d680a0... Ability to provision publishing pages
                     }
 
                     if (page.WebParts != null && page.WebParts.Count > 0)
