@@ -1,5 +1,8 @@
 ﻿using System;
+<<<<<<< HEAD
 using System.Collections.Generic;
+=======
+>>>>>>> 8693780c7dd820ea926f65e9d292259f6ddb4380
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
