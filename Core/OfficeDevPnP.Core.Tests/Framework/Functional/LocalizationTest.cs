@@ -25,8 +25,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public LocalizationTest()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c/sub";
         }
         #endregion
 
@@ -48,6 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionsLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -60,7 +61,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions ;
                 
                 var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
-                LocalizationValidator Validator = new LocalizationValidator();
+                LocalizationValidator Validator = new LocalizationValidator(cc.Web);
                 Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
             }
 
@@ -69,6 +70,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
@@ -81,7 +83,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions;
                 
                 var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
-                LocalizationValidator Validator = new LocalizationValidator();
+                LocalizationValidator Validator = new LocalizationValidator(cc.Web);
                 Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
             }
         }

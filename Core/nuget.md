@@ -4,7 +4,7 @@ PnP Core component has been released as a nuget package or as a two different nu
 
 - [Introducing Office 365 Developer PnP core component as nuget package](http://blogs.msdn.com/b/vesku/archive/2014/11/17/introducing-office-365-developer-pnp-core-component-as-nuget-package.aspx)
 
-We will be updating the package during monthly master merges with the latest component version. Please give us feedback and input on the package using [Office 365 Developer Patterns & Practices Yammer group](http://aka.ms/officedevpnpyammer).
+We will be updating the package during monthly master merges with the latest component version. Please give us feedback and input on the package using [SharePoint Developer Group](http://aka.ms/sppnp-community) at Microsoft Tech Community.
 
 
 ----------

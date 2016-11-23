@@ -48,6 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Security Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionSecurityTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))

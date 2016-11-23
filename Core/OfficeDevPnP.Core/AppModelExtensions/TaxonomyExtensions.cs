@@ -1373,22 +1373,22 @@ namespace Microsoft.SharePoint.Client
                     clientContext.Load(termSets, t => t.IncludeWithDefaultProperties(s => s.Terms));
                     clientContext.ExecuteQueryRetry();
                     var termGroupName = DenormalizeName(termGroup.Name);
-                    var groupPath = string.Format("{0}{1}", termGroupName, (includeId) ? string.Format(";#{0}", termGroup.Id.ToString()) : "");
+                    var groupPath = $"{termGroupName}{((includeId) ? $";#{termGroup.Id}" : "")}";
                     foreach (var set in termSets)
                     {
                         var setName = DenormalizeName(set.Name);
-                        var termsetPath = string.Format("{0}{3}{1}{2}", groupPath, setName, (includeId) ? string.Format(";#{0}", set.Id.ToString()) : "", delimiter);
+                        var termsetPath = string.Format("{0}{3}{1}{2}", groupPath, setName, (includeId) ? $";#{set.Id}" : "", delimiter);
                         foreach (var term in set.Terms)
                         {
                             var termName = DenormalizeName(term.Name);
-                            var termPath = string.Format("{0}{3}{1}{2}", termsetPath, termName, (includeId) ? string.Format(";#{0}", term.Id.ToString()) : "", delimiter);
+                            var termPath = string.Format("{0}{3}{1}{2}", termsetPath, termName, (includeId) ?
+                                $";#{term.Id.ToString()}"
+                                : "", delimiter);
                             termsString.Add(termPath);
 
                             if (term.TermsCount > 0)
                             {
-                                var subTermPath = string.Format("{0}{3}{1}{3}{2}", groupPath, termsetPath, termPath, delimiter);
-
-                                termsString.AddRange(ParseSubTerms(subTermPath, term, includeId, delimiter, clientContext));
+                                termsString.AddRange(ParseSubTerms(termPath, term, includeId, delimiter, clientContext));
                             }
                         }
                     }

@@ -23,6 +23,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     internal class ObjectFiles : ObjectHandlerBase
     {
         private readonly string[] WriteableReadOnlyFields = new string[] { "publishingpagelayout", "contenttypeid" };
+        
+        // See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
+        public static readonly string[] BlockedExtensionsInNoScript = new string[] { ".asmx", ".ascx", ".aspx", ".htc", ".jar", ".master", ".swf", ".xap", ".xsf" };
+        public static readonly string[] BlockedLibrariesInNoScript = new string[] { "_catalogs/theme", "style library", "_catalogs/lt", "_catalogs/wp" };
 
         public override string Name
         {
@@ -33,6 +37,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Check if this is not a noscript site as we're not allowed to write to the web property bag is that one
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 var context = web.Context as ClientContext;
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
@@ -52,6 +59,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
                         folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+                    }
+
+                    if (SkipFile(isNoScriptSite, file.Src, folderName))
+                    {
+                        // add log message
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Files_SkipFileUpload, file.Src, folderName);
+                        continue;
                     }
 
                     var folder = web.EnsureFolderPath(folderName);
@@ -119,10 +133,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
 
-                        if (checkedOut)
+                        switch (file.Level)
                         {
-                            targetFile.CheckIn("", CheckinType.MajorCheckIn);
-                            web.Context.ExecuteQueryRetry();
+                            case Model.FileLevel.Published:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Published);
+                                    break;
+                                }
+                            case Model.FileLevel.Draft:
+                                {
+                                    targetFile.PublishFileToLevel(Microsoft.SharePoint.Client.FileLevel.Draft);
+                                    break;
+                                }
+                            default:
+                                {
+                                    if (checkedOut)
+                                    {
+                                        targetFile.CheckIn("", CheckinType.MajorCheckIn);
+                                        web.Context.ExecuteQueryRetry();
+                                    }
+                                    break;
+                                }
                         }
 
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
@@ -290,6 +321,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     context.ExecuteQueryRetry();
                 }
             }
+        }
+
+        /// <summary>
+        /// Checks if a given file can be uploaded. Sites using NoScript can't handle all uploads
+        /// </summary>
+        /// <param name="isNoScriptSite">Is this a noscript site?</param>
+        /// <param name="fileName">Filename to verify</param>
+        /// <param name="folderName">Folder (library) to verify</param>
+        /// <returns>True is the file will not be uploaded, false otherwise</returns>
+        public static bool SkipFile(bool isNoScriptSite, string fileName, string folderName)
+        {
+            string fileExtionsion = System.IO.Path.GetExtension(fileName).ToLower();
+            if (isNoScriptSite)
+            {
+                if (!String.IsNullOrEmpty(fileExtionsion) && BlockedExtensionsInNoScript.Contains(fileExtionsion))
+                {
+                    // We need to skip this file
+                    return true;
+                }
+
+                if (!String.IsNullOrEmpty(folderName))
+                {
+                    foreach (string blockedlibrary in BlockedLibrariesInNoScript)
+                    {
+                        if (folderName.ToLower().StartsWith(blockedlibrary))
+                        {
+                            // Can't write to this library, let's skip
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private string Tokenize(Web web, string xml)

@@ -270,9 +270,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -327,6 +327,7 @@
     <Compile Include="AppModelExtensions\NavigationExtensionsTests.cs" />
     <Compile Include="Authentication\AuthenticationTests.cs" />
     <Compile Include="Diagnostics\LogTests.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
@@ -367,7 +368,7 @@
     <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
     <Compile Include="Framework\Functional\Validators\RegionalSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SearchSettingValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ListValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ListInstanceValidator.cs" />
     <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
     <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
@@ -538,7 +539,7 @@
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\publishing_add.xml" />
-    <Content Include="Framework\Functional\Templates\workflows_add.xml" />
+    <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -553,6 +554,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.json" />
+    <None Include="Resources\Templates\TestTemplateOriginal.pnp" />
+    <None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
     <None Include="Resources\TestSolution.wsp" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
@@ -597,7 +600,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Framework\Functional\Templates\workflow.xaml">
+    <None Include="Framework\Functional\Templates\PnPworkflow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </None>

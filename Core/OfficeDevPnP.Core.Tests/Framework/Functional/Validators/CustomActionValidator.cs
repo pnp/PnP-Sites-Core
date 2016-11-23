@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System;
 using System.Collections;
@@ -9,21 +10,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
     public class CustomActionValidator: ValidatorBase
     {
-        public static bool Validate(CustomActions sourceCustomActions, CustomActions targetCustomActions, TokenParser tokenParser)
+
+        public static bool Validate(CustomActions sourceCustomActions, CustomActions targetCustomActions, TokenParser tokenParser, Web web)
         {
+
+            if (web.IsNoScriptSite())
+            {
+                Console.WriteLine("Skipping validation of custom actions due to noscript site.");
+                return true;
+            }
+
             Console.WriteLine("Custom Action validation started...");
 
             bool isSiteCustomActionsMatch = false;
             bool isWebCustomActionsMatch = false;
             if (sourceCustomActions.SiteCustomActions.Count > 0)
             {
-                isSiteCustomActionsMatch = ValidateCustomActions(sourceCustomActions.SiteCustomActions, targetCustomActions.SiteCustomActions, tokenParser);
+                isSiteCustomActionsMatch = ValidateCustomActions(sourceCustomActions.SiteCustomActions, targetCustomActions.SiteCustomActions, tokenParser, web);
                 Console.WriteLine("Site Custom Actions validation " + isSiteCustomActionsMatch);
             }
 
             if (sourceCustomActions.WebCustomActions.Count > 0)
             {
-                isWebCustomActionsMatch = ValidateCustomActions(sourceCustomActions.WebCustomActions, targetCustomActions.WebCustomActions, tokenParser);
+                isWebCustomActionsMatch = ValidateCustomActions(sourceCustomActions.WebCustomActions, targetCustomActions.WebCustomActions, tokenParser, web);
                 Console.WriteLine("Web Custom  Actions validation " + isWebCustomActionsMatch);
             }
 
@@ -37,10 +46,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
         }
 
-        public static bool ValidateCustomActions(CustomActionCollection source, CustomActionCollection target, TokenParser tokenParser)
+        public static bool ValidateCustomActions(CustomActionCollection source, CustomActionCollection target, TokenParser tokenParser, Web web = null)
         {
             int sCount = 0;
             int tCount = 0;
+
+            if (web != null && web.IsNoScriptSite())
+            {
+                Console.WriteLine("Skipping validation of custom actions due to noscript site.");
+                return true;
+            }
 
             foreach (CustomAction srcSCA in source)
             {

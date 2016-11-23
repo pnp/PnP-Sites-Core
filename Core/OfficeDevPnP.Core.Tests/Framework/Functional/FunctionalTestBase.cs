@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
-                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
+                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString(), isNoScriptSite:false);
 
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
@@ -89,60 +89,68 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Apply template and read the "result"
         public TestProvisioningTemplateResult TestProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess = Handlers.All, ProvisioningTemplateApplyingInformation ptai = null, ProvisioningTemplateCreationInformation ptci = null)
         {
-            // Read the template from XML and apply it
-            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-            ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
-
-            if (ptai == null)
+            try
             {
-                ptai = new ProvisioningTemplateApplyingInformation();
-                ptai.HandlersToProcess = handlersToProcess;
-            }
+                // Read the template from XML and apply it
+                XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+                ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
 
-            if (ptai.ProgressDelegate == null)
-            {
-                ptai.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                if (ptai == null)
                 {
-                    Console.WriteLine("Applying template - {0}/{1} - {2}", progress, total, message);
+                    ptai = new ProvisioningTemplateApplyingInformation();
+                    ptai.HandlersToProcess = handlersToProcess;
+                }
+
+                if (ptai.ProgressDelegate == null)
+                {
+                    ptai.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                    {
+                        Console.WriteLine("Applying template - {0}/{1} - {2}", progress, total, message);
+                    };
+                }
+
+                sourceTemplate.Connector = provider.Connector;
+
+                TokenParser sourceTokenParser = new TokenParser(cc.Web, sourceTemplate);
+
+                cc.Web.ApplyProvisioningTemplate(sourceTemplate, ptai);
+
+                // Read the site we applied the template to 
+                if (ptci == null)
+                {
+                    ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                    ptci.HandlersToProcess = handlersToProcess;
+                }
+
+                if (ptci.ProgressDelegate == null)
+                {
+                    ptci.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+                    {
+                        Console.WriteLine("Getting template - {0}/{1} - {2}", progress, total, message);
+                    };
+                }
+
+                ProvisioningTemplate targetTemplate = cc.Web.GetProvisioningTemplate(ptci);
+
+                return new TestProvisioningTemplateResult()
+                {
+                    SourceTemplate = sourceTemplate,
+                    SourceTokenParser = sourceTokenParser,
+                    TargetTemplate = targetTemplate,
+                    TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
                 };
             }
-
-            sourceTemplate.Connector = provider.Connector;
-
-            TokenParser sourceTokenParser = new TokenParser(cc.Web, sourceTemplate);
-
-            cc.Web.ApplyProvisioningTemplate(sourceTemplate, ptai);
-
-            // Read the site we applied the template to 
-            if (ptci == null)
+            catch(Exception ex)
             {
-                ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = handlersToProcess;
+                Console.WriteLine(ex.ToDetailedString());
+                throw;
             }
-
-            if (ptci.ProgressDelegate == null)
-            {
-                ptci.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
-                {
-                    Console.WriteLine("Getting template - {0}/{1} - {2}", progress, total, message);
-                };
-            }
-
-            ProvisioningTemplate targetTemplate = cc.Web.GetProvisioningTemplate(ptci);
-
-            return new TestProvisioningTemplateResult()
-            {
-                SourceTemplate = sourceTemplate,
-                SourceTokenParser = sourceTokenParser,
-                TargetTemplate = targetTemplate,
-                TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
-            };
         }
         #endregion
 
         #region Helper methods
 #if !ONPREMISES
-        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
+        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
             try
             {
@@ -169,11 +177,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 };
 
                 tenant.CreateSiteCollection(siteToCreate, false, true);
+
+                if (isNoScriptSite)
+                {
+                    tenant.SetSiteProperties(siteToCreateUrl, noScriptSite: true);
+                }
+
                 return siteToCreateUrl;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }
@@ -212,7 +226,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     catch (Exception ex)
                     {
                         // eat all exceptions
-                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToDetailedString());
                     }
                 }
             }
@@ -246,7 +260,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             //return subWeb.Url;
         }
 #else
-        private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
+        private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
             string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
 
@@ -271,6 +285,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             };
 
             tenant.CreateSiteCollection(siteToCreate);
+
+            // Create the default groups
+            using (ClientContext cc = new ClientContext(siteToCreateUrl))
+            {
+                var owners = cc.Web.AddGroup("Test Owners", "", true, false);
+                var members = cc.Web.AddGroup("Test Members", "", true, false);
+                var visitors = cc.Web.AddGroup("Test Visitors", "", true, true);
+
+                cc.Web.AssociateDefaultGroups(owners, members, visitors);
+            }
+
             return siteToCreateUrl;
         }
 

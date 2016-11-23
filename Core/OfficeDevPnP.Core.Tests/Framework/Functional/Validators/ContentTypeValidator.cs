@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -25,23 +26,28 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class ContentTypeValidator : ValidatorBase
     {
+        private bool isNoScriptSite = false;
+
         #region construction
-        public ContentTypeValidator(): base()
+        public ContentTypeValidator(Web web): base()
         {
             // optionally override schema version
             SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
             XPathQuery = "/pnp:Templates/pnp:ProvisioningTemplate/pnp:ContentTypes/pnp:ContentType";
+
+            // Check if this is not a noscript site as we're not allowed to update some properties
+            isNoScriptSite = web.IsNoScriptSite();
         }
         #endregion
 
         #region Validation logic
-        public bool Validate(ContentTypeCollection sourceCollection, ContentTypeCollection targetCollection, TokenParser tokenParser)
+        public bool Validate(Core.Framework.Provisioning.Model.ContentTypeCollection sourceCollection, Core.Framework.Provisioning.Model.ContentTypeCollection targetCollection, TokenParser tokenParser)
         {
             // Convert object collections to XML 
             List<SerializedContentType> sourceContentTypes = new List<SerializedContentType>();
             List<SerializedContentType> targetContentTypes = new List<SerializedContentType>();
 
-            foreach (ContentType ct in sourceCollection)
+            foreach (Core.Framework.Provisioning.Model.ContentType ct in sourceCollection)
             {
                 ProvisioningTemplate pt = new ProvisioningTemplate();
                 pt.ContentTypes.Add(ct);
@@ -49,7 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 sourceContentTypes.Add(new SerializedContentType() { SchemaXml = ExtractElementXml(pt) });                
             }
 
-            foreach (ContentType ct in targetCollection)
+            foreach (Core.Framework.Provisioning.Model.ContentType ct in targetCollection)
             {
                 ProvisioningTemplate pt = new ProvisioningTemplate();
                 pt.ContentTypes.Add(ct);
@@ -87,6 +93,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (sourceObject.Attribute("Group") == null)
             {
                 DropAttribute(targetObject, "Group");
+            }
+
+            // Since we can't upload aspx files there's no point in using the engine to set a custom content type forms
+            if (isNoScriptSite)
+            {
+                DropAttribute(sourceObject, "NewFormUrl");
+                DropAttribute(targetObject, "NewFormUrl");
+                DropAttribute(sourceObject, "EditFormUrl");
+                DropAttribute(targetObject, "EditFormUrl");
+                DropAttribute(sourceObject, "DisplayFormUrl");
+                DropAttribute(targetObject, "DisplayFormUrl");
             }
 
             // Target content type is retrieved with all fieldrefs, so delete the OOB ones
@@ -137,27 +154,45 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 {
                     sourceObject.Element(ns + "DocumentSetTemplate").Attribute("WelcomePage").Remove();
                 }
-
-                // Drop the FileSourcePath attribute in both source and target
-                var defaultDocuments = targetObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
-                if (defaultDocuments != null)
+                
+                if (isNoScriptSite)
                 {
-                    IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
-
-                    foreach (var defaultDocument in defaultDocumentsElements)
+                    // Setting default documents is not supported in NoScript sites so let's drop that from the comparison
+                    var defaultDocuments = sourceObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                    if (defaultDocuments != null)
                     {
-                        DropAttribute(defaultDocument, "FileSourcePath");
+                        defaultDocuments.Remove();
+                    }
+
+                    defaultDocuments = targetObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                    if (defaultDocuments != null)
+                    {
+                        defaultDocuments.Remove();
                     }
                 }
-
-                defaultDocuments = sourceObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
-                if (defaultDocuments != null)
+                else
                 {
-                    IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
-
-                    foreach (var defaultDocument in defaultDocumentsElements)
+                    // Drop the FileSourcePath attribute in both source and target
+                    var defaultDocuments = targetObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                    if (defaultDocuments != null)
                     {
-                        DropAttribute(defaultDocument, "FileSourcePath");
+                        IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
+
+                        foreach (var defaultDocument in defaultDocumentsElements)
+                        {
+                            DropAttribute(defaultDocument, "FileSourcePath");
+                        }
+                    }
+
+                    defaultDocuments = sourceObject.Descendants(ns + "DefaultDocuments").FirstOrDefault();
+                    if (defaultDocuments != null)
+                    {
+                        IEnumerable<XElement> defaultDocumentsElements = defaultDocuments.Descendants(ns + "DefaultDocument");
+
+                        foreach (var defaultDocument in defaultDocumentsElements)
+                        {
+                            DropAttribute(defaultDocument, "FileSourcePath");
+                        }
                     }
                 }
             }

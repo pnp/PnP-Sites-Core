@@ -81,7 +81,7 @@ namespace Microsoft.SharePoint.Client
 
             IEnumerable<WebPartDefinition> query;
 
-#if ONPREMISES
+#if SP2016
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
             query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
 #else
@@ -410,11 +410,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     var wp = query.First();
 
-                    var exportMode = (WebPartExportMode)Enum.Parse(typeof(WebPartExportMode), wp.WebPart.Properties["ExportMode"].ToString());
+                    var exportMode = wp.WebPart.ExportMode;
                     var changed = false;
-                    if (exportMode != WebPartExportMode.All)
+                    if (exportMode != WebParts.WebPartExportMode.All)
                     {
-                        wp.WebPart.Properties["ExportMode"] = WebPartExportMode.All;
+                        wp.WebPart.ExportMode = WebParts.WebPartExportMode.All;
                         wp.SaveWebPartChanges();
                         web.Context.ExecuteQueryRetry();
                         changed = true;
@@ -426,7 +426,7 @@ namespace Microsoft.SharePoint.Client
 
                     if (changed)
                     {
-                        wp.WebPart.Properties["ExportMode"] = exportMode;
+                        wp.WebPart.ExportMode = exportMode;
                         wp.SaveWebPartChanges();
                         web.Context.ExecuteQueryRetry();
                     }

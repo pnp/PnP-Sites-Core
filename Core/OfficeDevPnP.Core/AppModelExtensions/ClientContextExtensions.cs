@@ -207,6 +207,7 @@ namespace Microsoft.SharePoint.Client
             bool hasMinimalVersion = false;
             try
             {
+                clientContext.ExecuteQueryRetry();
                 hasMinimalVersion = clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
             }
             catch (PropertyOrFieldNotInitializedException)

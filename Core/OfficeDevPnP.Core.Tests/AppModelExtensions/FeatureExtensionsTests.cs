@@ -91,7 +91,7 @@ namespace Microsoft.SharePoint.Client.Tests
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(ex.ToDetailedString());
                 throw;
             }
         }
@@ -130,7 +130,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     catch (Exception ex)
                     {
                         // eat all exceptions
-                        Console.WriteLine(ex.ToString());
+                        Console.WriteLine(ex.ToDetailedString());
                     }
                 }
             }
@@ -272,13 +272,20 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
-        [ExpectedException(typeof(System.AggregateException))]
         public void ActivateFakeFeatureTest()
         {
-            // Test
-            clientContext.Site.ActivateFeature(FakeFeatureId);
+            try
+            {
+                // Test
+                clientContext.Site.ActivateFeature(FakeFeatureId);
+                // We should not get here since we expect an error to be thrown
+                Assert.IsFalse(true);
+            }
+            catch
+            {
+                Assert.IsFalse(false);
+            }
 
-            Assert.IsFalse(clientContext.Site.IsFeatureActive(FakeFeatureId));
         }
 
         [TestMethod()]

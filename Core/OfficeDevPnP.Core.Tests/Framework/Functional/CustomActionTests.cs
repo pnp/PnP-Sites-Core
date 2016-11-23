@@ -34,6 +34,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionCustomActionAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -43,16 +44,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 // Add custom actions
                 var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.Validate(result.SourceTemplate.CustomActions, result.TargetTemplate.CustomActions, result.TargetTokenParser));
+                Assert.IsTrue(CustomActionValidator.Validate(result.SourceTemplate.CustomActions, result.TargetTemplate.CustomActions, result.TargetTokenParser, cc.Web));
 
 #if !SP2013
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser));
+                Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser, cc.Web));
 
                 // Update custom actions
                 var result3 = TestProvisioningTemplate(cc, "customaction_1605_delta_2.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.Validate(result3.SourceTemplate.CustomActions, result3.TargetTemplate.CustomActions, result3.TargetTokenParser));
+                Assert.IsTrue(CustomActionValidator.Validate(result3.SourceTemplate.CustomActions, result3.TargetTemplate.CustomActions, result3.TargetTokenParser, cc.Web));
 #endif
             }
         }
@@ -60,6 +61,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebCustomActionAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
@@ -69,12 +71,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 // Add custom actions
                 var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser));
+                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser, cc.Web));
 
 #if !SP2013
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser));
+                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser, cc.Web));
 #endif
             }
         }

@@ -140,7 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 string folders = GetUrlFolders(container);
 
                 CamlQuery camlQuery = new CamlQuery();
-                camlQuery.ViewXml = @"<View><Query><Where><Eq><FieldRef Name='ContentType' /><Valye Type='Text'>Folder</Value></Eq></Where></Query></View>";
+                camlQuery.ViewXml = @"<View><Query><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Folder</Value></Eq></Where></Query></View>";
 
                 if (folders.Length > 0)
                 {

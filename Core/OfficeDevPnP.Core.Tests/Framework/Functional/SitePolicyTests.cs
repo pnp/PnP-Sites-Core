@@ -47,16 +47,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// <summary>
         /// SitePolicyTests Test
         /// </summary>
-        [TestMethod]
-        public void SitePolicyTest()
-        {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "sitepolicy_add.xml", Handlers.SitePolicy);
-                SitePolicyValidator spv= new SitePolicyValidator();
-                Assert.IsTrue(spv.Validate(result.SourceTemplate.SitePolicy, result.TargetTemplate.SitePolicy,result.TargetTokenParser));
-            }
-        }
+        //[TestMethod]
+        //[Timeout(15 * 60 * 1000)]
+        //public void SitePolicyTest()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+        //    {
+        //        var result = TestProvisioningTemplate(cc, "sitepolicy_add.xml", Handlers.SitePolicy);
+        //        SitePolicyValidator spv= new SitePolicyValidator();
+        //        Assert.IsTrue(spv.Validate(result.SourceTemplate.SitePolicy, result.TargetTemplate.SitePolicy,result.TargetTokenParser));
+        //    }
+        //}
         #endregion
     }
 }

@@ -9,6 +9,7 @@ using System.Xml.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities;
+using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
@@ -21,61 +22,80 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             //SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
         }
 
-        public bool Validate(FileCollection sourceFiles, Microsoft.SharePoint.Client.ClientContext ctx)
+        public bool Validate(Core.Framework.Provisioning.Model.FileCollection sourceFiles, Microsoft.SharePoint.Client.ClientContext ctx)
         {
             int scount = 0;
             int tcount = 0;
 
-            foreach (var sf in sourceFiles)
+            try
             {
-                scount++;
-                string fileName = sf.Src;
-                string folderName = sf.Folder;
-                string fileUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName);
-                var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName));
-                ctx.Load(file, f => f.Exists, f => f.Length);
-                ctx.ExecuteQuery();
+                // Check if this is not a noscript site as we're not allowed to write to the web property bag is that one
+                bool isNoScriptSite = ctx.Web.IsNoScriptSite();
 
-                if (file.Exists)
+                foreach (var sf in sourceFiles)
                 {
-                    tcount++;
+                    scount++;
+                    string fileName = sf.Src;
+                    string folderName = sf.Folder;
+                    string fileUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName);
 
-                    #region File - Security
-                    if (sf.Security != null)
+                    // Skip the files we skipped to provision (if any)
+                    if (ObjectFiles.SkipFile(isNoScriptSite, fileName, folderName))
                     {
-                        ctx.Load(file, f => f.ListItemAllFields);
-                        ctx.ExecuteQuery();
-                        bool isSecurityMatch = ValidateSecurityCSOM(ctx, sf.Security, file.ListItemAllFields);
-                        if (!isSecurityMatch)
-                        {
-                            return false;
-                        }
-
+                        continue;
                     }
-                    #endregion
 
-                    #region Overwrite validation
-                    if (sf.Overwrite == false)
+                    var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, folderName + "/" + fileName));
+                    ctx.Load(file, f => f.Exists, f => f.Length);
+                    ctx.ExecuteQuery();
+
+                    if (file.Exists)
                     {
-                        // lookup the original added file size...should be different from the one we retrieved from SharePoint since we opted to NOT overwrite
-                        var files = System.IO.Directory.GetFiles(@".\framework\functional\templates");
-                        foreach (var f in files)
+                        tcount++;
+
+                        #region File - Security
+                        if (sf.Security != null)
                         {
-                            if (f.Contains(sf.Src))
+                            ctx.Load(file, f => f.ListItemAllFields);
+                            ctx.ExecuteQuery();
+                            bool isSecurityMatch = ValidateSecurityCSOM(ctx, sf.Security, file.ListItemAllFields);
+                            if (!isSecurityMatch)
                             {
-                                if (new System.IO.FileInfo(f).Length == file.Length)
+                                return false;
+                            }
+
+                        }
+                        #endregion
+
+                        #region Overwrite validation
+                        if (sf.Overwrite == false)
+                        {
+                            // lookup the original added file size...should be different from the one we retrieved from SharePoint since we opted to NOT overwrite
+                            var files = System.IO.Directory.GetFiles(@".\framework\functional\templates");
+                            foreach (var f in files)
+                            {
+                                if (f.Contains(sf.Src))
                                 {
-                                    return false;
+                                    if (new System.IO.FileInfo(f).Length == file.Length)
+                                    {
+                                        return false;
+                                    }
                                 }
                             }
                         }
+                        #endregion
                     }
-                    #endregion
+                    else
+                    {
+                        return false;
+                    }
                 }
-                else
-                {
-                    return false;
-                }
+            }
+            catch(Exception ex)
+            {
+                // Return false if we get an exception
+                Console.WriteLine(ex.ToDetailedString());
+                return false;
             }
 
             return true;
