@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // To handle situations where the propertybag is not updated fully when applying a theme, 
                 // we need to create a new context and use that one. Reloading the propertybag does not solve this.
-                var newContext = web.Context.Clone(web.Context.Url);
+                var newContext = web.Context.Clone(web.Url);
 
                 web = newContext.Web;
 
