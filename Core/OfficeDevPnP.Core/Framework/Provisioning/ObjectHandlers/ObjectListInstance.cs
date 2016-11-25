@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                         // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(templateList.Title, StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
+                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
 
                         if (index == -1)
                         {
