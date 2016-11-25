@@ -833,7 +833,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (existingList.BaseTemplate != (int)ListTemplateType.Survey && 
                     existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && 
-                    existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
+                    existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary &&
+                    existingList.BaseTemplate != 850) // 850 = Pages library on publishing site
                 {
                     // https://msdn.microsoft.com/EN-US/library/microsoft.sharepoint.splist.enableattachments.aspx
                     // The EnableAttachments property does not apply to any list that has a base type of Survey, DocumentLibrary or PictureLibrary.
