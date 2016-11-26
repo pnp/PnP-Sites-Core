@@ -2115,7 +2115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      DefaultViewDisplayName = wp.DefaultViewDisplayName,
                                      Order = (uint)wp.Order,
                                      Title = wp.Title,
-                                     Contents = wp.Contents.InnerXml,
+                                     Contents = wp.Contents.OuterXml,
                                      Zone = wp.Zone,
                                  }).ToList() : null
                          }) : null

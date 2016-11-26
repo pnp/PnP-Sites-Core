@@ -43,8 +43,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (PublishingPage page in template.Publishing.PublishingPages)
                 {
+                    string parsedFileName = parser.ParseString(page.FileName);
+                    string parsedFullFileName = parser.ParseString(page.FullFileName);
+
                     Microsoft.SharePoint.Client.Publishing.PublishingPage existingPage =
-                        web.GetPublishingPage(page.FileName + ".aspx");
+                        web.GetPublishingPage(parsedFileName + ".aspx");
 
                     if (!web.IsPropertyAvailable("RootFolder"))
                     {
@@ -58,11 +61,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             scope.LogDebug(
                                 CoreResources.Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false,
-                                page.FileName);
+                                parsedFileName);
                             continue;
                         }
 
-                        if (page.WelcomePage && web.RootFolder.WelcomePage.Contains(page.FullFileName))
+                        if (page.WelcomePage && web.RootFolder.WelcomePage.Contains(parsedFullFileName))
                         {
                             //set the welcome page to a Temp page to allow page deletion
                             web.RootFolder.WelcomePage = "home.aspx";
@@ -75,12 +78,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     web.AddPublishingPage(
-                        page.FileName,
+                        parsedFileName,
                         page.Layout,
                         parser.ParseString(page.Title)
                         );
                     Microsoft.SharePoint.Client.Publishing.PublishingPage publishingPage =
-                        web.GetPublishingPage(page.FullFileName);
+                        web.GetPublishingPage(parsedFullFileName);
                     Microsoft.SharePoint.Client.File pageFile = publishingPage.ListItem.File;
                     pageFile.CheckOut();
 
@@ -104,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         context.Load(mgr);
                         context.ExecuteQueryRetry();
 
-                        AddWebPartsToPublishingPage(page, context, mgr);
+                        AddWebPartsToPublishingPage(page, context, mgr, parser);
                     }
 
                     List pagesLibrary = publishingPage.ListItem.ParentList;
@@ -160,11 +163,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.SetHomePage(rootFolderRelativeUrl);
         }
 
-        private static void AddWebPartsToPublishingPage(PublishingPage page, ClientContext ctx, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr)
+        private static void AddWebPartsToPublishingPage(PublishingPage page, ClientContext ctx, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr, TokenParser parser)
         {
             foreach (var wp in page.WebParts)
             {
-                string wpContentsTokenResolved = wp.Contents;
+                string wpContentsTokenResolved = parser.ParseString(wp.Contents).Replace("<property name=\"JSLink\" type=\"string\">" + ctx.Site.ServerRelativeUrl,"<property name=\"JSLink\" type=\"string\">~sitecollection");
                 Microsoft.SharePoint.Client.WebParts.WebPart webPart = mgr.ImportWebPart(wpContentsTokenResolved).WebPart;
                 Microsoft.SharePoint.Client.WebParts.WebPartDefinition definition = mgr.AddWebPart(
                                                                                             webPart,
@@ -178,7 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (wp.IsListViewWebPart)
                 {
-                    AddListViewWebpart(ctx, wp, definition, webPartProperties);
+                    AddListViewWebpart(ctx, wp, definition, webPartProperties, parser);
                 }
             }
         }
@@ -187,9 +190,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ClientContext ctx,
             PublishingPageWebPart wp,
             Microsoft.SharePoint.Client.WebParts.WebPartDefinition definition,
-            PropertyValues webPartProperties)
+            PropertyValues webPartProperties,
+            TokenParser parser)
         {
-            string defaultViewDisplayName = wp.DefaultViewDisplayName;
+            string defaultViewDisplayName = parser.ParseString(wp.DefaultViewDisplayName);
 
             if (!String.IsNullOrEmpty(defaultViewDisplayName))
             {
@@ -212,7 +216,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     v => v.ViewQuery,
                     v => v.ViewData,
                     v => v.ViewJoins,
-                    v => v.ViewProjectedFields);
+                    v => v.ViewProjectedFields,
+                    v => v.Paged,
+                    v => v.RowLimit);
 
                 ctx.ExecuteQuery();
 
@@ -221,20 +227,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 viewCreatedFromWebpart.ViewData = viewCreatedFromList.ViewData;
                 viewCreatedFromWebpart.ViewJoins = viewCreatedFromList.ViewJoins;
                 viewCreatedFromWebpart.ViewProjectedFields = viewCreatedFromList.ViewProjectedFields;
-                viewCreatedFromWebpart.ViewFields.RemoveAll();
+                viewCreatedFromWebpart.Paged = viewCreatedFromList.Paged;
+                viewCreatedFromWebpart.RowLimit = viewCreatedFromList.RowLimit;
 
+                viewCreatedFromWebpart.ViewFields.RemoveAll();
                 foreach (var field in viewCreatedFromList.ViewFields)
                 {
                     viewCreatedFromWebpart.ViewFields.Add(field);
                 }
 
-                //need to set the JSLink to the new View added by the Webpart manager.
-                //This is because there's no way to change the BaseViewID property of the new View,
-                //and we needed to do that because the custom JSLink was bound to a specific BaseViewID (overrideCtx.BaseViewID = 3;)
-                //The work around to this is to add the JSLink to the specific new View created when you add the xsltViewWebpart to the page
-                //and remove the "overrideCtx.BaseViewID = 3;" from the JSLink file
-                //that way, the JSLink will be executed only for this View, that is only used in the xsltViewWebpart,
-                //so the effect is the same that bind the JSLink to the BaseViewID
                 if (webPartProperties.FieldValues.ContainsKey("JSLink") && webPartProperties.FieldValues["JSLink"] != null)
                 {
                     viewCreatedFromWebpart.JSLink = webPartProperties.FieldValues["JSLink"].ToString();
