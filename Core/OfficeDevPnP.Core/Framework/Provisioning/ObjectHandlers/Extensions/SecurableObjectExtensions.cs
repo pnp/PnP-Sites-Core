@@ -39,7 +39,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 {
                     var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(context);
 
-                    var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignment.RoleDefinition);
+                    var roleAssignmentRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
+                    var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignmentRoleDefinition);
 
                     if (roleDefinition != null)
                     {
