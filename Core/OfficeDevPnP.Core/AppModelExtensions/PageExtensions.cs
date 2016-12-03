@@ -364,7 +364,6 @@ namespace Microsoft.SharePoint.Client
 
         public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
         {
-
             string webPartXml = null;
 
             if (webPartId != Guid.Empty)

@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listItem = file.EnsureProperty(f => f.ListItemAllFields);
                     if (listItem != null)
                     {
-                        if (listItem.FieldValues.ContainsKey("WikiField"))
+                        if (listItem.FieldValues.ContainsKey("WikiField") && listItem.FieldValues["WikiField"] != null)
                         {
                             // Wiki page
                             var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
