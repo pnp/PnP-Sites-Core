@@ -20,8 +20,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         private const string AVAILABLEPAGELAYOUTS = "__PageLayouts";
         private const string DEFAULTPAGELAYOUT = "__DefaultPageLayout";
-        private readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
-        private readonly Guid PUBLISHING_FEATURE_SITE = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
         private const string HTML_PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
@@ -36,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                if (web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
+                if (web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                 {
                     web.EnsureProperty(w => w.Language);
                     var webTemplates = web.GetAvailableWebTemplates(web.Language, false);
@@ -296,8 +294,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return parser;
                 }
 
-                var webFeatureActive = web.IsFeatureActive(PUBLISHING_FEATURE_WEB);
-                var siteFeatureActive = site.IsFeatureActive(PUBLISHING_FEATURE_SITE);
+                var webFeatureActive = web.IsFeatureActive(Constants.FeatureId_Web_Publishing);
+                var siteFeatureActive = site.IsFeatureActive(Constants.FeatureId_Site_Publishing);
                 if (template.Publishing.AutoCheckRequirements == AutoCheckRequirementsOptions.SkipIfNotCompliant && !webFeatureActive)
                 {
                     scope.LogDebug("Publishing Feature (Web Scoped) not active. Skipping provisioning of Publishing settings");
@@ -308,15 +306,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!siteFeatureActive)
                     {
                         scope.LogDebug("Making site compliant for publishing");
-                        site.ActivateFeature(PUBLISHING_FEATURE_SITE);
-                        web.ActivateFeature(PUBLISHING_FEATURE_WEB);
+                        site.ActivateFeature(Constants.FeatureId_Site_Publishing);
+                        web.ActivateFeature(Constants.FeatureId_Web_Publishing);
                     }
                     else
                     {
-                        if (!web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
+                        if (!web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                         {
                             scope.LogDebug("Making site compliant for publishing");
-                            web.ActivateFeature(PUBLISHING_FEATURE_WEB);
+                            web.ActivateFeature(Constants.FeatureId_Web_Publishing);
                         }
                     }
                 }
@@ -370,7 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return web.IsFeatureActive(PUBLISHING_FEATURE_WEB);
+            return web.IsFeatureActive(Constants.FeatureId_Web_Publishing);
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
