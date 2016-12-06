@@ -65,7 +65,7 @@ namespace Microsoft.SharePoint.Client
                 WaitForIsComplete(tenant, op);
 
                 // Add delay to avoid race conditions
-                //Thread.Sleep(30 * 1000);
+                Thread.Sleep(30 * 1000);
 
                 // Return site guid of created site collection
                 siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
@@ -529,14 +529,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
         /// <returns>An IList of SiteEntity objects</returns>
-        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true)
-        {
+        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true, bool includeOD4BSites = false)
+        { 
             var sites = new List<SiteEntity>();
             SPOSitePropertiesEnumerable props = null;
 
             while (props == null || props.NextStartIndexFromSharePoint != null)
             //while (props == null || props.NextStartIndex > -1)
             {
+
+                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                {
+                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                    IncludeDetail = includeDetail
+                };
+
+                //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
                 props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
                 //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);
