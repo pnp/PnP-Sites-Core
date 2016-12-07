@@ -61,8 +61,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
-                                if (page.WelcomePage && url.Contains(web.RootFolder.WelcomePage))
+                                string welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, page.ParentTemplate.WebSettings.WelcomePage);
+                                bool overwriteHomepage = string.Equals(url, welcomePageUrl, StringComparison.InvariantCultureIgnoreCase);
+
+                                if (overwriteHomepage)
+                                {
                                     web.SetHomePage(string.Empty);
+                                }
 
                                 file.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
@@ -74,6 +79,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 else
                                 {
                                     web.AddLayoutToWikiPage(page.Layout, url);
+                                }
+
+                                if (overwriteHomepage)
+                                {
+                                    web.SetHomePage(page.ParentTemplate.WebSettings.WelcomePage);
                                 }
                             }
                             catch (Exception ex)
@@ -102,13 +112,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             scope.LogError(CoreResources.Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_, url, ex.Message, ex.StackTrace);
                         }
-                    }
-
-                    if (page.WelcomePage)
-                    {
-                        web.RootFolder.EnsureProperty(p => p.ServerRelativeUrl);
-                        var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
-                        web.SetHomePage(rootFolderRelativeUrl);
                     }
 
 #if !SP2013
