@@ -61,10 +61,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
-                                string welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, page.ParentTemplate.WebSettings.WelcomePage);
-                                bool overwriteHomepage = string.Equals(url, welcomePageUrl, StringComparison.InvariantCultureIgnoreCase);
+                                bool overwriteWelcomePage = false;
+                                if (!string.IsNullOrEmpty(page.ParentTemplate.WebSettings.WelcomePage))
+                                {
+                                    string welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, page.ParentTemplate.WebSettings.WelcomePage);
+                                    overwriteWelcomePage = string.Equals(url, welcomePageUrl, StringComparison.InvariantCultureIgnoreCase);
+                                }
 
-                                if (overwriteHomepage)
+                                if (overwriteWelcomePage)
                                 {
                                     web.SetHomePage(string.Empty);
                                 }
@@ -81,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     web.AddLayoutToWikiPage(page.Layout, url);
                                 }
 
-                                if (overwriteHomepage)
+                                if (overwriteWelcomePage)
                                 {
                                     web.SetHomePage(page.ParentTemplate.WebSettings.WelcomePage);
                                 }
