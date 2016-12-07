@@ -26,6 +26,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder.WelcomePage);
 
+                string welcomePageUrl = web.RootFolder.WelcomePage;
+
+                string welcomePageServerRelativeUrl = null;
+                if (!string.IsNullOrEmpty(welcomePageUrl))
+                {
+                    welcomePageServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, welcomePageUrl);
+                }
+
                 // Check if this is not a noscript site as we're not allowed to update some properties
                 bool isNoScriptSite = web.IsNoScriptSite();
 
@@ -61,12 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
-                                bool overwriteWelcomePage = false;
-                                if (!string.IsNullOrEmpty(page.ParentTemplate.WebSettings.WelcomePage))
-                                {
-                                    string welcomePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, page.ParentTemplate.WebSettings.WelcomePage);
-                                    overwriteWelcomePage = string.Equals(url, welcomePageUrl, StringComparison.InvariantCultureIgnoreCase);
-                                }
+                                bool overwriteWelcomePage = string.Equals(url, welcomePageServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase);
 
                                 if (overwriteWelcomePage)
                                 {
@@ -87,7 +90,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (overwriteWelcomePage)
                                 {
-                                    web.SetHomePage(page.ParentTemplate.WebSettings.WelcomePage);
+                                    web.SetHomePage(welcomePageUrl);
                                 }
                             }
                             catch (Exception ex)
