@@ -764,19 +764,31 @@ namespace Microsoft.SharePoint.Client
         {
             if (web == null) throw new ArgumentNullException(nameof(web));
 
+            // Retrieve the id of the publishing page library
             var context = web.Context;
-            int language = (int)web.EnsureProperty(w => w.Language);
+            var pagesLibraryId = web.GetPropertyBagValueString("__PagesListId", "");
 
-            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
-            context.ExecuteQueryRetry();
-            string pagesLibraryName = result.Value;
-
-            if (string.IsNullOrEmpty(pagesLibraryName))
+            // Check if it is isn't empty
+            if (String.IsNullOrEmpty(pagesLibraryId))
             {
-                throw new InvalidOperationException("Could not load pages library URL name from 'cmscore' resources file.");
+                return null;
             }
 
-            return web.GetListByUrl(pagesLibraryName) ?? web.GetListByTitle(pagesLibraryName);
+            // Parse the string to a valid guid
+            Guid pagesLibraryGuid;
+            if (!Guid.TryParse(pagesLibraryId, out pagesLibraryGuid))
+            {
+                return null;
+            }
+
+            // Retrieve the pages library 
+            var pagesLibrary = web.Lists.GetById(pagesLibraryGuid);
+            context.Load(pagesLibrary, list => list.Title);
+            context.ExecuteQueryRetry();
+
+            // Now retrieve the list by using GetListByTitle for compatability. 
+            // The properties loaded in GetListByTitle will still be loaded.
+            return web.GetListByTitle(pagesLibrary.Title);
         }
 
         /// <summary>
