@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -126,7 +127,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
 
             String notOnOrAfter = samlAssertion.DocumentElement.FirstChild.Attributes["NotOnOrAfter"].Value;
             DateTime toDate = DateTime.MinValue;
-            if (DateTime.TryParse(notOnOrAfter, out toDate))
+            if (DateTime.TryParse(notOnOrAfter, CultureInfo.InvariantCulture, DateTimeStyles.None, out toDate))
             {
                 return toDate;
             }
@@ -151,10 +152,10 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
             String notBefore = samlAssertion.DocumentElement.FirstChild.Attributes["NotBefore"].Value;
 
             DateTime toDate = DateTime.MinValue;
-            if (DateTime.TryParse(notOnOrAfter, out toDate))
+            if (DateTime.TryParse(notOnOrAfter, CultureInfo.InvariantCulture, DateTimeStyles.None, out toDate))
             {
                 DateTime fromDate = DateTime.MinValue;
-                if (DateTime.TryParse(notBefore, out fromDate))
+                if (DateTime.TryParse(notBefore, CultureInfo.InvariantCulture, DateTimeStyles.None, out fromDate))
                 {
                     return toDate - fromDate;
                 }

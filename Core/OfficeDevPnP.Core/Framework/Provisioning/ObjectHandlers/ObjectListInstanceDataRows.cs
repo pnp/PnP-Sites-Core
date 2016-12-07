@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using Microsoft.SharePoint.Client;
@@ -168,7 +169,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                                 case FieldType.DateTime:
                                                     var dateTime = DateTime.MinValue;
-                                                    if (DateTime.TryParse(fieldValue, out dateTime))
+                                                    if (DateTime.TryParse(fieldValue, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateTime))
                                                     {
                                                         listitem[parser.ParseString(dataValue.Key)] = dateTime;
                                                     }
