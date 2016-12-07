@@ -15,8 +15,6 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static class BaseTemplateManager
     {
-        private static readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
-
         public static ProvisioningTemplate GetBaseTemplate(this Web web)
         {
             web.Context.Load(web, p => p.WebTemplate, p => p.Configuration);
