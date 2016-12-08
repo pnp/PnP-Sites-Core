@@ -109,7 +109,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             else
             {
                 // warning
-                scope.LogWarning(CoreResources.Provisioning_Extensions_WebPartLocalization_Skip);
+                scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
             }
         }
     }

@@ -1042,4 +1042,7 @@
   <data name="Provisioning_Extensions_WebPartLocalization_Skip" xml:space="preserve">
     <value>Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
   </data>
+  <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
+    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
 </root>

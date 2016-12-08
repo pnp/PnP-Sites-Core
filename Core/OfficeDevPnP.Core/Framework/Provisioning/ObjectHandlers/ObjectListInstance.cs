@@ -509,11 +509,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
+#if !SP2013
                 // Localize view title
                 if (displayNameElement.Value.ContainsResourceToken())
                 {
                     createdView.LocalizeView(web, displayNameElement.Value, parser, monitoredScope);
                 }
+#endif
             }
             catch (Exception ex)
             {
@@ -983,7 +985,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                #region UserCustomActions
+#region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1038,7 +1040,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-                #endregion
+#endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
