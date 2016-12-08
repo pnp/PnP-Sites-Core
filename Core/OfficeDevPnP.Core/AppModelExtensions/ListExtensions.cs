@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Enums;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -768,8 +769,8 @@ namespace Microsoft.SharePoint.Client
             int language = (int)web.EnsureProperty(w => w.Language);
 
             var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
-            context.ExecuteQueryRetry();
-            string pagesLibraryName = result.Value;
+            context.ExecuteQueryRetry();            
+            string pagesLibraryName = new Regex(@"['´`]").Replace(result.Value, "");
 
             if (string.IsNullOrEmpty(pagesLibraryName))
             {
