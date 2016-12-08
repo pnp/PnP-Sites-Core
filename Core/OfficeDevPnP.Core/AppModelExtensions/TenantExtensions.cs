@@ -68,7 +68,8 @@ namespace Microsoft.SharePoint.Client
                 Thread.Sleep(30 * 1000);
 
                 // Return site guid of created site collection
-                siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                // Temporary not return the site guid for testing purposes
+                //siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
             }
             return siteGuid;
         }
