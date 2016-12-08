@@ -36,6 +36,10 @@
               Folder element with Name attribute 
               Security element on Folder element -->
         <pnp:ListInstance Title="{res:LI_1}" Description="{res:LI_1_Description}" TemplateType="101" Url="LI_1" EnableFolderCreation="true">
+          <pnp:Views RemoveExistingViews="true">
+            <View Type="HTML" DisplayName="{res:LI_1_ViewTitle}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" ImageUrl="/_layouts/images/generic.png?rev=43" Url="AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            </View>
+        </pnp:Views>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" />
             <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" />
