@@ -327,7 +327,6 @@
     <Compile Include="AppModelExtensions\NavigationExtensionsTests.cs" />
     <Compile Include="Authentication\AuthenticationTests.cs" />
     <Compile Include="Diagnostics\LogTests.cs" />
-    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
