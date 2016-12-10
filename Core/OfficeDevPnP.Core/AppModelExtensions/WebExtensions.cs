@@ -199,7 +199,7 @@ namespace Microsoft.SharePoint.Client
             var childWeb = webs.FirstOrDefault(item => string.Equals(item.ServerRelativeUrl, serverRelativeUrl, StringComparison.OrdinalIgnoreCase));
             return childWeb;
         }
-        
+
         /// <summary>
         /// Determines if a child Web site with the specified leaf URL exists. 
         /// </summary>
@@ -255,7 +255,7 @@ namespace Microsoft.SharePoint.Client
             }
             return exists;
         }
-        
+
         /// <summary>
         /// Determines if a web exists by title.
         /// </summary>
@@ -265,7 +265,7 @@ namespace Microsoft.SharePoint.Client
         public static bool WebExistsByTitle(this Web parentWeb, string title)
         {
             bool exists = false;
-            
+
             parentWeb.EnsureProperty(p => p.Webs);
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
@@ -389,9 +389,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region Apps and sandbox solutions
+        #region Apps and sandbox solutions
 
         /// <summary>
         /// Returns all app instances
@@ -533,9 +533,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Site retrieval via search
+        #region Site retrieval via search
         /// <summary>
         /// Returns all my site site collections
         /// </summary>
@@ -683,9 +683,9 @@ namespace Microsoft.SharePoint.Client
 
             return totalRows;
         }
-#endregion
+        #endregion
 
-#region Web (site) Property Bag Modifiers
+        #region Web (site) Property Bag Modifiers
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -970,16 +970,36 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-#endregion
+        #endregion
 
-#region Search
+        #region Search
 
         /// <summary>
-        /// Queues a web for a full crawl the next incremental crawl
+        /// Queues a web for a full crawl the next incremental/continous crawl
         /// </summary>
         /// <param name="web">Site to be processed</param>
         public static void ReIndexWeb(this Web web)
         {
+            web.EnsureProperties(w => w.WebTemplate, w => w.NoCrawl);
+            if (web.NoCrawl) return;
+#if !ONPREMISES
+            string[] NoProperyBagAccessTemplates = new string[] { "GROUP", "POINTPUBLISHINGTOPIC", "POINTPUBLISHINGPERSONAL" };
+
+#else
+            string[] NoProperyBagAccessTemplates = new string[] {};
+#endif
+            if (NoProperyBagAccessTemplates.Contains(web.WebTemplate))
+            {
+                // Update individual lists instead, as web bag is (no longer) accessible
+                var context = web.Context;
+                context.Load(web.Lists);
+                context.ExecuteQueryRetry();
+                foreach (var list in web.Lists)
+                {
+                    list.ReIndexList();
+                }
+                return;
+            }
             int searchversion = 0;
             if (web.PropertyBagContainsKey("vti_searchversion"))
             {
@@ -987,9 +1007,9 @@ namespace Microsoft.SharePoint.Client
             }
             web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
         }
-#endregion
+        #endregion
 
-#region Events
+        #region Events
 
 
         /// <summary>
@@ -1104,9 +1124,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Localization
+        #region Localization
 #if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
@@ -1130,9 +1150,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 #endif
-#endregion
+        #endregion
 
-#region TemplateHandling
+        #region TemplateHandling
 
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
@@ -1171,9 +1191,9 @@ namespace Microsoft.SharePoint.Client
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
 
-#endregion
+        #endregion
 
-#region Output Cache
+        #region Output Cache
 
         /// <summary>
         /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
@@ -1199,9 +1219,9 @@ namespace Microsoft.SharePoint.Client
             web.SetPropertyBagValue("EnableDebuggingOutput", debugCacheInformation.ToString());
         }
 
-#endregion
+        #endregion
 
-#region Request Access
+        #region Request Access
 #if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
@@ -1283,6 +1303,6 @@ namespace Microsoft.SharePoint.Client
             return emails;
         }
 #endif
-#endregion
+        #endregion
     }
 }
