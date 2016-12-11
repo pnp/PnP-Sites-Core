@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
@@ -27,8 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 GlobalNavigationType globalNavigationType;
                 CurrentNavigationType currentNavigationType;
 
-                // The Navigation handler works only for sites with Publishing Features enabled
-                if (!web.IsPublishingWeb())
+                if (!WebSupportsExtractNavigation(web))
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing);
                     return template;
@@ -36,8 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Retrieve the current web navigation settings
                 var navigationSettings = new WebNavigationSettings(web.Context, web);
-                web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
-                web.Context.ExecuteQueryRetry();
+                navigationSettings.EnsureProperties(ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
 
                 switch (navigationSettings.GlobalNavigation.Source)
                 {
@@ -99,8 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Navigation != null)
                 {
-                    // The Navigation handler works only for sites with Publishing Features enabled
-                    if (!web.IsPublishingWeb())
+                    if (!WebSupportsProvisionNavigation(web, template))
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing);
                         return parser;
@@ -185,6 +179,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         #region Utility methods
 
+        private bool WebSupportsProvisionNavigation(Web web, ProvisioningTemplate template)
+        {
+            if (template.Navigation == null) return true;
+
+            bool isNavSupported = true;
+            // The Navigation handler for managed metedata only works for sites with Publishing Features enabled
+            if (!web.IsPublishingWeb())
+            {
+                if (template.Navigation.GlobalNavigation != null
+                    && template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Managed)
+                {
+                    isNavSupported = false;
+                }
+                if (template.Navigation.CurrentNavigation != null
+                    && template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.Managed)
+                {
+                    isNavSupported = false;
+                }
+            }
+            return isNavSupported;
+        }
+
+        private bool WebSupportsExtractNavigation(Web web)
+        {
+            bool isNavSupported = true;
+            // The Navigation handler for managed metedata only works for sites with Publishing Features enabled
+            if (!web.IsPublishingWeb())
+            {
+                var navigationSettings = new WebNavigationSettings(web.Context, web);
+                navigationSettings.EnsureProperties(ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
+                if (navigationSettings.CurrentNavigation.Source == StandardNavigationSource.TaxonomyProvider)
+                {
+                    isNavSupported = false;
+                }
+                if (navigationSettings.GlobalNavigation.Source == StandardNavigationSource.TaxonomyProvider)
+                {
+                    isNavSupported = false;
+                }
+            }
+            return isNavSupported;
+        }
+
         private Boolean AreSiblingsEnabledForCurrentStructuralNavigation(Web web)
         {
             bool siblingsEnabled = false;
@@ -223,7 +259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ProvisionStructuralNavigationNodes(
                 web,
                 parser,
-                navigationType, 
+                navigationType,
                 structuralNavigation.NavigationNodes
                 );
         }
@@ -240,10 +276,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     node.IsExternal);
 
                 ProvisionStructuralNavigationNodes(
-                    web, 
+                    web,
                     parser,
-                    navigationType, 
-                    node.NavigationNodes, 
+                    navigationType,
+                    node.NavigationNodes,
                     parser.ParseString(node.Title));
             }
         }
@@ -345,12 +381,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return web.IsPublishingWeb();
+            return WebSupportsExtractNavigation(web);
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return web.IsPublishingWeb() && template.Navigation != null;
+            return WebSupportsProvisionNavigation(web, template);
         }
     }
 
