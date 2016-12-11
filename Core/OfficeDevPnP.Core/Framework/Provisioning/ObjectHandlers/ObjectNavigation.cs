@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -128,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser);
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, scope);
                                 break;
                         }
                         web.Context.ExecuteQueryRetry();
@@ -157,7 +158,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, scope);
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -166,7 +167,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, scope);
                                 break;
                         }
                         web.Context.ExecuteQueryRetry();
@@ -232,17 +233,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return siblingsEnabled;
         }
 
-        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser)
+        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, false);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, false, scope);
         }
 
-        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser)
+        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, scope);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation)
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, PnPMonitoredScope scope)
         {
             // Determine the target structural navigation
             var navigationType = currentNavigation ?
@@ -260,15 +261,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web,
                 parser,
                 navigationType,
-                structuralNavigation.NavigationNodes
+                structuralNavigation.NavigationNodes,
+                scope
                 );
         }
 
-        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, string parentNodeTitle = null)
+        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null)
         {
             foreach (var node in nodes)
             {
-                web.AddNavigationNode(
+                var navNode = web.AddNavigationNode(
                     parser.ParseString(node.Title),
                     new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
                     parser.ParseString(parentNodeTitle),
@@ -280,7 +282,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser,
                     navigationType,
                     node.NavigationNodes,
+                    scope,
                     parser.ParseString(node.Title));
+
+                if (node.Title.ContainsResourceToken())
+                {
+                    navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
+                }
             }
         }
 

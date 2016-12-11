@@ -112,6 +112,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
             }
         }
+
+        internal static void LocalizeNavigationNode(this Microsoft.SharePoint.Client.NavigationNode navigationNode, Web web, string token, TokenParser parser, PnPMonitoredScope scope)
+        {
+            if (CanUseAcceptLanguageHeaderForLocalization(web))
+            {
+                var context = web.Context;
+                var resourceValues = parser.GetResourceTokenResourceValues(token);
+                foreach (var resourceValue in resourceValues)
+                {
+                    // Save property with correct locale on the request to make it stick
+                    // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
+                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                    navigationNode.Title = resourceValue.Item2;
+                    navigationNode.Update();
+                    context.ExecuteQueryRetry();
+                }
+            }
+            else
+            {
+                // warning
+                scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
+            }
+        }
     }
 #endif
 }
