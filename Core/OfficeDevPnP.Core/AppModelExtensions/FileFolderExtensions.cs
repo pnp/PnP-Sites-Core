@@ -998,8 +998,8 @@ namespace Microsoft.SharePoint.Client
                 var web = context.Web;
                 
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
-                folder.Context.Load(file);
-                folder.Context.ExecuteQueryRetry();
+                web.Context.Load(file);
+                web.Context.ExecuteQueryRetry();
                 return file;
             }
             catch (ServerException sex)
@@ -1124,7 +1124,8 @@ namespace Microsoft.SharePoint.Client
                 catch (ServerException ex)
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
-                    if (ex.Message != "The object specified does not belong to a list.")
+                    // Handling the exception stating the "The object specified does not belong to a list."
+                    if (ex.ServerErrorCode != -2146232832)
                     {
                         throw;
                     }
@@ -1283,8 +1284,10 @@ namespace Microsoft.SharePoint.Client
                     }
                     catch (ServerException ex)
                     {
-                        if (ex.Message != "The object specified does not belong to a list.")
+                        // Handling the exception stating the "The object specified does not belong to a list."
+                        if (ex.ServerErrorCode != -2146232832)
                         {
+                            // TODO Replace this with an errorcode as well, does not work with localized o365 tenants
                             if (ex.Message.StartsWith("Cannot invoke method or retrieve property from null object. Object returned by the following call stack is null.") &&
                                 ex.Message.Contains("ListItemAllFields"))
                             {
