@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site RegionalSettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionRegionalSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -67,6 +68,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web RegionalSettings test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebRegionalSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

@@ -988,4 +988,61 @@
   <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
     <value>ExecuteQuery threw following exception: {0}.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Files_SkipFileUpload" xml:space="preserve">
+    <value>Skipping upload of file '{0}' to '{1}'.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls" xml:space="preserve">
+    <value>Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
+    <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions" xml:space="preserve">
+    <value>Skip adding/updating custom actions because the site has "noscript" enabled.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetry" xml:space="preserve">
+    <value>Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
+    <value>SendAsync threw following exception: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript" xml:space="preserve">
+    <value>Custom action '{0}' was not added/updated because the site was configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_SkipAddingWebParts" xml:space="preserve">
+    <value>Skipped adding web parts to page '{0}' because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention" xml:space="preserve">
+    <value>Audit log trimming retention is not set because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Publishing_SkipProvisioning" xml:space="preserve">
+    <value>Skip provisioning of publishing settings because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate" xml:space="preserve">
+    <value>Skipping custom master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate" xml:space="preserve">
+    <value>Skipping master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate" xml:space="preserve">
+    <value>Skipping NoCrawl update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck" xml:space="preserve">
+    <value>Skipping composed look handling because the site is marked as 'nosite'.</value>
+  </data>
+  <data name="GraphExtensions_GroupLogoFileDoesNotExist" xml:space="preserve">
+    <value>The group logo file does not exist.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate" xml:space="preserve">
+    <value>This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true.</value>
+  </data>
+  <data name="FileFolderExtensions_SetFileProperties_Error" xml:space="preserve">
+    <value>Content Type {0} does not exist in target list!</value>
+  </data>
+  <data name="Provisioning_Extensions_WebPartLocalization_Skip" xml:space="preserve">
+    <value>Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
+    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
 </root>

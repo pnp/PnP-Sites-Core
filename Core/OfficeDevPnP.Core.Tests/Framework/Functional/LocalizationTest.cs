@@ -1,16 +1,11 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -25,8 +20,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public LocalizationTest()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6dbf8f61-89ae-4960-b5ef-f87768efc812/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f/sub";
         }
         #endregion
 
@@ -48,6 +43,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionsLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -57,18 +53,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-                ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions ;
-                
-                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
-                LocalizationValidator Validator = new LocalizationValidator();
-                Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
-            }
+                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files;
 
+                var result = TestProvisioningTemplate(cc, "localization_add.xml", ptci.HandlersToProcess, null, ptci);
+                LocalizationValidator validator = new LocalizationValidator(cc.Web);
+                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser, cc.Web));
+            }
         }
         /// <summary>
         /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebLocalizationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
@@ -78,11 +74,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-                ptci.HandlersToProcess = Handlers.Fields|Handlers.ContentTypes|Handlers.Lists|Handlers.SupportedUILanguages|Handlers.CustomActions;
-                
-                var result = TestProvisioningTemplate(cc, "localization_add.xml", Handlers.Fields|Handlers.ContentTypes|Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions, null, ptci);
-                LocalizationValidator Validator = new LocalizationValidator();
-                Assert.IsTrue(Validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser));
+                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files;
+
+                var result = TestProvisioningTemplate(cc, "localization_add.xml", ptci.HandlersToProcess, null, ptci);
+                LocalizationValidator validator = new LocalizationValidator(cc.Web);
+                Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser, cc.Web));
             }
         }
 
@@ -92,6 +88,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             DeleteLists(cc);
             DeleteContentTypes(cc);
             DeleteCustomActions(cc);
+            DeletePages(cc);
         }
 
         private void DeleteLists(ClientContext cc)
@@ -178,6 +175,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 if (action.Name.StartsWith("CA_"))
                 {
                     cc.Web.DeleteCustomAction(action.Id);
+                }
+            }
+        }
+
+        private void DeletePages(ClientContext cc)
+        {
+            Web web = cc.Web;
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            string serverRelatedUrl = web.ServerRelativeUrl;
+
+            try
+            {
+                var file = web.GetFileByServerRelativeUrl(serverRelatedUrl + "/SitePages/LocalizationPage.aspx");
+                var file2 = web.GetFileByServerRelativeUrl(serverRelatedUrl + "/SitePages/LocalizationPage2.aspx");
+                cc.Load(file);
+                cc.Load(file2);
+                file.DeleteObject();
+                file2.DeleteObject();
+                cc.ExecuteQueryRetry();
+            }
+            catch (ServerException ex)
+            {
+                if (ex.ServerErrorTypeName != "System.IO.FileNotFoundException")
+                {
+                    throw;
                 }
             }
         }

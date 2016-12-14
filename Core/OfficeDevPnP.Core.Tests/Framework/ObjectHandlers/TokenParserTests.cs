@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     w => w.AssociatedOwnerGroup.Id,
                     w => w.AssociatedMemberGroup.Id,
                     w => w.AssociatedVisitorGroup.Id);
-                ctx.Load(ctx.Site, s => s.ServerRelativeUrl);
+                ctx.Load(ctx.Site, s => s.ServerRelativeUrl, s => s.Owner);
 
                 var masterCatalog = ctx.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
                 ctx.Load(masterCatalog, m => m.RootFolder.ServerRelativeUrl);
@@ -69,6 +69,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var associatedMemberGroupId = parser.ParseString("{groupid:associatedmembergroup}");
                 var associatedVisitorGroupId = parser.ParseString("{groupid:associatedvisitorgroup}");
                 var groupId = parser.ParseString($"{{groupid:{ownerGroupName}}}");
+                var siteOwner = parser.ParseString("{siteowner}");
 
                 Assert.IsTrue(site1 == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(site2 == $"{ctx.Web.ServerRelativeUrl}/test");
@@ -94,6 +95,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(int.Parse(associatedMemberGroupId) == ctx.Web.AssociatedMemberGroup.Id);
                 Assert.IsTrue(int.Parse(associatedVisitorGroupId) == ctx.Web.AssociatedVisitorGroup.Id);
                 Assert.IsTrue(associatedOwnerGroupId == groupId);
+                Assert.IsTrue(siteOwner == ctx.Site.Owner.LoginName);
 
             }
         }

@@ -107,6 +107,7 @@ namespace Microsoft.SharePoint.Client
                     clientTag = clientTag.Substring(0, 32);
                 }
                 features.Context.ClientTag = clientTag;
+                // Don't update this to ExecuteQueryRetry
                 features.Context.ExecuteQuery();
             }
             else
@@ -179,6 +180,7 @@ namespace Microsoft.SharePoint.Client
                         clientTag = clientTag.Substring(0, 32);
                     }
                     features.Context.ClientTag = clientTag;
+                    // Don't update this to ExecuteQueryRetry
                     features.Context.ExecuteQuery();
                     Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ProcessFeatureInternal_FeatureActive, featureID);
                 }

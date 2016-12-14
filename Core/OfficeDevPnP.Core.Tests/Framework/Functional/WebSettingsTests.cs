@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public WebSettingsTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_01efe7c1-e516-4a84-905d-d2763cfed349";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_01efe7c1-e516-4a84-905d-d2763cfed349/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c/sub";
         }
         #endregion
 
@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site WebSettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionWebSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -55,7 +56,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 TestProvisioningTemplate(cc, "websettings_files.xml", Handlers.Files);
 
                 var result = TestProvisioningTemplate(cc, "websettings_add.xml", Handlers.WebSettings);
-                WebSettingsValidator wv = new WebSettingsValidator();
+                WebSettingsValidator wv = new WebSettingsValidator(cc);
                 Assert.IsTrue(wv.Validate(result.SourceTemplate.WebSettings, result.TargetTemplate.WebSettings, result.TargetTokenParser));
             }
         }
@@ -64,12 +65,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site Auditsettings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionAuditSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
                 var result = TestProvisioningTemplate(cc, "auditsettings_add.xml", Handlers.AuditSettings);
-                AuditSettingsValidator av = new AuditSettingsValidator();
+                AuditSettingsValidator av = new AuditSettingsValidator(cc);
                 Assert.IsTrue(av.Validate(result.SourceTemplate.AuditSettings, result.TargetTemplate.AuditSettings, result.TargetTokenParser));
             }
         }
@@ -80,6 +82,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web WebSettings test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebWebSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -91,7 +94,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
             {
                 var result = TestProvisioningTemplate(cc, "websettings_add.xml", Handlers.WebSettings);
-                WebSettingsValidator wv = new WebSettingsValidator();
+                WebSettingsValidator wv = new WebSettingsValidator(cc);
                 Assert.IsTrue(wv.Validate(result.SourceTemplate.WebSettings, result.TargetTemplate.WebSettings, result.TargetTokenParser));
             }
         }

@@ -40,6 +40,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPropertyBagAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -105,6 +106,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebPropertyBagAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

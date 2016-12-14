@@ -60,6 +60,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site TermGroup Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionTermGroupTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -90,6 +91,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web TermGroup test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebTermGroupTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

@@ -9,11 +9,16 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {
-    [TestClass]
     class PublishingValidator : ValidatorBase
     {
         public bool Validate(Publishing source, Publishing target, ClientContext clientContext)
         {
+
+            if (clientContext.Web.IsNoScriptSite())
+            {
+                return true;
+            }
+
             bool isAvailableWebTemplatesMatch = ValidateObjects(source.AvailableWebTemplates, target.AvailableWebTemplates, new List<string> { "LanguageCode", "TemplateName" });
             if (!isAvailableWebTemplatesMatch) { return false; }
 

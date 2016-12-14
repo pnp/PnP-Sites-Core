@@ -21,6 +21,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
     public class AuditSettingsValidator : ValidatorBase
     {
+        private bool isNoScriptSite = false;
+
         #region construction        
         public AuditSettingsValidator() : base()
         {
@@ -32,6 +34,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         public AuditSettingsValidator(ClientContext cc) : this()
         {
             this.cc = cc;
+            isNoScriptSite = cc.Web.IsNoScriptSite();
         }
 
         #endregion
@@ -54,6 +57,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
+            if (isNoScriptSite)
+            {
+                DropAttribute(sourceObject, "AuditLogTrimmingRetention");
+                DropAttribute(targetObject, "AuditLogTrimmingRetention");
+            }
         }
         #endregion
 

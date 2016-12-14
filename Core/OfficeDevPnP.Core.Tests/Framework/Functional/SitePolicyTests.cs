@@ -48,6 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// SitePolicyTests Test
         /// </summary>
         //[TestMethod]
+        //[Timeout(15 * 60 * 1000)]
         //public void SitePolicyTest()
         //{
         //    using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))

@@ -20,8 +20,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         private string _provisioningTemplatePath1NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
 #pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2 = string.Empty;
-#pragma warning disable CS0618 // Type or member is obsolete
-        private string _provisioningTemplatePath2NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
 #pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5 = string.Empty;
 #pragma warning disable CS0618 // Type or member is obsolete
