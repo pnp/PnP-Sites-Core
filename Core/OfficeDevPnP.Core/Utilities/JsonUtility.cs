@@ -1,4 +1,4 @@
-﻿using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Utilities
 {
@@ -15,16 +15,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <returns>json string</returns>
         public static string Serialize<T>(T obj)
         {
-            //string retVal = null;
-            //using (MemoryStream ms = new MemoryStream())
-            //{
-            //    System.Runtime.Serialization.Json.DataContractJsonSerializer serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            //    serializer.WriteObject(ms, obj);
-            //    retVal = Encoding.Default.GetString(ms.ToArray());
-            //}
-            var s = new JavaScriptSerializer();
-            var retVal = s.Serialize(obj);
-            return retVal;
+            return JsonConvert.SerializeObject(obj) ;
         }
 
         /// <summary>
@@ -35,15 +26,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <returns>Object of type T</returns>
         public static T Deserialize<T>(string json)
         {
-            //var obj = Activator.CreateInstance<T>();
-            //using (MemoryStream ms = new MemoryStream(Encoding.Unicode.GetBytes(json)))
-            //{
-            //    System.Runtime.Serialization.Json.DataContractJsonSerializer serializer = new System.Runtime.Serialization.Json.DataContractJsonSerializer(obj.GetType());
-            //    obj = (T)serializer.ReadObject(ms);
-            //}
-            var s = new JavaScriptSerializer();
-            var obj = s.Deserialize<T>(json);
-            return obj;
+            return JsonConvert.DeserializeObject<T>(json);
         }
 
     }

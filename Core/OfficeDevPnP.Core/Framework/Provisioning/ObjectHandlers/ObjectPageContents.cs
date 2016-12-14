@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listItem = file.EnsureProperty(f => f.ListItemAllFields);
                     if (listItem != null)
                     {
-                        if (listItem.FieldValues.ContainsKey("WikiField"))
+                        if (listItem.FieldValues.ContainsKey("WikiField") && listItem.FieldValues["WikiField"] != null)
                         {
                             // Wiki page
                             var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
@@ -224,7 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Order = (uint)webPart.WebPart.ZoneIndex,
                     Contents = webPartxml
                 };
-#if !ONPREMISES
+#if !SP2016
                 // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
                 if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                 {
@@ -254,6 +254,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 xml = Regex.Replace(xml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
             }
+
+            //some webparts already contains the site URL using ~sitecollection token (i.e: CQWP)
+            xml = Regex.Replace(xml, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
+            xml = Regex.Replace(xml, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
+            xml = Regex.Replace(xml, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
+
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);

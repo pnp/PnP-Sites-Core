@@ -141,19 +141,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         /// <summary>
         /// The Files of the package
         /// </summary>
-        public IDictionary<String, PnPPackageFileItem> Files
+        public IDictionary<String, PnPPackageFileItem> Files 
         {
             get
             {
                 Dictionary<String, PnPPackageFileItem> result = new Dictionary<String, PnPPackageFileItem>();
+				var map = FilesMap?.Map;
                 List<PackagePart> fileParts = GetAllPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
                 foreach (PackagePart p in fileParts)
                 {
-                    String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
-                    String folder = fileName.LastIndexOf('/') >= 0 ?
-                        fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
-                    fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
-                    Byte[] content = ReadPackagePartBytes(p);
+					String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
+					String folder = fileName.LastIndexOf('/') >= 0 ?
+						fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
+
+					fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
+
+					if (string.IsNullOrEmpty(folder) && map != null && map.ContainsKey(fileName))
+					{
+						//try get folder from original name
+						var originalName = map[fileName].Replace(@"\", "/");
+						folder = originalName.LastIndexOf('/') >= 0 ?
+							originalName.Substring(0, originalName.LastIndexOf('/')) : String.Empty;
+					}
+
+					Byte[] content = ReadPackagePartBytes(p);
 
                     result[fileName] = new PnPPackageFileItem
                     {

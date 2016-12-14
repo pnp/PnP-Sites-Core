@@ -200,11 +200,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.WebSettings != null)
                 {
+                    // Check if this is not a noscript site as we're not allowed to update some properties
+                    bool isNoScriptSite = web.IsNoScriptSite();
+
                     web.EnsureProperty(w => w.HasUniqueRoleAssignments);
 
                     var webSettings = template.WebSettings;
 #if !ONPREMISES
-                    web.NoCrawl = webSettings.NoCrawl;
+                    if (!isNoScriptSite)
+                    {
+                        web.NoCrawl = webSettings.NoCrawl;
+                    }
+                    else
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
+                    }
 
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
@@ -216,32 +226,58 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (!String.IsNullOrEmpty(requestAccessEmailValue))
                         {
                             web.RequestAccessEmail = requestAccessEmailValue;
+
+                            web.Update();
+                            web.Context.ExecuteQueryRetry();
                         }
                     }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
                     {
-                        web.MasterUrl = masterUrl;
+                        if (!isNoScriptSite)
+                        {
+                            web.MasterUrl = masterUrl;
+                        }
+                        else
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate);
+                        }
                     }
                     var customMasterUrl = parser.ParseString(webSettings.CustomMasterPageUrl);
                     if (!string.IsNullOrEmpty(customMasterUrl))
                     {
-                        web.CustomMasterUrl = customMasterUrl;
+                        if (!isNoScriptSite)
+                        {
+                            web.CustomMasterUrl = customMasterUrl;
+                        }
+                        else
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate);
+                        }
                     }
-                    if (!string.IsNullOrEmpty(parser.ParseString(webSettings.Title)))
+                    if (webSettings.Title != null)
                     {
                         web.Title = parser.ParseString(webSettings.Title);
                     }
-                    web.Description = parser.ParseString(webSettings.Description);
-                    web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    if (webSettings.Description != null)
+                    {
+                        web.Description = parser.ParseString(webSettings.Description);
+                    }
+                    if (webSettings.SiteLogo != null)
+                    {
+                        web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
                     {
                         web.RootFolder.WelcomePage = welcomePage;
                         web.RootFolder.Update();
                     }
-                    web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    if (webSettings.AlternateCSS != null)
+                    {
+                        web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    }
 
                     web.Update();
                     web.Context.ExecuteQueryRetry();

@@ -19,8 +19,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public PropertyBagTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_25b60217-025d-45a8-961c-7436cb7419df";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_25b60217-025d-45a8-961c-7436cb7419df/sub";
         }
         #endregion
 
@@ -40,23 +40,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPropertyBagAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
             {
+                bool isNoScriptSite = cc.Web.IsNoScriptSite();
+
                 // Ensure we can test clean
                 DeleteWebProperties(cc);
 
                 // Add web properties
                 var result = TestProvisioningTemplate(cc, "propertybag_add.xml", Handlers.PropertyBagEntries);
-                PropertyBagValidator pv = new PropertyBagValidator();
-                Assert.IsTrue(pv.Validate(result.SourceTemplate.PropertyBagEntries, result.TargetTemplate.PropertyBagEntries, result.SourceTokenParser));
+
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv = new PropertyBagValidator();
+                    Assert.IsTrue(pv.Validate(result.SourceTemplate.PropertyBagEntries, result.TargetTemplate.PropertyBagEntries, result.SourceTokenParser));
+                }
 
                 // Update web properties
                 var result2 = TestProvisioningTemplate(cc, "propertybag_delta_1.xml", Handlers.PropertyBagEntries);
-                PropertyBagValidator pv2 = new PropertyBagValidator();
-                pv2.ValidateEvent += Pv2_ValidateEvent;
-                Assert.IsTrue(pv2.Validate(result2.SourceTemplate.PropertyBagEntries, result2.TargetTemplate.PropertyBagEntries, result2.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv2 = new PropertyBagValidator();
+                    pv2.ValidateEvent += Pv2_ValidateEvent;
+                    Assert.IsTrue(pv2.Validate(result2.SourceTemplate.PropertyBagEntries, result2.TargetTemplate.PropertyBagEntries, result2.SourceTokenParser));
+                }
 
                 // Update system properties: run 1 is without specifying the override flag...no updates should happen
                 ProvisioningTemplateApplyingInformation ptai3 = new ProvisioningTemplateApplyingInformation();
@@ -67,9 +77,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci3.BaseTemplate = null;
                 ptci3.HandlersToProcess = Handlers.PropertyBagEntries;
                 var result3 = TestProvisioningTemplate(cc, "propertybag_delta_2.xml", Handlers.PropertyBagEntries, ptai3, ptci3);
-                PropertyBagValidator pv3 = new PropertyBagValidator();
-                pv3.ValidateEvent += Pv3_ValidateEvent;
-                Assert.IsTrue(pv3.Validate(result3.SourceTemplate.PropertyBagEntries, result3.TargetTemplate.PropertyBagEntries, result3.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv3 = new PropertyBagValidator();
+                    pv3.ValidateEvent += Pv3_ValidateEvent;
+                    Assert.IsTrue(pv3.Validate(result3.SourceTemplate.PropertyBagEntries, result3.TargetTemplate.PropertyBagEntries, result3.SourceTokenParser));
+                }
 
                 // Update system properties: run 2 is with specifying the override flag...updates should happen if the overwrite flag was set to true
                 ProvisioningTemplateApplyingInformation ptai4 = new ProvisioningTemplateApplyingInformation();
@@ -81,32 +94,44 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci4.BaseTemplate = null;
                 ptci4.HandlersToProcess = Handlers.PropertyBagEntries;
                 var result4 = TestProvisioningTemplate(cc, "propertybag_delta_2.xml", Handlers.PropertyBagEntries, ptai4, ptci4);
-                PropertyBagValidator pv4 = new PropertyBagValidator();
-                pv4.ValidateEvent += Pv2_ValidateEvent;
-                Assert.IsTrue(pv4.Validate(result4.SourceTemplate.PropertyBagEntries, result4.TargetTemplate.PropertyBagEntries, result4.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv4 = new PropertyBagValidator();
+                    pv4.ValidateEvent += Pv2_ValidateEvent;
+                    Assert.IsTrue(pv4.Validate(result4.SourceTemplate.PropertyBagEntries, result4.TargetTemplate.PropertyBagEntries, result4.SourceTokenParser));
+                }
             }
         }
         #endregion
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebPropertyBagAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
             {
+                bool isNoScriptSite = cc.Web.IsNoScriptSite();
+
                 // Ensure we can test clean
                 DeleteWebProperties(cc);
 
                 // Add web properties
                 var result = TestProvisioningTemplate(cc, "propertybag_add.xml", Handlers.PropertyBagEntries);
-                PropertyBagValidator pv = new PropertyBagValidator();
-                Assert.IsTrue(pv.Validate(result.SourceTemplate.PropertyBagEntries, result.TargetTemplate.PropertyBagEntries, result.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv = new PropertyBagValidator();
+                    Assert.IsTrue(pv.Validate(result.SourceTemplate.PropertyBagEntries, result.TargetTemplate.PropertyBagEntries, result.SourceTokenParser));
+                }
 
                 // Update web properties
                 var result2 = TestProvisioningTemplate(cc, "propertybag_delta_1.xml", Handlers.PropertyBagEntries);
-                PropertyBagValidator pv2 = new PropertyBagValidator();
-                pv2.ValidateEvent += Pv2_ValidateEvent;
-                Assert.IsTrue(pv2.Validate(result2.SourceTemplate.PropertyBagEntries, result2.TargetTemplate.PropertyBagEntries, result2.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv2 = new PropertyBagValidator();
+                    pv2.ValidateEvent += Pv2_ValidateEvent;
+                    Assert.IsTrue(pv2.Validate(result2.SourceTemplate.PropertyBagEntries, result2.TargetTemplate.PropertyBagEntries, result2.SourceTokenParser));
+                }
 
                 // Update system properties: run 1 is without specifying the override flag...no updates should happen
                 ProvisioningTemplateApplyingInformation ptai3 = new ProvisioningTemplateApplyingInformation();
@@ -117,9 +142,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci3.BaseTemplate = null;
                 ptci3.HandlersToProcess = Handlers.PropertyBagEntries;
                 var result3 = TestProvisioningTemplate(cc, "propertybag_delta_2.xml", Handlers.PropertyBagEntries, ptai3, ptci3);
-                PropertyBagValidator pv3 = new PropertyBagValidator();
-                pv3.ValidateEvent += Pv3_ValidateEvent;
-                Assert.IsTrue(pv3.Validate(result3.SourceTemplate.PropertyBagEntries, result3.TargetTemplate.PropertyBagEntries, result3.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv3 = new PropertyBagValidator();
+                    pv3.ValidateEvent += Pv3_ValidateEvent;
+                    Assert.IsTrue(pv3.Validate(result3.SourceTemplate.PropertyBagEntries, result3.TargetTemplate.PropertyBagEntries, result3.SourceTokenParser));
+                }
 
                 // Update system properties: run 2 is with specifying the override flag...updates should happen if the overwrite flag was set to true
                 ProvisioningTemplateApplyingInformation ptai4 = new ProvisioningTemplateApplyingInformation();
@@ -131,9 +159,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ptci4.BaseTemplate = null;
                 ptci4.HandlersToProcess = Handlers.PropertyBagEntries;
                 var result4 = TestProvisioningTemplate(cc, "propertybag_delta_2.xml", Handlers.PropertyBagEntries, ptai4, ptci4);
-                PropertyBagValidator pv4 = new PropertyBagValidator();
-                pv4.ValidateEvent += Pv2_ValidateEvent;
-                Assert.IsTrue(pv4.Validate(result4.SourceTemplate.PropertyBagEntries, result4.TargetTemplate.PropertyBagEntries, result4.SourceTokenParser));
+                if (!isNoScriptSite)
+                {
+                    PropertyBagValidator pv4 = new PropertyBagValidator();
+                    pv4.ValidateEvent += Pv2_ValidateEvent;
+                    Assert.IsTrue(pv4.Validate(result4.SourceTemplate.PropertyBagEntries, result4.TargetTemplate.PropertyBagEntries, result4.SourceTokenParser));
+                }
             }
         }
         #endregion

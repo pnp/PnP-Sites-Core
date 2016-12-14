@@ -20,8 +20,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         #region Test initialize and cleanup
         static bool deactivateSiteFeatureOnTeardown = false;
         static bool deactivateWebFeatureOnTeardown = false;
-        static Guid publishingSiteFeatureId = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
-        static Guid publishingWebFeatureId = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
 
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
@@ -32,14 +30,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Site site;
                 site = ctx.Site;
                 web = ctx.Site.RootWeb;
-                if (!site.IsFeatureActive(publishingSiteFeatureId))
+                if (!site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
                 {
-                    site.ActivateFeature(publishingSiteFeatureId);
+                    site.ActivateFeature(Constants.FeatureId_Site_Publishing);
                     deactivateSiteFeatureOnTeardown = true;
                 }
-                if (!web.IsFeatureActive(publishingWebFeatureId))
+                if (!web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                 {
-                    site.RootWeb.ActivateFeature(publishingWebFeatureId);
+                    site.RootWeb.ActivateFeature(Constants.FeatureId_Web_Publishing);
                     deactivateWebFeatureOnTeardown = true;
                 }
             }
@@ -52,11 +50,11 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 if (deactivateSiteFeatureOnTeardown)
                 {
-                    ctx.Site.DeactivateFeature(publishingSiteFeatureId);
+                    ctx.Site.DeactivateFeature(Constants.FeatureId_Site_Publishing);
                 }
                 if (deactivateWebFeatureOnTeardown)
                 {
-                    ctx.Web.DeactivateFeature(publishingWebFeatureId);
+                    ctx.Web.DeactivateFeature(Constants.FeatureId_Web_Publishing);
                 }
             }
         }

@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public static PnPInfo UnpackTemplate(this MemoryStream stream)
         {
             PnPInfo siteTemplate;
-            using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, FileAccess.Read))
+            using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, FileAccess.ReadWrite))
             {
                 siteTemplate = LoadPnPPackage(package);
             }
@@ -72,9 +72,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                     new PnPFileInfo
                     {
                         InternalName = file.Key,
-                        OriginalName = String.IsNullOrEmpty(file.Value.Folder) ?
+                        OriginalName = package.FilesMap != null ?
+                            (String.IsNullOrEmpty(file.Value.Folder) ?
                             package.FilesMap.Map[file.Key] :
-                            package.FilesMap.Map[file.Key].Replace(file.Value.Folder + '/', ""),
+                            package.FilesMap.Map[file.Key].Replace(file.Value.Folder + '/', "")) :
+                            file.Key,
                         Folder = file.Value.Folder,
                         Content = file.Value.Content,
                     });

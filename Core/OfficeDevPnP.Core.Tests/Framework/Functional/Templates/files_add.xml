@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+Base template: goal is to verify that all files properties and elements work as expected. 
+               
+               Possible Files attributes are:
+               Src          (*)      
+               Folder       (*)       
+               Overwrite         
+               Level
+               
+               
+
+-->
+<pnp:ProvisioningTemplate ID="files_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <!-- Add supporting list to test upload -->
+  <pnp:Lists>
+    <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" />
+  </pnp:Lists>
+  <pnp:Files>
+    <!-- Write to created library -->
+    <pnp:File Src="garagelogo.png" Folder="LI_1" Overwrite="true" />
+    <!-- Write unsupported type for noscript sites -->
+    <pnp:File Src="CT3DisplayForm.aspx" Folder="LI_1" Overwrite="true" />
+    <!-- Write to site pages and apply security to the file -->
+    <pnp:File Src="files_add.xml" Folder="SitePages" Overwrite="true">
+      <pnp:Security>
+        <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:File>
+    <!-- Wite files to "system" libraries, some (like theme) are not supported -->
+    <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" />
+    <!-- Write file into sub folder with spaces -->
+    <pnp:File Src="garage.css" Folder="SiteAssets/this is a sub folder/sub" Overwrite="true" />
+    <!-- Write files to catalogs gallery -->
+    <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" />
+    <!-- Check that Overwrite property works -->
+    <pnp:File Src="oslo.preview" Folder="_catalogs/masterpage" Overwrite="false" />
+    <!-- Wite files to "style library" -->
+    <pnp:File Src="garagelogo.png" Folder="Style Library" Overwrite="true" />
+    <!-- Wite files to "list templates" -->
+    <pnp:File Src="garagelogo.png" Folder="_catalogs/lt" Overwrite="true" />
+    <!-- Wite files to "web part gallery" -->
+    <pnp:File Src="garagelogo.png" Folder="_catalogs/wp" Overwrite="true" />
+
+  </pnp:Files>
+</pnp:ProvisioningTemplate>
+
+

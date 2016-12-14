@@ -1,8 +1,9 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.SharePoint.Client;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using OfficeDevPnP.Core.Entities;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
@@ -12,7 +13,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
     {
         private static string UserName;
 
-
+        #region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -23,8 +24,18 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             }
         }
 
+        [ClassCleanup()]
+        public static void ClassCleanup()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                DeleteListsImplementation(clientContext);
+            }
+        }
+        #endregion
+
         [TestMethod]
-        public void AzureADAuth1()
+        public void AzureADAuthFullControlPermissionTest()
         {
             string siteUrl = TestCommon.DevSiteUrl;
             string spoUserName = AuthenticationTests.UserName;
@@ -45,6 +56,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             {
                 string domain = spoUserName.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries)[1];
 
+                // Instantiate a ClientContext object based on the defined Azure AD application
                 if (new Uri(siteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
                     cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(siteUrl, azureADClientId, domain, @"resources\PnPAzureAppTest.pfx", azureADCertPfxPassword, AzureEnvironment.PPE);
@@ -54,15 +66,42 @@ namespace OfficeDevPnP.Core.Tests.Authentication
                     cc = new AuthenticationManager().GetAzureADAppOnlyAuthenticatedContext(siteUrl, azureADClientId, domain, @"resources\PnPAzureAppTest.pfx", azureADCertPfxPassword);
                 }
 
+                // Check if we can read a property from the site
                 cc.Load(cc.Web, w => w.Title);
                 cc.ExecuteQueryRetry();
                 Console.WriteLine(String.Format("Site title: {0}", cc.Web.Title));
+
+                // Verify manage permissions by creating a new list - see https://technet.microsoft.com/en-us/library/cc721640.aspx
+                var list = cc.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
+
+                // Verify full control by enumerating permissions - see https://technet.microsoft.com/en-us/library/cc721640.aspx
+                var roleAssignments = cc.Web.GetAllUniqueRoleAssignments();
+
+                // Nothing blew up...so we're good :-)
+
             }
             finally
             {
                 cc.Dispose();
             }
         }
+
+        #region Helper methods
+        private static void DeleteListsImplementation(ClientContext cc)
+        {
+            cc.Load(cc.Web.Lists, f => f.Include(t => t.Title));
+            cc.ExecuteQueryRetry();
+
+            foreach (var list in cc.Web.Lists.ToList())
+            {
+                if (list.Title.StartsWith("Test_list_"))
+                {
+                    list.DeleteObject();
+                }
+            }
+            cc.ExecuteQueryRetry();
+        }
+        #endregion
     }
 #endif
 }

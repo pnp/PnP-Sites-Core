@@ -10,15 +10,17 @@
         <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultMessage" Width="1.5" PointX="7.75" PointY="2" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestResultTestResultMessage" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestRunTestResult" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Width="2.125" PointX="0.625" PointY="4.875" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Width="2.125" PointX="0.625" PointY="4.875" IsExpanded="true" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestRun" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Width="2.25" PointX="7.375" PointY="5.25" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Width="2.25" PointX="3.25" PointY="8.875" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestAuthentication" Width="2.25" PointX="5.75" PointY="4.5" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationProperty" Width="2.25" PointX="2.875" PointY="9.625" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" />
         <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" Width="2" PointX="12.875" PointY="2.375" FillColor="Maroon" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" Width="2" PointX="10.75" PointY="1.75" FillColor="Maroon" />
         <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTrackingBaseline" Width="1.5" PointX="15.875" PointY="2.375" FillColor="Maroon" />
-        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Users" Width="1.5" PointX="13.125" PointY="6.625" FillColor="Purple" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Users" Width="1.5" PointX="11.25" PointY="5.25" FillColor="Purple" />
+        <EntityTypeShape EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategory" Width="1.5" PointX="5.75" PointY="8.125" />
+        <AssociationConnector Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategoryTestConfiguration" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

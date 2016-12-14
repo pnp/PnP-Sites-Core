@@ -71,6 +71,8 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
+            bool isNoScript = parentWeb.IsNoScriptSite();
+
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
             WebCreationInformation creationInfo = new WebCreationInformation()
             {
@@ -83,7 +85,11 @@ namespace Microsoft.SharePoint.Client
             };
 
             Web newWeb = parentWeb.Webs.Add(creationInfo);
-            newWeb.Navigation.UseShared = inheritNavigation;
+
+            if (!isNoScript)
+            {
+                newWeb.Navigation.UseShared = inheritNavigation;
+            }
             newWeb.Update();
 
             parentWeb.Context.ExecuteQueryRetry();
@@ -300,6 +306,52 @@ namespace Microsoft.SharePoint.Client
         }
 
 
+        /// <summary>
+        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// 
+        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+        /// for the effects of NoScript
+        /// 
+        /// </summary>
+        /// <param name="site">site to verify</param>
+        /// <returns>True if noscript, false otherwise</returns>
+        public static bool IsNoScriptSite(this Site site)
+        {
+            return site.RootWeb.IsNoScriptSite();
+        }
+
+        /// <summary>
+        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// 
+        /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
+        /// for the effects of NoScript
+        /// 
+        /// </summary>
+        /// <param name="web">Web to verify</param>
+        /// <returns>True if noscript, false otherwise</returns>
+        public static bool IsNoScriptSite(this Web web)
+        {
+#if !ONPREMISES
+            string[] NoScriptSiteTemplates = new string[] { "GROUP" };
+            web.EnsureProperties(w => w.WebTemplate, w => w.EffectiveBasePermissions);
+
+            // Definition of no-script is not having the AddAndCustomizePages permission
+            if (!web.EffectiveBasePermissions.Has(PermissionKind.AddAndCustomizePages))
+            {
+                return true;
+            }
+
+            if (NoScriptSiteTemplates.Contains(web.WebTemplate))
+            {
+                return true;
+            }
+
+            return false;
+#else
+            return false;
+#endif
+        }
+
         private static bool IsCannotGetSiteException(Exception ex)
         {
             if (ex is ServerException)
@@ -337,9 +389,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-        #endregion
+#endregion
 
-        #region Apps and sandbox solutions
+#region Apps and sandbox solutions
 
         /// <summary>
         /// Returns all app instances
@@ -418,7 +470,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Log.Debug(Constants.LOGGING_SOURCE, "Uninstalling package '{0}'", packageInfo.PackageName);
-            Publishing.DesignPackage.UnInstall(site.Context, site, packageInfo);
+            UninstallSolution(site, packageGuid, fileName, majorVersion, minorVersion);
             site.Context.ExecuteQueryRetry();
 
 
@@ -465,7 +517,7 @@ namespace Microsoft.SharePoint.Client
             site.Context.Load(solutions);
             site.Context.ExecuteQueryRetry();
 
-            if (solutions.AreItemsAvailable)
+            if (solutions.AreItemsAvailable && solutions.Count > 0)
             {
                 var packageItem = solutions.FirstOrDefault();
                 var packageInfo = new DesignPackageInfo()
@@ -481,9 +533,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
-        #region Site retrieval via search
+#region Site retrieval via search
         /// <summary>
         /// Returns all my site site collections
         /// </summary>
@@ -631,9 +683,9 @@ namespace Microsoft.SharePoint.Client
 
             return totalRows;
         }
-        #endregion
+#endregion
 
-        #region Web (site) Property Bag Modifiers
+#region Web (site) Property Bag Modifiers
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -918,9 +970,9 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-        #endregion
+#endregion
 
-        #region Search
+#region Search
 
         /// <summary>
         /// Queues a web for a full crawl the next incremental crawl
@@ -935,9 +987,9 @@ namespace Microsoft.SharePoint.Client
             }
             web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
         }
-        #endregion
+#endregion
 
-        #region Events
+#region Events
 
 
         /// <summary>
@@ -1052,9 +1104,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
-        #region Localization
+#region Localization
 #if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
@@ -1078,9 +1130,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 #endif
-        #endregion
+#endregion
 
-        #region TemplateHandling
+#region TemplateHandling
 
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
@@ -1119,9 +1171,9 @@ namespace Microsoft.SharePoint.Client
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
 
-        #endregion
+#endregion
 
-        #region Output Cache
+#region Output Cache
 
         /// <summary>
         /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
@@ -1147,10 +1199,10 @@ namespace Microsoft.SharePoint.Client
             web.SetPropertyBagValue("EnableDebuggingOutput", debugCacheInformation.ToString());
         }
 
-        #endregion
+#endregion
 
-        #region Request Access
-        #if !ONPREMISES
+#region Request Access
+#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1230,7 +1282,7 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-        #endif
-        #endregion
+#endif
+#endregion
     }
 }

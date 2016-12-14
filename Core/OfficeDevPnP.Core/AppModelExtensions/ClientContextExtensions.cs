@@ -101,6 +101,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
                         throw;
                     }
                 }
@@ -174,6 +175,21 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Checks if the used ClientContext is app-only
+        /// </summary>
+        /// <param name="clientContext">The ClientContext to inspect</param>
+        /// <returns>True if app-only, false otherwise</returns>
+        public static bool IsAppOnly(this ClientRuntimeContext clientContext)
+        {
+            if (clientContext.Credentials == null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Defines a Maximum Retry Attemped Exception
         /// </summary>
         [Serializable]
@@ -206,6 +222,7 @@ namespace Microsoft.SharePoint.Client
             bool hasMinimalVersion = false;
             try
             {
+                clientContext.ExecuteQueryRetry();
                 hasMinimalVersion = clientContext.ServerLibraryVersion.CompareTo(minimallyRequiredVersion) >= 0;
             }
             catch (PropertyOrFieldNotInitializedException)

@@ -58,6 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Site Search Settings Test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollection1605SearchSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -79,6 +80,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Web Search Settings test
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void Web1605SearchSettingsTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

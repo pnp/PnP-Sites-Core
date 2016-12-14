@@ -56,16 +56,27 @@ namespace Microsoft.SharePoint.Client
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
 
-            if (wait)
-            {
-                WaitForIsComplete(tenant, op);
-            }
-
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
             Guid siteGuid = Guid.Empty;
+
             if (wait)
             {
-                siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                // Let's poll for site collection creation completion
+                WaitForIsComplete(tenant, op);
+
+                // Add delay to avoid race conditions
+                Thread.Sleep(30 * 1000);
+
+                // Return site guid of created site collection
+                try
+                {
+                    siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                }
+                catch(Exception ex)
+                {
+                    // Eat all exceptions cause there's currently (December 16) an issue in the service that can make this call fail in combination with app-only usage
+                    Log.Error("Temp eating exception to issue in service (December 2016). Exception is {0}.", ex.ToDetailedString());
+                }
             }
             return siteGuid;
         }
@@ -411,6 +422,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="storageWarningLevel"></param>
         /// <param name="userCodeMaximumLevel"></param>
         /// <param name="userCodeWarningLevel"></param>
+        /// <param name="noScriptSite"></param>
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
             bool? allowSelfServiceUpgrade = null,
@@ -418,7 +430,8 @@ namespace Microsoft.SharePoint.Client
             long? storageMaximumLevel = null,
             long? storageWarningLevel = null,
             double? userCodeMaximumLevel = null,
-            double? userCodeWarningLevel = null
+            double? userCodeWarningLevel = null,
+            bool? noScriptSite = null
             )
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
@@ -440,6 +453,8 @@ namespace Microsoft.SharePoint.Client
                     siteProps.UserCodeWarningLevel = userCodeWarningLevel.Value;
                 if (title != null)
                     siteProps.Title = title;
+                if (noScriptSite != null)
+                    siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
 
                 siteProps.Update();
                 tenant.Context.ExecuteQueryRetry();
@@ -522,14 +537,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
         /// <returns>An IList of SiteEntity objects</returns>
-        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true)
-        {
+        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true, bool includeOD4BSites = false)
+        { 
             var sites = new List<SiteEntity>();
             SPOSitePropertiesEnumerable props = null;
 
             while (props == null || props.NextStartIndexFromSharePoint != null)
             //while (props == null || props.NextStartIndex > -1)
             {
+
+                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                {
+                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                    IncludeDetail = includeDetail
+                };
+
+                //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
                 props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
                 //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);

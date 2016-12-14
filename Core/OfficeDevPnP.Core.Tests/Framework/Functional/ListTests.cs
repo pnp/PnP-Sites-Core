@@ -15,8 +15,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ListTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_07cc011c-813f-4418-9a4d-f41a5c1ac326/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333/sub";
         }
         #endregion
 
@@ -36,6 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -63,6 +64,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollection1605ListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -88,6 +90,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -118,6 +121,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
 
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void Web1605ListAddingTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

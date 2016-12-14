@@ -14,10 +14,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
     [TestClass]
     public class ConnectorFileSystemTests
     {
-        #region Test variables
-        static string testContainer = "pnptest";
-        static string testContainerSecure = "pnptestsecure";
-        #endregion
 
         #region Test initialize and cleanup
         [ClassInitialize()]

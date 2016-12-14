@@ -38,6 +38,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Verifies if both the site and web scoped features are correctly activated/deactivated for a root web of a site collection
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionFeatureActivationDeactivationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
@@ -53,6 +54,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         /// Verifies is the web scoped features are correctly activated/deactivated for a sub site
         /// </summary>
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebFeatureActivationDeactivationTest()
         {
             using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))

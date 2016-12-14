@@ -336,6 +336,7 @@ namespace OfficeDevPnP.Core
         /// <param name="storeName">The name of the store for the certificate</param>
         /// <param name="storeLocation">The location of the store for the certificate</param>
         /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint, AzureEnvironment environment = AzureEnvironment.Production)
         {
@@ -352,6 +353,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
@@ -368,6 +370,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, SecureString certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {

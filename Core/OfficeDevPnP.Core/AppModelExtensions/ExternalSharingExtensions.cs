@@ -131,8 +131,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="emailBody">Text attached to the email sent for the person to whom the document is shared</param>
         /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
         /// <see cref="ShareDocument(Web, string, string, ExternalSharingDocumentOption, bool, string, bool)"/>
-        public static SharingResult ShareDocument(this Web web, string urlToDocument, 
-                                                string targetEmailToShare, ExternalSharingDocumentOption shareOption, 
+        public static SharingResult ShareDocument(this Web web, string urlToDocument,
+                                                string targetEmailToShare, ExternalSharingDocumentOption shareOption,
                                                 bool sendEmail = true, string emailBody = "Document shared",
                                                 bool useSimplifiedRoles = true)
         {
@@ -244,6 +244,36 @@ namespace Microsoft.SharePoint.Client
             return info;
         }
 
+        /// <summary>
+        /// Invites an external user as a group member
+        /// </summary>
+        /// <param name="group">Group to add the user to</param>
+        /// <param name="email">The email address of the external user</param>
+        /// <param name="sendEmail">Should we send an email to the given address</param>
+        /// <param name="emailBody">Text to be added to the email</param>
+        /// <returns></returns>
+        public static SharingResult InviteExternalUser(this Group group, string email, bool sendEmail = true,
+            string emailBody = "Site shared with you.")
+        {
+            var web = (group.Context as ClientContext).Web;
+
+            return ShareSite(web, email, group, sendEmail, emailBody);
+        }
+
+        /// <summary>
+        /// Share site for a person using just email. Will resolve needed people picker JSON value automatically.
+        /// </summary>
+        /// <param name="web">Web for the context of the site to be shared.</param>
+        /// <param name="email">Email of the person to whom site should be shared.</param>
+        /// <param name="group">Group to invite the external user to</param>
+        /// <param name="sendEmail">Should we send email for the given address.</param>
+        /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
+        public static SharingResult ShareSite(this Web web, string email,
+            Group group, bool sendEmail = true, string emailBody = "Site shared for you.")
+        {
+            var peoplePickerValue = ResolvePeoplePickerValueForEmail(web, email);
+            return ShareSiteWithPeoplePickerValue(web, peoplePickerValue, group, sendEmail, emailBody);
+        }
 
         /// <summary>
         /// Share site for a person using just email. Will resolve needed people picker JSON value automatically.
@@ -282,24 +312,46 @@ namespace Microsoft.SharePoint.Client
                                                                     bool useSimplifiedRoles = true)
         {
             // Solve the group id for the shared option based on default groups
-            int groupId = SolveGroupIdToShare(web, shareOption);
-            string roleValue = string.Format("group:{0}", groupId); // Right permission setup
+            var groupId = SolveGroupIdToShare(web, shareOption);
+            string roleValue = $"group:{groupId}"; // Right permission setup
 
-            // Ensure that web URL has been loaded
-            if (!web.IsObjectPropertyInstantiated("Url"))
-            {
-                web.Context.Load(web, w => w.Url);
-                web.Context.ExecuteQueryRetry();
-            }
+            web.EnsureProperty(w => w.Url);
 
             // Set default settings for site sharing
-            bool propageAcl = false; // Not relevant for external accounts
-            bool includedAnonymousLinkInEmail = false; // Not when site is shared
+            var propagateAcl = false; // Not relevant for external accounts
+            var includedAnonymousLinkInEmail = false; // Not when site is shared
 
             var result = Web.ShareObject(web.Context, web.Url, peoplePickerInput,
-                                                        roleValue, 0, propageAcl,
+                                                        roleValue, 0, propagateAcl,
                                                         sendEmail, includedAnonymousLinkInEmail, null,
                                                         emailBody, useSimplifiedRoles);
+            web.Context.Load(result);
+            web.Context.ExecuteQueryRetry();
+            return result;
+        }
+
+        /// <summary>
+        /// Share site for a person using complex JSON object for people picker value.
+        /// </summary>
+        /// <param name="web">Web for the context of the site to be shared.</param>
+        /// <param name="peoplePickerInput">JSON object with the people picker value</param>
+        /// <param name="group">The group to invite the user to</param>
+        /// <param name="sendEmail">Should we send email for the given address.</param>
+        /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
+        /// <returns></returns>
+        public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput,
+                                                                    Group group,
+                                                                    bool sendEmail = true, string emailBody = "Site shared for you.")
+        {
+            // Solve the group id for the shared option based on default groups
+            var groupId = group.Id;
+            string roleValue = $"group:{groupId}"; // Right permission setup
+
+            web.EnsureProperty(w => w.Url);
+
+            var result = Web.ShareObject(web.Context, web.Url, peoplePickerInput, roleValue, groupId, false,
+                sendEmail, false, null, emailBody, false);
+
             web.Context.Load(result);
             web.Context.ExecuteQueryRetry();
             return result;

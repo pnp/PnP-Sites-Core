@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="sitepolicy_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:SitePolicy>PnPSitePolicy</pnp:SitePolicy>
+</pnp:ProvisioningTemplate>
+
+

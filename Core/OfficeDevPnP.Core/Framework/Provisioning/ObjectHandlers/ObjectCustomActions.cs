@@ -23,15 +23,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var context = web.Context as ClientContext;
                 var site = context.Site;
 
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 // if this is a sub site then we're not enabling the site collection scoped custom actions
                 if (!web.IsSubSite())
                 {
                     var siteCustomActions = template.CustomActions.SiteCustomActions;
-                    ProvisionCustomActionImplementation(site, siteCustomActions, parser, scope);
+                    ProvisionCustomActionImplementation(site, siteCustomActions, parser, scope, isNoScriptSite);
                 }
 
                 var webCustomActions = template.CustomActions.WebCustomActions;
-                ProvisionCustomActionImplementation(web, webCustomActions, parser, scope);
+                ProvisionCustomActionImplementation(web, webCustomActions, parser, scope, isNoScriptSite);
 
                 // Switch parser context back to it's original context
                 parser.Rebase(web);
@@ -39,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void ProvisionCustomActionImplementation(object parent, CustomActionCollection customActions, TokenParser parser, PnPMonitoredScope scope)
+        private void ProvisionCustomActionImplementation(object parent, CustomActionCollection customActions, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite= false)
         {
             Web web = null;
             Site site = null;
@@ -59,6 +62,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             foreach (var customAction in customActions)
             {
+
+                if (isNoScriptSite)
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
+                    continue;
+                }
+
                 var caExists = false;
                 if (site != null)
                 {
@@ -141,16 +151,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            UpdateCustomAction(parser, scope, customAction, existingCustomAction);
+                            UpdateCustomAction(parser, scope, customAction, existingCustomAction, isNoScriptSite);
                         }
                     }
                 }
             }
         }
 
-        internal static void UpdateCustomAction(TokenParser parser, PnPMonitoredScope scope, CustomAction customAction, UserCustomAction existingCustomAction)
+        internal static void UpdateCustomAction(TokenParser parser, PnPMonitoredScope scope, CustomAction customAction, UserCustomAction existingCustomAction, bool isNoScriptSite = false)
         {
             var isDirty = false;
+
+            if (isNoScriptSite)
+            {
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
+                return;
+            }
 
             // Otherwise we update it
             if (customAction.CommandUIExtension != null)

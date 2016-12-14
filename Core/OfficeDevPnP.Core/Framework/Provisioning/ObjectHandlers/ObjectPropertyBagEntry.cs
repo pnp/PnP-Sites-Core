@@ -27,9 +27,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     "DesignPreview"
                 });
 
+                // Check if this is not a noscript site as we're not allowed to write to the web property bag is that one
+                bool isNoScriptSite = web.IsNoScriptSite();
+                if (isNoScriptSite)
+                {
+                    return parser;
+                }
+
                 // To handle situations where the propertybag is not updated fully when applying a theme, 
                 // we need to create a new context and use that one. Reloading the propertybag does not solve this.
-                var newContext = web.Context.Clone(web.Context.Url);
+                var webUrl = web.EnsureProperty(w => w.Url);
+                var newContext = web.Context.Clone(webUrl);
 
                 web = newContext.Web;
 
@@ -176,7 +184,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.PropertyBagEntries.Any(); ;
+                _willProvision = template.PropertyBagEntries.Any() && !web.IsNoScriptSite();
             }
             return _willProvision.Value;
 

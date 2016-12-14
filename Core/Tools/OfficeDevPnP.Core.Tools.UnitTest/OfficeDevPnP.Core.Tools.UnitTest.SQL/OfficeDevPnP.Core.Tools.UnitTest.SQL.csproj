@@ -71,6 +71,9 @@
     <Compile Include="TestAuthenticationType.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="TestCategory.cs">
+      <DependentUpon>TestModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="TestConfiguration.cs">
       <DependentUpon>TestModel.tt</DependentUpon>
     </Compile>
@@ -113,6 +116,8 @@
     <Content Include="scripts\AddedAnonymousAccesscolumn.sql" />
     <Content Include="scripts\addfiletrackingbaselinetable.sql" />
     <Content Include="scripts\addfiletrackingtable.sql" />
+    <Content Include="scripts\addtestcategorytableandconstraints - part 2.sql" />
+    <Content Include="scripts\addtestcategorytableandconstraints - part 1.sql" />
     <Content Include="scripts\AddUsersColumns.sql" />
     <Content Include="scripts\adduserstable.sql" />
     <Content Include="scripts\createdpnprole.sql" />

@@ -58,10 +58,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new ThemeCatalogToken(web));
             _tokens.Add(new SiteNameToken(web));
             _tokens.Add(new SiteIdToken(web));
-            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+			_tokens.Add(new SiteOwnerToken(web));
+			_tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
             _tokens.Add(new GuidToken(web));
+            _tokens.Add(new DateNowToken(web));
             _tokens.Add(new CurrentUserIdToken(web));
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
@@ -95,9 +97,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Add ContentTypes
-            web.Context.Load(web.ContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
+            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
             web.Context.ExecuteQueryRetry();
-            foreach (var ct in web.ContentTypes)
+            foreach (var ct in web.AvailableContentTypes)
             {
                 _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
             }
