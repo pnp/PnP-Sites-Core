@@ -318,7 +318,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                else
+                else if(!webFeatureActive)
                 {
                     throw new Exception("Publishing Feature not active. Provisioning failed");
                 }
