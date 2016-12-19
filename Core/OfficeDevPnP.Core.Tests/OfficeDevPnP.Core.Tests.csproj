@@ -435,6 +435,11 @@
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx" />
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -610,10 +615,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Framework\Functional\Templates\DirFolder2\" />
-    <Folder Include="Framework\Functional\Templates\DirFolder\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
