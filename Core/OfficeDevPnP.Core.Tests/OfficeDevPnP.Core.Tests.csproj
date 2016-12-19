@@ -438,6 +438,9 @@
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Framework\Functional\Templates\customaction_modern_add.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
