@@ -453,6 +453,7 @@
     <Content Include="Framework\Functional\Templates\customaction_modern_add.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>

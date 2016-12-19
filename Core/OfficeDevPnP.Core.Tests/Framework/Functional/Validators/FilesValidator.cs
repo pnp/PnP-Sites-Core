@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 foreach (var dFile in directoryFiles)
                 {
                     var file = new Core.Framework.Provisioning.Model.File();
-                    file.Src = dFile.Src.Replace(directory.Src, "");
+                    file.Src = dFile.Src.Replace(directory.Src + "\\", "");
                     file.Folder = directory.Folder;
                     template.Files.Add(file);
                 }
