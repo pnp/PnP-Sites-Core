@@ -430,11 +430,23 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="App.config.sample" />
+    <None Include="Framework\Functional\DirFolder2\Doc4.docx" />
+    <None Include="Framework\Functional\DirFolder2\Doc5.docx" />
+    <None Include="Framework\Functional\DirFolder\Doc1.docx" />
+    <None Include="Framework\Functional\DirFolder\Doc2.docx" />
+    <None Include="Framework\Functional\DirFolder\Doc3.docx" />
     <None Include="Framework\Functional\Templates\ct3document.docx" />
     <None Include="Framework\Functional\Templates\ct1document.docx" />
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2MetaData.json" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx" />
+    <None Include="Framework\Functional\Templates\DirFolderMetadata.json" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx" />
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

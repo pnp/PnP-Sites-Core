@@ -54,6 +54,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 Assert.IsTrue(fv.Validate(result.SourceTemplate.Files,cc));
             }
         }
+
+        /// <summary>
+        /// Directory Files Test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void SiteCollectionDirectoryFilesTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);               
+
+                var result = TestProvisioningTemplate(cc, "files_add_1605.xml", Handlers.Files | Handlers.Lists);
+                FilesValidator fv = new FilesValidator();
+                fv.SchemaVersion = Core.Framework.Provisioning.Providers.Xml.XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(fv.Validate1605(result.SourceTemplate, cc));
+            }
+        }
         #endregion
 
         #region Web test cases
@@ -74,6 +93,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 Assert.IsTrue(fv.Validate(result.SourceTemplate.Files, cc));
             }
         }
+
+        /// <summary>
+        /// Directory Files Test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebCollectionDirectoryFilesTest()
+        {
+            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                var result = TestProvisioningTemplate(cc, "files_add_1605.xml", Handlers.Files | Handlers.Lists);
+                FilesValidator fv = new FilesValidator();
+                fv.SchemaVersion = Core.Framework.Provisioning.Providers.Xml.XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(fv.Validate1605(result.SourceTemplate, cc));
+            }
+        }
+
         #endregion
 
         #region Helper methods
