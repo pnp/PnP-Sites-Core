@@ -939,6 +939,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping view localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        /// </summary>
+        internal static string Provisioning_Extensions_ViewLocalization_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_ViewLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping web part localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
         /// </summary>
         internal static string Provisioning_Extensions_WebPartLocalization_Skip {
@@ -2054,17 +2063,17 @@ namespace OfficeDevPnP.Core {
         ///var PnPResponsiveApp = PnPResponsiveApp || {};
         ///
         ///PnPResponsiveApp.responsivizeSettings = function () {
-        ///	// return if no longer on Settings page
-        ///	if (window.location.href.indexOf(&apos;/settings.aspx&apos;) &lt; 0) return;
-        ///	
-        ///	// find the Settings root element, or wait if not available yet
-        ///	var settingsRoot = $(&quot;.ms-siteSettings-root&quot;);
-        ///	if (!settingsRoot.length) {
-        ///		setTimeout(PnPResponsiveApp.responsivizeSettings, 100);
+        ///    // return if no longer on Settings page
+        ///    if (window.location.href.indexOf(&apos;/settings.aspx&apos;) &lt; 0) return;
+        ///
+        ///    // find the Settings root element, or wait if not available yet
+        ///    var settingsRoot = $(&quot;.ms-siteSettings-root&quot;);
+        ///    if (!settingsRoot.length) {
+        ///        setTimeout(PnPResponsiveApp.responsivizeSettings, 100);
         ///        return;
-        ///	}
-        ///	
-        ///	$(&quot;.ms-siteSettings-root . [rest of string was truncated]&quot;;.
+        ///    }
+        ///
+        ///    $ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {

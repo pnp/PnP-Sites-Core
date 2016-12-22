@@ -1045,4 +1045,7 @@
   <data name="Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false" xml:space="preserve">
     <value>Skipping '{0}' as Overwrite is set to false</value>
   </data>
+  <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
+    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
 </root>

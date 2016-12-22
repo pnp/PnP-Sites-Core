@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Tests;
 using System.IO;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
@@ -34,7 +35,7 @@ namespace Microsoft.SharePoint.Client.Tests
             // Activate sideloading in order to test apps
             clientContext.Load(clientContext.Site, s => s.Id);
             clientContext.ExecuteQueryRetry();
-            clientContext.Site.ActivateFeature(OfficeDevPnP.Core.Constants.APPSIDELOADINGFEATUREID);
+            clientContext.Site.ActivateFeature(Constants.FeatureId_Site_AppSideLoading);
         }
 
         [TestCleanup()]
@@ -43,7 +44,7 @@ namespace Microsoft.SharePoint.Client.Tests
             // Deactivate sideloading
             clientContext.Load(clientContext.Site);
             clientContext.ExecuteQueryRetry();
-            clientContext.Site.DeactivateFeature(OfficeDevPnP.Core.Constants.APPSIDELOADINGFEATUREID);
+            clientContext.Site.DeactivateFeature(Constants.FeatureId_Site_AppSideLoading);
 
             var props = clientContext.Web.AllProperties;
             clientContext.Load(props);

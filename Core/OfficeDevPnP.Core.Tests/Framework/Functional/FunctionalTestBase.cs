@@ -237,14 +237,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
         {
-            // Create a sub site in the central site collection
-            using (var cc = TestCommon.CreateClientContext(sitecollectionUrl))
+            try
             {
-                //Create sub site
-                SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
-                var subWeb = cc.Web.CreateWeb(sub);
-                subWeb.EnsureProperty(t => t.Url);
-                return subWeb.Url;
+                // Create a sub site in the central site collection
+                using (var cc = TestCommon.CreateClientContext(sitecollectionUrl))
+                {
+                    //Create sub site
+                    SiteEntity sub = new SiteEntity() { Title = "Sub site for engine testing", Url = subSiteName, Description = "" };
+                    var subWeb = cc.Web.CreateWeb(sub);
+                    subWeb.EnsureProperty(t => t.Url);
+                    return subWeb.Url;
+                }
+
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.ToDetailedString());
+                throw;
             }
 
             // Below approach is not working on edog...to be investigated

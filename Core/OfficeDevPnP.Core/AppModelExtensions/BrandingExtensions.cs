@@ -1199,22 +1199,24 @@ namespace Microsoft.SharePoint.Client
                     web.Context.ExecuteQueryRetry();
                     foreach (var childWeb in websCollection)
                     {
-
-                        var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
-                        bool inheritTheme = false;
-                        if (!string.IsNullOrEmpty(inheritThemeProperty))
+                        if (childWeb.GetBaseTemplateId() != "APP#0")
                         {
-                            inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
-                        }
+                            var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
+                            bool inheritTheme = false;
+                            if (!string.IsNullOrEmpty(inheritThemeProperty))
+                            {
+                                inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
+                            }
 
-                        if (resetSubsitesToInherit || inheritTheme)
-                        {
-                            Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritMaster] = "True";
-                            childWeb.MasterUrl = masterPageServerRelativeUrl;
-                            childWeb.Update();
-                            web.Context.ExecuteQueryRetry();
-                            websToUpdate.Add(childWeb);
+                            if (resetSubsitesToInherit || inheritTheme)
+                            {
+                                Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
+                                childWeb.AllProperties[InheritMaster] = "True";
+                                childWeb.MasterUrl = masterPageServerRelativeUrl;
+                                childWeb.Update();
+                                web.Context.ExecuteQueryRetry();
+                                websToUpdate.Add(childWeb);
+                            }
                         }
                     }
                     index++;
@@ -1256,21 +1258,24 @@ namespace Microsoft.SharePoint.Client
                     web.Context.ExecuteQueryRetry();
                     foreach (var childWeb in websCollection)
                     {
-                        var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
-                        var inheritTheme = false;
-                        if (!string.IsNullOrEmpty(inheritThemeProperty))
+                        if (childWeb.GetBaseTemplateId() != "APP#0")
                         {
-                            inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
-                        }
+                            var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
+                            var inheritTheme = false;
+                            if (!string.IsNullOrEmpty(inheritThemeProperty))
+                            {
+                                inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
+                            }
 
-                        if (resetSubsitesToInherit || inheritTheme)
-                        {
-                            Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritCustomMaster] = "True";
-                            childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
-                            childWeb.Update();
-                            web.Context.ExecuteQueryRetry();
-                            websToUpdate.Add(childWeb);
+                            if (resetSubsitesToInherit || inheritTheme)
+                            {
+                                Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
+                                childWeb.AllProperties[InheritCustomMaster] = "True";
+                                childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
+                                childWeb.Update();
+                                web.Context.ExecuteQueryRetry();
+                                websToUpdate.Add(childWeb);
+                            }
                         }
                     }
                     index++;
@@ -1599,7 +1604,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
         /// <param name="web">The Web to disable the Responsive UI on</param>
-        public static void DisableReponsiveUI(this Web web)
+        public static void DisableResponsiveUI(this Web web)
         {
             try
             {
@@ -1615,7 +1620,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Site
         /// </summary>
         /// <param name="site">The Site to disable the Responsive UI on</param>
-        public static void DisableReponsiveUI(this Site site)
+        public static void DisableResponsiveUI(this Site site)
         {
             try
             {

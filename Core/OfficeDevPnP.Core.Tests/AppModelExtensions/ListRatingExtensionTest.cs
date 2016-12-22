@@ -13,11 +13,6 @@ namespace Microsoft.SharePoint.Client.Tests
         // Publishing infra active
         private static bool publishingActive = false;
 
-        //SharePoint Server Publishing Infrastructure - Site
-        private const string PublishingSiteFeature = "f6924d36-2fa8-4f0b-b16d-06b7250180fa";
-        //SharePoint Server Publishing - Web
-        private const string PublishingWebFeature = "94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb";
-
         private const string Averagerating = "AverageRating";
         private const string Ratedby = "RatedBy";
         private const string Ratingcount = "RatingCount";
@@ -40,14 +35,14 @@ namespace Microsoft.SharePoint.Client.Tests
                 // Activate publishing
                 if (!publishingActive)
                 {
-                    if (!cc.Site.IsFeatureActive(new Guid(PublishingSiteFeature)))
+                    if (!cc.Site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
                     {
-                        cc.Site.ActivateFeature(new Guid(PublishingSiteFeature));
+                        cc.Site.ActivateFeature(Constants.FeatureId_Site_Publishing);
                     }
 
-                    if (!cc.Web.IsFeatureActive(new Guid(PublishingWebFeature)))
+                    if (!cc.Web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                     {
-                        cc.Web.ActivateFeature(new Guid(PublishingWebFeature));
+                        cc.Web.ActivateFeature(Constants.FeatureId_Web_Publishing);
                     }
                 }
             }
@@ -62,14 +57,14 @@ namespace Microsoft.SharePoint.Client.Tests
                 // deactivate publishing if it was not active before the test run
                 if (!publishingActive)
                 {
-                    if (cc.Web.IsFeatureActive(new Guid(PublishingWebFeature)))
+                    if (cc.Web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                     {
-                        cc.Web.DeactivateFeature(new Guid(PublishingWebFeature));
+                        cc.Web.DeactivateFeature(Constants.FeatureId_Web_Publishing);
                     }
 
-                    if (cc.Site.IsFeatureActive(new Guid(PublishingSiteFeature)))
+                    if (cc.Site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
                     {
-                        cc.Site.DeactivateFeature(new Guid(PublishingSiteFeature));
+                        cc.Site.DeactivateFeature(Constants.FeatureId_Site_Publishing);
                     }
                 }
             }
@@ -103,11 +98,11 @@ namespace Microsoft.SharePoint.Client.Tests
         {
             // Enable Publishing Feature on Site and Web 
 
-            if (!_clientContext.Site.IsFeatureActive(new Guid(PublishingSiteFeature)))
-                _clientContext.Site.ActivateFeature(new Guid(PublishingSiteFeature));
+            if (!_clientContext.Site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
+                _clientContext.Site.ActivateFeature(Constants.FeatureId_Site_Publishing);
 
-            if (!_clientContext.Web.IsFeatureActive(new Guid(PublishingWebFeature)))
-                _clientContext.Web.ActivateFeature(new Guid(PublishingWebFeature));
+            if (!_clientContext.Web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
+                _clientContext.Web.ActivateFeature(Constants.FeatureId_Web_Publishing);
 
             _list.SetRating(VotingExperience.Ratings);
 
@@ -124,11 +119,11 @@ namespace Microsoft.SharePoint.Client.Tests
         {
             // Enable Publishing Feature on Site and Web 
 
-            if (!_clientContext.Site.IsFeatureActive(new Guid(PublishingSiteFeature)))
-                _clientContext.Site.ActivateFeature(new Guid(PublishingSiteFeature));
+            if (!_clientContext.Site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
+                _clientContext.Site.ActivateFeature(Constants.FeatureId_Site_Publishing);
 
-            if (!_clientContext.Web.IsFeatureActive(new Guid(PublishingWebFeature)))
-                _clientContext.Web.ActivateFeature(new Guid(PublishingWebFeature));
+            if (!_clientContext.Web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
+                _clientContext.Web.ActivateFeature(Constants.FeatureId_Web_Publishing);
 
             _list.SetRating(VotingExperience.Likes);
 

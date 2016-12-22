@@ -52,6 +52,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (!isValid) { return false; }
             #endregion
 
+            #region ListViews
+            if (CanUseAcceptLanguageHeaderForLocalization(web))
+            {
+                isValid = ValidateListView(ptSource, sParser);
+                if (!isValid) { return false; }
+            }
+            #endregion
+
             #region WebParts
             if (CanUseAcceptLanguageHeaderForLocalization(web))
             {
@@ -165,6 +173,42 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         private string GetPropertyValue(string attribute, XElement element)
         {
             return element.Attribute(attribute) != null ? element.Attribute(attribute).Value : "";
+        }
+        #endregion
+
+        #region ListViews
+        public bool ValidateListView(ProvisioningTemplate template, TokenParser parser)
+        {
+            var web = cc.Web;
+            cc.Load(web.Lists);
+            cc.ExecuteQueryRetry();
+            var allOk = true;
+            foreach (var listDef in template.Lists)
+            {
+                var list = web.GetListByUrl(listDef.Url);
+                foreach (var viewDef in listDef.Views)
+                {
+                    XElement currentXml = XElement.Parse(viewDef.SchemaXml);
+                    var viewUrl = currentXml.Attribute("Url").Value;
+                    var dispName = currentXml.Attribute("DisplayName").Value;
+                    if (dispName.ContainsResourceToken())
+                    {                        
+                        var resourceValues = parser.GetResourceTokenResourceValues(dispName);
+                        foreach (var resourceValue in resourceValues)
+                        {
+                            list.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                            list.Context.Load(list.Views);
+                            list.Context.ExecuteQueryRetry();
+                            var view = list.Views.Single(v => v.ServerRelativeUrl.EndsWith(viewUrl));
+                            if (!view.Title.Equals(resourceValue.Item2)) {
+                                allOk = false;
+                            }
+                        }
+                    }
+                }
+                
+            }
+            return allOk;
         }
         #endregion
 

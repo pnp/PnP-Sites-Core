@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                         // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(templateList.Title, StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
+                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
 
                         if (index == -1)
                         {
@@ -124,9 +124,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#endregion
+                    #endregion
 
-#region FieldRefs
+                    #region FieldRefs
 
                     foreach (var listInfo in processedLists)
                     {
@@ -154,7 +154,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
                                 }
-                                
+
                                 field.EnsureProperties(f => f.InternalName, f => f.Title);
 
                                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
@@ -197,9 +197,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#endregion
+                    #endregion
 
-#region Fields
+                    #region Fields
 
                     foreach (var listInfo in processedLists)
                     {
@@ -270,9 +270,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
-#endregion
+                    #endregion
 
-#region Default Field Values
+                    #region Default Field Values
                     foreach (var listInfo in processedLists)
                     {
                         if (listInfo.TemplateList.FieldDefaults.Any())
@@ -286,9 +286,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-#endregion
+                    #endregion
 
-#region Views
+                    #region Views
 
                     foreach (var listInfo in processedLists)
                     {
@@ -325,9 +325,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         //}
                     }
 
-#endregion
+                    #endregion
 
-#region Folders
+                    #region Folders
 
                     // Folders are supported for document libraries and generic lists only
                     foreach (var list in processedLists)
@@ -349,7 +349,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#endregion
+                    #endregion
 
                     // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
                     foreach (var listInfo in processedLists)
@@ -508,6 +508,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
+
+#if !SP2013
+                // Localize view title
+                if (displayNameElement.Value.ContainsResourceToken())
+                {
+                    createdView.LocalizeView(web, displayNameElement.Value, parser, monitoredScope);
+                }
+#endif
             }
             catch (Exception ex)
             {
@@ -566,7 +574,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             element.SetAttributeValue("AllowDeletion", "TRUE");
 
             var calculatedField = field as FieldCalculated;
-            if(calculatedField != null)
+            if (calculatedField != null)
             {
                 if (element.Element("Formula") != null)
                 {
@@ -859,9 +867,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ContentTypesEnabled = templateList.ContentTypesEnabled;
                     isDirty = true;
                 }
-                if (existingList.BaseTemplate != (int)ListTemplateType.Survey && 
-                    existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && 
-                    existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
+                if (existingList.BaseTemplate != (int)ListTemplateType.Survey &&
+                    existingList.BaseTemplate != (int)ListTemplateType.DocumentLibrary &&
+                    existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary &&
+                    existingList.BaseTemplate != 850) // 850 = Pages library on publishing site
                 {
                     // https://msdn.microsoft.com/EN-US/library/microsoft.sharepoint.splist.enableattachments.aspx
                     // The EnableAttachments property does not apply to any list that has a base type of Survey, DocumentLibrary or PictureLibrary.
@@ -1043,7 +1052,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
                     var defaultCtBinding = templateList.ContentTypeBindings.FirstOrDefault(ctb => ctb.Default == true);
-                    var currentDefaultContentTypeId = existingContentTypes.First().StringId;                       
+                    var currentDefaultContentTypeId = existingContentTypes.First().StringId;
 
                     foreach (var ctb in bindingsToAdd)
                     {
@@ -1200,14 +1209,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // EnableAttachments are not supported for DocumentLibraries, Survey and PictureLibraries
             // TODO: the user should be warned
-            if (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary && 
+            if (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary &&
                 createdList.BaseTemplate != (int)ListTemplateType.Survey &&
                 createdList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
             {
                 createdList.EnableAttachments = list.EnableAttachments;
             }
 
-            createdList.EnableModeration = list.EnableModeration;           
+            createdList.EnableModeration = list.EnableModeration;
             createdList.ForceCheckout = list.ForceCheckout;
 
             // Done for all other lists than for Survey - With Surveys versioning configuration will cause an exception
@@ -1414,7 +1423,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
-               
+
                 // For each list in the site
                 var lists = web.Lists;
 
@@ -1510,9 +1519,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             siteList.IsPropertyAvailable("MajorWithMinorVersionsLimit")
                                 ? siteList.MajorWithMinorVersionsLimit
                                 : 0,
-                        ForceCheckout = siteList.IsPropertyAvailable("ForceCheckout") ? 
+                        ForceCheckout = siteList.IsPropertyAvailable("ForceCheckout") ?
                             siteList.ForceCheckout : false,
-                        DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0, 
+                        DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
 
                     if (creationInfo.PersistMultiLanguageResources)
@@ -1644,10 +1653,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private List<string> SpecialFields => new List<string>() {"LikedBy"};
+        private List<string> SpecialFields => new List<string>() { "LikedBy" };
 
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
-        {  
+        {
             Microsoft.SharePoint.Client.FieldCollection siteColumns = null;
             if (web.IsSubSite())
             {
@@ -1678,11 +1687,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    if(siteColumn.DefaultValue != field.DefaultValue)
+                    if (siteColumn.DefaultValue != field.DefaultValue)
                     {
                         list.FieldDefaults.Add(field.InternalName, field.DefaultValue);
                     }
-                    
+
 
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
