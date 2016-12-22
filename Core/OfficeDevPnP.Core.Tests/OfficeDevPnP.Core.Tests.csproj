@@ -436,12 +436,22 @@
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
     <None Include="Framework\Functional\Templates\DirFolder2MetaData.json" />
-    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx" />
-    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Framework\Functional\Templates\DirFolderMetadata.json" />
-    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx" />
-    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx" />
-    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
