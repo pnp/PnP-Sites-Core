@@ -1364,7 +1364,12 @@ namespace Microsoft.SharePoint.Client
         public static void ReIndexList(this List list)
         {
             list.EnsureProperties(l => l.NoCrawl);
-            if (list.NoCrawl) return;
+            if (list.NoCrawl)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_SkipNoCrawlLists);
+                return;
+            }
+
             const string reIndexKey = "vti_searchversion";
             var searchversion = 0;
 

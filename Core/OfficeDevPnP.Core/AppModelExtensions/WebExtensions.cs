@@ -980,17 +980,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed</param>
         public static void ReIndexWeb(this Web web)
         {
-            web.EnsureProperties(w => w.WebTemplate, w => w.NoCrawl);
-            if (web.NoCrawl) return;
-#if !ONPREMISES
-            string[] NoProperyBagAccessTemplates = new string[] { "GROUP", "POINTPUBLISHINGTOPIC", "POINTPUBLISHINGPERSONAL" };
-
-#else
-            string[] NoProperyBagAccessTemplates = new string[] {};
-#endif
-            if (NoProperyBagAccessTemplates.Contains(web.WebTemplate))
+            if (web.IsNoScriptSite())
             {
-                // Update individual lists instead, as web bag is (no longer) accessible
+                // Update individual lists instead, as web bag is no (longer) accessible
                 var context = web.Context;
                 context.Load(web.Lists);
                 context.ExecuteQueryRetry();
@@ -998,14 +990,16 @@ namespace Microsoft.SharePoint.Client
                 {
                     list.ReIndexList();
                 }
-                return;
             }
-            int searchversion = 0;
-            if (web.PropertyBagContainsKey("vti_searchversion"))
+            else
             {
-                searchversion = (int)web.GetPropertyBagValueInt("vti_searchversion", 0);
+                int searchversion = 0;
+                if (web.PropertyBagContainsKey("vti_searchversion"))
+                {
+                    searchversion = (int)web.GetPropertyBagValueInt("vti_searchversion", 0);
+                }
+                web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
             }
-            web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
         }
         #endregion
 

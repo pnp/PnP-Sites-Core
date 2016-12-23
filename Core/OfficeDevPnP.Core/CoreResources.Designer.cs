@@ -543,6 +543,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping reindexing of the list because it&apos;s marked as a &apos;no crawl&apos; list..
+        /// </summary>
+        internal static string ListExtensions_SkipNoCrawlLists {
+            get {
+                return ResourceManager.GetString("ListExtensions_SkipNoCrawlLists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
         /// </summary>
         internal static string LoggingUtility_MessageWithException {

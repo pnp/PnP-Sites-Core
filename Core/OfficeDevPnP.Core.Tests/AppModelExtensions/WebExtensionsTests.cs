@@ -383,7 +383,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
         #region ReIndex Tests
         [TestMethod()]
-        public void TriggerReIndexTeamSite()
+        public void TriggerReIndexTeamSiteTest()
         {
             var web = clientContext.Web;
             clientContext.Load(web);
