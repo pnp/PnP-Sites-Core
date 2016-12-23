@@ -452,6 +452,12 @@
     <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc7.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc6.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
