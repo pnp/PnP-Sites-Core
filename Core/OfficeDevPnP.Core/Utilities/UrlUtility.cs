@@ -119,9 +119,9 @@ namespace OfficeDevPnP.Core.Utilities
         {
 	    return new Regex(INVALID_CHARS_REGEX).Replace(content, replacer);
         }
-        public static bool IsIisVirtualDirectory(this string content)
+        public static bool IsIisVirtualDirectory(string url)
         {
-            return Regex.IsMatch(content, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);
+            return Regex.IsMatch(url, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);
         }
 
     }
