@@ -1724,7 +1724,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             field.InternalName == "FileLeafRef" ||
                             field.InternalName == "FileSizeDisplay" ||
                             field.InternalName == "Preview" ||
-                            field.InternalName == "ThumbnailOnForm")
+                            field.InternalName == "ThumbnailOnForm" ||
+                            field.InternalName == "CheckoutUser" ||
+                            field.InternalName == "Modified_x0020_By" ||
+                            field.InternalName == "Created_x0020_By"
+                            )
                         {
                             addField = false;
                         }
