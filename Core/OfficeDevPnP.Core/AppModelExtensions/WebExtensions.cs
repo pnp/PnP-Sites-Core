@@ -1298,5 +1298,41 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
         #endregion
+
+        #region Image Renditions
+
+        /// <summary>
+        /// Adds an Image Rendition if the name of the Image Rendition doesn't already exist.
+        /// </summary>
+        /// <param name="web">SharePoint Web</param>
+        /// <param name="imageRenditionName">The display name of the Image Rendition</param>
+        /// <param name="imageRenditionWidth">The width of the Image Rendition</param>
+        /// <param name="imageRenditionHeight">The height of the Image Rendition</param>
+        public static void AddPublishingImageRendition(this Web web, string imageRenditionName, int imageRenditionWidth, int imageRenditionHeight)
+        {
+            List<string> imageRenditionNames = new List<string>();
+            List<ImageRendition> existingImageRenditions = SiteImageRenditions.GetRenditions(web.Context) as List<ImageRendition>;
+            web.Context.ExecuteQuery();
+            foreach (ImageRendition existingImageRendition in existingImageRenditions)
+            {
+                imageRenditionNames.Add(existingImageRendition.Name);
+            }
+            if (!imageRenditionNames.Contains(imageRenditionName))
+            {
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_AddPublishingImageRendition, imageRenditionName, imageRenditionWidth, imageRenditionHeight);
+                ImageRendition newImageRendition = new ImageRendition();
+                newImageRendition.Name = imageRenditionName;
+                newImageRendition.Width = imageRenditionWidth;
+                newImageRendition.Height = imageRenditionHeight;
+                existingImageRenditions.Add(newImageRendition);
+                SiteImageRenditions.SetRenditions(web.Context, existingImageRenditions);
+                web.Context.ExecuteQuery();
+            }
+            else
+            {
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_AddPublishingImageRendition_Error, imageRenditionName);
+            }
+        }
+        #endregion
     }
 }

@@ -2866,6 +2866,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Adding Image Rendition &apos;{0}&apos; of width &apos;{1}&apos; and height &apos;{2}&apos;..
+        /// </summary>
+        internal static string WebExtensions_AddPublishingImageRendition {
+            get {
+                return ResourceManager.GetString("WebExtensions_AddPublishingImageRendition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to add Image Rendition &apos;{0}&apos;..
+        /// </summary>
+        internal static string WebExtensions_AddPublishingImageRendition_Error {
+            get {
+                return ResourceManager.GetString("WebExtensions_AddPublishingImageRendition_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating web &apos;{0}&apos; with template &apos;{1}&apos;..
         /// </summary>
         internal static string WebExtensions_CreateWeb {
