@@ -1302,13 +1302,13 @@ namespace Microsoft.SharePoint.Client
         #region Image Renditions
 
         /// <summary>
-        /// Adds an Image Rendition if the name of the Image Rendition doesn't already exist.
+        /// Creates an Image Rendition if the name of the Image Rendition doesn't already exist.
         /// </summary>
         /// <param name="web">SharePoint Web</param>
         /// <param name="imageRenditionName">The display name of the Image Rendition</param>
         /// <param name="imageRenditionWidth">The width of the Image Rendition</param>
         /// <param name="imageRenditionHeight">The height of the Image Rendition</param>
-        public static void AddPublishingImageRendition(this Web web, string imageRenditionName, int imageRenditionWidth, int imageRenditionHeight)
+        public static void CreatePublishingImageRendition(this Web web, string imageRenditionName, int imageRenditionWidth, int imageRenditionHeight)
         {
             List<string> imageRenditionNames = new List<string>();
             List<ImageRendition> existingImageRenditions = SiteImageRenditions.GetRenditions(web.Context) as List<ImageRendition>;
@@ -1319,7 +1319,7 @@ namespace Microsoft.SharePoint.Client
             }
             if (!imageRenditionNames.Contains(imageRenditionName))
             {
-                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_AddPublishingImageRendition, imageRenditionName, imageRenditionWidth, imageRenditionHeight);
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreatePublishingImageRendition, imageRenditionName, imageRenditionWidth, imageRenditionHeight);
                 ImageRendition newImageRendition = new ImageRendition();
                 newImageRendition.Name = imageRenditionName;
                 newImageRendition.Width = imageRenditionWidth;
@@ -1330,7 +1330,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_AddPublishingImageRendition_Error, imageRenditionName);
+                Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreatePublishingImageRendition_Error, imageRenditionName);
             }
         }
         #endregion

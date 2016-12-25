@@ -2868,18 +2868,18 @@ namespace OfficeDevPnP.Core {
         /// <summary>
         ///   Looks up a localized string similar to Adding Image Rendition &apos;{0}&apos; of width &apos;{1}&apos; and height &apos;{2}&apos;..
         /// </summary>
-        internal static string WebExtensions_AddPublishingImageRendition {
+        internal static string WebExtensions_CreatePublishingImageRendition {
             get {
-                return ResourceManager.GetString("WebExtensions_AddPublishingImageRendition", resourceCulture);
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Unable to add Image Rendition &apos;{0}&apos;..
         /// </summary>
-        internal static string WebExtensions_AddPublishingImageRendition_Error {
+        internal static string WebExtensions_CreatePublishingImageRendition_Error {
             get {
-                return ResourceManager.GetString("WebExtensions_AddPublishingImageRendition_Error", resourceCulture);
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition_Error", resourceCulture);
             }
         }
         
