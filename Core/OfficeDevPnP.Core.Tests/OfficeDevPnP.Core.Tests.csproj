@@ -500,6 +500,7 @@
     <Content Include="Framework\Functional\Templates\localization_add.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\termgroup_delta_1605_1.xml" />
     <Content Include="Framework\Functional\Templates\websettings_files.xml">
       <SubType>Designer</SubType>
     </Content>
