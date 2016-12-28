@@ -383,11 +383,9 @@ namespace Microsoft.SharePoint.Client
                 var uri = new Uri(web.Context.Url);
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
                 
-                    var webUrl = uri.Port !- 80 and uri.Port != 443 ? $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}" : $"{uri.Scheme}://{uri.Host}{serverRelativeUrl}";
-                    var pageUrl = uri.Port !- 80 and uri.Port != 443 ? $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}" : "{uri.Scheme}://{uri.Host}{serverRelativePageUrl}";
-                if(webUrl.endsWith("/")) {
-                    webUrl = webUrl.substring(0, webUrl.length-1);
-                }
+                var webUrl =  $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
+                var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
+                webUrl = UrlUtility.EnsureTrailingSlash(webUrl);
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
                 request.Credentials = web.Context.Credentials;
