@@ -168,8 +168,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     user.Update();
                     web.Context.ExecuteQueryRetry();
                 }
-
-                if (!web.IsSubSite() && siteSecurity.SiteSecurityPermissions != null) // Only manage permissions levels on sitecol level
+                
+                if (siteSecurity.SiteSecurityPermissions != null) // With the change from october, manage permission levels on subsites as well
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -234,22 +234,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                         {
-                            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
-                            if (principal == null)
-                            {
-                                principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
-                            }
-
-                            var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
-
                             var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
-
                             if (roleDefinition != null)
                             {
+                                Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+                                if (principal == null)
+                                {
+                                    principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
+                                }
+
+                                var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
                                 roleDefinitionBindingCollection.Add(roleDefinition);
+                                web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                                web.Context.ExecuteQueryRetry();
                             }
-                            web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
-                            web.Context.ExecuteQueryRetry();
+                            else
+                            {
+                                scope.LogWarning("Role assignment {0} not found in web", roleAssignment.RoleDefinition);
+                            }
                         }
                     }
                 }
