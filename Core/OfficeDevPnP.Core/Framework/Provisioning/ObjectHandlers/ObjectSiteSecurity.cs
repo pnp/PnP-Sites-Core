@@ -421,6 +421,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.HasUniqueRoleAssignments)
                 {
+                    
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
                     if (!web.IsSubSite())
                     {
