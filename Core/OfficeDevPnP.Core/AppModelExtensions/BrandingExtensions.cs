@@ -1320,16 +1320,23 @@ namespace Microsoft.SharePoint.Client
 
             var pageLayout = rootWeb.GetPageLayoutListItemByName(pageLayoutName);
 
-            // Parse the right styled xml for the layout - <layout guid="944ea6be-f287-42c6-aa11-3fd75ab1ee9e" url="_catalogs/masterpage/ArticleLeft.aspx" />
-            XmlNode xmlNode = xd.CreateElement("layout");
-            var xmlAttribute = xd.CreateAttribute("guid");
-            xmlAttribute.Value = pageLayout["UniqueId"].ToString();
-            var xmlAttribute2 = xd.CreateAttribute("url");
-            // Get relative URL to the particular site collection
-            xmlAttribute2.Value = SolveSiteRelativeUrl(rootWeb, pageLayout["FileRef"].ToString());
-            xmlNode.Attributes.SetNamedItem(xmlAttribute);
-            xmlNode.Attributes.SetNamedItem(xmlAttribute2);
-            return xmlNode;
+            if (pageLayout != null)
+            {
+                // Parse the right styled xml for the layout - <layout guid="944ea6be-f287-42c6-aa11-3fd75ab1ee9e" url="_catalogs/masterpage/ArticleLeft.aspx" />
+                XmlNode xmlNode = xd.CreateElement("layout");
+                var xmlAttribute = xd.CreateAttribute("guid");
+                xmlAttribute.Value = pageLayout["UniqueId"].ToString();
+                var xmlAttribute2 = xd.CreateAttribute("url");
+                // Get relative URL to the particular site collection
+                xmlAttribute2.Value = SolveSiteRelativeUrl(rootWeb, pageLayout["FileRef"].ToString());
+                xmlNode.Attributes.SetNamedItem(xmlAttribute);
+                xmlNode.Attributes.SetNamedItem(xmlAttribute2);
+                return xmlNode;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException(String.Format(CoreResources.BrandingExtension_InvalidPageLayoutName, pageLayoutName));
+            }
         }
 
         private static string SolveSiteRelativeUrl(Web web, string url)
