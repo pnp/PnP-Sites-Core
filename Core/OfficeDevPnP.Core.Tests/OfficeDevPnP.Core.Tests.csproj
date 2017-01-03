@@ -435,9 +435,36 @@
     <None Include="Framework\Functional\Templates\CT21Document.docx" />
     <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
     <None Include="Framework\Functional\Templates\CT20Document.docx" />
+    <None Include="Framework\Functional\Templates\DirFolder2MetaData.json" />
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolderMetadata.json" />
+    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc7.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc6.docx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Framework\Functional\Templates\oslo.preview">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Framework\Functional\Templates\customaction_modern_add.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
