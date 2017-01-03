@@ -445,7 +445,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var createdView = createdList.Views.Add(viewCI);
-                web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
+                createdView.EnsureProperties(v => v.Scope,v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView);
                 web.Context.ExecuteQueryRetry();
                 
                 if (urlHasValue)
@@ -510,6 +510,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdView.Update();
                 }
 
+                // Aggregations
+                var aggregationsElement = viewElement.Descendants("Aggregations").FirstOrDefault();
+                if (aggregationsElement != null)
+                {
+                    if (aggregationsElement.HasElements)
+                    {
+                        var fieldRefString = "";
+                        var fieldRefs = aggregationsElement.Descendants("FieldRef");
+                        foreach (var fieldRef in fieldRefs)
+                        {
+                            fieldRefString += fieldRef.ToString();
+                        }
+                        if (createdView.Aggregations != fieldRefString)
+                        {
+                            createdView.Aggregations = fieldRefString;
+                            createdView.Update();
+                        }
+                    }
+                }
+
+                
                 // JSLink
                 var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
                 if (jslinkElement != null)
