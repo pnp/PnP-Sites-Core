@@ -216,6 +216,11 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Removes an existing image rendition
+        /// </summary>
+        /// <param name="web">SharePoint Web</param>
+        /// <param name="imageRenditionName">The name of the image rendition</param>
         public static void RemovePublishingImageRendition(this Web web, string imageRenditionName)
         {
             var imageRenditions = SiteImageRenditions.GetRenditions(web.Context);
@@ -225,6 +230,10 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 
+        /// <summary>
+        /// Returns all image renditions
+        /// </summary>
+        /// <param name="web">SharePoint Web</param>
         public static IList<ImageRendition> GetPublishingImageRenditions(this Web web)
         {
             var imageRenditions = SiteImageRenditions.GetRenditions(web.Context);
