@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.SharePoint.Client.Publishing;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
@@ -193,7 +194,7 @@ namespace Microsoft.SharePoint.Client
         {
             List<string> imageRenditionNames = new List<string>();
             List<ImageRendition> existingImageRenditions = SiteImageRenditions.GetRenditions(web.Context) as List<ImageRendition>;
-            web.Context.ExecuteQuery();
+            web.Context.ExecuteQueryRetry();
             foreach (ImageRendition existingImageRendition in existingImageRenditions)
             {
                 imageRenditionNames.Add(existingImageRendition.Name);
@@ -207,12 +208,28 @@ namespace Microsoft.SharePoint.Client
                 newImageRendition.Height = imageRenditionHeight;
                 existingImageRenditions.Add(newImageRendition);
                 SiteImageRenditions.SetRenditions(web.Context, existingImageRenditions);
-                web.Context.ExecuteQuery();
+                web.Context.ExecuteQueryRetry();
             }
             else
             {
                 Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreatePublishingImageRendition_Error, imageRenditionName);
             }
+        }
+
+        public static void RemovePublishingImageRendition(this Web web, string imageRenditionName)
+        {
+            var imageRenditions = SiteImageRenditions.GetRenditions(web.Context);
+            web.Context.ExecuteQueryRetry();
+            var newRenditionList = imageRenditions.Where(i => i.Name != imageRenditionName).ToList();
+            SiteImageRenditions.SetRenditions(web.Context, newRenditionList);
+            web.Context.ExecuteQueryRetry();
+        }
+
+        public static IList<ImageRendition> GetPublishingImageRenditions(this Web web)
+        {
+            var imageRenditions = SiteImageRenditions.GetRenditions(web.Context);
+            web.Context.ExecuteQueryRetry();
+            return imageRenditions;
         }
         #endregion
     }
