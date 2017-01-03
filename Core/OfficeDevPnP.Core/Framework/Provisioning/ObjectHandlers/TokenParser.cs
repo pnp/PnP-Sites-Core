@@ -70,12 +70,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new AuthenticationRealmToken(web));
 
             // Add lists
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Fields));
             web.Context.ExecuteQueryRetry();
             foreach (var list in web.Lists)
             {
                 _tokens.Add(new ListIdToken(web, list.Title, list.Id));
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                foreach (var field in list.Fields)
+                {
+                    web.Context.Load(field, f => f.Id, f => f.StaticName);
+                    web.Context.ExecuteQueryRetry();
+                    _tokens.Add(new ListFieldToken(web, list.Title, field.StaticName, field.Id));
+                }
             }
 
             if (web.IsSubSite())

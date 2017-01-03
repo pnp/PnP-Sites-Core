@@ -225,6 +225,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var list in lists)
             {
+                if (schemaXml.Contains(list.Id.ToString()))
+                {
+                    schemaXml = Regex.Replace(schemaXml, @"(ShowField=\"")(\w+)(\"")", string.Format("ShowField =\"{{listFieldName:{0}:$2}}\"", list.Title), RegexOptions.IgnoreCase);
+                }
                 schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
             }
 
@@ -402,7 +406,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var fieldXml = field.SchemaXml;
                         XElement element = XElement.Parse(fieldXml);
-
+                        if (field.TypeAsString.StartsWith("Lookup"))
+                        {
+                            web.Context.Load((FieldLookup)field, f => f.LookupField, f => f.LookupList, f => f.LookupWebId);
+                            web.Context.ExecuteQueryRetry();
+                        }
                         // Check if the field contains a reference to a list. If by Guid, rewrite the value of the attribute to use web relative paths
                         var listIdentifier = element.Attribute("List") != null ? element.Attribute("List").Value : null;
                         if (!string.IsNullOrEmpty(listIdentifier))
