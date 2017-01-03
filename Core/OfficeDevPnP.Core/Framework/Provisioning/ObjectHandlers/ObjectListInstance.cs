@@ -400,7 +400,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // Default view
-                var viewDefault = viewElement.Attribute("DefaultView") != null && Boolean.Parse(viewElement.Attribute("DefaultView").Value);
+                var viewDefault = viewElement.Attribute("DefaultView") != null && bool.Parse(viewElement.Attribute("DefaultView").Value);
 
                 // Row limit
                 var viewPaged = true;
@@ -447,7 +447,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var createdView = createdList.Views.Add(viewCI);
                 web.Context.Load(createdView, v => v.Scope, v => v.JSLink, v => v.Title);
                 web.Context.ExecuteQueryRetry();
-
+                
                 if (urlHasValue)
                 {
                     //restore original title 
@@ -491,6 +491,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!string.IsNullOrEmpty(scope) && Enum.TryParse<ViewScope>(scope, out parsedScope))
                 {
                     createdView.Scope = parsedScope;
+                    createdView.Update();
+                }
+
+                // MobileView
+                var mobileView = viewElement.Attribute("MobileView") != null && bool.Parse(viewElement.Attribute("MobileView").Value);
+                if (mobileView)
+                {
+                    createdView.MobileView = mobileView;
+                    createdView.Update();
+                }
+
+                // MobileDefaultView
+                var mobileDefaultView = viewElement.Attribute("MobileDefaultView") != null && bool.Parse(viewElement.Attribute("MobileDefaultView").Value);
+                if (mobileDefaultView)
+                {
+                    createdView.MobileDefaultView = mobileDefaultView;
                     createdView.Update();
                 }
 
