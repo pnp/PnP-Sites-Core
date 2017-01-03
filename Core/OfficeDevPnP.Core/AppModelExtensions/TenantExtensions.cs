@@ -64,8 +64,8 @@ namespace Microsoft.SharePoint.Client
                 // Let's poll for site collection creation completion
                 WaitForIsComplete(tenant, op);
 
-                // Add delay to avoid race conditions
-                Thread.Sleep(30 * 1000);
+                //// Add delay to avoid race conditions
+                //Thread.Sleep(30 * 1000);
 
                 // Return site guid of created site collection
                 try

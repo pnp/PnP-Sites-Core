@@ -249,7 +249,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var defaultLayoutXml = web.GetPropertyBagValueString(DEFAULTPAGELAYOUT, null);
 
             var defaultPageLayoutUrl = string.Empty;
-            if (defaultLayoutXml != null && defaultLayoutXml != "__inherit")
+            if (defaultLayoutXml != null && defaultLayoutXml.ToLower() != "__inherit")
             {
                 defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value.Replace("_catalogs/masterpage/", String.Empty);
             }
@@ -258,7 +258,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var layoutsXml = web.GetPropertyBagValueString(AVAILABLEPAGELAYOUTS, null);
 
-            if (!string.IsNullOrEmpty(layoutsXml) && layoutsXml != "__inherit")
+            if (!string.IsNullOrEmpty(layoutsXml) && layoutsXml.ToLower() != "__inherit")
             {
                 var layoutsElement = XElement.Parse(layoutsXml);
 
@@ -318,7 +318,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                else
+                else if(!webFeatureActive)
                 {
                     throw new Exception("Publishing Feature not active. Provisioning failed");
                 }
