@@ -380,6 +380,7 @@
     <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
     <Compile Include="AppModelExtensions\TenantExtensions.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
     <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
     <Compile Include="AppModelExtensions\VariationExtensions.cs" />
@@ -572,7 +573,7 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\WebPartLocalizationExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLocalization.cs" />
@@ -913,7 +914,7 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />

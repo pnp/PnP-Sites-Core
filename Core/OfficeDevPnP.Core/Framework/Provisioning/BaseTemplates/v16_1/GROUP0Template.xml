@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.9.1611.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.10.1612.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-GROUP0template">
     <pnp:ProvisioningTemplate ID="GROUP0template" Version="1" BaseSiteTemplate="GROUP#0">
       <pnp:WebSettings RequestAccessEmail="someone@example.com" NoCrawl="false" WelcomePage="Shared Documents/Forms/AllItems.aspx" SiteLogo="{site}/SiteAssets/__siteIcon__.jpg" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/boston.master" CustomMasterPageUrl="{masterpagecatalog}/boston.master" />
@@ -69,7 +69,7 @@
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="489d0b3c-ebd2-4c61-a78c-6c856aa9ec8d" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="af973b13-a73f-4e98-ae27-9215944be3d2" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="4/11/2016 2:00:26" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="2/12/2016 0:29:18" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="GroupDocumentsUrl" Value="Shared Documents" Overwrite="false" />
@@ -78,7 +78,7 @@
         <pnp:PropertyBagEntry Key="GroupType" Value="Public" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="4/11/2016 1:01:44" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="1/12/2016 23:34:17" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="GroupId" Value="ad5422ac-fdc5-4926-b253-18a315cb1b96" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
@@ -788,7 +788,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{5C66B480-BE68-4416-A6DA-7879F6E383AD}" Type="HTML" DisplayName="Recent Changes" Url="/sites/templategroup0/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x">
+            <View Name="{5C66B480-BE68-4416-A6DA-7879F6E383AD}" Type="HTML" DisplayName="Recent Changes" Url="/sites/templategroup0/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Modified" Ascending="FALSE" />

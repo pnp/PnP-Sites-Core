@@ -192,4 +192,7 @@
   <data name="WP_Title" xml:space="preserve">
     <value>Web Part Titel Een</value>
   </data>
+  <data name="LI_1_ViewTitle" xml:space="preserve">
+    <value>List View Titel</value>
+  </data>
 </root>

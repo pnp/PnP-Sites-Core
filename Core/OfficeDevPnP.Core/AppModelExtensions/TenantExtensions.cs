@@ -64,11 +64,19 @@ namespace Microsoft.SharePoint.Client
                 // Let's poll for site collection creation completion
                 WaitForIsComplete(tenant, op);
 
-                // Add delay to avoid race conditions
-                Thread.Sleep(30 * 1000);
+                //// Add delay to avoid race conditions
+                //Thread.Sleep(30 * 1000);
 
                 // Return site guid of created site collection
-                siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                try
+                {
+                    siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                }
+                catch(Exception ex)
+                {
+                    // Eat all exceptions cause there's currently (December 16) an issue in the service that can make this call fail in combination with app-only usage
+                    Log.Error("Temp eating exception to issue in service (December 2016). Exception is {0}.", ex.ToDetailedString());
+                }
             }
             return siteGuid;
         }

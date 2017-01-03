@@ -150,12 +150,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.First();
+                var site = siteCollections.Last();
                 var siteExists1 = tenant.CheckIfSiteExists(site.Url, "Active");
                 Assert.IsTrue(siteExists1);
 
                 try {
-                    var siteExists2 = tenant.CheckIfSiteExists(site.Url + "sites/aaabbbccc", "Active");
+                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
+                    var siteExists2 = tenant.CheckIfSiteExists(siteToCreateUrl, "Active");
                     Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
                 }
                 catch (ServerException) { }
@@ -171,11 +173,13 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.First();
+                var site = siteCollections.Last();
                 var siteExists1 = tenant.SiteExists(site.Url);
                 Assert.IsTrue(siteExists1);
 
-                var siteExists2 = tenant.SiteExists(site.Url + "sites/aaabbbccc");
+                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
+                var siteExists2 = tenant.SiteExists(siteToCreateUrl);
                 Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
             }
         }
