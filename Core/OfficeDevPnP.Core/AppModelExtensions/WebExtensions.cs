@@ -332,7 +332,7 @@ namespace Microsoft.SharePoint.Client
         public static bool IsNoScriptSite(this Web web)
         {
 #if !ONPREMISES
-            string[] NoScriptSiteTemplates = new string[] { "GROUP" };
+            string[] NoScriptSiteTemplates = new string[] { "GROUP", "POINTPUBLISHINGTOPIC", "POINTPUBLISHINGPERSONAL" };
             web.EnsureProperties(w => w.WebTemplate, w => w.EffectiveBasePermissions);
 
             // Definition of no-script is not having the AddAndCustomizePages permission
