@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
+                            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
                                 // Not a wikipage
                                 template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
@@ -143,7 +143,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                WriteWarning(string.Format("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION), ProvisioningMessageType.Warning);
+                                WriteWarning(
+                                    $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
                                 scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
                             }
                         }
@@ -157,7 +158,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
+                        if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                         {
                             // Page does not belong to a list, extract the file as is
                             template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
@@ -169,7 +170,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            WriteWarning(string.Format("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION), ProvisioningMessageType.Warning);
+                            WriteWarning(
+                                $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
                             scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
                         }
                     }
