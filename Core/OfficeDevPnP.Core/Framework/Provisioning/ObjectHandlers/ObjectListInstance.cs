@@ -547,6 +547,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 // Add ListViewId token parser
+                createdView.EnsureProperty(v => v.Id);
                 parser.AddToken(new ListViewIdToken(web, createdList.Title, createdView.Title, createdView.Id));
 
 #if !SP2013
