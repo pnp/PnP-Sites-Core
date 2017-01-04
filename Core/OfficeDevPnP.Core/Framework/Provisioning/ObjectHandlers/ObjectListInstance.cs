@@ -546,6 +546,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
+                // Add ListViewId token parser
+                parser.AddToken(new ListViewIdToken(web, createdList.Title, createdView.Title, createdView.Id));
+
 #if !SP2013
                 // Localize view title
                 if (displayNameElement.Value.ContainsResourceToken())
