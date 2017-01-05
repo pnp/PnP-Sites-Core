@@ -182,12 +182,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private bool WebSupportsProvisionNavigation(Web web, ProvisioningTemplate template)
         {
-            if (template.Navigation == null) return true;
-
             bool isNavSupported = true;
             // The Navigation handler for managed metedata only works for sites with Publishing Features enabled
             if (!web.IsPublishingWeb())
             {
+                // NOTE: Here there could be a very edge case for a site where publishing features were enabled, 
+                // configured managed navigation, and then disabled, keeping one navigation managed and another
+                // one structural. Just as a reminder ...
                 if (template.Navigation.GlobalNavigation != null
                     && template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Managed)
                 {
@@ -208,6 +209,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // The Navigation handler for managed metedata only works for sites with Publishing Features enabled
             if (!web.IsPublishingWeb())
             {
+                // NOTE: Here we could have the same edge case of method WebSupportsProvisionNavigation. 
+                // Just as a reminder ...
                 var navigationSettings = new WebNavigationSettings(web.Context, web);
                 navigationSettings.EnsureProperties(ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
                 if (navigationSettings.CurrentNavigation.Source == StandardNavigationSource.TaxonomyProvider)
@@ -394,7 +397,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return WebSupportsProvisionNavigation(web, template);
+            return (template.Navigation != null && 
+                WebSupportsProvisionNavigation(web, template));
         }
     }
 
