@@ -58,8 +58,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new ThemeCatalogToken(web));
             _tokens.Add(new SiteNameToken(web));
             _tokens.Add(new SiteIdToken(web));
-			_tokens.Add(new SiteOwnerToken(web));
-			_tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+            _tokens.Add(new SiteOwnerToken(web));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
             _tokens.Add(new GuidToken(web));
@@ -146,6 +146,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             _tokens.Add(new SiteCollectionTermGroupIdToken(web));
             _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+
+            // SiteCollection TermSets
+
+            var site = (web.Context as ClientContext).Site;
+            var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
+            web.Context.Load(siteCollectionTermGroup);
+            web.Context.ExecuteQueryRetry();
+            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+            {
+                web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                web.Context.ExecuteQueryRetry();
+                foreach (var termSet in siteCollectionTermGroup.TermSets)
+                {
+                    _tokens.Add(new SiteCollectionTermSetIdToken(web,termSet.Name,termSet.Id));;
+                }
+            }
 
             // Fields
             var fields = web.Fields;

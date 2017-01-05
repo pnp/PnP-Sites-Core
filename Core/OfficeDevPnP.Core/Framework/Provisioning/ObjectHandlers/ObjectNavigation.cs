@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ProvisionStructuralNavigationNodes(
                 web,
                 parser,
-                navigationType, 
+                navigationType,
                 structuralNavigation.NavigationNodes
                 );
         }
@@ -240,10 +240,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     node.IsExternal);
 
                 ProvisionStructuralNavigationNodes(
-                    web, 
+                    web,
                     parser,
-                    navigationType, 
-                    node.NavigationNodes, 
+                    navigationType,
+                    node.NavigationNodes,
                     parser.ParseString(node.Title));
             }
         }
@@ -304,6 +304,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Replace Taxonomy field references to SspId, TermSetId with tokens
             TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
             TermStore defaultStore = session.GetDefaultSiteCollectionTermStore();
+            var site = (web.Context as ClientContext).Site;
+            var siteCollectionTermGroup = defaultStore.GetSiteCollectionGroup(site, false);
+            web.Context.Load(siteCollectionTermGroup);
+            web.Context.ExecuteQueryRetry();
+            string siteCollectionTermGroupName = null;
+            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+            {
+                web.Context.Load(siteCollectionTermGroup, s => s.Name);
+                web.Context.ExecuteQueryRetry();
+                siteCollectionTermGroupName = siteCollectionTermGroup.Name;
+            }
             web.Context.Load(defaultStore, ts => ts.Name, ts => ts.Id);
             web.Context.ExecuteQueryRetry();
 
@@ -334,7 +345,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (!navigationTermSet.ServerObjectIsNull())
                         {
-                            managedNavigation.TermSetId = $"{{termsetid:{navigationTermSet.Group.Name}:{navigationTermSet.Name}}}";
+                            if (navigationTermSet.Group.Name == siteCollectionTermGroupName)
+                            {
+                                managedNavigation.TermSetId = $"{{sitecollectiontermsetid:{navigationTermSet.Name}}}";
+                            }
+                            else
+                            {
+                                managedNavigation.TermSetId =
+                                    $"{{termsetid:{navigationTermSet.Group.Name}:{navigationTermSet.Name}}}";
+                            }
                         }
                     }
                 }
