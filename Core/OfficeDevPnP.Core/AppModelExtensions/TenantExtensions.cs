@@ -446,7 +446,8 @@ namespace Microsoft.SharePoint.Client
             long? storageWarningLevel = null,
             double? userCodeMaximumLevel = null,
             double? userCodeWarningLevel = null,
-            bool? noScriptSite = null
+            bool? noScriptSite = null,
+            bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
@@ -471,8 +472,17 @@ namespace Microsoft.SharePoint.Client
                 if (noScriptSite != null)
                     siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
 
-                siteProps.Update();
+                var op = siteProps.Update();
+                tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
+                if (timeoutFunction != null)
+                {
+                    wait = true;
+                }
+                if (wait)
+                {
+                    WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.SettingSiteProperties);
+                }
             }
         }
 
