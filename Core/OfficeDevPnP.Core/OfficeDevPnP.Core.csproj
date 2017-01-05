@@ -626,6 +626,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteOwnerToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />

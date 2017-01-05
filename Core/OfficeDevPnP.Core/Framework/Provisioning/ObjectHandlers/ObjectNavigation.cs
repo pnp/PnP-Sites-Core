@@ -351,6 +351,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Replace Taxonomy field references to SspId, TermSetId with tokens
             TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
             TermStore defaultStore = session.GetDefaultSiteCollectionTermStore();
+            var site = (web.Context as ClientContext).Site;
+            var siteCollectionTermGroup = defaultStore.GetSiteCollectionGroup(site, false);
+            web.Context.Load(siteCollectionTermGroup, t => t.Name);
+            web.Context.ExecuteQueryRetry();
+            string siteCollectionTermGroupName = null;
+            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+            {
+                siteCollectionTermGroupName = siteCollectionTermGroup.Name;
+            }
             web.Context.Load(defaultStore, ts => ts.Name, ts => ts.Id);
             web.Context.ExecuteQueryRetry();
 
@@ -381,7 +390,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (!navigationTermSet.ServerObjectIsNull())
                         {
-                            managedNavigation.TermSetId = $"{{termsetid:{navigationTermSet.Group.Name}:{navigationTermSet.Name}}}";
+                            if (navigationTermSet.Group.Name == siteCollectionTermGroupName)
+                            {
+                                managedNavigation.TermSetId = $"{{sitecollectiontermsetid:{navigationTermSet.Name}}}";
+                            }
+                            else
+                            {
+                                managedNavigation.TermSetId =
+                                    $"{{termsetid:{navigationTermSet.Group.Name}:{navigationTermSet.Name}}}";
+                            }
                         }
                     }
                 }

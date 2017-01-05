@@ -33,10 +33,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         tg => tg.TermSets.Include(
                             tset => tset.Name,
                             tset => tset.Id)));
+                var siteCollectionTermGroup = termStore.GetSiteCollectionGroup((web.Context as ClientContext).Site, false);
+                web.Context.Load(siteCollectionTermGroup);
                 web.Context.ExecuteQueryRetry();
 
                 SiteCollectionTermGroupNameToken siteCollectionTermGroupNameToken =
                     new SiteCollectionTermGroupNameToken(web);
+
                 foreach (var modelTermGroup in template.TermGroups)
                 {
                     #region Group
@@ -129,6 +132,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id,
                                 modelTermSet.Language ?? termStore.DefaultLanguage);
                             parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
+                            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+                            {
+                                if (group.Name == siteCollectionTermGroup.Name)
+                                {
+                                    parser.AddToken((new SiteCollectionTermSetIdToken(web, modelTermSet.Name, modelTermSet.Id)));
+                                }
+                            }
                             newTermSet = true;
                             set.Description = modelTermSet.Description;
                             set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
