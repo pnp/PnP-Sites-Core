@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (CanUseAcceptLanguageHeaderForLocalization(web))
             {
                 isValid = ValidateListView(ptSource, sParser);
-                if (!isValid) { return false; }
+                if (!isValid) return false;
             }
             #endregion
 
@@ -65,6 +65,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             {
                 isValid = ValidateWebPartOnPages(ptSource, sParser);
                 if (!isValid) { return false; }
+            }
+            #endregion
+
+            #region Navigation
+            if (CanUseAcceptLanguageHeaderForLocalization(web))
+            {
+                isValid = ValidateStructuralNavigation(ptSource, sParser);
+                if (!isValid) return false;
             }
             #endregion
 
@@ -192,7 +200,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     var viewUrl = currentXml.Attribute("Url").Value;
                     var dispName = currentXml.Attribute("DisplayName").Value;
                     if (dispName.ContainsResourceToken())
-                    {                        
+                    {
                         var resourceValues = parser.GetResourceTokenResourceValues(dispName);
                         foreach (var resourceValue in resourceValues)
                         {
@@ -200,13 +208,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                             list.Context.Load(list.Views);
                             list.Context.ExecuteQueryRetry();
                             var view = list.Views.Single(v => v.ServerRelativeUrl.EndsWith(viewUrl));
-                            if (!view.Title.Equals(resourceValue.Item2)) {
+                            if (!view.Title.Equals(resourceValue.Item2))
+                            {
                                 allOk = false;
                             }
                         }
                     }
                 }
-                
+
             }
             return allOk;
         }
@@ -299,6 +308,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
             return locCustomActions;
+        }
+        #endregion
+
+        #region Navigation
+        public bool ValidateStructuralNavigation(ProvisioningTemplate template, TokenParser parser)
+        {
+            bool ok = true;
+            var web = cc.Web;
+            if (template.Navigation == null) return true;
+            if (template.Navigation.GlobalNavigation == null) return true;
+            if (template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Managed) return true;
+
+            var node = template.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.First();
+            if (node.Title.ContainsResourceToken())
+            {
+                var resourceValues = parser.GetResourceTokenResourceValues(node.Title);
+                foreach (var resourceValue in resourceValues)
+                {
+                    cc.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                    cc.Load(web, w => w.Navigation, w => w.Navigation.TopNavigationBar);
+                    cc.ExecuteQueryRetry();
+                    var firstNode = web.Navigation.TopNavigationBar.First();
+                    if (!firstNode.Title.Equals(resourceValue.Item2))
+                    {
+                        ok = false;
+                    }
+                }
+            }
+            return ok;
         }
         #endregion
 

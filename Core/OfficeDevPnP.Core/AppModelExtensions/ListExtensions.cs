@@ -1377,7 +1377,14 @@ namespace Microsoft.SharePoint.Client
             {
                 searchversion = (int)list.GetPropertyBagValueInt(reIndexKey, 0);
             }
-            list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+            try
+            {
+                list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+            }
+            catch (ServerUnauthorizedAccessException)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_SkipNoCrawlLists);
+            }
         }
     }
 }
