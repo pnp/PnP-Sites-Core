@@ -10,6 +10,7 @@
         CreatingSiteCollection,
         DeletingSiteCollection,
         RemovingDeletedSiteCollectionFromRecycleBin,
-        SettingSiteLockState
+        SettingSiteLockState,
+        SettingSiteProperties
     }
 }
