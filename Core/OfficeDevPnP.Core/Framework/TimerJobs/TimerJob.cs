@@ -63,8 +63,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private List<string> sitesToProcess;
         private bool expandSubSites = false;
         // Threading
-        private static int numberOfThreadsNotYetCompleted;
-        private static ManualResetEvent doneEvent;
+        private int numberOfThreadsNotYetCompleted;
+        private ManualResetEvent doneEvent;
         private bool useThreading = true;
         private int maximumThreads = 5;
         #endregion
