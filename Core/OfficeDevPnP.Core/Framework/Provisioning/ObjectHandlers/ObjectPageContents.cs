@@ -17,6 +17,7 @@ using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Utilities;
+using FileLevel = Microsoft.SharePoint.Client.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -57,17 +58,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // Wiki page
                             var fullUri = new Uri(UrlUtility.Combine(web.Url, web.RootFolder.WelcomePage));
 
-                            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
-                            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+                            //var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+                            //var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
                             var homeFile = web.GetFileByServerRelativeUrl(welcomePageUrl);
 
-                            LimitedWebPartManager limitedWPManager =
-                                homeFile.GetLimitedWebPartManager(PersonalizationScope.Shared);
+                            var limitedWPManager = homeFile.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
                             web.Context.Load(limitedWPManager);
 
-                            var webParts = web.GetWebParts(welcomePageUrl);
+                            //var webParts = web.GetWebParts(welcomePageUrl);
 
                             var page = new Page()
                             {
@@ -86,10 +86,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     try
                                     {
-                                        String serverSideControlIdToSearchFor = String.Format("g_{0}",
-                                            serverSideControlId.Replace("-", "_"));
+                                        var serverSideControlIdToSearchFor =
+                                            $"g_{serverSideControlId.Replace("-", "_")}";
 
-                                        WebPartDefinition webPart = limitedWPManager.WebParts.GetByControlId(serverSideControlIdToSearchFor);
+                                        var webPart = limitedWPManager.WebParts.GetByControlId(serverSideControlIdToSearchFor);
                                         web.Context.Load(webPart,
                                             wp => wp.Id,
                                             wp => wp.WebPart.Title,
@@ -203,11 +203,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
 
+            file.EnsureProperty(f => f.Level);
+
+            var containerPath = folderPath.StartsWith(web.ServerRelativeUrl) && web.ServerRelativeUrl != "/"
+                ? folderPath.Substring(web.ServerRelativeUrl.Length)
+                : folderPath;
+            var container = containerPath.Trim('/').Replace("%20", " ").Replace("/", "\\");
+
             var homeFile = new Model.File()
             {
                 Folder = Tokenize(folderPath, web.Url),
-                Src = fileName,
+                Src = !string.IsNullOrEmpty(container) ? $"{container}\\{fileName}" : fileName,
                 Overwrite = true,
+                Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
             };
 
             // Add field values to file
