@@ -17,6 +17,7 @@ using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Utilities;
+using FileLevel = Microsoft.SharePoint.Client.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -202,6 +203,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var file = web.GetFileByServerRelativeUrl(welcomePageUrl);
 
+            file.EnsureProperty(f => f.Level);
+
             var containerPath = folderPath.StartsWith(web.ServerRelativeUrl) && web.ServerRelativeUrl != "/"
                 ? folderPath.Substring(web.ServerRelativeUrl.Length)
                 : folderPath;
@@ -212,6 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Folder = Tokenize(folderPath, web.Url),
                 Src = !string.IsNullOrEmpty(container) ? $"{container}\\{fileName}" : fileName,
                 Overwrite = true,
+                Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
             };
 
             // Add field values to file

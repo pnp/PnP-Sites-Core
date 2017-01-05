@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Extensions;
 using Microsoft.SharePoint.Client;
+using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -802,6 +803,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      {
                          Overwrite = file.Overwrite,
                          Src = file.Src,
+                         Level = (V201605.FileLevel)Enum.Parse(typeof(V201605.FileLevel),file.Level.ToString()),
+                         LevelSpecified = file.Level != FileLevel.Draft,
                          Folder = file.Folder,
                          WebParts = file.WebParts.Count > 0 ?
                             (from wp in file.WebParts
