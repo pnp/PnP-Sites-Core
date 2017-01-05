@@ -306,13 +306,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             TermStore defaultStore = session.GetDefaultSiteCollectionTermStore();
             var site = (web.Context as ClientContext).Site;
             var siteCollectionTermGroup = defaultStore.GetSiteCollectionGroup(site, false);
-            web.Context.Load(siteCollectionTermGroup);
+            web.Context.Load(siteCollectionTermGroup, t => t.Name);
             web.Context.ExecuteQueryRetry();
             string siteCollectionTermGroupName = null;
             if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
             {
-                web.Context.Load(siteCollectionTermGroup, s => s.Name);
-                web.Context.ExecuteQueryRetry();
                 siteCollectionTermGroupName = siteCollectionTermGroup.Name;
             }
             web.Context.Load(defaultStore, ts => ts.Name, ts => ts.Id);
