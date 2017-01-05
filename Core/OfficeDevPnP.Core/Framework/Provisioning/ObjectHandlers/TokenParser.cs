@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
-using System.Resources;
+using System;
 using System.Collections;
-using System.Diagnostics;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Resources;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -44,6 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public TokenParser(Web web, ProvisioningTemplate template)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
+            var cultureName = new CultureInfo((int)web.Language).Name;
 
             _web = web;
 
@@ -216,6 +218,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     LocalizationToken token = new LocalizationToken(web, key, entries);
 
                     _tokens.Add(token);
+                }
+            }
+
+            // Add FieldTitleToken for fields to be created so that they are available for calculated fields
+            foreach (var field in template.SiteFields.Except(template.SiteFields.Where(s => fields.Any(sf => sf.InternalName.Equals(XElement.Parse(s.SchemaXml).Attribute("Name").Value)))))
+            {
+                var element = XElement.Parse(field.SchemaXml);
+                var displayName = element.Attribute("DisplayName")?.Value;
+
+                if (!string.IsNullOrEmpty(displayName))
+                {
+                    if (displayName.ContainsResourceToken())
+                    {
+                        // Add FieldTitleToken for the Web language
+                        var resourceValue = GetResourceTokenResourceValues(displayName).FirstOrDefault(r => r.Item1.Equals(cultureName, StringComparison.InvariantCultureIgnoreCase));
+
+                        _tokens.Add(new FieldTitleToken(web, element.Attribute("Name").Value, resourceValue != null ? resourceValue.Item2 : displayName));
+                    }
+                    else
+                        _tokens.Add(new FieldTitleToken(web, element.Attribute("Name").Value, displayName));
                 }
             }
 
