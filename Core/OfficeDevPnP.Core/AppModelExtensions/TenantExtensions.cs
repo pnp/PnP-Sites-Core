@@ -300,7 +300,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if deleted</returns>
         public static bool DeleteSiteCollection(this Tenant tenant, string siteFullUrl, bool useRecycleBin, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var cancelled = false;
+            var succeeded = false;
             bool ret = false;
 
             try
@@ -311,7 +311,7 @@ namespace Microsoft.SharePoint.Client
                 tenant.Context.ExecuteQueryRetry();
 
                 //check if site creation operation is complete
-                cancelled = WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.DeletingSiteCollection);
+                succeeded = WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.DeletingSiteCollection);
             }
             catch (ServerException ex)
             {
@@ -330,16 +330,16 @@ namespace Microsoft.SharePoint.Client
                 return true;
             }
 
-            if (!cancelled)
+            if (succeeded)
             {
                 // To delete Site collection completely, (may take a longer time)
                 SpoOperation op2 = tenant.RemoveDeletedSite(siteFullUrl);
                 tenant.Context.Load(op2, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
 
-                cancelled = WaitForIsComplete(tenant, op2, timeoutFunction,
+                succeeded = WaitForIsComplete(tenant, op2, timeoutFunction,
                     TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
-                ret = !cancelled;
+                ret = succeeded;
             }
             return ret;
         }
@@ -353,7 +353,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var cancelled = false;
+            var succeeded = true;
             var ret = true;
             var op = tenant.RemoveDeletedSite(siteFullUrl);
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
@@ -364,9 +364,9 @@ namespace Microsoft.SharePoint.Client
             }
             if (wait)
             {
-                cancelled = WaitForIsComplete(tenant, op, timeoutFunction,
+                succeeded = WaitForIsComplete(tenant, op, timeoutFunction,
                     TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
-                ret = !cancelled;
+                ret = succeeded;
             }
             return ret;
         }
@@ -688,14 +688,14 @@ namespace Microsoft.SharePoint.Client
         #region Private helper methods
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
-            bool cancelled = false;
+            bool succeeded = true;
             while (!op.IsComplete)
             {
                 if (timeoutFunction != null)
                 {
                     if (timeoutFunction(operationMessage))
                     {
-                        cancelled = true;
+                        succeeded = true;
                         break;
                     }
                 }
@@ -716,7 +716,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
             }
-            return cancelled;
+            return succeeded;
         }
 
         private static bool IsCannotGetSiteException(Exception ex)
