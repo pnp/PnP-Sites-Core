@@ -402,8 +402,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (termTerm == null)
                             {
                                 var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser, scope);
-                                modelTermTerm.Id = returnTuple.Item1;
-                                parser = returnTuple.Item2;
+                                if (returnTuple != null)
+                                {
+                                    modelTermTerm.Id = returnTuple.Item1;
+                                    parser = returnTuple.Item2;
+                                }
                             }
                             else
                             {
@@ -418,8 +421,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     else
                     {
                         var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser, scope);
-                        modelTermTerm.Id = returnTuple.Item1;
-                        parser = returnTuple.Item2;
+                        if (returnTuple != null)
+                        {
+                            modelTermTerm.Id = returnTuple.Item1;
+                            parser = returnTuple.Item2;
+                        }
                     }
                 }
                 if (modelTerm.Terms.Any(t => t.CustomSortOrder > -1))
