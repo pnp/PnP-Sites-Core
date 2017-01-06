@@ -423,11 +423,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web)
         {
+            
             var result = new Model.NavigationNode
             {
                 Title = node.Title,
                 IsExternal = node.IsExternal,
-                Url = node.Url.Replace(web.ServerRelativeUrl, "{site}"),
+                Url = web.ServerRelativeUrl != "/" ? node.Url.Replace(web.ServerRelativeUrl, "{site}") : $"{{site}}{node.Url}"
             };
 
             node.Context.Load(node.Children);
