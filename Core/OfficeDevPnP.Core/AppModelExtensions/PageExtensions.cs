@@ -15,6 +15,8 @@ using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.Personalizatio
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Web.Configuration;
+using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -399,6 +401,16 @@ namespace Microsoft.SharePoint.Client
 
                 var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
+                bool forceCheckout = false;
+                webPartPage.EnsureProperty(wpg => wpg.ListId);
+                if (webPartPage.ListId != Guid.Empty)
+                {
+                    var list = web.Lists.GetById(webPartPage.ListId);
+                    web.Context.Load(list, l => l.ForceCheckout);
+                    web.Context.ExecuteQueryRetry();
+                    forceCheckout = list.ForceCheckout;
+                }
+
                 var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
                 var query =
@@ -411,6 +423,11 @@ namespace Microsoft.SharePoint.Client
 
                 if (query.Any())
                 {
+                    if (forceCheckout)
+                    {
+                        webPartPage.CheckOut();
+                        web.Context.ExecuteQueryRetry();
+                    }
                     var wp = query.First();
 
                     var exportMode = wp.WebPart.ExportMode;
@@ -431,6 +448,11 @@ namespace Microsoft.SharePoint.Client
                     {
                         wp.WebPart.ExportMode = exportMode;
                         wp.SaveWebPartChanges();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                    if (forceCheckout)
+                    {
+                        webPartPage.UndoCheckOut();
                         web.Context.ExecuteQueryRetry();
                     }
                 }
