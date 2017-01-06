@@ -170,10 +170,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 SharePointConnector connector = new SharePointConnector(web.Context, web.Url, "dummy");
 
+                
                 Uri u = new Uri(web.Url);
-                if (folderPath.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+
+                if (u.PathAndQuery != "/")
                 {
-                    folderPath = folderPath.Replace(u.PathAndQuery, "");
+                    if (folderPath.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    {
+                        folderPath = folderPath.Replace(u.PathAndQuery, "");
+                    }
                 }
 
                 String container = folderPath.Trim('/').Replace("%20", " ").Replace("/", "\\");

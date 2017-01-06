@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
         private const string HTML_PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
-        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID =    "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
+        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
         private const string ASP_NET_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD1";
         public override string Name
         {
@@ -121,11 +121,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
                                 var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
+                                web.EnsureProperty(w => web.ServerRelativeUrl);
+                                file.EnsureProperty(f => f.Level);
+
+                                var containerPath = folderPath.StartsWith(web.ServerRelativeUrl) && web.ServerRelativeUrl != "/"  ? folderPath.Substring(web.ServerRelativeUrl.Length) : folderPath;
+                                var container = HttpUtility.UrlDecode(containerPath).Trim('/').Replace("/", "\\");
+
                                 var publishingFile = new Model.File()
                                 {
                                     Folder = Tokenize(folderPath, web.Url),
-                                    Src = HttpUtility.UrlDecode(fileName),
+                                    Src = !string.IsNullOrEmpty(container) ? $"{container}\\{HttpUtility.UrlDecode(fileName)}" : HttpUtility.UrlDecode(fileName),
                                     Overwrite = true,
+                                    Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
                                 };
 
                                 // Add field values to file
@@ -318,7 +325,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                else if(!webFeatureActive)
+                else if (!webFeatureActive)
                 {
                     throw new Exception("Publishing Feature not active. Provisioning failed");
                 }
@@ -329,8 +336,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.SetAvailableWebTemplates(availableWebTemplates);
                 }
-				
-				if (template.Publishing.DesignPackage != null)
+
+                if (template.Publishing.DesignPackage != null)
                 {
                     var package = template.Publishing.DesignPackage;
 
@@ -346,7 +353,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     scope.LogDebug("Installing design package");
                     site.InstallSolution(package.PackageGuid, tempFileName, package.MajorVersion, package.MinorVersion);
                     System.IO.File.Delete(tempFileName);
-	            }
+                }
                 // Set allowed page layouts
                 var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
                 if (availablePageLayouts.Any())
@@ -361,7 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
                 }
 
-                
+
                 return parser;
             }
         }
