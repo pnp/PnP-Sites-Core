@@ -502,7 +502,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var result = new List<Model.File>();
 
-            var files = directory.ParentTemplate.Connector.GetFiles(directory.Src);
+            // If the connector has a container specified we need to take that in account to find the files we need
+            string folderToGrabFilesFrom = directory.Src;
+            if (!String.IsNullOrEmpty(directory.ParentTemplate.Connector.GetContainer()))
+            {
+                folderToGrabFilesFrom = directory.ParentTemplate.Connector.GetContainer() + @"\" + directory.Src;
+            }
+
+            var files = directory.ParentTemplate.Connector.GetFiles(folderToGrabFilesFrom);
 
             if (!String.IsNullOrEmpty(directory.IncludedExtensions) && directory.IncludedExtensions != "*.*")
             {
@@ -529,12 +536,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (directory.Recursive)
             {
-                var subFolders = directory.ParentTemplate.Connector.GetFolders(directory.Src);
+                var subFolders = directory.ParentTemplate.Connector.GetFolders(folderToGrabFilesFrom);
+                var parentFolder = directory;
                 foreach (var folder in subFolders)
                 {
-                    directory.Src += @"\" + folder;
-                    directory.Folder += @"\" + folder;
+                    directory.Src = parentFolder.Src + @"\" + folder;
+                    directory.Folder = parentFolder.Folder + @"\" + folder;
+
                     result.AddRange(directory.GetDirectoryFiles(metadataProperties));
+
+                    //Remove the subfolder path(added above) as the second subfolder should come under its parent folder and not under its sibling
+                    parentFolder.Src = parentFolder.Src.Substring(0, parentFolder.Src.LastIndexOf(@"\"));
+                    parentFolder.Folder = parentFolder.Folder.Substring(0, parentFolder.Folder.LastIndexOf(@"\"));
                 }
             }
 

@@ -9,47 +9,47 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-	internal class ObjectListInstanceDataRows : ObjectHandlerBase
-	{
+    internal class ObjectListInstanceDataRows : ObjectHandlerBase
+    {
 
-		public override string Name
-		{
-			get { return "List instances Data Rows"; }
-		}
-		public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
-		{
-			using (var scope = new PnPMonitoredScope(this.Name))
-			{
+        public override string Name
+        {
+            get { return "List instances Data Rows"; }
+        }
+        public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
 
-				if (template.Lists.Any())
-				{
-					var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                if (template.Lists.Any())
+                {
+                    var rootWeb = (web.Context as ClientContext).Site.RootWeb;
 
-					web.EnsureProperties(w => w.ServerRelativeUrl);
+                    web.EnsureProperties(w => w.ServerRelativeUrl);
 
-					web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
-					web.Context.ExecuteQueryRetry();
-					var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();
-					var serverRelativeUrl = web.ServerRelativeUrl;
+                    web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.ExecuteQueryRetry();
+                    var existingLists = web.Lists.AsEnumerable<List>().Select(existingList => existingList.RootFolder.ServerRelativeUrl).ToList();
+                    var serverRelativeUrl = web.ServerRelativeUrl;
 
-					#region DataRows
+                    #region DataRows
 
-					foreach (var listInstance in template.Lists)
-					{
-						if (listInstance.DataRows != null && listInstance.DataRows.Any())
-						{
-							scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
-							// Retrieve the target list
-							var list = web.Lists.GetByTitle(parser.ParseString(listInstance.Title));
-							web.Context.Load(list);
+                    foreach (var listInstance in template.Lists)
+                    {
+                        if (listInstance.DataRows != null && listInstance.DataRows.Any())
+                        {
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
+                            // Retrieve the target list
+                            var list = web.Lists.GetByTitle(parser.ParseString(listInstance.Title));
+                            web.Context.Load(list);
 
-							// Retrieve the fields' types from the list
-							Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
-							web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind));
-							web.Context.ExecuteQueryRetry();
+                            // Retrieve the fields' types from the list
+                            Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
+                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind));
+                            web.Context.ExecuteQueryRetry();
 
-							foreach (var dataRow in listInstance.DataRows)
-							{
+                            foreach (var dataRow in listInstance.DataRows)
+                            {
                                 try
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
@@ -178,11 +178,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                             }
                                         }
-                                        listitem.Update();
                                     }
+                                    listitem.Update();
                                     web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
 
-                                    if (dataRow.Security != null && dataRow.Security.RoleAssignments.Count != 0)
+                                    if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
                                     {
                                         listitem.SetSecurity(parser, dataRow.Security);
                                     }
@@ -190,7 +190,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 catch (Exception ex)
                                 {
 
-                                    if (ex.GetType().Equals(typeof(ServerException)) && 
+                                    if (ex.GetType().Equals(typeof(ServerException)) &&
                                         (ex as ServerException).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPDuplicateValuesFoundException", StringComparison.InvariantCultureIgnoreCase) &&
                                         applyingInformation.IgnoreDuplicateDataRowErrors)
                                     {
@@ -202,42 +202,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
                                         throw;
                                     }
-								}
-							}
-						}
-					}
+                                }
+                            }
+                        }
+                    }
 
-					#endregion
-				}
-			}
+                    #endregion
+                }
+            }
 
-			return parser;
-		}
+            return parser;
+        }
 
-		public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
-		{
-			//using (var scope = new PnPMonitoredScope(this.Name))
-			//{ }
-			return template;
-		}
+        public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            //using (var scope = new PnPMonitoredScope(this.Name))
+            //{ }
+            return template;
+        }
 
-		public override bool WillProvision(Web web, ProvisioningTemplate template)
-		{
-			if (!_willProvision.HasValue)
-			{
-				_willProvision = template.Lists.Any(l => l.DataRows.Any());
-			}
-			return _willProvision.Value;
-		}
+        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        {
+            if (!_willProvision.HasValue)
+            {
+                _willProvision = template.Lists.Any(l => l.DataRows.Any());
+            }
+            return _willProvision.Value;
+        }
 
-		public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
-		{
-			if (!_willExtract.HasValue)
-			{
-				_willExtract = false;
-			}
-			return _willExtract.Value;
-		}
-	}
+        public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            if (!_willExtract.HasValue)
+            {
+                _willExtract = false;
+            }
+            return _willExtract.Value;
+        }
+    }
 }
 

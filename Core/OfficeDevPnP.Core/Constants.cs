@@ -3,12 +3,27 @@
 namespace OfficeDevPnP.Core
 {
     /// <summary>
-    /// Constants
+    /// Constants.
     /// </summary>
+    /// Recommendation: Constants should follow C# style guidelines and be Pascal Case
     public static class Constants
     {
+        [Obsolete("Use Constants.FeatureId_Site_AppSideLoading instead.")]
         public static readonly Guid APPSIDELOADINGFEATUREID = new Guid("AE3A1339-61F5-4f8f-81A7-ABD2DA956A7D");
+        [Obsolete("Use Constants.FeatureId_Web_MinimalDownloadStrategy instead.")]
         public static readonly Guid MINIMALDOWNLOADSTRATEGYFEATUREID = new Guid("87294c72-f260-42f3-a41b-981a2ffce37a");
+
+        // PublishingWeb SharePoint Server Publishing - Web
+        public static readonly Guid FeatureId_Web_Publishing = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
+        // PublishingSite SharePoint Server Publishing Infrastructure - Site
+        public static readonly Guid FeatureId_Site_Publishing = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
+        // MDSFeature
+        public static readonly Guid FeatureId_Web_MinimalDownloadStrategy = new Guid("87294c72-f260-42f3-a41b-981a2ffce37a");
+        // EnableAppSideLoading
+        public static readonly Guid FeatureId_Site_AppSideLoading = new Guid("AE3A1339-61F5-4f8f-81A7-ABD2DA956A7D");
+
+
+
 
         internal const string LOGGING_SOURCE = "OfficeDevPnP.Core";
         internal const string LOGGING_SOURCE_FRAMEWORK_PROVISIONING = "PnP Provisioning";

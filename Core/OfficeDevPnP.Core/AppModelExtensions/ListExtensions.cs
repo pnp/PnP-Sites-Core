@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Enums;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -769,7 +770,7 @@ namespace Microsoft.SharePoint.Client
 
             var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
             context.ExecuteQueryRetry();
-            string pagesLibraryName = result.Value;
+            string pagesLibraryName = new Regex(@"['´`]").Replace(result.Value, "");
 
             if (string.IsNullOrEmpty(pagesLibraryName))
             {
@@ -1283,7 +1284,7 @@ namespace Microsoft.SharePoint.Client
                                 var field = list.Fields.GetByInternalNameOrTitle(fieldName);
                                 clientContext.Load(field);
                                 clientContext.ExecuteQueryRetry();
-                                if (field.FieldTypeKind == FieldType.Text || field.FieldTypeKind == FieldType.Choice ||field.FieldTypeKind == FieldType.MultiChoice)
+                                if (field.FieldTypeKind == FieldType.Text || field.FieldTypeKind == FieldType.Choice || field.FieldTypeKind == FieldType.MultiChoice)
                                 {
                                     var textValue = defaultValue.Value;
                                     var defaultColumnTextValue = new DefaultColumnTextValue()
@@ -1362,6 +1363,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list"></param>
         public static void ReIndexList(this List list)
         {
+            list.EnsureProperties(l => l.NoCrawl);
+            if (list.NoCrawl)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_SkipNoCrawlLists);
+                return;
+            }
+
             const string reIndexKey = "vti_searchversion";
             var searchversion = 0;
 
@@ -1369,7 +1377,14 @@ namespace Microsoft.SharePoint.Client
             {
                 searchversion = (int)list.GetPropertyBagValueInt(reIndexKey, 0);
             }
-            list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+            try
+            {
+                list.SetPropertyBagValue(reIndexKey, searchversion + 1);
+            }
+            catch (ServerUnauthorizedAccessException)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_SkipNoCrawlLists);
+            }
         }
     }
 }

@@ -375,11 +375,13 @@
     <Compile Include="AppModelExtensions\ListExtensions.cs" />
     <Compile Include="AppModelExtensions\ListRatingExtensions.cs" />
     <Compile Include="AppModelExtensions\ProvisioningExtensions.cs" />
+    <Compile Include="AppModelExtensions\PublishingExtensions.cs" />
     <Compile Include="AppModelExtensions\RecordsManagementExtensions.cs" />
     <Compile Include="AppModelExtensions\SearchExtensions.cs" />
     <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
     <Compile Include="AppModelExtensions\TenantExtensions.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
     <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
     <Compile Include="AppModelExtensions\VariationExtensions.cs" />
@@ -572,7 +574,7 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\WebPartLocalizationExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLocalization.cs" />
@@ -618,11 +620,13 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListViewIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteOwnerToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
@@ -756,7 +760,6 @@
   <ItemGroup>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -912,7 +915,7 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />

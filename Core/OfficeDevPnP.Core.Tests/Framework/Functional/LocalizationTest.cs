@@ -53,8 +53,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files;
-
+                ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files | Handlers.Navigation;
+                
                 var result = TestProvisioningTemplate(cc, "localization_add.xml", ptci.HandlersToProcess, null, ptci);
                 LocalizationValidator validator = new LocalizationValidator(cc.Web);
                 Assert.IsTrue(validator.Validate(result.SourceTemplate, result.TargetTemplate, result.SourceTokenParser, result.TargetTokenParser, cc.Web));

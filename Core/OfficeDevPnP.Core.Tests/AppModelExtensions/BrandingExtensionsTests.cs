@@ -45,8 +45,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         private string publishingPagePath = string.Format("../../Resources/{0}.aspx", publishingPageWithoutExtension);
         private string pageLayoutTitle = "CustomHtmlPageLayout";
         private string welcomePageContentTypeId = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4";
-        private Guid publishingSiteFeatureId = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
-        private Guid publishingWebFeatureId = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
         private string testWebName;
         bool deactivateSiteFeatureOnTeardown = false;
         bool deactivateWebFeatureOnTeardown = false;
@@ -222,16 +220,16 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 site = ctx.Site;
                 web = ctx.Site.RootWeb;
 
-                if (!site.IsFeatureActive(publishingSiteFeatureId))
+                if (!site.IsFeatureActive(Constants.FeatureId_Site_Publishing))
                 {
-                    site.ActivateFeature(publishingSiteFeatureId);
+                    site.ActivateFeature(Constants.FeatureId_Site_Publishing);
                     Console.WriteLine("Site publishing feature activated");
                     deactivateSiteFeatureOnTeardown = true;
                 }
 
-                if (!web.IsFeatureActive(publishingWebFeatureId))
+                if (!web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                 {
-                    site.RootWeb.ActivateFeature(publishingWebFeatureId);
+                    site.RootWeb.ActivateFeature(Constants.FeatureId_Web_Publishing);
                     Console.WriteLine("Web publishing feature activated");
                     deactivateWebFeatureOnTeardown = true;
                 }
@@ -317,11 +315,11 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 if (deactivateSiteFeatureOnTeardown)
                 {
-                    ctx.Site.DeactivateFeature(publishingSiteFeatureId);
+                    ctx.Site.DeactivateFeature(Constants.FeatureId_Site_Publishing);
                 }
                 if (deactivateWebFeatureOnTeardown)
                 {
-                    ctx.Web.DeactivateFeature(publishingWebFeatureId);
+                    ctx.Web.DeactivateFeature(Constants.FeatureId_Web_Publishing);
                 }
             }
         }
