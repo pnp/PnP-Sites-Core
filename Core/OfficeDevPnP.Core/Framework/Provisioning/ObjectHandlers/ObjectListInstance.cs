@@ -1085,11 +1085,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (existingList.ContentTypesEnabled)
                 {
+                 
                     // Check if we need to add a content type
 
                     var existingContentTypes = existingList.ContentTypes;
                     web.Context.Load(existingContentTypes, cts => cts.Include(ct => ct.StringId));
                     web.Context.ExecuteQueryRetry();
+
+                    if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
+                    {
+                        WriteWarning($"You specified to remove existing content types for the list  with url '{existingList.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.",ProvisioningMessageType.Warning);
+                    }
 
                     var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
                     var defaultCtBinding = templateList.ContentTypeBindings.FirstOrDefault(ctb => ctb.Default == true);
