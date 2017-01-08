@@ -37,7 +37,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                string baseTemplate = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{0}.{1}{2}Template.xml", GetSharePointVersion(), webTemplate, configuration);
+                string baseTemplate = $"OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{GetSharePointVersion()}.{webTemplate}{configuration}Template.xml";
                 using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(baseTemplate))
                 {
                     // Figure out the formatter to use
@@ -71,7 +71,7 @@ namespace Microsoft.SharePoint.Client
         {
             Assembly asm = Assembly.GetAssembly(typeof(Site));
             AssemblyName name = asm.GetName();
-            return String.Format("{0}_{1}", name.Version.Major, name.Version.Minor);
+            return $"{name.Version.Major}_{name.Version.Minor}";
         }
 
     }

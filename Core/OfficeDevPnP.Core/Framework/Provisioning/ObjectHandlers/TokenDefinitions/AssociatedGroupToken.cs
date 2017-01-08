@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private AssociatedGroupType _groupType;
 
         public AssociatedGroupToken(Web web, AssociatedGroupType groupType)
-            : base(web, string.Format("{{associated{0}group}}", groupType.ToString().TrimEnd('s')))
+            : base(web, $"{{associated{groupType.ToString().TrimEnd('s')}group}}")
         {
             _groupType = groupType;
         }

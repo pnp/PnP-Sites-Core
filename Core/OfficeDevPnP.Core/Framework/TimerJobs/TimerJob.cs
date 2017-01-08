@@ -405,7 +405,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     JavaScriptSerializer s = null;
 
                     // if state is managed then the state value is stored in a property named "<timerjobname>_Properties"
-                    string propertyKey = String.Format("{0}_Properties", NormalizedTimerJobName(this.name));
+                    string propertyKey = $"{NormalizedTimerJobName(this.name)}_Properties";
 
                     // read the properties from the web property bag
                     if (this.manageState)
@@ -1547,7 +1547,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
                 string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
-                return String.Format("https://{0}-admin.sharepoint.com", tenantName);
+                return $"https://{tenantName}-admin.sharepoint.com";
             }
         }
 
@@ -1559,7 +1559,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string GetTopLevelSite(string site)
         {
             Uri uri = new Uri(site.TrimEnd(new[] { '/' }));
-            return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+            return $"{uri.Scheme}://{uri.DnsSafeHost}";
         }
 
         /// <summary>
@@ -1575,7 +1575,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             if (String.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath.Equals("/", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Site must be root site, no doubts possible
-                return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                return $"{uri.Scheme}://{uri.DnsSafeHost}";
             }
 
             string[] siteParts = uri.AbsolutePath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
@@ -1587,18 +1587,18 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 if (siteParts.Length == 1)
                 {
-                    return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
                 }
                 else
                 {
                     if (siteParts[0].Equals("sites", StringComparison.InvariantCultureIgnoreCase) ||
                         siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        return string.Format("{0}://{1}/{2}/{3}", uri.Scheme, uri.DnsSafeHost, siteParts[0], siteParts[1]);
+                        return $"{uri.Scheme}://{uri.DnsSafeHost}/{siteParts[0]}/{siteParts[1]}";
                     }
                     else
                     {
-                        return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                        return $"{uri.Scheme}://{uri.DnsSafeHost}";
                     }
                 }
             }
@@ -1614,7 +1614,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 else
                 {
-                    return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
                 }
             }
         }

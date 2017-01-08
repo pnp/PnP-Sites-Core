@@ -59,7 +59,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 else
                 {
-                    throw new NotSupportedException(string.Format("Elements child '{0}' not supported.", child.Name));
+                    throw new NotSupportedException($"Elements child '{child.Name}' not supported.");
                 }
             }
         }
@@ -99,7 +99,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 else
                 {
-                    throw new NotSupportedException(string.Format("Module child '{0}' not supported.", child.Name));
+                    throw new NotSupportedException($"Module child '{child.Name}' not supported.");
                 }
             }
         }

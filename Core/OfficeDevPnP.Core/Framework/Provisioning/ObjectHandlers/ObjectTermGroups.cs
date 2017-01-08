@@ -563,7 +563,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
-                    var propertyBagKey = string.Format("SiteCollectionGroupId{0}", termStore.Id);
+                    var propertyBagKey = $"SiteCollectionGroupId{termStore.Id}";
 
                     // Ensure to grab the property from the rootweb
                     var site = (web.Context as ClientContext).Site;

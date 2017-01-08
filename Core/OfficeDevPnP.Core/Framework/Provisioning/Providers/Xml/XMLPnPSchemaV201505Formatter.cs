@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             wrappedResult.Templates = new V201505.Templates[] {
                 new V201505.Templates
                 {
-                    ID = String.Format("CONTAINER-{0}", template.Id),
+                    ID = $"CONTAINER-{template.Id}",
                     ProvisioningTemplate = new V201505.ProvisioningTemplate[]
                     {
                         result
@@ -583,8 +583,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     (from provider in extensibilityHandlers
                      select new V201505.Provider
                      {
-                         HandlerType = String.Format("{0}, {1}", provider.Type, provider.Assembly),
-                         Configuration = provider.Configuration != null ? provider.Configuration.ToXmlNode() : null,
+                         HandlerType = $"{provider.Type}, {provider.Assembly}",
+                         Configuration = provider.Configuration?.ToXmlNode(),
                          Enabled = provider.Enabled,
                      }).ToArray();
             }

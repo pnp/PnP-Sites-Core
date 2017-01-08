@@ -148,7 +148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var ct = list.GetContentTypeById(value);
                             if (ct != null)
                             {
-                                value = string.Format("{{contenttypeid:{0}}}", ct.Name);
+                                value = $"{{contenttypeid:{ct.Name}}}";
                             }
                         }
 

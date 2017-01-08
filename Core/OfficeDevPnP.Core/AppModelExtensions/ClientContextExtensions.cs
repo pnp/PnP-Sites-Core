@@ -106,7 +106,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
             }
-            throw new MaximumRetryAttemptedException(string.Format("Maximum retry attempts {0}, has be attempted.", retryCount));
+            throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
 

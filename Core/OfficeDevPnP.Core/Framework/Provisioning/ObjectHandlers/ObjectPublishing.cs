@@ -149,12 +149,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
                                 {
-                                    scope.LogWarning(String.Format("The file \"{0}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.", file.Name));
+                                    scope.LogWarning($@"The file ""{file.Name}"" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.");
                                 }
                             }
                             else
                             {
-                                scope.LogWarning(String.Format("Skipping file \"{0}\" because it is native in the publishing feature.", file.Name));
+                                scope.LogWarning($@"Skipping file ""{file.Name}"" because it is native in the publishing feature.");
                             }
                         }
                     }
@@ -245,7 +245,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             String result = null;
             if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
             {
-                result = string.Format("{0}://{1}/", uri.Scheme, uri.Authority);
+                result = $"{uri.Scheme}://{uri.Authority}/";
             }
 
             return (result);

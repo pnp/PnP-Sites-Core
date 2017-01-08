@@ -9,9 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private string _viewId = null;
 
         public ListViewIdToken(Web web, string listTitle, string viewTitle, Guid viewId)
-            : base(web, string.Format("{{viewid:{0},{1}}}",
-                Regex.Escape(listTitle),
-                Regex.Escape(viewTitle)))
+            : base(web, $"{{viewid:{Regex.Escape(listTitle)},{Regex.Escape(viewTitle)}}}")
         {
             _viewId = viewId.ToString();
         }

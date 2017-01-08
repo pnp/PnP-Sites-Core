@@ -384,7 +384,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var list in lists)
             {
-                xml = Regex.Replace(xml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
             }
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             if (web.ServerRelativeUrl != "/")
@@ -455,7 +455,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
                 {
-                    container = String.Format(@"{0}\{1}", template.Connector.GetContainer(), container);
+                    container = $@"{template.Connector.GetContainer()}\{container}";
                 }
             }
             else

@@ -485,7 +485,7 @@ namespace Microsoft.SharePoint.Client
             // set the item as page layout
             listItem["ContentTypeId"] = itemContentTypeId;
             // Set the associated content type ID property
-            listItem["PublishingAssociatedContentType"] = string.Format(";#{0};#{1};#", associatedCt.Name, associatedCt.Id);
+            listItem["PublishingAssociatedContentType"] = $";#{associatedCt.Name};#{associatedCt.Id};#";
             listItem["UIVersion"] = Convert.ToString(15);
             listItem.Update();
 

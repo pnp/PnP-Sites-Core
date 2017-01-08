@@ -749,7 +749,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Add the html content
-            var layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
+            var layoutsZoneInner = layoutsTable.SelectSingleNode($"tbody/tr[{row}]/td[{col}]/div/div") as XmlElement;
             var text = xd.CreateTextNode("!!123456789!!");
             layoutsZoneInner.AppendChild(text);
 

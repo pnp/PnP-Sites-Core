@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             wrappedResult.Templates = new V201508.Templates[] {
                 new V201508.Templates
                 {
-                    ID = String.Format("CONTAINER-{0}", template.Id),
+                    ID = $"CONTAINER-{template.Id}",
                     ProvisioningTemplate = new V201508.ProvisioningTemplate[]
                     {
                         result
