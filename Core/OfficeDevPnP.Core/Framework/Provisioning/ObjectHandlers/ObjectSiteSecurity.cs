@@ -480,8 +480,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (roleDefinition.RoleTypeKind != RoleType.None)
                                     {
                                         // Replace with token
-                                        roleDefinitionValue = string.Format("{{roledefinition:{0}}}",
-                                            roleDefinition.RoleTypeKind);
+                                        roleDefinitionValue = $"{{roledefinition:{roleDefinition.RoleTypeKind}}}";
                                     }
                                     modelRoleAssignment.RoleDefinition = roleDefinitionValue;
                                     if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup)

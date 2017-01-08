@@ -505,13 +505,12 @@ namespace Microsoft.SharePoint.Client
             var solutionGallery = rootWeb.GetCatalog((int)ListTemplateType.SolutionCatalog);
 
             var camlQuery = new CamlQuery();
-            camlQuery.ViewXml = string.Format(
-              @"<View>  
+            camlQuery.ViewXml = $@"<View>  
                         <Query> 
-                           <Where><Eq><FieldRef Name='SolutionId' /><Value Type='Guid'>{0}</Value></Eq></Where> 
+                           <Where><Eq><FieldRef Name='SolutionId' /><Value Type='Guid'>{packageGuid}</Value></Eq></Where> 
                         </Query> 
                          <ViewFields><FieldRef Name='ID' /><FieldRef Name='FileLeafRef' /></ViewFields> 
-                  </View>", packageGuid);
+                  </View>";
 
             var solutions = solutionGallery.GetItems(camlQuery);
             site.Context.Load(solutions);
@@ -616,7 +615,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>All found site collections</returns>
         public static List<SiteEntity> SiteSearchScopedByUrl(this Web web, string siteUrl)
         {
-            string keywordQuery = String.Format("contentclass:\"STS_Site\" AND site:{0}", siteUrl);
+            string keywordQuery = $"contentclass:\"STS_Site\" AND site:{siteUrl}";
             return web.SiteSearch(keywordQuery);
         }
 
@@ -628,7 +627,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>All found site collections</returns>
         public static List<SiteEntity> SiteSearchScopedByTitle(this Web web, string siteTitle)
         {
-            string keywordQuery = String.Format("contentclass:\"STS_Site\" AND Title:{0}", siteTitle);
+            string keywordQuery = $"contentclass:\"STS_Site\" AND Title:{siteTitle}";
             return web.SiteSearch(keywordQuery);
         }
 

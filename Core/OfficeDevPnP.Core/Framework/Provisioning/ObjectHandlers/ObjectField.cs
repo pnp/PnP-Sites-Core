@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // The field Xml was found invalid
                         var tokenString = parser.GetLeftOverTokens(originalFieldXml).Aggregate(String.Empty, (acc, i) => acc + " " + i);
                         scope.LogError("The field was found invalid: {0}", tokenString);
-                        throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
+                        throw new Exception($"The field was found invalid: {tokenString}");
                     }
                 }
                 else
@@ -210,7 +210,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
                         var referencedField = fields.GetFieldByInternalName(fieldInternalName);
-                        formulastring = formulastring.Replace(string.Format("[{0}]", referencedField.Title), string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        formulastring = formulastring.Replace($"[{referencedField.Title}]", $"[{{fieldtitle:{fieldInternalName}}}]");
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
@@ -225,7 +225,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var list in lists)
             {
-                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
+                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
             }
 
             return schemaXml;
@@ -289,7 +289,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // The field Xml was found invalid
                 var tokenString = parser.GetLeftOverTokens(fieldXml).Aggregate(String.Empty, (acc, i) => acc + " " + i);
                 scope.LogError("The field was found invalid: {0}", tokenString);
-                throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
+                throw new Exception($"The field was found invalid: {tokenString}");
             }
         }
 
@@ -466,14 +466,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (persistLanguages)
                             {
                                 var fieldElement = XElement.Parse(fieldXml);
-                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                                var escapedFieldTitle = field.Title.Replace(" ", "_");
+                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, $"Field_{escapedFieldTitle}_DisplayName", template, creationInfo))
                                 {
-                                    var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                    var fieldTitle = $"{{res:Field_{escapedFieldTitle}_DisplayName}}";
                                     fieldElement.SetAttributeValue("DisplayName", fieldTitle);
                                 }
-                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, $"Field_{escapedFieldTitle}_Description", template, creationInfo))
                                 {
-                                    var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                    var fieldDescription = $"{{res:Field_{escapedFieldTitle}_Description}}";
                                     fieldElement.SetAttributeValue("Description", fieldDescription);
                                 }
 

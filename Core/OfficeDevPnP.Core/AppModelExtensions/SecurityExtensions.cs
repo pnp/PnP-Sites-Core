@@ -147,7 +147,8 @@ namespace Microsoft.SharePoint.Client
                         try
                         {
                             // New tenant
-                            string userIdentity = string.Format("c:0-.f|rolemanager|spo-grid-all-users/{0}", web.GetAuthenticationRealm());
+                            string userIdentity =
+                                $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                             spReader = web.EnsureUser(userIdentity);
                             web.Context.Load(spReader);
                             web.Context.ExecuteQueryRetry();

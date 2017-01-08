@@ -71,7 +71,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
+#pragma warning disable 618
             return !String.IsNullOrEmpty(template.SearchSettings);
+#pragma warning restore 618
         }
     }
 }

@@ -50,7 +50,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
 
             // Return people picker return value in right format
-            return string.Format("[{0}]", ret.Value);
+            return $"[{ret.Value}]";
         }
         /// <summary>
         /// Creates anonymous link to given document.

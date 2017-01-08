@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private string _listId = null;
 
         public ListIdToken(Web web, string name, Guid listid)
-            : base(web, string.Format("{{listid:{0}}}", Regex.Escape(name)))
+            : base(web, $"{{listid:{Regex.Escape(name)}}}")
         {
             _listId = listid.ToString();
         }

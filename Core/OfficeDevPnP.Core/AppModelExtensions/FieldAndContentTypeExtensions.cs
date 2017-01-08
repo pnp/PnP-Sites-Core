@@ -67,7 +67,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldAsXml))
             {
-                throw new ArgumentNullException("fieldAsXml");
+                throw new ArgumentNullException(nameof(fieldAsXml));
             }
 
             var xd = XDocument.Parse(fieldAsXml);
@@ -113,7 +113,7 @@ namespace Microsoft.SharePoint.Client
             var enumerable = fields as Field[] ?? fields.ToArray();
             if (!enumerable.Any())
             {
-                throw new ArgumentException(string.Format("Could not find field with internalName {0}", internalName));
+                throw new ArgumentException($"Could not find field with internalName {internalName}");
             }
 
             enumerable.First().DeleteObject();
@@ -133,7 +133,7 @@ namespace Microsoft.SharePoint.Client
             var enumerable = fields as Field[] ?? fields.ToArray();
             if (!enumerable.Any())
             {
-                throw new ArgumentException(string.Format("Could not find field with id {0}", fieldId));
+                throw new ArgumentException($"Could not find field with id {fieldId}");
             }
 
             enumerable.First().DeleteObject();
@@ -381,7 +381,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldId))
             {
-                throw new ArgumentNullException("fieldId");
+                throw new ArgumentNullException(nameof(fieldId));
             }
 
             return FieldExistsById(web, new Guid(fieldId), searchInSiteHierarchy);
@@ -398,12 +398,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var ct = GetContentTypeByName(web, contentTypeName);
@@ -423,7 +423,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var fields = contentType.Fields;
@@ -623,7 +623,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldId))
             {
-                throw new ArgumentNullException("fieldId");
+                throw new ArgumentNullException(nameof(fieldId));
             }
 
             return FieldExistsById(list, new Guid(fieldId));
@@ -639,7 +639,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var fields = list.Fields;
@@ -811,7 +811,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (contentType == null)
             {
-                throw new ArgumentNullException("contentType");
+                throw new ArgumentNullException(nameof(contentType));
             }
 
             if (list.ContentTypeExistsById(contentType.Id.StringValue))
@@ -1887,12 +1887,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(cultureName))
             {
-                throw new ArgumentNullException("cultureName");
+                throw new ArgumentNullException(nameof(cultureName));
             }
 
             if (string.IsNullOrEmpty(titleResource))
             {
-                throw new ArgumentNullException("titleResource");
+                throw new ArgumentNullException(nameof(titleResource));
             }
 
             if (field.IsObjectPropertyInstantiated("TitleResource"))

@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         public Web _web;
 
-        private List<TokenDefinition> _tokens = new List<TokenDefinition>();
+        private List<TokenDefinition> _tokens;
         private List<Localization> _localizations = new List<Localization>();
 
         public List<TokenDefinition> Tokens

@@ -486,7 +486,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 this.Lists.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+#pragma warning disable 618
                 this.Providers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+#pragma warning restore 618
                 this.Security.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Security.AdditionalMembers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Security.AdditionalOwners.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -535,7 +537,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Id == other.Id &&
                 this.Lists.DeepEquals(other.Lists) &&
                 this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries) &&
+#pragma warning disable 618
                 this.Providers.DeepEquals(other.Providers) &&
+#pragma warning restore 618
                 this.Security.AdditionalAdministrators.DeepEquals(other.Security.AdditionalAdministrators) &&
                 this.Security.AdditionalMembers.DeepEquals(other.Security.AdditionalMembers) &&
                 this.Security.AdditionalOwners.DeepEquals(other.Security.AdditionalOwners) &&

@@ -61,7 +61,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
+#pragma warning disable 618
                                 if (page.WelcomePage && url.Contains(web.RootFolder.WelcomePage))
+#pragma warning restore 618
                                     web.SetHomePage(string.Empty);
 
                                 file.DeleteObject();
@@ -104,7 +106,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+#pragma warning disable 618
                     if (page.WelcomePage)
+#pragma warning restore 618
                     {
                         web.RootFolder.EnsureProperty(p => p.ServerRelativeUrl);
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);

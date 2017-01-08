@@ -249,17 +249,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentException("fileName");
+                throw new ArgumentException(nameof(fileName));
             }
 
             if (String.IsNullOrEmpty(container))
             {
-                throw new ArgumentException("container");
+                throw new ArgumentException(nameof(container));
             }
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!initialized)

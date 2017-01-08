@@ -474,8 +474,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             var html = "";
@@ -749,7 +749,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Add the html content
-            var layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
+            var layoutsZoneInner = layoutsTable.SelectSingleNode($"tbody/tr[{row}]/td[{col}]/div/div") as XmlElement;
             var text = xd.CreateTextNode("!!123456789!!");
             layoutsZoneInner.AppendChild(text);
 
@@ -816,15 +816,15 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (string.IsNullOrEmpty(title))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("title")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "title");
+                  ? new ArgumentNullException(nameof(title))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(title));
             }
 
             var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);

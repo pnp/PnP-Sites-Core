@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         catch (ArgumentException ex)
                         {
                             // We skip and log any issues related to not existing lookup fields
-                            scope.LogError(String.Format("Exception searching for field! {0}", ex.Message));
+                            scope.LogError($"Exception searching for field! {ex.Message}");
                         }
                     }
                 }

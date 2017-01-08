@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <returns></returns>
         public static string Today(int? offset = null) {
             if (offset.HasValue)
-                return string.Format("<Today Offset='{0}' />", offset.Value);
+                return $"<Today Offset='{offset.Value}' />";
             return "<Today />";
         }
 
