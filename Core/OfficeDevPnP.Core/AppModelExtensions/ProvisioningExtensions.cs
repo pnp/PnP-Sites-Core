@@ -22,8 +22,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="path">Path to the XML file containing the Elements CAML defintion</param>
         public static void ProvisionElementFile(this Web web, string path)
         {
-            if (path == null) { throw new ArgumentNullException("path"); }
-            if (string.IsNullOrWhiteSpace(path)) { throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required, "path"); }
+            if (path == null) { throw new ArgumentNullException(nameof(path)); }
+            if (string.IsNullOrWhiteSpace(path)) { throw new ArgumentException(CoreResources.ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required, nameof(path)); }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.ProvisioningExtensions_ProvisionElementFile0, path);
 

@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (packageStream == null)
             {
-                throw new ArgumentNullException("package");
+                throw new ArgumentNullException(nameof(packageStream));
             }
 
             if (!packageStream.CanRead)

@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Load the template into an XDocument
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             V201512.ProvisioningTemplate result = new V201512.ProvisioningTemplate();
@@ -953,10 +953,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Search Settings
 
+#pragma warning disable 618
             if (!String.IsNullOrEmpty(template.SearchSettings))
             {
                 result.SearchSettings = template.SearchSettings.ToXmlElement();
             }
+#pragma warning restore 618
 
             #endregion
 
@@ -1028,6 +1030,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Providers
 
             // Translate Providers, if any
+#pragma warning disable 618
             if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
                 var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
@@ -1044,7 +1047,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
-
+#pragma warning restore 618
             #endregion
 
             XmlSerializerNamespaces ns =
@@ -1066,7 +1069,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Crate a copy of the source stream
@@ -1797,7 +1800,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (source.SearchSettings != null)
             {
+#pragma warning disable 618
                 result.SearchSettings = source.SearchSettings.OuterXml;
+#pragma warning restore 618
             }
 
             #endregion

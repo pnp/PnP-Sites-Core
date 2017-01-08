@@ -21,7 +21,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
             return clientContext.Clone(new Uri(siteUrl));
@@ -120,7 +120,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (siteUrl == null)
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
             ClientContext clonedClientContext = new ClientContext(siteUrl);

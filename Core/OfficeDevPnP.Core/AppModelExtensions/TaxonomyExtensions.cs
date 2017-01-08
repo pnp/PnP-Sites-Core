@@ -1820,7 +1820,7 @@ namespace Microsoft.SharePoint.Client
                 throw new NullReferenceException("The default term store is not available.");
 
             if (string.IsNullOrEmpty(mmsTermSetName))
-                throw new ArgumentNullException("mmsTermSetName", "The MMS term set is not specified.");
+                throw new ArgumentNullException(nameof(mmsTermSetName), "The MMS term set is not specified.");
 
             // get the term group and term set
             TermGroup termGroup = termStore.Groups.GetByName(mmsGroupName);

@@ -626,7 +626,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             UseOffice365Authentication(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
@@ -642,12 +642,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(userUPN))
             {
-                throw new ArgumentNullException("userName");
+                throw new ArgumentNullException(nameof(userUPN));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             this.authenticationType = AuthenticationType.Office365;
@@ -666,7 +666,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -699,7 +699,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             UseNetworkCredentialsAuthentication(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
@@ -721,12 +721,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             if (String.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             this.authenticationType = AuthenticationType.NetworkCredentials;
@@ -746,7 +746,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -789,12 +789,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(clientSecret))
             {
-                throw new ArgumentNullException("clientSecret");
+                throw new ArgumentNullException(nameof(clientSecret));
             }
 
             this.authenticationType = AuthenticationType.AppOnly;
@@ -817,7 +817,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(certificatePassword))
             {
-                throw new ArgumentNullException("certificatePassword");
+                throw new ArgumentNullException(nameof(certificatePassword));
             }
             UseAzureADAppOnlyAuthentication(clientId, azureTenant, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword));
         }
@@ -834,22 +834,22 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(azureTenant))
             {
-                throw new ArgumentNullException("azureTenant");
+                throw new ArgumentNullException(nameof(azureTenant));
             }
 
             if (String.IsNullOrEmpty(certificatePath))
             {
-                throw new ArgumentNullException("certificatePath");
+                throw new ArgumentNullException(nameof(certificatePath));
             }
 
             if (certificatePassword == null || certificatePassword.Length == 0)
             {
-                throw new ArgumentNullException("certificatePassword");
+                throw new ArgumentNullException(nameof(certificatePassword));
             }
             this.authenticationType = AuthenticationType.AzureADAppOnly;
             this.clientId = clientId;
@@ -871,17 +871,17 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(azureTenant))
             {
-                throw new ArgumentNullException("azureTenant");
+                throw new ArgumentNullException(nameof(azureTenant));
             }
 
             if (certificate == null)
             {
-                throw new ArgumentNullException("certificate");
+                throw new ArgumentNullException(nameof(certificate));
             }
 
             this.authenticationType = AuthenticationType.AzureADAppOnly;
@@ -1031,7 +1031,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             SetEnumerationCredentials(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
@@ -1046,12 +1046,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(userUPN))
             {
-                throw new ArgumentNullException("userUPN");
+                throw new ArgumentNullException(nameof(userUPN));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             this.enumerationUser = userUPN;
@@ -1069,7 +1069,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             SetEnumerationCredentials(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
@@ -1085,17 +1085,17 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(samAccountName))
             {
-                throw new ArgumentNullException("samAccountName");
+                throw new ArgumentNullException(nameof(samAccountName));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             if (String.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             this.enumerationUser = samAccountName;
@@ -1112,7 +1112,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -1161,7 +1161,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(site))
             {
-                throw new ArgumentNullException("site");
+                throw new ArgumentNullException(nameof(site));
             }
 
             site = site.ToLower();
@@ -1170,7 +1170,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 if (!IsValidUrl(site))
                 {
-                    throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), "site");
+                    throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), nameof(site));
                 }
             }
 

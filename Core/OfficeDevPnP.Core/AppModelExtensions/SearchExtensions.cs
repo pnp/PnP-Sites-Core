@@ -22,7 +22,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(exportFilePath))
             {
-                throw new ArgumentNullException("exportFilePath");
+                throw new ArgumentNullException(nameof(exportFilePath));
             }
 
             var searchConfig = GetSearchConfigurationImplementation(context, searchSettingsExportLevel);
@@ -86,7 +86,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(searchSchemaImportFilePath))
             {
-                throw new ArgumentNullException("searchSchemaImportFilePath");
+                throw new ArgumentNullException(nameof(searchSchemaImportFilePath));
             }
 
             SetSearchConfigurationImplementation(context, searchSettingsImportLevel, System.IO.File.ReadAllText(searchSchemaImportFilePath));
@@ -147,7 +147,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (searchCenterUrl == null)
             {
-                throw new ArgumentNullException("searchCenterUrl");
+                throw new ArgumentNullException(nameof(searchCenterUrl));
             }
 
             // Currently there is no direct API available to set the search center url on web.
@@ -192,7 +192,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (searchCenterUrl == null)
             {
-                throw new ArgumentNullException("searchCenterUrl");
+                throw new ArgumentNullException(nameof(searchCenterUrl));
             }
 
             if (!string.IsNullOrEmpty(searchCenterUrl))

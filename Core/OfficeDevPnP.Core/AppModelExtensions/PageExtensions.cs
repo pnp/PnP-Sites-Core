@@ -474,8 +474,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             var html = "";
@@ -816,15 +816,15 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (string.IsNullOrEmpty(title))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("title")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "title");
+                  ? new ArgumentNullException(nameof(title))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(title));
             }
 
             var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
