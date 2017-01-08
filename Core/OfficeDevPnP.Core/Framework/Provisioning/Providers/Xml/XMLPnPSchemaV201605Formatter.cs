@@ -492,6 +492,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Name = ct.Name,
                          Hidden = ct.Hidden,
                          Sealed = ct.Sealed,
+                         ReadOnly = ct.ReadOnly,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
                           select new V201605.ContentTypeFieldRef

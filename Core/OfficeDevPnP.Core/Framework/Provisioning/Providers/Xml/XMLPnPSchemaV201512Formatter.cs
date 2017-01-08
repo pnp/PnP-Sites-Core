@@ -431,6 +431,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Description = ct.Description,
                          Group = ct.Group,
                          Name = ct.Name,
+                         Sealed = ct.Sealed,
+                         Hidden = ct.Hidden,
+                         ReadOnly = ct.ReadOnly,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
                           select new V201512.ContentTypeFieldRef
@@ -440,7 +443,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
-                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate {  TargetName = ct.DocumentTemplate } : null,
+                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate { TargetName = ct.DocumentTemplate } : null,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201512.DocumentSetTemplate
                              {
@@ -2289,7 +2292,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return string.Join(",", permissions.ToArray());
         }
-            
+
         public static BasePermissions ToBasePermissionsV201512(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
@@ -2300,7 +2303,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 bp.Set((PermissionKind)permissionInt);
             }
-            else if(!string.IsNullOrEmpty(basePermissionString)){
+            else if (!string.IsNullOrEmpty(basePermissionString))
+            {
                 foreach (var pk in basePermissionString.Split(','))
                 {
                     PermissionKind permissionKind;
@@ -2312,7 +2316,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return bp;
         }
-    
+
     }
 }
 
