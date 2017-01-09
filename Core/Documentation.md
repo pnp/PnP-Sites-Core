@@ -47,6 +47,14 @@ Gets a site collection context for the passed web. This site collection client c
 > ##### Return value
 > A site collection client context object for the site collection
 
+#### IsAppOnly(Microsoft.SharePoint.Client.ClientRuntimeContext)
+Checks if the used ClientContext is app-only
+> ##### Parameters
+> **clientContext:** The ClientContext to inspect
+
+> ##### Return value
+> True if app-only, false otherwise
+
 #### Constructor
 Constructor
 > ##### Parameters
@@ -83,6 +91,18 @@ Class that holds the deprecated branding methods
 Class that deals with branding features
         
 ### Methods
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Site)
+Disables the Responsive UI on a Classic SharePoint Site
+> ##### Parameters
+> **site:** The Site to disable the Responsive UI on
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
+Disables the Responsive UI on a Classic SharePoint Web
+> ##### Parameters
+> **web:** The Web to disable the Responsive UI on
 
 
 #### ComposedLookExists(Microsoft.SharePoint.Client.Web,System.String)
@@ -489,13 +509,13 @@ Enables the responsive UI of a classic SharePoint Web or Site
 > **infrastructureUrl:** URL pointing to an infrastructure site
 
 
-#### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
+#### DisableResponsiveUI(Microsoft.SharePoint.Client.Web)
 Disables the Responsive UI on a Classic SharePoint Web
 > ##### Parameters
 > **web:** The Web to disable the Responsive UI on
 
 
-#### DisableReponsiveUI(Microsoft.SharePoint.Client.Site)
+#### DisableResponsiveUI(Microsoft.SharePoint.Client.Site)
 Disables the Responsive UI on a Classic SharePoint Site
 > ##### Parameters
 > **site:** The Site to disable the Responsive UI on
@@ -737,6 +757,18 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field of type TField
 
+#### GetFieldById(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
+
+> **fieldId:** Guid for the field ID
+
+> **searchInSiteHierarchy:** If true, search parent sites and root site
+
+> ##### Return value
+> Field of type TField
+
 #### GetFieldById``1(Microsoft.SharePoint.Client.List,System.Guid)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -747,6 +779,16 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field of type TField
 
+#### GetFieldById(Microsoft.SharePoint.Client.List,System.Guid)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **list:** List to be processed. Columns assoc in lists are defined on web or rootweb.
+
+> **fieldId:** Guid for the field ID
+
+> ##### Return value
+> Field
+
 #### GetFieldByName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -756,6 +798,36 @@ Returns the field if it exists. Null if it does not exist.
 
 > ##### Return value
 > Field of type TField
+
+#### GetFieldByName(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Guid for the field ID
+
+> ##### Return value
+> Field
+
+#### GetFieldByInternalName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Internal name of the field
+
+> ##### Return value
+> Field of type TField
+
+#### GetFieldByInternalName(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Internal name of the field
+
+> ##### Return value
+> Field
 
 #### FieldExistsByName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Returns if the field is found
@@ -2879,6 +2951,8 @@ Inserts a web part on a web part page
 
 > **page:** Page to add the web part on
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when page is a zero-length string or contains only white space
 
@@ -2894,6 +2968,8 @@ Inserts a web part on a web part page
 
 > **webPart:** Information about the web part to insert
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when serverRelativePageUrl is a zero-length string or contains only white space
 
@@ -2917,6 +2993,8 @@ Add web part to a wiki style page
 
 > **addSpace:** Does a blank line need to be added after the web part (to space web parts)
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when folder or page is a zero-length string or contains only white space
 
@@ -2938,6 +3016,8 @@ Add web part to a wiki style page
 
 > **addSpace:** Does a blank line need to be added after the web part (to space web parts)
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when serverRelativePageUrl is a zero-length string or contains only white space
 
@@ -4715,7 +4795,7 @@ Add a site collection administrator to a site collection
 > **addToOwnersGroup:** Optionally the added admins can also be added to the Site owners group
 
 
-#### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean)
+#### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean,System.Boolean)
 Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object.
 > ##### Parameters
 > **tenant:** Tenant object to operate against
@@ -4863,6 +4943,22 @@ Checks if the current web is a sub site or not
 
 > ##### Return value
 > True is sub site, false otherwise
+
+#### IsNoScriptSite(Microsoft.SharePoint.Client.Site)
+Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing. See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f for the effects of NoScript
+> ##### Parameters
+> **site:** site to verify
+
+> ##### Return value
+> True if noscript, false otherwise
+
+#### IsNoScriptSite(Microsoft.SharePoint.Client.Web)
+Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing. See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f for the effects of NoScript
+> ##### Parameters
+> **web:** Web to verify
+
+> ##### Return value
+> True if noscript, false otherwise
 
 #### GetAppInstances(Microsoft.SharePoint.Client.Web)
 Returns all app instances
@@ -6731,6 +6827,8 @@ Execute custom actions during provisioning of a template
 > **template:** The current Provisioning Template
 
 > **applyingInformation:** The Provisioning Template application information object
+
+> **tokenParser:** Token parser instance
 
 > **scope:** The PnPMonitoredScope of the current step in the pipeline
 
@@ -16804,6 +16902,8 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **thumbPrint:** The thumbprint of the certificate to locate in the store
 
+> **environment:** Indicates which Azure AD environment is being used
+
 > ##### Return value
 > 
 
@@ -16820,6 +16920,8 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **certificatePassword:** Password to the certificate
 
+> **environment:** Indicates which Azure AD environment is being used
+
 > ##### Return value
 > 
 
@@ -16835,6 +16937,8 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 > **certificatePath:** The path to the certificate (*.pfx) file on the file system
 
 > **certificatePassword:** Password to the certificate
+
+> **environment:** Indicates which Azure AD environment is being used
 
 > ##### Return value
 > 
@@ -16944,7 +17048,8 @@ Contains the content identifier (ID) for the Item content type.
 
 ## Core.Constants
             
-Constants
+Constants.
+            Recommendation: Constants should follow C# style guidelines and be Pascal Case
         
 
 ## Core.Diagnostics.Log
@@ -17127,6 +17232,8 @@ Looks up a localized string similar to Folder URL is required..
 Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
 #### FileFolderExtensions_LibraryMissing
 Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
+#### FileFolderExtensions_SetFileProperties_Error
+Looks up a localized string similar to Content Type {0} does not exist in target list!.
 #### FileFolderExtensions_UpdateFile0Properties1
 Looks up a localized string similar to Update file '{0}', change properties: {1}..
 #### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
@@ -17137,6 +17244,8 @@ Looks up a localized string similar to The argument must be a single file name a
 Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
 #### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
 Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### GraphExtensions_GroupLogoFileDoesNotExist
+Looks up a localized string similar to The group logo file does not exist..
 #### GraphExtensions_SendAsyncRetry
 Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
 #### GraphExtensions_SendAsyncRetryException
@@ -17233,6 +17342,10 @@ Looks up a localized string similar to Provider.Assembly missing value. Unable t
 Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
 #### Provisioning_Extensibility_Pipeline_Success
 Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
+#### Provisioning_Extensions_ViewLocalization_Skip
+Looks up a localized string similar to Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
+#### Provisioning_Extensions_WebPartLocalization_Skip
+Looks up a localized string similar to Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
 #### Provisioning_Formatter_Invalid_Template_URI
 Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
 #### Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention
@@ -17365,6 +17478,8 @@ Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
 Looks up a localized string similar to Data Rows.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
 Looks up a localized string similar to Creating list item {0}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate
+Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
 Looks up a localized string similar to Creating listitem failed: {0} : {1}.
 #### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
@@ -17468,7 +17583,7 @@ Looks up a localized string similar to PersistComposedLookFiles is set to true.
 #### SiteToTemplateConversion_ProgressDelegate_registered
 Looks up a localized string similar to ProgressDelegate registered.
 #### SP_Responsive_UI
-Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $(".ms-siteSettings-root . [rest of string was truncated]";.
+Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $ [rest of string was truncated]";.
 #### TaxonomyExtension_CreateTerm01UnderParent2
 Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
 #### TaxonomyExtension_CreateTermGroup0InStore1
