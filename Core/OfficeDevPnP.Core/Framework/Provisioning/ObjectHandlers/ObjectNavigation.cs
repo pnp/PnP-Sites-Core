@@ -342,9 +342,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(sourceNodes);
             web.Context.ExecuteQueryRetry();
 
-            result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
-                                            select n.ToDomainModelNavigationNode(web));
-
+            if (!sourceNodes.ServerObjectIsNull.Value)
+            {
+                result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
+                                                select n.ToDomainModelNavigationNode(web));
+            }
             return (result);
         }
 
