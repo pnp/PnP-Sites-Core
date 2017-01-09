@@ -288,10 +288,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     scope,
                     parser.ParseString(node.Title));
 
+#if !SP2013
                 if (node.Title.ContainsResourceToken())
                 {
                     navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
                 }
+#endif
             }
         }
 
