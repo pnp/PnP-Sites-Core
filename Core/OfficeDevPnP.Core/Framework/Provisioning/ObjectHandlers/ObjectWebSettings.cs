@@ -130,6 +130,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (creationInfo.FileConnector != null)
                 {
+                    if (UrlUtility.IsIisVirtualDirectory(serverRelativeUrl))
+                    {
+                        scope.LogWarning("File is not located in the content database. Not retrieving {0}", serverRelativeUrl);
+                        return success;
+                    }
 
                     try
                     {
