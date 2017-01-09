@@ -147,19 +147,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermGroupIdToken(web));
             _tokens.Add(new SiteCollectionTermGroupNameToken(web));
 
-            // SiteCollection TermSets
-
-            var site = (web.Context as ClientContext).Site;
-            var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
-            web.Context.Load(siteCollectionTermGroup);
-            web.Context.ExecuteQueryRetry();
-            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+            // SiteCollection TermSets, only when we're not working in app-only
+            if (!web.Context.IsAppOnly())
             {
-                web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                var site = (web.Context as ClientContext).Site;
+                var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
+                web.Context.Load(siteCollectionTermGroup);
                 web.Context.ExecuteQueryRetry();
-                foreach (var termSet in siteCollectionTermGroup.TermSets)
+                if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
                 {
-                    _tokens.Add(new SiteCollectionTermSetIdToken(web,termSet.Name,termSet.Id));;
+                    web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                    web.Context.ExecuteQueryRetry();
+                    foreach (var termSet in siteCollectionTermGroup.TermSets)
+                    {
+                        _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                    }
                 }
             }
 
