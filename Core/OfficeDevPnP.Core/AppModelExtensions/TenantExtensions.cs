@@ -695,7 +695,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     if (timeoutFunction(operationMessage))
                     {
-                        succeeded = true;
+                        succeeded = false;
                         break;
                     }
                 }
