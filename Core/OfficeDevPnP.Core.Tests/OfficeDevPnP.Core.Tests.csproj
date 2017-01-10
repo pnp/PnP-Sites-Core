@@ -345,6 +345,7 @@
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\NavigationTests.cs" />
     <Compile Include="Framework\Functional\PagesTests.cs" />
     <Compile Include="Framework\Functional\PublishingTest.cs" />
     <Compile Include="Framework\Functional\SecurityTests.cs" />
@@ -353,6 +354,7 @@
     <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
     <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
@@ -468,6 +470,9 @@
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\navigation_add.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add2.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add3.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
