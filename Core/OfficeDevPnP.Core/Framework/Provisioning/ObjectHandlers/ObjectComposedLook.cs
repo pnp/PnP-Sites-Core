@@ -130,27 +130,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.BackgroundFile), scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.ColorFile), scope);
                             DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, parser.ParseString(composedLook.FontFile), scope);
-                        }
-                        // Create file entries for the custom theme files  
-                        if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
-                        {
-                            var f = GetComposedLookFile(template.ComposedLook.BackgroundFile);
-                            f.Folder = Tokenize(f.Folder, web.Url);
-                            template.Files.Add(f);
-                        }
-                        if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
-                        {
-                            var f = GetComposedLookFile(template.ComposedLook.ColorFile);
-                            f.Folder = Tokenize(f.Folder, web.Url);
-                            template.Files.Add(f);
-                        }
-                        if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
-                        {
-                            var f = GetComposedLookFile(template.ComposedLook.FontFile);
-                            f.Folder = Tokenize(f.Folder, web.Url);
-                            template.Files.Add(f);
-                        }
 
+                            // Create file entries for the custom theme files  
+                            if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
+                            {
+                                var f = GetComposedLookFile(template.ComposedLook.BackgroundFile);
+                                f.Folder = Tokenize(f.Folder, web.Url);
+                                template.Files.Add(f);
+                            }
+                            if (!string.IsNullOrEmpty(template.ComposedLook.ColorFile))
+                            {
+                                var f = GetComposedLookFile(template.ComposedLook.ColorFile);
+                                f.Folder = Tokenize(f.Folder, web.Url);
+                                template.Files.Add(f);
+                            }
+                            if (!string.IsNullOrEmpty(template.ComposedLook.FontFile))
+                            {
+                                var f = GetComposedLookFile(template.ComposedLook.FontFile);
+                                f.Folder = Tokenize(f.Folder, web.Url);
+                                template.Files.Add(f);
+                            }
+                        }
                     }
                     catch (JsonSerializationException)
                     {
