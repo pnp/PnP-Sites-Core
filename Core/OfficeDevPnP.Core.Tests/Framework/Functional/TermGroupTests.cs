@@ -82,6 +82,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 TermGroupValidator tv2 = new TermGroupValidator();
                 tv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(tv2.Validate(result2.SourceTemplate.TermGroups, result2.TargetTemplate.TermGroups, result2.TargetTokenParser));
+
+                var result3 = TestProvisioningTemplate(cc, "termgroup_delta_1605_1.xml", Handlers.TermGroups, null, ptci);
+                TermGroupValidator tv3 = new TermGroupValidator();
+                tv3.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(tv3.Validate(result3.SourceTemplate.TermGroups, result3.TargetTemplate.TermGroups, result3.TargetTokenParser));
             }
         }
         #endregion
@@ -113,6 +118,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 TermGroupValidator tv2 = new TermGroupValidator();
                 tv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(tv2.Validate(result2.SourceTemplate.TermGroups, result2.TargetTemplate.TermGroups, result2.TargetTokenParser));
+
+                var result3 = TestProvisioningTemplate(cc, "termgroup_delta_1605_1.xml", Handlers.TermGroups, null, ptci);
+                TermGroupValidator tv3 = new TermGroupValidator();
+                tv3.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(tv3.Validate(result3.SourceTemplate.TermGroups, result3.TargetTemplate.TermGroups, result3.TargetTokenParser));
 
             }
         }
