@@ -405,7 +405,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     JavaScriptSerializer s = null;
 
                     // if state is managed then the state value is stored in a property named "<timerjobname>_Properties"
-                    string propertyKey = String.Format("{0}_Properties", NormalizedTimerJobName(this.name));
+                    string propertyKey = $"{NormalizedTimerJobName(this.name)}_Properties";
 
                     // read the properties from the web property bag
                     if (this.manageState)
@@ -626,7 +626,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             UseOffice365Authentication(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
@@ -642,12 +642,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(userUPN))
             {
-                throw new ArgumentNullException("userName");
+                throw new ArgumentNullException(nameof(userUPN));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             this.authenticationType = AuthenticationType.Office365;
@@ -666,7 +666,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -699,7 +699,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             UseNetworkCredentialsAuthentication(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
@@ -721,12 +721,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             if (String.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             this.authenticationType = AuthenticationType.NetworkCredentials;
@@ -746,7 +746,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -789,12 +789,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(clientSecret))
             {
-                throw new ArgumentNullException("clientSecret");
+                throw new ArgumentNullException(nameof(clientSecret));
             }
 
             this.authenticationType = AuthenticationType.AppOnly;
@@ -817,7 +817,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(certificatePassword))
             {
-                throw new ArgumentNullException("certificatePassword");
+                throw new ArgumentNullException(nameof(certificatePassword));
             }
             UseAzureADAppOnlyAuthentication(clientId, azureTenant, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword));
         }
@@ -834,22 +834,22 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(azureTenant))
             {
-                throw new ArgumentNullException("azureTenant");
+                throw new ArgumentNullException(nameof(azureTenant));
             }
 
             if (String.IsNullOrEmpty(certificatePath))
             {
-                throw new ArgumentNullException("certificatePath");
+                throw new ArgumentNullException(nameof(certificatePath));
             }
 
             if (certificatePassword == null || certificatePassword.Length == 0)
             {
-                throw new ArgumentNullException("certificatePassword");
+                throw new ArgumentNullException(nameof(certificatePassword));
             }
             this.authenticationType = AuthenticationType.AzureADAppOnly;
             this.clientId = clientId;
@@ -871,17 +871,17 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(clientId))
             {
-                throw new ArgumentNullException("clientId");
+                throw new ArgumentNullException(nameof(clientId));
             }
 
             if (String.IsNullOrEmpty(azureTenant))
             {
-                throw new ArgumentNullException("azureTenant");
+                throw new ArgumentNullException(nameof(azureTenant));
             }
 
             if (certificate == null)
             {
-                throw new ArgumentNullException("certificate");
+                throw new ArgumentNullException(nameof(certificate));
             }
 
             this.authenticationType = AuthenticationType.AzureADAppOnly;
@@ -1031,7 +1031,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             SetEnumerationCredentials(userUPN, Core.Utilities.EncryptionUtility.ToSecureString(password));
@@ -1046,12 +1046,12 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(userUPN))
             {
-                throw new ArgumentNullException("userUPN");
+                throw new ArgumentNullException(nameof(userUPN));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             this.enumerationUser = userUPN;
@@ -1069,7 +1069,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             SetEnumerationCredentials(samAccountName, Core.Utilities.EncryptionUtility.ToSecureString(password), domain);
@@ -1085,17 +1085,17 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(samAccountName))
             {
-                throw new ArgumentNullException("samAccountName");
+                throw new ArgumentNullException(nameof(samAccountName));
             }
 
             if (password == null || password.Length == 0)
             {
-                throw new ArgumentNullException("password");
+                throw new ArgumentNullException(nameof(password));
             }
 
             if (String.IsNullOrEmpty(domain))
             {
-                throw new ArgumentNullException("domain");
+                throw new ArgumentNullException(nameof(domain));
             }
 
             this.enumerationUser = samAccountName;
@@ -1112,7 +1112,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(credentialName))
             {
-                throw new ArgumentNullException("credentialName");
+                throw new ArgumentNullException(nameof(credentialName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_RetrieveFromCredMan, credentialName);
@@ -1161,7 +1161,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(site))
             {
-                throw new ArgumentNullException("site");
+                throw new ArgumentNullException(nameof(site));
             }
 
             site = site.ToLower();
@@ -1170,7 +1170,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 if (!IsValidUrl(site))
                 {
-                    throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), "site");
+                    throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), nameof(site));
                 }
             }
 
@@ -1547,7 +1547,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
                 string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
-                return String.Format("https://{0}-admin.sharepoint.com", tenantName);
+                return $"https://{tenantName}-admin.sharepoint.com";
             }
         }
 
@@ -1559,7 +1559,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string GetTopLevelSite(string site)
         {
             Uri uri = new Uri(site.TrimEnd(new[] { '/' }));
-            return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+            return $"{uri.Scheme}://{uri.DnsSafeHost}";
         }
 
         /// <summary>
@@ -1575,7 +1575,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             if (String.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath.Equals("/", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Site must be root site, no doubts possible
-                return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                return $"{uri.Scheme}://{uri.DnsSafeHost}";
             }
 
             string[] siteParts = uri.AbsolutePath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
@@ -1587,18 +1587,18 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 if (siteParts.Length == 1)
                 {
-                    return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
                 }
                 else
                 {
                     if (siteParts[0].Equals("sites", StringComparison.InvariantCultureIgnoreCase) ||
                         siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        return string.Format("{0}://{1}/{2}/{3}", uri.Scheme, uri.DnsSafeHost, siteParts[0], siteParts[1]);
+                        return $"{uri.Scheme}://{uri.DnsSafeHost}/{siteParts[0]}/{siteParts[1]}";
                     }
                     else
                     {
-                        return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                        return $"{uri.Scheme}://{uri.DnsSafeHost}";
                     }
                 }
             }
@@ -1614,7 +1614,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 else
                 {
-                    return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
                 }
             }
         }

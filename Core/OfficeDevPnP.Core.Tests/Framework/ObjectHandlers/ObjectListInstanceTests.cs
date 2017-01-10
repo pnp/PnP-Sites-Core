@@ -5,31 +5,61 @@ using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
     [TestClass]
     public class ObjectListInstanceTests
     {
+        private const string ElementSchema = @"<Field xmlns=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""DemoField"" DisplayName=""Test Field"" Type=""Text"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" Group=""PnP"" Required=""true""/>";
+        private Guid fieldId = Guid.Parse("{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}");
+
+        private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""DemoField""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
+        private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""DemoField""</Formula></Field>";
+        private Guid calculatedFieldId = Guid.Parse("{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}");
+
+
         private string listName;
-       
+
         [TestInitialize]
         public void Initialize()
         {
             listName = string.Format("Test_{0}", DateTime.Now.Ticks);
-            
+
         }
         [TestCleanup]
         public void CleanUp()
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                var list = ctx.Web.GetListByUrl(string.Format("lists/{0}",listName));
+                bool isDirty = false;
+
+                var list = ctx.Web.GetListByUrl(string.Format("lists/{0}", listName));
                 if (list == null)
                     list = ctx.Web.GetListByUrl(listName);
                 if (list != null)
                 {
                     list.DeleteObject();
+                    isDirty = true;
+                }
+
+                var field = ctx.Web.GetFieldById<FieldText>(fieldId); // Guid matches ID in field caml.
+                var calculatedField = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId); // Guid matches ID in field caml.
+
+                if (field != null)
+                {
+                    field.DeleteObject();
+                    isDirty = true;
+                }
+                if (calculatedField != null)
+                {
+                    calculatedField.DeleteObject();
+                    isDirty = true;
+                }
+
+                if (isDirty)
+                {
                     ctx.ExecuteQueryRetry();
                 }
             }
@@ -43,10 +73,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             listInstance.Url = string.Format("lists/{0}", listName);
             listInstance.Title = listName;
-            listInstance.TemplateType = (int) ListTemplateType.GenericList;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
 
             Dictionary<string, string> dataValues = new Dictionary<string, string>();
-            dataValues.Add("Title","Test");
+            dataValues.Add("Title", "Test");
             DataRow dataRow = new DataRow(dataValues);
 
             listInstance.DataRows.Add(dataRow);
@@ -65,7 +95,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
-                
+
                 var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
                 ctx.Load(items, itms => itms.Include(item => item["Title"]));
                 ctx.ExecuteQueryRetry();
@@ -81,7 +111,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 // Load the base template which will be used for the comparison work
-                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) {BaseTemplate = ctx.Web.GetBaseTemplate()};
+                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
                 var template = new ProvisioningTemplate();
                 template = new ObjectListInstance().ExtractObjects(ctx.Web, template, creationInfo);
@@ -104,7 +134,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 listInstance.ContentTypeBindings.Add(new ContentTypeBinding { ContentTypeId = BuiltInContentTypeId.DublinCoreName, Default = true });
                 var template = new ProvisioningTemplate();
                 template.Lists.Add(listInstance);
-                
+
                 ctx.Web.ApplyProvisioningTemplate(template);
 
                 var list = ctx.Web.GetListByUrl(listName);
@@ -149,7 +179,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             // Verify that tokens have been replaced
             var expectedConfig = string.Format("{0}+{1}", listId, listUrl).ToLower();
             Assert.AreEqual(expectedConfig, MockProviderForListInstanceTests.ConfigurationData.ToLower(), "Updated list title is not available as a token.");
-    }
+        }
 
         class MockProviderForListInstanceTests : OfficeDevPnP.Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
         {
@@ -159,7 +189,268 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ConfigurationData = configurationData;
             }
         }
+
+        [TestMethod]
+        public void CanProvisionCalculatedFieldRefInListInstance()
+        {
+            var template = new ProvisioningTemplate();
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = ElementSchema });
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = TokenizedCalculatedFieldElementSchema });
+
+            var listInstance = new ListInstance();
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+
+            var referencedField = new FieldRef();
+            referencedField.Id = fieldId;
+            listInstance.FieldRefs.Add(referencedField);
+
+            var calculatedFieldRef = new FieldRef();
+            calculatedFieldRef.Id = calculatedFieldId;
+            listInstance.FieldRefs.Add(calculatedFieldRef);
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f);
+                Assert.IsInstanceOfType(f, typeof(FieldCalculated));
+                Assert.IsFalse(f.Formula.Contains('#') || f.Formula.Contains('?'), "Calculated field was not provisioned properly");
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateCalculatedFieldRefInListInstance()
+        {
+            var template = new ProvisioningTemplate();
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = ElementSchema });
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = TokenizedCalculatedFieldElementSchema });
+
+            var listInstance = new ListInstance();
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+
+            var referencedField = new FieldRef();
+            referencedField.Id = fieldId;
+            listInstance.FieldRefs.Add(referencedField);
+
+            var calculatedFieldRef = new FieldRef();
+            calculatedFieldRef.Id = calculatedFieldId;
+            listInstance.FieldRefs.Add(calculatedFieldRef);
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f1 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f1);
+                Assert.IsInstanceOfType(f1, typeof(FieldCalculated));
+                Assert.IsFalse(f1.Formula.Contains('#') || f1.Formula.Contains('?'), "Calculated field was not provisioned properly the first time");
+
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var f2 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(f2);
+                Assert.IsInstanceOfType(f2, typeof(FieldCalculated));
+                Assert.IsFalse(f2.Formula.Contains('#') || f2.Formula.Contains('?'), "Calculated field was not provisioned properly the second time");
+            }
+        }
+
+        [TestMethod]
+        public void CanProvisionCalculatedFieldInListInstance()
+        {
+            var template = new ProvisioningTemplate();
+            var listInstance = new ListInstance();
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = ElementSchema });
+
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+
+            var referencedField = new FieldRef();
+            referencedField.Id = fieldId;
+            listInstance.FieldRefs.Add(referencedField);
+
+            var calculatedField = new Core.Framework.Provisioning.Model.Field();
+            calculatedField.SchemaXml = TokenizedCalculatedFieldElementSchema;
+            listInstance.Fields.Add(calculatedField);
+
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f);
+                Assert.IsInstanceOfType(f, typeof(FieldCalculated));
+                Assert.IsFalse(f.Formula.Contains('#') || f.Formula.Contains('?'), "Calculated field was not provisioned properly");
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), "The field was found invalid:  {fieldtitle:DemoField}")]
+        public void CanProvisionCalculatedFieldLocallyInListInstance()
+        {
+            //This test will fail as tokens does not support this scenario.
+            //The test serves as a reminder that this is not supported and needs to be fixed in a future release.
+            var template = new ProvisioningTemplate();
+            var listInstance = new ListInstance();
+
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+            var referencedField = new Core.Framework.Provisioning.Model.Field();
+            referencedField.SchemaXml = ElementSchema;
+            listInstance.Fields.Add(referencedField);
+            var calculatedField = new Core.Framework.Provisioning.Model.Field();
+            calculatedField.SchemaXml = TokenizedCalculatedFieldElementSchema;
+            listInstance.Fields.Add(calculatedField);
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f);
+                Assert.IsInstanceOfType(f, typeof(FieldCalculated));
+                Assert.IsFalse(f.Formula.Contains('#') || f.Formula.Contains('?'), "Calculated field was not provisioned properly");
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateCalculatedFieldInListInstance()
+        {
+            var template = new ProvisioningTemplate();
+            var listInstance = new ListInstance();
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = ElementSchema });
+
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+
+            var referencedField = new FieldRef();
+            referencedField.Id = fieldId;
+            listInstance.FieldRefs.Add(referencedField);
+
+            var calculatedField = new Core.Framework.Provisioning.Model.Field();
+            calculatedField.SchemaXml = TokenizedCalculatedFieldElementSchema;
+            listInstance.Fields.Add(calculatedField);
+
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f1 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f1);
+                Assert.IsInstanceOfType(f1, typeof(FieldCalculated));
+                Assert.IsFalse(f1.Formula.Contains('#') || f1.Formula.Contains('?'), "Calculated field was not provisioned properly the first time");
+
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var f2 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(f2);
+                Assert.IsInstanceOfType(f2, typeof(FieldCalculated));
+                Assert.IsFalse(f2.Formula.Contains('#') || f2.Formula.Contains('?'), "Calculated field was not provisioned properly the second time");
+            }
+        }
+
+        [TestMethod]
+        public void CanExtractCalculatedFieldFromListInstance()
+        {
+            var template = new ProvisioningTemplate();
+            var listInstance = new ListInstance();
+
+            template.SiteFields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = ElementSchema });
+
+            listInstance.Url = string.Format("lists/{0}", listName);
+            listInstance.Title = listName;
+            listInstance.TemplateType = (int)ListTemplateType.GenericList;
+
+            var referencedField = new FieldRef();
+            referencedField.Id = fieldId;
+            listInstance.FieldRefs.Add(referencedField);
+
+            var calculatedField = new Core.Framework.Provisioning.Model.Field();
+            calculatedField.SchemaXml = TokenizedCalculatedFieldElementSchema;
+            listInstance.Fields.Add(calculatedField);
+            template.Lists.Add(listInstance);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var rf = list.GetFieldById<FieldText>(fieldId);
+                var f = list.GetFieldById<FieldCalculated>(calculatedFieldId);
+
+                Assert.IsNotNull(rf, "Referenced field not added");
+                Assert.IsNotNull(f);
+                Assert.IsInstanceOfType(f, typeof(FieldCalculated));
+                Assert.IsFalse(f.Formula.Contains('#') || f.Formula.Contains('?'), "Calculated field was not provisioned properly");
+
+                var extractedTemplate = new ProvisioningTemplate();
+                var provisioningTemplateCreationInformation = new ProvisioningTemplateCreationInformation(ctx.Web);
+                new ObjectListInstance().ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
+
+                XElement fieldElement = XElement.Parse(extractedTemplate.Lists.First(l => l.Title == listName).Fields.First(cf => Guid.Parse(XElement.Parse(cf.SchemaXml).Attribute("ID").Value).Equals(calculatedFieldId)).SchemaXml);
+                var formula = fieldElement.Descendants("Formula").FirstOrDefault();
+
+                Assert.AreEqual(@"=[{fieldtitle:DemoField}]&""DemoField""", formula.Value, true, "Calculated field formula is not extracted properly");
+            }
+        }
     }
-
-
 }

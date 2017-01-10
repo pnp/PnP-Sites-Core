@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),

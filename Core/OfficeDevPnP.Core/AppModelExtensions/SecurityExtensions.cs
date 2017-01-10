@@ -147,7 +147,8 @@ namespace Microsoft.SharePoint.Client
                         try
                         {
                             // New tenant
-                            string userIdentity = string.Format("c:0-.f|rolemanager|spo-grid-all-users/{0}", web.GetAuthenticationRealm());
+                            string userIdentity =
+                                $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                             spReader = web.EnsureUser(userIdentity);
                             web.Context.Load(spReader);
                             web.Context.ExecuteQueryRetry();
@@ -1092,9 +1093,12 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(group);
             web.Context.Load(users);
             web.Context.ExecuteQueryRetry();
-            if (group != null)
+
+            if (users.AreItemsAvailable)
             {
-                result = users.Any(u => u.LoginName.Contains(userLoginName));
+                result = users.Any(u => 
+                  u.LoginName.ToLowerInvariant().Contains(userLoginName.ToLowerInvariant())
+                );
             }
 
             return result;

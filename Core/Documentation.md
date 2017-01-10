@@ -47,6 +47,14 @@ Gets a site collection context for the passed web. This site collection client c
 > ##### Return value
 > A site collection client context object for the site collection
 
+#### IsAppOnly(Microsoft.SharePoint.Client.ClientRuntimeContext)
+Checks if the used ClientContext is app-only
+> ##### Parameters
+> **clientContext:** The ClientContext to inspect
+
+> ##### Return value
+> True if app-only, false otherwise
+
 #### Constructor
 Constructor
 > ##### Parameters
@@ -83,6 +91,18 @@ Class that holds the deprecated branding methods
 Class that deals with branding features
         
 ### Methods
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Site)
+Disables the Responsive UI on a Classic SharePoint Site
+> ##### Parameters
+> **site:** The Site to disable the Responsive UI on
+
+
+#### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
+Disables the Responsive UI on a Classic SharePoint Web
+> ##### Parameters
+> **web:** The Web to disable the Responsive UI on
 
 
 #### ComposedLookExists(Microsoft.SharePoint.Client.Web,System.String)
@@ -489,13 +509,13 @@ Enables the responsive UI of a classic SharePoint Web or Site
 > **infrastructureUrl:** URL pointing to an infrastructure site
 
 
-#### DisableReponsiveUI(Microsoft.SharePoint.Client.Web)
+#### DisableResponsiveUI(Microsoft.SharePoint.Client.Web)
 Disables the Responsive UI on a Classic SharePoint Web
 > ##### Parameters
 > **web:** The Web to disable the Responsive UI on
 
 
-#### DisableReponsiveUI(Microsoft.SharePoint.Client.Site)
+#### DisableResponsiveUI(Microsoft.SharePoint.Client.Site)
 Disables the Responsive UI on a Classic SharePoint Site
 > ##### Parameters
 > **site:** The Site to disable the Responsive UI on
@@ -574,12 +594,14 @@ Checks if a feature is active
 > ##### Return value
 > True if active, false otherwise
 
-#### IsFeatureActiveInternal(Microsoft.SharePoint.Client.FeatureCollection,System.Guid)
+#### IsFeatureActiveInternal(Microsoft.SharePoint.Client.FeatureCollection,System.Guid,System.Boolean)
 Checks if a feature is active in the given FeatureCollection.
 > ##### Parameters
 > **features:** FeatureCollection to check in
 
 > **featureID:** ID of the feature to check
+
+> **noRetry:** Use regular ExecuteQuery
 
 > ##### Return value
 > True if active, false otherwise
@@ -735,6 +757,18 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field of type TField
 
+#### GetFieldById(Microsoft.SharePoint.Client.Web,System.Guid,System.Boolean)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **web:** Site to be processed - can be root web or sub site. Site columns should be created to root site.
+
+> **fieldId:** Guid for the field ID
+
+> **searchInSiteHierarchy:** If true, search parent sites and root site
+
+> ##### Return value
+> Field of type TField
+
 #### GetFieldById``1(Microsoft.SharePoint.Client.List,System.Guid)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -745,6 +779,16 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field of type TField
 
+#### GetFieldById(Microsoft.SharePoint.Client.List,System.Guid)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **list:** List to be processed. Columns assoc in lists are defined on web or rootweb.
+
+> **fieldId:** Guid for the field ID
+
+> ##### Return value
+> Field
+
 #### GetFieldByName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -754,6 +798,36 @@ Returns the field if it exists. Null if it does not exist.
 
 > ##### Return value
 > Field of type TField
+
+#### GetFieldByName(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Guid for the field ID
+
+> ##### Return value
+> Field
+
+#### GetFieldByInternalName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Internal name of the field
+
+> ##### Return value
+> Field of type TField
+
+#### GetFieldByInternalName(Microsoft.SharePoint.Client.FieldCollection,System.String)
+Returns the field if it exists. Null if it does not exist.
+> ##### Parameters
+> **fields:** FieldCollection to be processed.
+
+> **internalName:** Internal name of the field
+
+> ##### Return value
+> Field
 
 #### FieldExistsByName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Returns if the field is found
@@ -1701,6 +1775,26 @@ Finds files in the web. Can be slow.
 > ##### Return value
 > A list with the found objects
 
+#### FindFiles(Microsoft.SharePoint.Client.List,System.String)
+Find files in the list, Can be slow.
+> ##### Parameters
+> **list:** The list to process
+
+> **match:** a wildcard pattern to match
+
+> ##### Return value
+> A list with the found objects
+
+#### FindFiles(Microsoft.SharePoint.Client.Folder,System.String)
+Find files in a specific folder
+> ##### Parameters
+> **folder:** The folder to process
+
+> **match:** a wildcard pattern to match
+
+> ##### Return value
+> A list with the found objects
+
 #### FolderExists(Microsoft.SharePoint.Client.Web,System.String)
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
 Checks if the folder exists at the top level of the web site.
@@ -1753,7 +1847,7 @@ Gets a folder with a given name in a given
 > ##### Return value
 > The found if available, null otherwise
 
-#### SaveFileToLocal(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String)
+#### SaveFileToLocal(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.Func{System.String,System.Boolean})
 Saves a remote file to a local folder
 > ##### Parameters
 > **web:** The Web to process
@@ -1763,6 +1857,8 @@ Saves a remote file to a local folder
 > **localPath:** The local folder
 
 > **localFileName:** The local filename. If null the filename of the file on the server will be used
+
+> **fileExistsCallBack:** Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.
 
 
 #### UploadFile(Microsoft.SharePoint.Client.Folder,System.String,System.String,System.Boolean)
@@ -2855,6 +2951,8 @@ Inserts a web part on a web part page
 
 > **page:** Page to add the web part on
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when page is a zero-length string or contains only white space
 
@@ -2870,6 +2968,8 @@ Inserts a web part on a web part page
 
 > **webPart:** Information about the web part to insert
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when serverRelativePageUrl is a zero-length string or contains only white space
 
@@ -2893,6 +2993,8 @@ Add web part to a wiki style page
 
 > **addSpace:** Does a blank line need to be added after the web part (to space web parts)
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when folder or page is a zero-length string or contains only white space
 
@@ -2914,6 +3016,8 @@ Add web part to a wiki style page
 
 > **addSpace:** Does a blank line need to be added after the web part (to space web parts)
 
+> ##### Return value
+> Returns the added object
 > ##### Exceptions
 > **System.ArgumentException:** Thrown when serverRelativePageUrl is a zero-length string or contains only white space
 
@@ -4643,7 +4747,7 @@ Returns available webtemplates/site definitions
 > ##### Return value
 > 
 
-#### SetSiteProperties(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Double},System.Nullable{System.Double})
+#### SetSiteProperties(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Boolean})
 Sets tenant site Properties
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4663,6 +4767,8 @@ Sets tenant site Properties
 > **userCodeMaximumLevel:** 
 
 > **userCodeWarningLevel:** 
+
+> **noScriptSite:** 
 
 
 #### SetSiteLockState(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,OfficeDevPnP.Core.SiteLockState,System.Boolean)
@@ -4689,7 +4795,7 @@ Add a site collection administrator to a site collection
 > **addToOwnersGroup:** Optionally the added admins can also be added to the Site owners group
 
 
-#### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean)
+#### GetSiteCollections(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Int32,System.Int32,System.Boolean,System.Boolean)
 Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object.
 > ##### Parameters
 > **tenant:** Tenant object to operate against
@@ -4837,6 +4943,22 @@ Checks if the current web is a sub site or not
 
 > ##### Return value
 > True is sub site, false otherwise
+
+#### IsNoScriptSite(Microsoft.SharePoint.Client.Site)
+Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing. See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f for the effects of NoScript
+> ##### Parameters
+> **site:** site to verify
+
+> ##### Return value
+> True if noscript, false otherwise
+
+#### IsNoScriptSite(Microsoft.SharePoint.Client.Web)
+Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing. See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f for the effects of NoScript
+> ##### Parameters
+> **web:** Web to verify
+
+> ##### Return value
+> True if noscript, false otherwise
 
 #### GetAppInstances(Microsoft.SharePoint.Client.Web)
 Returns all app instances
@@ -5621,301 +5743,9 @@ Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020
 > ##### Return value
 > True, if hierarchy is created for the variation label
 
-## Core.AuthenticationManager
+## Core.Entities.UnifiedGroupEntity
             
-This manager class can be used to obtain a SharePointContext object
-            
-        
-### Methods
-
-
-#### GetSharePointOnlineAuthenticatedContextTenant(System.String,System.String,System.String)
-Returns a SharePointOnline ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **tenantUser:** User to be used to instantiate the ClientContext object
-
-> **tenantUserPassword:** Password of the user used to instantiate the ClientContext object
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetSharePointOnlineAuthenticatedContextTenant(System.String,System.String,System.Security.SecureString)
-Returns a SharePointOnline ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **tenantUser:** User to be used to instantiate the ClientContext object
-
-> **tenantUserPassword:** Password (SecureString) of the user used to instantiate the ClientContext object
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String)
-Returns an app only ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **appId:** Application ID which is requesting the ClientContext object
-
-> **appSecret:** Application secret of the Application which is requesting the ClientContext object
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String)
-Returns an app only ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **realm:** Realm of the environment (tenant) that requests the ClientContext object
-
-> **appId:** Application ID which is requesting the ClientContext object
-
-> **appSecret:** Application secret of the Application which is requesting the ClientContext object
-
-> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
-
-> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.String,System.String)
-Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **user:** User to be used to instantiate the ClientContext object
-
-> **password:** Password of the user used to instantiate the ClientContext object
-
-> **domain:** Domain of the user used to instantiate the ClientContext object
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
-Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **icon:** Optional icon to use for the popup form
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Native Application Client ID
-
-> **redirectUrl:** The Azure AD Native Application Redirect Uri as a string
-
-> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
-
-> ##### Return value
-> 
-
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Native Application Client ID
-
-> **redirectUri:** The Azure AD Native Application Redirect Uri
-
-> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
-
-> ##### Return value
-> 
-
-#### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **accessTokenGetter:** The AccessToken getter method to use
-
-> ##### Return value
-> 
-
-#### GetAzureADAccessTokenAuthenticatedContext(System.String,System.String)
-Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **accessToken:** An explicit value for the AccessToken
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,OfficeDevPnP.Core.AzureEnvironment)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **storeName:** The name of the store for the certificate
-
-> **storeLocation:** The location of the store for the certificate
-
-> **thumbPrint:** The thumbprint of the certificate to locate in the store
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificatePath:** The path to the certificate (*.pfx) file on the file system
-
-> **certificatePassword:** Password to the certificate
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString,OfficeDevPnP.Core.AzureEnvironment)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificatePath:** The path to the certificate (*.pfx) file on the file system
-
-> **certificatePassword:** Password to the certificate
-
-> ##### Return value
-> 
-
-#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,OfficeDevPnP.Core.AzureEnvironment)
-Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **clientId:** The Azure AD Application Client ID
-
-> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
-
-> **certificate:** 
-
-> **environment:** 
-
-> ##### Return value
-> 
-
-#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
-Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **user:** User to be used to instantiate the ClientContext object
-
-> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
-
-> **domain:** Domain of the user used to instantiate the ClientContext object
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### GetADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
-Returns a SharePoint on-premises ClientContext for sites secured via ADFS
-> ##### Parameters
-> **siteUrl:** Url of the SharePoint site that's secured via ADFS
-
-> **user:** Name of the user (e.g. administrator)
-
-> **password:** Password of the user
-
-> **domain:** Windows domain of the user
-
-> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
-
-> **idpId:** Identifier of the ADFS relying party that we're hitting
-
-> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
-
-> ##### Return value
-> ClientContext to be used by CSOM code
-
-#### RefreshADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
-Refreshes the SharePoint FedAuth cookie
-> ##### Parameters
-> **siteUrl:** Url of the SharePoint site that's secured via ADFS
-
-> **user:** Name of the user (e.g. administrator)
-
-> **password:** Password of the user
-
-> **domain:** Windows domain of the user
-
-> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
-
-> **idpId:** Identifier of the ADFS relying party that we're hitting
-
-> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
-
-
-#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
-Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
-> ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **realm:** Realm of the environment (tenant) that requests the ClientContext object
-
-> **appId:** Application ID which is requesting the ClientContext object
-
-> **appSecret:** Application secret of the Application which is requesting the ClientContext object
-
-> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
-
-> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
-
-
-#### GetAccessTokenLease(System.DateTime)
-Get the access token lease time span.
-> ##### Parameters
-> **expiresOn:** The ExpiresOn time of the current access token
-
-> ##### Return value
-> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
-
-## Core.BuiltInContentTypeId
-            
-A class that returns strings that represent identifiers (IDs) for built-in content types.
-        
-### Fields
-
-#### DocumentSet
-Contains the content identifier (ID) for the DocumentSet content type. To get content type from a list, use BestMatchContentTypeId().
-#### Item
-Contains the content identifier (ID) for the Item content type.
-
-## Core.Constants
-            
-Constants
-        
-
-## Core.Diagnostics.Log
-            
-Logging class
+Defines a Unified Group
         
 
 ## Core.Entities.AreaNavigationEntity
@@ -6156,676 +5986,6 @@ Represents Yammer Group information Generated based on Yammer response on 30th o
             
 Represents YammerUser Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
         
-
-## Core.Enums.NavigationType
-            
-Enum that defines the navigation types
-        
-
-## Core.Enums.TimeZone
-            
-Timezones to use when creating sitecollections Format UTC[PLUS|MINUS][HH:MM]_[DESCRIPTION]
-        
-
-## Core.EcmListManualRecordDeclaration
-            
-Specifies whether this list should allow the manual declaration of records. When manual record declaration is unavailable, records can only be declared through a policy or workflow.
-        
-### Fields
-
-#### UseSiteCollectionDefaults
-Use the site collection defaults
-#### AlwaysAllowManualDeclaration
-Always allow to manual declare records in this list
-#### NeverAllowManualDeclaration
-Never allow to manual declare records in this list
-
-## Core.EcmRecordDeclarationBy
-            
-Specify which user roles can declare and undeclare record status manually
-        
-### Fields
-
-#### AllListContributors
-All list contributors and administrators
-#### OnlyAdmins
-Only list administrators
-#### OnlyPolicy
-Only policy actions
-
-## Core.EcmSiteRecordRestrictions
-            
-Specify restrictions to place on a document or item once it has been declared as a record. Changing this setting will not affect items which have already been declared records.
-        
-### Fields
-
-#### None
-Records are no more restricted than non-records
-#### BlockDelete
-Records can be edited but not deleted
-#### BlockEdit
-Records cannot be edited or deleted. Any change will require the record declaration to be revoked
-
-## Core.VotingExperience
-            
-Voting Experience in List
-        
-
-## Core.WikiPageLayout
-            
-Out of the box wiki page layouts enumeration
-        
-
-## Core.Extensions.DictionaryExtensions
-            
-Extension type for Dictionaries
-        
-
-## Core.Extensions.EnumerableExtensions
-            
-Extension methods to make working with IEnumerable<T> values easier.
-        
-### Methods
-
-
-#### DeepEquals``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})
-Compares to instances of IEnumerable<T>
-> ##### Parameters
-> **source:** Source enumeration
-
-> **target:** Target enumeration
-
-> ##### Return value
-> Wether the two enumerations are deep equal
-
-## Core.CoreResources
-            
-A strongly-typed resource class, for looking up localized strings, etc.
-        
-### Properties
-
-#### ResourceManager
-Returns the cached ResourceManager instance used by this class.
-#### Culture
-Overrides the current thread's CurrentUICulture property for all resource lookups using this strongly typed resource class.
-#### AuthenticationManager_GetContext
-Looks up a localized string similar to Getting authentication context for '{0}'.
-#### AuthenticationManager_TenantUser
-Looks up a localized string similar to Tenant user '{0}'.
-#### AuthenticationManger_ProblemDeterminingTokenLease
-Looks up a localized string similar to Could not determine lease for appOnlyAccessToken. Error = {0}.
-#### BrandingExtension_ApplyTheme
-Looks up a localized string similar to Applying theme '{0}' in '{1}'.
-#### BrandingExtension_ComposedLookMissing
-Looks up a localized string similar to Composed look '{0}' not found..
-#### BrandingExtension_CreateComposedLook
-Looks up a localized string similar to Creating composed look '{0}' in '{1}'.
-#### BrandingExtension_DeployMasterPage
-Looks up a localized string similar to Deploying masterpage '{0}' to '{1}'..
-#### BrandingExtension_DeployPageLayout
-Looks up a localized string similar to Deploying page layout '{0}' to '{1}'..
-#### BrandingExtension_DeployTheme
-Looks up a localized string similar to Deploying theme '{0}' to '{1}'.
-#### BrandingExtension_SetCustomMasterUrl
-Looks up a localized string similar to Setting custom master URL '{0}' in '{1}'..
-#### BrandingExtension_SetMasterUrl
-Looks up a localized string similar to Setting master URL '{0}' in '{1}'..
-#### BrandingExtension_UpdateComposedLook
-Looks up a localized string similar to Updating composed look '{0}' in '{1}'.
-#### BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_
-Looks up a localized string similar to Destination file name is required..
-#### BrandingExtensions_UploadThemeFile_Source_file_path_is_required_
-Looks up a localized string similar to Source file path is required..
-#### BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### ClientContextExtensions_Clone_Url_of_the_site_is_required_
-Looks up a localized string similar to Url of the site is required..
-#### ClientContextExtensions_ExecuteQueryRetry
-Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
-#### ClientContextExtensions_ExecuteQueryRetryException
-Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
-#### Exception_Message_EmptyString_Arg
-Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
-#### FeatureExtensions_ActivateSiteCollectionFeature
-Looks up a localized string similar to Activating feature {0} in site collection..
-#### FeatureExtensions_ActivateWebFeature
-Looks up a localized string similar to Activating feature {0} in web..
-#### FeatureExtensions_DeactivateSiteCollectionFeature
-Looks up a localized string similar to Deactivating feature {0} in site collection..
-#### FeatureExtensions_DeactivateWebFeature
-Looks up a localized string similar to Deactivating feature {0} in web..
-#### FeatureExtensions_FeatureActivationProblem
-Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
-#### FeatureExtensions_ProcessFeatureInternal_FeatureActivationState
-Looks up a localized string similar to Activation state for feature with id {1} was {0}..
-#### FeatureExtensions_ProcessFeatureInternal_FeatureActive
-Looks up a localized string similar to Feature activation for {0} returned success..
-#### FeatureExtensions_ProcessFeatureInternal_FeatureException
-Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
-#### FieldAndContentTypeExtensions_AddField0ToContentType1
-Looks up a localized string similar to Adding field ({0}) to content type ({1})..
-#### FieldAndContentTypeExtensions_ContentType01AlreadyExists
-Looks up a localized string similar to Content type '{0}' ({1}) already exists; no changes made..
-#### FieldAndContentTypeExtensions_CreateContentType01
-Looks up a localized string similar to Creating content type '{0}' ({1})..
-#### FieldAndContentTypeExtensions_CreateDocumentSet
-Looks up a localized string similar to Creating document set '{0}'..
-#### FieldAndContentTypeExtensions_CreateField01
-Looks up a localized string similar to Creating field '{0}' ({1})..
-#### FieldAndContentTypeExtensions_CreateFieldBase
-Looks up a localized string similar to New Field as XML: {0}.
-#### FieldAndContentTypeExtensions_DeleteContentTypeById
-Looks up a localized string similar to Could not find content type with id: {0}.
-#### FieldAndContentTypeExtensions_DeleteContentTypeByName
-Looks up a localized string similar to Could not find content type with name: {0}.
-#### FieldAndContentTypeExtensions_Field01AlreadyExists
-Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
-#### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single document set name and cannot contain path characters..
-#### FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single folder name and cannot contain path characters..
-#### FileFolderExtensions_CreateFolder0Under12
-Looks up a localized string similar to Creating folder '{0}' under {1} '{2}'..
-#### FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_
-Looks up a localized string similar to Folder URL is required..
-#### FileFolderExtensions_FolderMissing
-Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
-#### FileFolderExtensions_LibraryMissing
-Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
-#### FileFolderExtensions_UpdateFile0Properties1
-Looks up a localized string similar to Update file '{0}', change properties: {1}..
-#### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
-Looks up a localized string similar to Destination file name is required..
-#### FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### FileFolderExtensions_UploadFile0ToFolder1
-Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
-#### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### ListExtensions_CreateList0Template12
-Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
-#### ListExtensions_GetWebRelativeUrl
-Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
-#### LoggingUtility_MessageWithException
-Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
-#### MailUtility_SendException
-Looks up a localized string similar to Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
-#### MailUtility_SendExceptionRethrow0
-Looks up a localized string similar to Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
-#### MailUtility_SendFailed
-Looks up a localized string similar to Mail message could not be sent. Send completed with error {0}..
-#### MailUtility_SendMailCancelled
-Looks up a localized string similar to Mail message was canceled..
-#### PnPMonitoredScope_Code_execution_ended
-Looks up a localized string similar to Code execution scope ended.
-#### PnPMonitoredScope_Code_execution_started
-Looks up a localized string similar to Code execution scope started.
-#### PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_
-Looks up a localized string similar to Updating property {0}.
-#### Provisioning_Asymmetric_Base_Templates
-Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
-#### Provisioning_Connectors_Azure_FailedToInitialize
-Looks up a localized string similar to Could not initialize AzureStorageConnector. Error = {0}.
-#### Provisioning_Connectors_Azure_FileDeleted
-Looks up a localized string similar to File {0} was deleted from Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from Azure storage container {1}. Error = {2}.
-#### Provisioning_Connectors_Azure_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from Azure storage container {1} because it was not available.
-#### Provisioning_Connectors_Azure_FileNotFound
-Looks up a localized string similar to File {0} not found in Azure storage container {1}. Exception = {2}.
-#### Provisioning_Connectors_Azure_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileSaved
-Looks up a localized string similar to File {0} saved to Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to Azure storage container {1}. Error = {2}.
-#### Provisioning_Connectors_FileSystem_FileDeleted
-Looks up a localized string similar to File {0} deleted from folder {1}.
-#### Provisioning_Connectors_FileSystem_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
-#### Provisioning_Connectors_FileSystem_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
-#### Provisioning_Connectors_FileSystem_FileNotFound
-Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
-#### Provisioning_Connectors_FileSystem_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from folder {1}.
-#### Provisioning_Connectors_FileSystem_FileSaved
-Looks up a localized string similar to File {0} saved to folder {1}.
-#### Provisioning_Connectors_FileSystem_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
-#### Provisioning_Connectors_OpenXML_FileDeleted
-Looks up a localized string similar to File {0} deleted from folder {1}.
-#### Provisioning_Connectors_OpenXML_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
-#### Provisioning_Connectors_OpenXML_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
-#### Provisioning_Connectors_OpenXML_FileNotFound
-Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
-#### Provisioning_Connectors_OpenXML_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from folder {1}.
-#### Provisioning_Connectors_OpenXML_FileSaved
-Looks up a localized string similar to File {0} saved to folder {1}.
-#### Provisioning_Connectors_OpenXML_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
-#### Provisioning_Connectors_SharePoint_FileDeleted
-Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from site {1}, library {2}. Error = {3}.
-#### Provisioning_Connectors_SharePoint_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from site {1}, library {2} because it was not available.
-#### Provisioning_Connectors_SharePoint_FileNotFound
-Looks up a localized string similar to File {0} not found in site {1}, library {2}. Exception = {3}.
-#### Provisioning_Connectors_SharePoint_FileRetrieved
-Looks up a localized string similar to File {0} found in site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileSaved
-Looks up a localized string similar to File {0} saved to site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to site {1}, library {2}. Error = {3}.
-#### Provisioning_Extensibility_Pipeline_BeforeInvocation
-Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
-#### Provisioning_Extensibility_Pipeline_ClientCtxNull
-Looks up a localized string similar to ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Exception
-Looks up a localized string similar to There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
-#### Provisioning_Extensibility_Pipeline_Missing_AssemblyName
-Looks up a localized string similar to Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Missing_TypeName
-Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Success
-Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
-#### Provisioning_Formatter_Invalid_Template_URI
-Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
-#### Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_
-Looks up a localized string similar to Downloading asset: {0}.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize
-Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector
-Looks up a localized string similar to Creating SharePointConnector.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look
-Looks up a localized string similar to Retrieving current composed look.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag
-Looks up a localized string similar to Using Composed Look Information from Property Bag.
-#### Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_
-Looks up a localized string similar to Adding content type to template: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type
-Looks up a localized string similar to Adding field {0} to content type.
-#### Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_
-Looks up a localized string similar to Context web is subweb. Skipping content types..
-#### Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_
-Looks up a localized string similar to Creating new Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold
-Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
-#### Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type
-Looks up a localized string similar to Field {0} exists in content type.
-#### Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request
-Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
-#### Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_
-Looks up a localized string similar to Recreating existing Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
-Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
-Looks up a localized string similar to Adding custom action '{0}' to scope Site.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
-Looks up a localized string similar to Adding custom action '{0}' to scope Web.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template
-Looks up a localized string similar to Adding site scoped custom action '{0}' to template.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template
-Looks up a localized string similar to Adding web scoped custom action '{0}' to template.
-#### Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Looks up a localized string similar to Removing site scoped custom action '{0}' from template because already available in base template.
-#### Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Looks up a localized string similar to Removing web scoped custom action '{0}' from template because already available in base template.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_
-Looks up a localized string similar to Calling extensibility callout {0}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_
-Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_
-Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_
-Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_Extraction
-Looks up a localized string similar to Extraction.
-#### Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_
-Looks up a localized string similar to Activating {0} scoped feature {1}.
-#### Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_
-Looks up a localized string similar to Deactivating {0} scoped feature {1}.
-#### Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_
-Looks up a localized string similar to Adding field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site
-Looks up a localized string similar to Adding field {0} to site.
-#### Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns
-Looks up a localized string similar to Context web is subweb, skipping site columns.
-#### Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_
-Looks up a localized string similar to Field {0} ({1}) exists but is of different type. Skipping field..
-#### Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_
-Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site
-Looks up a localized string similar to Updating field {0} in site.
-#### Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page
-Looks up a localized string similar to Adding webpart '{0}' to page.
-#### Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_
-Looks up a localized string similar to Uploading and overwriting existing file {0}.
-#### Provisioning_ObjectHandlers_Files_Uploading_file__0_
-Looks up a localized string similar to Uploading file {0}.
-#### Provisioning_ObjectHandlers_FinishExtraction
-Looks up a localized string similar to FINISH - Template Extraction.
-#### Provisioning_ObjectHandlers_FinishProvisioning
-Looks up a localized string similar to FINISH - Provisioning.
-#### Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_
-Looks up a localized string similar to Adding list: {0} - {1}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0_
-Looks up a localized string similar to Creating field {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_
-Looks up a localized string similar to Creating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0_
-Looks up a localized string similar to Creating list {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_
-Looks up a localized string similar to Creating list {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_view__0_
-Looks up a localized string similar to Creating view {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_
-Looks up a localized string similar to Creating view failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true
-Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
-#### Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_
-Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
-#### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
-Looks up a localized string similar to Field schema has no ID attribute: {0}.
-#### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
-Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
-#### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
-Looks up a localized string similar to ID for field is not a valid Guid: {0}.
-#### Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference
-Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
-#### Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_
-Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
-#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0_
-Looks up a localized string similar to Updating field {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_
-Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0_
-Looks up a localized string similar to Updating list {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_
-Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows
-Looks up a localized string similar to Data Rows.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
-Looks up a localized string similar to Creating list item {0}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
-Looks up a localized string similar to Creating listitem failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
-Looks up a localized string similar to Processing data rows for {0}.
-#### Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0
-Looks up a localized string similar to Unable to find lookup list with Id: {0}.
-#### Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_
-Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing
-Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
-#### Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation
-Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation
-Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation
-Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
-Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
-Looks up a localized string similar to Creating new page {0}.
-#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
-Looks up a localized string similar to Creating new page {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_
-Looks up a localized string similar to Overwriting existing page {0}.
-#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_
-Looks up a localized string similar to Overwriting existing page {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_PersistTemplateInformation
-Looks up a localized string similar to Persist Template Information.
-#### Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_
-Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
-#### Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_
-Looks up a localized string similar to Overwriting existing propertybag entry {0} with value {1}.
-#### Provisioning_ObjectHandlers_Provisioning
-Looks up a localized string similar to Provisioning.
-#### Provisioning_ObjectHandlers_RetrieveTemplateInfo
-Looks up a localized string similar to Retrieve Template Info.
-#### Provisioning_ObjectHandlers_SitePolicy_PolicyAdded
-Looks up a localized string similar to Site policy '{0}' applied to site.
-#### Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound
-Looks up a localized string similar to Site policy '{0}' not found.
-#### Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_
-Looks up a localized string similar to Add users failed for group '{0}': {1} : {2}.
-#### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
-Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
-#### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
-Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
-#### Provisioning_Providers_XML_InvalidFileFormat
-Looks up a localized string similar to Cannot process XML file {0}..
-#### ProvisioningExtensions_ErrorProvisioningModule0File1
-Looks up a localized string similar to Error provisioning module '{0}' file '{1}'. Error = {2}.
-#### ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required
-Looks up a localized string similar to Path to the element file is required.
-#### ProvisioningExtensions_ProvisionElementFile0
-Looks up a localized string similar to Provisioning Elements file '{0}'..
-#### ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__
-Looks up a localized string similar to Expected element 'Elements'..
-#### ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__
-Looks up a localized string similar to Expected element 'File'..
-#### ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__
-Looks up a localized string similar to Expected element 'Module'..
-#### SecurityExtensions_Error_VisitingSecurableObject
-Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
-#### SecurityExtensions_Info_VisitingSecurableObject
-Looks up a localized string similar to Visiting securable object: {0}.
-#### SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects
-Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
-#### Service_RegistrationFailed
-Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
-#### Services_AccessDenied
-Looks up a localized string similar to Service requestor is not registered: access denied.
-#### Services_CookieWithCachKeyNotFound
-Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
-#### Services_Registered
-Looks up a localized string similar to Service {0} has been registered for endpoint {1} using cachekey {2}..
-#### Services_TokenRefreshed
-Looks up a localized string similar to Token for cachekey {0} and hostweburl {1} has been refreshed..
-#### SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true
-Looks up a localized string similar to OverwriteSystemPropertyBagValues is to true.
-#### SiteToTemplateConversion_Base_template_available___0_
-Looks up a localized string similar to Base template available: {0}.
-#### SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true
-Looks up a localized string similar to IncludeAllTermGroups is set to true.
-#### SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true
-Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
-#### SiteToTemplateConversion_MessagesDelegate_registered
-Looks up a localized string similar to MessagesDelegate registered.
-#### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
-Looks up a localized string similar to PersistBrandingFiles is set to true.
-#### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
-Looks up a localized string similar to PersistComposedLookFiles is set to true.
-#### SiteToTemplateConversion_ProgressDelegate_registered
-Looks up a localized string similar to ProgressDelegate registered.
-#### SP_Responsive_UI
-Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $(".ms-siteSettings-root . [rest of string was truncated]";.
-#### TaxonomyExtension_CreateTerm01UnderParent2
-Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
-#### TaxonomyExtension_CreateTermGroup0InStore1
-Looks up a localized string similar to Creating term group '{0}' in term store '{1}'..
-#### TaxonomyExtension_CreateTermSet0InGroup1
-Looks up a localized string similar to Creating term set '{0}' in term group '{1}'..
-#### TaxonomyExtension_DeleteTerm01
-Looks up a localized string similar to Deleting term '{0}|{1}'..
-#### TaxonomyExtension_ExceptionUpdateDescriptionGroup01
-Looks up a localized string similar to Error setting description for term group '{0}' ({1}). Error = {2}.
-#### TaxonomyExtension_ExceptionUpdateDescriptionSet01
-Looks up a localized string similar to Error setting description for term set '{0}' ({1}). Error = {2}.
-#### TaxonomyExtension_ImportErrorDeleteId0Line1
-Looks up a localized string similar to Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
-#### TaxonomyExtension_ImportErrorDescription0Line1
-Looks up a localized string similar to Error encountered during import. The description '{0}' on line {1} is not valid..
-#### TaxonomyExtension_ImportErrorName0Line1
-Looks up a localized string similar to Error encountered during import. The name '{0}' is not valid on line {1}..
-#### TaxonomyExtension_ImportErrorTaggingLine0
-Looks up a localized string similar to Error encountered during import. The available for tagging entry on line {0} is not valid..
-#### TaxonomyExtension_ImportTermSet
-Looks up a localized string similar to Importing term set from file stream..
-#### TaxonomyExtension_TermGroup0Id1DoesNotMatchSpecifiedId2
-Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
-#### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
-Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
-#### TaxonomyExtensions_Field_Is_Not_Multivalues
-Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
-#### TaxonomyExtensions_ImportTermSet_File_path_is_required_
-Looks up a localized string similar to File path is required..
-#### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
-Looks up a localized string similar to Invalid CSV format; was expecting a comma in the first (header) line..
-#### TenantExtensions_ClosedContextWarning
-Looks up a localized string similar to ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
-#### TenantExtensions_SetLockState
-Looks up a localized string similar to SetSiteLockState: Current: {0} Target: {1}.
-#### TenantExtensions_UnknownExceptionAccessingSite
-Looks up a localized string similar to Could not determine if site exists in tenant. Error = {0}.
-#### TimerJob_AddSite_Done
-Looks up a localized string similar to Site {0} url/wildcard added.
-#### TimerJob_AddSite_InvalidUrl
-Looks up a localized string similar to Site url ({0}) contains invalid characters.
-#### TimerJob_Authentication_AppOnly
-Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
-#### TimerJob_Authentication_AzureADAppOnly
-Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
-#### TimerJob_Authentication_Network
-Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
-#### TimerJob_Authentication_O365
-Looks up a localized string similar to Timer job authentication set to type Office 365 with user {0}.
-#### TimerJob_Authentication_RetrieveFromCredMan
-Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
-#### TimerJob_Authentication_RetrieveFromCredManFailed
-Looks up a localized string similar to Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
-#### TimerJob_Authentication_TenantAdmin
-Looks up a localized string similar to Tenant admin site set to {0}..
-#### TimerJob_ClearAddedSites
-Looks up a localized string similar to All added sites are cleared.
-#### TimerJob_Clone
-Looks up a localized string similar to Timer job {0} settings cloned to timer job {0}.
-#### TimerJob_Constructor
-Looks up a localized string similar to Timer job constructed with name {0}, version {1}.
-#### TimerJob_DoWork_Done
-Looks up a localized string similar to Work for site {0} done.
-#### TimerJob_DoWork_NoEventHandler
-Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
-#### TimerJob_DoWork_Start
-Looks up a localized string similar to Doing work for site {0}.
-#### TimerJob_Enumeration_Network
-Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
-#### TimerJob_Enumeration_NoDomain
-Looks up a localized string similar to No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_NoPassword
-Looks up a localized string similar to No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_NoUser
-Looks up a localized string similar to No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_O365
-Looks up a localized string similar to Enumeration credentials specified for Office 365 enumeration with user {0}.
-#### TimerJob_ExpandSite_EatException
-Looks up a localized string similar to Eating exception {0} for site {1}.
-#### TimerJob_ExpandSubSites
-Looks up a localized string similar to ExpandSubSites set to {0}.
-#### TimerJob_ManageState
-Looks up a localized string similar to Manage state set to {0}.
-#### TimerJob_MaxThread1
-Looks up a localized string similar to If you only want 1 thread then set the UseThreading property to false.
-#### TimerJob_MaxThread100
-Looks up a localized string similar to You cannot use more than 100 threads.
-#### TimerJob_MaxThreadLessThan1
-Looks up a localized string similar to Number of threads must be between 2 and 100.
-#### TimerJob_MaxThreadSet
-Looks up a localized string similar to MaximumThreads set to {0}.
-#### TimerJob_OnTimerJobRun_CallEventHandler
-Looks up a localized string similar to Calling the eventhandler for site {0}.
-#### TimerJob_OnTimerJobRun_CallEventHandlerDone
-Looks up a localized string similar to Eventhandler called for site {0}.
-#### TimerJob_OnTimerJobRun_Error
-Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
-#### TimerJob_OnTimerJobRun_PrevRunRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRun = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRun to {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSuccessRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRunSuccessful = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSuccessSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
-#### TimerJob_OnTimerJobRun_PrevRunVersionRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRunVersion = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunVersionSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunVersion to {0}.
-#### TimerJob_OnTimerJobRun_PropertiesRead
-Looks up a localized string similar to Timerjob properties read using key {0} for site {1}.
-#### TimerJob_OnTimerJobRun_PropertiesSet
-Looks up a localized string similar to Timerjob properties written using key {0} for site {1}.
-#### TimerJob_Realm
-Looks up a localized string similar to Realm set to {0}.
-#### TimerJob_ResolveSites_Done
-Looks up a localized string similar to Resolving sites done, sub sites have been expanded.
-#### TimerJob_ResolveSites_DoneNoExpansionNeeded
-Looks up a localized string similar to Resolving sites done, no expansion needed.
-#### TimerJob_ResolveSites_LaunchThreadPerBatch
-Looks up a localized string similar to Expand subsites by launching a thread for each of the {0} work batches.
-#### TimerJob_ResolveSites_ResolveSite
-Looks up a localized string similar to Resolving wildcard site {0}.
-#### TimerJob_ResolveSites_ResolveSiteDone
-Looks up a localized string similar to Done resolving wildcard site {0}.
-#### TimerJob_ResolveSites_SequentialExpandDone
-Looks up a localized string similar to Done sequentially expanding all sites.
-#### TimerJob_ResolveSites_Started
-Looks up a localized string similar to Resolving sites started.
-#### TimerJob_ResolveSites_StartSequentialExpand
-Looks up a localized string similar to Start sequentially expanding all sites.
-#### TimerJob_ResolveSites_ThreadLaunched
-Looks up a localized string similar to Thread started to expand a batch of {0} sites.
-#### TimerJob_ResolveSites_ThreadsAreDone
-Looks up a localized string similar to Done waiting for all site expanding threads.
-#### TimerJob_Run_AfterResolveAddedSites
-Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_AfterUpdateAddedSites
-Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_BeforeResolveAddedSites
-Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_BeforeStartWorkBatches
-Looks up a localized string similar to Ready to start a thread for each of the {0} work batches.
-#### TimerJob_Run_BeforeUpdateAddedSites
-Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_Done
-Looks up a localized string similar to Run of timer job has ended.
-#### TimerJob_Run_DoneProcessingWorkBatches
-Looks up a localized string similar to Done processing the {0} work batches.
-#### TimerJob_Run_NoSites
-Looks up a localized string similar to Job does not have sites to process, bailing out.
-#### TimerJob_Run_ProcessSequentially
-Looks up a localized string similar to Ready to process each of the {0} sites in a sequential manner.
-#### TimerJob_Run_ProcessSequentiallyDone
-Looks up a localized string similar to Done with sequentially processing each of the {0} sites.
-#### TimerJob_Run_Started
-Looks up a localized string similar to Run of timer job has started.
-#### TimerJob_Run_ThreadLaunched
-Looks up a localized string similar to Thread launched for processing {0} sites.
-#### TimerJob_SharePointVersion
-Looks up a localized string similar to SharePointVersion set to {0}.
-#### TimerJob_SharePointVersion_Versions
-Looks up a localized string similar to SharePoint version must be 15 or 16.
-#### TimerJob_UseThreading
-Looks up a localized string similar to UseThreading set to {0}.
-#### WebExtensions_CreateWeb
-Looks up a localized string similar to Creating web '{0}' with template '{1}'..
-#### WebExtensions_DeleteWeb
-Looks up a localized string similar to Deleting web '{0}'..
-#### WebExtensions_InstallSolution
-Looks up a localized string similar to Installing sandbox solution '{0}' to '{1}'..
-#### WebExtensions_RemoveAppInstance
-Looks up a localized string similar to Removing app '{0}' instance {1}..
-#### WebExtensions_RequestAccessEmailLimitExceeded
-Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
-#### WebExtensions_SiteSearchUnhandledException
-Looks up a localized string similar to Site search error. Error = {0}.
-#### WebExtensions_UninstallSolution
-Looks up a localized string similar to Removing sandbox solution '{0}'..
 
 ## Core.Framework.Provisioning.Connectors.AzureStorageConnector
             
@@ -7667,6 +6827,8 @@ Execute custom actions during provisioning of a template
 > **template:** The current Provisioning Template
 
 > **applyingInformation:** The Provisioning Template application information object
+
+> **tokenParser:** Token parser instance
 
 > **scope:** The PnPMonitoredScope of the current step in the pipeline
 
@@ -17590,6 +16752,1018 @@ Get all sites that match the passed query. Batching is done in batches of 500 as
 
 > ##### Return value
 > Total result rows of the query
+
+## Core.AuthenticationManager
+            
+This manager class can be used to obtain a SharePointContext object
+            
+        
+### Methods
+
+
+#### GetSharePointOnlineAuthenticatedContextTenant(System.String,System.String,System.String)
+Returns a SharePointOnline ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **tenantUser:** User to be used to instantiate the ClientContext object
+
+> **tenantUserPassword:** Password of the user used to instantiate the ClientContext object
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetSharePointOnlineAuthenticatedContextTenant(System.String,System.String,System.Security.SecureString)
+Returns a SharePointOnline ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **tenantUser:** User to be used to instantiate the ClientContext object
+
+> **tenantUserPassword:** Password (SecureString) of the user used to instantiate the ClientContext object
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String)
+Returns an app only ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String)
+Returns an app only ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.String,System.String)
+Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **user:** User to be used to instantiate the ClientContext object
+
+> **password:** Password of the user used to instantiate the ClientContext object
+
+> **domain:** Domain of the user used to instantiate the ClientContext object
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
+Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **icon:** Optional icon to use for the popup form
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Native Application Client ID
+
+> **redirectUrl:** The Azure AD Native Application Redirect Uri as a string
+
+> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
+
+> ##### Return value
+> 
+
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Native Application Client ID
+
+> **redirectUri:** The Azure AD Native Application Redirect Uri
+
+> **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
+
+> ##### Return value
+> 
+
+#### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
+Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **accessTokenGetter:** The AccessToken getter method to use
+
+> ##### Return value
+> 
+
+#### GetAzureADAccessTokenAuthenticatedContext(System.String,System.String)
+Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **accessToken:** An explicit value for the AccessToken
+
+> ##### Return value
+> 
+
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,OfficeDevPnP.Core.AzureEnvironment)
+Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Application Client ID
+
+> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
+
+> **storeName:** The name of the store for the certificate
+
+> **storeLocation:** The location of the store for the certificate
+
+> **thumbPrint:** The thumbprint of the certificate to locate in the store
+
+> **environment:** Indicates which Azure AD environment is being used
+
+> ##### Return value
+> 
+
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
+Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Application Client ID
+
+> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
+
+> **certificatePath:** The path to the certificate (*.pfx) file on the file system
+
+> **certificatePassword:** Password to the certificate
+
+> **environment:** Indicates which Azure AD environment is being used
+
+> ##### Return value
+> 
+
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString,OfficeDevPnP.Core.AzureEnvironment)
+Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Application Client ID
+
+> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
+
+> **certificatePath:** The path to the certificate (*.pfx) file on the file system
+
+> **certificatePassword:** Password to the certificate
+
+> **environment:** Indicates which Azure AD environment is being used
+
+> ##### Return value
+> 
+
+#### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,OfficeDevPnP.Core.AzureEnvironment)
+Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The Azure AD Application Client ID
+
+> **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
+
+> **certificate:** 
+
+> **environment:** 
+
+> ##### Return value
+> 
+
+#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
+Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **user:** User to be used to instantiate the ClientContext object
+
+> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
+
+> **domain:** Domain of the user used to instantiate the ClientContext object
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### GetADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
+Returns a SharePoint on-premises ClientContext for sites secured via ADFS
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **user:** Name of the user (e.g. administrator)
+
+> **password:** Password of the user
+
+> **domain:** Windows domain of the user
+
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
+
+> **idpId:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
+#### RefreshADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
+Refreshes the SharePoint FedAuth cookie
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **user:** Name of the user (e.g. administrator)
+
+> **password:** Password of the user
+
+> **domain:** Windows domain of the user
+
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
+
+> **idpId:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
+
+
+#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
+Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
+
+
+#### GetAccessTokenLease(System.DateTime)
+Get the access token lease time span.
+> ##### Parameters
+> **expiresOn:** The ExpiresOn time of the current access token
+
+> ##### Return value
+> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
+
+## Core.BuiltInContentTypeId
+            
+A class that returns strings that represent identifiers (IDs) for built-in content types.
+        
+### Fields
+
+#### DocumentSet
+Contains the content identifier (ID) for the DocumentSet content type. To get content type from a list, use BestMatchContentTypeId().
+#### Item
+Contains the content identifier (ID) for the Item content type.
+
+## Core.Constants
+            
+Constants.
+            Recommendation: Constants should follow C# style guidelines and be Pascal Case
+        
+
+## Core.Diagnostics.Log
+            
+Logging class
+        
+
+## Core.Enums.NavigationType
+            
+Enum that defines the navigation types
+        
+
+## Core.Enums.TimeZone
+            
+Timezones to use when creating sitecollections Format UTC[PLUS|MINUS][HH:MM]_[DESCRIPTION]
+        
+
+## Core.EcmListManualRecordDeclaration
+            
+Specifies whether this list should allow the manual declaration of records. When manual record declaration is unavailable, records can only be declared through a policy or workflow.
+        
+### Fields
+
+#### UseSiteCollectionDefaults
+Use the site collection defaults
+#### AlwaysAllowManualDeclaration
+Always allow to manual declare records in this list
+#### NeverAllowManualDeclaration
+Never allow to manual declare records in this list
+
+## Core.EcmRecordDeclarationBy
+            
+Specify which user roles can declare and undeclare record status manually
+        
+### Fields
+
+#### AllListContributors
+All list contributors and administrators
+#### OnlyAdmins
+Only list administrators
+#### OnlyPolicy
+Only policy actions
+
+## Core.EcmSiteRecordRestrictions
+            
+Specify restrictions to place on a document or item once it has been declared as a record. Changing this setting will not affect items which have already been declared records.
+        
+### Fields
+
+#### None
+Records are no more restricted than non-records
+#### BlockDelete
+Records can be edited but not deleted
+#### BlockEdit
+Records cannot be edited or deleted. Any change will require the record declaration to be revoked
+
+## Core.VotingExperience
+            
+Voting Experience in List
+        
+
+## Core.WikiPageLayout
+            
+Out of the box wiki page layouts enumeration
+        
+
+## Core.Extensions.DictionaryExtensions
+            
+Extension type for Dictionaries
+        
+
+## Core.Extensions.EnumerableExtensions
+            
+Extension methods to make working with IEnumerable<T> values easier.
+        
+### Methods
+
+
+#### DeepEquals``1(System.Collections.Generic.IEnumerable{``0},System.Collections.Generic.IEnumerable{``0})
+Compares to instances of IEnumerable<T>
+> ##### Parameters
+> **source:** Source enumeration
+
+> **target:** Target enumeration
+
+> ##### Return value
+> Wether the two enumerations are deep equal
+
+## Core.CoreResources
+            
+A strongly-typed resource class, for looking up localized strings, etc.
+        
+### Properties
+
+#### ResourceManager
+Returns the cached ResourceManager instance used by this class.
+#### Culture
+Overrides the current thread's CurrentUICulture property for all resource lookups using this strongly typed resource class.
+#### AuthenticationManager_GetContext
+Looks up a localized string similar to Getting authentication context for '{0}'.
+#### AuthenticationManager_TenantUser
+Looks up a localized string similar to Tenant user '{0}'.
+#### AuthenticationManger_ProblemDeterminingTokenLease
+Looks up a localized string similar to Could not determine lease for appOnlyAccessToken. Error = {0}.
+#### BrandingExtension_ApplyTheme
+Looks up a localized string similar to Applying theme '{0}' in '{1}'.
+#### BrandingExtension_ComposedLookMissing
+Looks up a localized string similar to Composed look '{0}' not found..
+#### BrandingExtension_CreateComposedLook
+Looks up a localized string similar to Creating composed look '{0}' in '{1}'.
+#### BrandingExtension_DeployMasterPage
+Looks up a localized string similar to Deploying masterpage '{0}' to '{1}'..
+#### BrandingExtension_DeployPageLayout
+Looks up a localized string similar to Deploying page layout '{0}' to '{1}'..
+#### BrandingExtension_DeployTheme
+Looks up a localized string similar to Deploying theme '{0}' to '{1}'.
+#### BrandingExtension_SetCustomMasterUrl
+Looks up a localized string similar to Setting custom master URL '{0}' in '{1}'..
+#### BrandingExtension_SetMasterUrl
+Looks up a localized string similar to Setting master URL '{0}' in '{1}'..
+#### BrandingExtension_UpdateComposedLook
+Looks up a localized string similar to Updating composed look '{0}' in '{1}'.
+#### BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_
+Looks up a localized string similar to Destination file name is required..
+#### BrandingExtensions_UploadThemeFile_Source_file_path_is_required_
+Looks up a localized string similar to Source file path is required..
+#### BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### ClientContextExtensions_Clone_Url_of_the_site_is_required_
+Looks up a localized string similar to Url of the site is required..
+#### ClientContextExtensions_ExecuteQueryRetry
+Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+#### ClientContextExtensions_ExecuteQueryRetryException
+Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+#### Exception_Message_EmptyString_Arg
+Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
+#### FeatureExtensions_ActivateSiteCollectionFeature
+Looks up a localized string similar to Activating feature {0} in site collection..
+#### FeatureExtensions_ActivateWebFeature
+Looks up a localized string similar to Activating feature {0} in web..
+#### FeatureExtensions_DeactivateSiteCollectionFeature
+Looks up a localized string similar to Deactivating feature {0} in site collection..
+#### FeatureExtensions_DeactivateWebFeature
+Looks up a localized string similar to Deactivating feature {0} in web..
+#### FeatureExtensions_FeatureActivationProblem
+Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActivationState
+Looks up a localized string similar to Activation state for feature with id {1} was {0}..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActive
+Looks up a localized string similar to Feature activation for {0} returned success..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureException
+Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
+#### FieldAndContentTypeExtensions_AddField0ToContentType1
+Looks up a localized string similar to Adding field ({0}) to content type ({1})..
+#### FieldAndContentTypeExtensions_ContentType01AlreadyExists
+Looks up a localized string similar to Content type '{0}' ({1}) already exists; no changes made..
+#### FieldAndContentTypeExtensions_CreateContentType01
+Looks up a localized string similar to Creating content type '{0}' ({1})..
+#### FieldAndContentTypeExtensions_CreateDocumentSet
+Looks up a localized string similar to Creating document set '{0}'..
+#### FieldAndContentTypeExtensions_CreateField01
+Looks up a localized string similar to Creating field '{0}' ({1})..
+#### FieldAndContentTypeExtensions_CreateFieldBase
+Looks up a localized string similar to New Field as XML: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeById
+Looks up a localized string similar to Could not find content type with id: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeByName
+Looks up a localized string similar to Could not find content type with name: {0}.
+#### FieldAndContentTypeExtensions_Field01AlreadyExists
+Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
+#### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single document set name and cannot contain path characters..
+#### FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single folder name and cannot contain path characters..
+#### FileFolderExtensions_CreateFolder0Under12
+Looks up a localized string similar to Creating folder '{0}' under {1} '{2}'..
+#### FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_
+Looks up a localized string similar to Folder URL is required..
+#### FileFolderExtensions_FolderMissing
+Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
+#### FileFolderExtensions_LibraryMissing
+Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
+#### FileFolderExtensions_SetFileProperties_Error
+Looks up a localized string similar to Content Type {0} does not exist in target list!.
+#### FileFolderExtensions_UpdateFile0Properties1
+Looks up a localized string similar to Update file '{0}', change properties: {1}..
+#### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
+Looks up a localized string similar to Destination file name is required..
+#### FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### FileFolderExtensions_UploadFile0ToFolder1
+Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
+#### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### GraphExtensions_GroupLogoFileDoesNotExist
+Looks up a localized string similar to The group logo file does not exist..
+#### GraphExtensions_SendAsyncRetry
+Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+#### GraphExtensions_SendAsyncRetryException
+Looks up a localized string similar to SendAsync threw following exception: {0}..
+#### ListExtensions_CreateList0Template12
+Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
+#### ListExtensions_GetWebRelativeUrl
+Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
+#### LoggingUtility_MessageWithException
+Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
+#### MailUtility_SendException
+Looks up a localized string similar to Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
+#### MailUtility_SendExceptionRethrow0
+Looks up a localized string similar to Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
+#### MailUtility_SendFailed
+Looks up a localized string similar to Mail message could not be sent. Send completed with error {0}..
+#### MailUtility_SendMailCancelled
+Looks up a localized string similar to Mail message was canceled..
+#### PnPMonitoredScope_Code_execution_ended
+Looks up a localized string similar to Code execution scope ended.
+#### PnPMonitoredScope_Code_execution_started
+Looks up a localized string similar to Code execution scope started.
+#### PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_
+Looks up a localized string similar to Updating property {0}.
+#### Provisioning_Asymmetric_Base_Templates
+Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+#### Provisioning_Connectors_Azure_FailedToInitialize
+Looks up a localized string similar to Could not initialize AzureStorageConnector. Error = {0}.
+#### Provisioning_Connectors_Azure_FileDeleted
+Looks up a localized string similar to File {0} was deleted from Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1}. Error = {2}.
+#### Provisioning_Connectors_Azure_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1} because it was not available.
+#### Provisioning_Connectors_Azure_FileNotFound
+Looks up a localized string similar to File {0} not found in Azure storage container {1}. Exception = {2}.
+#### Provisioning_Connectors_Azure_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileSaved
+Looks up a localized string similar to File {0} saved to Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to Azure storage container {1}. Error = {2}.
+#### Provisioning_Connectors_FileSystem_FileDeleted
+Looks up a localized string similar to File {0} deleted from folder {1}.
+#### Provisioning_Connectors_FileSystem_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+#### Provisioning_Connectors_FileSystem_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+#### Provisioning_Connectors_FileSystem_FileNotFound
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+#### Provisioning_Connectors_FileSystem_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from folder {1}.
+#### Provisioning_Connectors_FileSystem_FileSaved
+Looks up a localized string similar to File {0} saved to folder {1}.
+#### Provisioning_Connectors_FileSystem_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleted
+Looks up a localized string similar to File {0} deleted from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+#### Provisioning_Connectors_OpenXML_FileNotFound
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+#### Provisioning_Connectors_OpenXML_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaved
+Looks up a localized string similar to File {0} saved to folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+#### Provisioning_Connectors_SharePoint_FileDeleted
+Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2}. Error = {3}.
+#### Provisioning_Connectors_SharePoint_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2} because it was not available.
+#### Provisioning_Connectors_SharePoint_FileNotFound
+Looks up a localized string similar to File {0} not found in site {1}, library {2}. Exception = {3}.
+#### Provisioning_Connectors_SharePoint_FileRetrieved
+Looks up a localized string similar to File {0} found in site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileSaved
+Looks up a localized string similar to File {0} saved to site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to site {1}, library {2}. Error = {3}.
+#### Provisioning_Extensibility_Pipeline_BeforeInvocation
+Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
+#### Provisioning_Extensibility_Pipeline_ClientCtxNull
+Looks up a localized string similar to ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Exception
+Looks up a localized string similar to There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
+#### Provisioning_Extensibility_Pipeline_Missing_AssemblyName
+Looks up a localized string similar to Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Missing_TypeName
+Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Success
+Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
+#### Provisioning_Extensions_ViewLocalization_Skip
+Looks up a localized string similar to Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
+#### Provisioning_Extensions_WebPartLocalization_Skip
+Looks up a localized string similar to Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
+#### Provisioning_Formatter_Invalid_Template_URI
+Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
+#### Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention
+Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_
+Looks up a localized string similar to Downloading asset: {0}.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize
+Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector
+Looks up a localized string similar to Creating SharePointConnector.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look
+Looks up a localized string similar to Retrieving current composed look.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag
+Looks up a localized string similar to Using Composed Look Information from Property Bag.
+#### Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck
+Looks up a localized string similar to Skipping composed look handling because the site is marked as 'nosite'..
+#### Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_
+Looks up a localized string similar to Adding content type to template: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type
+Looks up a localized string similar to Adding field {0} to content type.
+#### Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_
+Looks up a localized string similar to Context web is subweb. Skipping content types..
+#### Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_
+Looks up a localized string similar to Creating new Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
+#### Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type
+Looks up a localized string similar to Field {0} exists in content type.
+#### Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
+#### Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_
+Looks up a localized string similar to Recreating existing Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls
+Looks up a localized string similar to Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites..
+#### Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments
+Looks up a localized string similar to Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites..
+#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
+Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
+Looks up a localized string similar to Adding custom action '{0}' to scope Site.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
+Looks up a localized string similar to Adding custom action '{0}' to scope Web.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template
+Looks up a localized string similar to Adding site scoped custom action '{0}' to template.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template
+Looks up a localized string similar to Adding web scoped custom action '{0}' to template.
+#### Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template
+Looks up a localized string similar to Removing site scoped custom action '{0}' from template because already available in base template.
+#### Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template
+Looks up a localized string similar to Removing web scoped custom action '{0}' from template because already available in base template.
+#### Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript
+Looks up a localized string similar to Custom action '{0}' was not added/updated because the site was configured for noscript..
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_
+Looks up a localized string similar to Calling extensibility callout {0}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_
+Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_
+Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_
+Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_Extraction
+Looks up a localized string similar to Extraction.
+#### Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_
+Looks up a localized string similar to Activating {0} scoped feature {1}.
+#### Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_
+Looks up a localized string similar to Deactivating {0} scoped feature {1}.
+#### Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_
+Looks up a localized string similar to Adding field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site
+Looks up a localized string similar to Adding field {0} to site.
+#### Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns
+Looks up a localized string similar to Context web is subweb, skipping site columns.
+#### Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_
+Looks up a localized string similar to Field {0} ({1}) exists but is of different type. Skipping field..
+#### Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site
+Looks up a localized string similar to Updating field {0} in site.
+#### Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page
+Looks up a localized string similar to Adding webpart '{0}' to page.
+#### Provisioning_ObjectHandlers_Files_SkipFileUpload
+Looks up a localized string similar to Skipping upload of file '{0}' to '{1}'..
+#### Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_
+Looks up a localized string similar to Uploading and overwriting existing file {0}.
+#### Provisioning_ObjectHandlers_Files_Uploading_file__0_
+Looks up a localized string similar to Uploading file {0}.
+#### Provisioning_ObjectHandlers_FinishExtraction
+Looks up a localized string similar to FINISH - Template Extraction.
+#### Provisioning_ObjectHandlers_FinishProvisioning
+Looks up a localized string similar to FINISH - Provisioning.
+#### Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_
+Looks up a localized string similar to Adding list: {0} - {1}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0_
+Looks up a localized string similar to Creating field {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_
+Looks up a localized string similar to Creating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0_
+Looks up a localized string similar to Creating list {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_
+Looks up a localized string similar to Creating list {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_view__0_
+Looks up a localized string similar to Creating view {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_
+Looks up a localized string similar to Creating view failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true
+Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
+#### Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_
+Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
+#### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
+Looks up a localized string similar to Field schema has no ID attribute: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
+Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
+#### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
+Looks up a localized string similar to ID for field is not a valid Guid: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference
+Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
+#### Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_
+Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
+#### Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions
+Looks up a localized string similar to Skip adding/updating custom actions because the site has "noscript" enabled..
+#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0_
+Looks up a localized string similar to Updating field {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0_
+Looks up a localized string similar to Updating list {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_
+Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows
+Looks up a localized string similar to Data Rows.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
+Looks up a localized string similar to Creating list item {0}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate
+Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
+Looks up a localized string similar to Creating listitem failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
+Looks up a localized string similar to Processing data rows for {0}.
+#### Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0
+Looks up a localized string similar to Unable to find lookup list with Id: {0}.
+#### Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_
+Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing
+Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
+#### Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation
+Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation
+Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation
+Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
+Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
+Looks up a localized string similar to Creating new page {0}.
+#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
+Looks up a localized string similar to Creating new page {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_
+Looks up a localized string similar to Overwriting existing page {0}.
+#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_
+Looks up a localized string similar to Overwriting existing page {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Pages_SkipAddingWebParts
+Looks up a localized string similar to Skipped adding web parts to page '{0}' because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_PersistTemplateInformation
+Looks up a localized string similar to Persist Template Information.
+#### Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_
+Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
+#### Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_
+Looks up a localized string similar to Overwriting existing propertybag entry {0} with value {1}.
+#### Provisioning_ObjectHandlers_Provisioning
+Looks up a localized string similar to Provisioning.
+#### Provisioning_ObjectHandlers_Publishing_SkipProvisioning
+Looks up a localized string similar to Skip provisioning of publishing settings because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_RetrieveTemplateInfo
+Looks up a localized string similar to Retrieve Template Info.
+#### Provisioning_ObjectHandlers_SitePolicy_PolicyAdded
+Looks up a localized string similar to Site policy '{0}' applied to site.
+#### Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound
+Looks up a localized string similar to Site policy '{0}' not found.
+#### Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_
+Looks up a localized string similar to Add users failed for group '{0}': {1} : {2}.
+#### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
+Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
+#### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
+Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+#### Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate
+Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate
+Looks up a localized string similar to Skipping master page update because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate
+Looks up a localized string similar to Skipping NoCrawl update because the site is configured for noscript..
+#### Provisioning_Providers_XML_InvalidFileFormat
+Looks up a localized string similar to Cannot process XML file {0}..
+#### ProvisioningExtensions_ErrorProvisioningModule0File1
+Looks up a localized string similar to Error provisioning module '{0}' file '{1}'. Error = {2}.
+#### ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required
+Looks up a localized string similar to Path to the element file is required.
+#### ProvisioningExtensions_ProvisionElementFile0
+Looks up a localized string similar to Provisioning Elements file '{0}'..
+#### ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__
+Looks up a localized string similar to Expected element 'Elements'..
+#### ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__
+Looks up a localized string similar to Expected element 'File'..
+#### ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__
+Looks up a localized string similar to Expected element 'Module'..
+#### SecurityExtensions_Error_VisitingSecurableObject
+Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
+#### SecurityExtensions_Info_VisitingSecurableObject
+Looks up a localized string similar to Visiting securable object: {0}.
+#### SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects
+Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
+#### Service_RegistrationFailed
+Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
+#### Services_AccessDenied
+Looks up a localized string similar to Service requestor is not registered: access denied.
+#### Services_CookieWithCachKeyNotFound
+Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
+#### Services_Registered
+Looks up a localized string similar to Service {0} has been registered for endpoint {1} using cachekey {2}..
+#### Services_TokenRefreshed
+Looks up a localized string similar to Token for cachekey {0} and hostweburl {1} has been refreshed..
+#### SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true
+Looks up a localized string similar to OverwriteSystemPropertyBagValues is to true.
+#### SiteToTemplateConversion_Base_template_available___0_
+Looks up a localized string similar to Base template available: {0}.
+#### SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true
+Looks up a localized string similar to IncludeAllTermGroups is set to true.
+#### SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true
+Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
+#### SiteToTemplateConversion_MessagesDelegate_registered
+Looks up a localized string similar to MessagesDelegate registered.
+#### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
+Looks up a localized string similar to PersistBrandingFiles is set to true.
+#### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
+Looks up a localized string similar to PersistComposedLookFiles is set to true.
+#### SiteToTemplateConversion_ProgressDelegate_registered
+Looks up a localized string similar to ProgressDelegate registered.
+#### SP_Responsive_UI
+Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $ [rest of string was truncated]";.
+#### TaxonomyExtension_CreateTerm01UnderParent2
+Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
+#### TaxonomyExtension_CreateTermGroup0InStore1
+Looks up a localized string similar to Creating term group '{0}' in term store '{1}'..
+#### TaxonomyExtension_CreateTermSet0InGroup1
+Looks up a localized string similar to Creating term set '{0}' in term group '{1}'..
+#### TaxonomyExtension_DeleteTerm01
+Looks up a localized string similar to Deleting term '{0}|{1}'..
+#### TaxonomyExtension_ExceptionUpdateDescriptionGroup01
+Looks up a localized string similar to Error setting description for term group '{0}' ({1}). Error = {2}.
+#### TaxonomyExtension_ExceptionUpdateDescriptionSet01
+Looks up a localized string similar to Error setting description for term set '{0}' ({1}). Error = {2}.
+#### TaxonomyExtension_ImportErrorDeleteId0Line1
+Looks up a localized string similar to Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
+#### TaxonomyExtension_ImportErrorDescription0Line1
+Looks up a localized string similar to Error encountered during import. The description '{0}' on line {1} is not valid..
+#### TaxonomyExtension_ImportErrorName0Line1
+Looks up a localized string similar to Error encountered during import. The name '{0}' is not valid on line {1}..
+#### TaxonomyExtension_ImportErrorTaggingLine0
+Looks up a localized string similar to Error encountered during import. The available for tagging entry on line {0} is not valid..
+#### TaxonomyExtension_ImportTermSet
+Looks up a localized string similar to Importing term set from file stream..
+#### TaxonomyExtension_TermGroup0Id1DoesNotMatchSpecifiedId2
+Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
+Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtensions_Field_Is_Not_Multivalues
+Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
+#### TaxonomyExtensions_ImportTermSet_File_path_is_required_
+Looks up a localized string similar to File path is required..
+#### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
+Looks up a localized string similar to Invalid CSV format; was expecting a comma in the first (header) line..
+#### TenantExtensions_ClosedContextWarning
+Looks up a localized string similar to ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
+#### TenantExtensions_SetLockState
+Looks up a localized string similar to SetSiteLockState: Current: {0} Target: {1}.
+#### TenantExtensions_UnknownExceptionAccessingSite
+Looks up a localized string similar to Could not determine if site exists in tenant. Error = {0}.
+#### TimerJob_AddSite_Done
+Looks up a localized string similar to Site {0} url/wildcard added.
+#### TimerJob_AddSite_InvalidUrl
+Looks up a localized string similar to Site url ({0}) contains invalid characters.
+#### TimerJob_Authentication_AppOnly
+Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
+#### TimerJob_Authentication_AzureADAppOnly
+Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
+#### TimerJob_Authentication_Network
+Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
+#### TimerJob_Authentication_O365
+Looks up a localized string similar to Timer job authentication set to type Office 365 with user {0}.
+#### TimerJob_Authentication_RetrieveFromCredMan
+Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
+#### TimerJob_Authentication_RetrieveFromCredManFailed
+Looks up a localized string similar to Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
+#### TimerJob_Authentication_TenantAdmin
+Looks up a localized string similar to Tenant admin site set to {0}..
+#### TimerJob_ClearAddedSites
+Looks up a localized string similar to All added sites are cleared.
+#### TimerJob_Clone
+Looks up a localized string similar to Timer job {0} settings cloned to timer job {0}.
+#### TimerJob_Constructor
+Looks up a localized string similar to Timer job constructed with name {0}, version {1}.
+#### TimerJob_DoWork_Done
+Looks up a localized string similar to Work for site {0} done.
+#### TimerJob_DoWork_NoEventHandler
+Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
+#### TimerJob_DoWork_Start
+Looks up a localized string similar to Doing work for site {0}.
+#### TimerJob_Enumeration_Network
+Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
+#### TimerJob_Enumeration_NoDomain
+Looks up a localized string similar to No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_NoPassword
+Looks up a localized string similar to No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_NoUser
+Looks up a localized string similar to No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_O365
+Looks up a localized string similar to Enumeration credentials specified for Office 365 enumeration with user {0}.
+#### TimerJob_ExpandSite_EatException
+Looks up a localized string similar to Eating exception {0} for site {1}.
+#### TimerJob_ExpandSubSites
+Looks up a localized string similar to ExpandSubSites set to {0}.
+#### TimerJob_ManageState
+Looks up a localized string similar to Manage state set to {0}.
+#### TimerJob_MaxThread1
+Looks up a localized string similar to If you only want 1 thread then set the UseThreading property to false.
+#### TimerJob_MaxThread100
+Looks up a localized string similar to You cannot use more than 100 threads.
+#### TimerJob_MaxThreadLessThan1
+Looks up a localized string similar to Number of threads must be between 2 and 100.
+#### TimerJob_MaxThreadSet
+Looks up a localized string similar to MaximumThreads set to {0}.
+#### TimerJob_OnTimerJobRun_CallEventHandler
+Looks up a localized string similar to Calling the eventhandler for site {0}.
+#### TimerJob_OnTimerJobRun_CallEventHandlerDone
+Looks up a localized string similar to Eventhandler called for site {0}.
+#### TimerJob_OnTimerJobRun_Error
+Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
+#### TimerJob_OnTimerJobRun_PrevRunRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRun = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRun to {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSuccessRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunSuccessful = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSuccessSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
+#### TimerJob_OnTimerJobRun_PrevRunVersionRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunVersion = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunVersionSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunVersion to {0}.
+#### TimerJob_OnTimerJobRun_PropertiesRead
+Looks up a localized string similar to Timerjob properties read using key {0} for site {1}.
+#### TimerJob_OnTimerJobRun_PropertiesSet
+Looks up a localized string similar to Timerjob properties written using key {0} for site {1}.
+#### TimerJob_Realm
+Looks up a localized string similar to Realm set to {0}.
+#### TimerJob_ResolveSites_Done
+Looks up a localized string similar to Resolving sites done, sub sites have been expanded.
+#### TimerJob_ResolveSites_DoneNoExpansionNeeded
+Looks up a localized string similar to Resolving sites done, no expansion needed.
+#### TimerJob_ResolveSites_LaunchThreadPerBatch
+Looks up a localized string similar to Expand subsites by launching a thread for each of the {0} work batches.
+#### TimerJob_ResolveSites_ResolveSite
+Looks up a localized string similar to Resolving wildcard site {0}.
+#### TimerJob_ResolveSites_ResolveSiteDone
+Looks up a localized string similar to Done resolving wildcard site {0}.
+#### TimerJob_ResolveSites_SequentialExpandDone
+Looks up a localized string similar to Done sequentially expanding all sites.
+#### TimerJob_ResolveSites_Started
+Looks up a localized string similar to Resolving sites started.
+#### TimerJob_ResolveSites_StartSequentialExpand
+Looks up a localized string similar to Start sequentially expanding all sites.
+#### TimerJob_ResolveSites_ThreadLaunched
+Looks up a localized string similar to Thread started to expand a batch of {0} sites.
+#### TimerJob_ResolveSites_ThreadsAreDone
+Looks up a localized string similar to Done waiting for all site expanding threads.
+#### TimerJob_Run_AfterResolveAddedSites
+Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_AfterUpdateAddedSites
+Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_BeforeResolveAddedSites
+Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_BeforeStartWorkBatches
+Looks up a localized string similar to Ready to start a thread for each of the {0} work batches.
+#### TimerJob_Run_BeforeUpdateAddedSites
+Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_Done
+Looks up a localized string similar to Run of timer job has ended.
+#### TimerJob_Run_DoneProcessingWorkBatches
+Looks up a localized string similar to Done processing the {0} work batches.
+#### TimerJob_Run_NoSites
+Looks up a localized string similar to Job does not have sites to process, bailing out.
+#### TimerJob_Run_ProcessSequentially
+Looks up a localized string similar to Ready to process each of the {0} sites in a sequential manner.
+#### TimerJob_Run_ProcessSequentiallyDone
+Looks up a localized string similar to Done with sequentially processing each of the {0} sites.
+#### TimerJob_Run_Started
+Looks up a localized string similar to Run of timer job has started.
+#### TimerJob_Run_ThreadLaunched
+Looks up a localized string similar to Thread launched for processing {0} sites.
+#### TimerJob_SharePointVersion
+Looks up a localized string similar to SharePointVersion set to {0}.
+#### TimerJob_SharePointVersion_Versions
+Looks up a localized string similar to SharePoint version must be 15 or 16.
+#### TimerJob_UseThreading
+Looks up a localized string similar to UseThreading set to {0}.
+#### WebExtensions_CreateWeb
+Looks up a localized string similar to Creating web '{0}' with template '{1}'..
+#### WebExtensions_DeleteWeb
+Looks up a localized string similar to Deleting web '{0}'..
+#### WebExtensions_InstallSolution
+Looks up a localized string similar to Installing sandbox solution '{0}' to '{1}'..
+#### WebExtensions_RemoveAppInstance
+Looks up a localized string similar to Removing app '{0}' instance {1}..
+#### WebExtensions_RequestAccessEmailLimitExceeded
+Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
+#### WebExtensions_SiteSearchUnhandledException
+Looks up a localized string similar to Site search error. Error = {0}.
+#### WebExtensions_UninstallSolution
+Looks up a localized string similar to Removing sandbox solution '{0}'..
 
 ## Core.IdentityModel.TokenProviders.ADFS.CertificateMixed
             

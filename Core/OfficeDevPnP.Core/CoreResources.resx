@@ -1034,4 +1034,31 @@
     <value>Skipping composed look handling because the site is marked as 'nosite'.</value>
 >>>>>>> 440ea33964b0c1e30fd3a76cc6e580f9baaf0fcd
   </data>
+  <data name="GraphExtensions_GroupLogoFileDoesNotExist" xml:space="preserve">
+    <value>The group logo file does not exist.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate" xml:space="preserve">
+    <value>This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true.</value>
+  </data>
+  <data name="FileFolderExtensions_SetFileProperties_Error" xml:space="preserve">
+    <value>Content Type {0} does not exist in target list!</value>
+  </data>
+  <data name="Provisioning_Extensions_WebPartLocalization_Skip" xml:space="preserve">
+    <value>Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
+    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="ListExtensions_SkipNoCrawlLists" xml:space="preserve">
+    <value>Skipping reindexing of the list because it's marked as a 'no crawl' list.</value>
+  </data>
+  <data name="WebExtensions_CreatePublishingImageRendition" xml:space="preserve">
+    <value>Creating Image Rendition '{0}' of width '{1}' and height '{2}'.</value>
+  </data>
+  <data name="WebExtensions_CreatePublishingImageRendition_Error" xml:space="preserve">
+    <value>Unable to create Image Rendition '{0}'.</value>
+  </data>
+  <data name="BrandingExtension_InvalidPageLayoutName" xml:space="preserve">
+    <value>Cannot find Page Layout with name '{0}'.</value>
+  </data>
 </root>

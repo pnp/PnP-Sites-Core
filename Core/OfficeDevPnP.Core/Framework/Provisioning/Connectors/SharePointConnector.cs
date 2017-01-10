@@ -41,18 +41,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (clientContext == null)
             {
-                throw new ArgumentNullException("clientContext");
+                throw new ArgumentNullException(nameof(clientContext));
             }
 
             if (String.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentException("connectionString");
+                throw new ArgumentException(nameof(connectionString));
             }
 
             if (String.IsNullOrEmpty(container))
             {
-                throw new ArgumentException("container");
+                throw new ArgumentException(nameof(container));
             }
+            container = container.Replace('\\', '/');
 
             this.AddParameter(CLIENTCONTEXT, clientContext);
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
@@ -82,6 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             List<string> result = new List<string>();
 
@@ -95,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
                 if (folders.Length > 0)
                 {
-                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
                 }
 
                 ListItemCollection listItems = list.GetItems(camlQuery);
@@ -131,6 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             List<string> result = new List<string>();
 
@@ -144,7 +147,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
                 if (folders.Length > 0)
                 {
-                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
                 }
 
                 ListItemCollection listItems = list.GetItems(camlQuery);
@@ -181,6 +184,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (String.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("fileName");
+            }
+
+            if (container != null) { 
+                container = container.Replace('\\', '/');
             }
 
             string result = null;
@@ -231,6 +238,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new ArgumentException("fileName");
             }
 
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             return GetFileFromStorage(fileName, container);
         }
 
@@ -252,6 +264,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="stream">Stream containing the file contents</param>
         public override void SaveFileStream(string fileName, string container, Stream stream)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -316,6 +333,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="container">Name of the container to delete the file from</param>
         public override void DeleteFile(string fileName, string container)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -346,6 +368,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public override string GetFilenamePart(string fileName)
         {
+            fileName = fileName.Replace('\\', '/');
             if (fileName.IndexOf(@"/") != -1)
             {
                 var parts = fileName.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
@@ -443,7 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 if (parts[0].Equals("_catalogs", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return string.Format("_catalogs/{0}", parts[1]);
+                    return $"_catalogs/{parts[1]}";
                 }
             }
 

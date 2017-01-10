@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Utilities
         private static Lazy<String> PnPCoreVersionTagLazy = new Lazy<String>(
             () => {
                 Assembly coreAssembly = Assembly.GetExecutingAssembly();
-                String result = String.Format("PnPCore:{0}", ((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version.Split('.')[2]);
+                String result = $"PnPCore:{((AssemblyFileVersionAttribute) coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version.Split('.')[2]}";
                 return (result);
             }, 
             true);

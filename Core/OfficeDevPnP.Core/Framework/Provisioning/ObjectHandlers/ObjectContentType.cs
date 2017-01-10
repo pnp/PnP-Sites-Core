@@ -252,7 +252,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var createdCT = web.CreateContentType(name, description, id, group);
             foreach (var fieldRef in templateContentType.FieldRefs)
             {
-                var field = web.Fields.GetById(fieldRef.Id);
+                Microsoft.SharePoint.Client.Field field = null;
+                try
+                {
+                    // Try to get the field by ID
+                    field = web.Fields.GetById(fieldRef.Id);
+                }
+                catch (ArgumentException)
+                {
+                    // In case of failure, if we have the name
+                    if (!String.IsNullOrEmpty(fieldRef.Name))
+                    {
+                        // Let's try with that one
+                        field = web.Fields.GetByInternalNameOrTitle(fieldRef.Name);
+                    }
+                }
+
+                // Add it to the target content type
+                // Notice that this code will fail if the field does not exist
                 web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
             }
 
@@ -280,7 +297,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdCT.ReadOnly = templateContentType.ReadOnly;
             createdCT.Hidden = templateContentType.Hidden;
             createdCT.Sealed = templateContentType.Sealed;
-            
+
             if (templateContentType.DocumentSetTemplate == null)
             {
                 // Only apply a document template when the contenttype is not a document set
@@ -310,7 +327,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
                     !String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
-                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)) )
+                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
                 {
                     // log message
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls, name);
@@ -495,13 +512,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (persistLanguages)
                         {
-                            if (UserResourceExtensions.PersistResourceValue(ct.NameResource, string.Format("ContentType_{0}_Title", ct.Name.Replace(" ", "_")), template, creationInfo))
+                            var escapedCTName = ct.Name.Replace(" ", "_");
+                            if (UserResourceExtensions.PersistResourceValue(ct.NameResource, $"ContentType_{escapedCTName}_Title", template, creationInfo))
                             {
-                                newCT.Name = string.Format("{{res:ContentType_{0}_Title}}", ct.Name.Replace(" ", "_"));
+                                newCT.Name = $"{{res:ContentType_{escapedCTName}_Title}}";
                             }
-                            if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, string.Format("ContentType_{0}_Description", ct.Name.Replace(" ", "_")), template, creationInfo))
+                            if (UserResourceExtensions.PersistResourceValue(ct.DescriptionResource, $"ContentType_{escapedCTName}_Description", template, creationInfo))
                             {
-                                newCT.Description = string.Format("{{res:ContentType_{0}_Description}}", ct.Name.Replace(" ", "_"));
+                                newCT.Description = $"{{res:ContentType_{escapedCTName}_Description}}";
                             }
                         }
 #endif

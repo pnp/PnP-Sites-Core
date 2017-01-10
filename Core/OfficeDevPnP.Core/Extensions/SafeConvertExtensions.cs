@@ -136,7 +136,7 @@ namespace System {
                 throw new NotSupportedException(typeof(T).Name + " must be an Enum");
 
             if (false == Enum.IsDefined(typeof(T), name))
-                throw new ArgumentException(string.Format("{0} is not defined in type of enum {1}", name, typeof(T).Name));
+                throw new ArgumentException($"{name} is not defined in type of enum {typeof(T).Name}");
 
             return (T)Enum.Parse(typeof(T), name, true);
         }

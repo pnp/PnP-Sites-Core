@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
   <pnp:Preferences Author="PnP test team" />
   <pnp:Localizations>
     <pnp:Localization LCID="1033" Name="core" ResourceFile="core.en-us.resx" />
@@ -11,7 +11,13 @@
         <pnp:SupportedUILanguage LCID="1033"/>
         <pnp:SupportedUILanguage LCID="1043"/>
       </pnp:SupportedUILanguages>
-
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode IsExternal="true" Title="{res:NAV_Title}" Url="http://www.wikipedia.org"/>
+          </pnp:StructuralNavigation>
+        </pnp:GlobalNavigation>
+      </pnp:Navigation>
       <pnp:SiteFields>
         <Field ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"  Description="{res:FLD_CT_1_Description}" Type="Text" Name="FLD_CT_1" DisplayName="{res:Fld_CT_1}" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Description="{res:FLD_CT_2_Description}" Type="Text" Name="FLD_CT_2" DisplayName="{res:Fld_CT_2}" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
@@ -36,6 +42,10 @@
               Folder element with Name attribute 
               Security element on Folder element -->
         <pnp:ListInstance Title="{res:LI_1}" Description="{res:LI_1_Description}" TemplateType="101" Url="LI_1" EnableFolderCreation="true">
+          <pnp:Views RemoveExistingViews="true">
+            <View Type="HTML" DisplayName="{res:LI_1_ViewTitle}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" ImageUrl="/_layouts/images/generic.png?rev=43" Url="AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            </View>
+          </pnp:Views>
           <pnp:FieldRefs>
             <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" />
             <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" />
@@ -50,7 +60,96 @@
         <pnp:ListInstance Title="{res:LI_3}" Description="{res:LI_3_Description}" TemplateType="100" Url="Lists/LI_3">
         </pnp:ListInstance>
       </pnp:Lists>
-
+      <pnp:Pages>
+        <pnp:Page Layout="Custom" Overwrite="true" Url="{site}/SitePages/LocalizationPage.aspx">
+          <pnp:WebParts>
+            <pnp:WebPart Column="1" Row="1" Title="{resource:WP_Title}">
+              <pnp:Contents>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">
+                          <![CDATA[]]>
+                        </property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Booyah</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">TitleOnly</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+        </pnp:Page>
+      </pnp:Pages>
+      <pnp:Files>
+        <pnp:File Overwrite="true" Folder="{site}/SitePages" Src="LocalizationPage2.aspx">
+          <pnp:WebParts>
+            <pnp:WebPart Zone="MainColumn" Order="0" Title="{resource:WP_Title}">
+              <pnp:Contents>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">
+                          <![CDATA[]]>
+                        </property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Booyah</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">TitleOnly</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+        </pnp:File>
+      </pnp:Files>
       <pnp:CustomActions>
         <pnp:SiteCustomActions>
           <!--Must have deployed the Provider Hosted App, for Rights see Microsoft.SharePoint.Client.PermissionKind -->

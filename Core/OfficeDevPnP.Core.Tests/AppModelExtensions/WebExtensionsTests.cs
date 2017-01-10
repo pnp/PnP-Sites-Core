@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Tests;
 using System.IO;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
@@ -34,7 +35,7 @@ namespace Microsoft.SharePoint.Client.Tests
             // Activate sideloading in order to test apps
             clientContext.Load(clientContext.Site, s => s.Id);
             clientContext.ExecuteQueryRetry();
-            clientContext.Site.ActivateFeature(OfficeDevPnP.Core.Constants.APPSIDELOADINGFEATUREID);
+            clientContext.Site.ActivateFeature(Constants.FeatureId_Site_AppSideLoading);
         }
 
         [TestCleanup()]
@@ -43,7 +44,7 @@ namespace Microsoft.SharePoint.Client.Tests
             // Deactivate sideloading
             clientContext.Load(clientContext.Site);
             clientContext.ExecuteQueryRetry();
-            clientContext.Site.DeactivateFeature(OfficeDevPnP.Core.Constants.APPSIDELOADINGFEATUREID);
+            clientContext.Site.DeactivateFeature(Constants.FeatureId_Site_AppSideLoading);
 
             var props = clientContext.Web.AllProperties;
             clientContext.Load(props);
@@ -377,6 +378,27 @@ namespace Microsoft.SharePoint.Client.Tests
             clientContext.ExecuteQueryRetry();
             // All keys should be gone
             Assert.IsFalse(props.FieldValues.ContainsKey(_key), "Key still present");
+        }
+        #endregion
+
+        #region ReIndex Tests
+        [TestMethod()]
+        public void TriggerReIndexTeamSiteTest()
+        {
+            var web = clientContext.Web;
+            clientContext.Load(web);
+            clientContext.ExecuteQueryRetry();
+            web.ReIndexWeb();
+
+            var props = web.AllProperties;
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+            var version = (int)props["vti_searchversion"];
+            web.ReIndexWeb();
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+            var newVersion = (int)props["vti_searchversion"];
+            Assert.IsTrue(version == (newVersion - 1), "Version has not increased");
         }
         #endregion
 

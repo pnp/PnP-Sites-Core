@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             }
 
             using (XmlReader reader = element.CreateReader())
@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             }
 
             using (XmlReader reader = new XmlNodeReader(element))
@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (xml == null)
             {
-                throw new ArgumentNullException("xml");
+                throw new ArgumentNullException(nameof(xml));
             }
 
             XElement element = XElement.Parse(xml);
@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (xml == null)
             {
-                throw new ArgumentNullException("xml");
+                throw new ArgumentNullException(nameof(xml));
             }
 
             XElement element = XElement.Parse(xml);
@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (element == null)
             {
-                throw new ArgumentNullException("element");
+                throw new ArgumentNullException(nameof(element));
             }
 
             XElement xElement = XElement.Parse(element.OuterXml);

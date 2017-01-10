@@ -150,7 +150,7 @@ namespace OfficeDevPnP.Core
                 form.SuspendLayout();
                 form.Width = 900;
                 form.Height = 500;
-                form.Text = string.Format("Log in to {0}", siteUrl);
+                form.Text = $"Log in to {siteUrl}";
                 form.Controls.Add(browser);
                 form.ResumeLayout(false);
 
@@ -336,6 +336,7 @@ namespace OfficeDevPnP.Core
         /// <param name="storeName">The name of the store for the certificate</param>
         /// <param name="storeLocation">The location of the store for the certificate</param>
         /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint, AzureEnvironment environment = AzureEnvironment.Production)
         {
@@ -352,6 +353,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
@@ -368,6 +370,7 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
+        /// <param name="environment">Indicates which Azure AD environment is being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, SecureString certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
@@ -460,12 +463,12 @@ namespace OfficeDevPnP.Core
                     // If cookie is expired a new fedAuth cookie needs to be requested
                     if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now)
                     {
-                        fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, String.Format("{0}\\{1}", domain, user), password, new Uri(String.Format("https://{0}/adfs/services/trust/13/usernamemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                        fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, $"{domain}\\{user}", password, new Uri($"https://{sts}/adfs/services/trust/13/usernamemixed"), idpId, logonTokenCacheExpirationWindow);
                     }
                 }
                 else
                 {
-                    fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, String.Format("{0}\\{1}", domain, user), password, new Uri(String.Format("https://{0}/adfs/services/trust/13/usernamemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                    fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, $"{domain}\\{user}", password, new Uri($"https://{sts}/adfs/services/trust/13/usernamemixed"), idpId, logonTokenCacheExpirationWindow);
                 }
 
                 if (fedAuth == null)
@@ -491,7 +494,7 @@ namespace OfficeDevPnP.Core
         /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
         public void RefreshADFSUserNameMixedAuthenticatedContext(string siteUrl, string user, string password, string domain, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
-            fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, String.Format("{0}\\{1}", domain, user), password, new Uri(String.Format("https://{0}/adfs/services/trust/13/usernamemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+            fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, $"{domain}\\{user}", password, new Uri($"https://{sts}/adfs/services/trust/13/usernamemixed"), idpId, logonTokenCacheExpirationWindow);
         }
 
 
@@ -508,12 +511,12 @@ namespace OfficeDevPnP.Core
                     // If cookie is expired a new fedAuth cookie needs to be requested
                     if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now)
                     {
-                        fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                        fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"), idpId, logonTokenCacheExpirationWindow);
                     }
                 }
                 else
                 {
-                    fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(String.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+                    fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"), idpId, logonTokenCacheExpirationWindow);
                 }
 
                 if (fedAuth == null)
@@ -528,7 +531,7 @@ namespace OfficeDevPnP.Core
 
         public void RefreshADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
-            fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri(string.Format("https://{0}/adfs/services/trust/13/certificatemixed", sts)), idpId, logonTokenCacheExpirationWindow);
+            fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"), idpId, logonTokenCacheExpirationWindow);
 
         }
 

@@ -189,4 +189,13 @@
   <data name="SubSiteSettings_SiteTasks_Title" xml:space="preserve">
     <value>Sub Site Settings SiteTasks Titel</value>
   </data>
+  <data name="WP_Title" xml:space="preserve">
+    <value>Web Part Titel Een</value>
+  </data>
+  <data name="LI_1_ViewTitle" xml:space="preserve">
+    <value>List View Titel</value>
+  </data>
+  <data name="NAV_Title" xml:space="preserve">
+    <value>Navigatie One</value>
+  </data>
 </root>

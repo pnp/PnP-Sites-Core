@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 
             Web web = ctx.Web;
             ctx.Load(web, w => w.Url, w => w.ServerRelativeUrl);
-            ctx.ExecuteQuery();
+            ctx.ExecuteQueryRetry();
 
             foreach (var sourcePage in sourcePages)
             {
@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 Microsoft.SharePoint.Client.File file = web.GetFileByServerRelativeUrl(pageUrl);
                 ctx.Load(file, page => page.ListItemAllFields, page => page.ListItemAllFields.RoleAssignments.Include(roleAsg => roleAsg.Member,
                   roleAsg => roleAsg.RoleDefinitionBindings.Include(roleDef => roleDef.Name)));
-                ctx.ExecuteQuery();
+                ctx.ExecuteQueryRetry();
 
                 if (file != null)
                 {
@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     {
                         LimitedWebPartManager wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
                         ctx.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title, wp => wp.WebPart.Properties));
-                        ctx.ExecuteQuery();
+                        ctx.ExecuteQueryRetry();
 
                         if (wpm.WebParts.Count > 0)
                         {

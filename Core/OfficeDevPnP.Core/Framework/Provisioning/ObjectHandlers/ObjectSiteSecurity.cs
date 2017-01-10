@@ -385,25 +385,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
-                       
-                        scope.LogDebug("Processing group {0}", group.Title);
-                        var siteGroup = new SiteGroup()
+                        try
                         {
-                            Title = group.Title.Replace(web.Title, "{sitename}"),
-                            AllowMembersEditMembership = group.AllowMembersEditMembership,
-                            AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
-                            AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
-                            Description = group.Description,
-                            OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
-                            Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
-                            RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
-                        };
+                            scope.LogDebug("Processing group {0}", group.Title);
+                            var siteGroup = new SiteGroup()
+                            {
+                                Title = !string.IsNullOrEmpty(web.Title) ? group.Title.Replace(web.Title, "{sitename}") : group.Title,
+                                AllowMembersEditMembership = group.AllowMembersEditMembership,
+                                AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
+                                AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
+                                Description = group.Description,
+                                OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
+                                Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
+                                RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
+                            };
 
-                        foreach (var member in group.Users)
-                        {
-                            siteGroup.Members.Add(new User() { Name = member.LoginName });
+                            foreach (var member in group.Users)
+                            {
+                                scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
+                                siteGroup.Members.Add(new User() { Name = member.LoginName });
+                            }
+                            siteSecurity.SiteGroups.Add(siteGroup);
                         }
-                        siteSecurity.SiteGroups.Add(siteGroup);
+                        catch (Exception ee)
+                        {
+                            scope.LogError(ee.StackTrace);
+                            scope.LogError(ee.Message);
+                            scope.LogError(ee.InnerException.StackTrace);
+                        }
                     }
                 }
 
@@ -412,6 +421,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.HasUniqueRoleAssignments)
                 {
+                    
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
                     if (!web.IsSubSite())
                     {
@@ -427,6 +437,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 foreach (var permissionKey in permissionKeys)
                                 {
+                                    scope.LogDebug("Processing custom permissionKey definition {0}", permissionKey);
                                     var permissionKind =
                                         (PermissionKind) Enum.Parse(typeof(PermissionKind), permissionKey);
                                     if (webRoleDefinition.BasePermissions.Has(permissionKind))
@@ -453,6 +464,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var webRoleAssignment in webRoleAssignments)
                     {
+                        scope.LogDebug("Processing Role Assignment {0}", webRoleAssignment.ToString());
                         if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup
                             && !creationInfo.IncludeSiteGroups)
                             continue;
@@ -468,8 +480,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (roleDefinition.RoleTypeKind != RoleType.None)
                                     {
                                         // Replace with token
-                                        roleDefinitionValue = string.Format("{{roledefinition:{0}}}",
-                                            roleDefinition.RoleTypeKind);
+                                        roleDefinitionValue = $"{{roledefinition:{roleDefinition.RoleTypeKind}}}";
                                     }
                                     modelRoleAssignment.RoleDefinition = roleDefinitionValue;
                                     if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup)
@@ -513,7 +524,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
             }
-            loginName = loginName.Replace(web.Title, "{sitename}");
+            if (!string.IsNullOrEmpty(web.Title))
+            {
+                loginName = loginName.Replace(web.Title, "{sitename}");
+            }
             return loginName;
         }
 

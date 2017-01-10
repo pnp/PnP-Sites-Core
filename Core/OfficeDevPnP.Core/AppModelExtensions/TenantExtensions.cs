@@ -4,6 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
+using System.Xml.Serialization.Configuration;
+using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
@@ -15,9 +17,9 @@ namespace Microsoft.SharePoint.Client
 {
     public static partial class TenantExtensions
     {
-        const string SITE_STATUS_ACTIVE = "Active"; 
-        const string SITE_STATUS_CREATING = "Creating"; 
-        const string SITE_STATUS_RECYCLED = "Recycled"; 
+        const string SITE_STATUS_ACTIVE = "Active";
+        const string SITE_STATUS_CREATING = "Creating";
+        const string SITE_STATUS_RECYCLED = "Recycled";
 
 #if !ONPREMISES
         #region Site collection creation
@@ -28,8 +30,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="properties">Describes the site collection to be created</param>
         /// <param name="removeFromRecycleBin">It true and site is present in recycle bin, it will be removed first from the recycle bin</param>
         /// <param name="wait">If true, processing will halt until the site collection has been created</param>
-        /// <returns>Guid of the created site collection and Guid.Empty is the wait parameter is specified as false</returns>
-        public static Guid CreateSiteCollection(this Tenant tenant, SiteEntity properties, bool removeFromRecycleBin = false, bool wait = true)
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
+        /// <returns>Guid of the created site collection and Guid.Empty is the wait parameter is specified as false. Returns Guid.Empty if the wait is cancelled.</returns>
+        public static Guid CreateSiteCollection(this Tenant tenant, SiteEntity properties, bool removeFromRecycleBin = false, bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
             if (removeFromRecycleBin)
             {
@@ -58,17 +61,27 @@ namespace Microsoft.SharePoint.Client
 
             // Get site guid and return. If we create the site asynchronously, return an empty guid as we cannot retrieve the site by URL yet.
             Guid siteGuid = Guid.Empty;
-
+            if (timeoutFunction != null)
+            {
+                wait = true;
+            }
             if (wait)
             {
                 // Let's poll for site collection creation completion
-                WaitForIsComplete(tenant, op);
-
-                // Add delay to avoid race conditions
-                Thread.Sleep(30 * 1000);
-
-                // Return site guid of created site collection
-                siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                if (WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.CreatingSiteCollection))
+                {
+                    // Return site guid of created site collection
+                    try
+                    {
+                        siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                    }
+                    catch (Exception ex)
+                    {
+                        // Eat all exceptions cause there's currently (December 16) an issue in the service that can make this call fail in combination with app-only usage
+                        Log.Error("Temp eating exception to issue in service (December 2016). Exception is {0}.",
+                            ex.ToDetailedString());
+                    }
+                }
             }
             return siteGuid;
         }
@@ -89,11 +102,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="lcid">The site locale. See http://technet.microsoft.com/en-us/library/ff463597.aspx for a complete list of Lcid's</param>
         /// <param name="removeFromRecycleBin">If true, any existing site with the same URL will be removed from the recycle bin</param>
         /// <param name="wait">Wait for the site to be created before continuing processing</param>
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         /// <returns></returns>
         public static Guid CreateSiteCollection(this Tenant tenant, string siteFullUrl, string title, string siteOwnerLogin,
                                                         string template, int storageMaximumLevel, int storageWarningLevel,
                                                         int timeZoneId, int userCodeMaximumLevel, int userCodeWarningLevel,
-                                                        uint lcid, bool removeFromRecycleBin = false, bool wait = true)
+                                                        uint lcid, bool removeFromRecycleBin = false, bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
             SiteEntity siteCol = new SiteEntity()
             {
@@ -108,7 +122,7 @@ namespace Microsoft.SharePoint.Client
                 UserCodeWarningLevel = userCodeWarningLevel,
                 Lcid = lcid
             };
-            return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait);
+            return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait, timeoutFunction);
         }
         #endregion
 
@@ -142,7 +156,7 @@ namespace Microsoft.SharePoint.Client
                     tenant.Context.ExecuteQueryRetry();
                     ret = properties.Status.Equals(status, StringComparison.OrdinalIgnoreCase);
                 }
-                catch(ServerException ex)
+                catch (ServerException ex)
                 {
                     if (IsUnableToAccessSiteException(ex))
                     {
@@ -282,9 +296,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
         /// <param name="siteFullUrl">Url of the site collection to delete</param>
         /// <param name="useRecycleBin">Leave the deleted site collection in the site collection recycle bin</param>
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. Return true to cancel the wait loop.</param>
         /// <returns>True if deleted</returns>
-        public static bool DeleteSiteCollection(this Tenant tenant, string siteFullUrl, bool useRecycleBin)
+        public static bool DeleteSiteCollection(this Tenant tenant, string siteFullUrl, bool useRecycleBin, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
+            var succeeded = false;
             bool ret = false;
 
             try
@@ -295,9 +311,9 @@ namespace Microsoft.SharePoint.Client
                 tenant.Context.ExecuteQueryRetry();
 
                 //check if site creation operation is complete
-                WaitForIsComplete(tenant, op);
+                succeeded = WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.DeletingSiteCollection);
             }
-            catch(ServerException ex)
+            catch (ServerException ex)
             {
                 if (!useRecycleBin && IsCannotRemoveSiteException(ex))
                 {
@@ -314,14 +330,17 @@ namespace Microsoft.SharePoint.Client
                 return true;
             }
 
-            // To delete Site collection completely, (may take a longer time)
-            SpoOperation op2 = tenant.RemoveDeletedSite(siteFullUrl);
-            tenant.Context.Load(op2, i => i.IsComplete, i => i.PollingInterval);
-            tenant.Context.ExecuteQueryRetry();
+            if (succeeded)
+            {
+                // To delete Site collection completely, (may take a longer time)
+                SpoOperation op2 = tenant.RemoveDeletedSite(siteFullUrl);
+                tenant.Context.Load(op2, i => i.IsComplete, i => i.PollingInterval);
+                tenant.Context.ExecuteQueryRetry();
 
-            WaitForIsComplete(tenant, op2);
-            ret = true;
-
+                succeeded = WaitForIsComplete(tenant, op2, timeoutFunction,
+                    TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
+                ret = succeeded;
+            }
             return ret;
         }
 
@@ -331,20 +350,24 @@ namespace Microsoft.SharePoint.Client
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
         /// <param name="siteFullUrl">URL of the site collection to delete</param>
         /// <param name="wait">If true, processing will halt until the site collection has been deleted from the recycle bin</param>
-        /// <returns>True if deleted</returns>
-        public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true)
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
+        public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var ret = false;
+            var succeeded = true;
+            var ret = true;
             var op = tenant.RemoveDeletedSite(siteFullUrl);
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
             tenant.Context.ExecuteQueryRetry();
-
+            if (timeoutFunction != null)
+            {
+                wait = true;
+            }
             if (wait)
             {
-                WaitForIsComplete(tenant, op);
+                succeeded = WaitForIsComplete(tenant, op, timeoutFunction,
+                    TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
+                ret = succeeded;
             }
-
-            ret = true;
             return ret;
         }
         #endregion
@@ -423,7 +446,8 @@ namespace Microsoft.SharePoint.Client
             long? storageWarningLevel = null,
             double? userCodeMaximumLevel = null,
             double? userCodeWarningLevel = null,
-            bool? noScriptSite = null
+            bool? noScriptSite = null,
+            bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
@@ -448,8 +472,17 @@ namespace Microsoft.SharePoint.Client
                 if (noScriptSite != null)
                     siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
 
-                siteProps.Update();
+                var op = siteProps.Update();
+                tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
+                if (timeoutFunction != null)
+                {
+                    wait = true;
+                }
+                if (wait)
+                {
+                    WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.SettingSiteProperties);
+                }
             }
         }
 
@@ -460,7 +493,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="siteFullUrl">The target site to change the lock state.</param>
         /// <param name="lockState">The target state the site should be changed to.</param>
         /// <param name="wait">If true, processing will halt until the site collection lock state has been implemented</param>      
-        public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false)
+        /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
+        public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
             tenant.Context.Load(siteProps);
@@ -474,10 +508,13 @@ namespace Microsoft.SharePoint.Client
                 SpoOperation op = siteProps.Update();
                 tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
-
+                if (timeoutFunction != null)
+                {
+                    wait = true;
+                }
                 if (wait)
                 {
-                    WaitForIsComplete(tenant, op);
+                    WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.SettingSiteLockState);
                 }
 
             }
@@ -529,7 +566,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
         /// <returns>An IList of SiteEntity objects</returns>
-        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true)
+        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true, bool includeOD4BSites = false)
         {
             var sites = new List<SiteEntity>();
             SPOSitePropertiesEnumerable props = null;
@@ -537,7 +574,16 @@ namespace Microsoft.SharePoint.Client
             while (props == null || props.NextStartIndexFromSharePoint != null)
             //while (props == null || props.NextStartIndex > -1)
             {
-                props = tenant.GetSitePropertiesFromSharePoint(props == null?null:props.NextStartIndexFromSharePoint, includeDetail);
+
+                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                {
+                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                    IncludeDetail = includeDetail
+                };
+
+                //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
+                props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
                 //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
@@ -560,7 +606,8 @@ namespace Microsoft.SharePoint.Client
                     siteEntity.StorageUsage = prop.StorageUsage;
                     siteEntity.WebsCount = prop.WebsCount;
                     var lockState = SiteLockState.Unlock;
-                    if (Enum.TryParse(prop.LockState, out lockState)) {
+                    if (Enum.TryParse(prop.LockState, out lockState))
+                    {
                         siteEntity.LockState = lockState;
                     }
                     sites.Add(siteEntity);
@@ -639,11 +686,21 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Private helper methods
-        private static void WaitForIsComplete(Tenant tenant, SpoOperation op)
+        private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
+            bool succeeded = true;
             while (!op.IsComplete)
             {
+                if (timeoutFunction != null)
+                {
+                    if (timeoutFunction(operationMessage))
+                    {
+                        succeeded = false;
+                        break;
+                    }
+                }
                 Thread.Sleep(op.PollingInterval);
+
                 op.RefreshLoad();
                 if (!op.IsComplete)
                 {
@@ -659,6 +716,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
             }
+            return succeeded;
         }
 
         private static bool IsCannotGetSiteException(Exception ex)
@@ -686,7 +744,7 @@ namespace Microsoft.SharePoint.Client
             {
                 if (
                      (((ServerException)ex).ServerErrorCode == -2147024809 && ((ServerException)ex).ServerErrorTypeName.Equals("System.ArgumentException", StringComparison.InvariantCultureIgnoreCase)) ||
-                     (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))                    
+                     (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
                     )
                 {
                     return true;
@@ -706,7 +764,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (ex is ServerException)
             {
-                if (((ServerException)ex).ServerErrorCode == -1 
+                if (((ServerException)ex).ServerErrorCode == -1
                     && (
                         ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoException", StringComparison.InvariantCultureIgnoreCase) ||
                         ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))

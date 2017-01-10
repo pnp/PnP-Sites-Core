@@ -217,7 +217,7 @@ namespace Microsoft.SharePoint.Client
                 else
                 {
                     Log.Error(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_ComposedLookMissing, lookName);
-                    throw new Exception(string.Format("Composed look '{0}' can not be found; pass null or empty to set look directly (not based on an existing entry)", lookName));
+                    throw new Exception($"Composed look '{lookName}' can not be found; pass null or empty to set look directly (not based on an existing entry)");
                 }
             }
 
@@ -331,8 +331,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The uploaded file, with at least the ServerRelativeUrl property available</returns>
         public static File UploadThemeFile(this Web web, string localFilePath, string themeFolderVersion = "15")
         {
-            if (localFilePath == null) { throw new ArgumentNullException("localFilePath"); }
-            if (string.IsNullOrWhiteSpace(localFilePath)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Source_file_path_is_required_, "localFilePath"); }
+            if (localFilePath == null) { throw new ArgumentNullException(nameof(localFilePath)); }
+            if (string.IsNullOrWhiteSpace(localFilePath)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Source_file_path_is_required_, nameof(localFilePath)); }
 
             var fileName = Path.GetFileName(localFilePath);
             using (var localStream = new FileStream(localFilePath, FileMode.Open))
@@ -353,10 +353,10 @@ namespace Microsoft.SharePoint.Client
         public static File UploadThemeFile(this Web web, string fileName, string localFilePath, string themeFolderVersion = "15")
         {
             if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
-            if (string.IsNullOrWhiteSpace(fileName)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_, "fileName"); }
+            if (string.IsNullOrWhiteSpace(fileName)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_, nameof(fileName)); }
             if (localFilePath == null) { throw new ArgumentNullException(nameof(localFilePath)); }
             if (themeFolderVersion == null) throw new ArgumentNullException(nameof(themeFolderVersion));
-            if (string.IsNullOrWhiteSpace(localFilePath)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Source_file_path_is_required_, "localFilePath"); }
+            if (string.IsNullOrWhiteSpace(localFilePath)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Source_file_path_is_required_, nameof(localFilePath)); }
 
             using (var localStream = new FileStream(localFilePath, FileMode.Open))
             {
@@ -375,12 +375,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The uploaded file, with at least the ServerRelativeUrl property available</returns>
         public static File UploadThemeFile(this Web web, string fileName, Stream localStream, string themeFolderVersion = "15")
         {
-            if (fileName == null) { throw new ArgumentNullException("fileName"); }
-            if (localStream == null) { throw new ArgumentNullException("localStream"); }
-            if (string.IsNullOrWhiteSpace(fileName)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_, "fileName"); }
+            if (fileName == null) { throw new ArgumentNullException(nameof(fileName)); }
+            if (localStream == null) { throw new ArgumentNullException(nameof(localStream)); }
+            if (string.IsNullOrWhiteSpace(fileName)) { throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_, nameof(fileName)); }
             if (fileName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, "fileName");
+                throw new ArgumentException(CoreResources.BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
             }
 
             // Theme catalog only exists at site collection root
@@ -485,7 +485,7 @@ namespace Microsoft.SharePoint.Client
             // set the item as page layout
             listItem["ContentTypeId"] = itemContentTypeId;
             // Set the associated content type ID property
-            listItem["PublishingAssociatedContentType"] = string.Format(";#{0};#{1};#", associatedCt.Name, associatedCt.Id);
+            listItem["PublishingAssociatedContentType"] = $";#{associatedCt.Name};#{associatedCt.Id};#";
             listItem["UIVersion"] = Convert.ToString(15);
             listItem.Update();
 
@@ -592,14 +592,14 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
-                  ? new ArgumentNullException("masterPageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "masterPageName");
+                  ? new ArgumentNullException(nameof(masterPageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageName));
             }
             if (string.IsNullOrEmpty(customMasterPageName))
             {
                 throw (customMasterPageName == null)
-                  ? new ArgumentNullException("customMasterPageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "customMasterPageName");
+                  ? new ArgumentNullException(nameof(customMasterPageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(customMasterPageName));
             }
 
             web.SetMasterPageByName(masterPageName);
@@ -620,14 +620,14 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(masterPageUrl))
             {
                 throw (masterPageUrl == null)
-                  ? new ArgumentNullException("masterPageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "masterPageUrl");
+                  ? new ArgumentNullException(nameof(masterPageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageUrl));
             }
             if (string.IsNullOrEmpty(customMasterPageUrl))
             {
                 throw (customMasterPageUrl == null)
-                  ? new ArgumentNullException("customMasterPageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "customMasterPageUrl");
+                  ? new ArgumentNullException(nameof(customMasterPageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(customMasterPageUrl));
             }
 
             web.SetMasterPageByUrl(masterPageUrl);
@@ -646,8 +646,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
-                  ? new ArgumentNullException("masterPageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "masterPageName");
+                  ? new ArgumentNullException(nameof(masterPageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageName));
             }
             string masterPageUrl = GetRelativeUrlForMasterByName(web, masterPageName);
             if (!string.IsNullOrEmpty(masterPageUrl))
@@ -669,8 +669,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
-                  ? new ArgumentNullException("masterPageName")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "masterPageName");
+                  ? new ArgumentNullException(nameof(masterPageName))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageName));
             }
 
             string masterPageUrl = GetRelativeUrlForMasterByName(web, masterPageName);
@@ -691,7 +691,7 @@ namespace Microsoft.SharePoint.Client
         public static string GetRelativeUrlForMasterByName(this Web web, string masterPageName)
         {
             if (string.IsNullOrEmpty(masterPageName))
-                throw new ArgumentNullException("masterPageName");
+                throw new ArgumentNullException(nameof(masterPageName));
 
             List masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             CamlQuery query = new CamlQuery();
@@ -1131,7 +1131,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(pageLayoutName))
             {
-                throw new ArgumentNullException("pageLayoutName");
+                throw new ArgumentNullException(nameof(pageLayoutName));
             }
 
             var pageLayoutFolder = Path.GetDirectoryName(pageLayoutName);
@@ -1199,22 +1199,24 @@ namespace Microsoft.SharePoint.Client
                     web.Context.ExecuteQueryRetry();
                     foreach (var childWeb in websCollection)
                     {
-
-                        var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
-                        bool inheritTheme = false;
-                        if (!string.IsNullOrEmpty(inheritThemeProperty))
+                        if (childWeb.GetBaseTemplateId() != "APP#0")
                         {
-                            inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
-                        }
+                            var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
+                            bool inheritTheme = false;
+                            if (!string.IsNullOrEmpty(inheritThemeProperty))
+                            {
+                                inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
+                            }
 
-                        if (resetSubsitesToInherit || inheritTheme)
-                        {
-                            Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritMaster] = "True";
-                            childWeb.MasterUrl = masterPageServerRelativeUrl;
-                            childWeb.Update();
-                            web.Context.ExecuteQueryRetry();
-                            websToUpdate.Add(childWeb);
+                            if (resetSubsitesToInherit || inheritTheme)
+                            {
+                                Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
+                                childWeb.AllProperties[InheritMaster] = "True";
+                                childWeb.MasterUrl = masterPageServerRelativeUrl;
+                                childWeb.Update();
+                                web.Context.ExecuteQueryRetry();
+                                websToUpdate.Add(childWeb);
+                            }
                         }
                     }
                     index++;
@@ -1256,21 +1258,24 @@ namespace Microsoft.SharePoint.Client
                     web.Context.ExecuteQueryRetry();
                     foreach (var childWeb in websCollection)
                     {
-                        var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
-                        var inheritTheme = false;
-                        if (!string.IsNullOrEmpty(inheritThemeProperty))
+                        if (childWeb.GetBaseTemplateId() != "APP#0")
                         {
-                            inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
-                        }
+                            var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
+                            var inheritTheme = false;
+                            if (!string.IsNullOrEmpty(inheritThemeProperty))
+                            {
+                                inheritTheme = string.Equals(childWeb.AllProperties[InheritTheme].ToString(), "True", StringComparison.InvariantCultureIgnoreCase);
+                            }
 
-                        if (resetSubsitesToInherit || inheritTheme)
-                        {
-                            Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
-                            childWeb.AllProperties[InheritCustomMaster] = "True";
-                            childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
-                            childWeb.Update();
-                            web.Context.ExecuteQueryRetry();
-                            websToUpdate.Add(childWeb);
+                            if (resetSubsitesToInherit || inheritTheme)
+                            {
+                                Log.Debug(Constants.LOGGING_SOURCE, "Inherited: " + CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, childWeb.ServerRelativeUrl);
+                                childWeb.AllProperties[InheritCustomMaster] = "True";
+                                childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
+                                childWeb.Update();
+                                web.Context.ExecuteQueryRetry();
+                                websToUpdate.Add(childWeb);
+                            }
                         }
                     }
                     index++;
@@ -1315,16 +1320,23 @@ namespace Microsoft.SharePoint.Client
 
             var pageLayout = rootWeb.GetPageLayoutListItemByName(pageLayoutName);
 
-            // Parse the right styled xml for the layout - <layout guid="944ea6be-f287-42c6-aa11-3fd75ab1ee9e" url="_catalogs/masterpage/ArticleLeft.aspx" />
-            XmlNode xmlNode = xd.CreateElement("layout");
-            var xmlAttribute = xd.CreateAttribute("guid");
-            xmlAttribute.Value = pageLayout["UniqueId"].ToString();
-            var xmlAttribute2 = xd.CreateAttribute("url");
-            // Get relative URL to the particular site collection
-            xmlAttribute2.Value = SolveSiteRelativeUrl(rootWeb, pageLayout["FileRef"].ToString());
-            xmlNode.Attributes.SetNamedItem(xmlAttribute);
-            xmlNode.Attributes.SetNamedItem(xmlAttribute2);
-            return xmlNode;
+            if (pageLayout != null)
+            {
+                // Parse the right styled xml for the layout - <layout guid="944ea6be-f287-42c6-aa11-3fd75ab1ee9e" url="_catalogs/masterpage/ArticleLeft.aspx" />
+                XmlNode xmlNode = xd.CreateElement("layout");
+                var xmlAttribute = xd.CreateAttribute("guid");
+                xmlAttribute.Value = pageLayout["UniqueId"].ToString();
+                var xmlAttribute2 = xd.CreateAttribute("url");
+                // Get relative URL to the particular site collection
+                xmlAttribute2.Value = SolveSiteRelativeUrl(rootWeb, pageLayout["FileRef"].ToString());
+                xmlNode.Attributes.SetNamedItem(xmlAttribute);
+                xmlNode.Attributes.SetNamedItem(xmlAttribute2);
+                return xmlNode;
+            }
+            else
+            {
+                throw new IndexOutOfRangeException(String.Format(CoreResources.BrandingExtension_InvalidPageLayoutName, pageLayoutName));
+            }
         }
 
         private static string SolveSiteRelativeUrl(Web web, string url)
@@ -1599,7 +1611,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
         /// <param name="web">The Web to disable the Responsive UI on</param>
-        public static void DisableReponsiveUI(this Web web)
+        public static void DisableResponsiveUI(this Web web)
         {
             try
             {
@@ -1615,7 +1627,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Site
         /// </summary>
         /// <param name="site">The Site to disable the Responsive UI on</param>
-        public static void DisableReponsiveUI(this Site site)
+        public static void DisableResponsiveUI(this Site site)
         {
             try
             {

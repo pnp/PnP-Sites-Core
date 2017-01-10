@@ -15,6 +15,7 @@
     <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.FileTrackingSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="FileTrackingBaselineSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.FileTrackingBaselineSet" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="UsersSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.UsersSet" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="TestCategorySet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestCategorySet" store:Type="Tables" Schema="dbo" />
     <AssociationSet Name="TestResultTestResultMessage" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultTestResultMessage">
       <End Role="TestResult" EntitySet="TestResultSet" />
       <End Role="TestResultMessage" EntitySet="TestResultMessageSet" />
@@ -34,6 +35,10 @@
     <AssociationSet Name="TestConfigurationTestConfigurationProperty" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationTestConfigurationProperty">
       <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
       <End Role="TestConfigurationProperty" EntitySet="TestConfigurationPropertySet" />
+    </AssociationSet>
+    <AssociationSet Name="TestCategoryTestConfiguration" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestCategoryTestConfiguration">
+      <End Role="TestCategory" EntitySet="TestCategorySet" />
+      <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
     </AssociationSet>
   </EntityContainer>
   <EntityType Name="TestRunSet">
@@ -92,6 +97,7 @@
     <Property Name="TestSiteUrl" Type="nvarchar(max)" Nullable="false" />
     <Property Name="AnonymousAccess" Type="bit" Nullable="false" />
     <Property Name="TestAuthentication_Id" Type="int" Nullable="false" />
+    <Property Name="TestCategory_Id" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="TestAuthenticationSet">
     <Key>
@@ -156,6 +162,13 @@
     <Property Name="SendTestResults" Type="bit" Nullable="false" DefaultValue="false" />
     <Property Name="Email" Type="nvarchar(max)" Nullable="true" />
     <Property Name="IsEmailVerified" Type="bit" Nullable="false" DefaultValue="false" />
+  </EntityType>
+  <EntityType Name="TestCategorySet">
+    <Key>
+      <PropertyRef Name="Id" />
+    </Key>
+    <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="Name" Type="nvarchar(max)" Nullable="false" />
   </EntityType>
   <Association Name="TestResultTestResultMessage">
     <End Role="TestResult" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestResultSet" Multiplicity="1">
@@ -223,6 +236,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="TestCategoryTestConfiguration">
+    <End Role="TestCategory" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestCategorySet" Multiplicity="1" />
+    <End Role="TestConfiguration" Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Store.TestConfigurationSet" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TestCategory">
+        <PropertyRef Name="Id" />
+      </Principal>
+      <Dependent Role="TestConfiguration">
+        <PropertyRef Name="TestCategory_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
@@ -257,6 +282,11 @@
           <EntitySet Name="FileTrackingSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTracking" />
           <EntitySet Name="FileTrackingBaselineSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.FileTrackingBaseline" />
           <EntitySet Name="UsersSet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.Users" />
+          <EntitySet Name="TestCategorySet" EntityType="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategory" />
+          <AssociationSet Name="TestCategoryTestConfiguration" Association="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategoryTestConfiguration">
+            <End Role="TestCategory" EntitySet="TestCategorySet" />
+            <End Role="TestConfiguration" EntitySet="TestConfigurationSet" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="TestRun">
           <Key>
@@ -356,6 +386,7 @@
           <NavigationProperty Name="TestAuthentication" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" FromRole="TestConfiguration" ToRole="TestAuthentication" />
           <NavigationProperty Name="TestConfigurationProperties" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestConfigurationProperty" FromRole="TestConfiguration" ToRole="TestConfigurationProperty" />
           <Property Name="AnonymousAccess" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="TestCategory" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategoryTestConfiguration" FromRole="TestConfiguration" ToRole="TestCategory" />
         </EntityType>
         <Association Name="TestConfigurationTestRun">
           <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="1" >
@@ -469,6 +500,18 @@
           <Property Name="Email" Type="String" Nullable="true" MaxLength="Max" />
           <Property Name="IsEmailVerified" Type="Boolean" Nullable="false" DefaultValue="False" />
         </EntityType>
+        <EntityType Name="TestCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="Max" />
+          <NavigationProperty Name="TestConfiguration" Relationship="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategoryTestConfiguration" FromRole="TestCategory" ToRole="TestConfiguration" />
+        </EntityType>
+        <Association Name="TestCategoryTestConfiguration">
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategory" Role="TestCategory" Multiplicity="1" />
+          <End Type="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfiguration" Role="TestConfiguration" Multiplicity="*" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -604,9 +647,25 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="TestCategorySet">
+      <EntityTypeMapping TypeName="IsTypeOf(OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategory)">
+        <MappingFragment StoreEntitySet="TestCategorySet">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <AssociationSetMapping Name="TestConfigurationTestAuthentication" TypeName="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestConfigurationTestAuthentication" StoreEntitySet="TestConfigurationSet">
       <EndProperty Name="TestAuthentication">
         <ScalarProperty Name="Id" ColumnName="TestAuthentication_Id" />
+      </EndProperty>
+      <EndProperty Name="TestConfiguration">
+        <ScalarProperty Name="Id" ColumnName="Id" />
+      </EndProperty>
+    </AssociationSetMapping>
+    <AssociationSetMapping Name="TestCategoryTestConfiguration" TypeName="OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQL.TestCategoryTestConfiguration" StoreEntitySet="TestConfigurationSet">
+      <EndProperty Name="TestCategory">
+        <ScalarProperty Name="Id" ColumnName="TestCategory_Id" />
       </EndProperty>
       <EndProperty Name="TestConfiguration">
         <ScalarProperty Name="Id" ColumnName="Id" />

@@ -67,7 +67,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldAsXml))
             {
-                throw new ArgumentNullException("fieldAsXml");
+                throw new ArgumentNullException(nameof(fieldAsXml));
             }
 
             var xd = XDocument.Parse(fieldAsXml);
@@ -113,7 +113,7 @@ namespace Microsoft.SharePoint.Client
             var enumerable = fields as Field[] ?? fields.ToArray();
             if (!enumerable.Any())
             {
-                throw new ArgumentException(string.Format("Could not find field with internalName {0}", internalName));
+                throw new ArgumentException($"Could not find field with internalName {internalName}");
             }
 
             enumerable.First().DeleteObject();
@@ -133,7 +133,7 @@ namespace Microsoft.SharePoint.Client
             var enumerable = fields as Field[] ?? fields.ToArray();
             if (!enumerable.Any())
             {
-                throw new ArgumentException(string.Format("Could not find field with id {0}", fieldId));
+                throw new ArgumentException($"Could not find field with id {fieldId}");
             }
 
             enumerable.First().DeleteObject();
@@ -216,19 +216,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Field of type TField</returns>
         public static TField GetFieldById<TField>(this Web web, Guid fieldId, bool searchInSiteHierarchy = false) where TField : Field
         {
-            IEnumerable<Field> fields = null;
-            if (searchInSiteHierarchy)
-            {
-                fields = web.Context.LoadQuery(web.AvailableFields.Where(f => f.Id == fieldId));
-            }
-            else
-            {
-                fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == fieldId));
-            }
-
-            web.Context.ExecuteQueryRetry();
-
-            var field = fields.FirstOrDefault();
+            var field = web.GetFieldById(fieldId, searchInSiteHierarchy);
             if (field == null)
             {
                 return null;
@@ -242,17 +230,52 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the field if it exists. Null if it does not exist.
         /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
+        /// <param name="fieldId">Guid for the field ID</param>
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
+        /// <returns>Field of type TField</returns>
+        public static Field GetFieldById(this Web web, Guid fieldId, bool searchInSiteHierarchy = false)
+        {
+            IEnumerable<Field> fields = null;
+            if (searchInSiteHierarchy)
+            {
+                fields = web.Context.LoadQuery(web.AvailableFields.Where(f => f.Id == fieldId));
+            }
+            else
+            {
+                fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == fieldId));
+            }
+
+            web.Context.ExecuteQueryRetry();
+
+            return fields.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
         /// <typeparam name="TField">The selected field type to return.</typeparam>
         /// <param name="list">List to be processed. Columns assoc in lists are defined on web or rootweb.</param>
         /// <param name="fieldId">Guid for the field ID</param>
         /// <returns>Field of type TField</returns>
         public static TField GetFieldById<TField>(this List list, Guid fieldId) where TField : Field
         {
+            var field = list.GetFieldById(fieldId);
+            return field == null ? null : list.Context.CastTo<TField>(field);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <param name="list">List to be processed. Columns assoc in lists are defined on web or rootweb.</param>
+        /// <param name="fieldId">Guid for the field ID</param>
+        /// <returns>Field</returns>
+        public static Field GetFieldById(this List list, Guid fieldId)
+        {
             var fields = list.Context.LoadQuery(list.Fields.Where(f => f.Id == fieldId));
             list.Context.ExecuteQueryRetry();
 
-            var field = fields.FirstOrDefault();
-            return field == null ? null : list.Context.CastTo<TField>(field);
+            return fields.FirstOrDefault();
         }
 
         /// <summary>
@@ -262,7 +285,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fields">FieldCollection to be processed.</param>
         /// <param name="internalName">Guid for the field ID</param>
         /// <returns>Field of type TField</returns>
+        [Obsolete("Use GetFieldByInternalName instead. This method returns field based on StaticName. This could lead to unexpected results due to StaticName property not necessarily being unique within a field collection. (https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spfield.staticname.aspx)")]
         public static TField GetFieldByName<TField>(this FieldCollection fields, string internalName) where TField : Field
+        {
+            var field = fields.GetFieldByName(internalName);
+            return field == null ? null : fields.Context.CastTo<TField>(field);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <param name="fields">FieldCollection to be processed.</param>
+        /// <param name="internalName">Guid for the field ID</param>
+        /// <returns>Field</returns>
+        [Obsolete("Use GetFieldByInternalName instead. This method returns field based on StaticName. This could lead to unexpected results due to StaticName property not necessarily being unique within a field collection. (https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.spfield.staticname.aspx)")]
+        public static Field GetFieldByName(this FieldCollection fields, string internalName)
         {
             if (!fields.ServerObjectIsNull.HasValue ||
                 fields.ServerObjectIsNull.Value)
@@ -271,8 +308,37 @@ namespace Microsoft.SharePoint.Client
                 fields.Context.ExecuteQueryRetry();
             }
 
-            var field = fields.FirstOrDefault(f => f.StaticName == internalName);
+            return fields.FirstOrDefault(f => f.StaticName == internalName);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <typeparam name="TField">The selected field type to return.</typeparam>
+        /// <param name="fields">FieldCollection to be processed.</param>
+        /// <param name="internalName">Internal name of the field</param>
+        /// <returns>Field of type TField</returns>
+        public static TField GetFieldByInternalName<TField>(this FieldCollection fields, string internalName) where TField : Field
+        {
+            var field = fields.GetFieldByInternalName(internalName);
             return field == null ? null : fields.Context.CastTo<TField>(field);
+        }
+
+        /// <summary>
+        /// Returns the field if it exists. Null if it does not exist.
+        /// </summary>
+        /// <param name="fields">FieldCollection to be processed.</param>
+        /// <param name="internalName">Internal name of the field</param>
+        /// <returns>Field</returns>
+        public static Field GetFieldByInternalName(this FieldCollection fields, string internalName)
+        {
+            if (!fields.ServerObjectIsNull.HasValue ||
+                fields.ServerObjectIsNull.Value)
+            {
+                fields.Context.Load(fields);
+                fields.Context.ExecuteQueryRetry();
+            }
+            return fields.FirstOrDefault(f => f.InternalName == internalName);
         }
 
         /// <summary>
@@ -315,7 +381,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldId))
             {
-                throw new ArgumentNullException("fieldId");
+                throw new ArgumentNullException(nameof(fieldId));
             }
 
             return FieldExistsById(web, new Guid(fieldId), searchInSiteHierarchy);
@@ -332,12 +398,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeName))
             {
-                throw new ArgumentNullException("contentTypeName");
+                throw new ArgumentNullException(nameof(contentTypeName));
             }
 
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var ct = GetContentTypeByName(web, contentTypeName);
@@ -357,7 +423,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var fields = contentType.Fields;
@@ -557,7 +623,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldId))
             {
-                throw new ArgumentNullException("fieldId");
+                throw new ArgumentNullException(nameof(fieldId));
             }
 
             return FieldExistsById(list, new Guid(fieldId));
@@ -573,7 +639,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(fieldName))
             {
-                throw new ArgumentNullException("fieldName");
+                throw new ArgumentNullException(nameof(fieldName));
             }
 
             var fields = list.Fields;
@@ -745,7 +811,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (contentType == null)
             {
-                throw new ArgumentNullException("contentType");
+                throw new ArgumentNullException(nameof(contentType));
             }
 
             if (list.ContentTypeExistsById(contentType.Id.StringValue))
@@ -1821,12 +1887,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(cultureName))
             {
-                throw new ArgumentNullException("cultureName");
+                throw new ArgumentNullException(nameof(cultureName));
             }
 
             if (string.IsNullOrEmpty(titleResource))
             {
-                throw new ArgumentNullException("titleResource");
+                throw new ArgumentNullException(nameof(titleResource));
             }
 
             if (field.IsObjectPropertyInstantiated("TitleResource"))

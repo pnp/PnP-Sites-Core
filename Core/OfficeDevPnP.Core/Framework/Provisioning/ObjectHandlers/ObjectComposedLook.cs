@@ -309,7 +309,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             String fileUrl = originalFileUrl.Substring(0, originalFileUrl.LastIndexOf("/"));
             String fileName = FixFileName(originalFileUrl.Substring(originalFileUrl.LastIndexOf("/") + 1));
 
-            String result = String.Format("{0}/{1}", fileUrl, fileName);
+            String result = $"{fileUrl}/{fileName}";
 
             return (result);
         }

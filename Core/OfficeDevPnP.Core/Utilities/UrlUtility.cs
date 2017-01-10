@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Utilities
 #else
         const string INVALID_CHARS_REGEX = @"[\\~#%&*{}/:<>?+|\""]";
 #endif
+        const string IIS_MAPPED_PATHS_REGEX = @"/(_layouts|_admin|_app_bin|_controltemplates|_login|_vti_bin|_vti_pvt|_windows|_wpresources)/";
 
         #region [ Combine ]
         /// <summary>
@@ -117,6 +118,10 @@ namespace OfficeDevPnP.Core.Utilities
         public static string ReplaceInvalidUrlChars(this string content, string replacer)
         {
 	    return new Regex(INVALID_CHARS_REGEX).Replace(content, replacer);
+        }
+        public static bool IsIisVirtualDirectory(string url)
+        {
+            return Regex.IsMatch(url, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);
         }
 
     }

@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             {
                 var culture = new CultureInfo(language);
 
-                var resourceFileName = System.IO.Path.Combine(tempFolder, string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name));
+                var resourceFileName = System.IO.Path.Combine(tempFolder, $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx");
                 if (System.IO.File.Exists(resourceFileName))
                 {
                     // Read existing entries, if any
@@ -58,12 +58,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name) });
+                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx"});
 
                 // Persist the file using the connector
                 using (FileStream stream = System.IO.File.Open(resourceFileName, FileMode.Open))
                 {
-                    creationInfo.FileConnector.SaveFileStream(string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name), stream);
+                    creationInfo.FileConnector.SaveFileStream($"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx", stream);
                 }
                 // remove the temp resx file
                 System.IO.File.Delete(resourceFileName);

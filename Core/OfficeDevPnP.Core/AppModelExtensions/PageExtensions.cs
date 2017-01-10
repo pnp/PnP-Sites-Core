@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Microsoft.SharePoint.Client.Publishing;
@@ -9,13 +8,15 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Web.UI.WebControls.WebParts;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using OfficeDevPnP.Core.Utilities.WebParts;
 using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
+using System.Net;
+using System.IO;
+using System.Text;
+using System.Web.Configuration;
+using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -105,9 +106,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="webPart">Information about the web part to insert</param>
         /// <param name="page">Page to add the web part on</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when page is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when webPart or page is null</exception>
-        public static void AddWebPartToWebPartPage(this Web web, WebPartEntity webPart, string page)
+        public static WebPartDefinition AddWebPartToWebPartPage(this Web web, WebPartEntity webPart, string page)
         {
             if (webPart == null)
             {
@@ -128,7 +130,7 @@ namespace Microsoft.SharePoint.Client
             }
             var serverRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, page);
 
-            AddWebPartToWebPartPage(web, serverRelativeUrl, webPart);
+            return AddWebPartToWebPartPage(web, serverRelativeUrl, webPart);
         }
 
         /// <summary>
@@ -137,9 +139,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="serverRelativePageUrl">Page to add the web part on</param>
         /// <param name="webPart">Information about the web part to insert</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
-        public static void AddWebPartToWebPartPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart)
+        public static WebPartDefinition AddWebPartToWebPartPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
@@ -157,13 +160,13 @@ namespace Microsoft.SharePoint.Client
 
             if (webPartPage == null)
             {
-                return;
+                return null;
             }
 
             web.Context.Load(webPartPage);
             web.Context.ExecuteQueryRetry();
 
-            AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
+            return AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
         }
 
         /// <summary>
@@ -176,9 +179,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="row">Row of the wiki table that should hold the inserted web part</param>
         /// <param name="col">Column of the wiki table that should hold the inserted web part</param>
         /// <param name="addSpace">Does a blank line need to be added after the web part (to space web parts)</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when folder or page is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when folder, webPart or page is null</exception>
-        public static void AddWebPartToWikiPage(this Web web, string folder, WebPartEntity webPart, string page, int row, int col, bool addSpace)
+        public static WebPartDefinition AddWebPartToWikiPage(this Web web, string folder, WebPartEntity webPart, string page, int row, int col, bool addSpace)
         {
             if (string.IsNullOrEmpty(folder))
             {
@@ -207,7 +211,7 @@ namespace Microsoft.SharePoint.Client
 
             var webServerRelativeUrl = UrlUtility.EnsureTrailingSlash(web.ServerRelativeUrl);
             var serverRelativeUrl = UrlUtility.Combine(folder, page);
-            AddWebPartToWikiPage(web, webServerRelativeUrl + serverRelativeUrl, webPart, row, col, addSpace);
+            return AddWebPartToWikiPage(web, webServerRelativeUrl + serverRelativeUrl, webPart, row, col, addSpace);
         }
 
         /// <summary>
@@ -219,10 +223,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="row">Row of the wiki table that should hold the inserted web part</param>
         /// <param name="col">Column of the wiki table that should hold the inserted web part</param>
         /// <param name="addSpace">Does a blank line need to be added after the web part (to space web parts)</param>
+        /// <returns>Returns the added <see cref="Microsoft.SharePoint.Client.WebParts.WebPartDefinition"/> object</returns>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or webPart is null</exception>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "System.Xml.XmlDocument.CreateTextNode(System.String)")]
-        public static void AddWebPartToWikiPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart, int row, int col, bool addSpace)
+        public static WebPartDefinition AddWebPartToWikiPage(this Web web, string serverRelativePageUrl, WebPartEntity webPart, int row, int col, bool addSpace)
         {
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
@@ -240,7 +245,7 @@ namespace Microsoft.SharePoint.Client
 
             if (webPartPage == null)
             {
-                return;
+                return null;
             }
 
             web.Context.Load(webPartPage, wp => wp.ListItemAllFields);
@@ -356,11 +361,11 @@ namespace Microsoft.SharePoint.Client
             listItem.Update();
             web.Context.ExecuteQueryRetry();
 
+            return wpdNew;
         }
 
         public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
         {
-
             string webPartXml = null;
 
             if (webPartId != Guid.Empty)
@@ -379,8 +384,8 @@ namespace Microsoft.SharePoint.Client
                 }
                 var uri = new Uri(web.Context.Url);
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
-                var webUrl = $"{uri.Scheme}://{uri.Host}{serverRelativeUrl}";
-                var pageUrl = $"{uri.Scheme}://{uri.Host}{serverRelativePageUrl}";
+                var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
+                var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
                 request.Credentials = web.Context.Credentials;
@@ -396,6 +401,16 @@ namespace Microsoft.SharePoint.Client
 
                 var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
+                bool forceCheckout = false;
+                webPartPage.EnsureProperty(wpg => wpg.ListId);
+                if (webPartPage.ListId != Guid.Empty)
+                {
+                    var list = web.Lists.GetById(webPartPage.ListId);
+                    web.Context.Load(list, l => l.ForceCheckout);
+                    web.Context.ExecuteQueryRetry();
+                    forceCheckout = list.ForceCheckout;
+                }
+
                 var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
                 var query =
@@ -408,6 +423,11 @@ namespace Microsoft.SharePoint.Client
 
                 if (query.Any())
                 {
+                    if (forceCheckout)
+                    {
+                        webPartPage.CheckOut();
+                        web.Context.ExecuteQueryRetry();
+                    }
                     var wp = query.First();
 
                     var exportMode = wp.WebPart.ExportMode;
@@ -430,6 +450,11 @@ namespace Microsoft.SharePoint.Client
                         wp.SaveWebPartChanges();
                         web.Context.ExecuteQueryRetry();
                     }
+                    if (forceCheckout)
+                    {
+                        webPartPage.UndoCheckOut();
+                        web.Context.ExecuteQueryRetry();
+                    }
                 }
 #endif
             }
@@ -449,8 +474,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             var html = "";
@@ -724,7 +749,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Add the html content
-            var layoutsZoneInner = layoutsTable.SelectSingleNode(string.Format("tbody/tr[{0}]/td[{1}]/div/div", row, col)) as XmlElement;
+            var layoutsZoneInner = layoutsTable.SelectSingleNode($"tbody/tr[{row}]/td[{col}]/div/div") as XmlElement;
             var text = xd.CreateTextNode("!!123456789!!");
             layoutsZoneInner.AppendChild(text);
 
@@ -791,15 +816,15 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(serverRelativePageUrl))
             {
                 throw (serverRelativePageUrl == null)
-                  ? new ArgumentNullException("serverRelativePageUrl")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "serverRelativePageUrl");
+                  ? new ArgumentNullException(nameof(serverRelativePageUrl))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
             if (string.IsNullOrEmpty(title))
             {
                 throw (title == null)
-                  ? new ArgumentNullException("title")
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, "title");
+                  ? new ArgumentNullException(nameof(title))
+                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(title));
             }
 
             var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
@@ -1109,110 +1134,6 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Adds the publishing page.
-        /// </summary>
-        /// <param name="web">The web.</param>
-        /// <param name="pageName">Name of the page.</param>
-        /// <param name="pageTemplateName">Name of the page template/layout excluded the .aspx file extension.</param>
-        /// <param name="title">The title of the target publishing page.</param>
-        /// <param name="publish">Should the page be published or not?</param>
-        /// <param name="folder">The target folder for the page, within the Pages library.</param>
-        /// <param name="startDate">Start date for scheduled publishing.</param>
-        /// <param name="endDate">End date for scheduled publishing.</param>
-        /// <param name="schedule">Defines whether to define a schedule or not.</param>
-        /// <exception cref="System.ArgumentNullException">Thrown when key or pageName is a zero-length string or contains only white space</exception>
-        /// <exception cref="System.ArgumentException">Thrown when key or pageName is null</exception>
-        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null,
-            bool publish = false, Folder folder = null,
-            DateTime? startDate = null, DateTime? endDate = null, Boolean schedule = false)
-        {
-            if (string.IsNullOrEmpty(pageName))
-            {
-                throw (title == null)
-                  ? new ArgumentNullException(nameof(pageName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(pageName));
-            }
-            if (string.IsNullOrEmpty(pageTemplateName))
-            {
-                throw (title == null)
-                  ? new ArgumentNullException(nameof(pageTemplateName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(pageTemplateName));
-            }
-            if (string.IsNullOrEmpty(title))
-            {
-                title = pageName;
-            }
-
-            // Fix page name, if needed
-            pageName = pageName.ReplaceInvalidUrlChars("-");
-
-            var context = web.Context as ClientContext;
-            var site = context.Site;
-            context.Load(site, s => s.ServerRelativeUrl);
-            context.ExecuteQueryRetry();
-
-            // Load reference Page Layout
-            var pageFromPageLayout = context.Site.RootWeb.GetFileByServerRelativeUrl($"{UrlUtility.EnsureTrailingSlash(site.ServerRelativeUrl)}_catalogs/masterpage/{pageTemplateName}.aspx");
-            var pageLayoutItem = pageFromPageLayout.ListItemAllFields;
-            context.Load(pageLayoutItem);
-            context.ExecuteQueryRetry();
-
-            // Create the publishing page
-            var publishingWeb = PublishingWeb.GetPublishingWeb(context, web);
-            context.Load(publishingWeb);
-
-            // Configure the publishing page
-            var pageInformation = new PublishingPageInformation
-            {
-                Name = !pageName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase) ?
-                    $"{pageName}.aspx" : pageName,
-                PageLayoutListItem = pageLayoutItem
-            };
-
-            // Handle target folder, if any
-            if (folder != null)
-            {
-                pageInformation.Folder = folder;
-            }
-            var page = publishingWeb.AddPublishingPage(pageInformation);
-
-            // Get parent list of item, this way we can handle all languages
-            var pagesLibrary = page.ListItem.ParentList;
-            context.Load(pagesLibrary);
-            context.ExecuteQueryRetry();
-            var pageItem = page.ListItem;
-            pageItem["Title"] = title;
-            pageItem.Update();
-
-            // Checkin the page file, if needed
-            web.Context.Load(pageItem, p => p.File.CheckOutType);
-            web.Context.ExecuteQueryRetry();
-            if (pageItem.File.CheckOutType != CheckOutType.None)
-            {
-                pageItem.File.CheckIn(string.Empty, CheckinType.MajorCheckIn);
-            }
-
-            // Publish the page, if required
-            if (publish)
-            {
-                pageItem.File.Publish(string.Empty);
-                if (pagesLibrary.EnableModeration)
-                {
-                    pageItem.File.Approve(string.Empty);
-
-                    // Setup scheduling, if required
-                    if (schedule && startDate.HasValue)
-                    {
-                        page.StartDate = startDate.Value;
-                        page.EndDate = endDate ?? new DateTime(2050, 01, 01);
-                        page.Schedule(string.Empty);
-                    }
-                }
-            }
-            context.ExecuteQueryRetry();
-        }
-
-        /// <summary>
         /// Adds a user-friendly URL for a PublishingPage object.
         /// </summary>
         /// <param name="page">The target page to add to managed navigation.</param>
@@ -1276,69 +1197,6 @@ namespace Microsoft.SharePoint.Client
             return (friendlyUrl.Value);
         }
 
-        /// <summary>
-        /// Gets a Publishing Page from the root folder of the Pages library.
-        /// </summary>
-        /// <param name="web">The web.</param>
-        /// <param name="fileLeafRef">The file leaf reference.</param>
-        /// <returns>The PublishingPage object, if any. Otherwise null.</returns>
-        /// <exception cref="System.ArgumentNullException">fileLeafRef</exception>
-        /// <exception cref="System.ArgumentException">fileLeafRef</exception>
-        public static PublishingPage GetPublishingPage(this Web web, string fileLeafRef)
-        {
-            return (web.GetPublishingPage(fileLeafRef, null));
-        }
-
-        /// <summary>
-        /// Gets a Publishing Page from any folder in the Pages library.
-        /// </summary>
-        /// <param name="web">The web.</param>
-        /// <param name="fileLeafRef">The file leaf reference.</param>
-        /// <param name="folder">The folder where to search the page.</param>
-        /// <returns>The PublishingPage object, if any. Otherwise null.</returns>
-        /// <exception cref="System.ArgumentNullException">fileLeafRef</exception>
-        /// <exception cref="System.ArgumentException">fileLeafRef</exception>
-        public static PublishingPage GetPublishingPage(this Web web, string fileLeafRef, Folder folder)
-        {
-            if (string.IsNullOrEmpty(fileLeafRef))
-            {
-                throw (fileLeafRef == null)
-                  ? new ArgumentNullException(nameof(fileLeafRef))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(fileLeafRef));
-            }
-
-            var context = web.Context as ClientContext;
-            var pages = web.GetPagesLibrary();
-            // Get the language agnostic "Pages" library name         
-            context.Load(pages, p => p.RootFolder, p => p.ItemCount);
-            context.ExecuteQueryRetry();
-
-            if (pages != null && pages.ItemCount > 0)
-            {
-                var camlQuery = new CamlQuery
-                {
-                    FolderServerRelativeUrl = folder != null ? folder.ServerRelativeUrl : pages.RootFolder.ServerRelativeUrl,
-                    ViewXml = $@"<View Scope='RecursiveAll'>  
-                                    <Query> 
-                                        <Where><Eq><FieldRef Name='FileLeafRef' /><Value Type='Text'>{fileLeafRef}</Value></Eq></Where> 
-                                    </Query> 
-                                </View>"
-                };
-
-                var listItems = pages.GetItems(camlQuery);
-                context.Load(listItems);
-                context.ExecuteQueryRetry();
-
-                if (listItems.Count > 0)
-                {
-                    var page = PublishingPage.GetPublishingPage(context, listItems[0]);
-                    context.Load(page);
-                    context.ExecuteQueryRetry();
-                    return page;
-                }
-            }
-
-            return null;
-        }
+       
     }
 }
