@@ -470,9 +470,10 @@
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
-    <Content Include="Framework\Functional\Templates\navigation_add.xml" />
-    <Content Include="Framework\Functional\Templates\navigation_add2.xml" />
-    <Content Include="Framework\Functional\Templates\navigation_add3.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add_prereq.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">

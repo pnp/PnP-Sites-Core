@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0"?>
-<pnp:ProvisioningTemplate ID="navigation_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+<pnp:ProvisioningTemplate ID="navigation_add3_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
   <pnp:Navigation>
     <pnp:GlobalNavigation NavigationType="Inherit">      
     </pnp:GlobalNavigation>
