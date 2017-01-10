@@ -16,14 +16,13 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
             <pnp:Term Name="TS_4_1_1" />
             <pnp:Term Name="TS_4_1_2" />
           </pnp:Terms>
-        </pnp:TermSet>                
-      </pnp:TermSets>     
+        </pnp:TermSet>
+      </pnp:TermSets>
       <pnp:Contributors>
-        <pnp:User Name="i:0#.f|membership|administrator@crtlab2.onmicrosoft.com"/>    
-      <pnp:User Name="i:0#.f|membership|raj@crtlab2.onmicrosoft.com"/>
+        <pnp:User Name="c:0(.s|true"/>
       </pnp:Contributors>
-      <pnp:Managers>                
-        <pnp:User Name="i:0#.f|membership|raj@crtlab2.onmicrosoft.com"/>
+      <pnp:Managers>
+        <pnp:User Name="c:0(.s|true"/>
       </pnp:Managers>
     </pnp:TermGroup>
   </pnp:TermGroups>
