@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201605Formatter());
+                return (new XMLPnPSchemaV201605AutoMapperFormatter());
             }
         }
 
@@ -55,9 +55,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 case XMLPnPSchemaVersion.V201512:
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLPnPSchemaVersion.V201605:
-                    return (new XMLPnPSchemaV201605Formatter());
                 default:
-                    return (new XMLPnPSchemaV201605Formatter());
+                    return (new XMLPnPSchemaV201605AutoMapperFormatter());
             }
         }
 

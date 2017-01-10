@@ -1053,7 +1053,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (!String.IsNullOrEmpty(template.SiteSearchSettings))
             {
-                if (result.SearchSettings== null)
+                if (result.SearchSettings == null)
                 {
                     result.SearchSettings = new ProvisioningTemplateSearchSettings();
                 }
