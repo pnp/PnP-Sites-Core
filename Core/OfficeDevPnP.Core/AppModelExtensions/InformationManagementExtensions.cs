@@ -213,7 +213,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (web.HasSitePolicyApplied() && IsSiteClosed(web))
             {
-                ProjectPolicy.CloseProject(web.Context, web);
+                ProjectPolicy.OpenProject(web.Context, web);
                 web.Context.ExecuteQueryRetry();
                 return true;
             }
