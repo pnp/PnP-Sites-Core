@@ -181,7 +181,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to operate on</param>
         /// <returns>True if site is closed, false otherwise</returns>
-        public static bool IsSiteClosed(this Web web)
+        public static bool IsClosedBySitePolicy(this Web web)
         {
             var isClosed = ProjectPolicy.IsProjectClosed(web.Context, web);
             web.Context.ExecuteQueryRetry();
@@ -193,9 +193,9 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web"></param>
         /// <returns>True if site was closed, false otherwise</returns>
-        public static bool CloseSite(this Web web)
+        public static bool SetClosedBySitePolicy(this Web web)
         {
-            if (web.HasSitePolicyApplied() && !IsSiteClosed(web))
+            if (web.HasSitePolicyApplied() && !IsClosedBySitePolicy(web))
             {
                 ProjectPolicy.CloseProject(web.Context, web);
                 web.Context.ExecuteQueryRetry();
@@ -209,9 +209,9 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web"></param>
         /// <returns>True if site was opened, false otherwise</returns>
-        public static bool OpenSite(this Web web)
+        public static bool SetOpenBySitePolicy(this Web web)
         {
-            if (web.HasSitePolicyApplied() && IsSiteClosed(web))
+            if (web.HasSitePolicyApplied() && IsClosedBySitePolicy(web))
             {
                 ProjectPolicy.OpenProject(web.Context, web);
                 web.Context.ExecuteQueryRetry();
