@@ -1,25 +1,33 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
+    /// <summary>
+    /// Test cases for the provisioning engine web settings functionality
+    /// </summary>
     [TestClass]
-    public class FilesTests : FunctionalTestBase
+    public class WebSettingsNoScriptTests : FunctionalTestBase
     {
         #region Construction
-        public FilesTests()
+        public WebSettingsNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_da2a59c7-f789-4314-9889-2c57cb98d088";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_da2a59c7-f789-4314-9889-2c57cb98d088/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f449c481-ce49-4185-9ba1-f30c1752552c/sub";
         }
         #endregion
 
@@ -39,49 +47,39 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         /// <summary>
-        /// FilesTest Test
+        /// Site WebSettings Test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionFilesTest()
+        public void SiteCollectionWebSettingsTest()
         {
-            new FilesImplementation().SiteCollectionFiles(centralSiteCollectionUrl);
+            new WebSettingsImplementation().SiteCollectionWebSettings(centralSiteCollectionUrl);
         }
 
         /// <summary>
-        /// Directory Files Test
+        /// Site Auditsettings Test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionDirectoryFilesTest()
+        public void SiteCollectionAuditSettingsTest()
         {
-            new FilesImplementation().SiteCollectionDirectoryFiles(centralSiteCollectionUrl);
+            new WebSettingsImplementation().SiteCollectionAuditSettings(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
         /// <summary>
-        /// FilesTest Test
+        /// Web WebSettings test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void WebFilesTest()
+        public void WebWebSettingsTest()
         {
-            new FilesImplementation().WebFiles(centralSiteCollectionUrl);
+            new WebSettingsImplementation().WebWebSettings(centralSiteCollectionUrl, centralSubSiteUrl);
         }
 
-        /// <summary>
-        /// Directory Files Test
-        /// </summary>
-        [TestMethod]
-        [Timeout(15 * 60 * 1000)]
-        public void WebCollectionDirectoryFilesTest()
-        {
-            new FilesImplementation().WebDirectoryFiles(centralSiteCollectionUrl);
-        }
-
+        // Audit settings are only possible on site collection level, hence no test at web level!
         #endregion
-
-
     }
+#endif
 }

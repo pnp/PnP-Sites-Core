@@ -1,24 +1,29 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     [TestClass]
-    public class FieldTests : FunctionalTestBase
+    public class PropertyBagNoScriptTests: FunctionalTestBase
     {
+
         #region Construction
-        public FieldTests()
+        public PropertyBagNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_25b60217-025d-45a8-961c-7436cb7419df";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_25b60217-025d-45a8-961c-7436cb7419df/sub";
         }
         #endregion
 
@@ -34,32 +39,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
-
-        [TestInitialize()]
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (TestCommon.AppOnlyTesting())
-            {
-                Assert.Inconclusive("Test that require taxonomy creation are not supported in app-only.");
-            }
-        }
         #endregion
 
         #region Site collection test cases
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionFieldAddingTest()
+        public void SiteCollectionPropertyBagAddingTest()
         {
-            new FieldImplementation().SiteCollectionFieldAdding(centralSiteCollectionUrl);
+            new PropertyBagImplementation().SiteCollectionPropertyBagAdding(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
-        // No need to have these as the engine is blocking creation and extraction of fields at web level
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebPropertyBagAddingTest()
+        {
+            new PropertyBagImplementation().WebPropertyBagAdding(centralSubSiteUrl);
+        }
         #endregion
-
-
     }
+#endif
 }

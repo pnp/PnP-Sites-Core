@@ -5,20 +5,20 @@ using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
     [TestClass]
-    public class FieldTests : FunctionalTestBase
+    public class ContentTypeNoScriptTests : FunctionalTestBase
     {
+#if !ONPREMISES
         #region Construction
-        public FieldTests()
+        public ContentTypeNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333/sub";
         }
         #endregion
 
@@ -34,32 +34,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
-
-        [TestInitialize()]
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (TestCommon.AppOnlyTesting())
-            {
-                Assert.Inconclusive("Test that require taxonomy creation are not supported in app-only.");
-            }
-        }
         #endregion
 
         #region Site collection test cases
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionFieldAddingTest()
+        public void SiteCollectionContentTypeAddingTest()
         {
-            new FieldImplementation().SiteCollectionFieldAdding(centralSiteCollectionUrl);
+            new ContentTypeImplementation().SiteCollectionContentTypeAdding(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
-        // No need to have these as the engine is blocking creation and extraction of fields at web level
+        // No need to have these as the engine is blocking creation and extraction of content types at web level
         #endregion
-
-
     }
+#endif
 }

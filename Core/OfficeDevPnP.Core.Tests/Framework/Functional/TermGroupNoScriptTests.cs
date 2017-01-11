@@ -1,24 +1,35 @@
 ﻿using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
+    /// <summary>
+    /// Test cases for the provisioning engine term group functionality
+    /// </summary>
     [TestClass]
-    public class FieldTests : FunctionalTestBase
+   public class TermGroupNoScriptTests : FunctionalTestBase
     {
         #region Construction
-        public FieldTests()
+        public TermGroupNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206/sub";
         }
         #endregion
 
@@ -48,18 +59,28 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #endregion
 
         #region Site collection test cases
+        /// <summary>
+        /// Site TermGroup Test
+        /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionFieldAddingTest()
+        public void SiteCollectionTermGroupTest()
         {
-            new FieldImplementation().SiteCollectionFieldAdding(centralSiteCollectionUrl);
+            new TermGroupImplementation().SiteCollectionTermGroup(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
-        // No need to have these as the engine is blocking creation and extraction of fields at web level
+        /// <summary>
+        /// Web TermGroup test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebTermGroupTest()
+        {
+            new TermGroupImplementation().SiteCollectionTermGroup(centralSubSiteUrl);
+        }
         #endregion
-
-
     }
+#endif
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
@@ -10,15 +11,17 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     [TestClass]
-    public class FieldTests : FunctionalTestBase
+    public class PagesNoScriptTests : FunctionalTestBase
     {
         #region Construction
-        public FieldTests()
+        public PagesNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_6232f367-56a0-4e76-9208-6204b506d401/sub";
         }
         #endregion
 
@@ -34,32 +37,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
-
-        [TestInitialize()]
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            if (TestCommon.AppOnlyTesting())
-            {
-                Assert.Inconclusive("Test that require taxonomy creation are not supported in app-only.");
-            }
-        }
         #endregion
 
         #region Site collection test cases
+        /// <summary>
+        /// PagesTest Test
+        /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionFieldAddingTest()
+        public void SiteCollectionPagesTest()
         {
-            new FieldImplementation().SiteCollectionFieldAdding(centralSiteCollectionUrl);
+            new PagesImplementation().SiteCollectionPages(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
-        // No need to have these as the engine is blocking creation and extraction of fields at web level
+        /// <summary>
+        /// PagesTest Test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebPagesTest()
+        {
+            new PagesImplementation().WebPages(centralSubSiteUrl);
+        }
         #endregion
-
-
     }
+#endif
 }

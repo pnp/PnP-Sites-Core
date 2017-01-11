@@ -1,33 +1,28 @@
 ﻿using Microsoft.SharePoint.Client;
-using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Enums;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-    /// <summary>
-    /// Test cases for the provisioning engine term group functionality
-    /// </summary>
+#if !ONPREMISES
     [TestClass]
-   public class TermGroupTests : FunctionalTestBase
+    public class WorkflowsNoScriptTests : FunctionalTestBase
     {
         #region Construction
-        public TermGroupTests()
+        public WorkflowsNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_60453ae9-a218-436e-9231-cb9da3c4fdd3";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_60453ae9-a218-436e-9231-cb9da3c4fdd3/sub";
         }
         #endregion
 
@@ -49,37 +44,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             base.Initialize();
 
-            if (TestCommon.AppOnlyTesting())
+            if (new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Contains("spoppe.com")) 
             {
-                Assert.Inconclusive("Test that require taxonomy creation are not supported in app-only.");
+                Assert.Inconclusive("Test that require workflow can't be running on edog.");
             }
         }
         #endregion
 
         #region Site collection test cases
         /// <summary>
-        /// Site TermGroup Test
+        /// WorkflowsTests Test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionTermGroupTest()
+        public void SiteCollectionWorkflowsTest()
         {
-            new TermGroupImplementation().SiteCollectionTermGroup(centralSiteCollectionUrl);
+            new WorkflowImplementation().Workflows(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
         /// <summary>
-        /// Web TermGroup test
+        /// WorkflowsTests Test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void WebTermGroupTest()
+        public void WebWorkflowsTest()
         {
-            new TermGroupImplementation().SiteCollectionTermGroup(centralSubSiteUrl);
+            new WorkflowImplementation().Workflows(centralSubSiteUrl);
         }
         #endregion
-
-
     }
+#endif
 }

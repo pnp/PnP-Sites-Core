@@ -1,30 +1,29 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OfficeDevPnP.Core.Enums;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES   
     /// <summary>
     /// Test cases for the provisioning engine Publishing functionality
     /// </summary>
     [TestClass]
-    public class PublishingTest : FunctionalTestBase
+    public class LocalizationNoScriptTest : FunctionalTestBase
     {
         #region Construction
-        public PublishingTest()
+        public LocalizationNoScriptTest()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_5cef4b69-58d0-41d4-9ea6-06de3004b30f/sub";
         }
         #endregion
 
@@ -42,16 +41,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion
 
-        #region Site collection test cases
         /// <summary>
-        /// Design package publishing test in site collection
+        /// PnPLocalizationTest test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionPublishingTest()
+        public void SiteCollectionsLocalizationTest()
         {
-            new PublishingImplementation().SiteCollectionPublishing(centralSiteCollectionUrl);
+            new LocalizationImplementation().SiteCollectionsLocalization(centralSiteCollectionUrl);
         }
-        #endregion        
+        /// <summary>
+        /// PnPLocalizationTest test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebLocalizationTest()
+        {
+            new LocalizationImplementation().WebLocalization(centralSubSiteUrl);
+        }
     }
+#endif
 }

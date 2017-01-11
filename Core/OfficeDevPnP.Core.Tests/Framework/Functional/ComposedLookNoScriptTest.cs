@@ -13,18 +13,20 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     /// <summary>
     /// Test cases for the provisioning engine Publishing functionality
     /// </summary>
     [TestClass]
-    public class PublishingTest : FunctionalTestBase
+    public class ComposedLookNoScriptTest : FunctionalTestBase
     {
         #region Construction
-        public PublishingTest()
+        public ComposedLookNoScriptTest()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/bert1";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/bert1/sub";
         }
         #endregion
 
@@ -42,16 +44,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion
 
-        #region Site collection test cases
         /// <summary>
-        /// Design package publishing test in site collection
+        /// Site collection composed look test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionPublishingTest()
+        public void SiteCollectionComposedLookTest()
         {
-            new PublishingImplementation().SiteCollectionPublishing(centralSiteCollectionUrl);
+            new ComposedLookImplementation().SiteCollectionComposedLook(centralSiteCollectionUrl);
         }
-        #endregion        
+
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebComposedLookTest()
+        {
+            new ComposedLookImplementation().WebComposedLook(centralSiteCollectionUrl, centralSubSiteUrl);
+        }
     }
+#endif
 }

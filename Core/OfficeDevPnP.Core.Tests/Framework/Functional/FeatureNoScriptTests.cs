@@ -5,18 +5,20 @@ using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     /// <summary>
     /// Test cases for the provisioning engine feature functionality
     /// </summary>
     [TestClass]
-    public class FeatureTests: FunctionalTestBase
+    public class FeatureNoScriptTests: FunctionalTestBase
     {
         #region Construction
-        public FeatureTests()
+        public FeatureNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_b456f6e7-d69d-4a19-abb1-fd7f8be33019";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_b456f6e7-d69d-4a19-abb1-fd7f8be33019/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_28a75800-7295-4897-b8c8-4eb67cb2c553";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_28a75800-7295-4897-b8c8-4eb67cb2c553/sub";
         }
         #endregion
 
@@ -58,4 +60,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion
     }
+#endif
 }

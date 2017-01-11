@@ -9,12 +9,14 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     [TestClass]
-    public class ListTests : FunctionalTestBase
+    public class ListNoScriptTests : FunctionalTestBase
     {
         #region Construction
-        public ListTests()
+        public ListNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
             //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333";
             //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c81e4b0d-0242-4c80-8272-18f13e759333/sub";
@@ -68,4 +70,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #endregion
 
     }
+#endif
 }

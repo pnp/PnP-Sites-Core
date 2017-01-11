@@ -1,6 +1,9 @@
 ﻿using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Publishing;
+using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -16,18 +19,20 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     /// <summary>
-    /// Test cases for the provisioning engine term group functionality
+    /// Summary description for NavigationTests
     /// </summary>
     [TestClass]
-   public class TermGroupTests : FunctionalTestBase
+    public class NavigationNoScriptTests : FunctionalTestBase
     {
-        #region Construction
-        public TermGroupTests()
+        #region construction
+        public NavigationNoScriptTests()
         {
+            isNoScriptSite = true;
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_d644f1c6-80ac-4858-8e63-a7a5ce26c206/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f5f12c31-8aae-43f1-81d6-c389cb1c7505";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f5f12c31-8aae-43f1-81d6-c389cb1c7505/sub";
         }
         #endregion
 
@@ -58,28 +63,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         /// <summary>
-        /// Site TermGroup Test
+        /// Navigation test
         /// </summary>
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void SiteCollectionTermGroupTest()
+        public void SiteCollectionNavigationTest()
         {
-            new TermGroupImplementation().SiteCollectionTermGroup(centralSiteCollectionUrl);
+            new NavigationImplementation().SiteCollectionNavigation(centralSiteCollectionUrl);
         }
+
         #endregion
 
-        #region Web test cases
-        /// <summary>
-        /// Web TermGroup test
-        /// </summary>
+        #region WebTest
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
-        public void WebTermGroupTest()
+        public void WebNavigationTest()
         {
-            new TermGroupImplementation().SiteCollectionTermGroup(centralSubSiteUrl);
+            new NavigationImplementation().SiteCollectionNavigation(centralSubSiteUrl);
         }
         #endregion
-
-
     }
+#endif
 }

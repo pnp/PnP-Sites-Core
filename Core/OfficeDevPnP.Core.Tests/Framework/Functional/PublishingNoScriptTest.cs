@@ -13,15 +13,17 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     /// <summary>
     /// Test cases for the provisioning engine Publishing functionality
     /// </summary>
     [TestClass]
-    public class PublishingTest : FunctionalTestBase
+    public class PublishingNoScriptTest : FunctionalTestBase
     {
         #region Construction
-        public PublishingTest()
+        public PublishingNoScriptTest()
         {
+            isNoScriptSite = true;
             //debugMode = true;
             //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741";
             //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_a21016d5-886f-49eb-9984-f9f4dce76741/sub";
@@ -54,4 +56,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         }
         #endregion        
     }
+#endif
 }
