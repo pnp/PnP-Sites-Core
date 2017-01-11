@@ -329,10 +329,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     cc.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
                     cc.Load(web, w => w.Navigation, w => w.Navigation.TopNavigationBar);
                     cc.ExecuteQueryRetry();
-                    var firstNode = web.Navigation.TopNavigationBar.First();
-                    if (!firstNode.Title.Equals(resourceValue.Item2))
+                    if (!cc.Web.IsSubSite())
                     {
-                        ok = false;
+                        var firstNode = web.Navigation.TopNavigationBar.First();
+                        if (!firstNode.Title.Equals(resourceValue.Item2))
+                        {
+                            ok = false;
+                        }
                     }
                 }
             }
