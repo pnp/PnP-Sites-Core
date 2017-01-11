@@ -6,11 +6,11 @@ using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
+#if !ONPREMISES
     [TestClass]
     public class CustomActionNoScriptTests: FunctionalTestBase
     {
-#if !ONPREMISES
-        #region Construction
+    #region Construction
         public CustomActionNoScriptTests()
         {
             isNoScriptSite = true;
@@ -18,9 +18,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9";
             //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9/sub";
         }
-        #endregion
+    #endregion
 
-        #region Test setup
+    #region Test setup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -32,25 +32,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             ClassCleanupBase();
         }
-        #endregion
+    #endregion
 
-        #region Site collection test cases
+    #region Site collection test cases
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionCustomActionAddingTest()
         {
             new CustomActionImplementation().SiteCollectionCustomActionAdding(centralSiteCollectionUrl);
         }
-        #endregion
+    #endregion
 
-        #region Web test cases
+    #region Web test cases
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
         public void WebCustomActionAddingTest()
         {
             new CustomActionImplementation().WebCustomActionAdding(centralSubSiteUrl);
         }
-        #endregion
+    #endregion
     }
 #endif
 }
