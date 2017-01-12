@@ -195,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             {
-                WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
                 scope.LogError("No connector present to persist homepage");
             }
         }

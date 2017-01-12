@@ -258,7 +258,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
                 {
-                    WriteWarning("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation",ProvisioningMessageType.Warning);
+                    WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation",ProvisioningMessageType.Warning);
                     ClearWarningShown = true;
                 }
                 web.DeleteAllNavigationNodes(navigationType);
