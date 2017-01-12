@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     internal class ObjectNavigation : ObjectHandlerBase
     {
         const string NavigationShowSiblings = "__NavigationShowSiblings";
-
+        private bool ClearWarningShown = false;
         public override string Name
         {
             get { return "Navigation"; }
@@ -256,9 +256,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Remove existing nodes, if requested
             if (structuralNavigation.RemoveExistingNodes || clearNavigation)
             {
-                if (!structuralNavigation.RemoveExistingNodes)
+                if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
                 {
                     WriteWarning("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation",ProvisioningMessageType.Warning);
+                    ClearWarningShown = true;
                 }
                 web.DeleteAllNavigationNodes(navigationType);
             }
