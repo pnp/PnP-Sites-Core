@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Tests;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Linq;
@@ -40,7 +39,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     _termGroupName = "Test_Group_" + DateTime.Now.ToFileTime();
                     _termSetName = "Test_Termset_" + DateTime.Now.ToFileTime();
                     _termName = "Test_Term_" + DateTime.Now.ToFileTime();
-                    
+
                     var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
                     var termStore = taxSession.GetDefaultSiteCollectionTermStore();
 
@@ -530,6 +529,34 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
+        public void HandleTermsWithCommaTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var site = clientContext.Site;
+
+                var termName1 = "Comma,Comma";
+                var termName2 = "Quote \" Quoute";
+
+                List<string> termLines = new List<string>();
+                string termSrc1 = _termGroupName + "|" + _termSetName + "|\"" + termName1 + "\"";
+                string termSrc2 = _termGroupName + "|" + _termSetName + "|" + termName2;
+                termLines.Add(termSrc1);
+                termLines.Add(termSrc2);
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = session.GetDefaultSiteCollectionTermStore();
+                site.ImportTerms(termLines.ToArray(), 1033, termStore, "|");
+
+                var terms = site.ExportTermSet(_termSetId, false);
+                string termDest1 = terms.SingleOrDefault(t => t.Contains(termName1));
+                Assert.AreEqual(termSrc1, termDest1);
+                string termDest2 = terms.SingleOrDefault(t => t.Contains(termName2));
+                Assert.AreEqual(termSrc2, termDest2);
+            }
+        }
+
+        [TestMethod()]
         public void ImportTermSetSampleShouldCreateSetTest()
         {
             var importSetId = Guid.NewGuid();
@@ -552,7 +579,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 var rootCollection = createdSet.Terms;
                 clientContext.Load(createdSet);
                 clientContext.Load(allTerms);
-                clientContext.Load(rootCollection, ts => ts.Include(t=> t.Name, t => t.Description, t => t.IsAvailableForTagging));
+                clientContext.Load(rootCollection, ts => ts.Include(t => t.Name, t => t.Description, t => t.IsAvailableForTagging));
                 clientContext.ExecuteQueryRetry();
 
                 Assert.AreEqual("Political Geography", createdSet.Name);
@@ -601,7 +628,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termGroup = termStore.GetGroup(_termGroupId);
 
                 // Act
-                var termSet = termGroup.ImportTermSet(SampleUpdateTermSetPath, UpdateTermSetId, synchroniseDeletions:true, termSetIsOpen:true);
+                var termSet = termGroup.ImportTermSet(SampleUpdateTermSetPath, UpdateTermSetId, synchroniseDeletions: true, termSetIsOpen: true);
             }
 
             using (var clientContext = TestCommon.CreateClientContext())

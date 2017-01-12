@@ -1435,8 +1435,13 @@ namespace Microsoft.SharePoint.Client
         {
             if (name == null)
                 return (string)null;
-            else
-                return TrimSpacesRegex.Replace(name, " ").Replace('＆', '&').Replace('＂', '"');
+
+            name = TrimSpacesRegex.Replace(name, " ").Replace('＆', '&').Replace('＂', '"');
+            if (name.Contains(",") && !name.StartsWith("\"") && !name.EndsWith("\""))
+            {
+                name = '"' + name + '"'; //Add quotes for terms with comma, if not parsing breaks on import
+            }
+            return name;
         }
 
         /// <summary>
@@ -1966,7 +1971,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("Bound TaxonomyItem must be either a TermSet or a Term");
 
             termSet.EnsureProperties(ts => ts.TermStore);
-            
+
             // set the SSP ID and Term Set ID on the taxonomy field
             var taxField = clientContext.CastTo<TaxonomyField>(field);
             taxField.SspId = termSet.TermStore.Id;
