@@ -445,9 +445,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var createdView = createdList.Views.Add(viewCI);
-                createdView.EnsureProperties(v => v.Scope,v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView);
+                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView);
                 web.Context.ExecuteQueryRetry();
-                
+
                 if (urlHasValue)
                 {
                     //restore original title 
@@ -530,7 +530,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                
+
                 // JSLink
                 var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
                 if (jslinkElement != null)
@@ -1026,7 +1026,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-#region UserCustomActions
+                #region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1081,11 +1081,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-#endregion
+                #endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
-                 
+
                     // Check if we need to add a content type
 
                     var existingContentTypes = existingList.ContentTypes;
@@ -1094,7 +1094,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
                     {
-                        WriteWarning($"You specified to remove existing content types for the list  with url '{existingList.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.",ProvisioningMessageType.Warning);
+                        WriteWarning($"You specified to remove existing content types for the list  with url '{existingList.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
                     }
 
                     var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
@@ -1813,7 +1813,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    var schemaXml = ParseFieldSchema(field.SchemaXml, lists);
+                    var schemaXml = ParseFieldSchema(field.SchemaXml, web, lists);
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
@@ -1855,14 +1855,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (sourceList != null)
                                 fieldElement.Attribute("List").SetValue($"{{listid:{sourceList.Title}}}");
                         }
-
-                        list.Fields.Add(new Model.Field { SchemaXml = fieldElement.ToString() });
+                        var fieldSchema = fieldElement.ToString();
+                        if (field.TypeAsString.StartsWith("TaxonomyField"))
+                        {
+                            fieldSchema = TokenizeTaxonomyField(web, fieldElement);
+                        }
+                        list.Fields.Add(new Model.Field { SchemaXml = ParseFieldSchema(fieldSchema, web, lists) });
                     }
 
                     if (field.TypeAsString.StartsWith("TaxonomyField"))
                     {
-                        schemaXml = TokenizeTaxonomyField(web, fieldElement);
-
                         // find the corresponding taxonomy container text field and include it too
                         var taxField = (TaxonomyField)field;
                         taxField.EnsureProperties(f => f.TextField, f => f.Id);
@@ -1871,8 +1873,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(noteField, nf => nf.SchemaXml);
                         web.Context.ExecuteQueryRetry();
                         var noteSchemaXml = XElement.Parse(noteField.SchemaXml);
-                        noteSchemaXml.Attribute("SourceID").Remove();
-                        list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), lists) });
+                        noteSchemaXml.Attribute("SourceID")?.Remove();
+                        list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), web, lists) });
                     }
 
                 }
@@ -1934,13 +1936,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private string ParseFieldSchema(string schemaXml, List<List> lists)
+        private string ParseFieldSchema(string schemaXml, Web web, List<List> lists)
         {
             foreach (var list in lists)
             {
                 schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
             }
-
+            schemaXml = Regex.Replace(schemaXml, web.Id.ToString(), "{{siteid}}", RegexOptions.IgnoreCase);
+            schemaXml = Regex.Replace(schemaXml, web.Id.ToString("D"), "{siteid}", RegexOptions.IgnoreCase);
             return schemaXml;
         }
 
