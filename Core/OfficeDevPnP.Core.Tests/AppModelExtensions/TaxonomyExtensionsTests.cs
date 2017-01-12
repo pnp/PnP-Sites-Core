@@ -529,14 +529,14 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
-        public void HandleTermsWithCommaTest()
+        public void HandleTermsWithCommaQuotesTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
 
                 var termName1 = "Comma,Comma";
-                var termName2 = "Quote \" Quoute";
+                var termName2 = "Quote \" Quote";
 
                 List<string> termLines = new List<string>();
                 string termSrc1 = _termGroupName + "|" + _termSetName + "|\"" + termName1 + "\"";
