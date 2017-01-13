@@ -48,8 +48,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     directoryFiles.AddRange(directory.GetDirectoryFiles(metadataProperties));
                 }
 
-                foreach (var file in template.Files.Union(directoryFiles))
+                var filesToProcess = template.Files.Union(directoryFiles).ToArray();
+                var currentFileIndex = 0;
+                foreach (var file in filesToProcess)
                 {
+                    currentFileIndex++;
+                    WriteMessage($"File|{file.Src}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
@@ -184,6 +188,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+            WriteMessage("Done processing files",ProvisioningMessageType.Completed);
             return parser;
         }
 

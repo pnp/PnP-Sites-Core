@@ -10,6 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         Progress = 0,
         Error = 1,
         Warning = 2,
+        Completed = 3,
         EasterEgg = 100
     }
 }

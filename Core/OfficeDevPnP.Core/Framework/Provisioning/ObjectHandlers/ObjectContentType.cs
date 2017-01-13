@@ -41,9 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingCTs = web.ContentTypes.ToList();
                 var existingFields = web.Fields.ToList();
-
+                var currentCtIndex = 0;
                 foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
+                    currentCtIndex++;
+                    WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{template.ContentTypes.Count}", ProvisioningMessageType.Progress);
                     var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                     if (existingCT == null)
                     {
@@ -76,6 +78,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+            WriteMessage($"Done processing Content Types", ProvisioningMessageType.Completed);
             return parser;
         }
 
@@ -457,9 +460,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.ExecuteQueryRetry();
 
             List<ContentType> ctsToReturn = new List<ContentType>();
-
+            var currentCtIndex = 0;
             foreach (var ct in cts)
             {
+                currentCtIndex++;
+                WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{cts.Count()}", ProvisioningMessageType.Progress);
+
                 if (!BuiltInContentTypeId.Contains(ct.StringId))
                 {
                     string ctDocumentTemplate = null;
@@ -561,6 +567,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     ctsToReturn.Add(newCT);
                 }
             }
+            WriteMessage("Done processing Content Types", ProvisioningMessageType.Completed);
             return ctsToReturn;
         }
 
