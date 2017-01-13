@@ -128,7 +128,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    WriteMessage("Done processing lists",ProvisioningMessageType.Completed);
                     #endregion
 
                     #region FieldRefs
@@ -203,7 +202,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
                         }
-                        WriteMessage("Done processing fieldrefs",ProvisioningMessageType.Completed);
                     }
 
                     #endregion
@@ -281,7 +279,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
-                            WriteMessage("Done processing columns", ProvisioningMessageType.Completed);
                         }
                     }
 
@@ -334,16 +331,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
 
                         }
-                        WriteMessage($"Done creating views", ProvisioningMessageType.Completed);
-                        //// Removing existing views set the OnQuickLaunch option to false and need to be re-set.
-                        //if (list.OnQuickLaunch && list.RemoveExistingViews && list.Views.Count > 0)
-                        //{
-                        //    createdList.RefreshLoad();
-                        //    web.Context.ExecuteQueryRetry();
-                        //    createdList.OnQuickLaunch = list.OnQuickLaunch;
-                        //    createdList.Update();
-                        //    web.Context.ExecuteQueryRetry();
-                        //}
                     }
 
                     #endregion
@@ -380,6 +367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     web.Context.ExecuteQueryRetry();
 
+                    WriteMessage("Done processing lists",ProvisioningMessageType.Completed);
                 }
             }
             return parser;
@@ -389,7 +377,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             try
             {
-                
                 var viewElement = XElement.Parse(view.SchemaXml);
                 var displayNameElement = viewElement.Attribute("DisplayName");
                 if (displayNameElement == null)
