@@ -160,6 +160,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLFileSystemGetTemplate3Test()
+        {
+            var _expectedID = "SPECIALTEAM";
+            var _expectedVersion = 1.0;
+
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-02.xml");
+
+            Assert.AreEqual(_expectedID, result.Id);
+            Assert.AreEqual(_expectedVersion, result.Version);
+            Assert.IsTrue(result.Lists.Count == 2);
+            Assert.IsTrue(result.SiteFields.Count == 4);
+        }
+
         #endregion
 
         #region XML Azure Storage tests
