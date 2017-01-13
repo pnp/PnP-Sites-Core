@@ -84,6 +84,16 @@
           </pnp:CustomAction>
         </pnp:WebCustomActions>
       </pnp:CustomActions>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="false" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="StructuralLocal">
+          <pnp:StructuralNavigation RemoveExistingNodes="false">
+            <pnp:NavigationNode Title="Start" Url="{site}" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
       <pnp:Files>
         <pnp:File Src="Logo.png" Folder="SiteAssets" Overwrite="true" />
         <pnp:File Src="CustomPage.aspx" Folder="SitePages" Overwrite="true" />

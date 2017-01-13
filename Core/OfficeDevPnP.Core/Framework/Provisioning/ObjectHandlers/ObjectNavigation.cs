@@ -252,26 +252,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var navigationType = currentNavigation ?
                 Enums.NavigationType.QuickLaunch :
                 Enums.NavigationType.TopNavigationBar;
-
-            // Remove existing nodes, if requested
-            if (structuralNavigation.RemoveExistingNodes || clearNavigation)
+            if (structuralNavigation != null)
             {
-                if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
+                // Remove existing nodes, if requested
+                if (structuralNavigation.RemoveExistingNodes || clearNavigation)
                 {
-                    WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation",ProvisioningMessageType.Warning);
-                    ClearWarningShown = true;
+                    if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
+                    {
+                        WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation", ProvisioningMessageType.Warning);
+                        ClearWarningShown = true;
+                    }
+                    web.DeleteAllNavigationNodes(navigationType);
                 }
-                web.DeleteAllNavigationNodes(navigationType);
-            }
 
-            // Provision root level nodes, and children recursively
-            ProvisionStructuralNavigationNodes(
-                web,
-                parser,
-                navigationType,
-                structuralNavigation.NavigationNodes,
-                scope
-                );
+                // Provision root level nodes, and children recursively
+                if (structuralNavigation.NavigationNodes.Any())
+                {
+                    ProvisionStructuralNavigationNodes(
+                        web,
+                        parser,
+                        navigationType,
+                        structuralNavigation.NavigationNodes,
+                        scope
+                    );
+                }
+            }
         }
 
         private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null)
