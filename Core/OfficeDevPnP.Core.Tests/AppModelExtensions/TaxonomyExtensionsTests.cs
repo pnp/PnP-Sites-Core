@@ -529,20 +529,52 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod()]
-        public void HandleTermsWithCommaQuotesTest()
+        public void HandleTermsWithCommaTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
 
                 var termName1 = "Comma,Comma";
-                var termName2 = "Quote \" Quote";
 
                 List<string> termLines = new List<string>();
                 string termSrc1 = _termGroupName + "|" + _termSetName + "|\"" + termName1 + "\"";
+                termLines.Add(termSrc1);
+
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = session.GetDefaultSiteCollectionTermStore();
+                site.ImportTerms(termLines.ToArray(), 1033, termStore, "|");
+
+                var terms = site.ExportTermSet(_termSetId, false);
+                string termDest1 = terms.SingleOrDefault(t => t.Contains(termName1));
+                Assert.AreEqual(termSrc1, termDest1);
+            }
+        }
+
+        [TestMethod()]
+        public void HandleTermsWithQuotesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var site = clientContext.Site;
+
+                var termName1 = "\"Quotes and , comma\"";
+                var termName2 = "Quote \" In the Middle";
+                var termName3 = "\"Quote Start";
+                var termName4 = "Quote End\"";
+                var termName5 = "\"StartQuote \" MiddleQuote";
+
+                List<string> termLines = new List<string>();
+                string termSrc1 = _termGroupName + "|" + _termSetName + "|" + termName1;
                 string termSrc2 = _termGroupName + "|" + _termSetName + "|" + termName2;
+                string termSrc3 = _termGroupName + "|" + _termSetName + "|" + termName3;
+                string termSrc4 = _termGroupName + "|" + _termSetName + "|" + termName4;
+                string termSrc5 = _termGroupName + "|" + _termSetName + "|" + termName5;
                 termLines.Add(termSrc1);
                 termLines.Add(termSrc2);
+                termLines.Add(termSrc3);
+                termLines.Add(termSrc4);
+                termLines.Add(termSrc5);
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
                 var termStore = session.GetDefaultSiteCollectionTermStore();
@@ -553,6 +585,12 @@ namespace Microsoft.SharePoint.Client.Tests
                 Assert.AreEqual(termSrc1, termDest1);
                 string termDest2 = terms.SingleOrDefault(t => t.Contains(termName2));
                 Assert.AreEqual(termSrc2, termDest2);
+                string termDest3 = terms.SingleOrDefault(t => t.Contains(termName3));
+                Assert.AreEqual(termSrc3, termDest3);
+                string termDest4 = terms.SingleOrDefault(t => t.Contains(termName4));
+                Assert.AreEqual(termSrc4, termDest4);
+                string termDest5 = terms.SingleOrDefault(t => t.Contains(termName5));
+                Assert.AreEqual(termSrc5, termDest5);
             }
         }
 

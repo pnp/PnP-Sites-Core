@@ -583,8 +583,6 @@ namespace Microsoft.SharePoint.Client
                 var items = line.Split(new[] { delimiter }, StringSplitOptions.None);
                 if (items.Any())
                 {
-
-
                     List<string> terms = null;
 
                     var groupItem = items[0];
@@ -669,7 +667,7 @@ namespace Microsoft.SharePoint.Client
                                 item = items[q + 2];
                                 item = item.Replace(";#", "|");
                             }
-                            sb.AppendFormat("{0},", item);
+                            sb.AppendFormat("{0},", NormalizeName(item));
                         }
                         if (terms != null)
                         {
@@ -1425,10 +1423,14 @@ namespace Microsoft.SharePoint.Client
 
         private static string NormalizeName(string name)
         {
-            if (name == null)
-                return (string)null;
-            else
-                return TrimSpacesRegex.Replace(name, " ").Replace('&', '＆').Replace('"', '＂');
+            if (name == null) return (string)null;
+            name = TrimSpacesRegex.Replace(name, " ").Replace('&', '＆');
+
+            if (!name.Contains(",") || !name.StartsWith("\"") || !name.EndsWith("\""))
+            {
+                name = name.Replace('"', '＂');
+            }
+            return name;
         }
 
         private static string DenormalizeName(string name)
