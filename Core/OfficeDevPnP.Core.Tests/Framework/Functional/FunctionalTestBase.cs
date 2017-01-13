@@ -41,6 +41,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     // Apply noscript setting
                     if (isNoScriptSite)
                     {
+                        Console.WriteLine("Setting site {0} as NoScript", centralSiteCollectionUrl);
                         tenant.SetSiteProperties(centralSiteCollectionUrl, noScriptSite: true);
                     }
 #endif
