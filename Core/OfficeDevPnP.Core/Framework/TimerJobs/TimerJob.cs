@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Framework.TimerJobs.Enums;
 using OfficeDevPnP.Core.Framework.TimerJobs.Utilities;
 using OfficeDevPnP.Core.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.TimerJobs
 {
@@ -63,8 +64,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private List<string> sitesToProcess;
         private bool expandSubSites = false;
         // Threading
-        private static int numberOfThreadsNotYetCompleted;
-        private static ManualResetEvent doneEvent;
+        private int numberOfThreadsNotYetCompleted;
+        private ManualResetEvent doneEvent;
         private bool useThreading = true;
         private int maximumThreads = 5;
         #endregion
@@ -345,7 +346,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             // Instantiate the needed ClientContext objects
             ClientContext ccWeb = CreateClientContext(site);
-            ClientContext ccSite = null;
+            ClientContext ccSite;
 
             if (rootSite.Equals(site, StringComparison.InvariantCultureIgnoreCase))
             {
@@ -1164,14 +1165,11 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 throw new ArgumentNullException(nameof(site));
             }
 
-            site = site.ToLower();
+            site = site.ToLower(CultureInfo.InvariantCulture);
 
-            if (!site.Contains("*"))
+            if (!site.Contains("*") && !IsValidUrl(site))
             {
-                if (!IsValidUrl(site))
-                {
-                    throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), nameof(site));
-                }
+                throw new ArgumentException(string.Format(CoreResources.TimerJob_AddSite_InvalidUrl, site), nameof(site));
             }
 
             if (!requestedSites.Contains(site))
@@ -1452,7 +1450,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             }
             else
             {
-                ClientContext ccEnumerate = null;
+                ClientContext ccEnumerate;
                 //Good, we can use search for user profile and tenant API enumeration for regular sites
 #if !ONPREMISES
                 if (AuthenticationType == AuthenticationType.AppOnly)
