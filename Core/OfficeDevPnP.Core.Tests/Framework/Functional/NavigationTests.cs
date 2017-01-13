@@ -29,8 +29,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public NavigationTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f5f12c31-8aae-43f1-81d6-c389cb1c7505";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_f5f12c31-8aae-43f1-81d6-c389cb1c7505/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_fdde9ab9-339a-443c-a951-7d1f30cf582b";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_fdde9ab9-339a-443c-a951-7d1f30cf582b/sub";
         }
         #endregion
 
@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebNavigationTest()
         {
-            new NavigationImplementation().SiteCollectionNavigation(centralSubSiteUrl);
+            new NavigationImplementation().WebNavigation(centralSubSiteUrl);
         }
         #endregion
 

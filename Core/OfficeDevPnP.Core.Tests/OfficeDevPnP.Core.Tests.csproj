@@ -374,7 +374,6 @@
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
     <Compile Include="Framework\Functional\LocalizationNoScriptTest.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
-    <Compile Include="Framework\Functional\NavigationNoScriptTests.cs" />
     <Compile Include="Framework\Functional\NavigationTests.cs" />
     <Compile Include="Framework\Functional\PagesNoScriptTests.cs" />
     <Compile Include="Framework\Functional\PagesTests.cs" />

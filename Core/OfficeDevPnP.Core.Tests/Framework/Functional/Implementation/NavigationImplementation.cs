@@ -16,11 +16,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
         {
             using (var cc = TestCommon.CreateClientContext(url))
             {
-                // Publishing needs to be activated for this test
-                Prerequisite_EnablePublishingFeatures(cc);
-
-                // Termset is required to choose navigation term in managed navigation section
-                Prerequisite_CreateTermGroup(cc);
+                // Publishing needs to be activated for this test and we need a termset to be present
+                ImplementPrerequisites(cc);
 
                 #region Managed_Structural
                 // Retrieved target xml data is not matching with source xml navigation types so changing navigation settings to get correct data.
@@ -30,7 +27,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 NavigationValidator nv = new NavigationValidator();
                 nv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv.Validate(result.SourceTemplate.Navigation, result.TargetTemplate.Navigation, result.SourceTokenParser));
-
                 #endregion
 
                 #region Structural_Managed
@@ -48,8 +44,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
         {
             using (var cc = TestCommon.CreateClientContext(url))
             {
-                // Publishing needs to be activated for this test
-                Prerequisite_EnablePublishingFeatures(cc);
+                // Publishing needs to be activated for this test and we need a termset to be present
+                ImplementPrerequisites(cc);
 
                 #region Managed_Structural
                 // Retrieved target xml data is not matching with source xml navigation types so changing navigation settings to get correct data.
@@ -59,7 +55,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 NavigationValidator nv = new NavigationValidator();
                 nv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv.Validate(result.SourceTemplate.Navigation, result.TargetTemplate.Navigation, result.SourceTokenParser));
-
                 #endregion
 
                 #region Structural_Managed
@@ -129,14 +124,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
             }
         }
 
-        private void Prerequisite_CreateTermGroup(ClientContext cc)
+        private void ImplementPrerequisites(ClientContext cc)
         {
-            TestProvisioningTemplate(cc, "navigation_add_1605.xml", Handlers.TermGroups);
-        }
-
-        private void Prerequisite_EnablePublishingFeatures(ClientContext cc)
-        {
-            TestProvisioningTemplate(cc, "navigation_add_prereq.xml", Handlers.Features);
+            TestProvisioningTemplate(cc, "navigation_add_prereq.xml", Handlers.TermGroups | Handlers.Features);
         }
         #endregion
 
