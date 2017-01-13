@@ -462,7 +462,7 @@ namespace Microsoft.SharePoint.Client
                 if (storageMaximumLevel != null)
                     siteProps.StorageMaximumLevel = storageMaximumLevel.Value;
                 if (storageWarningLevel != null)
-                    siteProps.StorageWarningLevel = storageMaximumLevel.Value;
+                    siteProps.StorageWarningLevel = storageWarningLevel.Value;
                 if (userCodeMaximumLevel != null)
                     siteProps.UserCodeMaximumLevel = userCodeMaximumLevel.Value;
                 if (userCodeWarningLevel != null)
