@@ -295,7 +295,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
+#if !ONPREMISES
+                _willExtract = true;
+#else
                 _willExtract = web.Context.Credentials != null ? true : false;
+#endif
             }
             return _willExtract.Value;
         }
