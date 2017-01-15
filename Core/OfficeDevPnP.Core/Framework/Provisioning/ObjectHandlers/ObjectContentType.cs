@@ -8,6 +8,7 @@ using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
+using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -24,11 +25,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
-                if (web.IsSubSite())
-                {
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
-                    return parser;
-                }
+                //if (web.IsSubSite())
+                //{
+                //    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
+                //    return parser;
+                //}
 
                 // Check if this is not a noscript site as we're not allowed to update some properties
                 bool isNoScriptSite = web.IsNoScriptSite();
@@ -191,7 +192,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
-                    var field = web.Fields.GetById(fieldId);
+                    var field = web.AvailableFields.GetById(fieldRef.Id);
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
@@ -258,19 +259,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Microsoft.SharePoint.Client.Field field = null;
                 try
                 {
-                    // Try to get the field by ID
-                    field = web.Fields.GetById(fieldRef.Id);
+                    field = web.AvailableFields.GetById(fieldRef.Id);
                 }
                 catch (ArgumentException)
                 {
-                    // In case of failure, if we have the name
-                    if (!String.IsNullOrEmpty(fieldRef.Name))
+                    if (!string.IsNullOrEmpty(fieldRef.Name))
                     {
-                        // Let's try with that one
-                        field = web.Fields.GetByInternalNameOrTitle(fieldRef.Name);
+                        field = web.AvailableFields.GetByInternalNameOrTitle(fieldRef.Name);
                     }
                 }
-
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
                 web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
@@ -436,11 +433,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // if this is a sub site then we're not creating content type entities. 
-                if (web.IsSubSite())
-                {
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
-                    return template;
-                }
+                //if (web.IsSubSite())
+                //{
+                //    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
+                //    return template;
+                //}
 
                 template.ContentTypes.AddRange(GetEntities(web, scope, creationInfo, template));
 
@@ -477,8 +474,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    ContentType newCT = new ContentType
-                        (ct.StringId,
+                    ContentType newCT = new ContentType(
+                        ct.StringId,
                         ct.Name,
                         ct.Description,
                         ct.Group,
