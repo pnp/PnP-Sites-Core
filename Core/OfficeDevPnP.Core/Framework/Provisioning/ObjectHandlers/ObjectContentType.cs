@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (template.ContentTypes.Count > 0 && web.IsSubSite())
                 {
-                    WriteMessage("While technically possible, we recommend against provisioning content types to subwebs. Consider publishing the content types to the root site collection instead.",ProvisioningMessageType.Warning);
+                    WriteMessage("While technically possible, we recommend against provisioning content types to subwebs. Consider publishing the content types to the site collection root web instead.",ProvisioningMessageType.Warning);
                 }
                 foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
