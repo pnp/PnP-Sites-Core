@@ -456,7 +456,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (cts.Count > 0 && web.IsSubSite())
             {
-                WriteMessage("We discovered site collections in this subweb. While technically possible, we recommend moving these content types to the root site collection. Consider excluding them from this template.", ProvisioningMessageType.Warning);
+                WriteMessage("We discovered content types in this subweb. While technically possible, we recommend moving these content types to the root site collection. Consider excluding them from this template.", ProvisioningMessageType.Warning);
             }
             List<ContentType> ctsToReturn = new List<ContentType>();
             var currentCtIndex = 0;
