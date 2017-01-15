@@ -24,13 +24,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // if this is a sub site then we're not provisioning content types. Technically this can be done but it's not a recommended practice
-                //if (web.IsSubSite())
-                //{
-                //    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
-                //    return parser;
-                //}
-
                 // Check if this is not a noscript site as we're not allowed to update some properties
                 bool isNoScriptSite = web.IsNoScriptSite();
 
@@ -43,6 +36,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingCTs = web.ContentTypes.ToList();
                 var existingFields = web.Fields.ToList();
                 var currentCtIndex = 0;
+
+                if (template.ContentTypes.Count > 0 && web.IsSubSite())
+                {
+                    WriteMessage("While technically possible, we recommend against provisioning content types to subwebs. Consider publishing the content types to the root site collection instead.",ProvisioningMessageType.Warning);
+                }
                 foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                 {
                     currentCtIndex++;
@@ -456,6 +454,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks));
             web.Context.ExecuteQueryRetry();
 
+            if (cts.Count > 0 && web.IsSubSite())
+            {
+                WriteMessage("We discovered site collections in this subweb. While technically possible, we recommend moving these content types to the root site collection. Consider excluding them from this template.", ProvisioningMessageType.Warning);
+            }
             List<ContentType> ctsToReturn = new List<ContentType>();
             var currentCtIndex = 0;
             foreach (var ct in cts)
