@@ -44,11 +44,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var field in fields)
                 {
                     currentFieldIndex++;
-                    
+
                     XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
                     var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
-                    WriteMessage($"Field|{(fieldInternalName != null ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
+                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
@@ -298,7 +298,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-       
+
 
         private static void ValidateTaxonomyFieldDefaultValue(TaxonomyField field)
         {
@@ -434,7 +434,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //}
                             //}
                         }
-                        
+
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
