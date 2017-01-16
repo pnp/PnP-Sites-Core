@@ -130,6 +130,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
+
+            // make sure fields are in the correct order
+            var existingFieldNames = existingContentType.FieldLinks.Select(fld => fld.Name).ToList();
+            var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToList();
+            if (!existingFieldNames.SequenceEqual(ctFieldNames))
+            {
+                existingContentType.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
+                isDirty = true;
+            }
+
             if (!isNoScriptSite)
             {
                 if (templateContentType.DisplayFormUrl != null && existingContentType.DisplayFormUrl != parser.ParseString(templateContentType.DisplayFormUrl))
