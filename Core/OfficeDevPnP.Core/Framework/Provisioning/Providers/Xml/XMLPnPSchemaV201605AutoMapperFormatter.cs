@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // AutoMapper configuration
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new FromDomainModelToV201605Profile());
+                cfg.AddProfile(new V201605Profile());
             });
 
             return (config.CreateMapper());
@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // AutoMapper configuration
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new FromV201605ToDomainModelProfile());
+                cfg.AddProfile(new V201605Profile());
             });
 
             return (config.CreateMapper());

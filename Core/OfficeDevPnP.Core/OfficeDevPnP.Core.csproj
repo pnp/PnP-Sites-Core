@@ -668,8 +668,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromListToTypedArrayResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDictionaryToArrayConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromStringToDocumentTemplateResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperProfiles\FromDomainModelToV201605Profile.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperProfiles\FromV201605ToDomainModelProfile.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperProfiles\V201605Profile.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.cs">
