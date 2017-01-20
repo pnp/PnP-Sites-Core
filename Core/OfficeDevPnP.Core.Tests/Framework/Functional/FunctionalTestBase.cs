@@ -37,11 +37,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
 
+#if !ONPREMISES                    
                     // Apply noscript setting
                     if (isNoScriptSite)
                     {
+                        Console.WriteLine("Setting site {0} as NoScript", centralSiteCollectionUrl);
                         tenant.SetSiteProperties(centralSiteCollectionUrl, noScriptSite: true);
                     }
+#endif
                 }
             }
         }
@@ -76,9 +79,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
 
-        #endregion
+#endregion
 
-        #region Helper methods
+#region Helper methods
 #if !ONPREMISES
         internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
@@ -308,7 +311,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
-        #endregion
+#endregion
 
     }
 }

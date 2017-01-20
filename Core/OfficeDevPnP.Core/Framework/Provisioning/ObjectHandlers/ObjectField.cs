@@ -40,11 +40,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
                 var fields = template.SiteFields;
 
+                var currentFieldIndex = 0;
                 foreach (var field in fields)
                 {
+                    currentFieldIndex++;
+
                     XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
-
+                    var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
+                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
@@ -71,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                 }
             }
+            WriteMessage($"Done processing fields", ProvisioningMessageType.Completed);
             return parser;
         }
 
@@ -177,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     var fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
-                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
+                    WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId);
 
                 }
@@ -293,7 +298,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-       
+
 
         private static void ValidateTaxonomyFieldDefaultValue(TaxonomyField field)
         {
@@ -396,8 +401,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var taxTextFieldsToMoveUp = new List<Guid>();
                 var calculatedFieldsToMoveDown = new List<Guid>();
 
+                var currentFieldIndex = 0;
+                var fieldsToProcessCount = existingFields.Count;
                 foreach (var field in existingFields)
                 {
+                    currentFieldIndex++;
+                    WriteMessage($"Field|{field.InternalName}|{currentFieldIndex}|{fieldsToProcessCount}", ProvisioningMessageType.Progress);
                     if (!BuiltInFieldId.Contains(field.Id))
                     {
                         var fieldXml = field.SchemaXml;
@@ -407,7 +416,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var listIdentifier = element.Attribute("List") != null ? element.Attribute("List").Value : null;
                         if (!string.IsNullOrEmpty(listIdentifier))
                         {
-                            var listGuid = Guid.Empty;
+                            //var listGuid = Guid.Empty;
                             fieldXml = ParseFieldSchema(fieldXml, web.Lists);
                             element = XElement.Parse(fieldXml);
                             //if (Guid.TryParse(listIdentifier, out listGuid))
@@ -425,7 +434,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //}
                             //}
                         }
-                        
+
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
@@ -507,6 +516,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
+            WriteMessage($"Done processing fields", ProvisioningMessageType.Completed);
+
             return template;
         }
 

@@ -1,20 +1,5 @@
 ﻿<?xml version="1.0"?>
 <pnp:ProvisioningTemplate ID="navigation_add_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:TermGroups>
-    <!-- tenant/farm term group -->
-    <pnp:TermGroup Name="TG_1">
-      <pnp:TermSets>
-        <!-- Basic term set -->
-        <pnp:TermSet Name="TS_1_1" >
-          <pnp:Terms>
-            <!-- Terms with custom sort ordering-->
-            <pnp:Term Name="TS_1_1_1" CustomSortOrder="2" />
-            <pnp:Term Name="TS_1_1_2" CustomSortOrder="1" />
-          </pnp:Terms>
-        </pnp:TermSet>
-      </pnp:TermSets>
-    </pnp:TermGroup>
-  </pnp:TermGroups>
   <pnp:Navigation>
     <pnp:GlobalNavigation NavigationType="Managed">
       <pnp:ManagedNavigation

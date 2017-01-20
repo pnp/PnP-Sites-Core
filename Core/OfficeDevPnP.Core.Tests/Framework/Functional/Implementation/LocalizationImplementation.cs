@@ -11,6 +11,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
 {
     internal class LocalizationImplementation : ImplementationBase
     {
+#if !SP2013
         internal void SiteCollectionsLocalization(string url)
         {
             using (var cc = TestCommon.CreateClientContext(url))
@@ -47,7 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
         }
 
 
-        #region Helper methods
+#region Helper methods
         private void CleanUpTestData(ClientContext cc)
         {
             DeleteLists(cc);
@@ -168,7 +169,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 }
             }
         }
-        #endregion
+#endregion
+
+#endif
 
     }
 }

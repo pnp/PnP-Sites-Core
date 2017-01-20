@@ -235,6 +235,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
+        #endregion
+
+        #region XML SharePoint tests
+          
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLSharePointGetTemplate1Test()
