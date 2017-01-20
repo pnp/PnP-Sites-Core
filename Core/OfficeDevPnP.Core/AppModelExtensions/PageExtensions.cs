@@ -15,6 +15,7 @@ using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.Personalizatio
 using System.Net;
 using System.IO;
 using System.Text;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -78,24 +79,57 @@ namespace Microsoft.SharePoint.Client
             var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
             var limitedWebPartManager = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
 
-            IEnumerable<WebPartDefinition> query;
+            IEnumerable<WebPartDefinition> webparts;
 
+            bool hasZoneId = false;
+            try
+            {
+                var zoneIdQuery = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.ZoneId));
+                web.Context.ExecuteQueryRetry();
+                hasZoneId = true;
+            }
+            catch(ServerException ex)
+            {
+                hasZoneId = false;
+            }
 #if SP2016
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
-            query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            webparts = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
 #else
-            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
-            {
-                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.ZoneId, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
-            }
-            else
-            {
-                query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
-            }
-#endif
-            web.Context.ExecuteQueryRetry();
+            
+        var expressions = WebPartQuery(hasZoneId, wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden);
+        var wpQuery = (limitedWebPartManager.WebParts.IncludeWithDefaultProperties(expressions.ToArray()));
+        webparts = web.Context.LoadQuery(wpQuery);
 
-            return query;
+#endif
+
+            web.Context.ExecuteQueryRetry();
+            return webparts;
+        }
+
+   
+
+        private static List<Expression<Func<WebPartDefinition, object>>> WebPartQuery(bool hasZoneId, params Expression<Func<WebPartDefinition, object>>[] propertyExpressions)
+        {
+            var zoneIdProperty = typeof(WebPartDefinition).GetProperties().Where(pI => pI.Name == "ZoneId").FirstOrDefault();
+        
+            List<Expression<Func<WebPartDefinition, object>>> expressions = new List<Expression<Func<WebPartDefinition, object>>>();
+            expressions.AddRange(propertyExpressions);
+           
+            //Add WebPartDefinition Id
+            //Expression<Func<WebPartDefinition, object>> idExpression = wp => wp.Id;
+            //expressions.Add(idExpression);
+
+            //Add WebPartDefinition ZoneId if it exists in the reflected properties.
+            if (zoneIdProperty != null && hasZoneId)
+            {
+                Expression<Func<WebPartDefinition, object>> zoneExpression = wp => wp.ZoneId;
+                expressions.Add(zoneExpression);
+            }
+
+            return expressions;
+            //
+
         }
 
         /// <summary>
