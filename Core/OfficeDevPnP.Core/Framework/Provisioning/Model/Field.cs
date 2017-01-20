@@ -10,6 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
         private string _schemaXml = string.Empty;
+        private XElement _xelement = null;
         #endregion
 
         #region Public Properties
@@ -24,6 +25,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return this._schemaXml; }
             set { this._schemaXml = value; }
+        }
+
+        /// <summary>
+        /// Gets an XElement representation of the SchemaXml property.
+        /// </summary>
+        public XElement SchemaXElement
+        {
+            get
+            {
+                if (this._xelement == null)
+                {
+                    this._xelement = XElement.Parse(this.SchemaXml);
+                }
+                return this._xelement;
+            }
         }
 
         #endregion
