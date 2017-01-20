@@ -24,7 +24,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string SchemaXml
         {
             get { return this._schemaXml; }
-            set { this._schemaXml = value; }
+            set
+            {
+                this._xelement = null;
+                this._schemaXml = value;
+            }
         }
 
         /// <summary>
