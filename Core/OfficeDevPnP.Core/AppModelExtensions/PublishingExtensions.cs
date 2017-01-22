@@ -25,9 +25,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="schedule">Defines whether to define a schedule or not.</param>
         /// <exception cref="System.ArgumentNullException">Thrown when key or pageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentException">Thrown when key or pageName is null</exception>
-        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null,
-            bool publish = false, Folder folder = null,
-            DateTime? startDate = null, DateTime? endDate = null, Boolean schedule = false)
+        public static void AddPublishingPage(this Web web, string pageName, string pageTemplateName, string title = null, bool publish = false, Folder folder = null, DateTime? startDate = null, DateTime? endDate = null, Boolean schedule = false)
         {
             if (string.IsNullOrEmpty(pageName))
             {

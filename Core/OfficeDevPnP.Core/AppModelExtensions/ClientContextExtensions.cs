@@ -80,7 +80,7 @@ namespace Microsoft.SharePoint.Client
 #elif SP2016
                     clientContext.DisableReturnValueCache = true;
 #endif                
-                    clientContext.ExecuteQuery();
+                    clientContext.ExecuteQueryRetry();
                     return;
                 }
                 catch (WebException wex)
