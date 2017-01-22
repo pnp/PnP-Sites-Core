@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using Microsoft.SharePoint.Client.Publishing;
 using Microsoft.SharePoint.Client.Search.Query;
@@ -397,10 +398,20 @@ namespace Microsoft.SharePoint.Client
         /// Returns all app instances
         /// </summary>
         /// <param name="web">The site to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static ClientObjectList<AppInstance> GetAppInstances(this Web web)
+        public static ClientObjectList<AppInstance> GetAppInstances(this Web web, params Expression<Func<AppInstance, object>>[] expressions)
         {
             var instances = AppCatalog.GetAppInstances(web.Context, web);
+            if (expressions != null && expressions.Any())
+            {
+                web.Context.Load(instances, i => i.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                web.Context.Load(instances);
+            }
+
             web.Context.Load(instances);
             web.Context.ExecuteQueryRetry();
 
@@ -1297,6 +1308,6 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
         #endregion
-        
+
     }
 }

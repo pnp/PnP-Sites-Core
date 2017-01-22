@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -249,7 +250,7 @@ namespace Microsoft.SharePoint.Client
             return folder;
         }
 
-        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
+        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
         {
             ClientContext context = null;
             if (parentFolder != null)
@@ -278,7 +279,14 @@ namespace Microsoft.SharePoint.Client
             {
                 // Create folder for library or common URL path
                 var newFolder = folderCollection.Add(folderName);
-                folderCollection.Context.Load(newFolder);
+                if (expressions != null && expressions.Any())
+                {
+                    folderCollection.Context.Load(newFolder, expressions);
+                }
+                else
+                {
+                    folderCollection.Context.Load(newFolder);
+                }
                 folderCollection.Context.ExecuteQueryRetry();
                 return newFolder;
             }
@@ -298,7 +306,14 @@ namespace Microsoft.SharePoint.Client
                 // Get the newly created folder
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
                 // Ensure all properties are loaded (to be compatible with the previous implementation)
-                context.Load(newFolder);
+                if (expressions != null && expressions.Any())
+                {
+                    context.Load(newFolder, expressions);
+                }
+                else
+                {
+                    context.Load(newFolder);
+                }
                 context.ExecuteQueryRetry();
                 return (newFolder);
             }
@@ -335,8 +350,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to be processed - can be root web or sub site</param>
         /// <param name="parentFolder">Parent folder</param>
         /// <param name="folderPath">Folder path</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The folder structure</returns>
-        public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath)
+        public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl);
             parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
@@ -344,7 +360,7 @@ namespace Microsoft.SharePoint.Client
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
 
-            return web.EnsureFolderPath(webRelativeUrl);
+            return web.EnsureFolderPath(webRelativeUrl, expressions: expressions);
         }
 
         /// <summary>
@@ -353,13 +369,14 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to check for the named folder</param>
         /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
         /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolder(this Web web, string folderName)
+        public static Folder EnsureFolder(this Web web, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
             if (folderName.ContainsInvalidUrlChars())
             {
@@ -367,7 +384,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = web.Folders;
-            var folder = EnsureFolderImplementation(folderCollection, folderName);
+            var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
             return folder;
         }
 
@@ -376,13 +393,14 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="parentFolder">Parent folder to create under</param>
         /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
         /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolder(this Folder parentFolder, string folderName)
+        public static Folder EnsureFolder(this Folder parentFolder, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
             if (folderName.ContainsInvalidUrlChars())
             {
@@ -390,15 +408,21 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder);
+            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
             return folder;
         }
 
-        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
+        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
         {
             Folder folder = null;
-
-            folderCollection.Context.Load(folderCollection);
+            if (expressions != null && expressions.Any())
+            {
+                folderCollection.Context.Load(folderCollection, fc => fc.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                folderCollection.Context.Load(folderCollection);
+            }
             folderCollection.Context.ExecuteQueryRetry();
             foreach (Folder existingFolder in folderCollection)
             {
@@ -411,7 +435,7 @@ namespace Microsoft.SharePoint.Client
 
             if (folder == null)
             {
-                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
+                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
             }
 
             return folder;
@@ -422,6 +446,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to check for the specified folder</param>
         /// <param name="webRelativeUrl">Path to the folder, relative to the web site</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
@@ -431,7 +456,7 @@ namespace Microsoft.SharePoint.Client
         /// Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolderPath(this Web web, string webRelativeUrl)
+        public static Folder EnsureFolderPath(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
         {
             if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
 
@@ -545,7 +570,11 @@ namespace Microsoft.SharePoint.Client
 
                 currentFolder = nextFolder;
             }
-
+            if (expressions != null && expressions.Any())
+            {
+                web.Context.Load(currentFolder, expressions);
+                web.Context.ExecuteQueryRetry();
+            }
             return currentFolder;
         }
 
