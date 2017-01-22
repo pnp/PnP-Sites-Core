@@ -9,15 +9,26 @@ using Schema = OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfiles
 {
-    public class V201605Profile : Profile
+    public class V201605Profile : ProvisioningSchemaBaseMappingProfile
     {
-        public V201605Profile()
+        public V201605Profile(Type schemaTemplateType) : base(schemaTemplateType)
         {
+        }
+
+        protected override void ConfigureProfile(Type schemaTemplateType)
+        {
+            base.ConfigureProfile(schemaTemplateType);
+
             // To keep in account
             // - *Specified -> we can try to define a generic AfterMap handler
             // - Custom conversion for specific properties
             // - Default values for missing properties
             // - Collections with custom properties, like ListInstanceViews
+
+            var baseNamespace = schemaTemplateType.Namespace;
+            var provisioningTemplateType = Type.GetType($"{baseNamespace}.ProvisioningTemplate", true);
+
+            this.CreateMap(null, provisioningTemplateType).ReverseMap();
 
             CreateMap<Model.ProvisioningTemplate, Schema.ProvisioningTemplate>().ReverseMap();
             // TODO: Double check Version conversion from double to decimal
