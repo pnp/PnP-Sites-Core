@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using AutoMapper;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfiles;
+using Schema = OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {

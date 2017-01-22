@@ -665,9 +665,12 @@
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\TemplateProviderBase.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromCollectionToXmlElementsConverter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDecimalToDoubleResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDoubleToDecimalResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromListToTypedArrayResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDictionaryToArrayConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromStringToDocumentTemplateResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\MappingExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperProfiles\V201605Profile.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />

@@ -56,7 +56,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLPnPSchemaVersion.V201605:
                 default:
-                    return (new XMLPnPSchemaV201605AutoMapperFormatter());
+                    return (new XMLPnPSchemaV201605Formatter());
+                    // return (new XMLPnPSchemaV201605AutoMapperFormatter());
             }
         }
 
