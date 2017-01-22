@@ -44,31 +44,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperExten
                             var referenceDestinationProperty = destinationProperties.FirstOrDefault(p => p.Name == property.Name.Substring(0, property.Name.Length - SpecifiedSuffix.Length));
 
                             // If we have such a property, let's dig into it's mapping property to determine
-                            // the value to assign to the *Specified property inthe XML Schema model
+                            // the value to assign to the *Specified property in the XML Schema model
                             if (referenceDestinationProperty != null)
                             {
-                                // If the corresponding property in the source object is of type Nullable<T>
+                                // If the corresponding property in the source object exists
                                 var sourceProperty = sourceProperties.FirstOrDefault(p => p.Name == referenceDestinationProperty.Name);
-                                if (System.Nullable.GetUnderlyingType(sourceProperty.PropertyType) != null)
+                                if (sourceProperty != null)
                                 {
-                                    // We need to evaluate the HasValue property in order to define the *Specified property
-                                    var hasValueOutcome = false;
-                                    var hasValue = sourceProperty.PropertyType.GetProperty("HasValue", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                                    var nullablePropertyValue = sourceProperty.GetValue(source);
-                                    if (nullablePropertyValue != null)
+                                    // And if it is of type Nullable<T>
+                                    if (System.Nullable.GetUnderlyingType(sourceProperty.PropertyType) != null)
                                     {
-                                        hasValueOutcome = (Boolean)hasValue.GetValue(nullablePropertyValue);
-                                    }
+                                        // We need to evaluate the HasValue property in order to define the *Specified property
+                                        var hasValueOutcome = false;
+                                        var hasValue = sourceProperty.PropertyType.GetProperty("HasValue", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                                        var nullablePropertyValue = sourceProperty.GetValue(source);
+                                        if (nullablePropertyValue != null)
+                                        {
+                                            hasValueOutcome = (Boolean)hasValue.GetValue(nullablePropertyValue);
+                                        }
 
-                                    // Set the *Specified value to the outcome
-                                    property.SetValue(destination, hasValueOutcome);
-                                }
-                                else
-                                {
-                                    // Otherwise we simply need to set the *Specified property if
-                                    // the source property value does not equal default(T), where 
-                                    // T is the type of the source property 
-                                    property.SetValue(destination, sourceProperty.GetValue(source) != null);
+                                        // Set the *Specified value to the outcome
+                                        property.SetValue(destination, hasValueOutcome);
+                                    }
+                                    else
+                                    {
+                                        // Otherwise we simply need to set the *Specified property if
+                                        // the source property value does not equal default(T), where 
+                                        // T is the type of the source property 
+                                        property.SetValue(destination, sourceProperty.GetValue(source) != null);
+                                    }
                                 }
                             }
                         }
