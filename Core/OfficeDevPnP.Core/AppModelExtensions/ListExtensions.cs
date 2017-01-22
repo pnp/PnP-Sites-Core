@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -57,7 +58,7 @@ namespace Microsoft.SharePoint.Client
         public static EventReceiverDefinition AddRemoteEventReceiver(this List list, string name, string url, EventReceiverType eventReceiverType, EventReceiverSynchronization synchronization, int sequenceNumber, bool force)
         {
             var query = from receiver
-                     in list.EventReceivers
+                in list.EventReceivers
                         where receiver.ReceiverName == name
                         select receiver;
             var receivers = list.Context.LoadQuery(query);
@@ -98,7 +99,7 @@ namespace Microsoft.SharePoint.Client
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
             var query = from receiver
-                        in list.EventReceivers
+                in list.EventReceivers
                         where receiver.ReceiverId == id
                         select receiver;
 
@@ -124,7 +125,7 @@ namespace Microsoft.SharePoint.Client
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
             var query = from receiver
-                        in list.EventReceivers
+                in list.EventReceivers
                         where receiver.ReceiverName == name
                         select receiver;
 
@@ -143,6 +144,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region List Properties
+
         /// <summary>
         /// Sets a key/value pair in the web property bag
         /// </summary>
@@ -281,8 +283,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(contentTypeName))
             {
                 throw (contentTypeName == null)
-                  ? new ArgumentNullException(nameof(contentTypeName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(contentTypeName));
+                    ? new ArgumentNullException(nameof(contentTypeName))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(contentTypeName));
             }
 
             var _cts = list.ContentTypes;
@@ -314,8 +316,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listName))
             {
                 throw (listName == null)
-                  ? new ArgumentNullException(nameof(listName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
+                    ? new ArgumentNullException(nameof(listName))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
             }
             // Call actual implementation
             return CreateListInternal(web, null, (int)ListTemplateType.DocumentLibrary, listName, enableVersioning, urlPath: urlPath);
@@ -334,8 +336,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listTitle))
             {
                 throw (listTitle == null)
-                  ? new ArgumentNullException(nameof(listTitle))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
+                    ? new ArgumentNullException(nameof(listTitle))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
 
             var lists = web.Lists;
@@ -484,8 +486,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listName))
             {
                 throw (listName == null)
-                  ? new ArgumentNullException(nameof(listName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
+                    ? new ArgumentNullException(nameof(listName))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
             }
 
             List listToUpdate = web.Lists.GetByTitle(listName);
@@ -621,26 +623,26 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listTitle))
             {
                 throw (listTitle == null)
-                  ? new ArgumentNullException(nameof(listTitle))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
+                    ? new ArgumentNullException(nameof(listTitle))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
             if (string.IsNullOrEmpty(cultureName))
             {
                 throw (cultureName == null)
-                  ? new ArgumentNullException(nameof(cultureName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(cultureName));
+                    ? new ArgumentNullException(nameof(cultureName))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(cultureName));
             }
             if (string.IsNullOrEmpty(titleResource))
             {
                 throw (titleResource == null)
-                  ? new ArgumentNullException(nameof(titleResource))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(titleResource));
+                    ? new ArgumentNullException(nameof(titleResource))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(titleResource));
             }
             if (string.IsNullOrEmpty(descriptionResource))
             {
                 throw (descriptionResource == null)
-                  ? new ArgumentNullException(nameof(descriptionResource))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(descriptionResource));
+                    ? new ArgumentNullException(nameof(descriptionResource))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(descriptionResource));
             }
 
             List list = web.GetList(listTitle);
@@ -681,8 +683,8 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(listName))
             {
                 throw (listName == null)
-                  ? new ArgumentNullException(nameof(listName))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
+                    ? new ArgumentNullException(nameof(listName))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listName));
             }
 
             var listToQuery = web.Lists.GetByTitle(listName);
@@ -700,16 +702,23 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Loaded list instance matching to title or null</returns>
         /// <exception cref="System.ArgumentException">Thrown when listTitle is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">listTitle is null</exception>
-        public static List GetListByTitle(this Web web, string listTitle)
+        /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
+        public static List GetListByTitle(this Web web, string listTitle, params Expression<Func<List, object>>[] expressions)
         {
+            var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
+
+            if (expressions != null && expressions.Any())
+            {
+                baseExpressions.AddRange(expressions);
+            }
             if (string.IsNullOrEmpty(listTitle))
             {
                 throw (listTitle == null)
-                  ? new ArgumentNullException(nameof(listTitle))
-                  : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
+                    ? new ArgumentNullException(nameof(listTitle))
+                    : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
-
-            var lists = web.Context.LoadQuery(web.Lists).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
+            var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
+            var lists = web.Context.LoadQuery(query).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
             web.Context.ExecuteQueryRetry();
             return lists.FirstOrDefault();
         }
@@ -719,9 +728,16 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web (site) to be processed</param>
         /// <param name="webRelativeUrl">Url of list relative to the web (site), e.g. lists/testlist</param>
+        /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
         /// <returns></returns>
-        public static List GetListByUrl(this Web web, string webRelativeUrl)
+        public static List GetListByUrl(this Web web, string webRelativeUrl, params Expression<Func<List, object>>[] expressions)
         {
+            var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
+
+            if (expressions != null && expressions.Any())
+            {
+                baseExpressions.AddRange(expressions);
+            }
             if (string.IsNullOrEmpty(webRelativeUrl))
                 throw new ArgumentNullException(nameof(webRelativeUrl));
 
@@ -733,7 +749,7 @@ namespace Microsoft.SharePoint.Client
             var listServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, webRelativeUrl);
 
             var foundList = web.GetList(listServerRelativeUrl);
-            web.Context.Load(foundList, l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder);
+            web.Context.Load(foundList, baseExpressions.ToArray());
             try
             {
                 web.Context.ExecuteQueryRetry();
@@ -1016,14 +1032,14 @@ namespace Microsoft.SharePoint.Client
         /// <param name="personal"></param>
         /// <param name="paged"></param>        
         public static View CreateView(this List list,
-                                      string viewName,
-                                      ViewType viewType,
-                                      string[] viewFields,
-                                      uint rowLimit,
-                                      bool setAsDefault,
-                                      string query = null,
-                                      bool personal = false,
-                                      bool paged = false)
+            string viewName,
+            ViewType viewType,
+            string[] viewFields,
+            uint rowLimit,
+            bool setAsDefault,
+            string query = null,
+            bool personal = false,
+            bool paged = false)
         {
             if (string.IsNullOrEmpty(viewName))
                 throw new ArgumentNullException(nameof(viewName));
@@ -1055,16 +1071,24 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list"></param>
         /// <param name="id"></param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
-        public static View GetViewById(this List list, Guid id)
+        public static View GetViewById(this List list, Guid id, params Expression<Func<View, object>>[] expressions)
         {
-            id.ValidateNotNullOrEmpty("id");
+
+            id.ValidateNotNullOrEmpty(nameof(id));
 
             try
             {
                 var view = list.Views.GetById(id);
-
-                list.Context.Load(view);
+                if (expressions != null && expressions.Any())
+                {
+                    list.Context.Load(view, expressions);
+                }
+                else
+                {
+                    list.Context.Load(view);
+                }
                 list.Context.ExecuteQueryRetry();
 
                 return view;
@@ -1080,16 +1104,23 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list"></param>
         /// <param name="name"></param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
-        public static View GetViewByName(this List list, string name)
+        public static View GetViewByName(this List list, string name, params Expression<Func<View, object>>[] expressions)
         {
-            name.ValidateNotNullOrEmpty("name");
+            name.ValidateNotNullOrEmpty(nameof(name));
 
             try
             {
                 var view = list.Views.GetByTitle(name);
-
-                list.Context.Load(view);
+                if (expressions != null && expressions.Any())
+                {
+                    list.Context.Load(view, expressions);
+                }
+                else
+                {
+                    list.Context.Load(view);
+                }
                 list.Context.ExecuteQueryRetry();
 
                 return view;
