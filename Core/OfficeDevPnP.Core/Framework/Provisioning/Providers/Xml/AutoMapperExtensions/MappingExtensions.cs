@@ -24,38 +24,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperExten
         {
             return (map.AfterMap((source, destination) =>
              {
-                // Get the types underlying the mapping objects
-                var sourceType = source.GetType();
+                 // Get the types underlying the mapping objects
+                 var sourceType = source.GetType();
                  var destinationType = destination.GetType();
 
-                // Get all the instance public properties of the source and destination objects
-                var sourceProperties = sourceType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                 // Get all the instance public properties of the source and destination objects
+                 var sourceProperties = sourceType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                  var destinationProperties = destinationType.GetProperties(System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
 
-                // Let's see if we are mapping from the Domain Model to the XML Schema model
-                if (destinationType.Namespace.StartsWith(ProvisioningTemplateSchemaNamespaceTrailer))
+                 // Let's see if we are mapping from the Domain Model to the XML Schema model
+                 if (destinationType.Namespace.StartsWith(ProvisioningTemplateSchemaNamespaceTrailer))
                  {
                      foreach (var property in destinationProperties)
                      {
-                        // If we have a *Specified property in the XML Schema model type we need to handle it
-                        if (property.Name.EndsWith(SpecifiedSuffix, StringComparison.InvariantCultureIgnoreCase))
+                         // If we have a *Specified property in the XML Schema model type we need to handle it
+                         if (property.Name.EndsWith(SpecifiedSuffix, StringComparison.InvariantCultureIgnoreCase))
                          {
-                            // Look for a corresponding property without the *Specified suffix
-                            var referenceDestinationProperty = destinationProperties.FirstOrDefault(p => p.Name == property.Name.Substring(0, property.Name.Length - SpecifiedSuffix.Length));
+                             // Look for a corresponding property without the *Specified suffix
+                             var referenceDestinationProperty = destinationProperties.FirstOrDefault(p => p.Name == property.Name.Substring(0, property.Name.Length - SpecifiedSuffix.Length));
 
-                            // If we have such a property, let's dig into it's mapping property to determine
-                            // the value to assign to the *Specified property in the XML Schema model
-                            if (referenceDestinationProperty != null)
+                             // If we have such a property, let's dig into it's mapping property to determine
+                             // the value to assign to the *Specified property in the XML Schema model
+                             if (referenceDestinationProperty != null)
                              {
-                                // If the corresponding property in the source object exists
-                                var sourceProperty = sourceProperties.FirstOrDefault(p => p.Name == referenceDestinationProperty.Name);
+                                 // If the corresponding property in the source object exists
+                                 var sourceProperty = sourceProperties.FirstOrDefault(p => p.Name == referenceDestinationProperty.Name);
                                  if (sourceProperty != null)
                                  {
-                                    // And if it is of type Nullable<T>
-                                    if (System.Nullable.GetUnderlyingType(sourceProperty.PropertyType) != null)
+                                     // And if it is of type Nullable<T>
+                                     if (System.Nullable.GetUnderlyingType(sourceProperty.PropertyType) != null)
                                      {
-                                        // We need to evaluate the HasValue property in order to define the *Specified property
-                                        var hasValueOutcome = false;
+                                         // We need to evaluate the HasValue property in order to define the *Specified property
+                                         var hasValueOutcome = false;
                                          var hasValue = sourceProperty.PropertyType.GetProperty("HasValue", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
                                          var nullablePropertyValue = sourceProperty.GetValue(source);
                                          if (nullablePropertyValue != null)
@@ -63,15 +63,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperExten
                                              hasValueOutcome = (Boolean)hasValue.GetValue(nullablePropertyValue);
                                          }
 
-                                        // Set the *Specified value to the outcome
-                                        property.SetValue(destination, hasValueOutcome);
+                                         // Set the *Specified value to the outcome
+                                         property.SetValue(destination, hasValueOutcome);
                                      }
                                      else
                                      {
-                                        // Otherwise we simply need to set the *Specified property if
-                                        // the source property value does not equal default(T), where 
-                                        // T is the type of the source property 
-                                        property.SetValue(destination, sourceProperty.GetValue(source) != null);
+                                         // Otherwise we simply need to set the *Specified property if
+                                         // the source property value does not equal default(T), where 
+                                         // T is the type of the source property 
+                                         property.SetValue(destination, sourceProperty.GetValue(source) != null);
                                      }
                                  }
                              }
@@ -80,8 +80,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperExten
                  }
                  else
                  {
-                    // We are mapping from the XML Schema model to the Domain Model
-                }
+                     // We are mapping from the XML Schema model to the Domain Model
+                 }
              }));
         }
     }

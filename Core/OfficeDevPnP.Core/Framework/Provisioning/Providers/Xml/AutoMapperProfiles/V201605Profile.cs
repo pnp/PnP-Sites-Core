@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfi
             CreateMap<Model.ProvisioningTemplate, Schema.ProvisioningTemplate>()
                 .HandleSpecifiedProperties()
                 .ForMember(pt => pt.Version, opt => opt.ResolveUsing(new FromDoubleToDecimalResolver(), src => src.Version))
-                .ReverseMap()
+                .ReverseMap()                
                 .HandleSpecifiedProperties()
                 .ForMember(pt => pt.Version, opt => opt.ResolveUsing(new FromDecimalToDoubleResolver(), src => src.Version));
 
