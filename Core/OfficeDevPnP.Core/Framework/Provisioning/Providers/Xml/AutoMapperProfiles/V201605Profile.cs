@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfi
             CreateMap<Model.ProvisioningTemplate, Schema.ProvisioningTemplate>()
                 .HandleSpecifiedProperties()
                 .ForMember(pt => pt.Version, opt => opt.ResolveUsing(new FromDoubleToDecimalResolver(), src => src.Version))
-                .ReverseMap()                
+                .ReverseMap()
                 .HandleSpecifiedProperties()
                 .ForMember(pt => pt.Version, opt => opt.ResolveUsing(new FromDecimalToDoubleResolver(), src => src.Version));
 
@@ -60,14 +60,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfi
             // WorkDayStartHourSpecified
             CreateMap<Model.RegionalSettings, Schema.RegionalSettings>()
                 .HandleSpecifiedProperties()
-                .ForMember(dest => dest.AlternateCalendarType, opt => opt.ResolveUsing(null, src => src.AlternateCalendarType)) // TODO: Create a custom resolver (see FromTemplateToSchemaCalendarTypeV201605)
-                .ForMember(dest => dest.WorkDayStartHour, opt => opt.ResolveUsing(null, src => src.WorkDayStartHour)) // TODO: Create a custom resolver (see FromTemplateToSchemaWorkHourV201605)
-                .ForMember(dest => dest.WorkDayEndHour, opt => opt.ResolveUsing(null, src => src.WorkDayEndHour)) // TODO: Create a custom resolver (the same as the one before)
+                .ForMember(dest => dest.AlternateCalendarType, opt => opt.ResolveUsing(new CalendarTypeFromModelTypeResolver(), src => src.AlternateCalendarType))
+                .ForMember(dest => dest.WorkDayStartHour, opt => opt.ResolveUsing(new WorkHourFromModelTypeResolver(), src => src.WorkDayStartHour))
+                .ForMember(dest => dest.WorkDayEndHour, opt => opt.ResolveUsing(new WorkHourFromModelTypeResolver(), src => src.WorkDayEndHour))
                 .ReverseMap()
                 .HandleSpecifiedProperties()
-                .ForMember(dest => dest.AlternateCalendarType, opt => opt.ResolveUsing(null, src => src.AlternateCalendarType)) // TODO: Create a custom resolver (see FromTemplateToSchemaCalendarTypeV201605)
-                .ForMember(dest => dest.WorkDayStartHour, opt => opt.ResolveUsing(null, src => src.WorkDayStartHour)) // TODO: Create a custom resolver (see FromTemplateToSchemaWorkHourV201605)
-                .ForMember(dest => dest.WorkDayEndHour, opt => opt.ResolveUsing(null, src => src.WorkDayEndHour)); // TODO: Create a custom resolver (the same as the one before)
+                .ForMember(dest => dest.AlternateCalendarType, opt => opt.ResolveUsing(new CalendarTypeFromSchemaTypeResolver(), src => src.AlternateCalendarType))
+                .ForMember(dest => dest.WorkDayStartHour, opt => opt.ResolveUsing(new WorkHourFromSchemaTypeResolver(), src => src.WorkDayStartHour))
+                .ForMember(dest => dest.WorkDayEndHour, opt => opt.ResolveUsing(new WorkHourFromSchemaTypeResolver(), src => src.WorkDayEndHour));
 
             // Supported UI Languages
             CreateMap<Model.SupportedUILanguage, Schema.SupportedUILanguagesSupportedUILanguage>().ReverseMap();
@@ -76,10 +76,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.AutoMapperProfi
             // Special properties: AuditLogTrimmingRetentionSpecified, TrimAuditLogSpecified
             CreateMap<Model.AuditSettings, Schema.AuditSettings>()
                 .HandleSpecifiedProperties()
-                .ForMember(dest => dest.Audit, opt => opt.ResolveUsing(null, src => src.AuditFlags)) // TODO: Create a custom resolver (see FromTemplateToSchemaAuditsV201605)
+                .ForMember(dest => dest.Audit, opt => opt.ResolveUsing(new AuditMaskTypeFromModelTypeResolver(), src => src.AuditFlags))
                 .ReverseMap()
                 .HandleSpecifiedProperties()
-                .ForMember(dest => dest.AuditFlags, opt => opt.ResolveUsing(null, src => src.Audit)); // TODO: Create a custom resolver (see FromTemplateToSchemaAuditsV201605)
+                .ForMember(dest => dest.AuditFlags, opt => opt.ResolveUsing(new AuditMaskTypeFromSchemaTypeResolver(), src => src.Audit));
 
             // Site Security
             CreateMap<Model.SiteSecurity, Schema.Security>().ReverseMap();

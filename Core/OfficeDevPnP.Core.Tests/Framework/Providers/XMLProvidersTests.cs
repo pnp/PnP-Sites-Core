@@ -14,12 +14,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     public class XMLProvidersTests
     {
         #region Test variables
-        
+
         static string testContainer = "pnptest";
         static string testContainerSecure = "pnptestsecure";
 
         private const string TEST_CATEGORY = "Framework Provisioning XML Providers";
-        
+
         #endregion
 
         #region Test initialize and cleanup
@@ -95,10 +95,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLFileSystemGetTemplatesTest()
         {
-            XMLTemplateProvider provider = 
+            XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
-                    String.Format(@"{0}\..\..\Resources", 
-                    AppDomain.CurrentDomain.BaseDirectory), 
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
             var result = provider.GetTemplates();
@@ -160,6 +160,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void NewXMLSerializerTemplateTest()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-02.xml", new XMLPnPSchemaV201605Serializer());
+
+        }
+
         #endregion
 
         #region XML Azure Storage tests
@@ -172,8 +186,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             {
                 Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
             }
-            
-            XMLTemplateProvider provider = 
+
+            XMLTemplateProvider provider =
                 new XMLAzureStorageTemplateProvider(
                     TestCommon.AzureStorageKey, testContainer);
 
@@ -191,8 +205,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
             {
                 Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
-            } 
-            
+            }
+
             var _expectedID = "SPECIALTEAM";
             var _expectedVersion = 1.0;
 

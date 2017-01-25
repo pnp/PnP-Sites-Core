@@ -664,13 +664,19 @@
     <Compile Include="Framework\Provisioning\Providers\Json\JsonSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\TemplateProviderBase.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\AuditMaskTypeFromModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\AuditMaskTypeFromSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\CalendarTypeFromSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromCollectionToXmlElementsConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDecimalToDoubleResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDoubleToDecimalResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromListToTypedArrayResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromDictionaryToArrayConverter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\FromStringToDocumentTemplateResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\CalendarTypeFromModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\MappingExtensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\WorkHourFromModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperExtensions\WorkHourFromSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\AutoMapperProfiles\V201605Profile.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />
@@ -691,6 +697,13 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.cs">
       <DependentUpon>ProvisioningSchema-2016-05.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ContentTypeSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ISchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ProvisioningSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SerializerExtensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteFieldsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedTemplateSchemaAttribute.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
@@ -701,6 +714,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605AutoMapperFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaAutoMapperFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Formatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
