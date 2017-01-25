@@ -5,6 +5,6 @@ namespace OfficeDevPnP.Core.Utilities.WebParts
 {
     public interface IWebPartPostProcessor
     {
-        void Process(WebPartDefinition wpDefinition, File webPartPage);
+        void Process(WebPartDefinition wpDefinition, Web web);
     }
 }

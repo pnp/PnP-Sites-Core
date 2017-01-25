@@ -446,7 +446,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
                     var wpDefinition = AddWebPart(file, wpXml);
 
                     var xsltPostProcessor = new XsltWebPartPostProcessor(webParts.WebPart);
-                    xsltPostProcessor.Process(wpDefinition, file);
+                    xsltPostProcessor.Process(wpDefinition, ctx.Web);
 
                     var view = childWeb.GetListByUrl(TestListUrl).GetViewById(wpDefinition.Id);
 
@@ -474,7 +474,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
                 var wpDefinition = AddWebPart(file, wpXml);
 
                 var xsltPostProcessor = new XsltWebPartPostProcessor(webParts.WebPart);
-                xsltPostProcessor.Process(wpDefinition, file);
+                xsltPostProcessor.Process(wpDefinition, ctx.Web);
 
                 var view = ctx.Web.GetListByUrl(TestListUrl).GetViewById(wpDefinition.Id);
 
