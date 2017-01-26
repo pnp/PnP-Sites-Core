@@ -148,7 +148,7 @@ namespace OfficeDevPnP.Core
                     {
                         return "accesscontrol.chinacloudapi.cn";
                     }
-                case AzureEnvironment.Itar:
+                case AzureEnvironment.USGovernment:
                     {
                         return "accesscontrol.windows.net";
                     }
@@ -184,7 +184,7 @@ namespace OfficeDevPnP.Core
                     {
                         return "accounts";
                     }
-                case AzureEnvironment.Itar:
+                case AzureEnvironment.USGovernment:
                     {
                         return "accounts";
                     }
@@ -628,7 +628,7 @@ namespace OfficeDevPnP.Core
                     {
                         return "https://login.chinacloudapi.cn";
                     }
-                case AzureEnvironment.Itar:
+                case AzureEnvironment.USGovernment:
                     {
                         return "https://login-us.microsoftonline.com";
                     }
