@@ -93,16 +93,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (existingFieldElement.Attribute("Type").Value == templateFieldElement.Attribute("Type").Value) // Is existing field of the same type?
                 {
+                    var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
+
+                    if (listIdentifier != null)
+                    {
+                        // Temporary remove list attribute from list
+                        templateFieldElement.Attribute("List").Remove();
+                    }
+
                     if (IsFieldXmlValid(parser.ParseString(originalFieldXml), parser, web.Context))
                     {
-                        var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
-
-                        if (listIdentifier != null)
-                        {
-                            // Temporary remove list attribute from list
-                            templateFieldElement.Attribute("List").Remove();
-                        }
-
                         foreach (var attribute in templateFieldElement.Attributes())
                         {
                             if (existingFieldElement.Attribute(attribute.Name) != null)
