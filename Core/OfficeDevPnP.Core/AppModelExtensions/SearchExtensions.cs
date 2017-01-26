@@ -38,6 +38,17 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Returns the current search configuration for the specified object level
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="searchSettingsObjectLevel"></param>
+        /// <returns></returns>
+        public static string GetSearchConfiguration(this ClientContext context, SearchObjectLevel searchSettingsObjectLevel)
+        {
+            return GetSearchConfigurationImplementation(context, searchSettingsObjectLevel);
+        }
+
+        /// <summary>
         /// Returns the current search configuration as as string
         /// </summary>
         /// <param name="web"></param>
