@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var siteField in template.SiteFields)
             {
-                var fieldElement = siteField.SchemaXElement;
+                var fieldElement = XElement.Parse(siteField.SchemaXml);
 
                 if (fieldElement.Attribute("List") != null)
                 {
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach (var listField in listInstance.Fields)
                 {
-                    var fieldElement = listField.SchemaXElement;
+                    var fieldElement = XElement.Parse(listField.SchemaXml);
                     if (fieldElement.Attribute("List") == null) continue;
 
                     var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
@@ -203,20 +203,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                bool hasSiteLookupFields = template
-                    .SiteFields
-                    .Where(x => x.SchemaXElement.Attribute("List") != null)
-                    .Any();
-
-                bool hasListLookupFields = template
-                    .Lists
-                    .Where(x => x
-                                .Fields
-                                .Where(y => y.SchemaXElement.Attribute("List") != null)
-                                .Any())
-                    .Any();
-
-                _willProvision = hasSiteLookupFields || hasListLookupFields;
+                _willProvision = true;
             }
             return _willProvision.Value;
         }
