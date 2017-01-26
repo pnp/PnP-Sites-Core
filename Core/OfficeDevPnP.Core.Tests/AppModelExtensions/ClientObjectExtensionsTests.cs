@@ -148,6 +148,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
 
         [TestMethod]
+        public void HasMinimalRequiredVersionTest()
+        {
+            using (ClientContext clientContext = TestCommon.CreateClientContext())
+            {
+                Assert.IsTrue(clientContext.HasMinimalServerLibraryVersion("15.0.0.0"));
+            }
+        }
+        [TestMethod]
         public void EnsureMultiplePropertiesTest()
         {
             using (ClientContext clientContext = TestCommon.CreateClientContext())
