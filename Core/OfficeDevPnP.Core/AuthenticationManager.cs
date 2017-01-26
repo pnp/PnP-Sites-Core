@@ -16,13 +16,16 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core
 {
+    /// <summary>
+    /// Enum to identify the supported Office 365 hosting environments
+    /// </summary>
     public enum AzureEnvironment
     {
         Production=0,
         PPE=1,
         China=2,
         Germany=3,
-        Itar=4
+        USGovernment=4
     }
 
 
