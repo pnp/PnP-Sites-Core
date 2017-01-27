@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
@@ -9,7 +9,7 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security ClearSubscopes="false">
+      <pnp:Security>
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -28,16 +28,6 @@
         </pnp:AdditionalVisitors>
         <pnp:Permissions />
       </pnp:Security>
-      <pnp:Navigation>
-        <pnp:GlobalNavigation NavigationType="Structural">
-          <pnp:StructuralNavigation RemoveExistingNodes="false" />
-        </pnp:GlobalNavigation>
-        <pnp:CurrentNavigation NavigationType="StructuralLocal">
-          <pnp:StructuralNavigation RemoveExistingNodes="false">
-            <pnp:NavigationNode Title="Start" Url="{site}" />
-          </pnp:StructuralNavigation>
-        </pnp:CurrentNavigation>
-      </pnp:Navigation>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -94,16 +84,6 @@
           </pnp:CustomAction>
         </pnp:WebCustomActions>
       </pnp:CustomActions>
-      <pnp:Navigation>
-        <pnp:GlobalNavigation NavigationType="Structural">
-          <pnp:StructuralNavigation RemoveExistingNodes="false" />
-        </pnp:GlobalNavigation>
-        <pnp:CurrentNavigation NavigationType="StructuralLocal">
-          <pnp:StructuralNavigation RemoveExistingNodes="false">
-            <pnp:NavigationNode Title="Start" Url="{site}" />
-          </pnp:StructuralNavigation>
-        </pnp:CurrentNavigation>
-      </pnp:Navigation>
       <pnp:Files>
         <pnp:File Src="Logo.png" Folder="SiteAssets" Overwrite="true" />
         <pnp:File Src="CustomPage.aspx" Folder="SitePages" Overwrite="true" />
