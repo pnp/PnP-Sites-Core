@@ -634,6 +634,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             field.SchemaXml = element.ToString();
 
+            //Field has column Validation
+            if (element.Elements("Validation").FirstOrDefault() != null)
+            {
+                field.SchemaXml = ObjectField.TokenizeFieldValidationFormula(field, field.SchemaXml);
+            }
+
             var createdField = listInfo.SiteList.Fields.Add(field);
 
             createdField.Context.Load(createdField, cf => cf.Id, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
