@@ -153,15 +153,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var site = (web.Context as ClientContext).Site;
                 var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
                 web.Context.Load(siteCollectionTermGroup);
-                web.Context.ExecuteQueryRetry();
-                if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+                try
                 {
-                    web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
                     web.Context.ExecuteQueryRetry();
-                    foreach (var termSet in siteCollectionTermGroup.TermSets)
+                    if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                     {
-                        _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                        web.Context.ExecuteQueryRetry();
+                        foreach (var termSet in siteCollectionTermGroup.TermSets)
+                        {
+                            _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        }
                     }
+                }
+                catch (NullReferenceException)
+                {
+                    // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
                 }
             }
 
