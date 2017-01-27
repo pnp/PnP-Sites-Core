@@ -1832,6 +1832,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate {
