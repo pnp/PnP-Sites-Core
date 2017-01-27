@@ -226,6 +226,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaElement.ToString();
         }
 
+        /// <summary>
+        /// Replace Field Internal name by Display Name in the Validation formula
+        /// (due to a SP issue that when provisioning the field, is expecting the Display name)
+        /// https://github.com/SharePoint/PnP-Sites-Core/issues/849
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="schemaXml"></param>
+        /// <returns></returns>
+        internal static string TokenizeFieldValidationFormula(SPField field, string schemaXml)
+        {
+            var schemaElement = XElement.Parse(field.SchemaXml);
+
+            var validationNode = schemaElement.Elements("Validation").FirstOrDefault();
+            if (validationNode != null)
+            {
+                var validationNodeValue = validationNode.Value;
+                validationNode.Value = validationNodeValue.Replace(field.InternalName, string.Format("[{0}]", field.Title));
+            }
+
+            return schemaElement.ToString();
+        }
+
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
         {
             foreach (var list in lists)
@@ -558,7 +580,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
-        }
+        }        
     }
 
     internal static class XElementStringExtensions
