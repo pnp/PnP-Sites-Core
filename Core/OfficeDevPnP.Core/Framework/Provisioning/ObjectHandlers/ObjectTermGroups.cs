@@ -22,8 +22,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 this.reusedTerms = new List<ReusedTerm>();
 
                 TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(web.Context);
+                TermStore termStore = null;
 
-                var termStore = taxSession.GetDefaultKeywordsTermStore();
+                try
+                {
+                    termStore = taxSession.GetDefaultKeywordsTermStore();
+                }
+                catch (ServerException)
+                {
+                    // If the GetDefaultSiteCollectionTermStore method call fails ... raise a specific Warning
+                    WriteMessage(CoreResources.Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration, ProvisioningMessageType.Warning);
+
+                    // and exit skipping the current handler
+                    return parser;
+                }
 
                 web.Context.Load(termStore,
                     ts => ts.DefaultLanguage,
@@ -557,7 +569,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // Find the site collection termgroup, if any
                     TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
-                    var termStore = session.GetDefaultSiteCollectionTermStore();
+                    TermStore termStore = null;
+                        
+                    try
+                    {
+                        termStore = session.GetDefaultSiteCollectionTermStore();
+                    }
+                    catch (ServerException)
+                    {
+                        // If the GetDefaultSiteCollectionTermStore method call fails ... raise a specific Warning
+                        WriteMessage(CoreResources.Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration, ProvisioningMessageType.Warning);
+
+                        // and exit skipping the current handler
+                        return template;
+                    }
+
                     web.Context.Load(termStore, t => t.Id, t => t.DefaultLanguage, t => t.OrphanedTermsTermSet);
                     web.Context.ExecuteQueryRetry();
 
