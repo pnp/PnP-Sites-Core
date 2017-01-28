@@ -478,7 +478,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        var parentNode = quickLaunch.SingleOrDefault(n => n.Title == parentNodeTitle);
+                        var parentNode = quickLaunch.FirstOrDefault(n => n.Title == parentNodeTitle);
                         navigationNode = parentNode?.Children.Add(node);
                     }
                 }
