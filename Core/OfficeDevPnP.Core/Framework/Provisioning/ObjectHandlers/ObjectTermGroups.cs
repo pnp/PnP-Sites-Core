@@ -57,9 +57,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     #region Group
 
                     var newGroup = false;
+                    var normalizedGroupName = TaxonomyItem.NormalizeName(web.Context, modelTermGroup.Name);
+                    web.Context.ExecuteQueryRetry();
 
                     TermGroup group = termStore.Groups.FirstOrDefault(
-                        g => g.Id == modelTermGroup.Id || g.Name == modelTermGroup.Name);
+                        g => g.Id == modelTermGroup.Id || g.Name == normalizedGroupName.Value);
                     if (group == null)
                     {
                         if (modelTermGroup.Name == "Site Collection" ||
@@ -77,7 +79,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             var parsedGroupName = parser.ParseString(modelTermGroup.Name);
-                            group = termStore.Groups.FirstOrDefault(g => g.Name == parsedGroupName);
+                            var parsedNormalizedGroupName = TaxonomyItem.NormalizeName(web.Context, parsedGroupName);
+                            web.Context.ExecuteQueryRetry();
+
+                            group = termStore.Groups.FirstOrDefault(g => g.Name == parsedNormalizedGroupName.Value);
 
                             if (group == null)
                             {
@@ -129,11 +134,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         TermSet set = null;
                         var newTermSet = false;
+
+                        var normalizedTermSetName = TaxonomyItem.NormalizeName(web.Context, modelTermSet.Name);
+                        web.Context.ExecuteQueryRetry();
+
                         if (!newGroup)
                         {
                             set =
                                 group.TermSets.FirstOrDefault(
-                                    ts => ts.Id == modelTermSet.Id || ts.Name == modelTermSet.Name);
+                                    ts => ts.Id == modelTermSet.Id || ts.Name == normalizedTermSetName.Value);
                         }
                         if (set == null)
                         {
@@ -181,7 +190,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var term = terms.FirstOrDefault(t => t.Id == modelTerm.Id);
                                     if (term == null)
                                     {
-                                        term = terms.FirstOrDefault(t => t.Name == modelTerm.Name);
+                                        var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, modelTerm.Name);
+                                        web.Context.ExecuteQueryRetry();
+
+                                        term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                                         if (term == null)
                                         {
                                             var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser,
