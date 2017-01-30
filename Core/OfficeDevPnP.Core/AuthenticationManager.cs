@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.Germany:
                     {
-                        return "login.microsoftonline.de";
+                        return "microsoftonline.de";
                     }
                 case AzureEnvironment.China:
                     {
@@ -178,7 +178,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.Germany:
                     {
-                        return "";
+                        return "login";
                     }
                 case AzureEnvironment.China:
                     {
