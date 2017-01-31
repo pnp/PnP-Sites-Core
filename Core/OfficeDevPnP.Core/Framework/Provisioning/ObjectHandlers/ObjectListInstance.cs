@@ -1609,34 +1609,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list.Security = siteList.GetSecurity();
 
-                    //var logCTWarning = false;
                     if (baseTemplateList != null)
                     {
                         if (!baseTemplateList.Equals(list))
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
-                            //if (list.ContentTypesEnabled && list.ContentTypeBindings.Any() && web.IsSubSite())
-                            //{
-                            //    logCTWarning = true;
-                            //}
                         }
                     }
                     else
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                         template.Lists.Add(list);
-                        //if (list.ContentTypesEnabled && list.ContentTypeBindings.Any() && web.IsSubSite())
-                        //{
-                        //    logCTWarning = true;
-                        //}
-
                     }
-                    //if (logCTWarning)
-                    //{
-                    //    scope.LogWarning("You are extracting a template from a subweb. List '{0}' refers to content types. Content types are not exported when extracting a template from a subweb", siteList.Title);
-                    //    WriteMessage($"You are extracting a template from a subweb. List '{siteList.Title}' refers to content types. Content types are not exported when extracting a template from a subweb", ProvisioningMessageType.Warning);
-                    //}
                 }
 
             }
