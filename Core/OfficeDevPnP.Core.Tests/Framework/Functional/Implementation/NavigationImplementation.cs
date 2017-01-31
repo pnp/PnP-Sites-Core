@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
             TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(cc);
             taxonomySession.UpdateCache();
             cc.Load(taxonomySession, ts => ts.TermStores);
-            cc.ExecuteQuery();
+            cc.ExecuteQueryRetry();
 
             var navigationSettings = new WebNavigationSettings(cc, cc.Web);
             navigationSettings.GlobalNavigation.Source = gSource;
@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
 
             try
             {
-                cc.ExecuteQuery();
+                cc.ExecuteQueryRetry();
             }
             catch (Exception ex) // if termset not found then set newly created termset to managed navigation
             {
@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 navigationSettings.GlobalNavigation.Source = gSource;
                 navigationSettings.CurrentNavigation.Source = cSource;
                 navigationSettings.Update(taxonomySession);
-                cc.ExecuteQuery();
+                cc.ExecuteQueryRetry();
             }
         }
 
