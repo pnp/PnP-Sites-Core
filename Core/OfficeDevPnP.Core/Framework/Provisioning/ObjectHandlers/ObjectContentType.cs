@@ -37,32 +37,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingFields = web.Fields.ToList();
                 var currentCtIndex = 0;
 
-                if (template.ContentTypes.Count > 0 && web.IsSubSite())
+                var doProvision = true;
+                if (web.IsSubSite() && !applyingInformation.ProvisionContentTypesToSubWebs)
                 {
-                    WriteMessage("While technically possible, we recommend against provisioning content types to subwebs. Consider publishing the content types to the site collection root web instead.",ProvisioningMessageType.Warning);
+                    WriteMessage("This template contains content types and you are provisioning to a subweb. If you still want to provision these content types, set the ProvisionContentTypesToSubWebs property to true.", ProvisioningMessageType.Warning);
+                    doProvision = false;
                 }
-                foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
+                if (doProvision)
                 {
-                    currentCtIndex++;
-                    WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{template.ContentTypes.Count}", ProvisioningMessageType.Progress);
-                    var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
-                    if (existingCT == null)
+                    foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                     {
-                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                        var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
-                        if (newCT != null)
+                        currentCtIndex++;
+                        WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{template.ContentTypes.Count}", ProvisioningMessageType.Progress);
+                        var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
+                        if (existingCT == null)
                         {
-                            existingCTs.Add(newCT);
-                        }
-                    }
-                    else
-                    {
-                        if (ct.Overwrite)
-                        {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-
-                            existingCT.DeleteObject();
-                            web.Context.ExecuteQueryRetry();
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
                             var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
                             if (newCT != null)
                             {
@@ -71,8 +61,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                            UpdateContentType(web, existingCT, ct, parser, scope, isNoScriptSite);
+                            if (ct.Overwrite)
+                            {
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+
+                                existingCT.DeleteObject();
+                                web.Context.ExecuteQueryRetry();
+                                var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
+                                if (newCT != null)
+                                {
+                                    existingCTs.Add(newCT);
+                                }
+                            }
+                            else
+                            {
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                                UpdateContentType(web, existingCT, ct, parser, scope, isNoScriptSite);
+                            }
                         }
                     }
                 }

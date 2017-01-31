@@ -35,6 +35,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         public bool IgnoreDuplicateDataRowErrors { get; set; }
 
+        /// <summary>
+        /// If true then any content types in the template will be provisioned to subwebs
+        /// </summary>
+        public bool ProvisionContentTypesToSubWebs { get; set; }
+
         public Handlers HandlersToProcess
         {
             get
