@@ -157,9 +157,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             {
-                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
-                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
-                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
+                    !string.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
+                    !string.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
                 {
                     // log message
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls, existingContentType.Name);
@@ -185,8 +185,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
-            List<Guid> targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
-            List<Guid> sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
+            var targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
+            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
@@ -313,24 +313,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Skipping updates of forms as we can't upload forms to noscript sites
             if (!isNoScriptSite)
             {
-                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
                 {
                     createdCT.NewFormUrl = parser.ParseString(templateContentType.NewFormUrl);
                 }
-                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)))
                 {
                     createdCT.EditFormUrl = parser.ParseString(templateContentType.EditFormUrl);
                 }
-                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)))
                 {
                     createdCT.DisplayFormUrl = parser.ParseString(templateContentType.DisplayFormUrl);
                 }
             }
             else
             {
-                if (!String.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
-                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
-                    !String.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
+                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DisplayFormUrl)) ||
+                    !string.IsNullOrEmpty(parser.ParseString(templateContentType.EditFormUrl)) ||
+                    !string.IsNullOrEmpty(parser.ParseString(templateContentType.NewFormUrl)))
                 {
                     // log message
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls, name);
@@ -435,13 +435,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // if this is a sub site then we're not creating content type entities. 
-                //if (web.IsSubSite())
-                //{
-                //    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_);
-                //    return template;
-                //}
-
                 template.ContentTypes.AddRange(GetEntities(web, scope, creationInfo, template));
 
                 // If a base template is specified then use that one to "cleanup" the generated template model
@@ -473,7 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!BuiltInContentTypeId.Contains(ct.StringId))
                 {
                     string ctDocumentTemplate = null;
-                    if (!String.IsNullOrEmpty(ct.DocumentTemplate))
+                    if (!string.IsNullOrEmpty(ct.DocumentTemplate))
                     {
                         if (!ct.DocumentTemplate.StartsWith("_cts/"))
                         {
@@ -481,7 +474,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    ContentType newCT = new ContentType(
+                    var newCT = new ContentType(
                         ct.StringId,
                         ct.Name,
                         ct.Description,
@@ -509,7 +502,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
 #if !SP2013
                         // only persist language values for content types we actually will keep...no point in spending time on this is we clean the field afterwards
-                        bool persistLanguages = true;
+                        var persistLanguages = true;
                         if (creationInfo.BaseTemplate != null)
                         {
                             int index = creationInfo.BaseTemplate.ContentTypes.FindIndex(c => c.Id.Equals(ct.StringId));
@@ -615,7 +608,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static Byte[] ReadFullStream(Stream input)
         {
             byte[] buffer = new byte[16 * 1024];
-            using (MemoryStream mem = new MemoryStream())
+            using (var mem = new MemoryStream())
             {
                 int read;
                 while ((read = input.Read(buffer, 0, buffer.Length)) > 0)
