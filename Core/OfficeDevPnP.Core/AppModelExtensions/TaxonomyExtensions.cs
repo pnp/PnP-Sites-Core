@@ -947,7 +947,7 @@ namespace Microsoft.SharePoint.Client
                 catch (Exception ex)
                 {
                     throw new ApplicationException(
-                        string.Format("Exception on line {0}: {1}", lineIndex + 1, ex.Message),
+                        $"Exception on line {lineIndex + 1}: {ex.Message}",
                         ex);
                 }
                 Log.Debug(Constants.LOGGING_SOURCE, "End ImportTermSet");
@@ -1820,7 +1820,7 @@ namespace Microsoft.SharePoint.Client
                 throw new NullReferenceException("The default term store is not available.");
 
             if (string.IsNullOrEmpty(mmsTermSetName))
-                throw new ArgumentNullException("mmsTermSetName", "The MMS term set is not specified.");
+                throw new ArgumentNullException(nameof(mmsTermSetName), "The MMS term set is not specified.");
 
             // get the term group and term set
             TermGroup termGroup = termStore.Groups.GetByName(mmsGroupName);
@@ -1993,7 +1993,8 @@ namespace Microsoft.SharePoint.Client
             var clientContext = web.Context as ClientContext;
             var list = clientContext.Site.RootWeb.GetListByUrl("Lists/TaxonomyHiddenList");
             CamlQuery camlQuery = new CamlQuery();
-            camlQuery.ViewXml = string.Format(@"<View><Query><Where><Eq><FieldRef Name='IdForTerm' /><Value Type='Text'>{0}</Value></Eq></Where></Query></View>", term.Id);
+            camlQuery.ViewXml =
+                $@"<View><Query><Where><Eq><FieldRef Name='IdForTerm' /><Value Type='Text'>{term.Id}</Value></Eq></Where></Query></View>";
 
             var items = list.GetItems(camlQuery);
             web.Context.Load(items);

@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify the delta behavior + 201605 added functionality
+               -Add of new contributors and managers in term group
+-->
+
+<pnp:ProvisioningTemplate ID="termgroup_delta_1605_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:TermGroups>
+    <!-- tenant/farm term group -->
+    <pnp:TermGroup Name="TG_4">
+      <pnp:TermSets>
+        <!-- Add basic term set -->
+        <pnp:TermSet Name="TS_4_1" >
+          <pnp:Terms>
+            <pnp:Term Name="TS_4_1_1" />
+            <pnp:Term Name="TS_4_1_2" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>
+      <pnp:Contributors>
+        <pnp:User Name="c:0(.s|true"/>
+      </pnp:Contributors>
+      <pnp:Managers>
+        <pnp:User Name="c:0(.s|true"/>
+      </pnp:Managers>
+    </pnp:TermGroup>
+  </pnp:TermGroups>
+</pnp:ProvisioningTemplate>

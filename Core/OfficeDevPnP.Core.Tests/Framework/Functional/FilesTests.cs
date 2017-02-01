@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Linq;
@@ -44,15 +45,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionFilesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                // Ensure we can test clean
-                DeleteLists(cc);
-
-                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files | Handlers.Lists);
-                FilesValidator fv = new FilesValidator();
-                Assert.IsTrue(fv.Validate(result.SourceTemplate.Files,cc));
-            }
+            new FilesImplementation().SiteCollectionFiles(centralSiteCollectionUrl);
         }
 
         /// <summary>
@@ -62,16 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionDirectoryFilesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                // Ensure we can test clean
-                DeleteLists(cc);               
-
-                var result = TestProvisioningTemplate(cc, "files_add_1605.xml", Handlers.Files | Handlers.Lists);
-                FilesValidator fv = new FilesValidator();
-                fv.SchemaVersion = Core.Framework.Provisioning.Providers.Xml.XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
-                Assert.IsTrue(fv.Validate1605(result.SourceTemplate, cc));
-            }
+            new FilesImplementation().SiteCollectionDirectoryFiles(centralSiteCollectionUrl);
         }
         #endregion
 
@@ -83,15 +67,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebFilesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                // Ensure we can test clean
-                DeleteLists(cc);
-
-                var result = TestProvisioningTemplate(cc, "files_add.xml", Handlers.Files | Handlers.Lists);
-                FilesValidator fv = new FilesValidator();
-                Assert.IsTrue(fv.Validate(result.SourceTemplate.Files, cc));
-            }
+            new FilesImplementation().WebFiles(centralSiteCollectionUrl);
         }
 
         /// <summary>
@@ -101,40 +77,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebCollectionDirectoryFilesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                // Ensure we can test clean
-                DeleteLists(cc);
-
-                var result = TestProvisioningTemplate(cc, "files_add_1605.xml", Handlers.Files | Handlers.Lists);
-                FilesValidator fv = new FilesValidator();
-                fv.SchemaVersion = Core.Framework.Provisioning.Providers.Xml.XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
-                Assert.IsTrue(fv.Validate1605(result.SourceTemplate, cc));
-            }
+            new FilesImplementation().WebDirectoryFiles(centralSiteCollectionUrl);
         }
 
         #endregion
 
-        #region Helper methods
-        private void DeleteLists(ClientContext cc)
-        {
-            DeleteListsImplementation(cc);
-        }
 
-        private static void DeleteListsImplementation(ClientContext cc)
-        {
-            cc.Load(cc.Web.Lists, f => f.Include(t => t.Title));
-            cc.ExecuteQueryRetry();
-
-            foreach (var list in cc.Web.Lists.ToList())
-            {
-                if (list.Title.StartsWith("LI_"))
-                {
-                    list.DeleteObject();
-                }
-            }
-            cc.ExecuteQueryRetry();
-        }
-        #endregion
     }
 }

@@ -23,6 +23,6 @@
     </pnp:File>
     <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" Level="Published"/>
     <pnp:Directory Src=".\DirFolder" Folder="LI_2" Overwrite="true" Recursive="true" IncludedExtensions="*.docx,*.pdf" ExcludedExtensions="*.xml,*.txt" MetadataMappingFile=".\DirFolderMetadata.json" />
-  <pnp:Directory Src=".\DirFolder2" Folder="LI_3" Overwrite="true" Recursive="true" IncludedExtensions="*.docx,*.pdf" ExcludedExtensions="*.xml,*.txt" MetadataMappingFile=".\DirFolder2Metadata.json" />
+    <pnp:Directory Src=".\DirFolder2" Folder="LI_3" Overwrite="true" Recursive="true" IncludedExtensions="*.docx,*.pdf" ExcludedExtensions="*.xml,*.txt" MetadataMappingFile=".\DirFolder2Metadata.json" />
   </pnp:Files>
 </pnp:ProvisioningTemplate>

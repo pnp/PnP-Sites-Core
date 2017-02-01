@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Load the template into an XDocument
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             V201512.ProvisioningTemplate result = new V201512.ProvisioningTemplate();
@@ -82,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             wrappedResult.Templates = new V201512.Templates[] {
                 new V201512.Templates
                 {
-                    ID = String.Format("CONTAINER-{0}", template.Id),
+                    ID = $"CONTAINER-{template.Id}",
                     ProvisioningTemplate = new V201512.ProvisioningTemplate[]
                     {
                         result
@@ -431,6 +431,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Description = ct.Description,
                          Group = ct.Group,
                          Name = ct.Name,
+                         Sealed = ct.Sealed,
+                         Hidden = ct.Hidden,
+                         ReadOnly = ct.ReadOnly,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
                           select new V201512.ContentTypeFieldRef
@@ -440,7 +443,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Hidden = fieldRef.Hidden,
                               Required = fieldRef.Required
                           }).ToArray() : null,
-                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate {  TargetName = ct.DocumentTemplate } : null,
+                         DocumentTemplate = !String.IsNullOrEmpty(ct.DocumentTemplate) ? new ContentTypeDocumentTemplate { TargetName = ct.DocumentTemplate } : null,
                          DocumentSetTemplate = ct.DocumentSetTemplate != null ?
                              new V201512.DocumentSetTemplate
                              {
@@ -950,10 +953,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Search Settings
 
+#pragma warning disable 618
             if (!String.IsNullOrEmpty(template.SearchSettings))
             {
                 result.SearchSettings = template.SearchSettings.ToXmlElement();
             }
+#pragma warning restore 618
 
             #endregion
 
@@ -1025,6 +1030,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Providers
 
             // Translate Providers, if any
+#pragma warning disable 618
             if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
                 var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
@@ -1032,7 +1038,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     (from provider in extensibilityHandlers
                      select new V201512.Provider
                      {
-                         HandlerType = String.Format("{0}, {1}", provider.Type, provider.Assembly),
+                         HandlerType = $"{provider.Type}, {provider.Assembly}",
                          Configuration = provider.Configuration != null ? provider.Configuration.ToXmlNode() : null,
                          Enabled = provider.Enabled,
                      }).ToArray();
@@ -1041,7 +1047,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
-
+#pragma warning restore 618
             #endregion
 
             XmlSerializerNamespaces ns =
@@ -1063,7 +1069,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Crate a copy of the source stream
@@ -1794,7 +1800,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (source.SearchSettings != null)
             {
+#pragma warning disable 618
                 result.SearchSettings = source.SearchSettings.OuterXml;
+#pragma warning restore 618
             }
 
             #endregion
@@ -2289,7 +2297,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return string.Join(",", permissions.ToArray());
         }
-            
+
         public static BasePermissions ToBasePermissionsV201512(this string basePermissionString)
         {
             BasePermissions bp = new BasePermissions();
@@ -2300,7 +2308,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 bp.Set((PermissionKind)permissionInt);
             }
-            else if(!string.IsNullOrEmpty(basePermissionString)){
+            else if (!string.IsNullOrEmpty(basePermissionString))
+            {
                 foreach (var pk in basePermissionString.Split(','))
                 {
                     PermissionKind permissionKind;
@@ -2312,7 +2321,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
             return bp;
         }
-    
+
     }
 }
 

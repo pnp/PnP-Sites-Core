@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -112,13 +113,13 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateDocumentSet(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
         {
-            if (folder == null) { throw new ArgumentNullException("folder"); }
-            if (documentSetName == null) { throw new ArgumentNullException("documentSetName"); }
-            if (contentTypeId == null) { throw new ArgumentNullException("contentTypeId"); }
+            if (folder == null) { throw new ArgumentNullException(nameof(folder)); }
+            if (documentSetName == null) { throw new ArgumentNullException(nameof(documentSetName)); }
+            if (contentTypeId == null) { throw new ArgumentNullException(nameof(contentTypeId)); }
 
             if (documentSetName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_, "documentSetName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_, nameof(documentSetName));
             }
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_CreateDocumentSet, documentSetName);
@@ -215,7 +216,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (folderName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, "folderName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
 
             var folderCollection = web.Folders;
@@ -241,7 +242,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (folderName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, "folderName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
 
             var folderCollection = parentFolder.Folders;
@@ -249,7 +250,7 @@ namespace Microsoft.SharePoint.Client
             return folder;
         }
 
-        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
+        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
         {
             ClientContext context = null;
             if (parentFolder != null)
@@ -278,7 +279,14 @@ namespace Microsoft.SharePoint.Client
             {
                 // Create folder for library or common URL path
                 var newFolder = folderCollection.Add(folderName);
-                folderCollection.Context.Load(newFolder);
+                if (expressions != null && expressions.Any())
+                {
+                    folderCollection.Context.Load(newFolder, expressions);
+                }
+                else
+                {
+                    folderCollection.Context.Load(newFolder);
+                }
                 folderCollection.Context.ExecuteQueryRetry();
                 return newFolder;
             }
@@ -298,7 +306,14 @@ namespace Microsoft.SharePoint.Client
                 // Get the newly created folder
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
                 // Ensure all properties are loaded (to be compatible with the previous implementation)
-                context.Load(newFolder);
+                if (expressions != null && expressions.Any())
+                {
+                    context.Load(newFolder, expressions);
+                }
+                else
+                {
+                    context.Load(newFolder);
+                }
                 context.ExecuteQueryRetry();
                 return (newFolder);
             }
@@ -335,8 +350,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to be processed - can be root web or sub site</param>
         /// <param name="parentFolder">Parent folder</param>
         /// <param name="folderPath">Folder path</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The folder structure</returns>
-        public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath)
+        public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl);
             parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
@@ -344,7 +360,7 @@ namespace Microsoft.SharePoint.Client
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
 
-            return web.EnsureFolderPath(webRelativeUrl);
+            return web.EnsureFolderPath(webRelativeUrl, expressions: expressions);
         }
 
         /// <summary>
@@ -353,21 +369,22 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to check for the named folder</param>
         /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
         /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolder(this Web web, string folderName)
+        public static Folder EnsureFolder(this Web web, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
             if (folderName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, "folderName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
 
             var folderCollection = web.Folders;
-            var folder = EnsureFolderImplementation(folderCollection, folderName);
+            var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
             return folder;
         }
 
@@ -376,29 +393,36 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="parentFolder">Parent folder to create under</param>
         /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
         /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolder(this Folder parentFolder, string folderName)
+        public static Folder EnsureFolder(this Folder parentFolder, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
             if (folderName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, "folderName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
 
             var folderCollection = parentFolder.Folders;
-            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder);
+            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
             return folder;
         }
 
-        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null)
+        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
         {
             Folder folder = null;
-
-            folderCollection.Context.Load(folderCollection);
+            if (expressions != null && expressions.Any())
+            {
+                folderCollection.Context.Load(folderCollection, fc => fc.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                folderCollection.Context.Load(folderCollection);
+            }
             folderCollection.Context.ExecuteQueryRetry();
             foreach (Folder existingFolder in folderCollection)
             {
@@ -411,7 +435,7 @@ namespace Microsoft.SharePoint.Client
 
             if (folder == null)
             {
-                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
+                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
             }
 
             return folder;
@@ -422,6 +446,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to check for the specified folder</param>
         /// <param name="webRelativeUrl">Path to the folder, relative to the web site</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The existing or newly created folder</returns>
         /// <remarks>
         /// <para>
@@ -431,12 +456,12 @@ namespace Microsoft.SharePoint.Client
         /// Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
         /// </para>
         /// </remarks>
-        public static Folder EnsureFolderPath(this Web web, string webRelativeUrl)
+        public static Folder EnsureFolderPath(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
         {
-            if (webRelativeUrl == null) { throw new ArgumentNullException("webRelativeUrl"); }
+            if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
 
             //Web root folder should be returned if webRelativeUrl is empty
-            if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, "webRelativeUrl"); }
+            if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, nameof(webRelativeUrl)); }
 
             // Check if folder exists
             if (!web.IsPropertyAvailable("ServerRelativeUrl"))
@@ -545,7 +570,11 @@ namespace Microsoft.SharePoint.Client
 
                 currentFolder = nextFolder;
             }
-
+            if (expressions != null && expressions.Any())
+            {
+                web.Context.Load(currentFolder, expressions);
+                web.Context.ExecuteQueryRetry();
+            }
             return currentFolder;
         }
 
@@ -575,7 +604,7 @@ namespace Microsoft.SharePoint.Client
         public static List<File> FindFiles(this List list, string match)
         {
             Folder rootFolder = list.EnsureProperty(l => l.RootFolder);
-            
+
             match = WildcardToRegex(match);
             List<File> files = new List<File>();
 
@@ -633,7 +662,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(folderName))
             {
-                throw new ArgumentNullException("folderName");
+                throw new ArgumentNullException(nameof(folderName));
             }
 
             var folderCollection = parentFolder.Folders;
@@ -645,17 +674,17 @@ namespace Microsoft.SharePoint.Client
         {
             if (folderCollection == null)
             {
-                throw new ArgumentNullException("folderCollection");
+                throw new ArgumentNullException(nameof(folderCollection));
             }
 
             if (string.IsNullOrEmpty(folderName))
             {
-                throw new ArgumentNullException("folderName");
+                throw new ArgumentNullException(nameof(folderName));
             }
 
             if (folderName.ContainsInvalidUrlChars())
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, "folderName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
 
             folderCollection.Context.Load(folderCollection);
@@ -748,7 +777,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(folderName))
             {
-                throw new ArgumentNullException("folderName");
+                throw new ArgumentNullException(nameof(folderName));
             }
 
             folder.Context.Load(folder);
@@ -774,7 +803,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="localPath">The local folder</param>
         /// <param name="localFileName">The local filename. If null the filename of the file on the server will be used</param>
         /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
-        public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string,bool> fileExistsCallBack = null)
+        public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
         {
             var clientContext = web.Context as ClientContext;
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
@@ -828,12 +857,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (folder == null)
             {
-                throw new ArgumentNullException("folder");
+                throw new ArgumentNullException(nameof(folder));
             }
 
             if (localFilePath == null)
             {
-                throw new ArgumentNullException("localFilePath");
+                throw new ArgumentNullException(nameof(localFilePath));
             }
 
             if (!System.IO.File.Exists(localFilePath))
@@ -858,22 +887,22 @@ namespace Microsoft.SharePoint.Client
         {
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, "fileName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
             }
 
             if (Regex.IsMatch(fileName, REGEX_INVALID_FILE_NAME_CHARS))
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, "fileName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
             }
 
             // Create the file
@@ -904,12 +933,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (folder == null)
             {
-                throw new ArgumentNullException("folder");
+                throw new ArgumentNullException(nameof(folder));
             }
 
             if (localFilePath == null)
             {
-                throw new ArgumentNullException("localFilePath");
+                throw new ArgumentNullException(nameof(localFilePath));
             }
 
             if (!System.IO.File.Exists(localFilePath))
@@ -935,22 +964,22 @@ namespace Microsoft.SharePoint.Client
         {
             if (fileName == null)
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (string.IsNullOrWhiteSpace(fileName))
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, "fileName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
             }
 
             if (Regex.IsMatch(fileName, REGEX_INVALID_FILE_NAME_CHARS))
             {
-                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, "fileName");
+                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
             }
 
             var serverRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
@@ -966,7 +995,7 @@ namespace Microsoft.SharePoint.Client
             var file = folder.Files.GetByUrl(serverRelativeUrl);
             folder.Context.Load(file);
             folder.Context.ExecuteQueryRetry();
-            
+
             return file;
         }
 
@@ -980,12 +1009,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (folder == null)
             {
-                throw new ArgumentNullException("folder");
+                throw new ArgumentNullException(nameof(folder));
             }
 
             if (string.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentNullException("fileName");
+                throw new ArgumentNullException(nameof(fileName));
             }
 
             try
@@ -996,10 +1025,10 @@ namespace Microsoft.SharePoint.Client
                 var context = folder.Context as ClientContext;
 
                 var web = context.Web;
-                
+
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
-                folder.Context.Load(file);
-                folder.Context.ExecuteQueryRetry();
+                web.Context.Load(file);
+                web.Context.ExecuteQueryRetry();
                 return file;
             }
             catch (ServerException sex)
@@ -1022,7 +1051,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (localFile == null)
             {
-                throw new ArgumentNullException("localFile");
+                throw new ArgumentNullException(nameof(localFile));
             }
 
             if (!System.IO.File.Exists(localFile))
@@ -1097,12 +1126,12 @@ namespace Microsoft.SharePoint.Client
         {
             if (file == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             }
 
             if (properties == null)
             {
-                throw new ArgumentNullException("properties");
+                throw new ArgumentNullException(nameof(properties));
             }
 
             var changedProperties = new Dictionary<string, string>();
@@ -1124,7 +1153,8 @@ namespace Microsoft.SharePoint.Client
                 catch (ServerException ex)
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
-                    if (ex.Message != "The object specified does not belong to a list.")
+                    // Handling the exception stating the "The object specified does not belong to a list."
+                    if (ex.ServerErrorCode != -2146232832)
                     {
                         throw;
                     }
@@ -1159,7 +1189,7 @@ namespace Microsoft.SharePoint.Client
                                         changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
                                     }
                                     else
-                                    {            
+                                    {
                                         Log.Error(Constants.LOGGING_SOURCE, CoreResources.FileFolderExtensions_SetFileProperties_Error, propertyValue);
                                     }
                                 }
@@ -1254,7 +1284,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (file == null)
             {
-                throw new ArgumentNullException("file");
+                throw new ArgumentNullException(nameof(file));
             }
 
             var publishingRequired = false;
@@ -1283,8 +1313,10 @@ namespace Microsoft.SharePoint.Client
                     }
                     catch (ServerException ex)
                     {
-                        if (ex.Message != "The object specified does not belong to a list.")
+                        // Handling the exception stating the "The object specified does not belong to a list."
+                        if (ex.ServerErrorCode != -2146232832)
                         {
+                            // TODO Replace this with an errorcode as well, does not work with localized o365 tenants
                             if (ex.Message.StartsWith("Cannot invoke method or retrieve property from null object. Object returned by the following call stack is null.") &&
                                 ex.Message.Contains("ListItemAllFields"))
                             {
