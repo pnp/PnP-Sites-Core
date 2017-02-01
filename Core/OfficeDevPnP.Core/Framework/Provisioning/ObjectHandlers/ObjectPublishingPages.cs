@@ -100,7 +100,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         context.Load(mgr);
                         context.ExecuteQueryRetry();
 
-                        AddWebPartsToPublishingPage(page, context, mgr, parser);
+                        AddWebPartsToPublishingPage(web, page, mgr, parser);
                     }
 
                     List pagesLibrary = publishingPage.ListItem.ParentList;
@@ -156,8 +156,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.SetHomePage(rootFolderRelativeUrl);
         }
 
-        private static void AddWebPartsToPublishingPage(PublishingPage page, ClientContext ctx, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr, TokenParser parser)
+        private static void AddWebPartsToPublishingPage(Web web, PublishingPage page, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr, TokenParser parser)
         {
+            ClientContext ctx = web.Context as ClientContext;
             foreach (var wp in page.WebParts)
             {
                 string wpContentsTokenResolved = parser.ParseString(wp.Contents).Replace("<property name=\"JSLink\" type=\"string\">" + ctx.Site.ServerRelativeUrl,"<property name=\"JSLink\" type=\"string\">~sitecollection");
@@ -168,19 +169,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                                             (int)wp.Order
                                                                                         );
                 var webPartProperties = definition.WebPart.Properties;
-                ctx.Load(definition.WebPart);
-                ctx.Load(webPartProperties);
-                ctx.ExecuteQuery();
+                web.Context.Load(definition.WebPart);
+                web.Context.Load(webPartProperties);
+                web.Context.ExecuteQuery();
 
                 if (wp.IsListViewWebPart)
                 {
-                    AddListViewWebpart(ctx, wp, definition, webPartProperties, parser);
+                    AddListViewWebpart(web, wp, definition, webPartProperties, parser);
                 }
             }
         }
 
         private static void AddListViewWebpart(
-            ClientContext ctx,
+            Web web,
             PublishingPageWebPart wp,
             Microsoft.SharePoint.Client.WebParts.WebPartDefinition definition,
             PropertyValues webPartProperties,
@@ -192,17 +193,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 string listUrl = webPartProperties.FieldValues["ListUrl"].ToString();
 
-                ctx.Load(definition, d => d.Id); // Id of the hidden view which gets automatically created
-                ctx.ExecuteQuery();
+                web.Context.Load(definition, d => d.Id); // Id of the hidden view which gets automatically created
+                web.Context.ExecuteQuery();
 
                 Guid viewId = definition.Id;
-                List list = ctx.Web.GetListByUrl(listUrl);
+                List list = web.GetListByUrl(listUrl);
 
                 Microsoft.SharePoint.Client.View viewCreatedFromWebpart = list.Views.GetById(viewId);
-                ctx.Load(viewCreatedFromWebpart);
+                web.Context.Load(viewCreatedFromWebpart);
 
                 Microsoft.SharePoint.Client.View viewCreatedFromList = list.Views.GetByTitle(defaultViewDisplayName);
-                ctx.Load(
+                web.Context.Load(
                     viewCreatedFromList,
                     v => v.ViewFields,
                     v => v.ListViewXml,
@@ -213,7 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     v => v.Paged,
                     v => v.RowLimit);
 
-                ctx.ExecuteQuery();
+                web.Context.ExecuteQuery();
 
                 //need to copy the same View definition to the new View added by the Webpart manager
                 viewCreatedFromWebpart.ViewQuery = viewCreatedFromList.ViewQuery;
@@ -236,7 +237,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 viewCreatedFromWebpart.Update();
 
-                ctx.ExecuteQuery();
+                web.Context.ExecuteQuery();
             }
         }
 
