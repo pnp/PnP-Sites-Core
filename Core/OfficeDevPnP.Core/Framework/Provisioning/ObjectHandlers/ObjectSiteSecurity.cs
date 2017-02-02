@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // Changed by Paolo Pialorsi to embrace the new sub-site attributes for break role inheritance and copy role assignments
+                // Changed by Paolo Pialorsi to embrace the new sub-site attributes to break role inheritance and copy role assignments
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
                 //if (web.IsSubSite() && !template.Security.BreakRoleInheritance)
                 //{
@@ -42,22 +42,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-
                 web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
                 web.Context.Load(memberGroup, o => o.Title, o => o.Users);
                 web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
 
                 web.Context.ExecuteQueryRetry();
 
-                if (!ownerGroup.ServerObjectIsNull.Value)
+                if (!ownerGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
                 }
-                if (!memberGroup.ServerObjectIsNull.Value)
+                if (!memberGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
                 }
-                if (!visitorGroup.ServerObjectIsNull.Value)
+                if (!visitorGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
@@ -168,8 +167,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     user.Update();
                     web.Context.ExecuteQueryRetry();
                 }
-                
-                if (siteSecurity.SiteSecurityPermissions != null) // With the change from october, manage permission levels on subsites as well
+
+                // With the change from october, manage permission levels on subsites as well
+                if (siteSecurity.SiteSecurityPermissions != null) 
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -182,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var siteRoleDefinition = roleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
                             if (siteRoleDefinition == null)
                             {
-                                scope.LogDebug("Creation role definition {0}", parser.ParseString(templateRoleDefinition.Name));
+                                scope.LogDebug("Creating role definition {0}", parser.ParseString(templateRoleDefinition.Name));
                                 var roleDefinitionCI = new RoleDefinitionCreationInformation();
                                 roleDefinitionCI.Name = parser.ParseString(templateRoleDefinition.Name);
                                 roleDefinitionCI.Description = parser.ParseString(templateRoleDefinition.Description);
