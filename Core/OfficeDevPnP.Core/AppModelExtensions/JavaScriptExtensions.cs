@@ -80,6 +80,7 @@ namespace Microsoft.SharePoint.Client
                     throw new ArgumentException(nameof(scriptLinks));
                 }
 
+#if !ONPREMISES
                 if (scriptLinksEnumerable.Length == 1)
                 {
                     var scriptSrc = scriptLinksEnumerable[0];
@@ -104,7 +105,7 @@ namespace Microsoft.SharePoint.Client
                             scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}{serverRelativeUrl}/{scriptSrc}";
                         }
                     }
-                    // scriptSrc needs to be abso
+
                     var customAction = new CustomActionEntity
                     {
                         Name = key,
@@ -123,7 +124,6 @@ namespace Microsoft.SharePoint.Client
                 }
                 else
                 {
-
                     var scripts = new StringBuilder(@" var headID = document.getElementsByTagName('head')[0]; 
 var scripts = document.getElementsByTagName('script');
 var scriptsSrc = [];
@@ -152,6 +152,35 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
 
                     ret = AddJsBlockImplementation(clientObject, key, scripts.ToString(), sequence);
                 }
+#else
+                var scripts = new StringBuilder(@" var headID = document.getElementsByTagName('head')[0]; 
+var scripts = document.getElementsByTagName('script');
+var scriptsSrc = [];
+for(var i = 0; i < scripts.length; i++) {
+    if(scripts[i].type === 'text/javascript'){
+        scriptsSrc.push(scripts[i].src);
+    }
+}
+");
+                foreach (var link in scriptLinksEnumerable)
+                {
+                    if (!string.IsNullOrEmpty(link))
+                    {
+                        scripts.Append(@"
+if (scriptsSrc.indexOf('{1}') === -1)  {  
+    var newScript = document.createElement('script');
+    newScript.id = '{0}';
+    newScript.type = 'text/javascript';
+    newScript.src = '{1}';
+    headID.appendChild(newScript);
+    scriptsSrc.push('{1}');
+}".Replace("{0}", key).Replace("{1}", link));
+                    }
+
+                }
+
+                ret = AddJsBlockImplementation(clientObject, key, scripts.ToString(), sequence);
+#endif
 
             }
             else
