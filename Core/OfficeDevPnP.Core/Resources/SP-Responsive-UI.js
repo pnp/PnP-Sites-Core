@@ -58,6 +58,10 @@ PnPResponsiveApp.init = function () {
 
             // embedding and loading of all necessary CSS files and JS libraries
             var currentScriptUrl = $('#PnPResponsiveUI').attr('src');
+            if (currentScriptUrl == undefined)
+            {
+                currentScriptUrl = $("script[src$='sp-responsive-ui.js']").attr("src")
+            }
             if (currentScriptUrl != undefined) {
                 var currentScriptBaseUrl = currentScriptUrl.substring(0, currentScriptUrl.lastIndexOf("/") + 1);
 
