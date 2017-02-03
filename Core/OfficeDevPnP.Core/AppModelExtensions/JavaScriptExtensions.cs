@@ -77,15 +77,38 @@ namespace Microsoft.SharePoint.Client
                 var scriptLinksEnumerable = scriptLinks as string[] ?? scriptLinks.ToArray();
                 if (!scriptLinksEnumerable.Any())
                 {
-                    throw new ArgumentException("Parameter scriptLinks can't be empty");
+                    throw new ArgumentException(nameof(scriptLinks));
                 }
 
                 if (scriptLinksEnumerable.Length == 1)
                 {
+                    var scriptSrc = scriptLinksEnumerable[0];
+                    if (!scriptSrc.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var serverUri = new Uri(clientObject.Context.Url);
+                        if (scriptSrc.StartsWith("/"))
+                        {
+                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}/{scriptSrc}";
+                        }
+                        else
+                        {
+                            var serverRelativeUrl = string.Empty;
+                            if (clientObject is Web)
+                            {
+                                serverRelativeUrl = ((Web)clientObject).EnsureProperty(w => w.ServerRelativeUrl);
+                            }
+                            else
+                            {
+                                serverRelativeUrl = ((Site)clientObject).RootWeb.EnsureProperty(w => w.ServerRelativeUrl);
+                            }
+                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}{serverRelativeUrl}/{scriptSrc}";
+                        }
+                    }
+                    // scriptSrc needs to be abso
                     var customAction = new CustomActionEntity
                     {
                         Name = key,
-                        ScriptSrc = scriptLinksEnumerable[0],
+                        ScriptSrc = scriptSrc,
                         Location = SCRIPT_LOCATION,
                         Sequence = sequence
                     };
@@ -135,164 +158,164 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
             {
                 throw new ArgumentException("Only Site or Web supported as clientObject");
 
-    }
+            }
             return ret;
         }
 
-/// <summary>
-/// Removes the custom action that triggers the execution of a javascript link
-/// </summary>
-/// <param name="web">Site to be processed - can be root web or sub site</param>
-/// <param name="key">Identifier (key) for the custom action that will be deleted</param>
-/// <returns>True if action was ok</returns>
-public static bool DeleteJsLink(this Web web, string key)
-{
-    return DeleteJsLinkImplementation(web, key);
-}
-
-/// <summary>
-/// Removes the custom action that triggers the execution of a javascript link
-/// </summary>
-/// <param name="site">Site to be processed</param>
-/// <param name="key">Identifier (key) for the custom action that will be deleted</param>
-/// <returns>True if action was ok</returns>
-public static bool DeleteJsLink(this Site site, string key)
-{
-    return DeleteJsLinkImplementation(site, key);
-}
-
-private static bool DeleteJsLinkImplementation(ClientObject clientObject, string key)
-{
-    bool ret;
-    if (clientObject is Web || clientObject is Site)
-    {
-        var jsAction = new CustomActionEntity()
+        /// <summary>
+        /// Removes the custom action that triggers the execution of a javascript link
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="key">Identifier (key) for the custom action that will be deleted</param>
+        /// <returns>True if action was ok</returns>
+        public static bool DeleteJsLink(this Web web, string key)
         {
-            Name = key,
-            Location = SCRIPT_LOCATION,
-            Remove = true,
-        };
-        if (clientObject is Web)
-        {
-            ret = ((Web)clientObject).AddCustomAction(jsAction);
-        }
-        else
-        {
-            ret = ((Site)clientObject).AddCustomAction(jsAction);
+            return DeleteJsLinkImplementation(web, key);
         }
 
-    }
-    else
-    {
-        throw new ArgumentException("Only Site or Web supported as clientObject");
-    }
-    return ret;
-}
-
-/// <summary>
-/// Injects javascript via a adding a custom action to the site
-/// </summary>
-/// <param name="web">Site to be processed - can be root web or sub site</param>
-/// <param name="key">Identifier (key) for the custom action that will be created</param>
-/// <param name="scriptBlock">Javascript to be injected</param>
-/// <param name="sequence"></param>
-/// <returns>True if action was ok</returns>
-public static bool AddJsBlock(this Web web, string key, string scriptBlock, int sequence = 0)
-{
-    return AddJsBlockImplementation(web, key, scriptBlock, sequence);
-
-}
-
-/// <summary>
-/// Injects javascript via a adding a custom action to the site
-/// </summary>
-/// <param name="site">Site to be processed</param>
-/// <param name="key">Identifier (key) for the custom action that will be created</param>
-/// <param name="scriptBlock">Javascript to be injected</param>
-/// <param name="sequence"></param>
-/// <returns>True if action was ok</returns>
-public static bool AddJsBlock(this Site site, string key, string scriptBlock, int sequence = 0)
-{
-    return AddJsBlockImplementation(site, key, scriptBlock, sequence);
-}
-
-private static bool AddJsBlockImplementation(ClientObject clientObject, string key, string scriptBlock, int sequence)
-{
-    bool ret;
-    if (clientObject is Web || clientObject is Site)
-    {
-        var jsAction = new CustomActionEntity()
+        /// <summary>
+        /// Removes the custom action that triggers the execution of a javascript link
+        /// </summary>
+        /// <param name="site">Site to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be deleted</param>
+        /// <returns>True if action was ok</returns>
+        public static bool DeleteJsLink(this Site site, string key)
         {
-            Name = key,
-            Location = SCRIPT_LOCATION,
-            ScriptBlock = scriptBlock,
-            Sequence = sequence
-        };
-        if (clientObject is Web)
-        {
-            ret = ((Web)clientObject).AddCustomAction(jsAction);
+            return DeleteJsLinkImplementation(site, key);
         }
-        else
+
+        private static bool DeleteJsLinkImplementation(ClientObject clientObject, string key)
         {
-            ret = ((Site)clientObject).AddCustomAction(jsAction);
+            bool ret;
+            if (clientObject is Web || clientObject is Site)
+            {
+                var jsAction = new CustomActionEntity()
+                {
+                    Name = key,
+                    Location = SCRIPT_LOCATION,
+                    Remove = true,
+                };
+                if (clientObject is Web)
+                {
+                    ret = ((Web)clientObject).AddCustomAction(jsAction);
+                }
+                else
+                {
+                    ret = ((Site)clientObject).AddCustomAction(jsAction);
+                }
+
+            }
+            else
+            {
+                throw new ArgumentException("Only Site or Web supported as clientObject");
+            }
+            return ret;
         }
-    }
-    else
-    {
-        throw new ArgumentException("Only Site or Web supported as clientObject");
-    }
-    return ret;
-}
 
-/// <summary>
-/// Checks if the target web already has a custom JsLink with a specified key
-/// </summary>
-/// <param name="web">Web to be processed</param>
-/// <param name="key">Identifier (key) for the custom action that will be created</param>
-/// <returns></returns>
-public static Boolean ExistsJsLink(this Web web, String key)
-{
-    return (ExistsJsLinkImplementation(web, key));
-}
-
-/// <summary>
-/// Checks if the target site already has a custom JsLink with a specified key
-/// </summary>
-/// <param name="site">Site to be processed</param>
-/// <param name="key">Identifier (key) for the custom action that will be created</param>
-/// <returns></returns>
-public static Boolean ExistsJsLink(this Site site, String key)
-{
-    return (ExistsJsLinkImplementation(site, key));
-}
-
-public static Boolean ExistsJsLinkImplementation(ClientObject clientObject, String key)
-{
-    UserCustomActionCollection existingActions;
-    if (clientObject is Web)
-    {
-        existingActions = ((Web)clientObject).UserCustomActions;
-    }
-    else
-    {
-        existingActions = ((Site)clientObject).UserCustomActions;
-    }
-
-    clientObject.Context.Load(existingActions);
-    clientObject.Context.ExecuteQueryRetry();
-
-    var actions = existingActions.ToArray();
-    foreach (var action in actions)
-    {
-        if (action.Name == key &&
-            action.Location == "ScriptLink")
+        /// <summary>
+        /// Injects javascript via a adding a custom action to the site
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <param name="scriptBlock">Javascript to be injected</param>
+        /// <param name="sequence"></param>
+        /// <returns>True if action was ok</returns>
+        public static bool AddJsBlock(this Web web, string key, string scriptBlock, int sequence = 0)
         {
-            return (true);
-        }
-    }
+            return AddJsBlockImplementation(web, key, scriptBlock, sequence);
 
-    return (false);
-}
+        }
+
+        /// <summary>
+        /// Injects javascript via a adding a custom action to the site
+        /// </summary>
+        /// <param name="site">Site to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <param name="scriptBlock">Javascript to be injected</param>
+        /// <param name="sequence"></param>
+        /// <returns>True if action was ok</returns>
+        public static bool AddJsBlock(this Site site, string key, string scriptBlock, int sequence = 0)
+        {
+            return AddJsBlockImplementation(site, key, scriptBlock, sequence);
+        }
+
+        private static bool AddJsBlockImplementation(ClientObject clientObject, string key, string scriptBlock, int sequence)
+        {
+            bool ret;
+            if (clientObject is Web || clientObject is Site)
+            {
+                var jsAction = new CustomActionEntity()
+                {
+                    Name = key,
+                    Location = SCRIPT_LOCATION,
+                    ScriptBlock = scriptBlock,
+                    Sequence = sequence
+                };
+                if (clientObject is Web)
+                {
+                    ret = ((Web)clientObject).AddCustomAction(jsAction);
+                }
+                else
+                {
+                    ret = ((Site)clientObject).AddCustomAction(jsAction);
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Only Site or Web supported as clientObject");
+            }
+            return ret;
+        }
+
+        /// <summary>
+        /// Checks if the target web already has a custom JsLink with a specified key
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <returns></returns>
+        public static Boolean ExistsJsLink(this Web web, String key)
+        {
+            return (ExistsJsLinkImplementation(web, key));
+        }
+
+        /// <summary>
+        /// Checks if the target site already has a custom JsLink with a specified key
+        /// </summary>
+        /// <param name="site">Site to be processed</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <returns></returns>
+        public static Boolean ExistsJsLink(this Site site, String key)
+        {
+            return (ExistsJsLinkImplementation(site, key));
+        }
+
+        public static Boolean ExistsJsLinkImplementation(ClientObject clientObject, String key)
+        {
+            UserCustomActionCollection existingActions;
+            if (clientObject is Web)
+            {
+                existingActions = ((Web)clientObject).UserCustomActions;
+            }
+            else
+            {
+                existingActions = ((Site)clientObject).UserCustomActions;
+            }
+
+            clientObject.Context.Load(existingActions);
+            clientObject.Context.ExecuteQueryRetry();
+
+            var actions = existingActions.ToArray();
+            foreach (var action in actions)
+            {
+                if (action.Name == key &&
+                    action.Location == "ScriptLink")
+                {
+                    return (true);
+                }
+            }
+
+            return (false);
+        }
     }
 }
 
