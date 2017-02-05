@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Tests.Framework.Providers.Extensibility;
 using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 using Microsoft.SharePoint.Client;
+using System.Threading;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -35,6 +36,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             if (!String.IsNullOrEmpty(TestCommon.DevSiteUrl))
             {
+                CleanupTemplatesFromSharePointLibrary();
                 UploadTemplatesToSharePointLibrary();
             }
         }
