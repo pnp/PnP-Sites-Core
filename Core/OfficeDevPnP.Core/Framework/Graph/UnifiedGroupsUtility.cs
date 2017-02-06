@@ -138,6 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     MailNickname = mailNickname,
                     MailEnabled = true,
                     SecurityEnabled = false,
+                    Visibility = isPrivate == true ? "Private" : "Public",
                     GroupTypes = new List<string> { "Unified" },
                 };
 
