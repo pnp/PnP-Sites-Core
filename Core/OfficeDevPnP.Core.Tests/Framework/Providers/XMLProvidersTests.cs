@@ -137,11 +137,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var context = TestCommon.CreatePnPClientContext();
 
             var docLib = context.Web.GetListByTitle(testTemplatesDocLib);
-            context.Load(docLib);
-            context.ExecuteQueryRetry();
-            docLib.DeleteObject();
-            context.ExecuteQueryRetry();
-
+            if (docLib != null)
+            {
+                context.Load(docLib);
+                context.ExecuteQueryRetry();
+                docLib.DeleteObject();
+                context.ExecuteQueryRetry();
+            }
         }
         #endregion
 
