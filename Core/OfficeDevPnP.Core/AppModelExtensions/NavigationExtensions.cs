@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Collections;
+using System.Linq.Expressions;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 
@@ -477,7 +478,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        var parentNode = quickLaunch.SingleOrDefault(n => n.Title == parentNodeTitle);
+                        var parentNode = quickLaunch.FirstOrDefault(n => n.Title == parentNodeTitle);
                         navigationNode = parentNode?.Children.Add(node);
                     }
                 }
@@ -787,14 +788,22 @@ namespace Microsoft.SharePoint.Client
         /// Returns all custom actions in a web
         /// </summary>
         /// <param name="web">The web to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Web web)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Web web, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)web.Context;
 
             List<UserCustomAction> actions = new List<UserCustomAction>();
 
-            clientContext.Load(web.UserCustomActions);
+            if (expressions != null && expressions.Any())
+            {
+                clientContext.Load(web.UserCustomActions, u => u.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                clientContext.Load(web.UserCustomActions);
+            }
             clientContext.ExecuteQueryRetry();
 
             foreach (UserCustomAction uca in web.UserCustomActions)
@@ -808,14 +817,21 @@ namespace Microsoft.SharePoint.Client
         /// Returns all custom actions in a web
         /// </summary>
         /// <param name="site">The site to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
 
             List<UserCustomAction> actions = new List<UserCustomAction>();
-
-            clientContext.Load(site.UserCustomActions);
+            if (expressions != null && expressions.Any())
+            {
+                clientContext.Load(site.UserCustomActions, u => u.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                clientContext.Load(site.UserCustomActions);
+            }
             clientContext.ExecuteQueryRetry();
 
             foreach (UserCustomAction uca in site.UserCustomActions)

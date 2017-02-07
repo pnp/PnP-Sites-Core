@@ -16,10 +16,16 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core
 {
+    /// <summary>
+    /// Enum to identify the supported Office 365 hosting environments
+    /// </summary>
     public enum AzureEnvironment
     {
         Production=0,
-        PPE=1
+        PPE=1,
+        China=2,
+        Germany=3,
+        USGovernment=4
     }
 
 
@@ -37,11 +43,12 @@ namespace OfficeDevPnP.Core
         private CookieContainer fedAuth = null;
         private string _contextUrl;
         private TokenCache _tokenCache;
-        private const string _commonAuthority = "https://login.windows.net/Common";
+        private string _commonAuthority = "https://login.windows.net/Common";
         private static AuthenticationContext _authContext = null;
         private string _clientId;
         private Uri _redirectUri;
 
+        #region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
         /// Returns a SharePointOnline ClientContext object 
         /// </summary>
@@ -94,6 +101,19 @@ namespace OfficeDevPnP.Core
         /// Returns an app only ClientContext object
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="appId">Application ID which is requesting the ClientContext object</param>
+        /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string appId, string appSecret, AzureEnvironment environment = AzureEnvironment.Production)
+        {
+            return GetAppOnlyAuthenticatedContext(siteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(siteUrl)), appId, appSecret, GetAzureADACSEndPoint(environment), GetAzureADACSEndPointPrefix(environment));
+        }
+
+        /// <summary>
+        /// Returns an app only ClientContext object
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
         /// <param name="appId">Application ID which is requesting the ClientContext object</param>
         /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
@@ -108,18 +128,150 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
-        /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+        /// Get's the Azure ASC login end point for the given environment
+        /// </summary>
+        /// <param name="environment">Environment to get the login information for</param>
+        /// <returns>Azure ASC login endpoint</returns>
+        public string GetAzureADACSEndPoint(AzureEnvironment environment)
+        {
+            switch (environment)
+            {
+                case AzureEnvironment.Production:
+                    {
+                        return "accesscontrol.windows.net";
+                    }
+                case AzureEnvironment.Germany:
+                    {
+                        return "microsoftonline.de";
+                    }
+                case AzureEnvironment.China:
+                    {
+                        return "accesscontrol.chinacloudapi.cn";
+                    }
+                case AzureEnvironment.USGovernment:
+                    {
+                        return "accesscontrol.windows.net";
+                    }
+                case AzureEnvironment.PPE:
+                    {
+                        return "windows-ppe.net";
+                    }
+                default:
+                    {
+                        return "accesscontrol.windows.net";
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Get's the Azure ACS login end point prefix for the given environment
+        /// </summary>
+        /// <param name="environment">Environment to get the login information for</param>
+        /// <returns>Azure ACS login endpoint prefix</returns>
+        public string GetAzureADACSEndPointPrefix(AzureEnvironment environment)
+        {
+            switch (environment)
+            {
+                case AzureEnvironment.Production:
+                    {
+                        return "accounts";
+                    }
+                case AzureEnvironment.Germany:
+                    {
+                        return "login";
+                    }
+                case AzureEnvironment.China:
+                    {
+                        return "accounts";
+                    }
+                case AzureEnvironment.USGovernment:
+                    {
+                        return "accounts";
+                    }
+                case AzureEnvironment.PPE:
+                    {
+                        return "login";
+                    }
+                default:
+                    {
+                        return "accounts";
+                    }
+            }
+        }
+
+        /// <summary>
+        /// Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
-        /// <param name="user">User to be used to instantiate the ClientContext object</param>
-        /// <param name="password">Password of the user used to instantiate the ClientContext object</param>
-        /// <param name="domain">Domain of the user used to instantiate the ClientContext object</param>
-        /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, string password, string domain)
+        /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
+        /// <param name="appId">Application ID which is requesting the ClientContext object</param>
+        /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
+        /// <param name="acsHostUrl">Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts</param>
+        /// <param name="globalEndPointPrefix">Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
+        private void EnsureToken(string siteUrl, string realm, string appId, string appSecret, string acsHostUrl, string globalEndPointPrefix)
         {
-            ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.Credentials = new NetworkCredential(user, password, domain);
-            return clientContext;
+            if (appOnlyAccessToken == null)
+            {
+                lock (tokenLock)
+                {
+                    Log.Debug(Constants.LOGGING_SOURCE, "AuthenticationManager:EnsureToken(siteUrl:{0},realm:{1},appId:{2},appSecret:PRIVATE)", siteUrl, realm, appId);
+                    if (appOnlyAccessToken == null)
+                    {
+                        Utilities.TokenHelper.Realm = realm;
+                        Utilities.TokenHelper.ServiceNamespace = realm;
+                        Utilities.TokenHelper.ClientId = appId;
+                        Utilities.TokenHelper.ClientSecret = appSecret;
+
+                        if (!String.IsNullOrEmpty(acsHostUrl))
+                        {
+                            Utilities.TokenHelper.AcsHostUrl = acsHostUrl;
+                        }
+
+                        if (globalEndPointPrefix != null)
+                        {
+                            Utilities.TokenHelper.GlobalEndPointPrefix = globalEndPointPrefix;
+                        }
+
+                        var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
+                        string token = response.AccessToken;
+                        ThreadPool.QueueUserWorkItem(obj =>
+                        {
+                            try
+                            {
+                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
+                                var lease = GetAccessTokenLease(response.ExpiresOn);
+                                lease =
+                                    TimeSpan.FromSeconds(
+                                        Math.Min(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds,
+                                                 TimeSpan.FromHours(1).TotalSeconds));
+                                Thread.Sleep(lease);
+                                appOnlyAccessToken = null;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                                appOnlyAccessToken = null;
+                            }
+                        });
+                        appOnlyAccessToken = token;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get the access token lease time span.
+        /// </summary>
+        /// <param name="expiresOn">The ExpiresOn time of the current access token</param>
+        /// <returns>Returns a TimeSpan represents the time interval within which the current access token is valid thru.</returns>
+        private TimeSpan GetAccessTokenLease(DateTime expiresOn)
+        {
+            DateTime now = DateTime.UtcNow;
+            DateTime expires = expiresOn.Kind == DateTimeKind.Utc ?
+                expiresOn : TimeZoneInfo.ConvertTimeToUtc(expiresOn);
+            TimeSpan lease = expires - now;
+            return lease;
         }
 
         /// <summary>
@@ -189,7 +341,41 @@ namespace OfficeDevPnP.Core
 
             return null;
         }
+        #endregion
 
+        #region Authenticating against SharePoint on-premises using credentials
+        /// <summary>
+        /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="user">User to be used to instantiate the ClientContext object</param>
+        /// <param name="password">Password of the user used to instantiate the ClientContext object</param>
+        /// <param name="domain">Domain of the user used to instantiate the ClientContext object</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, string password, string domain)
+        {
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.Credentials = new NetworkCredential(user, password, domain);
+            return clientContext;
+        }
+
+        /// <summary>
+        /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="user">User to be used to instantiate the ClientContext object</param>
+        /// <param name="password">Password (SecureString) of the user used to instantiate the ClientContext object</param>
+        /// <param name="domain">Domain of the user used to instantiate the ClientContext object</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, SecureString password, string domain)
+        {
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.Credentials = new NetworkCredential(user, password, domain);
+            return clientContext;
+        }
+        #endregion
+
+        #region Authenticating against SharePoint Online using Azure AD based authentication
 #if !ONPREMISES
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
@@ -198,10 +384,11 @@ namespace OfficeDevPnP.Core
         /// <param name="clientId">The Azure AD Native Application Client ID</param>
         /// <param name="redirectUrl">The Azure AD Native Application Redirect Uri as a string</param>
         /// <param name="tokenCache">Optional token cache. If not specified an in-memory token cache will be used</param>
-        /// <returns></returns>
-        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, string redirectUrl, TokenCache tokenCache = null)
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>Client context object</returns>
+        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, string redirectUrl, TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
         {
-            return GetAzureADNativeApplicationAuthenticatedContext(siteUrl, clientId, new Uri(redirectUrl), tokenCache);
+            return GetAzureADNativeApplicationAuthenticatedContext(siteUrl, clientId, new Uri(redirectUrl), tokenCache, environment);
         }
 
         /// <summary>
@@ -211,14 +398,17 @@ namespace OfficeDevPnP.Core
         /// <param name="clientId">The Azure AD Native Application Client ID</param>
         /// <param name="redirectUri">The Azure AD Native Application Redirect Uri</param>
         /// <param name="tokenCache">Optional token cache. If not specified an in-memory token cache will be used</param>
-        /// <returns></returns>
-        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, Uri redirectUri, TokenCache tokenCache = null)
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>Client context object</returns>
+        public ClientContext GetAzureADNativeApplicationAuthenticatedContext(string siteUrl, string clientId, Uri redirectUri, TokenCache tokenCache = null, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var clientContext = new ClientContext(siteUrl);
             _contextUrl = siteUrl;
             _tokenCache = tokenCache;
             _clientId = clientId;
             _redirectUri = redirectUri;
+            _commonAuthority = String.Format("{0}/common", GetAzureADLoginEndPoint(environment));
+
             clientContext.ExecutingWebRequest += clientContext_NativeApplicationExecutingWebRequest;
 
             return clientContext;
@@ -229,7 +419,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="accessTokenGetter">The AccessToken getter method to use</param>
-        /// <returns></returns>
+        /// <returns>Client context object</returns>
         public ClientContext GetAzureADWebApplicationAuthenticatedContext(String siteUrl, Func<String, String> accessTokenGetter)
         {
             var clientContext = new ClientContext(siteUrl);
@@ -250,7 +440,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="accessToken">An explicit value for the AccessToken</param>
-        /// <returns></returns>
+        /// <returns>Client context object</returns>
         public ClientContext GetAzureADAccessTokenAuthenticatedContext(String siteUrl, String accessToken)
         {
             var clientContext = new ClientContext(siteUrl);
@@ -336,8 +526,8 @@ namespace OfficeDevPnP.Core
         /// <param name="storeName">The name of the store for the certificate</param>
         /// <param name="storeLocation">The location of the store for the certificate</param>
         /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
-        /// <param name="environment">Indicates which Azure AD environment is being used</param>
-        /// <returns></returns>
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>ClientContext being used</returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, StoreName storeName, StoreLocation storeLocation, string thumbPrint, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var cert = Utilities.X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
@@ -353,8 +543,8 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
-        /// <param name="environment">Indicates which Azure AD environment is being used</param>
-        /// <returns></returns>
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>Client context object</returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, string certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var certPassword = Utilities.EncryptionUtility.ToSecureString(certificatePassword);
@@ -370,8 +560,8 @@ namespace OfficeDevPnP.Core
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
         /// <param name="certificatePath">The path to the certificate (*.pfx) file on the file system</param>
         /// <param name="certificatePassword">Password to the certificate</param>
-        /// <param name="environment">Indicates which Azure AD environment is being used</param>
-        /// <returns></returns>
+        /// <param name="environment">SharePoint environment being used</param>
+        /// <returns>Client context object</returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, string certificatePath, SecureString certificatePassword, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var certfile = System.IO.File.OpenRead(certificatePath);
@@ -393,21 +583,14 @@ namespace OfficeDevPnP.Core
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="clientId">The Azure AD Application Client ID</param>
         /// <param name="tenant">The Azure AD Tenant, e.g. mycompany.onmicrosoft.com</param>
-        /// <param name="certificate"></param>
-        /// <param name="environment"></param>
+        /// <param name="certificate">Certificate used to authenticate</param>
+        /// <param name="environment">SharePoint environment being used</param>
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
-
             var clientContext = new ClientContext(siteUrl);
 
-            var authority = string.Format(CultureInfo.InvariantCulture, "https://login.windows.net/{0}/", tenant);
-
-            if (environment == AzureEnvironment.PPE)
-            {
-                //windows-ppe.net
-                authority = string.Format(CultureInfo.InvariantCulture, "https://login.windows-ppe.net/{0}/", tenant);
-            }
+            string authority = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/", GetAzureADLoginEndPoint(environment), tenant);
 
             var authContext = new AuthenticationContext(authority);
 
@@ -423,23 +606,46 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
-#endif
 
         /// <summary>
-        /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+        /// Get's the Azure AD login end point for the given environment
         /// </summary>
-        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
-        /// <param name="user">User to be used to instantiate the ClientContext object</param>
-        /// <param name="password">Password (SecureString) of the user used to instantiate the ClientContext object</param>
-        /// <param name="domain">Domain of the user used to instantiate the ClientContext object</param>
-        /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, SecureString password, string domain)
+        /// <param name="environment">Environment to get the login information for</param>
+        /// <returns>Azure AD login endpoint</returns>
+        public string GetAzureADLoginEndPoint(AzureEnvironment environment)
         {
-            ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.Credentials = new NetworkCredential(user, password, domain);
-            return clientContext;
+            switch (environment)
+            {
+                case AzureEnvironment.Production:
+                    {
+                        return "https://login.windows.net";
+                    }
+                case AzureEnvironment.Germany:
+                    {
+                        return "https://login.microsoftonline.de";
+                    }
+                case AzureEnvironment.China:
+                    {
+                        return "https://login.chinacloudapi.cn";
+                    }
+                case AzureEnvironment.USGovernment:
+                    {
+                        return "https://login-us.microsoftonline.com";
+                    }
+                case AzureEnvironment.PPE:
+                    {
+                        return "https://login.windows-ppe.net";
+                    }
+                default:
+                    {
+                        return "https://login.windows.net";
+                    }
+            }
         }
+#endif
+        #endregion
 
+        #region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
@@ -497,9 +703,15 @@ namespace OfficeDevPnP.Core
             fedAuth = new UsernameMixed().GetFedAuthCookie(siteUrl, $"{domain}\\{user}", password, new Uri($"https://{sts}/adfs/services/trust/13/usernamemixed"), idpId, logonTokenCacheExpirationWindow);
         }
 
-
-
-
+        /// <summary>
+        /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
+        /// </summary>
+        /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="serialNumber">Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method</param>
+        /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
+        /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
+        /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
@@ -529,87 +741,21 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
+        /// <summary>
+        /// Refreshes the SharePoint FedAuth cookie 
+        /// </summary>
+        /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="serialNumber">Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method</param>
+        /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
+        /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
+        /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
         public void RefreshADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"), idpId, logonTokenCacheExpirationWindow);
 
         }
+        #endregion
 
-
-
-        /// <summary>
-        /// Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
-        /// </summary>
-        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
-        /// <param name="realm">Realm of the environment (tenant) that requests the ClientContext object</param>
-        /// <param name="appId">Application ID which is requesting the ClientContext object</param>
-        /// <param name="appSecret">Application secret of the Application which is requesting the ClientContext object</param>
-        /// <param name="acsHostUrl">Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts</param>
-        /// <param name="globalEndPointPrefix">Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        private void EnsureToken(string siteUrl, string realm, string appId, string appSecret, string acsHostUrl, string globalEndPointPrefix)
-        {
-            if (appOnlyAccessToken == null)
-            {
-                lock (tokenLock)
-                {
-                    Log.Debug(Constants.LOGGING_SOURCE, "AuthenticationManager:EnsureToken(siteUrl:{0},realm:{1},appId:{2},appSecret:PRIVATE)", siteUrl, realm, appId);
-                    if (appOnlyAccessToken == null)
-                    {
-                        Utilities.TokenHelper.Realm = realm;
-                        Utilities.TokenHelper.ServiceNamespace = realm;
-                        Utilities.TokenHelper.ClientId = appId;
-                        Utilities.TokenHelper.ClientSecret = appSecret;
-
-                        if (!String.IsNullOrEmpty(acsHostUrl))
-                        {
-                            Utilities.TokenHelper.AcsHostUrl = acsHostUrl;
-                        }
-
-                        if (!String.IsNullOrEmpty(globalEndPointPrefix))
-                        {
-                            Utilities.TokenHelper.GlobalEndPointPrefix = globalEndPointPrefix;
-                        }
-
-                        var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
-                        string token = response.AccessToken;
-                        ThreadPool.QueueUserWorkItem(obj =>
-                        {
-                            try
-                            {
-                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
-                                var lease = GetAccessTokenLease(response.ExpiresOn);
-                                lease =
-                                    TimeSpan.FromSeconds(
-                                        Math.Min(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds,
-                                                 TimeSpan.FromHours(1).TotalSeconds));
-                                Thread.Sleep(lease);
-                                appOnlyAccessToken = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
-                                appOnlyAccessToken = null;
-                            }
-                        });
-                        appOnlyAccessToken = token;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Get the access token lease time span.
-        /// </summary>
-        /// <param name="expiresOn">The ExpiresOn time of the current access token</param>
-        /// <returns>Returns a TimeSpan represents the time interval within which the current access token is valid thru.</returns>
-        private TimeSpan GetAccessTokenLease(DateTime expiresOn)
-        {
-            DateTime now = DateTime.UtcNow;
-            DateTime expires = expiresOn.Kind == DateTimeKind.Utc ?
-                expiresOn : TimeZoneInfo.ConvertTimeToUtc(expiresOn);
-            TimeSpan lease = expires - now;
-            return lease;
-        }
     }
 }

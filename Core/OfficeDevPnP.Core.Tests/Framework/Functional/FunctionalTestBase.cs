@@ -2,20 +2,9 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -27,11 +16,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         internal static string centralSubSiteUrl = "";
         internal const string centralSubSiteName = "sub";
         internal static bool debugMode = false;
+        internal static bool isNoScriptSite = false;
 
-        private ProvisioningTemplate _sourceTemplate = null;
-        private ProvisioningTemplate _targetTemplate = null;
-        private TokenParser _sourceParser = null;
-        private TokenParser _targetParser = null;
         internal string sitecollectionName = "";
 
         #region Test preparation
@@ -46,10 +32,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
-                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString(), isNoScriptSite:false);
+                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString(), isNoScriptSite: isNoScriptSite);
 
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
+
+#if !ONPREMISES                    
+                    // Apply noscript setting
+                    if (isNoScriptSite)
+                    {
+                        Console.WriteLine("Setting site {0} as NoScript", centralSiteCollectionUrl);
+                        tenant.SetSiteProperties(centralSiteCollectionUrl, noScriptSite: true);
+                    }
+#endif
                 }
             }
         }
@@ -84,71 +79,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             sitecollectionName = sitecollectionNamePrefix + Guid.NewGuid().ToString();
         }
 
-        #endregion
+#endregion
 
-        #region Apply template and read the "result"
-        public TestProvisioningTemplateResult TestProvisioningTemplate(ClientContext cc, string templateName, Handlers handlersToProcess = Handlers.All, ProvisioningTemplateApplyingInformation ptai = null, ProvisioningTemplateCreationInformation ptci = null)
-        {
-            try
-            {
-                // Read the template from XML and apply it
-                XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-                ProvisioningTemplate sourceTemplate = provider.GetTemplate(templateName);
-
-                if (ptai == null)
-                {
-                    ptai = new ProvisioningTemplateApplyingInformation();
-                    ptai.HandlersToProcess = handlersToProcess;
-                }
-
-                if (ptai.ProgressDelegate == null)
-                {
-                    ptai.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
-                    {
-                        Console.WriteLine("Applying template - {0}/{1} - {2}", progress, total, message);
-                    };
-                }
-
-                sourceTemplate.Connector = provider.Connector;
-
-                TokenParser sourceTokenParser = new TokenParser(cc.Web, sourceTemplate);
-
-                cc.Web.ApplyProvisioningTemplate(sourceTemplate, ptai);
-
-                // Read the site we applied the template to 
-                if (ptci == null)
-                {
-                    ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                    ptci.HandlersToProcess = handlersToProcess;
-                }
-
-                if (ptci.ProgressDelegate == null)
-                {
-                    ptci.ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
-                    {
-                        Console.WriteLine("Getting template - {0}/{1} - {2}", progress, total, message);
-                    };
-                }
-
-                ProvisioningTemplate targetTemplate = cc.Web.GetProvisioningTemplate(ptci);
-
-                return new TestProvisioningTemplateResult()
-                {
-                    SourceTemplate = sourceTemplate,
-                    SourceTokenParser = sourceTokenParser,
-                    TargetTemplate = targetTemplate,
-                    TargetTokenParser = new TokenParser(cc.Web, targetTemplate),
-                };
-            }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.ToDetailedString());
-                throw;
-            }
-        }
-        #endregion
-
-        #region Helper methods
+#region Helper methods
 #if !ONPREMISES
         internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
@@ -181,10 +114,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                 tenant.CreateSiteCollection(siteToCreate, false, true);
 
-                if (isNoScriptSite)
-                {
-                    tenant.SetSiteProperties(siteToCreateUrl, noScriptSite: true);
-                }
+                //if (isNoScriptSite)
+                //{
+                //    tenant.SetSiteProperties(siteToCreateUrl, noScriptSite: true);
+                //}
 
                 return siteToCreateUrl;
             }
@@ -199,40 +132,50 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             var tenant = new Tenant(tenantContext);
 
-            var siteCols = tenant.GetSiteCollections();
-
-            foreach (var siteCol in siteCols)
+            try
             {
-                if (siteCol.Url.Contains(sitecollectionNamePrefix))
-                {
-                    try
-                    {
-                        // Drop the site collection from the recycle bin
-                        if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
-                        {
-                            tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
-                        }
-                        else
-                        {
-                            // Eat the exceptions: would occur if the site collection is already in the recycle bin.
-                            try
-                            {
-                                // ensure the site collection in unlocked state before deleting
-                                tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
-                            }
-                            catch { }
+                var siteCols = tenant.GetSiteCollections();
 
-                            // delete the site collection, do not use the recyle bin
-                            tenant.DeleteSiteCollection(siteCol.Url, false);
-                        }
-                    }
-                    catch (Exception ex)
+                foreach (var siteCol in siteCols)
+                {
+                    if (siteCol.Url.Contains(sitecollectionNamePrefix))
                     {
-                        // eat all exceptions
-                        Console.WriteLine(ex.ToDetailedString());
+                        try
+                        {
+                            // Drop the site collection from the recycle bin
+                            if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
+                            {
+                                tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
+                            }
+                            else
+                            {
+                                // Eat the exceptions: would occur if the site collection is already in the recycle bin.
+                                try
+                                {
+                                    // ensure the site collection in unlocked state before deleting
+                                    tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
+                                }
+                                catch { }
+
+                                // delete the site collection, do not use the recyle bin
+                                tenant.DeleteSiteCollection(siteCol.Url, false);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // eat all exceptions
+                            Console.WriteLine(ex.ToDetailedString());
+                        }
                     }
                 }
             }
+            // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToDetailedString());
+                throw;
+            }
+
         }
 
         internal static string CreateTestSubSite(Tenant tenant, string sitecollectionUrl, string subSiteName)
@@ -378,7 +321,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
             return string.Format("{0}{1}/{2}", host, path, siteCollection);
         }
-        #endregion
+#endregion
 
     }
 }

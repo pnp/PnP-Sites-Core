@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201605AutoMapperFormatter());
+                return (new XMLPnPSchemaV201605Formatter());
             }
         }
 

@@ -43,41 +43,51 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             var tenant = new Tenant(tenantContext);
 
-            var siteCols = tenant.GetSiteCollections();
-
-            foreach (var siteCol in siteCols)
+            try
             {
-                if (siteCol.Url.Contains(sitecollectionNamePrefix))
-                {
-                    try
-                    {
-                        // Drop the site collection from the recycle bin
-                        if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
-                        {
-                            tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
-                        }
-                        else
-                        {
-                            // Eat the exceptions: would occur if the site collection is already in the recycle bin.
-                            try
-                            {
-                                // ensure the site collection in unlocked state before deleting
-                                tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
-                            }
-                            catch { }
+                var siteCols = tenant.GetSiteCollections();
 
-                            // delete the site collection, do not use the recyle bin
-                            tenant.DeleteSiteCollection(siteCol.Url, false);
-                        }
-                    }
-                    catch (Exception ex)
+                foreach (var siteCol in siteCols)
+                {
+                    if (siteCol.Url.Contains(sitecollectionNamePrefix))
                     {
-                        // eat all exceptions
-                        Console.WriteLine(ex.ToDetailedString());
+                        try
+                        {
+                            // Drop the site collection from the recycle bin
+                            if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
+                            {
+                                tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
+                            }
+                            else
+                            {
+                                // Eat the exceptions: would occur if the site collection is already in the recycle bin.
+                                try
+                                {
+                                    // ensure the site collection in unlocked state before deleting
+                                    tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
+                                }
+                                catch { }
+
+                                // delete the site collection, do not use the recyle bin
+                                tenant.DeleteSiteCollection(siteCol.Url, false);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // eat all exceptions
+                            Console.WriteLine(ex.ToDetailedString());
+                        }
                     }
                 }
             }
+            // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
+            catch (Exception ex)
+            {                
+                Console.WriteLine(ex.ToDetailedString());
+                throw;
+            }
         }
+    
 
         [TestInitialize()]
         public void Initialize()

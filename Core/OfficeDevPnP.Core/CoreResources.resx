@@ -1057,4 +1057,7 @@
   <data name="BrandingExtension_InvalidPageLayoutName" xml:space="preserve">
     <value>Cannot find Page Layout with name '{0}'.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration" xml:space="preserve">
+    <value>The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!</value>
+  </data>
 </root>

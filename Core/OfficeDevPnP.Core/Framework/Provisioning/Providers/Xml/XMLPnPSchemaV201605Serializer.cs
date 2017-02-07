@@ -19,66 +19,39 @@ using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
-    internal class XMLPnPSchemaV201605Serializer : IXMLSchemaFormatter, ITemplateFormatter
+    /// <summary>
+    /// Implements the logic to serialize a schema of version 201605
+    /// </summary>
+    internal class XMLPnPSchemaV201605Serializer : XmlPnPSchemaBaseSerializer
     {
-        private TemplateProviderBase _provider;
-
-        public void Initialize(TemplateProviderBase provider)
+        public XMLPnPSchemaV201605Serializer():
+            base(typeof(XMLConstants)
+                .Assembly
+                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2016-05.xsd"))
         {
-            this._provider = provider;
         }
 
-        string IXMLSchemaFormatter.NamespaceUri
+        public override string NamespaceUri
         {
             get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05); }
         }
 
-        string IXMLSchemaFormatter.NamespacePrefix
+        public override string NamespacePrefix
         {
             get { return (XMLConstants.PROVISIONING_SCHEMA_PREFIX); }
         }
 
-        public bool IsValid(Stream template)
+        public override Stream ToFormattedTemplate(Model.ProvisioningTemplate template)
         {
-            if (template == null)
-            {
-                throw new ArgumentNullException(nameof(template));
-            }
-
-            // Load the template into an XDocument
-            XDocument xml = XDocument.Load(template);
-
-            // Load the XSD embedded resource
-            Stream stream = typeof(XMLPnPSchemaV201605Serializer)
-                .Assembly
-                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2016-05.xsd");
-
-            // Prepare the XML Schema Set
-            XmlSchemaSet schemas = new XmlSchemaSet();
-            schemas.Add(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05,
-                new XmlTextReader(stream));
-
-            Boolean result = true;
-            xml.Validate(schemas, (o, e) =>
-            {
-                Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
-                result = false;
-            });
-
-            return (result);
+            throw new NotImplementedException();
         }
 
-        Stream ITemplateFormatter.ToFormattedTemplate(Model.ProvisioningTemplate template)
+        public override Model.ProvisioningTemplate ToProvisioningTemplate(Stream template)
         {
-            return null;
+            throw new NotImplementedException();
         }
 
-        public Model.ProvisioningTemplate ToProvisioningTemplate(Stream template)
-        {
-            return (this.ToProvisioningTemplate(template, null));
-        }
-
-        public Model.ProvisioningTemplate ToProvisioningTemplate(Stream template, String identifier)
+        public override Model.ProvisioningTemplate ToProvisioningTemplate(Stream template, string identifier)
         {
             if (template == null)
             {

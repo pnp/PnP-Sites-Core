@@ -583,8 +583,6 @@ namespace Microsoft.SharePoint.Client
                 var items = line.Split(new[] { delimiter }, StringSplitOptions.None);
                 if (items.Any())
                 {
-
-
                     List<string> terms = null;
 
                     var groupItem = items[0];
@@ -669,7 +667,7 @@ namespace Microsoft.SharePoint.Client
                                 item = items[q + 2];
                                 item = item.Replace(";#", "|");
                             }
-                            sb.AppendFormat("{0},", item);
+                            sb.AppendFormat("{0},", NormalizeName(item));
                         }
                         if (terms != null)
                         {
@@ -1425,18 +1423,27 @@ namespace Microsoft.SharePoint.Client
 
         private static string NormalizeName(string name)
         {
-            if (name == null)
-                return (string)null;
-            else
-                return TrimSpacesRegex.Replace(name, " ").Replace('&', '＆').Replace('"', '＂');
+            if (name == null) return (string)null;
+            name = TrimSpacesRegex.Replace(name, " ").Replace('&', '＆');
+
+            if (!name.Contains(",") || !name.StartsWith("\"") || !name.EndsWith("\""))
+            {
+                name = name.Replace('"', '＂');
+            }
+            return name;
         }
 
         private static string DenormalizeName(string name)
         {
             if (name == null)
                 return (string)null;
-            else
-                return TrimSpacesRegex.Replace(name, " ").Replace('＆', '&').Replace('＂', '"');
+
+            name = TrimSpacesRegex.Replace(name, " ").Replace('＆', '&').Replace('＂', '"');
+            if (name.Contains(",") && !name.StartsWith("\"") && !name.EndsWith("\""))
+            {
+                name = '"' + name + '"'; //Add quotes for terms with comma, if not parsing breaks on import
+            }
+            return name;
         }
 
         /// <summary>
@@ -1966,7 +1973,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("Bound TaxonomyItem must be either a TermSet or a Term");
 
             termSet.EnsureProperties(ts => ts.TermStore);
-            
+
             // set the SSP ID and Term Set ID on the taxonomy field
             var taxField = clientContext.CastTo<TaxonomyField>(field);
             taxField.SspId = termSet.TermStore.Id;

@@ -17,8 +17,6 @@ namespace Microsoft.SharePoint.Client
 {
     public static partial class TenantExtensions
     {
-        const string SITE_STATUS_ACTIVE = "Active";
-        const string SITE_STATUS_CREATING = "Creating";
         const string SITE_STATUS_RECYCLED = "Recycled";
 
 #if !ONPREMISES
@@ -70,16 +68,24 @@ namespace Microsoft.SharePoint.Client
                 // Let's poll for site collection creation completion
                 if (WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.CreatingSiteCollection))
                 {
-                    // Return site guid of created site collection
-                    try
+                    // Restore of original flow to validate correct working in edog after fix got committed
+                    if (properties.Url.ToLower().Contains("spoppe.com"))
                     {
                         siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // Eat all exceptions cause there's currently (December 16) an issue in the service that can make this call fail in combination with app-only usage
-                        Log.Error("Temp eating exception to issue in service (December 2016). Exception is {0}.",
-                            ex.ToDetailedString());
+                        // Return site guid of created site collection
+                        try
+                        {
+                            siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                        }
+                        catch (Exception ex)
+                        {
+                            // Eat all exceptions cause there's currently (December 16) an issue in the service that can make tenant API calls fail in combination with app-only usage
+                            Log.Error("Temp eating exception due to issue in service (December 2016). Exception is {0}.",
+                                ex.ToDetailedString());
+                        }
                     }
                 }
             }
@@ -140,7 +146,7 @@ namespace Microsoft.SharePoint.Client
             bool ret = false;
             //Get the site name
             var url = new Uri(siteFullUrl);
-            var siteDomainUrl = url.GetLeftPart(UriPartial.Scheme | UriPartial.Authority);
+            var siteDomainUrl = url.GetLeftPart(UriPartial.Authority);
             int siteNameIndex = url.AbsolutePath.IndexOf('/', 1) + 1;
             var managedPath = url.AbsolutePath.Substring(0, siteNameIndex);
             var siteRelativePath = url.AbsolutePath.Substring(siteNameIndex);
@@ -353,7 +359,6 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static bool DeleteSiteCollectionFromRecycleBin(this Tenant tenant, string siteFullUrl, bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var succeeded = true;
             var ret = true;
             var op = tenant.RemoveDeletedSite(siteFullUrl);
             tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
@@ -364,7 +369,7 @@ namespace Microsoft.SharePoint.Client
             }
             if (wait)
             {
-                succeeded = WaitForIsComplete(tenant, op, timeoutFunction,
+                var succeeded = WaitForIsComplete(tenant, op, timeoutFunction,
                     TenantOperationMessage.RemovingDeletedSiteCollectionFromRecycleBin);
                 ret = succeeded;
             }
@@ -395,13 +400,11 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The Guid of a site collection or an Guid.Empty if the Site does not exist</returns>
         public static Guid GetSiteGuidByUrl(this Tenant tenant, Uri siteFullUrl)
         {
-            var siteGuid = Guid.Empty;
-
             Site site = null;
             site = tenant.GetSiteByUrl(siteFullUrl.OriginalString);
             tenant.Context.Load(site);
             tenant.Context.ExecuteQueryRetry();
-            siteGuid = site.Id;
+            var siteGuid = site.Id;
 
             return siteGuid;
         }
@@ -462,7 +465,7 @@ namespace Microsoft.SharePoint.Client
                 if (storageMaximumLevel != null)
                     siteProps.StorageMaximumLevel = storageMaximumLevel.Value;
                 if (storageWarningLevel != null)
-                    siteProps.StorageWarningLevel = storageMaximumLevel.Value;
+                    siteProps.StorageWarningLevel = storageWarningLevel.Value;
                 if (userCodeMaximumLevel != null)
                     siteProps.UserCodeMaximumLevel = userCodeMaximumLevel.Value;
                 if (userCodeWarningLevel != null)
@@ -572,19 +575,18 @@ namespace Microsoft.SharePoint.Client
             SPOSitePropertiesEnumerable props = null;
 
             while (props == null || props.NextStartIndexFromSharePoint != null)
-            //while (props == null || props.NextStartIndex > -1)
             {
 
-                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
-                {
-                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
-                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
-                    IncludeDetail = includeDetail
-                };
-
+                // approach to be used as of Feb 2017
+                //SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                //{
+                //    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                //    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                //    IncludeDetail = includeDetail
+                //};
                 //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
+
                 props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
-                //props = tenant.GetSiteProperties(props == null ? 0 : props.NextStartIndex, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
 
@@ -605,7 +607,7 @@ namespace Microsoft.SharePoint.Client
                     siteEntity.LastContentModifiedDate = prop.LastContentModifiedDate;
                     siteEntity.StorageUsage = prop.StorageUsage;
                     siteEntity.WebsCount = prop.WebsCount;
-                    var lockState = SiteLockState.Unlock;
+                    SiteLockState lockState;
                     if (Enum.TryParse(prop.LockState, out lockState))
                     {
                         siteEntity.LockState = lockState;
@@ -629,28 +631,24 @@ namespace Microsoft.SharePoint.Client
 
             // get all user profiles
             var userProfileResult = svcClient.GetUserProfileByIndex(-1);
-            //var profileCount = svcClient.GetUserProfileCount();
 
             while (int.Parse(userProfileResult.NextValue) != -1)
             {
                 var personalSpaceProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PersonalSpace");
 
-                if (personalSpaceProperty != null)
+                if (personalSpaceProperty != null && personalSpaceProperty.Values.Any())
                 {
-                    if (personalSpaceProperty.Values.Any())
+                    var usernameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "UserName");
+                    var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
+                    var url = personalSpaceProperty.Values[0].Value as string;
+                    var name = nameProperty.Values[0].Value as string;
+                    var siteEntity = new SiteEntity
                     {
-                        var usernameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "UserName");
-                        var nameProperty = userProfileResult.UserProfile.FirstOrDefault(p => p.Name == "PreferredName");
-                        var url = personalSpaceProperty.Values[0].Value as string;
-                        var name = nameProperty.Values[0].Value as string;
-                        var siteEntity = new SiteEntity
-                        {
-                            Url = url,
-                            Title = name,
-                            SiteOwnerLogin = usernameProperty.Values[0].Value as string
-                        };
-                        sites.Add(siteEntity);
-                    }
+                        Url = url,
+                        Title = name,
+                        SiteOwnerLogin = usernameProperty.Values[0].Value as string
+                    };
+                    sites.Add(siteEntity);
                 }
 
                 userProfileResult = svcClient.GetUserProfileByIndex(int.Parse(userProfileResult.NextValue));
@@ -691,13 +689,10 @@ namespace Microsoft.SharePoint.Client
             bool succeeded = true;
             while (!op.IsComplete)
             {
-                if (timeoutFunction != null)
+                if (timeoutFunction != null && timeoutFunction(operationMessage))
                 {
-                    if (timeoutFunction(operationMessage))
-                    {
-                        succeeded = false;
-                        break;
-                    }
+                    succeeded = false;
+                    break;
                 }
                 Thread.Sleep(op.PollingInterval);
 

@@ -336,7 +336,35 @@
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+    <Compile Include="Framework\Functional\ComposedLookNoScriptTest.cs" />
+    <Compile Include="Framework\Functional\ContentTypeNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\CustomActionNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\FeatureNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\FieldNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\FilesNoScriptTests.cs" />
     <Compile Include="Framework\Functional\FilesTests.cs" />
+    <Compile Include="Framework\Functional\Implementation\ComposedLookImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\ContentTypeImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\CustomActionImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\FeatureImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\FieldImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\FilesImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\ImplementationBase.cs" />
+    <Compile Include="Framework\Functional\Implementation\LanguageImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\ListImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\LocalizationImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\NavigationImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\PagesImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\PropertyBagImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\PublishingImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\RegionalSettingsImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\SearchSettingsImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\SecurityImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\TermGroupImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\WebSettingsImplementation.cs" />
+    <Compile Include="Framework\Functional\Implementation\WorkflowImplementation.cs" />
+    <Compile Include="Framework\Functional\LanguageNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\ListNoScriptTests.cs" />
     <Compile Include="Framework\Functional\ListTests.cs" />
     <Compile Include="Framework\Functional\ComposedLookTest.cs" />
     <Compile Include="Framework\Functional\CustomActionTests.cs" />
@@ -344,15 +372,25 @@
     <Compile Include="Framework\Functional\ContentTypeTests.cs" />
     <Compile Include="Framework\Functional\FieldTests.cs" />
     <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+    <Compile Include="Framework\Functional\LocalizationNoScriptTest.cs" />
     <Compile Include="Framework\Functional\LocalizationTest.cs" />
+    <Compile Include="Framework\Functional\NavigationTests.cs" />
+    <Compile Include="Framework\Functional\PagesNoScriptTests.cs" />
     <Compile Include="Framework\Functional\PagesTests.cs" />
+    <Compile Include="Framework\Functional\PropertyBagNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\PublishingNoScriptTest.cs" />
     <Compile Include="Framework\Functional\PublishingTest.cs" />
+    <Compile Include="Framework\Functional\RegionalSettingsNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\SearchSettingNoScriptTests.cs" />
+    <Compile Include="Framework\Functional\SecurityNoScriptTests.cs" />
     <Compile Include="Framework\Functional\SecurityTests.cs" />
     <Compile Include="Framework\Functional\SitePolicyTests.cs" />
+    <Compile Include="Framework\Functional\TermGroupNoScriptTests.cs" />
     <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
     <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
@@ -361,6 +399,7 @@
     <Compile Include="Framework\Functional\LanguageTests.cs" />
     <Compile Include="Framework\Functional\TermGroupTests.cs" />
     <Compile Include="Framework\Functional\Validators\WorkflowValidator.cs" />
+    <Compile Include="Framework\Functional\WebSettingsNoScriptTests.cs" />
     <Compile Include="Framework\Functional\WebSettingsTests.cs" />
     <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
     <Compile Include="Framework\Functional\SearchSettingTests.cs" />
@@ -381,6 +420,7 @@
     <Compile Include="Framework\Functional\PropertyBagTests.cs" />
     <Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
     <Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
+    <Compile Include="Framework\Functional\WorkflowsNoScriptTests.cs" />
     <Compile Include="Framework\Functional\WorkflowsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
@@ -468,6 +508,10 @@
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\navigation_add_prereq.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
+    <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
@@ -500,6 +544,7 @@
     <Content Include="Framework\Functional\Templates\localization_add.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Framework\Functional\Templates\termgroup_delta_1605_1.xml" />
     <Content Include="Framework\Functional\Templates\websettings_files.xml">
       <SubType>Designer</SubType>
     </Content>
