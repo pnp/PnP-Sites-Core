@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <typeparam name="TSource">The type of the source object</typeparam>
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination object</param>
-        /// <param name="resolverExpressions">Any custom resolver, optional</param>
+        /// <param name="resolvers">Any custom resolver, optional</param>
         public static void MapProperties<TSource>(TSource source, Object destination, Dictionary<Expression<Func<TSource, Object>>, IResolver> resolverExpressions = null)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <typeparam name="TDestination">The type of the destination object</typeparam>
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination object</param>
-        /// <param name="resolverExpressions">Any custom resolver, optional</param>
+        /// <param name="resolvers">Any custom resolver, optional</param>
         public static void MapProperties<TDestination>(Object source, TDestination destination, Dictionary<Expression<Func<TDestination, Object>>, IResolver> resolverExpressions = null)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 foreach (var re in resolverExpressions.Keys)
                 {
                     var propertySelector = re.Body as MemberExpression ?? ((UnaryExpression)re.Body).Operand as MemberExpression;
-                    resolvers.Add(propertySelector.Member.DeclaringType.Name, resolverExpressions[re]);
+                    resolvers.Add(propertySelector.Member.Name, resolverExpressions[re]);
                 }
             }
 
@@ -95,8 +95,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // and that are not array or Xml domain model related
             foreach (var dp in destinationProperties.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
-                        //p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name &&
-                        //p.PropertyType.BaseType.Name != typeof(BaseModel).Name &&
+                        p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name &&
+                        p.PropertyType.BaseType.Name != typeof(BaseModel).Name &&
                         !p.PropertyType.IsArray &&
                         !p.PropertyType.Namespace.Contains(typeof(OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.XMLConstants).Namespace))))
             {
@@ -125,30 +125,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                     else
                     {
-                        if (dp.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name)
-                        {
+                        // TODO: We could apply a logic to handle all the possible conversions
+                        // Like from Guid to String, from String to Guid, etc.
 
+                        // Right now, for testing purposes, I just output and skip any issue
+
+                        try
+                        {
+                            // We simply need to do 1:1 value mapping
+                            dp.SetValue(destination, sp.GetValue(source));
                         }
-                        else if (dp.PropertyType.BaseType.Name != typeof(BaseModel).Name)
+                        catch (Exception ex)
                         {
-
-                        }
-                        else
-                        {
-                            // TODO: We could apply a logic to handle all the possible conversions
-                            // Like from Guid to String, from String to Guid, etc.
-
-                            // Right now, for testing purposes, I just output and skip any issue
-
-                            try
-                            {
-                                // We simply need to do 1:1 value mapping
-                                dp.SetValue(destination, sp.GetValue(source));
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(ex.Message);
-                            }
+                            Console.WriteLine(ex.Message);
                         }
                     }
                 }

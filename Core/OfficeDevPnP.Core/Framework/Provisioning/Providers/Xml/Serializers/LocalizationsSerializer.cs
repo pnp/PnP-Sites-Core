@@ -20,10 +20,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 System.Reflection.BindingFlags.IgnoreCase |
                 System.Reflection.BindingFlags.Public).GetValue(persistence);
 
-            template.Localizations.AddRange(
-                PnPObjectsMapper.MapObject(localizations,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(Localization)))
-                        as IEnumerable<Localization>);
+            if (localizations != null)
+            {
+                template.Localizations.AddRange(
+                    PnPObjectsMapper.MapObject(localizations,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(Localization)))
+                            as IEnumerable<Localization>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

@@ -509,7 +509,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer201605()
         {
-            // new XMLPnPSchemaV201605Serializer()
+            //var _expectedID = "SPECIALTEAM";
+            //var _expectedVersion = 1.0;
+
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result);
+            //Assert.AreEqual(_expectedID, result.Id);
+            //Assert.AreEqual(_expectedVersion, result.Version);
+            //Assert.IsTrue(result.Lists.Count == 2);
+            //Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
         #endregion

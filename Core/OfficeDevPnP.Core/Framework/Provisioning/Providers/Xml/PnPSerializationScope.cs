@@ -19,11 +19,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public String BaseSchemaNamespace => this._baseSchemaNamespace;
         public String BaseSchemaAssemblyName => this._baseSchemaAssemblyName;
 
-        public PnPSerializationScope(String baseSchemaNamespace, String baseSchemaAssemblyName)
+        public PnPSerializationScope(Type schemaTemplateType)
         {
             // Save the scope information
-            this._baseSchemaNamespace = baseSchemaNamespace;
-            this._baseSchemaAssemblyName = baseSchemaAssemblyName;
+            this._baseSchemaNamespace = schemaTemplateType.Namespace;
+            this._baseSchemaAssemblyName = schemaTemplateType.Assembly.FullName;
 
             // Save the previous scope, if any
             this._previous = Current;

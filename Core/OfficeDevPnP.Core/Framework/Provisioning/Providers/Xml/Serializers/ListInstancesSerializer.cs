@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     internal class ListInstancesSerializer : PnPBaseSchemaSerializer
     {
-        public override void Deserialize(object persistence, ProvisioningTemplate template, String baseSchemaNamespace)
+        public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var lists = persistence.GetType().GetProperty("Lists",
                 System.Reflection.BindingFlags.Instance |
@@ -26,9 +26,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         as IEnumerable<ListInstance>);
         }
 
-        public override void Serialize(ProvisioningTemplate template, object persistence, String baseSchemaNamespace)
+        public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var listInstanceTypeName = $"{baseSchemaNamespace}.ListInstance, OfficeDevPnP.Core";
+            var listInstanceTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstance, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var listInstanceType = Type.GetType(listInstanceTypeName, true);
 
             persistence.GetType().GetProperty("Lists",

@@ -25,10 +25,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.Public).GetValue(preferences);
 
-                template.GetType().GetProperty("Parameters")
-                    .SetValue(template, PnPObjectsMapper.MapObject(parameters,
-                            new TemplateParameterFromSchemaToModelTypeResolver())
-                            as Dictionary<String, String>);
+                if (parameters != null)
+                {
+                    template.GetType().GetProperty("Parameters")
+                        .SetValue(template, PnPObjectsMapper.MapObject(parameters,
+                                new TemplateParameterFromSchemaToModelTypeResolver())
+                                as Dictionary<String, String>);
+                }
             }
         }
 
