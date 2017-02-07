@@ -524,8 +524,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(result);
             Assert.AreEqual(_expectedID, result.Id);
             Assert.AreEqual(_expectedVersion, result.Version);
-            //Assert.IsTrue(result.Lists.Count == 2);
-            //Assert.IsTrue(result.SiteFields.Count == 4);
+            Assert.IsTrue(result.Lists.Count == 1);
+            Assert.IsTrue(result.PropertyBagEntries.Count == 2);
         }
 
         #endregion

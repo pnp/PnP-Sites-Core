@@ -45,12 +45,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             var tbps = new TemplateBasePropertiesSerializer();
             tbps.Deserialize(persistenceTemplate, template);
+
+            var pbs = new PropertyBagPropertiesSerializer();
+            pbs.Deserialize(persistenceTemplate, template);
+
+            var lis = new ListInstancesSerializer();
+            lis.Deserialize(persistenceTemplate, template);
         }
 
         protected override void SerializeTemplate(Model.ProvisioningTemplate template, object persistenceTemplate)
         {
             var tbps = new TemplateBasePropertiesSerializer();
             tbps.Serialize(template, persistenceTemplate);
+
+            var pbs = new PropertyBagPropertiesSerializer();
+            pbs.Serialize(template, persistenceTemplate);
+
+            var lis = new ListInstancesSerializer();
+            lis.Serialize(template, persistenceTemplate);
         }
     }
 }
