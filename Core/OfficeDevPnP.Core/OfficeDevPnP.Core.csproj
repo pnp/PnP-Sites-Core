@@ -685,8 +685,15 @@
     <Compile Include="Framework\Provisioning\Providers\Json\JsonSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\TemplateProviderBase.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IPnPSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ITypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPBaseSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPObjectsMapper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPSerializationScope.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.cs">
       <DependentUpon>ProvisioningSchema-2015-03.xsd</DependentUpon>
     </Compile>
@@ -704,13 +711,26 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.cs">
       <DependentUpon>ProvisioningSchema-2016-05.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ContentTypeSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ISchemaSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ProvisioningSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SerializerExtensions.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteFieldsSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedTemplateSchemaAttribute.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToDictionaryValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDecimalToDoubleValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDictionaryToArrayValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDoubleToDecimalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\ContentTypeSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\ISchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\LocalizationsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\ProvisioningSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\SerializerExtensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\SiteFieldsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\Old\SupportedTemplateSchemaAttribute.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PropertyBagPropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateParametersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />

@@ -242,7 +242,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         #endregion
 
         #region XML SharePoint tests
-          
+
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLSharePointGetTemplate1Test()
@@ -499,6 +499,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             }
 
             return cert;
+        }
+
+        #endregion
+
+        #region Formatter Refactoring Tests
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer201605()
+        {
+            // new XMLPnPSchemaV201605Serializer()
         }
 
         #endregion
