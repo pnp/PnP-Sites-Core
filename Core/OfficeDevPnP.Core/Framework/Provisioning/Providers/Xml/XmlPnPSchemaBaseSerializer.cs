@@ -231,13 +231,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 // Prepare a variable to hold the single source formatted template
                 var source = ProcessInputStream(template, identifier, result);
 
-                DeserializeTemplate(template, result);
+                DeserializeTemplate(source, result);
 
                 return (result);
             }
         }
 
-        protected abstract void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate result);
+        protected abstract void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate template);
 
         public Stream ToFormattedTemplate(ProvisioningTemplate template)
         {
@@ -312,6 +312,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
-        protected abstract void SerializeTemplate(ProvisioningTemplate result, Object persistenceTemplate);
+        protected abstract void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate);
     }
 }

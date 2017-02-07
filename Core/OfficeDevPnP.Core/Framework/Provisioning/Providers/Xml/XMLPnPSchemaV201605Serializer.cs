@@ -41,14 +41,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             get { return (XMLConstants.PROVISIONING_SCHEMA_PREFIX); }
         }
 
-        protected override void DeserializeTemplate(object persistenceTemplate, Model.ProvisioningTemplate result)
+        protected override void DeserializeTemplate(object persistenceTemplate, Model.ProvisioningTemplate template)
         {
-            // Handle custom serializers, if any
+            var tbps = new TemplateBasePropertiesSerializer();
+            tbps.Deserialize(persistenceTemplate, template);
         }
 
-        protected override void SerializeTemplate(Model.ProvisioningTemplate result, object persistenceTemplate)
+        protected override void SerializeTemplate(Model.ProvisioningTemplate template, object persistenceTemplate)
         {
-            // Handle custom serializers, if any
+            var tbps = new TemplateBasePropertiesSerializer();
+            tbps.Serialize(template, persistenceTemplate);
         }
     }
 }

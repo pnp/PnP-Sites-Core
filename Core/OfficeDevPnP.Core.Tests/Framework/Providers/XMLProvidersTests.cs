@@ -509,8 +509,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer201605()
         {
-            //var _expectedID = "SPECIALTEAM";
-            //var _expectedVersion = 1.0;
+            var _expectedID = "SPECIALTEAM-01";
+            var _expectedVersion = 1.0;
 
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -522,8 +522,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
 
             Assert.IsNotNull(result);
-            //Assert.AreEqual(_expectedID, result.Id);
-            //Assert.AreEqual(_expectedVersion, result.Version);
+            Assert.AreEqual(_expectedID, result.Id);
+            Assert.AreEqual(_expectedVersion, result.Version);
             //Assert.IsTrue(result.Lists.Count == 2);
             //Assert.IsTrue(result.SiteFields.Count == 4);
         }
