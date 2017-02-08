@@ -21,7 +21,7 @@
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
       </pnp:PropertyBagEntries>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" RemoveExistingContentTypes="true" />
+        <pnp:ListInstance TemplateType="0" />
       </pnp:Lists>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>

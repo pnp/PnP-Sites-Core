@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class TemplateParameterFromSchemaToModelTypeResolver : ITypeResolver
     {
-        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null)
+        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             var result = new Dictionary<String, String>();
 

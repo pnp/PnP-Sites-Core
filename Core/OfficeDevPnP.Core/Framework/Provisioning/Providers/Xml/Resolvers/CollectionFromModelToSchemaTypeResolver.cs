@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             this._targetItemType = targetItemType;
         }
 
-        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null)
+        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             if (null != source)
             {
@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 foreach (var i in sourceList)
                 {
                     var targetItem = Activator.CreateInstance(this._targetItemType, true);
-                    PnPObjectsMapper.MapProperties(i, targetItem, resolvers);
+                    PnPObjectsMapper.MapProperties(i, targetItem, resolvers, recursive);
                     result.SetValue(targetItem, index);
                     index++;
                 }

@@ -15,6 +15,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// Resolves a source type into a result
         /// </summary>
         /// <param name="source">The full source object to resolve</param>
-        Object Resolve(Object source, Dictionary<String, IResolver> resolvers = null);
+        /// <param name="resolvers"></param>
+        /// <param name="recursive">Defines whether to apply the mapping recursively, optional and by default false</param>
+        Object Resolve(Object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false);
     }
 }

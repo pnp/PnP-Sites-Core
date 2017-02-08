@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             template.Lists.AddRange(
                 PnPObjectsMapper.MapObject(lists,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)))
+                        new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)), recursive: true)
                         as IEnumerable<ListInstance>);
         }
 
@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 System.Reflection.BindingFlags.Public).SetValue(
                     persistence,
                     PnPObjectsMapper.MapObject(template.Lists,
-                        new CollectionFromModelToSchemaTypeResolver(listInstanceType)));
+                        new CollectionFromModelToSchemaTypeResolver(listInstanceType), recursive: true));
         }
     }
 }

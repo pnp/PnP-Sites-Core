@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             this._parametersType = parametersType;
         }
 
-        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null)
+        public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             var typedSource = source as Dictionary<String, String>;
             var result = Array.CreateInstance(this._parametersType, typedSource.Count);

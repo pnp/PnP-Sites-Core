@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <param name="source">The full source object to resolve</param>
         /// <param name="destination">The full destination object to resolve</param>
         /// <param name="sourceValue">The source value to resolve</param>
+        /// <returns>The resolved value</returns>
         Object Resolve(Object source, Object destination, Object sourceValue);
     }
 }

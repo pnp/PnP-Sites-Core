@@ -1,5 +1,7 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -73,7 +75,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination object</param>
         /// <param name="resolvers">Any custom resolver, optional</param>
-        public static void MapProperties(Object source, Object destination, Dictionary<String, IResolver> resolvers = null)
+        /// <param name="recursive">Defines whether to apply the mapping recursively, optional and by default false</param>
+        public static void MapProperties(Object source, Object destination, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             // Retrieve the list of destination properties
             var destinationProperties = destination.GetType().GetProperties(
@@ -95,10 +98,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // and that are not array or Xml domain model related
             foreach (var dp in destinationProperties.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
-                        p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name &&
-                        p.PropertyType.BaseType.Name != typeof(BaseModel).Name &&
-                        !p.PropertyType.IsArray &&
-                        !p.PropertyType.Namespace.Contains(typeof(OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.XMLConstants).Namespace))))
+                        ((p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name &&
+                        p.PropertyType.BaseType.Name != typeof(BaseModel).Name) || recursive) &&
+                        ((!p.PropertyType.IsArray &&
+                        !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)) || recursive))))
             {
                 // Search for the matching source property
                 var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
@@ -125,19 +128,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                     else
                     {
-                        // TODO: We could apply a logic to handle all the possible conversions
-                        // Like from Guid to String, from String to Guid, etc.
-
-                        // Right now, for testing purposes, I just output and skip any issue
-
                         try
                         {
-                            // We simply need to do 1:1 value mapping
-                            dp.SetValue(destination, sp.GetValue(source));
+                            if (recursive && dp.PropertyType.BaseType.Name == typeof(ProvisioningTemplateCollection<>).Name)
+                            {
+                                // We need to recursively handle a collection of properties in the Domain Model
+                                var destinationCollection = dp.GetValue(destination);
+                                if (destinationCollection != null)
+                                {
+                                    // TODO: Take care of XmlAny types in the XML Schema Model
+
+                                    var resolvedCollection =
+                                        PnPObjectsMapper.MapObject(sp.GetValue(source),
+                                        new CollectionFromSchemaToModelTypeResolver(
+                                            dp.PropertyType.BaseType.GenericTypeArguments[0]), recursive);
+
+                                    destinationCollection.GetType().GetMethod("AddRange",
+                                        System.Reflection.BindingFlags.Instance |
+                                        System.Reflection.BindingFlags.Public |
+                                        System.Reflection.BindingFlags.IgnoreCase)
+                                        .Invoke(destinationCollection, new Object[] { resolvedCollection });
+                                }
+                            }
+                            else if (recursive && dp.PropertyType.BaseType.Name == typeof(BaseModel).Name)
+                            {
+                                // We need to recursively handle a complex property in the Domain Model
+
+                            }
+                            else if (recursive && dp.PropertyType.IsArray)
+                            {
+                                // We need to recursively handle an array of objects in the XML Schema Model
+
+                            }
+                            else if (recursive && dp.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace))
+                            {
+                                // We need to recursively handle a complex property in the XML Schema Model
+
+                            }
+                            else
+                            {
+                                // We simply need to do 1:1 value mapping
+                                dp.SetValue(destination, sp.GetValue(source));
+                            }
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            Console.WriteLine(ex.Message);
+                            // Right now, for testing purposes, I just output and skip any issue
+                            // TODO: Handle issues insteaf of skipping them
                         }
                     }
                 }
@@ -149,15 +186,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// </summary>
         /// <param name="source">The source object</param>
         /// <param name="resolver">A custom resolver</param>
+        /// <param name="recursive">Defines whether to apply the mapping recursively, optional and by default false</param>
         /// <returns>The mapped destination object</returns>
-        public static Object MapObject(Object source, ITypeResolver resolver)
+        public static Object MapObject(Object source, ITypeResolver resolver, Boolean recursive = false)
         {
             Object result = null;
 
             // Normalize the keys of the resolvers, if any
             if (null != resolver)
             {
-                result = resolver.Resolve(source);
+                result = resolver.Resolve(source, recursive: recursive);
             }
 
             return (result);

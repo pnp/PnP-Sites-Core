@@ -19,14 +19,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            // TODO: Find a way to avoid using explicit type names
-
-            //// Without lambda expressions
-            //var resolvers = new Dictionary<string, IResolver>();
-            //resolvers.Add("Version", new FromDecimalToDoubleValueResolver());
-            //resolvers.Add("Parameters", new FromArrayToDictionaryValueResolver());
-            //PnPObjectsMapper.MapProperties(persistenceTemplate, template, resolvers);
-
             // Define the dynamic type for the template's properties
             var propertiesTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var propertiesType = Type.GetType(propertiesTypeName, true);
