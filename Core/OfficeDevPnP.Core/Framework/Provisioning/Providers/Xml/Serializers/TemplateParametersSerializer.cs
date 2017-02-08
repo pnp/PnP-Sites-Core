@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
-        AutoInclude = false)]
+        Default = false)]
     internal class TemplateParametersSerializer : PnPBaseSchemaSerializer
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -40,15 +40,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var parametersTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PreferencesParameter, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var parametersType = Type.GetType(parametersTypeName, true);
-
-            persistence.GetType().GetProperty("Parameters",
+            var preferences = persistence.GetType().GetProperty("Preferences",
                 System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public).SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObject(template.Parameters,
-                        new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
+                System.Reflection.BindingFlags.Public).GetValue(persistence);
+
+            if (preferences != null)
+            {
+                var parametersTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PreferencesParameter, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var parametersType = Type.GetType(parametersTypeName, true);
+
+                preferences.GetType().GetProperty("Parameters",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public).SetValue(
+                        preferences,
+                        PnPObjectsMapper.MapObject(template.Parameters,
+                            new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
+            }
         }
     }
 }

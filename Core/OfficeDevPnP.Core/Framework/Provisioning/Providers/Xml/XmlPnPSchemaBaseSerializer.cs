@@ -248,7 +248,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (attribute != null &&
-                        attribute.AutoInclude &&
+                        attribute.Default &&
                         attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
                 }
                 ).OrderBy(t =>
@@ -266,15 +266,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     serializer.Deserialize(persistenceTemplate, template);
                 }
             }
-
-            //var tbps = new TemplateBasePropertiesSerializer();
-            //tbps.Deserialize(persistenceTemplate, template);
-
-            //var pbs = new PropertyBagPropertiesSerializer();
-            //pbs.Deserialize(persistenceTemplate, template);
-
-            //var lis = new ListInstancesSerializer();
-            //lis.Deserialize(persistenceTemplate, template);
         }
 
         public Stream ToFormattedTemplate(ProvisioningTemplate template)
@@ -290,16 +281,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 // Create the wrapper
                 var wrapperType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Provisioning, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-                Object wrappedResult = Activator.CreateInstance(wrapperType);
+                Object wrapper = Activator.CreateInstance(wrapperType);
 
                 // Create the Preferences
                 var preferencesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Preferences, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
                 Object preferences = Activator.CreateInstance(preferencesType);
 
-                wrappedResult.GetType().GetProperty("Preferences",
+                wrapper.GetType().GetProperty("Preferences",
                     System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrappedResult, preferences);
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, preferences);
+
+                // Handle the Parameters of the schema wrapper, if any
+                var tps = new TemplateParametersSerializer();
+                tps.Serialize(template, wrapper);
+
+                // Handle the Localizations of the schema wrapper, if any
+                var ls = new LocalizationsSerializer();
+                ls.Serialize(template, wrapper);
 
                 // Configure the Generator
                 preferences.GetType().GetProperty("Generator",
@@ -315,7 +314,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 templatesItem.GetType().GetProperty("ID",
                     System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrappedResult, $"CONTAINER-{template.Id}");
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, $"CONTAINER-{template.Id}");
 
                 var provisioningTemplates = Array.CreateInstance(typeof(TSchemaTemplate), 1);
                 provisioningTemplates.SetValue(result, 0);
@@ -323,9 +322,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 templatesItem.GetType().GetProperty("ProvisioningTemplate",
                     System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrappedResult, provisioningTemplates);
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
 
                 templates.SetValue(templatesItem, 0);
+
+                wrapperType.GetProperty("Templates",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
 
                 SerializeTemplate(template, result);
 
@@ -338,11 +342,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 XmlSerializer xmlSerializer = new XmlSerializer(wrapperType);
                 if (ns != null)
                 {
-                    xmlSerializer.Serialize(output, wrappedResult, ns);
+                    xmlSerializer.Serialize(output, wrapper, ns);
                 }
                 else
                 {
-                    xmlSerializer.Serialize(output, wrappedResult);
+                    xmlSerializer.Serialize(output, wrapper);
                 }
 
                 output.Position = 0;
@@ -360,7 +364,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (attribute != null &&
-                        attribute.AutoInclude &&
+                        attribute.Default &&
                         attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
                 }
                 ).OrderBy(t =>
@@ -378,15 +382,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     serializer.Serialize(template, persistenceTemplate);
                 }
             }
-
-            //var tbps = new TemplateBasePropertiesSerializer();
-            //tbps.Serialize(template, persistenceTemplate);
-
-            //var pbs = new PropertyBagPropertiesSerializer();
-            //pbs.Serialize(template, persistenceTemplate);
-
-            //var lis = new ListInstancesSerializer();
-            //lis.Serialize(template, persistenceTemplate);
         }
     }
 }

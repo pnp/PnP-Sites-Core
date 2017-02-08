@@ -507,7 +507,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer201605()
+        public void XMLSerializer_Deserialize_201605()
         {
             var _expectedID = "SPECIALTEAM-01";
             var _expectedVersion = 1.0;
@@ -526,6 +526,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(_expectedVersion, result.Version);
             Assert.IsTrue(result.Lists.Count == 1);
             Assert.IsTrue(result.PropertyBagEntries.Count == 2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
         }
 
         #endregion

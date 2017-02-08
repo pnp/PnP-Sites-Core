@@ -35,6 +35,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <summary>
         /// Defines whether to automatically include the serializer in the serialization process or not
         /// </summary>
-        public Boolean AutoInclude { get; set; } = true;
+        public Boolean Default { get; set; } = true;
     }
 }

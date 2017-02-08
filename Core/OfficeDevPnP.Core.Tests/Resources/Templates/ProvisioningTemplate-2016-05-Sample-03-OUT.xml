@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="Parameter1">ValueParameter1</pnp:Parameter>
+      <pnp:Parameter Key="Parameter2">ValueParameter2</pnp:Parameter>
+      <pnp:Parameter Key="Parameter3">ValueParameter3</pnp:Parameter>
+      <pnp:Parameter Key="Parameter4">ValueParameter4</pnp:Parameter>
+      <pnp:Parameter Key="Parameter5">ValueParameter5</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
+  <pnp:Localizations>
+    <pnp:Localization LCID="1033" Name="en-US" ResourceFile="template.en-US.resx" />
+    <pnp:Localization LCID="1040" Name="it-IT" ResourceFile="template.it-It.resx" />
+  </pnp:Localizations>
+  <pnp:Templates ID="CONTAINER-SPECIALTEAM-01">
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM-01" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://camo.githubusercontent.com/a732087ed949b0f2f84f5f02b8c79f1a9dd96f65/687474703a2f2f692e696d6775722e636f6d2f6c3031686876452e706e67" DisplayName="Sample Template #01" Description="Sample Template #01 Description">
+      <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
+      </pnp:PropertyBagEntries>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" RemoveExistingContentTypes="true" />
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

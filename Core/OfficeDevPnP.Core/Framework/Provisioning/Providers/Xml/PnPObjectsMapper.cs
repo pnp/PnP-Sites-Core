@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <typeparam name="TSource">The type of the source object</typeparam>
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination object</param>
-        /// <param name="resolvers">Any custom resolver, optional</param>
+        /// <param name="resolverExpressions">Any custom resolver, optional</param>
         public static void MapProperties<TSource>(TSource source, Object destination, Dictionary<Expression<Func<TSource, Object>>, IResolver> resolverExpressions = null)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <typeparam name="TDestination">The type of the destination object</typeparam>
         /// <param name="source">The source object</param>
         /// <param name="destination">The destination object</param>
-        /// <param name="resolvers">Any custom resolver, optional</param>
+        /// <param name="resolverExpressions">Any custom resolver, optional</param>
         public static void MapProperties<TDestination>(Object source, TDestination destination, Dictionary<Expression<Func<TDestination, Object>>, IResolver> resolverExpressions = null)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);

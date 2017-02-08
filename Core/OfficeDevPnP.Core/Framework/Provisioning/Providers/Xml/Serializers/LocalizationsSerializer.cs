@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
-        AutoInclude = false)]
+        Default = false)]
     internal class LocalizationsSerializer : PnPBaseSchemaSerializer
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
