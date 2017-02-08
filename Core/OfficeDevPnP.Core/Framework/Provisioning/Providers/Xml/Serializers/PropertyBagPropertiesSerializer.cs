@@ -11,6 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the property bag properties
     /// </summary>
+    [TemplateSchemaSerializer(SerializationSequence = 200, DeserializationSequence = 200,
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        AutoInclude = true)]
     internal class PropertyBagPropertiesSerializer : PnPBaseSchemaSerializer
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

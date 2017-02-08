@@ -11,6 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the localization settings
     /// </summary>
+    [TemplateSchemaSerializer(
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        AutoInclude = false)]
     internal class LocalizationsSerializer : PnPBaseSchemaSerializer
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

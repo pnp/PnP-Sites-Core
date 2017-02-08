@@ -11,6 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the parameters of the template
     /// </summary>
+    [TemplateSchemaSerializer(
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        AutoInclude = false)]
     internal class TemplateParametersSerializer : PnPBaseSchemaSerializer
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Utilities;
 using System.Xml.Serialization;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers;
 using System.Collections;
+using System.Reflection;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -237,7 +238,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
-        protected abstract void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate template);
+        protected virtual void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate template)
+        {
+            // Get all serializers to run in automated mode, ordered by DeserializationSequence
+            var currentAssembly = this.GetType().Assembly;
+            var serializers = currentAssembly.GetTypes()
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
+                .Where(t =>
+                {
+                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (attribute != null &&
+                        attribute.AutoInclude &&
+                        attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
+                }
+                ).OrderBy(t =>
+                {
+                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (attribute.DeserializationSequence);
+                }
+                );
+
+            foreach (var serializerType in serializers)
+            {
+                var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
+                if (serializer != null)
+                {
+                    serializer.Deserialize(persistenceTemplate, template);
+                }
+            }
+
+            //var tbps = new TemplateBasePropertiesSerializer();
+            //tbps.Deserialize(persistenceTemplate, template);
+
+            //var pbs = new PropertyBagPropertiesSerializer();
+            //pbs.Deserialize(persistenceTemplate, template);
+
+            //var lis = new ListInstancesSerializer();
+            //lis.Deserialize(persistenceTemplate, template);
+        }
 
         public Stream ToFormattedTemplate(ProvisioningTemplate template)
         {
@@ -312,6 +350,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
-        protected abstract void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate);
+        protected virtual void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate)
+        {
+            // Get all serializers to run in automated mode, ordered by DeserializationSequence
+            var currentAssembly = this.GetType().Assembly;
+            var serializers = currentAssembly.GetTypes()
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
+                .Where(t =>
+                {
+                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (attribute != null &&
+                        attribute.AutoInclude &&
+                        attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
+                }
+                ).OrderBy(t =>
+                {
+                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (attribute.SerializationSequence);
+                }
+                );
+
+            foreach (var serializerType in serializers)
+            {
+                var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
+                if (serializer != null)
+                {
+                    serializer.Serialize(template, persistenceTemplate);
+                }
+            }
+
+            //var tbps = new TemplateBasePropertiesSerializer();
+            //tbps.Serialize(template, persistenceTemplate);
+
+            //var pbs = new PropertyBagPropertiesSerializer();
+            //pbs.Serialize(template, persistenceTemplate);
+
+            //var lis = new ListInstancesSerializer();
+            //lis.Serialize(template, persistenceTemplate);
+        }
     }
 }
