@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the parameters of the template
     /// </summary>
     [TemplateSchemaSerializer(
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
         Default = false)]
     internal class TemplateParametersSerializer : PnPBaseSchemaSerializer
     {
@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 if (parameters != null)
                 {
                     template.GetType().GetProperty("Parameters")
-                        .SetValue(template, PnPObjectsMapper.MapObject(parameters,
+                        .SetValue(template, PnPObjectsMapper.MapObjects(parameters,
                                 new TemplateParameterFromSchemaToModelTypeResolver())
                                 as Dictionary<String, String>);
                 }
@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     System.Reflection.BindingFlags.Instance |
                     System.Reflection.BindingFlags.Public).SetValue(
                         preferences,
-                        PnPObjectsMapper.MapObject(template.Parameters,
+                        PnPObjectsMapper.MapObjects(template.Parameters,
                             new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
             }
         }

@@ -13,6 +13,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class FromArrayToDictionaryValueResolver<TKey, TValue> : IValueResolver
     {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
         private String _keyField;
         private String _valueField;
         private Type _sourceArrayItemType;

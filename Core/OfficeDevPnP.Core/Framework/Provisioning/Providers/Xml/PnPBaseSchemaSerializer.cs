@@ -13,6 +13,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// </summary>
     internal abstract class PnPBaseSchemaSerializer : IPnPSchemaSerializer
     {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
         public abstract void Deserialize(object persistence, ProvisioningTemplate template);
 
         public abstract void Serialize(ProvisioningTemplate template, object persistence);

@@ -12,6 +12,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class CollectionFromSchemaToModelTypeResolver : ITypeResolver
     {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
         private Type _targetItemType;
 
         public CollectionFromSchemaToModelTypeResolver(Type targetItemType)

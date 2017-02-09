@@ -11,6 +11,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class TemplateParameterFromModelToSchemaTypeResolver : ITypeResolver
     {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
         private Type _parametersType;
 
         public TemplateParameterFromModelToSchemaTypeResolver(Type parametersType)

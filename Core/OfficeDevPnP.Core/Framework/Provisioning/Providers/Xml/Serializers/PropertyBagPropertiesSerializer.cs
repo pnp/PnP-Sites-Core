@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the property bag properties
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 200, DeserializationSequence = 200,
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
         Default = true)]
     internal class PropertyBagPropertiesSerializer : PnPBaseSchemaSerializer
     {
@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 System.Reflection.BindingFlags.Public).GetValue(persistence);
 
             template.PropertyBagEntries.AddRange(
-                PnPObjectsMapper.MapObject(properties,
+                PnPObjectsMapper.MapObjects(properties,
                         new CollectionFromSchemaToModelTypeResolver(typeof(PropertyBagEntry)))
                         as IEnumerable<PropertyBagEntry>);
         }
@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 System.Reflection.BindingFlags.IgnoreCase |
                 System.Reflection.BindingFlags.Public).SetValue(
                     persistence,
-                    PnPObjectsMapper.MapObject(template.PropertyBagEntries,
+                    PnPObjectsMapper.MapObjects(template.PropertyBagEntries,
                         new CollectionFromModelToSchemaTypeResolver(propertyBagType)));
         }
     }

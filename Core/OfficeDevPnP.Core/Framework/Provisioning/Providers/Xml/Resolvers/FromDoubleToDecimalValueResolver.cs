@@ -11,6 +11,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class FromDoubleToDecimalValueResolver : IValueResolver
     {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
         public object Resolve(object source, object destination, object sourceValue)
         {
             return (Convert.ToDecimal(sourceValue));

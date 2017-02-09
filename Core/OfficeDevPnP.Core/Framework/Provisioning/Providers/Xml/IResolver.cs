@@ -12,5 +12,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     public interface IResolver
     {
         // TODO: Consider adding something like IsReusable property
+
+        /// <summary>
+        /// Provides the name of the Resolver
+        /// </summary>
+        String Name { get; }
     }
 }

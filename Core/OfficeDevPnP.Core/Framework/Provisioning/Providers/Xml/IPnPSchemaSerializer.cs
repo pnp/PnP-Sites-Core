@@ -13,6 +13,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     public interface IPnPSchemaSerializer
     {
         /// <summary>
+        /// Provides the name of the serializer type
+        /// </summary>
+        String Name { get;  }
+
+        /// <summary>
         /// The method to deserialize an XML Schema based object into a Domain Model object
         /// </summary>
         /// <param name="persistence">The persistence layer object</param>

@@ -717,6 +717,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDecimalToDoubleValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDictionaryToArrayValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDoubleToDecimalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListInstanceDataRowsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ListInstancesSerializer.cs" />

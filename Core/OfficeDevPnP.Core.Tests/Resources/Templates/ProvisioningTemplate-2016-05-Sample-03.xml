@@ -73,7 +73,51 @@
         <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="10" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0102" />
           </pnp:ContentTypeBindings>
+          <pnp:FieldDefaults>
+            <pnp:FieldDefault FieldName="Field01">DefaultValue01</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field02">DefaultValue02</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field03">DefaultValue03</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field04">DefaultValue04</pnp:FieldDefault>
+          </pnp:FieldDefaults>
+          <pnp:DataRows>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value01-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value01-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value01-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value01-04</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value02-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value02-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value02-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value02-04</pnp:DataValue>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value03-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value03-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value03-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value03-04</pnp:DataValue>
+            </pnp:DataRow>
+          </pnp:DataRows>
+          <pnp:UserCustomActions>
+            <pnp:CustomAction Name="SampleCustomAction"
+                              Description="Just a sample custom action"
+                              Enabled="true"
+                              Group="Samples"
+                              ImageUrl="OneImage.png"
+                              Location="Any"
+                              RegistrationId="0x0101"
+                              RegistrationType="ContentType"
+                              Sequence="100"
+                              ScriptBlock="scriptblock"
+                              ScriptSrc="script.js"
+                              Url="http://somewhere.com/"
+                              Rights="Contribute"
+                              Title="Sample Action" />
+          </pnp:UserCustomActions>
           <pnp:Views>
             <View DisplayName="View One">
               <ViewFields>

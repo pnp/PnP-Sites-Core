@@ -7,18 +7,19 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     /// <summary>
-    /// Resolves a Decimal value into a Double
+    /// Type to resolve a collection of DataRows for a ListInstance
     /// </summary>
-    internal class FromDecimalToDoubleValueResolver : IValueResolver
+    internal class ListInstanceDataRowsFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name
         {
             get { return (this.GetType().Name); }
         }
 
-        public object Resolve(object source, object destination, object sourceValue)
+        public object Resolve(object source, Dictionary<string, IResolver> resolvers = null, bool recursive = false)
         {
-            return (Convert.ToDouble(sourceValue));
+            // TODO: Provide real implementation
+            return (null);
         }
     }
 }

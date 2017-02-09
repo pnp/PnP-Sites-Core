@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the localization settings
     /// </summary>
     [TemplateSchemaSerializer(
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate), typeof(Xml.V201512.ProvisioningTemplate) },
+        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
         Default = false)]
     internal class LocalizationsSerializer : PnPBaseSchemaSerializer
     {
@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             if (localizations != null)
             {
                 template.Localizations.AddRange(
-                    PnPObjectsMapper.MapObject(localizations,
+                    PnPObjectsMapper.MapObjects(localizations,
                             new CollectionFromSchemaToModelTypeResolver(typeof(Localization)))
                             as IEnumerable<Localization>);
             }
@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 System.Reflection.BindingFlags.IgnoreCase |
                 System.Reflection.BindingFlags.Public).SetValue(
                     persistence,
-                    PnPObjectsMapper.MapObject(template.Localizations,
+                    PnPObjectsMapper.MapObjects(template.Localizations,
                         new CollectionFromModelToSchemaTypeResolver(localizationType)));
         }
     }
