@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<String> propertyBagPropertiesToPreserve;
         private bool persistPublishingFiles = false;
         private bool includeNativePublishingFiles = false;
+        private bool skipVersionCheck = false;
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
 
@@ -220,6 +221,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 extensibilityHandlers = value;
             }
+        }
+
+        public bool SkipVersionCheck
+        {
+            get { return skipVersionCheck; }
+            set { skipVersionCheck = value; }
         }
     }
 }

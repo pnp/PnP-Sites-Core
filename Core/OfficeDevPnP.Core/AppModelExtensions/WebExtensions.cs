@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using Microsoft.SharePoint.Client.Publishing;
 using Microsoft.SharePoint.Client.Search.Query;
@@ -199,7 +200,7 @@ namespace Microsoft.SharePoint.Client
             var childWeb = webs.FirstOrDefault(item => string.Equals(item.ServerRelativeUrl, serverRelativeUrl, StringComparison.OrdinalIgnoreCase));
             return childWeb;
         }
-        
+
         /// <summary>
         /// Determines if a child Web site with the specified leaf URL exists. 
         /// </summary>
@@ -255,7 +256,7 @@ namespace Microsoft.SharePoint.Client
             }
             return exists;
         }
-        
+
         /// <summary>
         /// Determines if a web exists by title.
         /// </summary>
@@ -265,7 +266,7 @@ namespace Microsoft.SharePoint.Client
         public static bool WebExistsByTitle(this Web parentWeb, string title)
         {
             bool exists = false;
-            
+
             parentWeb.EnsureProperty(p => p.Webs);
 
             var subWeb = (from w in parentWeb.Webs where w.Title == title select w).SingleOrDefault();
@@ -332,7 +333,7 @@ namespace Microsoft.SharePoint.Client
         public static bool IsNoScriptSite(this Web web)
         {
 #if !ONPREMISES
-            string[] NoScriptSiteTemplates = new string[] { "GROUP" };
+            string[] NoScriptSiteTemplates = new string[] { "GROUP", "POINTPUBLISHINGTOPIC", "POINTPUBLISHINGPERSONAL" };
             web.EnsureProperties(w => w.WebTemplate, w => w.EffectiveBasePermissions);
 
             // Definition of no-script is not having the AddAndCustomizePages permission
@@ -389,18 +390,28 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region Apps and sandbox solutions
+        #region Apps and sandbox solutions
 
         /// <summary>
         /// Returns all app instances
         /// </summary>
         /// <param name="web">The site to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static ClientObjectList<AppInstance> GetAppInstances(this Web web)
+        public static ClientObjectList<AppInstance> GetAppInstances(this Web web, params Expression<Func<AppInstance, object>>[] expressions)
         {
             var instances = AppCatalog.GetAppInstances(web.Context, web);
+            if (expressions != null && expressions.Any())
+            {
+                web.Context.Load(instances, i => i.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                web.Context.Load(instances);
+            }
+
             web.Context.Load(instances);
             web.Context.ExecuteQueryRetry();
 
@@ -505,13 +516,12 @@ namespace Microsoft.SharePoint.Client
             var solutionGallery = rootWeb.GetCatalog((int)ListTemplateType.SolutionCatalog);
 
             var camlQuery = new CamlQuery();
-            camlQuery.ViewXml = string.Format(
-              @"<View>  
+            camlQuery.ViewXml = $@"<View>  
                         <Query> 
-                           <Where><Eq><FieldRef Name='SolutionId' /><Value Type='Guid'>{0}</Value></Eq></Where> 
+                           <Where><Eq><FieldRef Name='SolutionId' /><Value Type='Guid'>{packageGuid}</Value></Eq></Where> 
                         </Query> 
                          <ViewFields><FieldRef Name='ID' /><FieldRef Name='FileLeafRef' /></ViewFields> 
-                  </View>", packageGuid);
+                  </View>";
 
             var solutions = solutionGallery.GetItems(camlQuery);
             site.Context.Load(solutions);
@@ -533,9 +543,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Site retrieval via search
+        #region Site retrieval via search
         /// <summary>
         /// Returns all my site site collections
         /// </summary>
@@ -554,7 +564,7 @@ namespace Microsoft.SharePoint.Client
         /// are not returned
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <returns>All site collections</returns>
+        /// <returns>All site collections - Duplicates are not being trimmed.</returns>
         public static List<SiteEntity> SiteSearch(this Web web)
         {
             return web.SiteSearch(string.Empty);
@@ -565,10 +575,10 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="keywordQueryValue">Keyword query</param>
-        /// <param name="trimDublicates">Indicates if dublicates should be trimmed or not</param>
+        /// <param name="trimDuplicates">Indicates if duplicates should be trimmed or not. Defaults to false</param>
         /// <returns>All found site collections</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDublicates = true)
+        public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDuplicates = false)
         {
             try
             {
@@ -577,7 +587,7 @@ namespace Microsoft.SharePoint.Client
                 List<SiteEntity> sites = new List<SiteEntity>();
 
                 KeywordQuery keywordQuery = new KeywordQuery(web.Context);
-                keywordQuery.TrimDuplicates = false;
+                keywordQuery.TrimDuplicates = trimDuplicates;
 
                 if (keywordQueryValue.Length == 0)
                 {
@@ -616,7 +626,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>All found site collections</returns>
         public static List<SiteEntity> SiteSearchScopedByUrl(this Web web, string siteUrl)
         {
-            string keywordQuery = String.Format("contentclass:\"STS_Site\" AND site:{0}", siteUrl);
+            string keywordQuery = $"contentclass:\"STS_Site\" AND site:{siteUrl}";
             return web.SiteSearch(keywordQuery);
         }
 
@@ -628,7 +638,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>All found site collections</returns>
         public static List<SiteEntity> SiteSearchScopedByTitle(this Web web, string siteTitle)
         {
-            string keywordQuery = String.Format("contentclass:\"STS_Site\" AND Title:{0}", siteTitle);
+            string keywordQuery = $"contentclass:\"STS_Site\" AND Title:{siteTitle}";
             return web.SiteSearch(keywordQuery);
         }
 
@@ -683,9 +693,9 @@ namespace Microsoft.SharePoint.Client
 
             return totalRows;
         }
-#endregion
+        #endregion
 
-#region Web (site) Property Bag Modifiers
+        #region Web (site) Property Bag Modifiers
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -970,26 +980,40 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-#endregion
+        #endregion
 
-#region Search
+        #region Search
 
         /// <summary>
-        /// Queues a web for a full crawl the next incremental crawl
+        /// Queues a web for a full crawl the next incremental/continous crawl
         /// </summary>
         /// <param name="web">Site to be processed</param>
         public static void ReIndexWeb(this Web web)
         {
-            int searchversion = 0;
-            if (web.PropertyBagContainsKey("vti_searchversion"))
+            if (web.IsNoScriptSite())
             {
-                searchversion = (int)web.GetPropertyBagValueInt("vti_searchversion", 0);
+                // Update individual lists instead, as web bag is no (longer) accessible
+                var context = web.Context;
+                context.Load(web.Lists);
+                context.ExecuteQueryRetry();
+                foreach (var list in web.Lists)
+                {
+                    list.ReIndexList();
+                }
             }
-            web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
+            else
+            {
+                int searchversion = 0;
+                if (web.PropertyBagContainsKey("vti_searchversion"))
+                {
+                    searchversion = (int)web.GetPropertyBagValueInt("vti_searchversion", 0);
+                }
+                web.SetPropertyBagValue("vti_searchversion", searchversion + 1);
+            }
         }
-#endregion
+        #endregion
 
-#region Events
+        #region Events
 
 
         /// <summary>
@@ -1104,9 +1128,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Localization
+        #region Localization
 #if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
@@ -1130,9 +1154,9 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 #endif
-#endregion
+        #endregion
 
-#region TemplateHandling
+        #region TemplateHandling
 
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
@@ -1171,9 +1195,9 @@ namespace Microsoft.SharePoint.Client
             return new SiteToTemplateConversion().GetRemoteTemplate(web, creationInfo);
         }
 
-#endregion
+        #endregion
 
-#region Output Cache
+        #region Output Cache
 
         /// <summary>
         /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
@@ -1199,9 +1223,9 @@ namespace Microsoft.SharePoint.Client
             web.SetPropertyBagValue("EnableDebuggingOutput", debugCacheInformation.ToString());
         }
 
-#endregion
+        #endregion
 
-#region Request Access
+        #region Request Access
 #if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
@@ -1283,6 +1307,7 @@ namespace Microsoft.SharePoint.Client
             return emails;
         }
 #endif
-#endregion
+        #endregion
+
     }
 }

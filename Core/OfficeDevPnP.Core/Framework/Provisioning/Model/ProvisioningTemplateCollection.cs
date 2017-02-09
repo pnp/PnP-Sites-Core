@@ -103,15 +103,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             if (startIndex > this.Count)
             {
-                throw new ArgumentOutOfRangeException("startIndex");
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
             if ((count < 0) || (startIndex > (this.Count - count)))
             {
-                throw new ArgumentOutOfRangeException("count");
+                throw new ArgumentOutOfRangeException(nameof(count));
             }
             if (match == null)
             {
-                throw new ArgumentNullException("match");
+                throw new ArgumentNullException(nameof(match));
             }
 
             int num = startIndex + count;
@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             if (match == null)
             {
-                throw new ArgumentNullException("match");
+                throw new ArgumentNullException(nameof(match));
             }
 
             List<Int32> matches = new List<Int32>();

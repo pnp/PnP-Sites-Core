@@ -132,7 +132,7 @@ namespace Microsoft.SharePoint.Client
                     defaultView.ViewFields.Add("LikesCount");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("experience");
+                    throw new ArgumentOutOfRangeException(nameof(experience));
             }
 
             defaultView.Update();

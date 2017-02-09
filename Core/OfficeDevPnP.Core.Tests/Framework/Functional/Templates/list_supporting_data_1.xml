@@ -11,6 +11,9 @@ supporting template: add elements needed in lists tests
     <Field ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" Type="Text" Name="FLD_CT_2" DisplayName="Fld CT 2" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
     <Field ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" Type="Text" Name="FLD_CT_3" DisplayName="Fld CT 3" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
     <Field ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" Type="Text" Name="FLD_CT_4" DisplayName="Fld CT 4" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
+    <Field ID="{5A3BEB31-AB8E-4FC6-BBF2-661D88DDECFC}" Type="Text" Name="FLD_CT_5" DisplayName="Fld CT 5" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE">
+      <Validation>=(LEN(LEFT([FLD CT 5],FIND("@",[FLD CT 5])-1))&gt;0)+(LEN(RIGHT([FLD CT 5],LEN([FLD CT 5])-FIND(".",[FLD CT 5],FIND("@",[FLD CT 5]))))&gt;0)+(LEN(MID([FLD CT 5],FIND("@",[FLD CT 5])+1,FIND(".",[FLD CT 5],FIND("@",[FLD CT 5]))-FIND("@",[FLD CT 5])-1))&gt;0)+(ISERROR(FIND(" ",[FLD CT 5]))=TRUE)=4</Validation>
+    </Field>
   </pnp:SiteFields>
   <!-- Test content types -->
   <pnp:ContentTypes>
@@ -19,6 +22,7 @@ supporting template: add elements needed in lists tests
     <pnp:ContentType ID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" Name="CT_1" Description="CT 1" Group="PnP Demo">
       <pnp:FieldRefs>
         <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
+        <pnp:FieldRef ID="{5A3BEB31-AB8E-4FC6-BBF2-661D88DDECFC}" />
       </pnp:FieldRefs>
     </pnp:ContentType>
     <!-- Bare minimum -->

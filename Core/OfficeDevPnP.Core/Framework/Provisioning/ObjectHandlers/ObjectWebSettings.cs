@@ -107,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var webServerUrl = web.EnsureProperty(w => w.Url);
             var serverUri = new Uri(webServerUrl);
-            var serverUrl = string.Format("{0}://{1}", serverUri.Scheme, serverUri.Authority);
+            var serverUrl = $"{serverUri.Scheme}://{serverUri.Authority}";
             var fullUri = new Uri(UrlUtility.Combine(serverUrl, serverRelativeUrl));
 
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
@@ -130,6 +130,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (creationInfo.FileConnector != null)
                 {
+                    if (UrlUtility.IsIisVirtualDirectory(serverRelativeUrl))
+                    {
+                        scope.LogWarning("File is not located in the content database. Not retrieving {0}", serverRelativeUrl);
+                        return success;
+                    }
 
                     try
                     {
@@ -171,7 +176,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                    WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
                     scope.LogError("No connector present to persist homepage");
                 }
             }

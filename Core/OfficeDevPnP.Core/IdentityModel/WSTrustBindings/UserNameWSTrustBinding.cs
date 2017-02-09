@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if (!IsHttpClientCredentialTypeDefined(clientCredentialType))
             {
-                throw new ArgumentOutOfRangeException("clientCredentialType");
+                throw new ArgumentOutOfRangeException(nameof(clientCredentialType));
             }
             
             if (((SecurityMode.Transport == mode) && (HttpClientCredentialType.Digest != clientCredentialType)) && (HttpClientCredentialType.Basic != clientCredentialType))
@@ -88,7 +88,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             {
                 if (!IsHttpClientCredentialTypeDefined(value))
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
                 if (((SecurityMode.Transport == base.SecurityMode) && (HttpClientCredentialType.Digest != value)) && (HttpClientCredentialType.Basic != value))
                 {

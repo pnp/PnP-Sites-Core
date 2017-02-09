@@ -161,12 +161,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             if (String.IsNullOrEmpty(uri))
             {
-                throw new ArgumentException("uri");
+                throw new ArgumentException(nameof(uri));
             }
 
             if (formatter == null)

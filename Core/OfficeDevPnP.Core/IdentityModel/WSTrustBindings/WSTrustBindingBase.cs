@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
           
             if (trustVersion == null)
             {
-                throw new ArgumentNullException("trustVersion");
+                throw new ArgumentNullException(nameof(trustVersion));
             }
             
             ValidateTrustVersion(trustVersion);
@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if (securityBindingElement == null)
             {
-                throw new ArgumentNullException("securityBindingElement");
+                throw new ArgumentNullException(nameof(securityBindingElement));
             }
             
             if (TrustVersion.WSTrustFeb2005 == _trustVersion)
@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if (((securityMode != SecurityMode.None) && (securityMode != SecurityMode.Message)) && ((securityMode != SecurityMode.Transport) && (securityMode != SecurityMode.TransportWithMessageCredential)))
             {
-                throw new ArgumentOutOfRangeException("securityMode");
+                throw new ArgumentOutOfRangeException(nameof(securityMode));
             }
             
             if (securityMode == SecurityMode.None)
@@ -124,7 +124,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if ((trustVersion != TrustVersion.WSTrust13) && (trustVersion != TrustVersion.WSTrustFeb2005))
             {
-                throw new ArgumentOutOfRangeException("trustVersion");
+                throw new ArgumentOutOfRangeException(nameof(trustVersion));
             }
         }
 
@@ -178,7 +178,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 }
                 
                 ValidateTrustVersion(value);

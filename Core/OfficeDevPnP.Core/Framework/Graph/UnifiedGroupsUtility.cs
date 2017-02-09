@@ -47,12 +47,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
         {
             if (String.IsNullOrEmpty(groupId))
             {
-                throw new ArgumentNullException("groupId");
+                throw new ArgumentNullException(nameof(groupId));
             }
 
             if (String.IsNullOrEmpty(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             // Use a synchronous model to invoke the asynchronous process
@@ -105,22 +105,22 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
             if (String.IsNullOrEmpty(displayName))
             {
-                throw new ArgumentNullException("displayName");
+                throw new ArgumentNullException(nameof(displayName));
             }
 
             if (String.IsNullOrEmpty(description))
             {
-                throw new ArgumentNullException("description");
+                throw new ArgumentNullException(nameof(description));
             }
 
             if (String.IsNullOrEmpty(mailNickname))
             {
-                throw new ArgumentNullException("mailNickname");
+                throw new ArgumentNullException(nameof(mailNickname));
             }
 
             if (String.IsNullOrEmpty(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             // Use a synchronous model to invoke the asynchronous process
@@ -138,6 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     MailNickname = mailNickname,
                     MailEnabled = true,
                     SecurityEnabled = false,
+                    Visibility = isPrivate == true ? "Private" : "Public",
                     GroupTypes = new List<string> { "Unified" },
                 };
 
@@ -464,12 +465,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
         {
             if (String.IsNullOrEmpty(groupId))
             {
-                throw new ArgumentNullException("groupId");
+                throw new ArgumentNullException(nameof(groupId));
             }
 
             if (String.IsNullOrEmpty(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             // Use a synchronous model to invoke the asynchronous process
@@ -494,12 +495,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
         {
             if (String.IsNullOrEmpty(groupId))
             {
-                throw new ArgumentNullException("groupId");
+                throw new ArgumentNullException(nameof(groupId));
             }
 
             if (String.IsNullOrEmpty(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             // Use a synchronous model to invoke the asynchronous process
@@ -547,7 +548,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         {
             if (String.IsNullOrEmpty(accessToken))
             {
-                throw new ArgumentNullException("accessToken");
+                throw new ArgumentNullException(nameof(accessToken));
             }
 
             List<UnifiedGroupEntity> result = null;

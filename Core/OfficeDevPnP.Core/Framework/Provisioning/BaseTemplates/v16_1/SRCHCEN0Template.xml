@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.10.1612.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.11.1701.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCEN0template">
     <pnp:ProvisioningTemplate ID="SRCHCEN0template" Version="1" BaseSiteTemplate="SRCHCEN#0">
       <pnp:WebSettings RequestAccessEmail="someone@example.com" NoCrawl="true" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -9,56 +9,58 @@
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="__SearchReportsAndDataRuleId" Value="38e5864b-c21d-4035-ae33-09fcb8d4d638" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="3b7a2aec-e648-4e49-9281-22f9d17bb0a7;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SearchReportsAndDataRuleId" Value="c8710433-18c3-4b42-8b24-920dde03a3c3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="ca609bff-236e-4da8-8b77-e91e0dfb39e8;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NoCrawl" Value="true" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="511de581-e50f-4a8b-aca2-59e53e934610" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="48896bc7-bf14-4bc2-93df-5da86355306e" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__PageLayouts" Value="&lt;pagelayouts&gt;&lt;layout guid=&quot;d37a44f8-4cc5-4694-a9cb-32d8acf8136d&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;&lt;/pagelayouts&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="4f20ec39-26e0-4cfd-8007-180cfedb0035" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="6455a5c2-024d-4a5a-bcae-53d429391d31" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="cab102a2-05d1-4caf-ab39-1f2c69797dc6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PageLayouts" Value="&lt;pagelayouts&gt;&lt;layout guid=&quot;abb5788a-5fac-4abb-8009-0418b21d38d5&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;&lt;/pagelayouts&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NoMobileMappinga0e1090b195f491e896c947a05c99571" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="f01f92dc-51de-49e0-933c-9265508df378" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="ca8f887e-26e4-408c-b2e8-60763951fed8" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="e7f70320-c28f-4aab-b5a6-128e163e9494" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="8/01/2017 23:07:25" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="6b4e5442-a0ca-4f69-9a93-53f7e1a9d78e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="1662e335-b3bc-4e63-ae7b-33751916aa57" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SearchVideoRuleId" Value="37129aa5-8d93-4721-86de-e1ee3a72bf66" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SearchVideoRuleId" Value="696faa4b-eab2-4e7a-96dd-5f7012dc271a" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="3c5b1999-21ef-4b4e-be1b-96013fce023b" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="83fad793-e86c-4ba3-ac15-aec18b67e276" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__PagesListId" Value="bc67f952-12c6-4a70-b4cb-18f6ef46d25d" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="3b7a2aec-e648-4e49-9281-22f9d17bb0a7;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="5251759e-10fc-4d68-bd4a-630792c04c21" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="608972e8-1630-4f14-b524-7862c386887d" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="fd392189-6cca-4d5e-a9e7-6724a189f90e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="5268a935-a4de-4de5-b8eb-047406363792" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="ca609bff-236e-4da8-8b77-e91e0dfb39e8;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="f4c32e92-733e-4501-9c55-91409533fe62" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="5334644c-2089-4ccb-81ef-75acfc4be756" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="bc704846-2fbb-490d-81b6-629c462c3ee3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;b0542930-3d93-488e-bb87-9ba63d085fc6&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;b0542930-3d93-488e-bb87-9ba63d085fc6&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;c3d4e0f6-6a49-421b-a134-783671348609&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;c3d4e0f6-6a49-421b-a134-783671348609&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="showurlstructure" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;d37a44f8-4cc5-4694-a9cb-32d8acf8136d&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;abb5788a-5fac-4abb-8009-0418b21d38d5&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__NoMobileMapping5d0cdc14b1294a69a52354066625d556" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowdesigner" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="875f94df-b6e7-4a2b-bbff-14a9871c8bf3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="2c69de40-26a1-4f9b-8562-18793319e660" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.5917" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="93cdc90c-d84f-40b4-b5d6-fc5eef8aad4e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="39721868-908e-4c0a-80ae-1c8c1e1877fb" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6008" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="b07e979a-ae92-418b-8e43-82066bc3bb38" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="dc07b83a-ef60-4d39-b1d3-4b9b5ee03624" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="3bc4e66f-a8f2-48f5-882f-91e04e6bd25f" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="db39614e-bb88-42e3-becb-cc908d9ff669" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1031;1036;2108;1057;1044;1049;2052;1028;1081;1086;1060;1030;1069;1035;1043;1051;1068;1026;1110;1055;1106;1050;1038;1042;1063;1071;1033;1025;1041;1062;1164;1046;2070;9242;1054;5146;1029;3082;1037;1045;10266;2074;1058;1032;1061;1040;1087;1053;1066;1027;1048" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="b4a16f80-8d1e-47c7-9185-7e608a8624a3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="1b115c82-a153-43d7-9e16-543f583cd674" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="465e17f2-49db-488c-8d47-f7b14351f5c2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="c0784dec-f81f-484b-8a69-2efec7ed9bec" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
@@ -66,9 +68,9 @@
         <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="529167cc-cf75-4205-bea3-0e522c3eaed1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="c8a1ff89-e928-464a-ac86-5b127da21094" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__ImagesListId" Value="003b6454-7623-4b13-8af8-5be74999738d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="1a2f3977-e5e2-445c-8994-c6e901ec065f" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="195b9c4f-dd06-4a19-a2f0-69db413e3a86" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="5fc018cc-ff5e-4cb9-bf69-7f62b9931c84" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
@@ -174,15 +176,15 @@
       </pnp:Security>
       <pnp:Navigation>
         <pnp:GlobalNavigation NavigationType="Managed">
-          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{termsetid:Site Collection - bertonline.sharepoint.com-sites-templateSRCHCEN0-12:Site Navigation}" />
+          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{sitecollectiontermsetid:Site Navigation}" />
         </pnp:GlobalNavigation>
         <pnp:CurrentNavigation NavigationType="Managed">
-          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{termsetid:Site Collection - bertonline.sharepoint.com-sites-templateSRCHCEN0-12:Site Navigation}" />
+          <pnp:ManagedNavigation TermStoreId="{sitecollectiontermstoreid}" TermSetId="{sitecollectiontermsetid:Site Navigation}" />
         </pnp:CurrentNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="Wiki Categories_0" StaticName="e1a5b98cdd71426dacb6e478c7a5882f" Name="e1a5b98cdd71426dacb6e478c7a5882f" ID="{f863c21f-5fdb-4a91-bb0c-5ae889190dd7}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" />
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" />
+        <Field Type="Note" DisplayName="Wiki Categories_0" StaticName="e1a5b98cdd71426dacb6e478c7a5882f" Name="e1a5b98cdd71426dacb6e478c7a5882f" ID="{f863c21f-5fdb-4a91-bb0c-5ae889190dd7}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" />
         <Field ID="{56747800-D36E-4625-ABE3-B1BC74A7D5F8}" Name="LowerValuesAreBetter" StaticName="LowerValuesAreBetter" Description="Whether lower is better or higher is better" Group="Status Indicators" Type="Boolean" DisplayName="Lower values are better" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{672D9500-5649-49ae-8166-777F40527874}" Name="AbuseReportsCommentsLookup" SourceID="http://schemas.microsoft.com/sharepoint/v3" DisplaceOnUpgrade="TRUE" Group="_Hidden" Type="Lookup" List="" Mult="TRUE" DisplayName="Comments Lookup" ReadOnly="TRUE" Hidden="TRUE" AllowDeletion="FALSE" Sealed="TRUE">
           <FieldRefs>
@@ -190,7 +192,7 @@
           </FieldRefs>
         </Field>
         <Field ID="{1F30D200-0D4E-4C8A-A7EB-2E49815BF2BE}" DisplayName="Instance Id" Name="WF4InstanceId" Type="Text" Group="_Hidden" Hidden="TRUE" Sealed="TRUE" Indexed="TRUE" />
-        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="5d0cdc14-b129-4a69-a523-54066625d556" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
+        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="a0e1090b-195f-491e-896c-947a05c99571" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
           <Customization>
             <ArrayOfProperty>
               <Property>
@@ -723,7 +725,7 @@
         </Field>
         <Field ID="{74E6AE8A-0E3E-4DCB-BBFF-B5A016D74D64}" Name="_dlc_ExpireDateSaved" StaticName="_dlc_ExpireDateSaved" DisplayName="Original Expiration Date" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" Type="DateTime" Indexed="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="FALSE" Required="FALSE" Sealed="TRUE" ReadOnly="TRUE" OverwriteInChildScopes="TRUE" />
         <Field ID="{cca3f38b-47d8-484f-8467-5d810006bff5}" Name="TranslationStateTermInformation" StaticName="TranslationStateTermInformation" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Terms" Type="Note" Required="FALSE" Sealed="TRUE" Hidden="FALSE" />
-        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Wiki Categories" StaticName="Wiki_x0020_Page_x0020_Categories" Name="Wiki_x0020_Page_x0020_Categories" ID="{e1a5b98c-dd71-426d-acb6-e478c7a5882f}" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" List="{{listid:TaxonomyHiddenList}}" WebId="5d0cdc14-b129-4a69-a523-54066625d556" ShowField="Term1033" ShowInEditForm="TRUE" Mult="TRUE" Sortable="FALSE">
+        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Wiki Categories" StaticName="Wiki_x0020_Page_x0020_Categories" Name="Wiki_x0020_Page_x0020_Categories" ID="{e1a5b98c-dd71-426d-acb6-e478c7a5882f}" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" List="{{listid:TaxonomyHiddenList}}" WebId="a0e1090b-195f-491e-896c-947a05c99571" ShowField="Term1033" ShowInEditForm="TRUE" Mult="TRUE" Sortable="FALSE">
           <Customization>
             <ArrayOfProperty>
               <Property>
@@ -1098,7 +1100,7 @@
         <Field ID="{2B67BCD7-14D4-4c13-85DD-605EB8109B5E}" Name="HtmlDesignAssociated" StaticName="HtmlDesignAssociated" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Associated File" Description="Describes whether a file has a SharePoint master page (.master) or page layout (.aspx) file associated with it. Setting this value to true will re-associate to a previously associated file or create a new file for association." Type="Boolean" Required="FALSE" Sealed="TRUE">
           <Default>TRUE</Default>
         </Field>
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="5d0cdc14-b129-4a69-a523-54066625d556" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="a0e1090b-195f-491e-896c-947a05c99571" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{2E8881DA-0332-4ad9-A565-45B5B8B2702F}" Name="ReportOwner" StaticName="ReportOwner" Description="Owner of this document" List="UserInfo" DisplayName="Owner" Group="Reports" Type="User" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{291AACDA-4CFB-4d59-968B-5E2EA0C9EAB7}" Name="KPI" StaticName="KPI" Description="Name of Microsoft SQL Server 2005 Analysis Services KPI" Group="Status Indicators" Type="Text" DisplayName="Indicator" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{325C00DD-FD91-468B-81CF-5BB9951ABBA1}" Name="RobotsNoIndex" StaticName="SeoRobotsNoIndex" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Hide from Internet Search Engines is a site column created by the Publishing feature. It is used to indicate to search engine crawlers that a particular page should not be indexed." DisplayName="Hide from Internet Search Engines" Type="Boolean" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" />
@@ -1180,7 +1182,7 @@
         </Field>
         <Field ID="{186175F6-E318-4e9a-B5F7-4F7C751585A0}" Name="RoutingAliases" StaticName="RoutingAliases" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Aliases" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Sealed="TRUE" MaxLength="255" />
         <Field ID="{10A4D7F7-AB3A-426f-B5CC-AB1EB03A94F4}" Name="RoutingTargetPath" StaticName="RoutingTargetPath" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Target Path" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Sealed="TRUE" MaxLength="255" />
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="5d0cdc14-b129-4a69-a523-54066625d556" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{5d0cdc14-b129-4a69-a523-54066625d556}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="a0e1090b-195f-491e-896c-947a05c99571" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{a0e1090b-195f-491e-896c-947a05c99571}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{434F51FB-FFD2-4A0E-A03B-CA3131AC67BA}" Name="Ratings" StaticName="Ratings" DisplayName="User ratings" Description="User ratings for the item" Group="_Hidden" Type="Note" Hidden="TRUE" ForcePromoteDemote="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{88fd7ffb-523d-4758-b624-02eaceee1a5d}" Name="TranslationPackageGroupId" StaticName="TranslationPackageGroupId" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Translation Package Group ID" Type="Guid" Required="TRUE" Sealed="TRUE" Hidden="TRUE" Indexed="TRUE" />
         <Field ID="{65c899fb-85d9-4b80-922e-eae197f942fa}" Name="TranslationStateItemInformation" StaticName="TranslationStateItemInformation" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Translated Items" Type="Note" Required="FALSE" Sealed="TRUE" Hidden="FALSE" />
@@ -1371,7 +1373,7 @@
             <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01002CF74A4DAE39480396EEA7A4BA2BE5FB" Name="Reusable HTML" Description="" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x01002CF74A4DAE39480396EEA7A4BA2BE5FB" Name="Reusable HTML" Description="" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1383,7 +1385,7 @@
             <pnp:FieldRef ID="82dd22bf-433e-4260-b26e-5b8360dd9105" Name="ReusableHTML" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01004613D6562E4C41A7B9DADDAC1689E00D" Name="Published Link" Description="Create a New Published Link" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x01004613D6562E4C41A7B9DADDAC1689E00D" Name="Published Link" Description="Create a New Published Link" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1391,7 +1393,7 @@
             <pnp:FieldRef ID="92bba27e-eef6-41aa-b728-6dd9caf2bde2" Name="PublishedLinksDescription" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01004D5A79BAFA4A4576B79C56FF3D0D662D" Name="Reusable Text" Description="" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x01004D5A79BAFA4A4576B79C56FF3D0D662D" Name="Reusable Text" Description="" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1403,8 +1405,8 @@
             <pnp:FieldRef ID="890e9d41-5a0e-4988-87bf-0fb9d80f60df" Name="ReusableText" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x010085EC78BE64F9478AAE3ED069093B9963" Name="Project Policy" Description="Container content type for Project Policy definitions" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="" />
-        <pnp:ContentType ID="0x010087D89D279834C94E98E5E1B4A913C67E" Name="Page Output Cache" Description="Page Output Cache is a system content type template created by the Publishing Resources feature to define cache profiles." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x010085EC78BE64F9478AAE3ED069093B9963" Name="Project Policy" Description="Container content type for Project Policy definitions" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="" />
+        <pnp:ContentType ID="0x010087D89D279834C94E98E5E1B4A913C67E" Name="Page Output Cache" Description="Page Output Cache is a system content type template created by the Publishing Resources feature to define cache profiles." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1423,7 +1425,7 @@
             <pnp:FieldRef ID="773ed051-58db-4ff2-879b-08b21ab001e0" Name="PublishingCacheAllowWriters" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01009AF87C5C1DF34CA38277FEABCB5018F6" Name="Device Channel" Description="Create a channel to change this site's appearance based on what devices visit the site." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x01009AF87C5C1DF34CA38277FEABCB5018F6" Name="Device Channel" Description="Create a channel to change this site's appearance based on what devices visit the site." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1451,7 +1453,7 @@
             <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x0100DC2417D125A4489CA59DCC70E3F152B2" Name="Rule" Description="Create a rule that moves content submitted to this site to the correct library or folder." Group="_Hidden" NewFormUrl="_layouts/15/EditRule.aspx" EditFormUrl="_layouts/15/EditRule.aspx" DisplayFormUrl="">
+        <pnp:ContentType ID="0x0100DC2417D125A4489CA59DCC70E3F152B2" Name="Rule" Description="Create a rule that moves content submitted to this site to the correct library or folder." Group="_Hidden" Sealed="true" NewFormUrl="_layouts/15/EditRule.aspx" EditFormUrl="_layouts/15/EditRule.aspx" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" />
@@ -1505,7 +1507,7 @@
             <pnp:FieldRef ID="cca3f38b-47d8-484f-8467-5d810006bff5" Name="Terms" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01010007FF3E057FA8AB4AA42FCB67B453FFC1" Name="System Page Layout" Description="System Page Layout is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to page layouts in the page layouts gallery and master page gallery, update the Page Layout content type template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x01010007FF3E057FA8AB4AA42FCB67B453FFC1" Name="System Page Layout" Description="System Page Layout is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to page layouts in the page layouts gallery and master page gallery, update the Page Layout content type template." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -1568,7 +1570,7 @@
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/CreateNewHtml.aspx?Mode=PL" />
         </pnp:ContentType>
-        <pnp:ContentType ID="0x0101000F1C8B9E0EB4BE489F09807B2C53288F" Name="System Master Page" Description="System Master Page is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to master pages in the page layouts gallery and master page gallery, update the Master Page content type template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x0101000F1C8B9E0EB4BE489F09807B2C53288F" Name="System Master Page" Description="System Master Page is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to master pages in the page layouts gallery and master page gallery, update the Master Page content type template." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -1895,7 +1897,7 @@
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/spnewdashboard.aspx" />
         </pnp:ContentType>
-        <pnp:ContentType ID="0x010100C5033D6CFB8447359FB795C8A73A2B19" Name="Design File" Description="HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x010100C5033D6CFB8447359FB795C8A73A2B19" Name="Design File" Description="HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -1907,7 +1909,7 @@
             <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2" Name="System Page" Description="System Page is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to the Pages library, update the Page content type template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2" Name="System Page" Description="System Page is a system content type template created by the Publishing Resources feature, and it cannot be modified. To add columns to the Pages library, update the Page content type template." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -2219,7 +2221,7 @@
             <pnp:FieldRef ID="88fd7ffb-523d-4758-b624-02eaceee1a5d" Name="Translation Package Group ID" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x010100F8EF98760CBA4A94994F13BA881038FA" Name="InfoPath Form Template" Description="A Microsoft InfoPath Form Template." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x010100F8EF98760CBA4A94994F13BA881038FA" Name="InfoPath Form Template" Description="A Microsoft InfoPath Form Template." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -2240,7 +2242,7 @@
             <pnp:FieldRef ID="1a03fa74-8c63-40cc-bd06-73b580bd8743" Name="LinkTemplateName" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x010100FDA260FD09A244B183A666F2AE2475A6" Name="Device Channel Mappings" Description="Device Channel Mappings is a system content type template created by the Mobile and Alternate Device Targeting feature. This content type is used to define device channel mapping files." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x010100FDA260FD09A244B183A666F2AE2475A6" Name="Device Channel Mappings" Description="Device Channel Mappings is a system content type template created by the Mobile and Alternate Device Targeting feature. This content type is used to define device channel mapping files." Group="_Hidden" Hidden="true" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" />
@@ -2266,7 +2268,7 @@
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/upload.aspx" />
         </pnp:ContentType>
-        <pnp:ContentType ID="0x0108003365C4474CAE8C42BCE396314E88E51F" Name="Workflow Task (SharePoint 2013)" Description="Create a SharePoint 2013 Workflow Task" Group="List Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x0108003365C4474CAE8C42BCE396314E88E51F" Name="Workflow Task (SharePoint 2013)" Description="Create a SharePoint 2013 Workflow Task" Group="List Content Types" Hidden="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2283,7 +2285,7 @@
             <pnp:FieldRef ID="1f30d200-0d4e-4c8a-a7eb-2e49815bf2be" Name="WorkflowInstanceId" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F93160" Name="SharePoint Server Workflow Task" Description="A work item created by a workflow that you or your team needs to complete." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F93160" Name="SharePoint Server Workflow Task" Description="A work item created by a workflow that you or your team needs to complete." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2315,7 +2317,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0401" Name="Publishing Approval Workflow Task (ar-sa)" Description="عنصر عمل تم إنشاؤه من قبل سير عمل تحتاج أنت أو فريق عملك لإكماله." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0401" Name="Publishing Approval Workflow Task (ar-sa)" Description="عنصر عمل تم إنشاؤه من قبل سير عمل تحتاج أنت أو فريق عملك لإكماله." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2347,7 +2349,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0402" Name="Publishing Approval Workflow Task (bg-bg)" Description="Работен елемент, създаден от работен поток, който трябва да се завърши от вас или вашия екип." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0402" Name="Publishing Approval Workflow Task (bg-bg)" Description="Работен елемент, създаден от работен поток, който трябва да се завърши от вас или вашия екип." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2379,7 +2381,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0403" Name="Publishing Approval Workflow Task (ca-es)" Description="Un element de treball creat per un flux de treball que heu de completar vós o el vostre equip." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0403" Name="Publishing Approval Workflow Task (ca-es)" Description="Un element de treball creat per un flux de treball que heu de completar vós o el vostre equip." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2411,7 +2413,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0404" Name="Publishing Approval Workflow Task (zh-tw)" Description="您或您的團隊需要完成之工作流程所建立的工作項目。" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0404" Name="Publishing Approval Workflow Task (zh-tw)" Description="您或您的團隊需要完成之工作流程所建立的工作項目。" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2443,7 +2445,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0405" Name="Publishing Approval Workflow Task (cs-cz)" Description="Pracovní položka vytvořená pracovním postupem, kterou vy nebo váš tým musíte dokončit" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0405" Name="Publishing Approval Workflow Task (cs-cz)" Description="Pracovní položka vytvořená pracovním postupem, kterou vy nebo váš tým musíte dokončit" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2475,7 +2477,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0406" Name="Publishing Approval Workflow Task (da-dk)" Description="Et arbejdselement, der er oprettet af en arbejdsproces, som du eller din gruppe skal fuldføre." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0406" Name="Publishing Approval Workflow Task (da-dk)" Description="Et arbejdselement, der er oprettet af en arbejdsproces, som du eller din gruppe skal fuldføre." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2507,7 +2509,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0407" Name="Publishing Approval Workflow Task (de-de)" Description="Ein von einem Workflow erstelltes Arbeitselement, das von Ihnen oder Ihrem Team abgeschlossen werden muss." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0407" Name="Publishing Approval Workflow Task (de-de)" Description="Ein von einem Workflow erstelltes Arbeitselement, das von Ihnen oder Ihrem Team abgeschlossen werden muss." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2539,7 +2541,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0408" Name="Publishing Approval Workflow Task (el-gr)" Description="Ένα στοιχείο εργασίας που δημιουργήθηκε από μια ροή εργασίας και το οποίο πρέπει να ολοκληρώσετε εσείς ή η ομάδα σας." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0408" Name="Publishing Approval Workflow Task (el-gr)" Description="Ένα στοιχείο εργασίας που δημιουργήθηκε από μια ροή εργασίας και το οποίο πρέπει να ολοκληρώσετε εσείς ή η ομάδα σας." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2571,7 +2573,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0409" Name="Publishing Approval Workflow Task (en-US)" Description="A work item created by an workflow that you or your team needs to complete." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0409" Name="Publishing Approval Workflow Task (en-US)" Description="A work item created by an workflow that you or your team needs to complete." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2603,7 +2605,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040B" Name="Publishing Approval Workflow Task (fi-fi)" Description="Työnkulun luoma työkohde, joka sinun tai työryhmän on suoritettava." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040B" Name="Publishing Approval Workflow Task (fi-fi)" Description="Työnkulun luoma työkohde, joka sinun tai työryhmän on suoritettava." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2635,7 +2637,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040C" Name="Publishing Approval Workflow Task (fr-fr)" Description="Élément de travail créé par un flux de travail que vous ou votre équipe devez accomplir." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040C" Name="Publishing Approval Workflow Task (fr-fr)" Description="Élément de travail créé par un flux de travail que vous ou votre équipe devez accomplir." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2667,7 +2669,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040D" Name="Publishing Approval Workflow Task (he-IL)" Description="פריט עבודה שנוצר על-ידי זרימת עבודה שעליך או על הצוות שלך להשלים." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040D" Name="Publishing Approval Workflow Task (he-IL)" Description="פריט עבודה שנוצר על-ידי זרימת עבודה שעליך או על הצוות שלך להשלים." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2699,7 +2701,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040E" Name="Publishing Approval Workflow Task (hu-HU)" Description="Saját maga vagy a csoport által elvégzendő, egy adott munkafolyamat által létrehozott munkaelem." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA040E" Name="Publishing Approval Workflow Task (hu-HU)" Description="Saját maga vagy a csoport által elvégzendő, egy adott munkafolyamat által létrehozott munkaelem." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2731,7 +2733,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0410" Name="Publishing Approval Workflow Task (it-it)" Description="Elemento di lavoro creato da un flusso di lavoro, che deve essere completato da un utente o un team." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0410" Name="Publishing Approval Workflow Task (it-it)" Description="Elemento di lavoro creato da un flusso di lavoro, che deve essere completato da un utente o un team." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2763,7 +2765,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0411" Name="Publishing Approval Workflow Task (ja-jp)" Description="個人またはチームで完了する必要のある、ワークフローから作成された作業項目です。" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0411" Name="Publishing Approval Workflow Task (ja-jp)" Description="個人またはチームで完了する必要のある、ワークフローから作成された作業項目です。" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2795,7 +2797,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0412" Name="Publishing Approval Workflow Task (ko-KR)" Description="사용자 또는 사용자 팀이 완료해야 하는 워크플로에서 생성되는 작업 항목입니다." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0412" Name="Publishing Approval Workflow Task (ko-KR)" Description="사용자 또는 사용자 팀이 완료해야 하는 워크플로에서 생성되는 작업 항목입니다." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2827,7 +2829,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0413" Name="Publishing Approval Workflow Task (nl-nl)" Description="Dit werkitem is gemaakt door een werkstroom die u of uw team moet voltooien." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0413" Name="Publishing Approval Workflow Task (nl-nl)" Description="Dit werkitem is gemaakt door een werkstroom die u of uw team moet voltooien." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2859,7 +2861,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0414" Name="Publishing Approval Workflow Task (nb-no)" Description="Et arbeidselement opprettet ved hjelp av en arbeidsflyt som du eller gruppen din må fullføre." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0414" Name="Publishing Approval Workflow Task (nb-no)" Description="Et arbeidselement opprettet ved hjelp av en arbeidsflyt som du eller gruppen din må fullføre." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2891,7 +2893,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0415" Name="Publishing Approval Workflow Task (pl-pl)" Description="Element pracy utworzony w ramach przepływu pracy, który musi wykonać użytkownik lub jego zespół." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0415" Name="Publishing Approval Workflow Task (pl-pl)" Description="Element pracy utworzony w ramach przepływu pracy, który musi wykonać użytkownik lub jego zespół." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2923,7 +2925,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0416" Name="Publishing Approval Workflow Task (pt-br)" Description="Um item de trabalho criado por um fluxo de trabalho que você ou sua equipe precisa concluir." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0416" Name="Publishing Approval Workflow Task (pt-br)" Description="Um item de trabalho criado por um fluxo de trabalho que você ou sua equipe precisa concluir." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2955,7 +2957,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0418" Name="Publishing Approval Workflow Task (ro-RO)" Description="Un element de lucru creat de un flux de lucru pe care dvs. sau echipa dvs. trebuie să-l terminați." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0418" Name="Publishing Approval Workflow Task (ro-RO)" Description="Un element de lucru creat de un flux de lucru pe care dvs. sau echipa dvs. trebuie să-l terminați." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -2987,7 +2989,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0419" Name="Publishing Approval Workflow Task (ru-RU)" Description="Созданная рабочим процессом задача, которую предстоит выполнить вам или вашей рабочей группе." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0419" Name="Publishing Approval Workflow Task (ru-RU)" Description="Созданная рабочим процессом задача, которую предстоит выполнить вам или вашей рабочей группе." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3019,7 +3021,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041A" Name="Publishing Approval Workflow Task (hr-hr)" Description="Radna stavka koju je stvorio tijek rada potreban vama ili vašem timu za dovršetak." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041A" Name="Publishing Approval Workflow Task (hr-hr)" Description="Radna stavka koju je stvorio tijek rada potreban vama ili vašem timu za dovršetak." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3051,7 +3053,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041B" Name="Publishing Approval Workflow Task (sk-sk)" Description="Položka práce vytvorená pracovným postupom, ktorú musíte dokončiť vy alebo váš tím." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041B" Name="Publishing Approval Workflow Task (sk-sk)" Description="Položka práce vytvorená pracovným postupom, ktorú musíte dokončiť vy alebo váš tím." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3083,7 +3085,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041D" Name="Publishing Approval Workflow Task (sv-se)" Description="Ett arbetsobjekt skapat av ett arbetsflöde som du eller din grupp behöver slutföra." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041D" Name="Publishing Approval Workflow Task (sv-se)" Description="Ett arbetsobjekt skapat av ett arbetsflöde som du eller din grupp behöver slutföra." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3115,7 +3117,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041E" Name="Publishing Approval Workflow Task (th-TH)" Description="รายการงานที่สร้างขึ้นโดยเวิร์กโฟลว์ที่คุณหรือทีมของคุณต้องทำให้เสร็จสมบูรณ์" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041E" Name="Publishing Approval Workflow Task (th-TH)" Description="รายการงานที่สร้างขึ้นโดยเวิร์กโฟลว์ที่คุณหรือทีมของคุณต้องทำให้เสร็จสมบูรณ์" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3147,7 +3149,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041F" Name="Publishing Approval Workflow Task (tr-tr)" Description="Sizin veya ekibinizin tamamlaması gereken bir iş akışı tarafından oluşturulan bir çalışma öğesi." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA041F" Name="Publishing Approval Workflow Task (tr-tr)" Description="Sizin veya ekibinizin tamamlaması gereken bir iş akışı tarafından oluşturulan bir çalışma öğesi." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3179,7 +3181,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0422" Name="Publishing Approval Workflow Task (uk-ua)" Description="Робоче завдання, створене робочим циклом, яке ваша група або ви маєте завершити." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0422" Name="Publishing Approval Workflow Task (uk-ua)" Description="Робоче завдання, створене робочим циклом, яке ваша група або ви маєте завершити." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3211,7 +3213,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0424" Name="Publishing Approval Workflow Task (sl-si)" Description="Delovna naloga, ki jo je ustvaril potek dela, ki ga morate vi ali vaša skupina dokončati." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0424" Name="Publishing Approval Workflow Task (sl-si)" Description="Delovna naloga, ki jo je ustvaril potek dela, ki ga morate vi ali vaša skupina dokončati." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3243,7 +3245,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0425" Name="Publishing Approval Workflow Task (et-EE)" Description="Töövoo loodud tööüksus, mis tuleb teil või teie meeskonnal täita." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0425" Name="Publishing Approval Workflow Task (et-EE)" Description="Töövoo loodud tööüksus, mis tuleb teil või teie meeskonnal täita." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3275,7 +3277,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0426" Name="Publishing Approval Workflow Task (lv-lv)" Description="Darbplūsmas izveidots darba uzdevums, kas jāpabeidz jums vai jūsu grupai." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0426" Name="Publishing Approval Workflow Task (lv-lv)" Description="Darbplūsmas izveidots darba uzdevums, kas jāpabeidz jums vai jūsu grupai." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3307,7 +3309,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0427" Name="Publishing Approval Workflow Task (lt-lt)" Description="Darbo elementas, sukurtas darbo eigos, kurią jūs arba jūsų komanda turite užbaigti." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0427" Name="Publishing Approval Workflow Task (lt-lt)" Description="Darbo elementas, sukurtas darbo eigos, kurią jūs arba jūsų komanda turite užbaigti." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3339,7 +3341,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA042D" Name="Publishing Approval Workflow Task (eu-es)" Description="Zuk edo zure taldeak burutu beharreko lan-fluxu batek sorturiko laneko elementua." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA042D" Name="Publishing Approval Workflow Task (eu-es)" Description="Zuk edo zure taldeak burutu beharreko lan-fluxu batek sorturiko laneko elementua." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3371,7 +3373,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0439" Name="Publishing Approval Workflow Task (hi-in)" Description="किसी वर्कफ़्लो द्वारा बनाया गया एक कार्य आइटम जिसे आपको या आपकी टीम को पूरा करने की आवश्‍यकता है." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0439" Name="Publishing Approval Workflow Task (hi-in)" Description="किसी वर्कफ़्लो द्वारा बनाया गया एक कार्य आइटम जिसे आपको या आपकी टीम को पूरा करने की आवश्‍यकता है." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3403,7 +3405,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA043F" Name="Publishing Approval Workflow Task (kk-kz)" Description="Сіз немесе тобыңыз аяқтайтын жұмыс үрдісі арқылы жасалған жұмыс элементі." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA043F" Name="Publishing Approval Workflow Task (kk-kz)" Description="Сіз немесе тобыңыз аяқтайтын жұмыс үрдісі арқылы жасалған жұмыс элементі." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3435,7 +3437,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0456" Name="Publishing Approval Workflow Task (gl-es)" Description="Elemento de traballo creado por un fluxo de traballo que precisa de ser concluído por ti ou polo teu equipo" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0456" Name="Publishing Approval Workflow Task (gl-es)" Description="Elemento de traballo creado por un fluxo de traballo que precisa de ser concluído por ti ou polo teu equipo" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3467,7 +3469,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0804" Name="Publishing Approval Workflow Task (zh-CN)" Description="由您或您的工作组必须完成的工作流创建的工作项目。" Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0804" Name="Publishing Approval Workflow Task (zh-CN)" Description="由您或您的工作组必须完成的工作流创建的工作项目。" Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3499,7 +3501,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0816" Name="Publishing Approval Workflow Task (pt-PT)" Description="Um item de trabalho criado por um fluxo de trabalho que necessita de ser concluído por si ou pela sua equipa." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0816" Name="Publishing Approval Workflow Task (pt-PT)" Description="Um item de trabalho criado por um fluxo de trabalho que necessita de ser concluído por si ou pela sua equipa." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3531,7 +3533,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA081A" Name="Publishing Approval Workflow Task (sr-latn-cs)" Description="Stavka posla koju je kreirao tok posla, a koju vi ili vaš tim treba da dovršite." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA081A" Name="Publishing Approval Workflow Task (sr-latn-cs)" Description="Stavka posla koju je kreirao tok posla, a koju vi ili vaš tim treba da dovršite." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3563,7 +3565,7 @@
             <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0C0A" Name="Publishing Approval Workflow Task (es-ES)" Description="Un elemento de trabajo creado por un flujo de trabajo que el usuario o su equipo necesita completar." Group="_Hidden" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
+        <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F9316000A245BAB39C6543159300E33084BA0C0A" Name="Publishing Approval Workflow Task (es-ES)" Description="Un elemento de trabajo creado por un flujo de trabajo que el usuario o su equipo necesita completar." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" />
@@ -3604,7 +3606,7 @@
             <pnp:FieldRef ID="b1b53d80-23d6-e31b-b235-3a286b9f10ea" Name="PublishedDate" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x0120D5" Name="Document Collection Folder" Description="Create a new Document Collection Folder" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x0120D5" Name="Document Collection Folder" Description="Create a new Document Collection Folder" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" />
             <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" />
@@ -3613,7 +3615,7 @@
             <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
-        <pnp:ContentType ID="0x0120D520A8" Name="System Media Collection" Description="System type for a collection of rich media assets." Group="_Hidden" NewFormUrl="_layouts/15/NewDocSet.aspx" EditFormUrl="" DisplayFormUrl="">
+        <pnp:ContentType ID="0x0120D520A8" Name="System Media Collection" Description="System type for a collection of rich media assets." Group="_Hidden" Sealed="true" NewFormUrl="_layouts/15/NewDocSet.aspx" EditFormUrl="" DisplayFormUrl="">
           <pnp:DocumentSetTemplate />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D520A808" Name="Video" Description="Upload or link to a video." Group="Digital Asset Content Types" NewFormUrl="_layouts/15/NewVideoSet.aspx" EditFormUrl="_layouts/15/EditVideoSet.aspx" DisplayFormUrl="">
@@ -3652,7 +3654,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{30309D46-63D5-4978-8A1D-5C0DEF821579}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateSRCHCEN0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{EB9DEEC9-719F-4A0E-9DD4-FC882482644A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateSRCHCEN0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -3685,7 +3687,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{4E81EE21-A854-4F27-BCFC-271DFEAEEFA0}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{A32947DC-1B4A-42D2-8CFE-578E6D5E3FC7}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -3716,7 +3718,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{2BFBF0E0-304D-45D5-9D7C-835B19884BA9}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{3FDC67CE-1622-445D-9072-B5C9A9A35CB8}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -3731,7 +3733,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{1514F346-8FF2-4B73-956F-A74BB2CAC60D}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateSRCHCEN0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{6E1C6901-5DCA-4567-8D63-C85ED3F0FF9F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateSRCHCEN0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -3783,7 +3785,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{33ADD772-B051-4AFE-A6C2-C636D770886B}" Type="HTML" DisplayName="All Assets" Url="/sites/templateSRCHCEN0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{634E44A3-598A-4ECB-AECD-B8D28C68DA7B}" Type="HTML" DisplayName="All Assets" Url="/sites/templateSRCHCEN0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -3816,7 +3818,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{A08C46EE-B0C5-4873-A527-9CBD009203F9}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateSRCHCEN0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{BADACB9D-BEA4-4F1A-BB4D-8A9382C34B07}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateSRCHCEN0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -3889,7 +3891,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{B83D3DBF-2D7E-450D-BE7E-3416E4E6250C}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{5FAFC99C-5D96-4E9B-A0E2-0C0209CB64FA}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -3938,7 +3940,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{BAEBD202-74AF-43B9-87E5-11A588FF7C9F}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateSRCHCEN0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{14B1FB9C-270F-43CC-8797-8CF879EE4E4E}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateSRCHCEN0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -3958,7 +3960,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{0B9933AF-1760-4BB5-ACB0-734E0D9AEB1B}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templateSRCHCEN0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{48D524A1-AD86-4C61-B10A-CB09D8173D48}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templateSRCHCEN0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -3979,7 +3981,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{FDC81602-21EF-408B-BFE4-2F8DF9E2165E}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templateSRCHCEN0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{453AD85B-76BB-43C1-ADBD-26C9C1988ACF}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templateSRCHCEN0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -4006,7 +4008,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{B7BA3008-0ADE-432A-AFF7-BB2DEAA6191E}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templateSRCHCEN0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{773E59CE-BFE4-47AA-805B-076E9B70C410}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templateSRCHCEN0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -4049,7 +4051,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{F1D59F01-D7B7-4DA3-A532-C4CE288C0ED9}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{3603CFF5-1D3F-4112-B922-15268C5222D5}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -4085,7 +4087,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{9F329A25-2DC1-448F-A4F8-1FAA804E32A1}" Type="HTML" DisplayName="All Assets" Url="/sites/templateSRCHCEN0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{C69BBB64-CAC5-4212-A7E7-CD8B5B29FCFE}" Type="HTML" DisplayName="All Assets" Url="/sites/templateSRCHCEN0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -4118,7 +4120,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{B64B7216-FE51-4F46-9250-7A46FF64616F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateSRCHCEN0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{71076979-6CA7-4AFE-A541-9B8ED93C0E8A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateSRCHCEN0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -4200,7 +4202,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{698D8661-D97E-4F10-91F5-4A6257AE05C9}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{FC9BC567-8821-491D-B5EF-29A1EBD7B187}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSRCHCEN0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -4240,7 +4242,7 @@
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Pages" Description="Use this list to store the tabs displayed in the default blank search pages." DocumentTemplate="" TemplateType="301" Url="SearchCenter" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:Views>
-            <View Name="{4A7E74B9-FA4D-4407-B4FC-146F204B20FA}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            <View Name="{AD7F475D-2917-456E-9360-4EBF1DB1D665}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchCenter/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Order" Ascending="TRUE" />
@@ -4259,7 +4261,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Pages}}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Pages}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{9c849680-afd3-47ac-9470-56a3318adcbf}" StaticName="Comments" SourceID="{{listid:Tabs in Search Pages}}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{3ea60b27-8570-4476-bd8c-03e81ae38203}" StaticName="Comments" SourceID="{{listid:Tabs in Search Pages}}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
@@ -4323,7 +4325,7 @@
         </pnp:ListInstance>
         <pnp:ListInstance Title="Tabs in Search Results" Description="Use this list to store the tabs displayed in search results." DocumentTemplate="" TemplateType="301" Url="SearchResults" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" EnableAttachments="false" EnableFolderCreation="false">
           <pnp:Views>
-            <View Name="{729D0770-1577-44B7-9545-05B1FE364DDB}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
+            <View Name="{CEBBD990-6F10-43A3-91EC-7609D0A46363}" DefaultView="TRUE" Type="HTML" OrderedView="TRUE" DisplayName="All Tabs" Url="/sites/templateSRCHCEN0/SearchResults/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Order" Ascending="TRUE" />
@@ -4342,7 +4344,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Results}}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Results}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{256fce6e-e603-4ba2-a310-b43e31f42bc1}" StaticName="Comments" SourceID="{{listid:Tabs in Search Results}}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{339950cf-8535-4d93-97f0-7634690d5015}" StaticName="Comments" SourceID="{{listid:Tabs in Search Results}}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
@@ -4411,7 +4413,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x012004" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{65CDF29E-778C-4E10-B7E0-34F3DDCFB008}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{E44F8DB5-EB9D-47D1-AD19-EBD3B7B72388}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -4430,7 +4432,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{4D77189C-07AC-4150-9CDC-E6A3D6995E9F}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{FD21683C-86C9-45C7-9BD6-7CA8871BC143}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -4455,7 +4457,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{93CF34A2-32E7-4EBD-96D0-AD4ECFA8CDB2}" Type="HTML" DisplayName="Due Today" Url="/sites/templateSRCHCEN0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{217C777C-DE7F-46F5-AE37-CE31CEC87A44}" Type="HTML" DisplayName="Due Today" Url="/sites/templateSRCHCEN0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -4480,7 +4482,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{A8B33758-F94F-444D-9D10-9023AA081740}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{EABE0EA7-F724-4120-8452-A0BC8F1227C0}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateSRCHCEN0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Neq>
@@ -4504,7 +4506,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{5B8EB450-D83D-4661-BD44-B95E7CEDAB0B}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateSRCHCEN0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{993A6B59-EEFB-4E2A-AE48-354B237AD331}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateSRCHCEN0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="AssignedTo" />
@@ -4523,7 +4525,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{7C36DD22-39B2-474F-9ECA-F1FCE884EE59}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateSRCHCEN0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{813F86FE-E879-4276-9471-EF8C9C880B7D}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateSRCHCEN0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Membership Type="CurrentUserGroups">

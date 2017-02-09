@@ -106,14 +106,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             {
 
                 var _instance = GetProviderInstance(handler);
+#pragma warning disable 618
                 if (_instance is IProvisioningExtensibilityProvider)
+#pragma warning restore 618
                 {
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
                         handler.Assembly,
                         handler.Type);
 
+#pragma warning disable 618
                     (_instance as IProvisioningExtensibilityProvider).ProcessRequest(ctx, template, handler.Configuration);
+#pragma warning restore 618
 
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,

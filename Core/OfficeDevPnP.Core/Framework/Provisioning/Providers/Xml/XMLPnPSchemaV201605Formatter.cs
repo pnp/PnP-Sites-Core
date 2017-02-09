@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 using OfficeDevPnP.Core.Extensions;
 using Microsoft.SharePoint.Client;
+using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -39,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Load the template into an XDocument
@@ -69,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             V201605.ProvisioningTemplate result = new V201605.ProvisioningTemplate();
@@ -82,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             wrappedResult.Templates = new V201605.Templates[] {
                 new V201605.Templates
                 {
-                    ID = String.Format("CONTAINER-{0}", template.Id),
+                    ID = $"CONTAINER-{template.Id}",
                     ProvisioningTemplate = new V201605.ProvisioningTemplate[]
                     {
                         result
@@ -408,18 +409,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (template.Navigation != null)
             {
-                result.Navigation = new V201605.Navigation {
+                result.Navigation = new V201605.Navigation
+                {
                     GlobalNavigation =
                         template.Navigation.GlobalNavigation != null ?
-                            new NavigationGlobalNavigation {
+                            new NavigationGlobalNavigation
+                            {
                                 NavigationType = (NavigationGlobalNavigationNavigationType)Enum.Parse(typeof(NavigationGlobalNavigationNavigationType), template.Navigation.GlobalNavigation.NavigationType.ToString()),
                                 StructuralNavigation =
                                     template.Navigation.GlobalNavigation.StructuralNavigation != null ?
                                         new V201605.StructuralNavigation
                                         {
                                             RemoveExistingNodes = template.Navigation.GlobalNavigation.StructuralNavigation.RemoveExistingNodes,
-                                            NavigationNode = (from n in template.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes
-                                                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                                            NavigationNode = (from n in template.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
                                         } : null,
                                 ManagedNavigation =
                                     template.Navigation.GlobalNavigation.ManagedNavigation != null ?
@@ -428,7 +430,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                             TermSetId = template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId,
                                             TermStoreId = template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId,
                                         } : null
-                                }
+                            }
                                 : null,
                     CurrentNavigation =
                         template.Navigation.CurrentNavigation != null ?
@@ -452,7 +454,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                         } : null
                             }
                             : null
-                        };
+                };
             }
 
             #endregion
@@ -489,6 +491,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Description = ct.Description,
                          Group = ct.Group,
                          Name = ct.Name,
+                         Hidden = ct.Hidden,
+                         Sealed = ct.Sealed,
+                         ReadOnly = ct.ReadOnly,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
                           select new V201605.ContentTypeFieldRef
@@ -649,7 +654,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                               Title = customAction.Title,
                               Url = customAction.Url,
                           }).ToArray() : null,
-                        }).ToArray();
+                     }).ToArray();
             }
             else
             {
@@ -802,6 +807,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      {
                          Overwrite = file.Overwrite,
                          Src = file.Src,
+                         Level = (V201605.FileLevel)Enum.Parse(typeof(V201605.FileLevel), file.Level.ToString()),
+                         LevelSpecified = file.Level != FileLevel.Draft,
                          Folder = file.Folder,
                          WebParts = file.WebParts.Count > 0 ?
                             (from wp in file.WebParts
@@ -1047,7 +1054,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (!String.IsNullOrEmpty(template.SiteSearchSettings))
             {
-                if (result.SearchSettings== null)
+                if (result.SearchSettings == null)
                 {
                     result.SearchSettings = new ProvisioningTemplateSearchSettings();
                 }
@@ -1133,6 +1140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Providers
 
             // Translate Providers, if any
+#pragma warning disable 618
             if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
                 var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
@@ -1140,7 +1148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     (from provider in extensibilityHandlers
                      select new V201605.Provider
                      {
-                         HandlerType = String.Format("{0}, {1}", provider.Type, provider.Assembly),
+                         HandlerType = $"{provider.Type}, {provider.Assembly}",
                          Configuration = provider.Configuration != null ? provider.Configuration.ToXmlNode() : null,
                          Enabled = provider.Enabled,
                      }).ToArray();
@@ -1149,7 +1157,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
-
+#pragma warning restore 618
             #endregion
 
             XmlSerializerNamespaces ns =
@@ -1171,7 +1179,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Crate a copy of the source stream
@@ -1522,7 +1530,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 if (result.Navigation.GlobalNavigation != null &&
                     result.Navigation.GlobalNavigation.StructuralNavigation != null &&
                     source.Navigation.GlobalNavigation != null &&
-                    source.Navigation.GlobalNavigation.StructuralNavigation != null)
+                    source.Navigation.GlobalNavigation.StructuralNavigation != null &&
+                    source.Navigation.GlobalNavigation.StructuralNavigation.NavigationNode != null)
                 {
                     result.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.AddRange(
                         from n in source.Navigation.GlobalNavigation.StructuralNavigation.NavigationNode
@@ -1534,7 +1543,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 if (result.Navigation.CurrentNavigation != null &&
                     result.Navigation.CurrentNavigation.StructuralNavigation != null &&
                     source.Navigation.CurrentNavigation != null &&
-                    source.Navigation.CurrentNavigation.StructuralNavigation != null)
+                    source.Navigation.CurrentNavigation.StructuralNavigation != null &&
+                    source.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode != null)
                 {
                     result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.AddRange(
                         from n in source.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode
@@ -1947,9 +1957,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             }),
                         termGroup.SiteCollectionTermGroup,
                         termGroup.Contributors != null ? (from c in termGroup.Contributors
-                         select new Model.User { Name = c.Name }).ToArray() : null,
+                                                          select new Model.User { Name = c.Name }).ToArray() : null,
                         termGroup.Managers != null ? (from m in termGroup.Managers
-                         select new Model.User { Name = m.Name }).ToArray() : null
+                                                      select new Model.User { Name = m.Name }).ToArray() : null
                         )
                     {
                         Description = termGroup.Description,
@@ -2579,7 +2589,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      select n.FromSchemaNavigationNodeToModelNavigationNodeV201605()));
             }
 
-            return (result);  
+            return (result);
         }
 
         public static V201605.NavigationNode FromModelNavigationNodeToSchemaNavigationNodeV201605(
@@ -2591,7 +2601,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 Title = node.Title,
                 Url = node.Url,
                 ChildNodes = (from n in node.NavigationNodes
-                             select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
+                              select n.FromModelNavigationNodeToSchemaNavigationNodeV201605()).ToArray()
             };
 
             return (result);
