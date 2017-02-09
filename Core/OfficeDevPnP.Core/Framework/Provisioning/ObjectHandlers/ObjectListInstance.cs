@@ -583,6 +583,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             siteList.Context.ExecuteQueryRetry();
 
             var isDirty = false;
+
+#if !SP2013
             if (!string.IsNullOrEmpty(fieldRef.DisplayName) && (fieldRef.DisplayName != listField.Title || fieldRef.DisplayName.ContainsResourceToken()))
             {
                 if (fieldRef.DisplayName.ContainsResourceToken())
@@ -595,6 +597,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 isDirty = true;
             }
+#else
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && fieldRef.DisplayName != listField.Title)
+            {
+                listField.Title = fieldRef.DisplayName;
+                isDirty = true;
+            }
+#endif
+
             // We cannot configure Hidden property for Phonetic fields 
             if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
                 (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
@@ -653,6 +663,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdField.Context.ExecuteQueryRetry();
 
             var isDirty = false;
+
+#if !SP2013
             if (!string.IsNullOrEmpty(fieldRef.DisplayName) && (createdField.Title != fieldRef.DisplayName || fieldRef.DisplayName.ContainsResourceToken()))
             {
                 if (fieldRef.DisplayName.ContainsResourceToken())
@@ -665,6 +677,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 isDirty = true;
             }
+#else
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && createdField.Title != fieldRef.DisplayName)
+            {
+                createdField.Title = fieldRef.DisplayName;
+                isDirty = true;
+            }
+#endif
+
             if (createdField.Hidden != fieldRef.Hidden)
             {
                 createdField.Hidden = fieldRef.Hidden;
@@ -1055,7 +1075,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                #region UserCustomActions
+#region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1110,7 +1130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-                #endregion
+#endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
