@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.11.1701.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BDR0template">
     <pnp:ProvisioningTemplate ID="BDR0template" Version="1" BaseSiteTemplate="BDR#0">
       <pnp:WebSettings NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -2751,7 +2751,6 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" DisplayName="Document ID Value" />
             <pnp:FieldRef ID="3b63724f-3418-461f-868b-7706f69b029c" Name="_dlc_DocIdUrl" DisplayName="Document ID" />
-            <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
@@ -3051,7 +3050,6 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" DisplayName="Document ID Value" />
             <pnp:FieldRef ID="3b63724f-3418-461f-868b-7706f69b029c" Name="_dlc_DocIdUrl" DisplayName="Document ID" />
-            <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
         <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false">
@@ -3201,7 +3199,6 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" DisplayName="Document ID Value" />
             <pnp:FieldRef ID="3b63724f-3418-461f-868b-7706f69b029c" Name="_dlc_DocIdUrl" DisplayName="Document ID" />
-            <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Checked Out To" />
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
