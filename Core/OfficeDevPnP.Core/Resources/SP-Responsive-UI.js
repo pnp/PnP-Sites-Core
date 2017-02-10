@@ -97,7 +97,19 @@ PnPResponsiveApp.Main = (function () {
          * @public
          */
         init: function () {
-            var currentScriptUrl = document.getElementById('PnPResponsiveUI').src;
+            var currentScriptUrl;
+
+            var currentScript = document.getElementById('PnPResponsiveUI');
+            if (currentScript != undefined) {
+                currentScriptUrl = currentScript.src;
+            }
+
+            if (currentScriptUrl == undefined) {
+                var responsiveScripts = document.querySelectorAll("script[src$='sp-responsive-ui.js']");
+                if (responsiveScripts.length > 0) {
+                    currentScriptUrl = responsiveScripts[0].src;
+                }
+            }
             if (currentScriptUrl != undefined) {
                 var currentScriptBaseUrl = currentScriptUrl.substring(0, currentScriptUrl.lastIndexOf('/') + 1);
                 loadCSS(currentScriptBaseUrl + 'sp-responsive-ui.css');
@@ -264,5 +276,10 @@ PnPResponsiveApp.Main = (function () {
     };
 })();
 
-PnPResponsiveApp.Main.addViewport();
-PnPResponsiveApp.Main.init();
+// Register Responsive Behavior after SP page is loaded
+_spBodyOnLoadFunctionNames.push("responsiveStartup");
+
+function responsiveStartup() {
+    PnPResponsiveApp.Main.addViewport();
+    PnPResponsiveApp.Main.init();
+}
