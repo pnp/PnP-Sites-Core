@@ -89,7 +89,7 @@ namespace Microsoft.SharePoint.Client
                         var serverUri = new Uri(clientObject.Context.Url);
                         if (scriptSrc.StartsWith("/"))
                         {
-                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}/{scriptSrc}";
+                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}{scriptSrc}";
                         }
                         else
                         {
