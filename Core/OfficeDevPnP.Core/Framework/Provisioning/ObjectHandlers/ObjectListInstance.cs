@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Lists.Any())
                 {
-                    var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                    var rootWeb = ((ClientContext)web.Context).Site.RootWeb;
 
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     #endregion
 
                     #region FieldRefs
-                    
+
                     foreach (var listInfo in processedLists)
                     {
 
@@ -155,11 +155,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                 {
-                                    field = CreateFieldRef(listInfo, field, fieldRef);
+                                    field = CreateFieldRef(listInfo, field, fieldRef, parser);
                                 }
                                 else
                                 {
-                                    field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef);
+                                    field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef, parser);
                                 }
 
                                 field.EnsureProperties(f => f.InternalName, f => f.Title);
@@ -216,7 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             total = listInfo.TemplateList.Fields.Count;
                             foreach (var field in listInfo.TemplateList.Fields)
                             {
-                                
+
                                 var fieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                                 if (fieldElement.Attribute("ID") == null)
                                 {
@@ -302,11 +302,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #region Views
 
-                    
-    
+
+
                     foreach (var listInfo in processedLists)
                     {
-                        
+
 
                         var list = listInfo.TemplateList;
                         var createdList = listInfo.SiteList;
@@ -367,7 +367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     web.Context.ExecuteQueryRetry();
 
-                    WriteMessage("Done processing lists",ProvisioningMessageType.Completed);
+                    WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
             }
             return parser;
@@ -574,7 +574,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef)
+        private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef, TokenParser parser)
         {
             // find the field in the list
             var listField = siteList.Fields.GetById(fieldId);
@@ -583,11 +583,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             siteList.Context.ExecuteQueryRetry();
 
             var isDirty = false;
+
+#if !SP2013
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && (fieldRef.DisplayName != listField.Title || fieldRef.DisplayName.ContainsResourceToken()))
+            {
+                if (fieldRef.DisplayName.ContainsResourceToken())
+                {
+                    listField.TitleResource.SetUserResourceValue(fieldRef.DisplayName, parser);
+                }
+                else
+                {
+                    listField.Title = fieldRef.DisplayName;
+                }
+                isDirty = true;
+            }
+#else
             if (!string.IsNullOrEmpty(fieldRef.DisplayName) && fieldRef.DisplayName != listField.Title)
             {
                 listField.Title = fieldRef.DisplayName;
                 isDirty = true;
             }
+#endif
+
             // We cannot configure Hidden property for Phonetic fields 
             if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
                 (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
@@ -616,7 +633,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listField;
         }
 
-        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef)
+        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser)
         {
             field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
             XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
@@ -646,11 +663,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdField.Context.ExecuteQueryRetry();
 
             var isDirty = false;
+
+#if !SP2013
+            if (!string.IsNullOrEmpty(fieldRef.DisplayName) && (createdField.Title != fieldRef.DisplayName || fieldRef.DisplayName.ContainsResourceToken()))
+            {
+                if (fieldRef.DisplayName.ContainsResourceToken())
+                {
+                    createdField.TitleResource.SetUserResourceValue(fieldRef.DisplayName, parser);
+                }
+                else
+                {
+                    createdField.Title = fieldRef.DisplayName;
+                }
+                isDirty = true;
+            }
+#else
             if (!string.IsNullOrEmpty(fieldRef.DisplayName) && createdField.Title != fieldRef.DisplayName)
             {
                 createdField.Title = fieldRef.DisplayName;
                 isDirty = true;
             }
+#endif
+
             if (createdField.Hidden != fieldRef.Hidden)
             {
                 createdField.Hidden = fieldRef.Hidden;
@@ -1041,7 +1075,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                #region UserCustomActions
+#region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1096,7 +1130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-                #endregion
+#endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
@@ -1631,7 +1665,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
             }
-            WriteMessage("Done processing lists",ProvisioningMessageType.Completed);
+            WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
             return template;
         }
 
@@ -1727,11 +1761,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             var fieldsToProcess = siteList.Fields.AsEnumerable().Where(field => !field.Hidden || SpecialFields.Contains(field.InternalName)).ToArray();
-        
-            
+
+
             foreach (var field in fieldsToProcess)
             {
-        
+
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
                 if (siteColumn != null)
                 {
