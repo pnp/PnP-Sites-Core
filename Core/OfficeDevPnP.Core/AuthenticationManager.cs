@@ -510,7 +510,7 @@ namespace OfficeDevPnP.Core
                 }
                 catch (Exception acquireEx)
                 {
-                    throw new Exception("Error trying to acquire authentication result: " + acquireEx.Message);
+                    Log.Error(Constants.LOGGING_SOURCE, acquireEx.ToDetailedString());
                 }
             }
 
