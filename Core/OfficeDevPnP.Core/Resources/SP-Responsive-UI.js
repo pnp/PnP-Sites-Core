@@ -195,6 +195,15 @@ PnPResponsiveApp.Main = (function () {
             var topNavClone = topNav.cloneNode(true);
             topNavClone.className = topNavClone.className + ' mobile-only';
             topNavClone = cloneSPIdNodes(topNavClone);
+            /* Sub nodes accordion */
+            var childs = topNavClone.querySelectorAll('a.dynamic-children');
+            for (var c = 0; c < childs.length; c++) {
+                childs[c].href = 'javascript:undefined';
+                childs[c].addEventListener('click', function (e) {
+                    toggleClass(this.parentNode, 'expand');
+                    return false;
+                });
+            }
             topNav.className = topNav.className + ' no-mobile';
             document.getElementById('sideNavBox').appendChild(topNavClone);
 
