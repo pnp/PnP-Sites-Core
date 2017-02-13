@@ -75,7 +75,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                         catch (Exception ex)
                         {
                             // eat all exceptions
-                            Console.WriteLine(ex.ToDetailedString());
+                            Console.WriteLine(ex.ToDetailedString(tenant.Context));
                         }
                     }
                 }
@@ -83,7 +83,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
             catch (Exception ex)
             {                
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }
@@ -440,7 +440,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }

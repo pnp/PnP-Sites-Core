@@ -123,7 +123,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }
@@ -164,7 +164,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                         catch (Exception ex)
                         {
                             // eat all exceptions
-                            Console.WriteLine(ex.ToDetailedString());
+                            Console.WriteLine(ex.ToDetailedString(tenant.Context));
                         }
                     }
                 }
@@ -172,7 +172,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
             // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
 
