@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         public Web _web;
 
-        private List<TokenDefinition> _tokens = new List<TokenDefinition>();
+        private List<TokenDefinition> _tokens;
         private List<Localization> _localizations = new List<Localization>();
 
         public List<TokenDefinition> Tokens
@@ -58,8 +58,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new ThemeCatalogToken(web));
             _tokens.Add(new SiteNameToken(web));
             _tokens.Add(new SiteIdToken(web));
-			_tokens.Add(new SiteOwnerToken(web));
-			_tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+            _tokens.Add(new SiteOwnerToken(web));
+            _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
             _tokens.Add(new GuidToken(web));
@@ -70,12 +70,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new AuthenticationRealmToken(web));
 
             // Add lists
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
             web.Context.ExecuteQueryRetry();
             foreach (var list in web.Lists)
             {
                 _tokens.Add(new ListIdToken(web, list.Title, list.Id));
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+
+                foreach (var view in list.Views)
+                {
+                    _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
             }
 
             if (web.IsSubSite())
@@ -141,6 +146,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             _tokens.Add(new SiteCollectionTermGroupIdToken(web));
             _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+
+            // SiteCollection TermSets, only when we're not working in app-only
+            if (!web.Context.IsAppOnly())
+            {
+                var site = (web.Context as ClientContext).Site;
+                var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
+                web.Context.Load(siteCollectionTermGroup);
+                try
+                {
+                    web.Context.ExecuteQueryRetry();
+                    if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
+                    {
+                        web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                        web.Context.ExecuteQueryRetry();
+                        foreach (var termSet in siteCollectionTermGroup.TermSets)
+                        {
+                            _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        }
+                    }
+                }
+                catch (NullReferenceException)
+                {
+                    // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
+                }
+            }
 
             // Fields
             var fields = web.Fields;

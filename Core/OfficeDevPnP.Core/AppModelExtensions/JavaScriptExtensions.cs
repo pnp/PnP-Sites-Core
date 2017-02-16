@@ -71,15 +71,88 @@ namespace Microsoft.SharePoint.Client
 
         private static bool AddJsLinkImplementation(ClientObject clientObject, string key, IEnumerable<string> scriptLinks, int sequence)
         {
-            var ret = false;
+            bool ret;
             if (clientObject is Web || clientObject is Site)
             {
                 var scriptLinksEnumerable = scriptLinks as string[] ?? scriptLinks.ToArray();
                 if (!scriptLinksEnumerable.Any())
                 {
-                    throw new ArgumentException("Parameter scriptLinks can't be empty");
+                    throw new ArgumentException(nameof(scriptLinks));
                 }
 
+#if !ONPREMISES
+                if (scriptLinksEnumerable.Length == 1)
+                {
+                    var scriptSrc = scriptLinksEnumerable[0];
+                    if (!scriptSrc.StartsWith("http", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        var serverUri = new Uri(clientObject.Context.Url);
+                        if (scriptSrc.StartsWith("/"))
+                        {
+                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}{scriptSrc}";
+                        }
+                        else
+                        {
+                            var serverRelativeUrl = string.Empty;
+                            if (clientObject is Web)
+                            {
+                                serverRelativeUrl = ((Web)clientObject).EnsureProperty(w => w.ServerRelativeUrl);
+                            }
+                            else
+                            {
+                                serverRelativeUrl = ((Site)clientObject).RootWeb.EnsureProperty(w => w.ServerRelativeUrl);
+                            }
+                            scriptSrc = $"{serverUri.Scheme}://{serverUri.Authority}{serverRelativeUrl}/{scriptSrc}";
+                        }
+                    }
+
+                    var customAction = new CustomActionEntity
+                    {
+                        Name = key,
+                        ScriptSrc = scriptSrc,
+                        Location = SCRIPT_LOCATION,
+                        Sequence = sequence
+                    };
+                    if (clientObject is Web)
+                    {
+                        ret = ((Web)clientObject).AddCustomAction(customAction);
+                    }
+                    else
+                    {
+                        ret = ((Site)clientObject).AddCustomAction(customAction);
+                    }
+                }
+                else
+                {
+                    var scripts = new StringBuilder(@" var headID = document.getElementsByTagName('head')[0]; 
+var scripts = document.getElementsByTagName('script');
+var scriptsSrc = [];
+for(var i = 0; i < scripts.length; i++) {
+    if(scripts[i].type === 'text/javascript'){
+        scriptsSrc.push(scripts[i].src);
+    }
+}
+");
+                    foreach (var link in scriptLinksEnumerable)
+                    {
+                        if (!string.IsNullOrEmpty(link))
+                        {
+                            scripts.Append(@"
+if (scriptsSrc.indexOf('{1}') === -1)  {  
+    var newScript = document.createElement('script');
+    newScript.id = '{0}';
+    newScript.type = 'text/javascript';
+    newScript.src = '{1}';
+    headID.appendChild(newScript);
+    scriptsSrc.push('{1}');
+}".Replace("{0}", key).Replace("{1}", link));
+                        }
+
+                    }
+
+                    ret = AddJsBlockImplementation(clientObject, key, scripts.ToString(), sequence);
+                }
+#else
                 var scripts = new StringBuilder(@" var headID = document.getElementsByTagName('head')[0]; 
 var scripts = document.getElementsByTagName('script');
 var scriptsSrc = [];
@@ -107,6 +180,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
                 }
 
                 ret = AddJsBlockImplementation(clientObject, key, scripts.ToString(), sequence);
+#endif
 
             }
             else
@@ -141,7 +215,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
 
         private static bool DeleteJsLinkImplementation(ClientObject clientObject, string key)
         {
-            var ret = false;
+            bool ret;
             if (clientObject is Web || clientObject is Site)
             {
                 var jsAction = new CustomActionEntity()
@@ -196,7 +270,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
 
         private static bool AddJsBlockImplementation(ClientObject clientObject, string key, string scriptBlock, int sequence)
         {
-            var ret = false;
+            bool ret;
             if (clientObject is Web || clientObject is Site)
             {
                 var jsAction = new CustomActionEntity()
@@ -246,7 +320,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
 
         public static Boolean ExistsJsLinkImplementation(ClientObject clientObject, String key)
         {
-            UserCustomActionCollection existingActions = null;
+            UserCustomActionCollection existingActions;
             if (clientObject is Web)
             {
                 existingActions = ((Web)clientObject).UserCustomActions;

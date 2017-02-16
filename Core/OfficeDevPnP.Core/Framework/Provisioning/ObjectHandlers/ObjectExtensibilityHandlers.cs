@@ -67,7 +67,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
                 foreach (var handler in template.ExtensibilityHandlers
+#pragma warning disable 618
                     .Union(template.Providers)
+#pragma warning restore 618
                     .Union(applyingInformation.ExtensibilityHandlers))
                 {
                     if (handler.Enabled)
@@ -128,7 +130,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
+#pragma warning disable 618
                 _willProvision = template.ExtensibilityHandlers.Union(template.Providers).Any();
+#pragma warning restore 618
             }
             return _willProvision.Value;
         }

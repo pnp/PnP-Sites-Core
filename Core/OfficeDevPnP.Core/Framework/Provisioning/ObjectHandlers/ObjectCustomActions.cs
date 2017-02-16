@@ -403,15 +403,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var resourceKey = userCustomAction.Name.Replace(" ", "_");
 
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", resourceKey), template, creationInfo))
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, $"CustomAction_{resourceKey}_Title", template, creationInfo))
                 {
-                    var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", resourceKey);
+                    var customActionTitle = $"{{res:CustomAction_{resourceKey}_Title}}";
                     customAction.Title = customActionTitle;
 
                 }
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", resourceKey), template, creationInfo))
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, $"CustomAction_{resourceKey}_Description", template, creationInfo))
                 {
-                    var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", resourceKey);
+                    var customActionDescription = $"{{res:CustomAction_{resourceKey}_Description}}";
                     customAction.Description = customActionDescription;
                 }
             }

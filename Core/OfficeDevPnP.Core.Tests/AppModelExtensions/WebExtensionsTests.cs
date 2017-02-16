@@ -381,6 +381,27 @@ namespace Microsoft.SharePoint.Client.Tests
         }
         #endregion
 
+        #region ReIndex Tests
+        [TestMethod()]
+        public void TriggerReIndexTeamSiteTest()
+        {
+            var web = clientContext.Web;
+            clientContext.Load(web);
+            clientContext.ExecuteQueryRetry();
+            web.ReIndexWeb();
+
+            var props = web.AllProperties;
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+            var version = (int)props["vti_searchversion"];
+            web.ReIndexWeb();
+            web.Context.Load(props);
+            web.Context.ExecuteQueryRetry();
+            var newVersion = (int)props["vti_searchversion"];
+            Assert.IsTrue(version == (newVersion - 1), "Version has not increased");
+        }
+        #endregion
+
         #region Provisioning Tests
         [TestMethod]
         public void GetProvisioningTemplateTest()

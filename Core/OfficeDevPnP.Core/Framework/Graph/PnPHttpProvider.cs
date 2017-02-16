@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 }
             }
 
-            throw new MaximumRetryAttemptedException(string.Format("Maximum retry attempts {0}, has be attempted.", this._retryCount));
+            throw new MaximumRetryAttemptedException($"Maximum retry attempts {this._retryCount}, has be attempted.");
         }
     }
 }

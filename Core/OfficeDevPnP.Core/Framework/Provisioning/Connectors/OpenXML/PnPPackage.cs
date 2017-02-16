@@ -411,7 +411,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
                 //TODO: fix method to support long streams
                 if (size > Int32.MaxValue)
-                    throw new ArgumentOutOfRangeException("Long streams are not supported.");
+                    throw new ArgumentOutOfRangeException(nameof(part),"Long streams are not supported.");
 
                 bytes = new byte[size];
                 stream.Read(bytes, 0, (int)size);

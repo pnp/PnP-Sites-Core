@@ -33,8 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                (this.PackagePath != null ? this.PackagePath.GetHashCode() : 0),
-                (this.Source != null ? this.Source.GetHashCode() : 0)
+                PackagePath?.GetHashCode() ?? 0,
+                Source?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 

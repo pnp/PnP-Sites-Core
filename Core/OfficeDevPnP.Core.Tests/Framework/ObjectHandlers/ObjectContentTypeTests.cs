@@ -19,6 +19,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     {
         private const string ElementSchema = @"<ContentType ID=""0x010100503B9E20E5455344BFAC2292DC6FE805"" Name=""Test Content Type"" Group=""PnP"" Version=""1"" xmlns=""http://schemas.microsoft.com/sharepoint/v3"" />";
 
+        private const string SubwebUrl = "9e92eac775b64d31a0fb771de86983aa";
+
         [TestCleanup]
         public void CleanUp()
         {
@@ -31,8 +33,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     ct.DeleteObject();
                     ctx.ExecuteQueryRetry();
                 }
-                ctx.Web.RemoveFieldByInternalName("PnPTestField");
+                try
+                {
+                    ctx.Web.RemoveFieldByInternalName("PnPTestField");
+                }
+                catch
+                {
+                }
+                var subwebs = ctx.LoadQuery(ctx.Web.Webs);
+                ctx.ExecuteQueryRetry();
 
+                if (subwebs.FirstOrDefault(w => w.Url.EndsWith(SubwebUrl)) != null)
+                {
+                    subwebs.FirstOrDefault(w => w.Url.EndsWith(SubwebUrl)).DeleteObject();
+                    ctx.ExecuteQueryRetry();
+                }
             }
         }
 
@@ -72,12 +87,64 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
+        public void CanProvisionToObjectsToSubweb()
+        {
+            var template = new ProvisioningTemplate();
+
+
+            var contentType = new ContentType()
+            {
+                Id = "0x010100503B9E20E5455344BFAC2292DC6FE805",
+                Name = "Test Content Type",
+                Group = "PnP",
+                Description = "Test Description",
+                Overwrite = true,
+                Hidden = false
+            };
+
+            template.ContentTypes.Add(contentType);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Create subweb
+                var web = ctx.Web.Webs.Add(new WebCreationInformation()
+                {
+                    Description = "Subweb",
+                    Language = 1033,
+                    Title = "Subweb",
+                    Url = SubwebUrl,
+                    WebTemplate = "STS#0"
+                });
+                ctx.Load(web);
+                ctx.ExecuteQueryRetry();
+
+                TokenParser parser = new TokenParser(web, template);
+
+                var applyingInformation = new ProvisioningTemplateApplyingInformation();
+
+                new ObjectContentType().ProvisionObjects(web, template, parser, applyingInformation);
+
+                var ct = web.GetContentTypeByName("Test Content Type");
+
+                Assert.IsNull(ct);
+
+                applyingInformation.ProvisionContentTypesToSubWebs = true;
+
+                new ObjectContentType().ProvisionObjects(web, template, parser, applyingInformation);
+
+                ct = web.GetContentTypeByName("Test Content Type");
+
+                Assert.IsNotNull(ct);
+            }
+        }
+
+        [TestMethod]
         public void FieldUsingTokensAreCorrectlyOrdered()
         {
             var template = new ProvisioningTemplate();
 
-            template.Parameters.Add("TestFieldPrefix","PnP");
-            
+            template.Parameters.Add("TestFieldPrefix", "PnP");
+
 
             var contentType = new ContentType
             {
@@ -97,7 +164,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             contentType.FieldRefs.Add(new FieldRef("{parameter:TestFieldPrefix}TestField")
             {
-                Id= new Guid("{dd6b7dae-1281-458d-a66c-01b0c7b7930b}")
+                Id = new Guid("{dd6b7dae-1281-458d-a66c-01b0c7b7930b}")
             });
 
             contentType.FieldRefs.Add(new FieldRef("AssignedTo")

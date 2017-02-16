@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                // Changed by Paolo Pialorsi to embrace the new sub-site attributes for break role inheritance and copy role assignments
+                // Changed by Paolo Pialorsi to embrace the new sub-site attributes to break role inheritance and copy role assignments
                 // if this is a sub site then we're not provisioning security as by default security is inherited from the root site
                 //if (web.IsSubSite() && !template.Security.BreakRoleInheritance)
                 //{
@@ -42,22 +42,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-
                 web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
                 web.Context.Load(memberGroup, o => o.Title, o => o.Users);
                 web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
 
                 web.Context.ExecuteQueryRetry();
 
-                if (!ownerGroup.ServerObjectIsNull.Value)
+                if (!ownerGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
                 }
-                if (!memberGroup.ServerObjectIsNull.Value)
+                if (!memberGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
                 }
-                if (!visitorGroup.ServerObjectIsNull.Value)
+                if (!visitorGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
@@ -168,8 +167,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     user.Update();
                     web.Context.ExecuteQueryRetry();
                 }
-                
-                if (siteSecurity.SiteSecurityPermissions != null) // With the change from october, manage permission levels on subsites as well
+
+                // With the change from october, manage permission levels on subsites as well
+                if (siteSecurity.SiteSecurityPermissions != null) 
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -182,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var siteRoleDefinition = roleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
                             if (siteRoleDefinition == null)
                             {
-                                scope.LogDebug("Creation role definition {0}", parser.ParseString(templateRoleDefinition.Name));
+                                scope.LogDebug("Creating role definition {0}", parser.ParseString(templateRoleDefinition.Name));
                                 var roleDefinitionCI = new RoleDefinitionCreationInformation();
                                 roleDefinitionCI.Name = parser.ParseString(templateRoleDefinition.Name);
                                 roleDefinitionCI.Description = parser.ParseString(templateRoleDefinition.Description);
@@ -383,29 +383,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (web.IsSubSite())
                     {
-                        WriteWarning("You are requesting to export sitegroups from a subweb. Notice that ALL sitegroups from the site collection are included in the result.", ProvisioningMessageType.Warning);
+                        WriteMessage("You are requesting to export sitegroups from a subweb. Notice that ALL sitegroups from the site collection are included in the result.", ProvisioningMessageType.Warning);
                     }
                     foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
-                       
-                        scope.LogDebug("Processing group {0}", group.Title);
-                        var siteGroup = new SiteGroup()
+                        try
                         {
-                            Title = group.Title.Replace(web.Title, "{sitename}"),
-                            AllowMembersEditMembership = group.AllowMembersEditMembership,
-                            AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
-                            AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
-                            Description = group.Description,
-                            OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
-                            Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
-                            RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
-                        };
+                            scope.LogDebug("Processing group {0}", group.Title);
+                            var siteGroup = new SiteGroup()
+                            {
+                                Title = !string.IsNullOrEmpty(web.Title) ? group.Title.Replace(web.Title, "{sitename}") : group.Title,
+                                AllowMembersEditMembership = group.AllowMembersEditMembership,
+                                AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
+                                AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,
+                                Description = group.Description,
+                                OnlyAllowMembersViewMembership = group.OnlyAllowMembersViewMembership,
+                                Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
+                                RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
+                            };
 
-                        foreach (var member in group.Users)
-                        {
-                            siteGroup.Members.Add(new User() { Name = member.LoginName });
+                            foreach (var member in group.Users)
+                            {
+                                scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
+                                siteGroup.Members.Add(new User() { Name = member.LoginName });
+                            }
+                            siteSecurity.SiteGroups.Add(siteGroup);
                         }
-                        siteSecurity.SiteGroups.Add(siteGroup);
+                        catch (Exception ee)
+                        {
+                            scope.LogError(ee.StackTrace);
+                            scope.LogError(ee.Message);
+                            scope.LogError(ee.InnerException.StackTrace);
+                        }
                     }
                 }
 
@@ -414,6 +423,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.HasUniqueRoleAssignments)
                 {
+                    
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
                     if (!web.IsSubSite())
                     {
@@ -429,6 +439,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 foreach (var permissionKey in permissionKeys)
                                 {
+                                    scope.LogDebug("Processing custom permissionKey definition {0}", permissionKey);
                                     var permissionKind =
                                         (PermissionKind) Enum.Parse(typeof(PermissionKind), permissionKey);
                                     if (webRoleDefinition.BasePermissions.Has(permissionKind))
@@ -455,6 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var webRoleAssignment in webRoleAssignments)
                     {
+                        scope.LogDebug("Processing Role Assignment {0}", webRoleAssignment.ToString());
                         if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup
                             && !creationInfo.IncludeSiteGroups)
                             continue;
@@ -470,8 +482,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (roleDefinition.RoleTypeKind != RoleType.None)
                                     {
                                         // Replace with token
-                                        roleDefinitionValue = string.Format("{{roledefinition:{0}}}",
-                                            roleDefinition.RoleTypeKind);
+                                        roleDefinitionValue = $"{{roledefinition:{roleDefinition.RoleTypeKind}}}";
                                     }
                                     modelRoleAssignment.RoleDefinition = roleDefinitionValue;
                                     if (webRoleAssignment.Member.PrincipalType == PrincipalType.SharePointGroup)
@@ -515,7 +526,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
             }
-            loginName = loginName.Replace(web.Title, "{sitename}");
+            if (!string.IsNullOrEmpty(web.Title))
+            {
+                loginName = loginName.Replace(web.Title, "{sitename}");
+            }
             return loginName;
         }
 

@@ -4,7 +4,8 @@ using System.Linq;
 using Microsoft.SharePoint.Client.InformationPolicy;
 using OfficeDevPnP.Core.Entities;
 
-namespace Microsoft.SharePoint.Client {
+namespace Microsoft.SharePoint.Client
+{
 
     /// <summary>
     /// Class that deals with information management features
@@ -111,13 +112,13 @@ namespace Microsoft.SharePoint.Client {
                              p => p.EmailBodyWithTeamMailbox);
                 web.Context.ExecuteQueryRetry();
                 return new SitePolicyEntity
-                    {
-                        Name = policy.Name,
-                        Description = policy.Description,
-                        EmailBody = policy.EmailBody,
-                        EmailBodyWithTeamMailbox = policy.EmailBodyWithTeamMailbox,
-                        EmailSubject = policy.EmailSubject
-                    };
+                {
+                    Name = policy.Name,
+                    Description = policy.Description,
+                    EmailBody = policy.EmailBody,
+                    EmailBodyWithTeamMailbox = policy.EmailBodyWithTeamMailbox,
+                    EmailSubject = policy.EmailSubject
+                };
             }
             else
             {
@@ -155,7 +156,7 @@ namespace Microsoft.SharePoint.Client {
         public static bool ApplySitePolicy(this Web web, string sitePolicy)
         {
             var result = false;
-            
+
             var sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
             web.Context.Load(sitePolicies);
             web.Context.ExecuteQueryRetry();
@@ -163,7 +164,7 @@ namespace Microsoft.SharePoint.Client {
             if (sitePolicies != null && sitePolicies.Count > 0)
             {
                 var policyToApply = sitePolicies.FirstOrDefault(p => p.Name == sitePolicy);
-                                
+
                 if (policyToApply != null)
                 {
                     ProjectPolicy.ApplyProjectPolicy(web.Context, web, policyToApply);
@@ -175,5 +176,48 @@ namespace Microsoft.SharePoint.Client {
             return result;
         }
 
+        /// <summary>
+        /// Check if a site is closed
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>True if site is closed, false otherwise</returns>
+        public static bool IsClosedBySitePolicy(this Web web)
+        {
+            var isClosed = ProjectPolicy.IsProjectClosed(web.Context, web);
+            web.Context.ExecuteQueryRetry();
+            return isClosed.Value;
+        }
+
+        /// <summary>
+        /// Close a site, if it has a site policy applied and is currently not closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was closed, false otherwise</returns>
+        public static bool SetClosedBySitePolicy(this Web web)
+        {
+            if (web.HasSitePolicyApplied() && !IsClosedBySitePolicy(web))
+            {
+                ProjectPolicy.CloseProject(web.Context, web);
+                web.Context.ExecuteQueryRetry();
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Open a site, if it has a site policy applied and is currently closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was opened, false otherwise</returns>
+        public static bool SetOpenBySitePolicy(this Web web)
+        {
+            if (web.HasSitePolicyApplied() && IsClosedBySitePolicy(web))
+            {
+                ProjectPolicy.OpenProject(web.Context, web);
+                web.Context.ExecuteQueryRetry();
+                return true;
+            }
+            return false;
+        }
     }
 }

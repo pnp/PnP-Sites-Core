@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private readonly string _value = null;
         public ParameterToken(Web web, string name, string value)
-            : base(web, string.Format("{{parameter:{0}}}", Regex.Escape(name)), string.Format("{{\\${0}}}", Regex.Escape(name)))
+            : base(web, $"{{parameter:{Regex.Escape(name)}}}", $"{{\\${Regex.Escape(name)}}}")
         {
             _value = value;
         }
