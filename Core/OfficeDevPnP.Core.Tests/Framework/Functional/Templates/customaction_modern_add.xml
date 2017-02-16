@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: Goal is to verify that all custom action properties work as expected. please keep this XML up to date if additional properties are added.
+
+               Possible attributes are:
+               Name               (*) 
+               Location           (*)
+               Description            (resource)
+               Title                  (parsed, resource)
+               Group
+               CommandUIExtension     (parsed)
+               ImageUrl               (parsed)
+               RegistrationId
+               RegistrationType
+               ScriptBlock            (parsed)
+               ScriptSrc              (parsed, excluding ~site and ~sitecollection)
+               Sequence
+               Url                    (parsed)   
+               Rights
+               Enabled
+
+-->
+
+<pnp:ProvisioningTemplate ID="customaction_modern_base" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Features>
+    <pnp:SiteFeatures>
+      <pnp:Feature ID="E3540C7D-6BEA-403C-A224-1A12EAFEE4C4" Deactivate="true" Description="Disable modern list experience"/>
+    </pnp:SiteFeatures>
+    <pnp:WebFeatures>
+      <pnp:Feature ID="52E14B6F-B1BB-4969-B89B-C4FAA56745EF" Deactivate="true" Description="Disable modern list experience"/>
+    </pnp:WebFeatures>
+  </pnp:Features>
+  <pnp:CustomActions>
+    <pnp:SiteCustomActions>
+      <pnp:CustomAction Name="CA_1" Description="ca 1" Location="EditControlBlock" RegistrationType="List" RegistrationId="100" Title="CA 1 Title" Sequence="3000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={sitename}" Enabled="true"/>
+      <pnp:CustomAction Name="CA_2" Description="ca 2" Location="EditControlBlock" RegistrationType="List" RegistrationId="100" Title="CA 2 Title" Sequence="4000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={sitename}" Enabled="true"/>
+      <pnp:CustomAction Name="CA_4" Description="ca 4" Location="CommandUI.Ribbon" RegistrationType="List" RegistrationId="100" Title="CA 4 Title" Sequence="6000" Enabled="true">
+        <pnp:CommandUIExtension>
+          <CommandUIDefinitions>
+            <CommandUIDefinition Location="Ribbon.Templates._children">
+              <Button
+                Id="Ribbon.Templates.OfficeDevPnPDownloadAll"
+                Command="OfficeDevPnP.Cmd.DownloadAll"
+                Image16by16="/_layouts/15/images/sharepointfoundation16.png"
+                LabelText="Download All"
+                Description="Download all files separately"
+                ToolTipTitle="Download All"
+                ToolTipDescription="Download all files separately"
+                TemplateAlias="o1"
+                Sequence="15"/>
+            </CommandUIDefinition>
+          </CommandUIDefinitions>
+          <CommandUIHandlers>
+            <CommandUIHandler
+              Command="OfficeDevPnP.Cmd.DownloadAll"
+              CommandAction="https://contoso.azurewebsites.net/pages/index.aspx" />
+          </CommandUIHandlers>
+        </pnp:CommandUIExtension>
+      </pnp:CustomAction>
+      <pnp:CustomAction Name="CA_6" Description="ca 6" Location="CommandUI.Ribbon" RegistrationType="List" RegistrationId="100" Title="CA 6 Title" Sequence="5000" Enabled="true">
+        <pnp:CommandUIExtension>
+            <CommandUIDefinitions>
+              <CommandUIDefinition Location="Ribbon.CustomTabs._children">
+                <Tab Id="Custom Tab" Title="Custom Tab" Description="Custom Tab">
+                  <Scaling Id="Custom Tab.Scaling">
+                    <MaxSize Id="Custom Group.Scaling.MaxSize" GroupId="Custom Group" Size="LargeLarge" />
+                    <MaxSize Id="Custom Group 2.Scaling.MaxSize" GroupId="Custom Group 2" Size="LargeLarge" />
+                    <Scale Id="Custom Group.Scaling.Scale" GroupId="Custom Group" Size="LargeLarge" />
+                    <Scale Id="Custom Group 2.Scaling.Scale" GroupId="Custom Group 2" Size="LargeLarge" />
+                  </Scaling>
+                  <Groups Id="Custom Tab.Groups">
+                    <Group Id="Custom Group 2" Title="Custom Group 2" Description="Custom Group 2" Sequence="7888" Template="Ribbon.Templates.Flexible2">
+                      <Controls Id="Custom Group 2.Controls">
+                        <Button Id="CustomButton3" LabelText="Custom Button 3" Image16by16="/_layouts/15/images/attach16.png" ToolTipTitle="Custom Button 3" ToolTipDescription="Custom Button 3" Command="CustomButton3.Command" TemplateAlias="o1" />
+                      </Controls>
+                    </Group>
+                    <Group Id="Custom Group 1" Title="Custom Group 1" Description="Custom Group 1" Sequence="10000" Template="Ribbon.Templates.Flexible2">
+                      <Controls Id="Custom Group 1.Controls">
+                        <!-- Image16by16="/_layouts/15/1033/images/formatmap16x16.png?rev=33" Image16by16Left="-144" Image16by16Top="-107" Image32by32="/_layouts/15/1033/images/formatmap32x32.png?rev=33" Image32by32Left="-374" Image32by32Top="-272" -->
+                        <Button Id="CustomButton1" LabelText="Custom Button 1" Image16by16="/_layouts/15/images/itslidelibrary.png" ToolTipTitle="Custom Button 1" ToolTipDescription="Custom Button 1" Command="CustomButton1.Command" TemplateAlias="o1" />
+                        <Button Id="CustomButton2" LabelText="Custom Button 2" Image16by16="/_layouts/15/images/dldsln16.png" ToolTipTitle="Custom Button 2" ToolTipDescription="Custom Button 2" Command="CustomButton2.Command" TemplateAlias="o1" />
+                      </Controls>
+                    </Group>
+                  </Groups>
+                </Tab>
+              </CommandUIDefinition>
+              <CommandUIDefinition Location="Ribbon.Templates._children">
+                <GroupTemplate Id="Ribbon.Templates.Flexible2">
+                  <Layout Title="LargeLarge" LayoutTitle="LargeLarge">
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o1" Type="OneRow" />
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o2" Type="OneRow" />
+                  </Layout>
+                  <Layout Title="LargeMedium" LayoutTitle="LargeMedium">
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o1" Type="OneRow" />
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                  <Layout Title="LargeSmall" LayoutTitle="LargeSmall">
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o1" Type="OneRow" />
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                  <Layout Title="MediumLarge" LayoutTitle="MediumLarge">
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o2" Type="OneRow" />
+                  </Layout>
+                  <Layout Title="MediumMedium" LayoutTitle="MediumMedium">
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                  <Layout Title="MediumSmall" LayoutTitle="MediumSmall">
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                  <Layout Title="SmallLarge" LayoutTitle="SmallLarge">
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Large" TemplateAlias="o2" Type="OneRow" />
+                  </Layout>
+                  <Layout Title="SmallMedium" LayoutTitle="SmallMedium">
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Medium" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                  <Layout Title="SmallSmall" LayoutTitle="SmallSmall">
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o1" Type="ThreeRow" />
+                    <OverflowSection DisplayMode="Small" TemplateAlias="o2" Type="ThreeRow" />
+                  </Layout>
+                </GroupTemplate>
+              </CommandUIDefinition>
+            </CommandUIDefinitions>
+            <CommandUIHandlers>
+              <CommandUIHandler Command="CustomButton1.Command" CommandAction="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={sitename}" />
+              <CommandUIHandler Command="CustomButton2.Command" CommandAction="http://www.bing.com" />
+              <CommandUIHandler Command="CustomButton3.Command" CommandAction="http://dev.office.com/sharepoint" />
+            </CommandUIHandlers>
+        </pnp:CommandUIExtension>
+      </pnp:CustomAction>
+    </pnp:SiteCustomActions>
+  </pnp:CustomActions>
+</pnp:ProvisioningTemplate>

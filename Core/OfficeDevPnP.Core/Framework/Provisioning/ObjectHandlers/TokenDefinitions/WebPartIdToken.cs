@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private string _webpartId = null;
         public WebPartIdToken(Web web, string name, Guid webpartid)
-            : base(web, string.Format("{{webpartid:{0}}}", Regex.Escape(name)))
+            : base(web, $"{{webpartid:{Regex.Escape(name)}}}")
         {
             _webpartId = webpartid.ToString();
         }

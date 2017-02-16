@@ -72,7 +72,7 @@ namespace OfficeDevPnP.Core
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
             {
-                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, "siteUrl");
+                throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
             return Clone(new Uri(siteUrl));
         }

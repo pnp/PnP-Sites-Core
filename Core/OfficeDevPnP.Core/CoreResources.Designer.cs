@@ -142,6 +142,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find Page Layout with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string BrandingExtension_InvalidPageLayoutName {
+            get {
+                return ResourceManager.GetString("BrandingExtension_InvalidPageLayoutName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting custom master URL &apos;{0}&apos; in &apos;{1}&apos;..
         /// </summary>
         internal static string BrandingExtension_SetCustomMasterUrl {
@@ -539,6 +548,15 @@ namespace OfficeDevPnP.Core {
         internal static string ListExtensions_GetWebRelativeUrl {
             get {
                 return ResourceManager.GetString("ListExtensions_GetWebRelativeUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping reindexing of the list because it&apos;s marked as a &apos;no crawl&apos; list..
+        /// </summary>
+        internal static string ListExtensions_SkipNoCrawlLists {
+            get {
+                return ResourceManager.GetString("ListExtensions_SkipNoCrawlLists", resourceCulture);
             }
         }
         
@@ -1814,6 +1832,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate {
@@ -2853,6 +2880,24 @@ namespace OfficeDevPnP.Core {
         internal static string TimerJob_UseThreading {
             get {
                 return ResourceManager.GetString("TimerJob_UseThreading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating Image Rendition &apos;{0}&apos; of width &apos;{1}&apos; and height &apos;{2}&apos;..
+        /// </summary>
+        internal static string WebExtensions_CreatePublishingImageRendition {
+            get {
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to create Image Rendition &apos;{0}&apos;..
+        /// </summary>
+        internal static string WebExtensions_CreatePublishingImageRendition_Error {
+            get {
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition_Error", resourceCulture);
             }
         }
         

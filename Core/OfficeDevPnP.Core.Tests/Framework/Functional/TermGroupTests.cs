@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Collections;
@@ -63,26 +64,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionTermGroupTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                // delete termgroups first
-                DeleteTermGroups(cc);
-
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.IncludeAllTermGroups = true;
-                ptci.IncludeSiteCollectionTermGroup = true;
-                ptci.IncludeTermGroupsSecurity = true;
-                ptci.HandlersToProcess = Handlers.TermGroups;
-
-                var result = TestProvisioningTemplate(cc, "termgroup_add.xml", Handlers.TermGroups, null, ptci);
-                TermGroupValidator tv = new TermGroupValidator();
-                Assert.IsTrue(tv.Validate(result.SourceTemplate.TermGroups, result.TargetTemplate.TermGroups, result.TargetTokenParser));
-
-                var result2 = TestProvisioningTemplate(cc, "termgroup_delta_1605.xml", Handlers.TermGroups, null, ptci);
-                TermGroupValidator tv2 = new TermGroupValidator();
-                tv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
-                Assert.IsTrue(tv2.Validate(result2.SourceTemplate.TermGroups, result2.TargetTemplate.TermGroups, result2.TargetTokenParser));
-            }
+            new TermGroupImplementation().SiteCollectionTermGroup(centralSiteCollectionUrl);
         }
         #endregion
 
@@ -94,89 +76,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebTermGroupTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                // delete termgroups first
-                DeleteTermGroups(cc);
-
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.IncludeAllTermGroups = true;
-                ptci.IncludeSiteCollectionTermGroup = true;
-                ptci.IncludeTermGroupsSecurity = true;
-                ptci.HandlersToProcess = Handlers.TermGroups;
-
-                var result = TestProvisioningTemplate(cc, "termgroup_add.xml", Handlers.TermGroups, null, ptci);
-                TermGroupValidator tv = new TermGroupValidator();
-                Assert.IsTrue(tv.Validate(result.SourceTemplate.TermGroups, result.TargetTemplate.TermGroups, result.TargetTokenParser));
-
-                var result2 = TestProvisioningTemplate(cc, "termgroup_delta_1605.xml", Handlers.TermGroups, null, ptci);
-                TermGroupValidator tv2 = new TermGroupValidator();
-                tv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
-                Assert.IsTrue(tv2.Validate(result2.SourceTemplate.TermGroups, result2.TargetTemplate.TermGroups, result2.TargetTokenParser));
-
-            }
+            new TermGroupImplementation().SiteCollectionTermGroup(centralSubSiteUrl);
         }
         #endregion
 
-        #region Helper methods
-        private void DeleteTermGroups(ClientContext cc)
-        {
-            var taxSession = TaxonomySession.GetTaxonomySession(cc);
-            var termStore = taxSession.GetDefaultSiteCollectionTermStore();
-
-            DeleteTermGroupsImplementation(cc, termStore);
-        }
-
-        private void DeleteTermGroupsImplementation(ClientContext cc, TermStore termStore)
-        {
-            cc.Load(termStore.Groups, p => p.Include(t => t.Name, t => t.TermSets.Include(s => s.Name, s => s.Terms.Include(q => q.IsDeprecated, q => q.ReusedTerms))));
-            cc.ExecuteQueryRetry();
-
-            foreach (var termGroup in termStore.Groups.ToList())
-            {
-                DeleteTermGroupImplementation(cc, termGroup);
-            }
-
-            var siteCollectionGroup = termStore.GetSiteCollectionGroup(cc.Site, true);
-            cc.Load(siteCollectionGroup, t => t.Name, t => t.TermSets.Include(s => s.Name, s => s.Terms.Include(q => q.IsDeprecated, q => q.ReusedTerms)));
-            cc.ExecuteQueryRetry();
-            DeleteTermGroupImplementation(cc, siteCollectionGroup, true);
-
-            termStore.CommitAll();
-            termStore.UpdateCache();
-            cc.ExecuteQueryRetry();
-        }
-
-        private static void DeleteTermGroupImplementation(ClientContext cc, Microsoft.SharePoint.Client.Taxonomy.TermGroup termGroup, bool siteCollectionGroup=false)
-        {
-            if (termGroup.Name.StartsWith("TG_") || siteCollectionGroup)
-            {
-                foreach (var termSet in termGroup.TermSets)
-                {
-                    if (termSet.Name.StartsWith("TS_"))
-                    {
-                        foreach (var term in termSet.Terms)
-                        {
-                            // first deleted the reused terms to avoid issues with re-using the same term id in an upcoming test run
-                            foreach (var reusedTerm in term.ReusedTerms)
-                            {
-                                term.DeleteObject();
-                            }
-                            cc.ExecuteQueryRetry();
-                        }
-
-                        termSet.DeleteObject();
-                    }
-                }
-
-                if (!siteCollectionGroup)
-                {
-                    termGroup.DeleteObject();
-                }
-                cc.ExecuteQueryRetry();
-            }
-        }
-        #endregion
 
     }
 }

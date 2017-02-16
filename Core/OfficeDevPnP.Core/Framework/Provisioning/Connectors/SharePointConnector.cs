@@ -41,17 +41,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (clientContext == null)
             {
-                throw new ArgumentNullException("clientContext");
+                throw new ArgumentNullException(nameof(clientContext));
             }
 
             if (String.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentException("connectionString");
+                throw new ArgumentException(nameof(connectionString));
             }
 
             if (String.IsNullOrEmpty(container))
             {
-                throw new ArgumentException("container");
+                throw new ArgumentException(nameof(container));
             }
             container = container.Replace('\\', '/');
 
@@ -97,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
                 if (folders.Length > 0)
                 {
-                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
                 }
 
                 ListItemCollection listItems = list.GetItems(camlQuery);
@@ -147,7 +147,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
                 if (folders.Length > 0)
                 {
-                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
                 }
 
                 ListItemCollection listItems = list.GetItems(camlQuery);
@@ -466,7 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 if (parts[0].Equals("_catalogs", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return string.Format("_catalogs/{0}", parts[1]);
+                    return $"_catalogs/{parts[1]}";
                 }
             }
 

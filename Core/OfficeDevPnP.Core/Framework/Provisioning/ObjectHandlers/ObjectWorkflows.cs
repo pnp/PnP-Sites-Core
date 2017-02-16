@@ -253,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     ((ServerException)ex).Message.Contains("A connection that was expected to be kept alive was closed by the server.")
                                     )
                                 {
-                                    WriteWarning(String.Format("Connection closed whilst adding Workflow Definition, trying again in {0}ms", delay), ProvisioningMessageType.Warning);
+                                    WriteMessage($"Connection closed whilst adding Workflow Definition, trying again in {delay}ms", ProvisioningMessageType.Warning);
 
                                     Thread.Sleep(delay);
 
@@ -284,7 +284,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId))
                         {
                             // Thus, delete it before adding it again!
-                            WriteWarning(string.Format("Workflow Subscription '{0}' already exists. It will be updated.", subscription.Name), ProvisioningMessageType.Warning);
+                            WriteMessage($"Workflow Subscription '{subscription.Name}' already exists. It will be updated.", ProvisioningMessageType.Warning);
                             workflowSubscription = existingWorkflowSubscriptions.FirstOrDefault((s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId));
 
                             if (workflowSubscription != null)
@@ -394,7 +394,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 mem.Position = 0;
 
-                String xamlFileName = String.Format("{0}.xaml", id.ToString());
+                String xamlFileName = $"{id.ToString()}.xaml";
                 connector.SaveFileStream(xamlFileName, mem);
                 return (xamlFileName);
             }
@@ -415,7 +415,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
                             if (list != null)
                             {
-                                result.Add(p.Key, String.Format("{{listid:{0}}}", list.Title));
+                                result.Add(p.Key, $"{{listid:{list.Title}}}");
                             }
                         }
                         break;
@@ -437,7 +437,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(listId));
             if (list != null)
             {
-                returnValue = String.Format("{{listid:{0}}}", list.Title);
+                returnValue = $"{{listid:{list.Title}}}";
             }
 
             return returnValue;
@@ -457,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
                             if (list != null)
                             {
-                                result.Add(p.Key, String.Format("{{listid:{0}}}", list.Title));
+                                result.Add(p.Key, $"{{listid:{list.Title}}}");
                             }
                         }
                         break;

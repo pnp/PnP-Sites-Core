@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Diagnostics
         public PnPMonitoredScope()
         {
             Guid g = Guid.NewGuid();
-            StartScope(string.Format("Unnamed Scope {0}", g));
+            StartScope($"Unnamed Scope {g}");
         }
 
         internal int ThreadId

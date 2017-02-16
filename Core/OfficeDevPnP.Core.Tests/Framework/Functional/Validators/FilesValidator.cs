@@ -94,11 +94,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             catch(Exception ex)
             {
                 // Return false if we get an exception
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(ctx));
                 return false;
             }
 
             return true;
+        }
+
+        public bool Validate1605(ProvisioningTemplate template, Microsoft.SharePoint.Client.ClientContext ctx)
+        {
+            var directoryFiles = new List<Core.Framework.Provisioning.Model.File>();
+            
+            // Get all files from directories
+            foreach (var directory in template.Directories)
+            {
+                var metadataProperties = directory.GetMetadataProperties();
+                directoryFiles = directory.GetDirectoryFiles(metadataProperties);
+
+                // Add directory files to template file collection
+                foreach (var dFile in directoryFiles)
+                {
+                    var file = new Core.Framework.Provisioning.Model.File();
+                    file.Src = dFile.Src.Replace(directory.Src + "\\", "");
+                    file.Folder = directory.Folder;
+                    template.Files.Add(file);
+                }
+            }
+           
+            // validate all files
+            return Validate(template.Files, ctx);
         }
     }
 }

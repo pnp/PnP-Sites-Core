@@ -43,41 +43,51 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             var tenant = new Tenant(tenantContext);
 
-            var siteCols = tenant.GetSiteCollections();
-
-            foreach (var siteCol in siteCols)
+            try
             {
-                if (siteCol.Url.Contains(sitecollectionNamePrefix))
-                {
-                    try
-                    {
-                        // Drop the site collection from the recycle bin
-                        if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
-                        {
-                            tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
-                        }
-                        else
-                        {
-                            // Eat the exceptions: would occur if the site collection is already in the recycle bin.
-                            try
-                            {
-                                // ensure the site collection in unlocked state before deleting
-                                tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
-                            }
-                            catch { }
+                var siteCols = tenant.GetSiteCollections();
 
-                            // delete the site collection, do not use the recyle bin
-                            tenant.DeleteSiteCollection(siteCol.Url, false);
-                        }
-                    }
-                    catch (Exception ex)
+                foreach (var siteCol in siteCols)
+                {
+                    if (siteCol.Url.Contains(sitecollectionNamePrefix))
                     {
-                        // eat all exceptions
-                        Console.WriteLine(ex.ToDetailedString());
+                        try
+                        {
+                            // Drop the site collection from the recycle bin
+                            if (tenant.CheckIfSiteExists(siteCol.Url, "Recycled"))
+                            {
+                                tenant.DeleteSiteCollectionFromRecycleBin(siteCol.Url, false);
+                            }
+                            else
+                            {
+                                // Eat the exceptions: would occur if the site collection is already in the recycle bin.
+                                try
+                                {
+                                    // ensure the site collection in unlocked state before deleting
+                                    tenant.SetSiteLockState(siteCol.Url, SiteLockState.Unlock);
+                                }
+                                catch { }
+
+                                // delete the site collection, do not use the recyle bin
+                                tenant.DeleteSiteCollection(siteCol.Url, false);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // eat all exceptions
+                            Console.WriteLine(ex.ToDetailedString(tenant.Context));
+                        }
                     }
                 }
             }
+            // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
+            catch (Exception ex)
+            {                
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
+                throw;
+            }
         }
+    
 
         [TestInitialize()]
         public void Initialize()
@@ -150,12 +160,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.First();
+                var site = siteCollections.Last();
                 var siteExists1 = tenant.CheckIfSiteExists(site.Url, "Active");
                 Assert.IsTrue(siteExists1);
 
                 try {
-                    var siteExists2 = tenant.CheckIfSiteExists(site.Url + "sites/aaabbbccc", "Active");
+                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
+                    var siteExists2 = tenant.CheckIfSiteExists(siteToCreateUrl, "Active");
                     Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
                 }
                 catch (ServerException) { }
@@ -171,11 +183,13 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.First();
+                var site = siteCollections.Last();
                 var siteExists1 = tenant.SiteExists(site.Url);
                 Assert.IsTrue(siteExists1);
 
-                var siteExists2 = tenant.SiteExists(site.Url + "sites/aaabbbccc");
+                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
+                var siteExists2 = tenant.SiteExists(siteToCreateUrl);
                 Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
             }
         }
@@ -426,7 +440,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }

@@ -7,6 +7,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Collections;
+using System.Linq.Expressions;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 
@@ -435,10 +436,12 @@ namespace Microsoft.SharePoint.Client
 
             return (editableNavigationTermSet);
         }
-        
+
         #endregion
 
         #region Navigation elements - quicklaunch, top navigation, search navigation
+
+
         /// <summary>
         /// Add a node to quick launch, top navigation bar or search navigation. The node will be added as the last node in the
         /// collection.
@@ -450,8 +453,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>
         /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
-
-        public static void AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
+        /// <returns>Newly added NavigationNode</returns>
+        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
@@ -463,6 +466,7 @@ namespace Microsoft.SharePoint.Client
                 IsExternal = isExternal
             };
 
+            NavigationNode navigationNode = null;
             try
             {
                 if (navigationType == NavigationType.QuickLaunch)
@@ -470,11 +474,13 @@ namespace Microsoft.SharePoint.Client
                     var quickLaunch = web.Navigation.QuickLaunch;
                     if (string.IsNullOrEmpty(parentNodeTitle))
                     {
-                        quickLaunch.Add(node);
-                        return;
+                        navigationNode = quickLaunch.Add(node);
                     }
-                    var parentNode = quickLaunch.SingleOrDefault(n => n.Title == parentNodeTitle);
-                    parentNode?.Children.Add(node);
+                    else
+                    {
+                        var parentNode = quickLaunch.FirstOrDefault(n => n.Title == parentNodeTitle);
+                        navigationNode = parentNode?.Children.Add(node);
+                    }
                 }
                 else if (navigationType == NavigationType.TopNavigationBar)
                 {
@@ -482,23 +488,24 @@ namespace Microsoft.SharePoint.Client
                     if (!string.IsNullOrEmpty(parentNodeTitle))
                     {
                         var parentNode = topLink.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        parentNode?.Children.Add(node);
+                        navigationNode = parentNode?.Children.Add(node);
                     }
                     else
                     {
-                        topLink.Add(node);
+                        navigationNode = topLink.Add(node);
                     }
                 }
                 else if (navigationType == NavigationType.SearchNav)
                 {
                     var searchNavigation = web.LoadSearchNavigation();
-                    searchNavigation.Add(node);
+                    navigationNode = searchNavigation.Add(node);
                 }
             }
             finally
             {
                 web.Context.ExecuteQueryRetry();
             }
+            return navigationNode;
         }
 
         /// <summary>
@@ -781,14 +788,22 @@ namespace Microsoft.SharePoint.Client
         /// Returns all custom actions in a web
         /// </summary>
         /// <param name="web">The web to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Web web)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Web web, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)web.Context;
 
             List<UserCustomAction> actions = new List<UserCustomAction>();
 
-            clientContext.Load(web.UserCustomActions);
+            if (expressions != null && expressions.Any())
+            {
+                clientContext.Load(web.UserCustomActions, u => u.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                clientContext.Load(web.UserCustomActions);
+            }
             clientContext.ExecuteQueryRetry();
 
             foreach (UserCustomAction uca in web.UserCustomActions)
@@ -802,14 +817,21 @@ namespace Microsoft.SharePoint.Client
         /// Returns all custom actions in a web
         /// </summary>
         /// <param name="site">The site to process</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns></returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
 
             List<UserCustomAction> actions = new List<UserCustomAction>();
-
-            clientContext.Load(site.UserCustomActions);
+            if (expressions != null && expressions.Any())
+            {
+                clientContext.Load(site.UserCustomActions, u => u.IncludeWithDefaultProperties(expressions));
+            }
+            else
+            {
+                clientContext.Load(site.UserCustomActions);
+            }
             clientContext.ExecuteQueryRetry();
 
             foreach (UserCustomAction uca in site.UserCustomActions)

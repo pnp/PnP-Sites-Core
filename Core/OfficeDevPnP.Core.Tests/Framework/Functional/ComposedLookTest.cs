@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Collections;
@@ -48,45 +49,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionComposedLookTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                if (!cc.Web.IsNoScriptSite())
-                {
-                    // Add supporting files
-                    TestProvisioningTemplate(cc, "composedlook_files.xml", Handlers.Files);
-
-                    var result = TestProvisioningTemplate(cc, "composedlook_add_1.xml", Handlers.ComposedLook);
-                    ComposedLookValidator composedLookVal = new ComposedLookValidator();
-                    Assert.IsTrue(composedLookVal.Validate(result.SourceTemplate.ComposedLook, result.TargetTemplate.ComposedLook));
-
-                    var result2 = TestProvisioningTemplate(cc, "composedlook_add_2.xml", Handlers.ComposedLook);
-                    Assert.IsTrue(composedLookVal.Validate(result2.SourceTemplate.ComposedLook, result2.TargetTemplate.ComposedLook));
-                }
-            }
+            new ComposedLookImplementation().SiteCollectionComposedLook(centralSiteCollectionUrl);
         }
 
         [TestMethod]
         [Timeout(15 * 60 * 1000)]
         public void WebComposedLookTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                // Add supporting files
-                TestProvisioningTemplate(cc, "composedlook_files.xml", Handlers.Files);
-            }
-
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                if (!cc.Web.IsNoScriptSite())
-                {
-                    var result = TestProvisioningTemplate(cc, "composedlook_add_1.xml", Handlers.ComposedLook);
-                    ComposedLookValidator composedLookVal = new ComposedLookValidator();
-                    Assert.IsTrue(composedLookVal.Validate(result.SourceTemplate.ComposedLook, result.TargetTemplate.ComposedLook));
-
-                    var result2 = TestProvisioningTemplate(cc, "composedlook_add_2.xml", Handlers.ComposedLook);
-                    Assert.IsTrue(composedLookVal.Validate(result2.SourceTemplate.ComposedLook, result2.TargetTemplate.ComposedLook));
-                }
-            }
+            new ComposedLookImplementation().WebComposedLook(centralSiteCollectionUrl, centralSubSiteUrl);
         }
 
     }

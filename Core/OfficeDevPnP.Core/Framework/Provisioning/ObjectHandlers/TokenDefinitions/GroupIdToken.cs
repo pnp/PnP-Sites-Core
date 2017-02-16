@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private readonly int _groupId = 0;
         public GroupIdToken(Web web, string name, int groupId)
-            : base(web, string.Format("{{groupid:{0}}}", Regex.Escape(name)))
+            : base(web, $"{{groupid:{Regex.Escape(name)}}}")
         {
             _groupId = groupId;
         }

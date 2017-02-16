@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
             catch (Exception e)
             {
-                return string.Format("Error while generating log information, {0}", e);
+                return $"Error while generating log information, {e}";
             }
         }
     }
