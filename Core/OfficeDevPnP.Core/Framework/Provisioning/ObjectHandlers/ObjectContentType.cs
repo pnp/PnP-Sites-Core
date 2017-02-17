@@ -136,7 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // make sure fields are in the correct order
-            var existingFieldNames = existingContentType.FieldLinks.Select(fld => fld.Name).ToArray();
+            var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
             var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
             if (!existingFieldNames.SequenceEqual(ctFieldNames))
             {
