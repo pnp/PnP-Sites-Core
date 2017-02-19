@@ -831,6 +831,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     doSave = fileExistsCallBack(fileOut);
                 }
+                else
+                {
+                    doSave = true;
+                }
             }
             else
             {
