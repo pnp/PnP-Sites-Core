@@ -683,6 +683,73 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+        #region ClientSide Package Deployment
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <param name="appCatalogSiteUrl">Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps) </param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy=true, bool overwrite=true)
+        {
+            if (String.IsNullOrEmpty(appCatalogSiteUrl))
+            {
+                throw new ArgumentException("Please specify a app catalog site url");
+            }
+
+            Uri catalogUri;
+            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
+            {
+                throw new ArgumentException("Please specify a valid app catalog site url");
+            }
+
+            if (String.IsNullOrEmpty(spPkgName))
+            {
+                throw new ArgumentException("Please specify a package name");
+            }
+
+            if (String.IsNullOrEmpty(spPkgPath))
+            {
+                throw new ArgumentException("Please specify a package path");
+            }
+
+            using (var appCatalogContext = tenant.Context.Clone(catalogUri))
+            {
+                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
+                if (catalog == null)
+                {
+                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
+                }
+
+                Folder rootFolder = catalog.RootFolder;
+
+                // Upload package
+                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
+                if (sppkgFile == null)
+                {
+                    throw new Exception($"Upload of {spPkgName} failed");
+                }
+
+                if (autoDeploy && System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                {
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
+                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = true;
+                    sppkgFile.ListItemAllFields.Update();
+                }
+
+                appCatalogContext.Load(sppkgFile.ListItemAllFields);
+                appCatalogContext.ExecuteQueryRetry();
+
+                return sppkgFile.ListItemAllFields;
+            }
+        }
+        #endregion
+
         #region Private helper methods
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
