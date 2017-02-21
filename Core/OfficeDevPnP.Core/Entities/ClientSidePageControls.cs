@@ -121,6 +121,14 @@ namespace OfficeDevPnP.Core.Entities
         public abstract string ToHtml();
 
         /// <summary>
+        /// Removes the control from the page
+        /// </summary>
+        public void Delete()
+        {
+            this.Section.Zone.Page.Controls.Remove(this);
+        }
+
+        /// <summary>
         /// Receives data-sp-controldata content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
