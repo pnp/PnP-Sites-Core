@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Utilities.WebParts.Processors
     /// </summary>
     public class PassThroughProcessor : IWebPartPostProcessor
     {
-        public void Process(WebPartDefinition wpDefinition, File webPartPage)
+        public void Process(WebPartDefinition wpDefinition, Web currentPageWeb)
         {
             
         }

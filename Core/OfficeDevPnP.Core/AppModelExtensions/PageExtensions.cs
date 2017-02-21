@@ -166,7 +166,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(webPartPage);
             web.Context.ExecuteQueryRetry();
 
-            return AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
+            return AddWebPart(web, webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace Microsoft.SharePoint.Client
 
             string wikiField = (string)webPartPage.ListItemAllFields["WikiField"];
 
-            var wpdNew = AddWebPart(webPartPage, webPart, "wpz", 0);
+            var wpdNew = AddWebPart(web, webPartPage, webPart, "wpz", 0);
 
             //HTML structure in default team site home page (W16)
             //<div class="ExternalClass284FC748CB4242F6808DE69314A7C981">
@@ -1054,7 +1054,7 @@ namespace Microsoft.SharePoint.Client
             SetWebPartPropertyInternal(web, key, value, id, serverRelativePageUrl);
         }
 
-        private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
+        private static WebPartDefinition AddWebPart(Web web, File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
         {
             var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
             var oWebPartDefinition = limitedWebPartManager.ImportWebPart(webPart.WebPartXml);
@@ -1063,7 +1063,7 @@ namespace Microsoft.SharePoint.Client
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
 
-            WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
+            WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, web);
 
             return wpdNew;
         }

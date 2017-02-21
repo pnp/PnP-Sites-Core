@@ -22,9 +22,9 @@ namespace OfficeDevPnP.Core.Utilities.WebParts.Processors
             _properties = schema.Data.Properties.Property.ToList();
         }
 
-        public void Process(WebPartDefinition wpDefinition, File webPartPage)
+        public void Process(WebPartDefinition wpDefinition, Web currentPageWeb)
         {
-            var web = GetWeb(webPartPage);
+            var web = ResolveWeb(currentPageWeb);
             var list = GetList(web);
 
             if (list == null)
@@ -223,9 +223,9 @@ namespace OfficeDevPnP.Core.Utilities.WebParts.Processors
             return null;
         }
 
-        private Web GetWeb(File webPartPage)
+        private Web ResolveWeb(Web currentPageWeb)
         {
-            var context = (ClientContext)webPartPage.Context;
+            var context = (ClientContext)currentPageWeb.Context;
 
             var webIdProperty = GetProperty("WebId");
             Guid webId;
@@ -235,7 +235,7 @@ namespace OfficeDevPnP.Core.Utilities.WebParts.Processors
                 return context.Site.OpenWebById(webId);
             }
 
-            return ((ClientContext) webPartPage.Context).Web;
+            return currentPageWeb;
         }
 
         private bool TryParseGuidProperty(PropertyType property, out Guid id)
