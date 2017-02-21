@@ -93,16 +93,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (existingFieldElement.Attribute("Type").Value == templateFieldElement.Attribute("Type").Value) // Is existing field of the same type?
                 {
+                    var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
+
+                    if (listIdentifier != null)
+                    {
+                        // Temporary remove list attribute from list
+                        templateFieldElement.Attribute("List").Remove();
+                    }
+
                     if (IsFieldXmlValid(parser.ParseString(originalFieldXml), parser, web.Context))
                     {
-                        var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
-
-                        if (listIdentifier != null)
-                        {
-                            // Temporary remove list attribute from list
-                            templateFieldElement.Attribute("List").Remove();
-                        }
-
                         foreach (var attribute in templateFieldElement.Attributes())
                         {
                             if (existingFieldElement.Attribute(attribute.Name) != null)
@@ -223,6 +223,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     formulaElement.Value = formulastring;
                 }
             }
+            return schemaElement.ToString();
+        }
+
+        /// <summary>
+        /// Replace Field Internal name by Display Name in the Validation formula
+        /// (due to a SP issue that when provisioning the field, is expecting the Display name)
+        /// https://github.com/SharePoint/PnP-Sites-Core/issues/849
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="schemaXml"></param>
+        /// <returns></returns>
+        internal static string TokenizeFieldValidationFormula(SPField field, string schemaXml)
+        {
+            var schemaElement = XElement.Parse(field.SchemaXml);
+
+            var validationNode = schemaElement.Elements("Validation").FirstOrDefault();
+            if (validationNode != null)
+            {
+                var validationNodeValue = validationNode.Value;
+                validationNode.Value = validationNodeValue.Replace(field.InternalName, string.Format("[{0}]", field.Title));
+            }
+
             return schemaElement.ToString();
         }
 
@@ -558,7 +580,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
-        }
+        }        
     }
 
     internal static class XElementStringExtensions

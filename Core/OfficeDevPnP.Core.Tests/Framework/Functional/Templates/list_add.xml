@@ -109,10 +109,23 @@ Base template: goal is to verify that all list properties and elements work as e
       <pnp:Fields>
         <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1" Description="Fld LI 7 1" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2" Description="Fld LI 7 2" MaxLength="255" AllowDeletion="TRUE" />
+        <!-- Test field with validation formula, when extracting we get internal field name but when applying only [displayname] works, so the engine does handle this by transforming to [displayname] during extraction -->
+        <Field ID="{CED12C86-CFA7-46E5-8F2F-1E9C43BCA46E}" Type="Text" Name="FLD_LI_7_4" DisplayName="Fld LI 7 4" MaxLength="200" AllowDeletion="TRUE">
+          <Validation>=(LEN(LEFT([Fld LI 7 4],FIND("@",[Fld LI 7 4])-1))&gt;0)+(LEN(RIGHT([Fld LI 7 4],LEN([Fld LI 7 4])-FIND(".",[Fld LI 7 4],FIND("@",[Fld LI 7 4]))))&gt;0)+(LEN(MID([Fld LI 7 4],FIND("@",[Fld LI 7 4])+1,FIND(".",[Fld LI 7 4],FIND("@",[Fld LI 7 4]))-FIND("@",[Fld LI 7 4])-1))&gt;0)+(ISERROR(FIND(" ",[Fld LI 7 4]))=TRUE)=4</Validation>
+        </Field>
       </pnp:Fields>
       <pnp:FieldDefaults>
         <pnp:FieldDefault FieldName="FLD_LI_7_1">default Fld LI 7 1 value</pnp:FieldDefault>
       </pnp:FieldDefaults>
+    </pnp:ListInstance>
+    <!-- FieldRef usage when the field has a validation formula -->
+    <pnp:ListInstance Title="LI_8" TemplateType="101" Url="LI_8" EnableFolderCreation="false">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_8" Hidden="false" Required="true" Name="Informative"/>
+        <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden ="true" />
+        <!-- Reference to a field with a validation formula -->
+        <pnp:FieldRef ID="5A3BEB31-AB8E-4FC6-BBF2-661D88DDECFC" />
+      </pnp:FieldRefs>
     </pnp:ListInstance>
 
     <!-- Lists -->

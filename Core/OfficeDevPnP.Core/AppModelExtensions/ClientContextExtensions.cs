@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Web;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
@@ -11,6 +13,10 @@ namespace Microsoft.SharePoint.Client
 {
     public static partial class ClientContextExtensions
     {
+#if ONPREMISES
+        private const string MicrosoftSharePointTeamServicesHeader = "MicrosoftSharePointTeamServices";
+#endif
+
         /// <summary>
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
@@ -221,6 +227,7 @@ namespace Microsoft.SharePoint.Client
         public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, Version minimallyRequiredVersion)
         {
             bool hasMinimalVersion = false;
+#if !ONPREMISES
             try
             {
                 clientContext.ExecuteQueryRetry();
@@ -230,6 +237,28 @@ namespace Microsoft.SharePoint.Client
             {
                 // swallow the exception.
             }
+#else
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(clientContext.Url);
+
+                var response = request.GetResponse();
+                if (response.Headers.AllKeys.Contains(MicrosoftSharePointTeamServicesHeader))
+                {
+                    var responseVersion = new Version(response.Headers[MicrosoftSharePointTeamServicesHeader]);
+                    hasMinimalVersion = responseVersion.CompareTo(minimallyRequiredVersion) >= 0;
+                }
+            }
+            catch (WebException ex)
+            {
+                var response = ex.Response;
+                if (response.Headers.AllKeys.Contains(MicrosoftSharePointTeamServicesHeader))
+                {
+                    var responseVersion = new Version(response.Headers[MicrosoftSharePointTeamServicesHeader]);
+                    hasMinimalVersion = responseVersion.CompareTo(minimallyRequiredVersion) >= 0;
+                }
+            }
+#endif
             return hasMinimalVersion;
         }
 

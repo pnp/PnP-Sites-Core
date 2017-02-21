@@ -279,6 +279,29 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Returns the field if it exists. Null if does not exist.
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="internalName">If true, search parent sites and root site</param>
+        /// <returns></returns>
+        public static Field GetFieldByInternalName(this Web web, string internalName, bool searchInSiteHierarchy = false)
+        {
+            IEnumerable<Field> fields = null;
+
+            if (searchInSiteHierarchy)
+            {
+                fields = web.Context.LoadQuery(web.AvailableFields.Where(f => f.InternalName == internalName));
+            }
+            else
+            {
+                fields = web.Context.LoadQuery(web.Fields.Where(f => f.InternalName == internalName));
+            }
+           
+            web.Context.ExecuteQueryRetry();
+            return fields.FirstOrDefault();
+        }
+
+        /// <summary>
         /// Returns the field if it exists. Null if it does not exist.
         /// </summary>
         /// <typeparam name="TField">The selected field type to return.</typeparam>

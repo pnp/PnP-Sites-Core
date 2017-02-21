@@ -17,8 +17,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public FieldTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_811105dc-86c9-4b27-bf8d-6f275f2176e8";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_811105dc-86c9-4b27-bf8d-6f275f2176e8/sub";
         }
         #endregion
 

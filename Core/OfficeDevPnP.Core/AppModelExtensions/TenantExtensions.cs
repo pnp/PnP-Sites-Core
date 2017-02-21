@@ -68,16 +68,24 @@ namespace Microsoft.SharePoint.Client
                 // Let's poll for site collection creation completion
                 if (WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.CreatingSiteCollection))
                 {
-                    // Return site guid of created site collection
-                    try
+                    // Restore of original flow to validate correct working in edog after fix got committed
+                    if (properties.Url.ToLower().Contains("spoppe.com"))
                     {
                         siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        // Eat all exceptions cause there's currently (December 16) an issue in the service that can make this call fail in combination with app-only usage
-                        Log.Error("Temp eating exception to issue in service (December 2016). Exception is {0}.",
-                            ex.ToDetailedString());
+                        // Return site guid of created site collection
+                        try
+                        {
+                            siteGuid = tenant.GetSiteGuidByUrl(new Uri(properties.Url));
+                        }
+                        catch (Exception ex)
+                        {
+                            // Eat all exceptions cause there's currently (December 16) an issue in the service that can make tenant API calls fail in combination with app-only usage
+                            Log.Error("Temp eating exception due to issue in service (December 2016). Exception is {0}.",
+                                ex.ToDetailedString());
+                        }
                     }
                 }
             }

@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             catch(Exception ex)
             {
                 // Return false if we get an exception
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(ctx));
                 return false;
             }
 
