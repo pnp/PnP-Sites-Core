@@ -561,15 +561,18 @@ namespace OfficeDevPnP.Core.Entities
         private void InitializeSecurity()
         {
             // Let's try to grab an access token, will work when we're in app-only or user+app model
-            this.Context.ExecutingWebRequest += (sender, e) =>
-            {
-                if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
-                {
-                    this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
-                }
-            };
+            this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
             this.Context.Load(this.Context.Web, w => w.Url);
             this.context.ExecuteQueryRetry();
+            this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+        }
+
+        private void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
+            {
+                this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
+            }
         }
 
         private string ClientSideWebPartEnumToName(DefaultClientSideWebParts webPart)
