@@ -17,6 +17,7 @@ using System.IO;
 using System.Text;
 using System.Web.Configuration;
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
+using OfficeDevPnP.Core.Pages;
 
 namespace Microsoft.SharePoint.Client
 {

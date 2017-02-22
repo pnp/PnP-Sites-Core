@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Web.UI;
 
-namespace OfficeDevPnP.Core.Entities
+namespace OfficeDevPnP.Core.Pages
 {
 #if !ONPREMISES
     #region Client Side control classes

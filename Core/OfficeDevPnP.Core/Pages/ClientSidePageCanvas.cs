@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
 
-namespace OfficeDevPnP.Core.Entities
+namespace OfficeDevPnP.Core.Pages
 {
 #if !ONPREMISES
     #region Canvas page model classes   

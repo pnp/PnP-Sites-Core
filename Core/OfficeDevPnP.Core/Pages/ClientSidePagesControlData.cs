@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace OfficeDevPnP.Core.Entities
+namespace OfficeDevPnP.Core.Pages
 {
 #if !ONPREMISES
     #region Classes to support json (de-)serialization of control/webpart data

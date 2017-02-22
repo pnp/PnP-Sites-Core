@@ -417,9 +417,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Entities\ClientSidePageCanvas.cs" />
-    <Compile Include="Entities\ClientSidePageControls.cs" />
-    <Compile Include="Entities\ClientSidePagesControlData.cs" />
+    <Compile Include="Pages\ClientSidePageCanvas.cs" />
+    <Compile Include="Pages\ClientSidePageControls.cs" />
+    <Compile Include="Pages\ClientSidePagesControlData.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
@@ -951,6 +951,7 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
+    <Content Include="Sites\Dummy.txt" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
