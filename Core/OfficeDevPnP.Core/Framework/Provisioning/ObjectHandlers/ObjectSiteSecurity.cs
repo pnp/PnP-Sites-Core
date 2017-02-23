@@ -162,10 +162,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var admin in siteSecurity.AdditionalAdministrators)
                 {
                     var parsedAdminName = parser.ParseString(admin.Name);
-                    var user = web.EnsureUser(parsedAdminName);
-                    user.IsSiteAdmin = true;
-                    user.Update();
-                    web.Context.ExecuteQueryRetry();
+                    try
+                    {
+                        var user = web.EnsureUser(parsedAdminName);
+                        user.IsSiteAdmin = true;
+                        user.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogWarning(ex, "Failed to add AdditionalAdministrator {0}", parsedAdminName);
+                    }
                 }
 
                 // With the change from october, manage permission levels on subsites as well
@@ -238,15 +245,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (roleDefinition != null)
                             {
                                 Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+
                                 if (principal == null)
                                 {
-                                    principal = web.EnsureUser(parser.ParseString(roleAssignment.Principal));
+                                    var parsedUser = parser.ParseString(roleAssignment.Principal);
+                                    try
+                                    {
+                                        principal = web.EnsureUser(parsedUser);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
+                                    }
                                 }
 
-                                var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
-                                roleDefinitionBindingCollection.Add(roleDefinition);
-                                web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
-                                web.Context.ExecuteQueryRetry();
+                                if (principal != null)
+                                {
+                                    var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
+                                    roleDefinitionBindingCollection.Add(roleDefinition);
+                                    web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                                    web.Context.ExecuteQueryRetry();
+                                }
                             }
                             else
                             {
@@ -270,9 +289,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var parsedUserName = parser.ParseString(user.Name);
                         scope.LogDebug("Adding user {0}", parsedUserName);
-                        var existingUser = web.EnsureUser(parsedUserName);
-                        group.Users.AddUser(existingUser);
 
+                        try
+                        {
+                            var existingUser = web.EnsureUser(parsedUserName);
+                            group.Users.AddUser(existingUser);
+                        }
+                        catch (Exception ex)
+                        {
+                            scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
+                        }
                     }
                     web.Context.ExecuteQueryRetry();
                 }
