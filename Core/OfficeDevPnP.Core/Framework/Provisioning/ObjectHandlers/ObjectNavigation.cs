@@ -112,6 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             case GlobalNavigationType.Inherit:
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                                web.Navigation.UseShared = true;
                                 break;
                             case GlobalNavigationType.Managed:
                                 if (template.Navigation.GlobalNavigation.ManagedNavigation == null)
