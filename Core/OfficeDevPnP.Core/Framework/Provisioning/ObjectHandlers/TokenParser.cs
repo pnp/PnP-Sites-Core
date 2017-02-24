@@ -324,10 +324,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (tokensToSkip != null)
                     {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
+                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
                         {
-                            foreach (var filteredToken in filteredTokens)
+                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))
@@ -355,10 +354,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     origInput = input;
                     if (tokensToSkip != null)
                     {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
+                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
                         {
-                            foreach (var filteredToken in filteredTokens)
+                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))

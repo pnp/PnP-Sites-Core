@@ -28,14 +28,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             var regexs = new Regex[this._tokens.Length];
             for (var q = 0; q < this._tokens.Length; q++)
             {
-                regexs[q] = new Regex(Regex.Escape(this._tokens[q]), RegexOptions.IgnoreCase);
+                regexs[q] = new Regex(this._tokens[q], RegexOptions.IgnoreCase);
             }
             return regexs;
         }
 
         public Regex GetRegexForToken(string token)
         {
-            return new Regex(Regex.Escape(token), RegexOptions.IgnoreCase);
+            return new Regex(token, RegexOptions.IgnoreCase);
         }
 
         public int GetTokenLength()
