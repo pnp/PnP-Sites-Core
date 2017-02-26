@@ -198,8 +198,11 @@ PnPResponsiveApp.Main = (function () {
             /* Sub nodes accordion */
             var childs = topNavClone.querySelectorAll('a.dynamic-children');
             for (var c = 0; c < childs.length; c++) {
-                childs[c].href = 'javascript:undefined';
-                childs[c].addEventListener('click', function (e) {
+                /* Add button to preserve html link */
+                var expandBtn = document.createElement('button');
+                expandBtn.type = 'button';
+                childs[c].parentNode.insertBefore(expandBtn, childs[c]);
+                expandBtn.addEventListener('click', function (e) {
                     toggleClass(this.parentNode, 'expand');
                     return false;
                 });
