@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 using Microsoft.Graph;
 using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -123,193 +122,201 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            // Use a synchronous model to invoke the asynchronous process
-            result = Task.Run(async () =>
+            try
             {
-                var group = new UnifiedGroupEntity();
-
-                var graphClient = CreateGraphClient(accessToken, retryCount, delay);
-
-                // Prepare the group resource object
-                var newGroup = new Microsoft.Graph.Group
+                // Use a synchronous model to invoke the asynchronous process
+                result = Task.Run(async () =>
                 {
-                    DisplayName = displayName,
-                    Description = description,
-                    MailNickname = mailNickname,
-                    MailEnabled = true,
-                    SecurityEnabled = false,
-                    Visibility = isPrivate == true ? "Private" : "Public",
-                    GroupTypes = new List<string> { "Unified" },
-                };
+                    var group = new UnifiedGroupEntity();
 
-                Microsoft.Graph.Group addedGroup = null;
-                String modernSiteUrl = null;
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
-                // Add the group to the collection of groups (if it does not exist
-                if (addedGroup == null)
-                {
-                    addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
-
-                    if (addedGroup != null)
+                    // Prepare the group resource object
+                    var newGroup = new Microsoft.Graph.Group
                     {
-                        group.DisplayName = addedGroup.DisplayName;
-                        group.Description = addedGroup.Description;
-                        group.GroupId = addedGroup.Id;
-                        group.Mail = addedGroup.Mail;
-                        group.MailNickname = addedGroup.MailNickname;
+                        DisplayName = displayName,
+                        Description = description,
+                        MailNickname = mailNickname,
+                        MailEnabled = true,
+                        SecurityEnabled = false,
+                        Visibility = isPrivate == true ? "Private" : "Public",
+                        GroupTypes = new List<string> { "Unified" },
+                    };
 
-                        int imageRetryCount = retryCount;
+                    Microsoft.Graph.Group addedGroup = null;
+                    String modernSiteUrl = null;
 
-                        if (groupLogo != null)
+                    // Add the group to the collection of groups (if it does not exist
+                    if (addedGroup == null)
+                    {
+                        addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
+
+                        if (addedGroup != null)
                         {
-                            using (var memGroupLogo = new MemoryStream())
+                            group.DisplayName = addedGroup.DisplayName;
+                            group.Description = addedGroup.Description;
+                            group.GroupId = addedGroup.Id;
+                            group.Mail = addedGroup.Mail;
+                            group.MailNickname = addedGroup.MailNickname;
+
+                            int imageRetryCount = retryCount;
+
+                            if (groupLogo != null)
                             {
-                                groupLogo.CopyTo(memGroupLogo);
-
-                                while (imageRetryCount > 0)
+                                using (var memGroupLogo = new MemoryStream())
                                 {
-                                    bool groupLogoUpdated = false;
-                                    memGroupLogo.Position = 0;
+                                    groupLogo.CopyTo(memGroupLogo);
 
-                                    using (var tempGroupLogo = new MemoryStream())
+                                    while (imageRetryCount > 0)
                                     {
-                                        memGroupLogo.CopyTo(tempGroupLogo);
-                                        tempGroupLogo.Position = 0;
-                                        
-                                        try
+                                        bool groupLogoUpdated = false;
+                                        memGroupLogo.Position = 0;
+
+                                        using (var tempGroupLogo = new MemoryStream())
                                         {
-                                            groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id,
-                                                accessToken, groupLogo: tempGroupLogo);
+                                            memGroupLogo.CopyTo(tempGroupLogo);
+                                            tempGroupLogo.Position = 0;
+
+                                            try
+                                            {
+                                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id,
+                                                    accessToken, groupLogo: tempGroupLogo);
+                                            }
+                                            catch
+                                            {
+                                                // Skip any exception and simply retry
+                                            }
                                         }
-                                        catch
+
+                                        // In case of failure retry up to 10 times, with 500ms delay in between
+                                        if (!groupLogoUpdated)
                                         {
-                                            // Skip any exception and simply retry
+                                            // Pop up the delay for the group image
+                                            await Task.Delay(delay * (retryCount - imageRetryCount));
+                                            imageRetryCount--;
+                                        }
+                                        else
+                                        {
+                                            break;
                                         }
                                     }
+                                }
+                            }
 
-                                    // In case of failure retry up to 10 times, with 500ms delay in between
-                                    if (!groupLogoUpdated)
+                            int driveRetryCount = retryCount;
+
+                            while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
+                            {
+                                try
+                                {
+                                    modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
+                                }
+                                catch
+                                {
+                                    // Skip any exception and simply retry
+                                }
+
+                                // In case of failure retry up to 10 times, with 500ms delay in between
+                                if (String.IsNullOrEmpty(modernSiteUrl))
+                                {
+                                    await Task.Delay(delay * (retryCount - driveRetryCount));
+                                    driveRetryCount--;
+                                }
+                            }
+
+                            group.SiteUrl = modernSiteUrl;
+                        }
+                    }
+
+                    #region Handle group's owners
+
+                    if (owners != null && owners.Length > 0)
+                    {
+                        // For each and every owner
+                        foreach (var o in owners)
+                        {
+                            // Search for the user object
+                            var ownerQuery = await graphClient.Users
+                                    .Request()
+                                    .Filter($"userPrincipalName eq '{o}'")
+                                    .GetAsync();
+
+                            var owner = ownerQuery.FirstOrDefault();
+
+                            if (owner != null)
+                            {
+                                try
+                                {
+                                    // And if any, add it to the collection of group's owners
+                                    await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
+                                }
+                                catch (ServiceException ex)
+                                {
+                                    if (ex.Error.Code == "Request_BadRequest" &&
+                                        ex.Error.Message.Contains("added object references already exist"))
                                     {
-                                        // Pop up the delay for the group image
-                                        Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - imageRetryCount)));
-                                        imageRetryCount--;
+                                        // Skip any already existing owner
                                     }
                                     else
                                     {
-                                        break;
+                                        throw ex;
                                     }
                                 }
                             }
                         }
-
-                        int driveRetryCount = retryCount;
-
-                        while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
-                        {
-                            try
-                            {
-                                modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
-                            }
-                            catch
-                            {
-                                // Skip any exception and simply retry
-                            }
-
-                            // In case of failure retry up to 10 times, with 500ms delay in between
-                            if (String.IsNullOrEmpty(modernSiteUrl))
-                            {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - driveRetryCount)));
-                                driveRetryCount--;
-                            }
-                        }
-
-                        group.SiteUrl = modernSiteUrl;
                     }
-                }
 
-                #region Handle group's owners
+                    #endregion
 
-                if (owners != null && owners.Length > 0)
-                {
-                    // For each and every owner
-                    foreach (var o in owners)
+                    #region Handle group's members
+
+                    if (members != null && members.Length > 0)
                     {
-                        // Search for the user object
-                        var ownerQuery = await graphClient.Users
-                            .Request()
-                            .Filter($"userPrincipalName eq '{o}'")
-                            .GetAsync();
-
-                        var owner = ownerQuery.FirstOrDefault();
-
-                        if (owner != null)
+                        // For each and every owner
+                        foreach (var m in members)
                         {
-                            try
+                            // Search for the user object
+                            var memberQuery = await graphClient.Users
+                                    .Request()
+                                    .Filter($"userPrincipalName eq '{m}'")
+                                    .GetAsync();
+
+                            var member = memberQuery.FirstOrDefault();
+
+                            if (member != null)
                             {
-                                // And if any, add it to the collection of group's owners
-                                await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
-                            }
-                            catch (ServiceException ex)
-                            {
-                                if (ex.Error.Code == "Request_BadRequest" &&
-                                    ex.Error.Message.Contains("added object references already exist"))
+                                try
                                 {
-                                    // Skip any already existing owner
+                                    // And if any, add it to the collection of group's owners
+                                    await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
                                 }
-                                else
+                                catch (ServiceException ex)
                                 {
-                                    throw ex;
+                                    if (ex.Error.Code == "Request_BadRequest" &&
+                                        ex.Error.Message.Contains("added object references already exist"))
+                                    {
+                                        // Skip any already existing member
+                                    }
+                                    else
+                                    {
+                                        throw ex;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                #endregion
+                    #endregion
 
-                #region Handle group's members
+                    return (group);
 
-                if (members != null && members.Length > 0)
-                {
-                    // For each and every owner
-                    foreach (var m in members)
-                    {
-                        // Search for the user object
-                        var memberQuery = await graphClient.Users
-                            .Request()
-                            .Filter($"userPrincipalName eq '{m}'")
-                            .GetAsync();
-
-                        var member = memberQuery.FirstOrDefault();
-
-                        if (member != null)
-                        {
-                            try
-                            {
-                                // And if any, add it to the collection of group's owners
-                                await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
-                            }
-                            catch (ServiceException ex)
-                            {
-                                if (ex.Error.Code == "Request_BadRequest" &&
-                                    ex.Error.Message.Contains("added object references already exist"))
-                                {
-                                    // Skip any already existing member
-                                }
-                                else
-                                {
-                                    throw ex;
-                                }
-                            }
-                        }
-                    }
-                }
-
-                #endregion
-
-                return (group);
-
-            }).GetAwaiter().GetResult();
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
 
             return (result);
         }
