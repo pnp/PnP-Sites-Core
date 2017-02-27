@@ -90,6 +90,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             var isDirty = false;
+            var reOrderFields = false;
+
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
                 scope.LogPropertyUpdate("Hidden");
@@ -135,14 +137,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isDirty = true;
             }
 
-            // make sure fields are in the correct order
-            var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
-            var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
-            if (!existingFieldNames.SequenceEqual(ctFieldNames))
-            {
-                existingContentType.FieldLinks.Reorder(ctFieldNames);
-                isDirty = true;
-            }
 
             if (!isNoScriptSite)
             {
@@ -193,15 +187,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Update(true);
                 web.Context.ExecuteQueryRetry();
             }
+
+            // Set flag to reorder fields CT fields are not equal to template fields
+            var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
+            var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
+            reOrderFields = !existingFieldNames.SequenceEqual(ctFieldNames);
+
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
             var targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
-            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
+            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();                      
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
             if (fieldsNotPresentInTarget.Any())
             {
+                // Set flag to reorder fields when new fields are added.
+                reOrderFields = true;
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
@@ -209,22 +211,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
-
-                // reload content type fields
-                web.Context.Load(existingContentType, ct => ct.FieldLinks);
-                web.Context.ExecuteQueryRetry();
-
-                // make sure fields are in the correct order
-                existingFieldNames = existingContentType.FieldLinks.Select(fld => fld.Name).ToArray();
-
-                if (!existingFieldNames.SequenceEqual(ctFieldNames))
-                {
-                    existingContentType.FieldLinks.Reorder(ctFieldNames);
-                    isDirty = true;
-                }
             }
 
-            isDirty = false;
+            // Reorder fields
+            if (reOrderFields)
+            {
+                existingContentType.FieldLinks.Reorder(ctFieldNames);
+                isDirty = true;
+            }
+
             foreach (var fieldId in targetIds.Intersect(sourceIds))
             {
                 var fieldLink = existingContentType.FieldLinks.FirstOrDefault(fl => fl.Id == fieldId);
