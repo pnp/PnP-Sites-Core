@@ -601,7 +601,14 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                             if (includeSite)
                             {
-                                group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                try
+                                {
+                                    group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                }
+                                catch (ServiceException e)
+                                {
+                                    group.SiteUrl = e.Error.Message;
+                                }
                             }
 
                             groups.Add(group);
@@ -620,7 +627,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 }
 
                 return (groups);
-
             }).GetAwaiter().GetResult();
 
             return (result);
