@@ -66,7 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 System.Reflection.BindingFlags.Instance |
                 System.Reflection.BindingFlags.Public);
 
-            // Normalize the keys of the resolvers, if any
+            // Normalize the keys of the resolvers, if any, just in case (maybe this step can be removed)
             if (null != resolvers)
             {
                 resolvers = resolvers.ToDictionary(i => i.Key.ToUpper(), i => i.Value);
@@ -77,34 +77,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             foreach (var dp in destinationProperties.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
                         (p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name || recursive) &&
-                        p.PropertyType.BaseType.Name != typeof(BaseModel).Name && // TODO: Think about this rule ...
-                        (!p.PropertyType.IsArray || recursive) &&
-                        !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)))) // TODO: Think about this rule ...
+                        // p.PropertyType.BaseType.Name != typeof(BaseModel).Name && // TODO: Think about this rule ...
+                        (!p.PropertyType.IsArray || recursive) // &&
+                        // !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)
+                        ))) // TODO: Think about this rule ...
             {
+                // Let's try to see if we have a custom resolver for the current property
+                var resolverKey = $"{dp.DeclaringType.FullName}.{dp.Name}".ToUpper();
+                var resolver = resolvers != null && resolvers.ContainsKey(resolverKey) ? resolvers[resolverKey] : null;
+
                 // Search for the matching source property
                 var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (sp != null)
+                if (null != sp || null != resolver)
                 {
-                    // Let's try to see if we have a custom resolver for the current property
-                    var resolverKey = dp.Name.ToUpper();
-                    var resolver = resolvers != null && resolvers.ContainsKey(resolverKey) ? resolvers[resolverKey] : null;
-
                     if (null != resolver)
                     {
                         if (resolver is IValueResolver)
                         {
                             // We have a resolver, thus we use it to resolve the input value
                             dp.SetValue(destination, ((IValueResolver)resolver)
-                                .Resolve(source, destination, sp.GetValue(source)));
+                                .Resolve(source, destination, sp?.GetValue(source)));
                         }
                         else if (resolver is ITypeResolver)
                         {
                             // We have a resolver, thus we use it to resolve the input value
                             dp.SetValue(destination, ((ITypeResolver)resolver)
-                                .Resolve(source));
+                                .Resolve(source, resolvers, recursive));
                         }
                     }
-                    else
+                    else if (null != sp)
                     {
                         try
                         {
@@ -119,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     var resolvedCollection =
                                         PnPObjectsMapper.MapObjects(sp.GetValue(source),
                                         new CollectionFromSchemaToModelTypeResolver(
-                                            dp.PropertyType.BaseType.GenericTypeArguments[0]), null, recursive);
+                                            dp.PropertyType.BaseType.GenericTypeArguments[0]), resolvers, recursive);
 
                                     destinationCollection.GetType().GetMethod("AddRange",
                                         System.Reflection.BindingFlags.Instance |
@@ -215,7 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 foreach (var re in resolverExpressions.Keys)
                 {
                     var propertySelector = re.Body as MemberExpression ?? ((UnaryExpression)re.Body).Operand as MemberExpression;
-                    resolvers.Add(propertySelector.Member.Name, resolverExpressions[re]);
+                    resolvers.Add($"{propertySelector.Member.DeclaringType.FullName}.{propertySelector.Member.Name}".ToUpper(), resolverExpressions[re]);
                 }
             }
 

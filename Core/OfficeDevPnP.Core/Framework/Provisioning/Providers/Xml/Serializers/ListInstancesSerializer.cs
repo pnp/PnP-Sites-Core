@@ -26,8 +26,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             var expressions = new Dictionary<Expression<Func<ListInstance, Object>>, IResolver>();
 
-            // Define custom resolver for DataRows
-            expressions.Add(l => l.DataRows, new ListInstanceDataRowsFromSchemaToModelTypeResolver());
+            // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
+            expressions.Add(l => l.FieldRefs[0].Id, new FromStringToGuidValueResolver());
+
+            // Define custom resolvers for DataRows Values and Security
+            var dataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var dataRowValueType = Type.GetType(dataRowValueTypeName, true);
+            var dataRowValueKeySelector = CreateSelectorLambda(dataRowValueType, "FieldName");
+            var dataRowValueValueSelector = CreateSelectorLambda(dataRowValueType, "Value");
+            expressions.Add(l => l.DataRows[0].Values,
+                new FromArrayToDictionaryValueResolver<String, String>(
+                    dataRowValueType, dataRowValueKeySelector, dataRowValueValueSelector));
+
+            expressions.Add(l => l.DataRows[0].Security, new SecurityFromSchemaToModelTypeResolver());
 
             // Define custom resolver for Fields Defaults
             var fieldDefaultTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FieldDefault, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -38,7 +49,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 new FromArrayToDictionaryValueResolver<String, String>(
                     fieldDefaultType, fieldDefaultKeySelector, fieldDefaultValueSelector));
 
-            // TODO: Define custom resolver for Security
+            // Define custom resolver for Security
+            expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
             // TODO: Define custom resolver for UserCustomActions
 

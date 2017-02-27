@@ -88,12 +88,26 @@
               <pnp:DataValue FieldName="Field02">Value01-02</pnp:DataValue>
               <pnp:DataValue FieldName="Field03">Value01-03</pnp:DataValue>
               <pnp:DataValue FieldName="Field04">Value01-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
             </pnp:DataRow>
             <pnp:DataRow>
               <pnp:DataValue FieldName="Field01">Value02-01</pnp:DataValue>
               <pnp:DataValue FieldName="Field02">Value02-02</pnp:DataValue>
               <pnp:DataValue FieldName="Field03">Value02-03</pnp:DataValue>
               <pnp:DataValue FieldName="Field04">Value02-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance ClearSubscopes="false" CopyRoleAssignments="false">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
             </pnp:DataRow>
             <pnp:DataRow>
               <pnp:DataValue FieldName="Field01">Value03-01</pnp:DataValue>
@@ -138,6 +152,33 @@
               </Query>
             </View>
           </pnp:Views>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Name="ProjectID" DisplayName="Project ID" Hidden="false" Required="true" />
+            <pnp:FieldRef ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Name="ProjectName" DisplayName="Project Name" Hidden="true" Required="false" />
+            <pnp:FieldRef ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Name="ProjectManager" DisplayName="Project Manager" Hidden="false" Required="true" />
+          </pnp:FieldRefs>
+          <pnp:Folders>
+            <pnp:Folder Name="Folder01">
+              <pnp:Folder Name="Folder01.01">
+                <pnp:Security>
+                  <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+                    <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                    <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                    <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                  </pnp:BreakRoleInheritance>
+                </pnp:Security>
+              </pnp:Folder>
+              <pnp:Folder Name="Folder01.02" />
+            </pnp:Folder>
+            <pnp:Folder Name="Folder02" />
+          </pnp:Folders>
         </pnp:ListInstance>
       </pnp:Lists>
       <pnp:Features>

@@ -38,6 +38,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         {
             var result = new Dictionary<TKey, TValue>();
 
+            if (null == sourceValue && null != source)
+            {
+                // If we don't have the source value, but we have the source object
+                // we try to retrieve the source value from the source object
+                sourceValue = source.GetType().GetProperties().FirstOrDefault(sp => sp.PropertyType.IsArray &&
+                    sp.PropertyType.GetElementType().FullName == _sourceArrayItemType.FullName)?.GetValue(source);
+            }
+
             if (null != sourceValue)
             {
                 foreach (var l in (IEnumerable)sourceValue)
