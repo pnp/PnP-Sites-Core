@@ -75,8 +75,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                UpdateContentType(web, existingCT, ct, parser, scope, isNoScriptSite);
+                                // We can't update a sealed content type unless we change sealed to false
+                                if (!existingCT.Sealed || !ct.Sealed)
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                                    UpdateContentType(web, existingCT, ct, parser, scope);
+                                }
                             }
                         }
                     }
