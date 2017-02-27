@@ -507,6 +507,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Graph call returned the following error: {0}..
+        /// </summary>
+        internal static string GraphExtensions_ErrorOccured {
+            get {
+                return ResourceManager.GetString("GraphExtensions_ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The group logo file does not exist..
         /// </summary>
         internal static string GraphExtensions_GroupLogoFileDoesNotExist {
@@ -2076,22 +2085,27 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /* PnP SharePoint - Responsiveness */
+        ///   Looks up a localized string similar to /**
+        /// * PnP SharePoint - Responsiveness
+        /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
+        /// * @see {@link http://usejsdoc.org/|JSDoc}
+        /// */
         ///
-        ///var PnPResponsiveApp = PnPResponsiveApp || {};
+        ////*
+        /// * PnPResponsiveApp
+        /// * @namespace
+        /// */
+        ///if (window.hasOwnProperty(&apos;Type&apos;)) {
+        ///    Type.registerNamespace(&apos;PnPResponsiveApp&apos;);
+        ///} else {
+        ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
+        ///}
         ///
-        ///PnPResponsiveApp.responsivizeSettings = function () {
-        ///    // return if no longer on Settings page
-        ///    if (window.location.href.indexOf(&apos;/settings.aspx&apos;) &lt; 0) return;
-        ///
-        ///    // find the Settings root element, or wait if not available yet
-        ///    var settingsRoot = $(&quot;.ms-siteSettings-root&quot;);
-        ///    if (!settingsRoot.length) {
-        ///        setTimeout(PnPResponsiveApp.responsivizeSettings, 100);
-        ///        return;
-        ///    }
-        ///
-        ///    $ [rest of string was truncated]&quot;;.
+        ////**
+        /// * PnP Responsive
+        /// * @class
+        /// */
+        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2113,7 +2127,7 @@ namespace OfficeDevPnP.Core {
         ///}
         ///
         ///#contentBox {
-        ///	min-width: auto;
+        ///    min-width: auto;
         ///}
         ///
         ////* Make sure dialog windows don&apos;t break */
@@ -2127,7 +2141,7 @@ namespace OfficeDevPnP.Core {
         ///
         ///.ms-dialog #s4-bodyContainer {
         ///    min-width: 0;
-        ///    f [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI_CSS {
             get {
