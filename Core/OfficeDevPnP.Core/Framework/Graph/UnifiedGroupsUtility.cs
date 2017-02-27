@@ -321,12 +321,85 @@ namespace OfficeDevPnP.Core.Framework.Graph
             return (result);
         }
 
+        private static async Task AddMembers(string[] members, GraphServiceClient graphClient, Group addedGroup)
+        {
+            foreach (var m in members)
+            {
+                // Search for the user object
+                var memberQuery = await graphClient.Users
+                    .Request()
+                    .Filter($"userPrincipalName eq '{m}'")
+                    .GetAsync();
+
+                var member = memberQuery.FirstOrDefault();
+
+                if (member != null)
+                {
+                    try
+                    {
+                        // And if any, add it to the collection of group's owners
+                        await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
+                    }
+                    catch (ServiceException ex)
+                    {
+                        if (ex.Error.Code == "Request_BadRequest" &&
+                            ex.Error.Message.Contains("added object references already exist"))
+                        {
+                            // Skip any already existing member
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
+                }
+            }
+        }
+
+        private static async Task AddOwners(string[] owners, GraphServiceClient graphClient, Group addedGroup)
+        {
+            foreach (var o in owners)
+            {
+                // Search for the user object
+                var ownerQuery = await graphClient.Users
+                    .Request()
+                    .Filter($"userPrincipalName eq '{o}'")
+                    .GetAsync();
+
+                var owner = ownerQuery.FirstOrDefault();
+
+                if (owner != null)
+                {
+                    try
+                    {
+                        // And if any, add it to the collection of group's owners
+                        await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
+                    }
+                    catch (ServiceException ex)
+                    {
+                        if (ex.Error.Code == "Request_BadRequest" &&
+                            ex.Error.Message.Contains("added object references already exist"))
+                        {
+                            // Skip any already existing owner
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Updates the logo of an Office 365 Group
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="displayName">The Display Name for the Office 365 Group</param>
         /// <param name="description">The Description for the Office 365 Group</param>
+        /// <param name="owners">A list of UPNs for group owners, if any, to be added to the site</param>
+        /// <param name="members">A list of UPNs for group members, if any, to be added to the site</param>
+        /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
@@ -334,7 +407,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <returns>Declares whether the Office 365 Group has been updated or not</returns>
         public static bool UpdateUnifiedGroup(string groupId,
             string accessToken, int retryCount = 10, int delay = 500,
-            string displayName = null, string description = null, Stream groupLogo = null)
+            string displayName = null, string description = null, string[] owners = null, string[] members = null,
+            Stream groupLogo = null, bool isPrivate = false)
         {
             // Use a synchronous model to invoke the asynchronous process
             var result = Task.Run(async () =>
@@ -361,6 +435,30 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 if (!String.IsNullOrEmpty(description) && groupToUpdate.Description != description)
                 {
                     groupToUpdate.Description = description;
+                    updateGroup = true;
+                }
+
+                // Check if visibility has changed for the Group
+                bool existingIsPrivate = groupToUpdate.Visibility == "Private";
+                if (existingIsPrivate != isPrivate)
+                {
+                    groupToUpdate.Visibility = isPrivate == true ? "Private" : "Public";
+                    updateGroup = true;
+                }
+
+                // Check if we are to add owners
+                if (owners != null && owners.Length > 0)
+                {
+                    // For each and every owner
+                    await AddOwners(owners, graphClient, groupToUpdate);
+                    updateGroup = true;
+                }
+
+                // Check if we are to add members
+                if (members != null && members.Length > 0)
+                {
+                    // For each and every owner
+                    await AddMembers(members, graphClient, groupToUpdate);
                     updateGroup = true;
                 }
 
