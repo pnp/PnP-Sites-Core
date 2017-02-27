@@ -325,7 +325,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
-        /// Updates the logo of an Office 365 Group
+        /// Updates the logo, members or visibility state of an Office 365 Group
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="displayName">The Display Name for the Office 365 Group</param>
