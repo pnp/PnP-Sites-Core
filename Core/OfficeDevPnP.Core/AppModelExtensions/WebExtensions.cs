@@ -659,7 +659,7 @@ namespace Microsoft.SharePoint.Client
             int totalRows = 0;
 
             keywordQuery.QueryText = keywordQueryValue;
-            keywordQuery.RowLimit = 4;
+            keywordQuery.RowLimit = 500;
             // keywordQuery.StartRow = startRow;
             keywordQuery.SelectProperties.Add("Title");
             keywordQuery.SelectProperties.Add("SPSiteUrl");
