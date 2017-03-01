@@ -15,6 +15,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Utilities;
+using Microsoft.SharePoint.Client.WebParts;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -549,8 +550,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         createdView.JSLink = jslink;
                         createdView.Update();
+                        createdView.EnsureProperty(v => v.ServerRelativeUrl);
+                        ListExtensions.SetJSLinkCustomizations(createdList, createdView.ServerRelativeUrl , jslink);
+
+
                     }
                 }
+                
 
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
@@ -573,6 +579,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw;
             }
         }
+
+        
+
 
         private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef)
         {

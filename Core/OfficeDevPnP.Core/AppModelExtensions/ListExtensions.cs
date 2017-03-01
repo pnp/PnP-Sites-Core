@@ -604,6 +604,32 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Sets JS link customization for a list view page
+        /// </summary>
+        /// <param name="list">SharePoint list</param>
+        /// <param name="serverRelativeUrl">url of the view page</param>
+        /// <param name="jslink">JSLink to set to the form. Set to empty string to remove the set JSLink customization.
+        /// Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+        /// </param>
+        public static void SetJSLinkCustomizations(this List list, string serverRelativeUrl, string jslink)
+        {
+
+            var file = list.ParentWeb.GetFileByServerRelativeUrl(serverRelativeUrl);
+            var wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
+            list.Context.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title));
+            list.Context.ExecuteQueryRetry();
+
+            // Set the JS link for all web parts
+            foreach (var wpd in wpm.WebParts)
+            {
+                var wp = wpd.WebPart;
+                wp.Properties["JSLink"] = jslink;
+                wpd.SaveWebPartChanges();
+
+                list.Context.ExecuteQueryRetry();
+            }
+        }
 
 
 #if !ONPREMISES
