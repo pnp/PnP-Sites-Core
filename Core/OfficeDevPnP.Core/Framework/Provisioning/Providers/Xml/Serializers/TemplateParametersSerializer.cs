@@ -18,19 +18,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            var preferences = persistence.GetType().GetProperty("Preferences",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public).GetValue(persistence);
+            var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
             
             if (preferences != null)
             {
-                var parameters = preferences.GetType().GetProperty("Parameters",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public).GetValue(preferences);
+                var parameters = preferences.GetPublicInstancePropertyValue("Parameters");
 
                 if (parameters != null)
                 {
-                    template.GetType().GetProperty("Parameters")
+                    template.GetPublicInstanceProperty("Parameters")
                         .SetValue(template, PnPObjectsMapper.MapObjects(parameters,
                                 new TemplateParameterFromSchemaToModelTypeResolver())
                                 as Dictionary<String, String>);
@@ -40,18 +36,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var preferences = persistence.GetType().GetProperty("Preferences",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public).GetValue(persistence);
+            var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
 
             if (preferences != null)
             {
                 var parametersTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PreferencesParameter, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var parametersType = Type.GetType(parametersTypeName, true);
 
-                preferences.GetType().GetProperty("Parameters",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public).SetValue(
+                preferences.GetPublicInstanceProperty("Parameters")
+                    .SetValue(
                         preferences,
                         PnPObjectsMapper.MapObjects(template.Parameters,
                             new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));

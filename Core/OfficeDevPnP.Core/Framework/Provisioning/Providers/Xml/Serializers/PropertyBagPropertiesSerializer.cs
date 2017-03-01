@@ -18,10 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            var properties = persistence.GetType().GetProperty("PropertyBagEntries",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).GetValue(persistence);
+            var properties = persistence.GetPublicInstancePropertyValue("PropertyBagEntries");
 
             template.PropertyBagEntries.AddRange(
                 PnPObjectsMapper.MapObjects(properties,
@@ -34,10 +31,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var propertyBagTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PropertyBagEntry, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var propertyBagType = Type.GetType(propertyBagTypeName, true);
 
-            persistence.GetType().GetProperty("PropertyBagEntries",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).SetValue(
+            persistence.GetPublicInstanceProperty("PropertyBagEntries")
+                .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.PropertyBagEntries,
                         new CollectionFromModelToSchemaTypeResolver(propertyBagType)));

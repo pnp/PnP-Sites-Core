@@ -130,7 +130,11 @@
                               ScriptSrc="script.js"
                               Url="http://somewhere.com/"
                               Rights="Contribute"
-                              Title="Sample Action" />
+                              Title="Sample Action">
+              <pnp:CommandUIExtension>
+                <!-- Whatever you like here -->
+              </pnp:CommandUIExtension>
+            </pnp:CustomAction>
           </pnp:UserCustomActions>
           <pnp:Views>
             <View DisplayName="View One">

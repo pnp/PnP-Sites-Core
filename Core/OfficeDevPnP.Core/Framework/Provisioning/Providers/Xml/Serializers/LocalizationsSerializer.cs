@@ -18,10 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            var localizations = persistence.GetType().GetProperty("Localizations",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).GetValue(persistence);
+            var localizations = persistence.GetPublicInstancePropertyValue("Localizations");
 
             if (localizations != null)
             {
@@ -37,10 +34,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var localizationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.LocalizationsLocalization, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var localizationType = Type.GetType(localizationTypeName, true);
 
-            persistence.GetType().GetProperty("Localizations",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).SetValue(
+            persistence.GetPublicInstanceProperty("Localizations")
+                .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.Localizations,
                         new CollectionFromModelToSchemaTypeResolver(localizationType)));

@@ -19,10 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            var lists = persistence.GetType().GetProperty("Lists",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).GetValue(persistence);
+            var lists = persistence.GetPublicInstancePropertyValue("Lists");
 
             var expressions = new Dictionary<Expression<Func<ListInstance, Object>>, IResolver>();
 
@@ -52,9 +49,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             // Define custom resolver for Security
             expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
-            // TODO: Define custom resolver for UserCustomActions
+            // TODO: Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
 
-            // TODO: Define custom resolver for Views (XML based)
+            // TODO: Define custom resolver for Views (XML Any)
+
+            // TODO: Define custom resolver for recursive Folders
 
             template.Lists.AddRange(
                 PnPObjectsMapper.MapObjects<ListInstance>(lists,
@@ -71,10 +70,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             // TODO: Define the way back for the non-standard properties defined in the Deserialize method
 
-            persistence.GetType().GetProperty("Lists",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.IgnoreCase |
-                System.Reflection.BindingFlags.Public).SetValue(
+            persistence.GetPublicInstanceProperty("Lists")
+                .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.Lists,
                         new CollectionFromModelToSchemaTypeResolver(listInstanceType), recursive: true));

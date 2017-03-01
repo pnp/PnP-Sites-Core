@@ -1,6 +1,8 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,19 +17,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, Dictionary<string, IResolver> resolvers = null, bool recursive = false)
         {
+            var result = new ObjectSecurity();
+
             // Use Reflection to get the Security property
-            var security = source?.GetType()?.GetProperty("Security",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase)?
-                .GetValue(source);
+            var security = source.GetPublicInstancePropertyValue("Security");
 
             if (null != security)
             {
-                // TODO: Implement
+                var breakRoleInheritance = security.GetPublicInstancePropertyValue("BreakRoleInheritance");
+
+                if (null != breakRoleInheritance)
+                {
+                    var copyRoleAssignments = breakRoleInheritance.GetPublicInstancePropertyValue("CopyRoleAssignments");
+                    if (null != copyRoleAssignments)
+                    {
+                        result.CopyRoleAssignments = (Boolean)copyRoleAssignments;
+                    }
+
+                    var clearSubscopes = breakRoleInheritance.GetPublicInstancePropertyValue("ClearSubscopes");
+                    if (null != clearSubscopes)
+                    {
+                        result.ClearSubscopes = (Boolean)clearSubscopes;
+                    }
+
+                    var roleAssignments = breakRoleInheritance.GetPublicInstancePropertyValue("RoleAssignment");
+                    result.RoleAssignments.AddRange(
+                        PnPObjectsMapper.MapObjects<ListInstance>(roleAssignments,
+                                new CollectionFromSchemaToModelTypeResolver(typeof(RoleAssignment)),
+                                null,
+                                recursive: true)
+                                as IEnumerable<RoleAssignment>);                    
+                }
             }
 
-            return (null);
+            return (result);
         }
     }
 }
