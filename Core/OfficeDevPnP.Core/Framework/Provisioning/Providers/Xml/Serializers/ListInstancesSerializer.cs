@@ -50,6 +50,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
             // TODO: Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
+            expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, 
+                new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
 
             // TODO: Define custom resolver for Views (XML Any)
 

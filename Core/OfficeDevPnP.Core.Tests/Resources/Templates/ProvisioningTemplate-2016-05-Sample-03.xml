@@ -132,7 +132,9 @@
                               Rights="Contribute"
                               Title="Sample Action">
               <pnp:CommandUIExtension>
-                <!-- Whatever you like here -->
+                <customElement>
+                  <!-- Whatever you like here -->
+                </customElement>
               </pnp:CommandUIExtension>
             </pnp:CustomAction>
           </pnp:UserCustomActions>
