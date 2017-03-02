@@ -1326,6 +1326,22 @@ namespace Microsoft.SharePoint.Client
                                     };
                                     existingValues.Add(defaultColumnTextValue);
                                 }
+                                else if (field.FieldTypeKind == FieldType.User)
+                                {
+                                    var textValue = defaultValue.Value;
+                                    if (!textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                        Text = textValue
+                                    };
+                                    existingValues.Add(defaultColumnTextValue);
+                                }
                                 else
                                 {
                                     var termsIdentifier = defaultValue.Value;
