@@ -45,6 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
                 web.Context.Load(memberGroup, o => o.Title, o => o.Users);
                 web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+                web.Context.Load(web.SiteUsers);
 
                 web.Context.ExecuteQueryRetry();
 
@@ -251,7 +252,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var parsedUser = parser.ParseString(roleAssignment.Principal);
                                     try
                                     {
-                                        principal = web.EnsureUser(parsedUser);
+                                        if (parsedUser.Contains("#ext#"))
+                                        {
+                                            principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
+
+                                            if (principal == null)
+                                                scope.LogInfo($"Skipping external user {parsedUser}");
+                                        }
+                                        else
+                                        {
+                                            principal = web.EnsureUser(parsedUser);
+                                            web.Context.ExecuteQueryRetry();
+                                        }
                                     }
                                     catch (Exception ex)
                                     {
@@ -290,14 +302,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var parsedUserName = parser.ParseString(user.Name);
                         scope.LogDebug("Adding user {0}", parsedUserName);
 
-                        try
+                        if (parsedUserName.Contains("#ext#"))
                         {
-                            var existingUser = web.EnsureUser(parsedUserName);
-                            group.Users.AddUser(existingUser);
+                            var externalUser = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUserName));
+
+                            if (externalUser == null)
+                                scope.LogInfo($"Skipping external user {parsedUserName}");
+                            else
+                                group.Users.AddUser(externalUser);
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
+                            try
+                            {
+                                var existingUser = web.EnsureUser(parsedUserName);
+                                web.Context.ExecuteQueryRetry();
+
+                                group.Users.AddUser(existingUser);
+                            }
+                            catch (Exception ex)
+                            {
+                                scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
+                            }
                         }
                     }
                     web.Context.ExecuteQueryRetry();
