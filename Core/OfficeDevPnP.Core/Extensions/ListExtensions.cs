@@ -1409,7 +1409,6 @@ namespace Microsoft.SharePoint.Client
                             {
                                 var fieldName = defaultValue.Attribute("FieldName").Value;
                                 var textValue = defaultValue.Value;
-                                //var fieldSetting = new Tuple<string, string, string>(href, fieldName, textValue);
                                 var fieldSetting = new Dictionary<string, string>
                                 {
                                     ["Path"] = href,
