@@ -1490,6 +1490,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating list {0} with FieldRef {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Folder &apos;{0}&apos; already exists in parent folder &apos;{1}&apos;..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists {

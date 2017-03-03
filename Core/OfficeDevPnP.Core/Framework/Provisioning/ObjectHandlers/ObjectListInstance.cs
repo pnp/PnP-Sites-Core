@@ -142,6 +142,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             currentListIndex = 0;
                             foreach (var fieldRef in listInfo.TemplateList.FieldRefs)
                             {
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_, listInfo.TemplateList.Title, fieldRef.Name);
+
                                 currentListIndex++;
                                 WriteMessage($"Site Columns for list {listInfo.TemplateList.Title}|{fieldRef.Name}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
                                 var field = rootWeb.GetFieldById(fieldRef.Id);

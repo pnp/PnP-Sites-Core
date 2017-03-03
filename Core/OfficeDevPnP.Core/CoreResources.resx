@@ -753,6 +753,9 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_" xml:space="preserve">
     <value>Updating list {0} failed: {1} : {2}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_" xml:space="preserve">
+    <value>Updating list {0} with FieldRef {1}</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_" xml:space="preserve">
     <value>Field schema has no ID attribute: {0}</value>
   </data>
