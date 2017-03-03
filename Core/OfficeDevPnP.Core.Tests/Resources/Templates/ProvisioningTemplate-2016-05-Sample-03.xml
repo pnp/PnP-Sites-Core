@@ -157,6 +157,14 @@
                 </Where>
               </Query>
             </View>
+            <View DisplayName="View Two">
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Title" />
+                <FieldRef Name="ProjectID" />
+                <FieldRef Name="ProjectName" />
+              </ViewFields>
+            </View>
           </pnp:Views>
           <pnp:Security>
             <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">

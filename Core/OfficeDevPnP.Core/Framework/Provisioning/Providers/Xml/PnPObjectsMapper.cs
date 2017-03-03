@@ -101,8 +101,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         else if (resolver is ITypeResolver)
                         {
                             // We have a resolver, thus we use it to resolve the input value
-                            dp.SetValue(destination, ((ITypeResolver)resolver)
-                                .Resolve(source, resolvers, recursive));
+                            if (dp.PropertyType.BaseType.Name == typeof(ProvisioningTemplateCollection<>).Name)
+                            {
+                                var destinationCollection = dp.GetValue(destination);
+                                if (destinationCollection != null)
+                                {
+                                    var resolvedCollection = ((ITypeResolver)resolver)
+                                        .Resolve(source, resolvers, recursive);
+
+                                    destinationCollection.GetType().GetMethod("AddRange",
+                                        System.Reflection.BindingFlags.Instance |
+                                        System.Reflection.BindingFlags.Public |
+                                        System.Reflection.BindingFlags.IgnoreCase)
+                                        .Invoke(destinationCollection, new Object[] { resolvedCollection });
+                                }
+                            }
+                            else
+                            {
+                                dp.SetValue(destination, ((ITypeResolver)resolver)
+                                    .Resolve(source, resolvers, recursive));
+                            }
                         }
                     }
                     else if (null != sp)

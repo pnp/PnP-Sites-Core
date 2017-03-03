@@ -49,13 +49,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             // Define custom resolver for Security
             expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
-            // TODO: Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
+            // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
             expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, 
                 new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
 
-            // TODO: Define custom resolver for Views (XML Any)
+            // Define custom resolver for Views (XML Any + RemoveExistingViews)
+            expressions.Add(l => l.Views,
+                new ListViewsFromSchemaToModelTypeResolver());
+            expressions.Add(l => l.RemoveExistingViews,
+                new RemoveExistingViewsFromSchemaToModelValueResolver());
 
-            // TODO: Define custom resolver for recursive Folders
+            // Define custom resolver for recursive Folders
+            // expressions.Add(l => l.Folders,
+            //    new FoldersFromSchemaToModelTypeResolver());
+            // expressions.Add(l => l.Folders[0].Security, new SecurityFromSchemaToModelTypeResolver());
 
             template.Lists.AddRange(
                 PnPObjectsMapper.MapObjects<ListInstance>(lists,
