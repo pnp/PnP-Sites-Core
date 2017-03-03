@@ -166,7 +166,7 @@
             #suiteBar-rwd > #suiteBar-close:after {
                 -ms-transform: translate(0px, 5px) rotate(45deg);
                 -webkit-transform: translate(0px, 5px) rotate(45deg);
-                transform: translate(0px, 5px) rotate(45eg);
+                transform: translate(0px, 5px) rotate(45deg);
                 background: #fff;
                 height: 3px;
                 width: 20px;
