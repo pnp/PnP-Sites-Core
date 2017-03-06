@@ -1315,9 +1315,16 @@ namespace Microsoft.SharePoint.Client
                                 var field = list.Fields.GetByInternalNameOrTitle(fieldName);
                                 clientContext.Load(field);
                                 clientContext.ExecuteQueryRetry();
-                                if (field.FieldTypeKind == FieldType.Text || field.FieldTypeKind == FieldType.Choice || field.FieldTypeKind == FieldType.MultiChoice)
+                                if (field.FieldTypeKind == FieldType.Text || field.FieldTypeKind == FieldType.Choice || field.FieldTypeKind == FieldType.MultiChoice || field.FieldTypeKind == FieldType.User)
                                 {
                                     var textValue = defaultValue.Value;
+
+                                    if (field.FieldTypeKind == FieldType.User && !textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+
                                     var defaultColumnTextValue = new DefaultColumnTextValue()
                                     {
                                         FieldInternalName = fieldName,
