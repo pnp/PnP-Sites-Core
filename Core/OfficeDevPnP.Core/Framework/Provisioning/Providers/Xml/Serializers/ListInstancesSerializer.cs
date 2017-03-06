@@ -60,8 +60,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 new RemoveExistingViewsFromSchemaToModelValueResolver());
 
             // Define custom resolver for recursive Folders
-            // expressions.Add(l => l.Folders,
-            //    new FoldersFromSchemaToModelTypeResolver());
+            expressions.Add(l => l.Folders,
+               new FoldersFromSchemaToModelTypeResolver());
             // expressions.Add(l => l.Folders[0].Security, new SecurityFromSchemaToModelTypeResolver());
 
             template.Lists.AddRange(
