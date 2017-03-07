@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,6 +15,7 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -1368,6 +1370,75 @@ namespace Microsoft.SharePoint.Client
                 var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
 
                 list.SetDefaultColumnValuesImplementation(termsList);
+            }
+        }
+
+        /// <summary>
+        /// <para>Gets default values for column values.</para>
+        /// <para></para>
+        /// <para>The returned list contains one dictionary per default setting per folder.</para>
+        /// <para>Each dictionary has the following keys set: Path, Field, Value</para>
+        /// <para></para>
+        /// <para>Path: Relative path to the library/folder</para>
+        /// <para>Field: Internal name of the field which has a default value</para>
+        /// <para>Value: The default value for the field</para>
+        /// </summary>
+        /// <param name="list"></param>
+        public static List<Dictionary<string, string>> GetDefaultColumnValues(this List list)
+        {
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                if (formsFolder != null)
+                {
+                    var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
+                    clientContext.Load(configFile, c => c.Exists);
+                    bool fileExists = false;
+                    try
+                    {
+                        clientContext.ExecuteQueryRetry();
+                        fileExists = true;
+                    }
+                    catch
+                    {
+                    }
+
+                    if (fileExists)
+                    {
+                        var streamResult = configFile.OpenBinaryStream();
+                        clientContext.ExecuteQueryRetry();
+                        XDocument document = XDocument.Load(streamResult.Value);
+                        var values = from a in document.Descendants("a") select a;
+
+                        var currentDefaults = new List<Dictionary<string, string>>();
+                        foreach (var value in values)
+                        {
+                            var href = value.Attribute("href").Value;
+                            href = Uri.UnescapeDataString(href);
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
+
+                            var defaultValues = from d in value.Descendants("DefaultValue") select d;
+                            foreach (var defaultValue in defaultValues)
+                            {
+                                var fieldName = defaultValue.Attribute("FieldName").Value;
+                                var textValue = defaultValue.Value;
+                                var fieldSetting = new Dictionary<string, string>
+                                {
+                                    ["Path"] = href,
+                                    ["Field"] = fieldName,
+                                    ["Value"] = textValue
+                                };
+                                currentDefaults.Add(fieldSetting);
+                            }
+                        }
+                        return currentDefaults;
+                    }
+                }
+                return null;
             }
         }
 
