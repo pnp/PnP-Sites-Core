@@ -1366,7 +1366,17 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-
+        /// <summary>
+        /// <para>Gets default values for column values.</para>
+        /// <para></para>
+        /// <para>The returned list contains one dictionary per default setting per folder.</para>
+        /// <para>Each dictionary has the following keys set: Path, Field, Value</para>
+        /// <para></para>
+        /// <para>Path: Relative path to the library/folder</para>
+        /// <para>Field: Internal name of the field which has a default value</para>
+        /// <para>Value: The default value for the field</para>
+        /// </summary>
+        /// <param name="list"></param>
         public static List<Dictionary<string, string>> GetDefaultColumnValues(this List list)
         {
             using (var clientContext = (ClientContext)list.Context)
