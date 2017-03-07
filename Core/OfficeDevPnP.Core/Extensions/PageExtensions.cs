@@ -17,6 +17,7 @@ using System.IO;
 using System.Text;
 using System.Web.Configuration;
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
+using OfficeDevPnP.Core.Pages;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -855,7 +856,35 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Adds a client side "modern" page to a "classic" or "modern" site
+        /// </summary>
+        /// <param name="web">Web to add the page to</param>
+        /// <param name="pageName">Name (e.g. demo.aspx) of the page to be added</param>
+        /// <param name="alreadyPersist">Already persist the created, empty, page before returning the instantiated <see cref="ClientSidePage"/> instance</param>
+        /// <returns>A <see cref="ClientSidePage"/> instance</returns>
+        public static ClientSidePage AddClientSidePage(this Web web, string pageName, bool alreadyPersist = false)
+        {
+            var page = new ClientSidePage(web.Context as ClientContext);
+            if (alreadyPersist)
+            {
+                page.Save(pageName);
+            }
+            return page;
+        }
 
+        /// <summary>
+        /// Loads a client side "modern" page 
+        /// </summary>
+        /// <param name="web">Web to load the page from</param>
+        /// <param name="pageName">Name (e.g. demo.aspx) of the page to be loaded</param>
+        /// <returns>A <see cref="ClientSidePage"/> instance</returns>
+        public static ClientSidePage LoadClientSidePage(this Web web, string pageName)
+        {
+            return ClientSidePage.Load((web.Context as ClientContext), pageName);
+        }
+#endif
         /// <summary>
         /// Adds a blank Wiki page to the site pages library
         /// </summary>

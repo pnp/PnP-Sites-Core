@@ -89,7 +89,7 @@ namespace Microsoft.SharePoint.Client.Tests
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }
@@ -130,7 +130,7 @@ namespace Microsoft.SharePoint.Client.Tests
                         catch (Exception ex)
                         {
                             // eat all exceptions
-                            Console.WriteLine(ex.ToDetailedString());
+                            Console.WriteLine(ex.ToDetailedString(tenant.Context));
                         }
                     }
                 }
@@ -138,7 +138,7 @@ namespace Microsoft.SharePoint.Client.Tests
             // catch exceptions with the GetSiteCollections call and log them so we can grab the corelation ID
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(tenant.Context));
                 throw;
             }
         }

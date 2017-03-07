@@ -568,6 +568,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="startIndex">Not relevant anymore</param>
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
+        /// <param name="includeOD4BSites">Also return the OD4B sites</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true, bool includeOD4BSites = false)
         {
@@ -578,15 +579,16 @@ namespace Microsoft.SharePoint.Client
             {
 
                 // approach to be used as of Feb 2017
-                //SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
-                //{
-                //    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
-                //    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
-                //    IncludeDetail = includeDetail
-                //};
-                //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
+                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                {
+                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                    IncludeDetail = includeDetail
+                };
+                props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
 
-                props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
+                // Previous approach, being replaced by GetSitePropertiesFromSharePointByFilters which also allows to fetch OD4B sites
+                //props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
 
@@ -680,6 +682,73 @@ namespace Microsoft.SharePoint.Client
                 client.CookieContainer = cookieContainer;
             }
             return client;
+        }
+        #endregion
+
+        #region ClientSide Package Deployment
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <param name="appCatalogSiteUrl">Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps) </param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy=true, bool overwrite=true)
+        {
+            if (String.IsNullOrEmpty(appCatalogSiteUrl))
+            {
+                throw new ArgumentException("Please specify a app catalog site url");
+            }
+
+            Uri catalogUri;
+            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
+            {
+                throw new ArgumentException("Please specify a valid app catalog site url");
+            }
+
+            if (String.IsNullOrEmpty(spPkgName))
+            {
+                throw new ArgumentException("Please specify a package name");
+            }
+
+            if (String.IsNullOrEmpty(spPkgPath))
+            {
+                throw new ArgumentException("Please specify a package path");
+            }
+
+            using (var appCatalogContext = tenant.Context.Clone(catalogUri))
+            {
+                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
+                if (catalog == null)
+                {
+                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
+                }
+
+                Folder rootFolder = catalog.RootFolder;
+
+                // Upload package
+                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
+                if (sppkgFile == null)
+                {
+                    throw new Exception($"Upload of {spPkgName} failed");
+                }
+
+                if (autoDeploy && System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                {
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
+                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = true;
+                    sppkgFile.ListItemAllFields.Update();
+                }
+
+                appCatalogContext.Load(sppkgFile.ListItemAllFields);
+                appCatalogContext.ExecuteQueryRetry();
+
+                return sppkgFile.ListItemAllFields;
+            }
         }
         #endregion
 

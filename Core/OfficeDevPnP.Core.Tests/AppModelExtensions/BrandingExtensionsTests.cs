@@ -294,7 +294,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 }
                 catch (Microsoft.SharePoint.Client.ServerException ex)
                 {
-                    Console.WriteLine(ex.ToDetailedString());
+                    Console.WriteLine(ex.ToDetailedString(wciCtx));
                     //retry
                     Console.WriteLine("Site creation failed. Sleeping for {0} seconds before retrying.", backoffInterval);
 

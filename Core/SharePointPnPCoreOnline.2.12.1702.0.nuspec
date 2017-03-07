@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>SharePointPnPCoreOnline</id>
-        <version>2.11.1701.1</version>
+        <version>2.12.1702.0</version>
         <title>SharePoint PnP Core library for SharePoint Online</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>
@@ -17,10 +17,11 @@
         <dependencies>
             <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
             <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
-            <dependency id="AppForSharePointOnlineWebToolkit" version="3.1.2" />
             <dependency id="WindowsAzure.Storage" version="7.0.0" />
             <dependency id="Microsoft.Azure.ActiveDirectory.GraphClient" version="2.1.0" />
-            <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6008.1200" />
+            <dependency id="SharePointPnP.IdentityModel.Extensions" version="1.2.0" />
+            <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6112.1200" />
+            <dependency id="Newtonsoft.Json" version="9.0.1" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
@@ -38,7 +39,6 @@
             <frameworkAssembly assemblyName="System.Xml" targetFramework="" />
             <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework="" />
             <frameworkAssembly assemblyName="Microsoft.IdentityModel" targetFramework="" />
-            <frameworkAssembly assemblyName="Microsoft.IdentityModel.Extensions" targetFramework="" />
         </frameworkAssemblies>
     </metadata>
     <files>

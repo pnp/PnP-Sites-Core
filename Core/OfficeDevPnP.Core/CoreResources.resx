@@ -1048,6 +1048,9 @@
   <data name="ListExtensions_SkipNoCrawlLists" xml:space="preserve">
     <value>Skipping reindexing of the list because it's marked as a 'no crawl' list.</value>
   </data>
+  <data name="ListExtensions_IncorrectValueFormat" xml:space="preserve">
+    <value>Value should be in the format of &lt;id&gt;;#&lt;value&gt; (Example 1: 1;#Foo Bar   Example 2: 1;#Foo Bar;#2;#Bar Foo)</value>
+  </data>
   <data name="WebExtensions_CreatePublishingImageRendition" xml:space="preserve">
     <value>Creating Image Rendition '{0}' of width '{1}' and height '{2}'.</value>
   </data>

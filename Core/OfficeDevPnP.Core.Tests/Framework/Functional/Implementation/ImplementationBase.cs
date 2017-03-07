@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToDetailedString());
+                Console.WriteLine(ex.ToDetailedString(cc));
                 throw;
             }
         }
