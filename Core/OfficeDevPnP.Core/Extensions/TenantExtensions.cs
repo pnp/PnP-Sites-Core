@@ -568,6 +568,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="startIndex">Not relevant anymore</param>
         /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeDetail">Option to return a limited set of data</param>
+        /// <param name="includeOD4BSites">Also return the OD4B sites</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, int endIndex = 500000, bool includeDetail = true, bool includeOD4BSites = false)
         {
@@ -578,15 +579,16 @@ namespace Microsoft.SharePoint.Client
             {
 
                 // approach to be used as of Feb 2017
-                //SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
-                //{
-                //    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
-                //    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
-                //    IncludeDetail = includeDetail
-                //};
-                //props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
+                SPOSitePropertiesEnumerableFilter filter = new SPOSitePropertiesEnumerableFilter()
+                {
+                    IncludePersonalSite = includeOD4BSites ? PersonalSiteFilter.Include : PersonalSiteFilter.UseServerDefault,
+                    StartIndex = props == null ? null : props.NextStartIndexFromSharePoint,
+                    IncludeDetail = includeDetail
+                };
+                props = tenant.GetSitePropertiesFromSharePointByFilters(filter);
 
-                props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
+                // Previous approach, being replaced by GetSitePropertiesFromSharePointByFilters which also allows to fetch OD4B sites
+                //props = tenant.GetSitePropertiesFromSharePoint(props == null ? null : props.NextStartIndexFromSharePoint, includeDetail);
                 tenant.Context.Load(props);
                 tenant.Context.ExecuteQueryRetry();
 

@@ -561,6 +561,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Value should be in the format of &lt;id&gt;;#&lt;value&gt; (Example 1: 1;#Foo Bar   Example 2: 1;#Foo Bar;#2;#Bar Foo).
+        /// </summary>
+        internal static string ListExtensions_IncorrectValueFormat {
+            get {
+                return ResourceManager.GetString("ListExtensions_IncorrectValueFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping reindexing of the list because it&apos;s marked as a &apos;no crawl&apos; list..
         /// </summary>
         internal static string ListExtensions_SkipNoCrawlLists {
