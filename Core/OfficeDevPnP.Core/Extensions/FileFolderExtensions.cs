@@ -814,29 +814,9 @@ namespace Microsoft.SharePoint.Client
             ClientResult<Stream> stream = file.OpenBinaryStream();
             clientContext.ExecuteQueryRetry();
 
-            string fileOut;
-            if (!string.IsNullOrEmpty(localFileName))
-            {
-                fileOut = Path.Combine(localPath, localFileName);
-            }
-            else
-            {
-                fileOut = Path.Combine(localPath, file.Name);
-            }
-            var doSave = false;
+            var fileOut = Path.Combine(localPath, !string.IsNullOrEmpty(localFileName) ? localFileName : file.Name);
 
-            if (fileExistsCallBack != null)
-            {
-                if (System.IO.File.Exists(fileOut))
-                {
-                    doSave = fileExistsCallBack(fileOut);
-                }
-            }
-            else
-            {
-                doSave = true;
-            }
-            if (doSave)
+            if (!System.IO.File.Exists(fileOut) || (fileExistsCallBack != null && fileExistsCallBack(fileOut)))
             {
                 using (Stream fileStream = new FileStream(fileOut, FileMode.Create))
                 {
