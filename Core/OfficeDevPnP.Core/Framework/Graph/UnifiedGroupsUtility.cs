@@ -179,8 +179,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                                             try
                                             {
-                                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id,
-                                                    accessToken, groupLogo: tempGroupLogo);
+                                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, accessToken, groupLogo: tempGroupLogo);
                                             }
                                             catch
                                             {
@@ -232,38 +231,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (owners != null && owners.Length > 0)
                     {
-                        // For each and every owner
-                        foreach (var o in owners)
-                        {
-                            // Search for the user object
-                            var ownerQuery = await graphClient.Users
-                                    .Request()
-                                    .Filter($"userPrincipalName eq '{o}'")
-                                    .GetAsync();
-
-                            var owner = ownerQuery.FirstOrDefault();
-
-                            if (owner != null)
-                            {
-                                try
-                                {
-                                    // And if any, add it to the collection of group's owners
-                                    await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
-                                }
-                                catch (ServiceException ex)
-                                {
-                                    if (ex.Error.Code == "Request_BadRequest" &&
-                                        ex.Error.Message.Contains("added object references already exist"))
-                                    {
-                                        // Skip any already existing owner
-                                    }
-                                    else
-                                    {
-                                        throw ex;
-                                    }
-                                }
-                            }
-                        }
+                        await AddOwners(owners, graphClient, addedGroup);
                     }
 
                     #endregion
@@ -272,38 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (members != null && members.Length > 0)
                     {
-                        // For each and every owner
-                        foreach (var m in members)
-                        {
-                            // Search for the user object
-                            var memberQuery = await graphClient.Users
-                                    .Request()
-                                    .Filter($"userPrincipalName eq '{m}'")
-                                    .GetAsync();
-
-                            var member = memberQuery.FirstOrDefault();
-
-                            if (member != null)
-                            {
-                                try
-                                {
-                                    // And if any, add it to the collection of group's owners
-                                    await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
-                                }
-                                catch (ServiceException ex)
-                                {
-                                    if (ex.Error.Code == "Request_BadRequest" &&
-                                        ex.Error.Message.Contains("added object references already exist"))
-                                    {
-                                        // Skip any already existing member
-                                    }
-                                    else
-                                    {
-                                        throw ex;
-                                    }
-                                }
-                            }
-                        }
+                        await AddMembers(members, graphClient, addedGroup);
                     }
 
                     #endregion
