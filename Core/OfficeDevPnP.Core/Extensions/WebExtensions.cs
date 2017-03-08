@@ -564,7 +564,7 @@ namespace Microsoft.SharePoint.Client
         /// are not returned
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <returns>All site collections - Duplicates are not being trimmed.</returns>
+        /// <returns>All site collections</returns>
         public static List<SiteEntity> SiteSearch(this Web web)
         {
             return web.SiteSearch(string.Empty);
@@ -575,7 +575,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="keywordQueryValue">Keyword query</param>
-        /// <param name="trimDuplicates">Indicates if duplicates should be trimmed or not. Defaults to false</param>
+        /// <param name="trimDuplicates">Indicates if dublicates should be trimmed or not</param>
         /// <returns>All found site collections</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDuplicates = false)
@@ -591,20 +591,22 @@ namespace Microsoft.SharePoint.Client
 
                 if (keywordQueryValue.Length == 0)
                 {
+
                     keywordQueryValue = "contentclass:\"STS_Site\"";
+
                 }
 
-                int startRow = 0;
+                //int startRow = 0;
                 int totalRows = 0;
 
-                totalRows = web.ProcessQuery(keywordQueryValue, sites, keywordQuery, startRow);
+                totalRows = web.ProcessQuery(keywordQueryValue, sites, keywordQuery);
+
 
                 if (totalRows > 0)
                 {
-                    while (totalRows >= sites.Count)
+                    while (totalRows > 0)
                     {
-                        startRow += 500;
-                        totalRows = web.ProcessQuery(keywordQueryValue, sites, keywordQuery, startRow);
+                        totalRows = web.ProcessQuery(keywordQueryValue + " AND IndexDocId >" + sites.Last().IndexDocId, sites, keywordQuery);// From the second Query get the next set (rowlimit) of search result based on IndexDocId
                     }
                 }
 
@@ -650,20 +652,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="keywordQueryValue">keyword query </param>
         /// <param name="sites">sites variable that hold the resulting sites</param>
         /// <param name="keywordQuery">KeywordQuery object</param>
-        /// <param name="startRow">Start row of the resultset to be returned</param>
+
         /// <returns>Total number of rows for the query</returns>
-        private static int ProcessQuery(this Web web, string keywordQueryValue, List<SiteEntity> sites, KeywordQuery keywordQuery, int startRow)
+        private static int ProcessQuery(this Web web, string keywordQueryValue, List<SiteEntity> sites, KeywordQuery keywordQuery)
         {
             int totalRows = 0;
 
             keywordQuery.QueryText = keywordQueryValue;
             keywordQuery.RowLimit = 500;
-            keywordQuery.StartRow = startRow;
+            // keywordQuery.StartRow = startRow;
             keywordQuery.SelectProperties.Add("Title");
             keywordQuery.SelectProperties.Add("SPSiteUrl");
             keywordQuery.SelectProperties.Add("Description");
             keywordQuery.SelectProperties.Add("WebTemplate");
-            keywordQuery.SortList.Add("SPSiteUrl", SortDirection.Ascending);
+            keywordQuery.SelectProperties.Add("IndexDocId"); // Change : Include IndexDocId property to get the IndexDocId for paging
+            keywordQuery.SortList.Add("IndexDocId", SortDirection.Ascending); // Change : Sort by IndexDocId
             SearchExecutor searchExec = new SearchExecutor(web.Context);
 
             // Important to avoid trimming "similar" site collections
@@ -686,6 +689,7 @@ namespace Microsoft.SharePoint.Client
                             Url = row["SPSiteUrl"] != null ? row["SPSiteUrl"].ToString() : "",
                             Description = row["Description"] != null ? row["Description"].ToString() : "",
                             Template = row["WebTemplate"] != null ? row["WebTemplate"].ToString() : "",
+                            IndexDocId = row["DocId"] != null ? double.Parse(row["DocId"].ToString()) : 0, // Change : Include IndexDocId in the sites List
                         });
                     }
                 }
