@@ -29,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     termStore = taxSession.GetDefaultKeywordsTermStore();
                     web.Context.Load(termStore,
+                        ts => ts.Languages,
                         ts => ts.DefaultLanguage,
                         ts => ts.Groups.Include(
                             tg => tg.Name,
@@ -370,7 +371,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var label in modelTerm.Labels)
             {
-                if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
+                if (((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false) && termStore.Languages.Contains(label.Language))
                 {
                     term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
                 }

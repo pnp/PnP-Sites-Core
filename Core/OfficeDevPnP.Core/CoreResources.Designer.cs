@@ -1163,6 +1163,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it&apos;s marked as sealed and the template is not changing the sealed value..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding custom action &apos;{0}&apos; to scope Site.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site {
@@ -1499,6 +1508,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating list {0} with FieldRef {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Folder &apos;{0}&apos; already exists in parent folder &apos;{1}&apos;..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists {
@@ -1831,7 +1849,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+        ///   Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_ {
             get {

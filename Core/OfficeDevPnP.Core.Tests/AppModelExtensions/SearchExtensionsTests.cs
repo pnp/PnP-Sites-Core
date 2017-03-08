@@ -60,5 +60,16 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsNotNull(config);
             }
         }
+
+        [TestMethod]
+        public void TestSiteSearchTest()
+        {
+            using (ClientContext clientContext = TestCommon.CreateClientContext())
+            {
+                var sites = clientContext.Web.SiteSearch();
+                Assert.IsTrue(sites.Any());
+            }           
+        }
+
     }
 }
