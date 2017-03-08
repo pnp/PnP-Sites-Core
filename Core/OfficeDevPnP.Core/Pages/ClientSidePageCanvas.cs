@@ -379,7 +379,7 @@ namespace OfficeDevPnP.Core.Pages
                 // create page listitem
                 item = pagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
-                item["ContentTypeId"] = "0x0101009D1CB255DA76424F860D91F20E6C4118";
+                item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
                 item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
                 item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
                 item["PageLayoutType"] = "Article";
