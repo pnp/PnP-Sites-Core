@@ -1063,4 +1063,7 @@
   <data name="Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration" xml:space="preserve">
     <value>The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed" xml:space="preserve">
+    <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
+  </data>
 </root>
