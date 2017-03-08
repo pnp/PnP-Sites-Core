@@ -212,6 +212,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // Set flag to reorder fields when new fields are added.
                 reOrderFields = true;
+
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
