@@ -250,24 +250,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (principal == null)
                                 {
                                     var parsedUser = parser.ParseString(roleAssignment.Principal);
-                                    try
+                                    if (parsedUser.Contains("#ext#"))
                                     {
-                                        if (parsedUser.Contains("#ext#"))
-                                        {
-                                            principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
+                                        principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
 
-                                            if (principal == null)
-                                                scope.LogInfo($"Skipping external user {parsedUser}");
+                                        if (principal == null)
+                                        {
+                                            scope.LogInfo($"Skipping external user {parsedUser}");
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        try
                                         {
                                             principal = web.EnsureUser(parsedUser);
                                             web.Context.ExecuteQueryRetry();
                                         }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
+                                        catch (Exception ex)
+                                        {
+                                            scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
+                                        }
                                     }
                                 }
 
@@ -307,9 +309,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var externalUser = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUserName));
 
                             if (externalUser == null)
+                            {
                                 scope.LogInfo($"Skipping external user {parsedUserName}");
+                            }
                             else
+                            {
                                 group.Users.AddUser(externalUser);
+                            }
                         }
                         else
                         {
@@ -317,7 +323,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 var existingUser = web.EnsureUser(parsedUserName);
                                 web.Context.ExecuteQueryRetry();
-
                                 group.Users.AddUser(existingUser);
                             }
                             catch (Exception ex)
