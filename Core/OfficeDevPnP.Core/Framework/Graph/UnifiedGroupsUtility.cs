@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Threading;
 using Microsoft.Graph;
 using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -123,133 +122,138 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw new ArgumentNullException(nameof(accessToken));
             }
 
-            // Use a synchronous model to invoke the asynchronous process
-            result = Task.Run(async () =>
+            try
             {
-                var group = new UnifiedGroupEntity();
-
-                var graphClient = CreateGraphClient(accessToken, retryCount, delay);
-
-                // Prepare the group resource object
-                var newGroup = new Microsoft.Graph.Group
+                // Use a synchronous model to invoke the asynchronous process
+                result = Task.Run(async () =>
                 {
-                    DisplayName = displayName,
-                    Description = description,
-                    MailNickname = mailNickname,
-                    MailEnabled = true,
-                    SecurityEnabled = false,
-                    Visibility = isPrivate == true ? "Private" : "Public",
-                    GroupTypes = new List<string> { "Unified" },
-                };
+                    var group = new UnifiedGroupEntity();
 
-                Microsoft.Graph.Group addedGroup = null;
-                String modernSiteUrl = null;
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
-                // Add the group to the collection of groups (if it does not exist
-                if (addedGroup == null)
-                {
-                    addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
-
-                    if (addedGroup != null)
+                    // Prepare the group resource object
+                    var newGroup = new Microsoft.Graph.Group
                     {
-                        group.DisplayName = addedGroup.DisplayName;
-                        group.Description = addedGroup.Description;
-                        group.GroupId = addedGroup.Id;
-                        group.Mail = addedGroup.Mail;
-                        group.MailNickname = addedGroup.MailNickname;
+                        DisplayName = displayName,
+                        Description = description,
+                        MailNickname = mailNickname,
+                        MailEnabled = true,
+                        SecurityEnabled = false,
+                        Visibility = isPrivate == true ? "Private" : "Public",
+                        GroupTypes = new List<string> { "Unified" },
+                    };
 
-                        int imageRetryCount = retryCount;
+                    Microsoft.Graph.Group addedGroup = null;
+                    String modernSiteUrl = null;
 
-                        if (groupLogo != null)
+                    // Add the group to the collection of groups (if it does not exist
+                    if (addedGroup == null)
+                    {
+                        addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
+
+                        if (addedGroup != null)
                         {
-                            using (var memGroupLogo = new MemoryStream())
+                            group.DisplayName = addedGroup.DisplayName;
+                            group.Description = addedGroup.Description;
+                            group.GroupId = addedGroup.Id;
+                            group.Mail = addedGroup.Mail;
+                            group.MailNickname = addedGroup.MailNickname;
+
+                            int imageRetryCount = retryCount;
+
+                            if (groupLogo != null)
                             {
-                                groupLogo.CopyTo(memGroupLogo);
-
-                                while (imageRetryCount > 0)
+                                using (var memGroupLogo = new MemoryStream())
                                 {
-                                    bool groupLogoUpdated = false;
-                                    memGroupLogo.Position = 0;
+                                    groupLogo.CopyTo(memGroupLogo);
 
-                                    using (var tempGroupLogo = new MemoryStream())
+                                    while (imageRetryCount > 0)
                                     {
-                                        memGroupLogo.CopyTo(tempGroupLogo);
-                                        tempGroupLogo.Position = 0;
+                                        bool groupLogoUpdated = false;
+                                        memGroupLogo.Position = 0;
 
-                                        try
+                                        using (var tempGroupLogo = new MemoryStream())
                                         {
-                                            groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id,
-                                                accessToken, groupLogo: tempGroupLogo);
-                                        }
-                                        catch
-                                        {
-                                            // Skip any exception and simply retry
-                                        }
-                                    }
+                                            memGroupLogo.CopyTo(tempGroupLogo);
+                                            tempGroupLogo.Position = 0;
 
-                                    // In case of failure retry up to 10 times, with 500ms delay in between
-                                    if (!groupLogoUpdated)
-                                    {
-                                        // Pop up the delay for the group image
-                                        Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - imageRetryCount)));
-                                        imageRetryCount--;
-                                    }
-                                    else
-                                    {
-                                        break;
+                                            try
+                                            {
+                                                groupLogoUpdated = UpdateUnifiedGroup(addedGroup.Id, accessToken, groupLogo: tempGroupLogo);
+                                            }
+                                            catch
+                                            {
+                                                // Skip any exception and simply retry
+                                            }
+                                        }
+
+                                        // In case of failure retry up to 10 times, with 500ms delay in between
+                                        if (!groupLogoUpdated)
+                                        {
+                                            // Pop up the delay for the group image
+                                            await Task.Delay(delay * (retryCount - imageRetryCount));
+                                            imageRetryCount--;
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
                                     }
                                 }
                             }
+
+                            int driveRetryCount = retryCount;
+
+                            while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
+                            {
+                                try
+                                {
+                                    modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
+                                }
+                                catch
+                                {
+                                    // Skip any exception and simply retry
+                                }
+
+                                // In case of failure retry up to 10 times, with 500ms delay in between
+                                if (String.IsNullOrEmpty(modernSiteUrl))
+                                {
+                                    await Task.Delay(delay * (retryCount - driveRetryCount));
+                                    driveRetryCount--;
+                                }
+                            }
+
+                            group.SiteUrl = modernSiteUrl;
                         }
-
-                        int driveRetryCount = retryCount;
-
-                        while (driveRetryCount > 0 && String.IsNullOrEmpty(modernSiteUrl))
-                        {
-                            try
-                            {
-                                modernSiteUrl = GetUnifiedGroupSiteUrl(addedGroup.Id, accessToken);
-                            }
-                            catch
-                            {
-                                // Skip any exception and simply retry
-                            }
-
-                            // In case of failure retry up to 10 times, with 500ms delay in between
-                            if (String.IsNullOrEmpty(modernSiteUrl))
-                            {
-                                Thread.Sleep(TimeSpan.FromMilliseconds(delay * (retryCount - driveRetryCount)));
-                                driveRetryCount--;
-                            }
-                        }
-
-                        group.SiteUrl = modernSiteUrl;
                     }
-                }
 
-                #region Handle group's owners
+                    #region Handle group's owners
 
-                if (owners != null && owners.Length > 0)
-                {
-                    // For each and every owner
-                    await AddOwners(owners, graphClient, addedGroup);
-                }
+                    if (owners != null && owners.Length > 0)
+                    {
+                        await AddOwners(owners, graphClient, addedGroup);
+                    }
 
-                #endregion
+                    #endregion
 
-                #region Handle group's members
+                    #region Handle group's members
 
-                if (members != null && members.Length > 0)
-                {
-                    // For each and every owner
-                    await AddMembers(members, graphClient, addedGroup);
-                }
+                    if (members != null && members.Length > 0)
+                    {
+                        await AddMembers(members, graphClient, addedGroup);
+                    }
 
-                #endregion
+                    #endregion
 
-                return (group);
+                    return (group);
 
-            }).GetAwaiter().GetResult();
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
 
             return (result);
         }
@@ -632,7 +636,14 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                             if (includeSite)
                             {
-                                group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                try
+                                {
+                                    group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                }
+                                catch (ServiceException e)
+                                {
+                                    group.SiteUrl = e.Error.Message;
+                                }
                             }
 
                             groups.Add(group);
@@ -651,7 +662,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 }
 
                 return (groups);
-
             }).GetAwaiter().GetResult();
 
             return (result);

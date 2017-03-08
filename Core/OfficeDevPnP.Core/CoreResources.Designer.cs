@@ -507,6 +507,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Graph call returned the following error: {0}..
+        /// </summary>
+        internal static string GraphExtensions_ErrorOccured {
+            get {
+                return ResourceManager.GetString("GraphExtensions_ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The group logo file does not exist..
         /// </summary>
         internal static string GraphExtensions_GroupLogoFileDoesNotExist {
