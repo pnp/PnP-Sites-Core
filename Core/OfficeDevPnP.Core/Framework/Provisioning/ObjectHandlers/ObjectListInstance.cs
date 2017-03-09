@@ -552,8 +552,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         createdView.JSLink = jslink;
                         createdView.Update();
-                        createdView.EnsureProperty(v => v.ServerRelativeUrl);
-                        createdList.SetJSLinkCustomizations(createdView.ServerRelativeUrl, jslink);
+
+                        // Only push the JSLink value to the web part as it contains a / indicating it's a custom one. So we're not pushing the OOB ones like clienttemplates.js or hierarchytaskslist.js
+                        // but do push custom ones down to th web part (e.g. ~sitecollection/Style Library/JSLink-Samples/ConfidentialDocuments.js)
+                        if (jslink.Contains("/"))
+                        {
+                            createdView.EnsureProperty(v => v.ServerRelativeUrl);
+                            createdList.SetJSLinkCustomizations(createdView.ServerRelativeUrl, jslink);
+                        }
                     }
                 }
                 
