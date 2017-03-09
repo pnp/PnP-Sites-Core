@@ -54,6 +54,7 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
           <pnp:Terms>
             <!-- Term reuse requires the ID of the term to match an already created term id + specify the IsReused flag -->
             <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" IsSourceTerm="false" SourceTermId="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}">
+              <!-- A reused term can have it's own local custom properties -->
               <pnp:LocalCustomProperties>
                 <pnp:Property Key="test_local_3" Value="value_3" />
                 <pnp:Property Key="test_local_4" Value="value_4" />
