@@ -233,7 +233,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The server version could not be detected. Error: {0}..
+        ///   Looks up a localized string similar to The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}..
         /// </summary>
         internal static string ClientContextExtensions_HasMinimalServerLibraryVersion_Error {
             get {

@@ -1073,6 +1073,6 @@
     <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
   </data>
   <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
-    <value>The server version could not be detected. Error: {0}.</value>
+    <value>The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}.</value>
   </data>
 </root>
