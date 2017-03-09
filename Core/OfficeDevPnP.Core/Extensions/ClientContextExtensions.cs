@@ -241,7 +241,7 @@ namespace Microsoft.SharePoint.Client
             try
             {
                 Uri urlUri = new Uri(clientContext.Url);
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{urlUri.Scheme}://{urlUri.DnsSafeHost}/_vti_pvt/service.cnf");
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{urlUri.Scheme}://{urlUri.DnsSafeHost}:{urlUri.Port}/_vti_pvt/service.cnf");
                 request.UseDefaultCredentials = true;
 
                 var response = request.GetResponse();
