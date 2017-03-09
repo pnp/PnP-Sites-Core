@@ -1072,4 +1072,7 @@
   <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed" xml:space="preserve">
     <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
   </data>
+  <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
+    <value>The server version could not be detected. Error: {0}.</value>
+  </data>
 </root>

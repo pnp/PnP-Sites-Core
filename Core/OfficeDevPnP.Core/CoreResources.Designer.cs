@@ -233,6 +233,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The server version could not be detected. Error: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_HasMinimalServerLibraryVersion_Error {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_HasMinimalServerLibraryVersion_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
         /// </summary>
         internal static string Exception_Message_EmptyString_Arg {
