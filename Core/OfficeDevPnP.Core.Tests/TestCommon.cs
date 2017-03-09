@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tests
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
             DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
 
-            if (string.IsNullOrEmpty(TenantUrl))
+            if (string.IsNullOrEmpty(TenantUrl) || string.IsNullOrEmpty(DevSiteUrl)))
             {
                 throw new ConfigurationErrorsException("Tenant site Url or Dev site url in App.config are not set up.");
             }
