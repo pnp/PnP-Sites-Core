@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using Microsoft.WindowsAzure.Storage;
@@ -525,6 +526,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(_expectedID, result.Id);
             Assert.AreEqual(_expectedVersion, result.Version);
             Assert.IsTrue(result.Lists.Count == 1);
+
+            //content types asserts
+            Assert.IsNotNull(result.ContentTypes);
+            Assert.AreEqual(1, result.ContentTypes.Count);
+            Assert.IsNotNull(result.ContentTypes[0].FieldRefs);
+            Assert.AreEqual(4, result.ContentTypes[0].FieldRefs.Count);
+            Assert.AreEqual(1, result.ContentTypes[0].FieldRefs.Count(f => f.Required));
+
             Assert.IsTrue(result.PropertyBagEntries.Count == 2);
         }
 

@@ -55,7 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static PnPSerializationScope Current
         {
             get { return CallContext.LogicalGetData(nameof(PnPSerializationScope)) as PnPSerializationScope; }
-            set { CallContext.LogicalSetData(nameof(PnPSerializationScope), value); }
+            set
+            {
+                System.Configuration.ConfigurationManager.GetSection("system.xml/xmlReader");
+                CallContext.LogicalSetData(nameof(PnPSerializationScope), value);
+            }
         }
     }
 }
