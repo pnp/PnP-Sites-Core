@@ -1727,6 +1727,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skip applying of navigation settings on NoScript sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_SkipProvisioning {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_SkipProvisioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating new page {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Pages_Creating_new_page__0_ {

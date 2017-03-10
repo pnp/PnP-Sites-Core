@@ -1075,4 +1075,7 @@
   <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
     <value>The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_SkipProvisioning" xml:space="preserve">
+    <value>Skip applying of navigation settings on NoScript sites.</value>
+  </data>
 </root>
