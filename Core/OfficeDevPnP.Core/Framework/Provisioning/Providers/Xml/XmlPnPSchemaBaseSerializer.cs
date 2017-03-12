@@ -54,9 +54,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             // Prepare the XML Schema Set
             XmlSchemaSet schemas = new XmlSchemaSet();
+            this._referenceSchema.Seek(0, SeekOrigin.Begin);
             schemas.Add(((IXMLSchemaFormatter)this).NamespaceUri,
                 new XmlTextReader(this._referenceSchema));
-
+                        
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {

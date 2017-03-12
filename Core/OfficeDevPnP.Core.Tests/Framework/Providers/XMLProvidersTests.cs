@@ -555,6 +555,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
         }
 
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template1 = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            provider.SaveAs(template1, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+
+        }
+
+
         #endregion
     }
 }

@@ -2,15 +2,12 @@
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the list instances
+    /// Class to serialize/deserialize the content types
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
         SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
@@ -26,9 +23,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
             expressions.Add(c => c.FieldRefs[0].Id, new FromStringToGuidValueResolver());
 
-            // Define custom resolver for Security
-            //expressions.Add(l => l.DocumentSetTemplate, new SecurityFromSchemaToModelTypeResolver());
-
             template.ContentTypes.AddRange(
                 PnPObjectsMapper.MapObjects<ContentType>(contentTypes,
                         new CollectionFromSchemaToModelTypeResolver(typeof(ContentType)),
@@ -42,9 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var contentTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ContentType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var contentTypeType = Type.GetType(contentTypeTypeName, true);
 
-            // TODO: Define the way back for the non-standard properties defined in the Deserialize method
-
-            persistence.GetPublicInstanceProperty("ContentType")
+            persistence.GetPublicInstanceProperty("ContentTypes")
                 .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.ContentTypes,
