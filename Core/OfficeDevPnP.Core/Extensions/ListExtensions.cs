@@ -606,17 +606,21 @@ namespace Microsoft.SharePoint.Client
         private static void SetJSLinkCustomizationsImplementation(List list, File file, string jslink)
         {
             var wpm = file.GetLimitedWebPartManager(PersonalizationScope.Shared);
-            list.Context.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title));
+            list.Context.Load(wpm.WebParts, wps => wps.Include(wp => wp.WebPart.Title, wp => wp.WebPart.Properties));
             list.Context.ExecuteQueryRetry();
 
             // Set the JS link for all web parts
             foreach (var wpd in wpm.WebParts)
             {
                 var wp = wpd.WebPart;
-                wp.Properties["JSLink"] = jslink;
-                wpd.SaveWebPartChanges();
 
-                list.Context.ExecuteQueryRetry();
+                if (wp.Properties.FieldValues.Keys.Contains("JSLink"))
+                { 
+                    wp.Properties["JSLink"] = jslink;
+                    wpd.SaveWebPartChanges();
+
+                    list.Context.ExecuteQueryRetry();
+                }
             }
         }
 

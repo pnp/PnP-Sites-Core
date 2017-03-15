@@ -233,6 +233,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_HasMinimalServerLibraryVersion_Error {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_HasMinimalServerLibraryVersion_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
         /// </summary>
         internal static string Exception_Message_EmptyString_Arg {
@@ -503,6 +512,15 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and" +
                         "_cannot_contain_path_characters_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Graph call returned the following error: {0}..
+        /// </summary>
+        internal static string GraphExtensions_ErrorOccured {
+            get {
+                return ResourceManager.GetString("GraphExtensions_ErrorOccured", resourceCulture);
             }
         }
         
@@ -1705,6 +1723,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip applying of navigation settings on NoScript sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_SkipProvisioning {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_SkipProvisioning", resourceCulture);
             }
         }
         

@@ -240,23 +240,32 @@ namespace Microsoft.SharePoint.Client
 #else
             try
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(clientContext.Url);
+                Uri urlUri = new Uri(clientContext.Url);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{urlUri.Scheme}://{urlUri.DnsSafeHost}:{urlUri.Port}/_vti_pvt/service.cnf");
+                request.UseDefaultCredentials = true;
 
                 var response = request.GetResponse();
-                if (response.Headers.AllKeys.Contains(MicrosoftSharePointTeamServicesHeader))
+
+                using (var dataStream = response.GetResponseStream())
                 {
-                    var responseVersion = new Version(response.Headers[MicrosoftSharePointTeamServicesHeader]);
-                    hasMinimalVersion = responseVersion.CompareTo(minimallyRequiredVersion) >= 0;
+                    // Open the stream using a StreamReader for easy access.
+                    using (System.IO.StreamReader reader = new System.IO.StreamReader(dataStream))
+                    {
+                        // Read the content.Will be in this format
+                        // vti_encoding:SR|utf8-nl
+                        // vti_extenderversion: SR | 15.0.0.4505
+
+                        string version = reader.ReadToEnd().Split('|')[2].Trim();
+
+                        // Only compare the first three digits
+                        var compareToVersion = new Version(minimallyRequiredVersion.Major, minimallyRequiredVersion.MajorRevision, minimallyRequiredVersion.Minor, 0);
+                        hasMinimalVersion = new Version(version.Split('.')[0].ToInt32(), 0, version.Split('.')[3].ToInt32(), 0).CompareTo(compareToVersion) >= 0;
+                    }
                 }
             }
             catch (WebException ex)
             {
-                var response = ex.Response;
-                if (response.Headers.AllKeys.Contains(MicrosoftSharePointTeamServicesHeader))
-                {
-                    var responseVersion = new Version(response.Headers[MicrosoftSharePointTeamServicesHeader]);
-                    hasMinimalVersion = responseVersion.CompareTo(minimallyRequiredVersion) >= 0;
-                }
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_HasMinimalServerLibraryVersion_Error, ex.ToDetailedString(clientContext));
             }
 #endif
             return hasMinimalVersion;
