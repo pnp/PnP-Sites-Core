@@ -76,7 +76,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             }
                         }
                     }
-
                     return (siteUrl);
 
                 }).GetAwaiter().GetResult();
@@ -551,10 +550,10 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken,
-            int retryCount = 10, int delay = 500)
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true)
         {
             if (String.IsNullOrEmpty(groupId))
             {
@@ -584,10 +583,19 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         DisplayName = g.DisplayName,
                         Description = g.Description,
                         Mail = g.Mail,
-                        MailNickname = g.MailNickname,
-                        SiteUrl = GetUnifiedGroupSiteUrl(groupId, accessToken),
+                        MailNickname = g.MailNickname
                     };
-
+                    if (includeSite)
+                    {
+                        try
+                        {
+                            group.SiteUrl = GetUnifiedGroupSiteUrl(groupId, accessToken);
+                        }
+                        catch (ServiceException e)
+                        {
+                            group.SiteUrl = e.Error.Message;
+                        }
+                    }
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -675,9 +683,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                         group.SiteUrl = e.Error.Message;
                                     }
                                 }
-
                                 groups.Add(group);
-
                             }
                         }
 
