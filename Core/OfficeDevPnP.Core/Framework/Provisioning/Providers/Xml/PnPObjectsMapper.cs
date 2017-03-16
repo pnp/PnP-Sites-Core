@@ -159,8 +159,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             // Whatever else ...
                             else
                             {
+                                object sourceValue = sp.GetValue(source);
+                                if(sourceValue != null && dp.PropertyType == typeof(string) && sp.PropertyType != typeof(string))
+                                {
+                                    //default conversion to string
+                                    sourceValue = sourceValue.ToString();
+                                }
                                 // We simply need to do 1:1 value mapping
-                                dp.SetValue(destination, sp.GetValue(source));
+                                dp.SetValue(destination, sourceValue);
                             }
                         }
                         catch (Exception)
