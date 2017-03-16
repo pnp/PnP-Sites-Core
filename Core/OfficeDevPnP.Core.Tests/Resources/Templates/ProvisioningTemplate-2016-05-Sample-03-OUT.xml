@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.14.1704.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="Parameter1">ValueParameter1</pnp:Parameter>
       <pnp:Parameter Key="Parameter2">ValueParameter2</pnp:Parameter>
@@ -20,8 +20,41 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
       </pnp:PropertyBagEntries>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
+          <pnp:FieldRefs>
+            <pnp:FieldRef Required="true" />
+            <pnp:FieldRef />
+            <pnp:FieldRef />
+            <pnp:FieldRef />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" RemoveExistingContentTypes="true" />
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" RemoveExistingContentTypes="true">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0102" />
+          </pnp:ContentTypeBindings>
+          <pnp:FieldRefs>
+            <pnp:FieldRef Name="ProjectID" Required="true" DisplayName="Project ID" />
+            <pnp:FieldRef Name="ProjectName" Hidden="true" DisplayName="Project Name" />
+            <pnp:FieldRef Name="ProjectManager" Required="true" DisplayName="Project Manager" />
+          </pnp:FieldRefs>
+          <pnp:DataRows>
+            <pnp:DataRow />
+            <pnp:DataRow />
+            <pnp:DataRow />
+          </pnp:DataRows>
+          <pnp:Folders>
+            <pnp:Folder Name="Folder01" />
+            <pnp:Folder Name="Folder02" />
+          </pnp:Folders>
+          <pnp:UserCustomActions>
+            <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101" />
+          </pnp:UserCustomActions>
+        </pnp:ListInstance>
       </pnp:Lists>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
