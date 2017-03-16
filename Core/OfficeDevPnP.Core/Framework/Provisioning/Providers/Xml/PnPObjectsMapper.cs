@@ -153,8 +153,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             {
                                 dp.SetValue(destination,
                                         PnPObjectsMapper.MapObjects(sp.GetValue(source),
-                                            new CollectionFromModelToSchemaTypeResolver(dp.PropertyType.IsArray ? dp.PropertyType.GetElementType() : null), null, recursive));
-
+                                            new CollectionFromModelToSchemaTypeResolver(dp.PropertyType.IsArray ? dp.PropertyType.GetElementType() : null), 
+                                            resolvers, recursive));
                             }
                             // Whatever else ...
                             else

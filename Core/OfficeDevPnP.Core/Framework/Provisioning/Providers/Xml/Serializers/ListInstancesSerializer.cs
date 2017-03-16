@@ -76,13 +76,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var listInstanceTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstance, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var listInstanceType = Type.GetType(listInstanceTypeName, true);
 
-            // TODO: Define the way back for the non-standard properties defined in the Deserialize method
+            var resolvers = new Dictionary<String, IResolver>();
+
+            // Define custom resolvers for DataRows Values and Security
+
+            // Define custom resolver for Fields Defaults
+
+            // Define custom resolver for Security
+
+            // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
+
+            // Define custom resolver for Views (XML Any + RemoveExistingViews)
+            resolvers.Add($"{listInstanceType}.Views",
+                new ListViewsFromModelToSchemaTypeResolver());
+            //expressions.Add(l => l.RemoveExistingViews,
+            //    new RemoveExistingViewsFromSchemaToModelValueResolver());
+
+            // Define custom resolver for recursive Folders
 
             persistence.GetPublicInstanceProperty("Lists")
                 .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.Lists,
-                        new CollectionFromModelToSchemaTypeResolver(listInstanceType), recursive: true));
+                        new CollectionFromModelToSchemaTypeResolver(listInstanceType), resolvers, recursive: true));
         }
     }
 }

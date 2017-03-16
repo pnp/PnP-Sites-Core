@@ -37,6 +37,34 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0101" />
             <pnp:ContentTypeBinding ContentTypeID="0x0102" />
           </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View DisplayName="View One">
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Title" />
+                <FieldRef Name="ProjectID" />
+                <FieldRef Name="ProjectName" />
+                <FieldRef Name="ProjectManager" />
+                <FieldRef Name="DocumentDescription" />
+              </ViewFields>
+              <Query>
+                <Where>
+                  <Eq>
+                    <FieldRef Name="ProjectManager" />
+                    <Value Type="Text">[Me]</Value>
+                  </Eq>
+                </Where>
+              </Query>
+            </View>
+            <View DisplayName="View Two">
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Title" />
+                <FieldRef Name="ProjectID" />
+                <FieldRef Name="ProjectName" />
+              </ViewFields>
+            </View>
+          </pnp:Views>
           <pnp:FieldRefs>
             <pnp:FieldRef Name="ProjectID" Required="true" DisplayName="Project ID" />
             <pnp:FieldRef Name="ProjectName" Hidden="true" DisplayName="Project Name" />
