@@ -2023,7 +2023,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="field">Field to be wired up</param>
         /// <param name="taxonomyItem">Taxonomy TermSet or Term</param>
         /// <param name="defaultValue">default value for the field</param>
-        public static void SetTaxonomyFieldDefaultValue(this Field field, TaxonomyItem taxonomyItem, string defaultValue)
+        /// <param name="pushChangesToLists">push changes to lists</param>
+        public static void SetTaxonomyFieldDefaultValue(this Field field, TaxonomyItem taxonomyItem, string defaultValue, bool pushChangesToLists = false)
         {
             if (string.IsNullOrEmpty(defaultValue))
             {
@@ -2074,7 +2075,14 @@ namespace Microsoft.SharePoint.Client
                 field.Context.ExecuteQueryRetry();
 
                 taxField.DefaultValue = validateValue.Value;
-                taxField.Update();
+                if (!pushChangesToLists)
+                {
+                    taxField.Update();
+                }
+                else
+                {
+                    taxField.UpdateAndPushChanges(true);
+                }
                 clientContext.ExecuteQueryRetry();
             }
         }
