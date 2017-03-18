@@ -10,6 +10,8 @@ using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 using Microsoft.SharePoint.Client;
 using System.Threading;
+using System.Xml.Linq;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -574,10 +576,196 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var template2 = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
             Assert.IsNotNull(template2);
+        }
 
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ContentTypes_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result.ContentTypes);
+
+            var ct = result.ContentTypes.FirstOrDefault();
+            Assert.IsNotNull(ct);
+            Assert.AreEqual("0x01005D4F34E4BE7F4B6892AEBE088EDD215E", ct.Id);
+            Assert.AreEqual("General Project Document", ct.Name);
+            Assert.AreEqual("General Project Document Content Type", ct.Description);
+            Assert.AreEqual("Base Foundation Content Types", ct.Group);
+            Assert.AreEqual("/Forms/DisplayForm.aspx", ct.DisplayFormUrl);
+            Assert.AreEqual("/Forms/NewForm.aspx", ct.NewFormUrl);
+            Assert.AreEqual("/Forms/EditForm.aspx", ct.EditFormUrl);
+            //Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate);
+            Assert.IsNotNull(ct.DocumentSetTemplate);
+            Assert.IsTrue(ct.Hidden);
+            Assert.IsTrue(ct.Overwrite);
+            Assert.IsTrue(ct.ReadOnly);
+            Assert.IsTrue(ct.Sealed);
+
+
+            Assert.IsNotNull(ct.FieldRefs);
+            Assert.AreEqual(4, ct.FieldRefs.Count);
+
+            var field = ct.FieldRefs.FirstOrDefault(f => f.Name == "TestField");
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new Guid("23203e97-3bfe-40cb-afb4-07aa2b86bf45"), field.Id);
+            Assert.IsTrue(field.Required);
+            Assert.IsTrue(field.Hidden);
         }
 
 
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ContentTypes_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            var dt = new DocumentSetTemplate();
+            dt.SharedFields.Add(Guid.NewGuid());
+            dt.SharedFields.Add(Guid.NewGuid());
+            dt.WelcomePageFields.Add(Guid.NewGuid());
+            dt.WelcomePageFields.Add(Guid.NewGuid());
+            dt.WelcomePage = "home.aspx";
+            dt.DefaultDocuments.Add(new DefaultDocument()
+            {
+                ContentTypeId = Guid.NewGuid().ToString(),
+                FileSourcePath = "document.dotx",
+                Name = "DefaultDocument"
+            });
+            result.ContentTypes[0].DocumentSetTemplate = dt;
+
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult = 
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.ContentTypes);
+
+            var ct = template.ContentTypes.FirstOrDefault();
+            Assert.IsNotNull(ct);
+
+            Assert.AreEqual("0x01005D4F34E4BE7F4B6892AEBE088EDD215E", ct.ID);
+            Assert.AreEqual("General Project Document", ct.Name);
+            Assert.AreEqual("General Project Document Content Type", ct.Description);
+            Assert.AreEqual("Base Foundation Content Types", ct.Group);
+            Assert.AreEqual("/Forms/DisplayForm.aspx", ct.DisplayFormUrl);
+            Assert.AreEqual("/Forms/NewForm.aspx", ct.NewFormUrl);
+            Assert.AreEqual("/Forms/EditForm.aspx", ct.EditFormUrl);
+            //Assert.IsNotNull(ct.DocumentTemplate);
+            //Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate.TargetName);
+            Assert.IsTrue(ct.Hidden);
+            Assert.IsTrue(ct.Overwrite);
+            Assert.IsTrue(ct.ReadOnly);
+            Assert.IsTrue(ct.Sealed);
+
+
+            Assert.IsNotNull(ct.FieldRefs);
+            Assert.AreEqual(4, ct.FieldRefs.Count());
+
+            var field = ct.FieldRefs.FirstOrDefault(f => f.Name == "TestField");
+            Assert.IsNotNull(field);
+            Assert.AreEqual("23203e97-3bfe-40cb-afb4-07aa2b86bf45", field.ID);
+            Assert.IsTrue(field.Required);
+            Assert.IsTrue(field.Hidden);
+        }
+
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_CustomActions_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.CustomActions);
+            Assert.IsNotNull(result.CustomActions.SiteCustomActions);
+            Assert.IsNotNull(result.CustomActions.WebCustomActions);
+
+            var ca = result.CustomActions.SiteCustomActions.FirstOrDefault(c => c.Name == "CA_SITE_SETTINGS_SITECLASSIFICATION");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Site Classification Application", ca.Description);
+            Assert.AreEqual("Microsoft.SharePoint.SiteSettings", ca.Location);
+            Assert.AreEqual("Site Classification", ca.Title);
+            Assert.AreEqual(1000, ca.Sequence);
+            Assert.IsTrue(ca.Rights.Has(PermissionKind.ManageWeb));
+            Assert.AreEqual("https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}", ca.Url);
+            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.IsNotNull(ca.CommandUIExtension);
+            Assert.AreEqual("http://sharepoint.com", ca.ImageUrl);
+            Assert.AreEqual("101", ca.RegistrationId);
+            Assert.AreEqual("alert('boo')", ca.ScriptBlock);
+            Assert.AreEqual(2, ca.CommandUIExtension.Nodes().Count());
+
+            ca = result.CustomActions.SiteCustomActions.FirstOrDefault(c => c.Name == "CA_SUBSITE_OVERRIDE");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Override new sub-site link", ca.Description);
+            Assert.AreEqual("ScriptLink", ca.Location);
+            Assert.AreEqual("SubSiteOveride", ca.Title);
+            Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual("~site/PnP_Provisioning_JS/PnP_EmbeddedJS.js", ca.ScriptSrc);
+            Assert.AreEqual(UserCustomActionRegistrationType.ContentType, ca.RegistrationType);
+            Assert.IsNull(ca.CommandUIExtension);
+
+            ca = result.CustomActions.WebCustomActions.FirstOrDefault(c => c.Name == "CA_WEB_DOCLIB_MENU_SAMPLE");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Document Library Custom Menu", ca.Description);
+            Assert.AreEqual("ActionsMenu", ca.Group);
+            Assert.AreEqual("Microsoft.SharePoint.StandardMenu", ca.Location);
+            Assert.AreEqual("DocLib Custom Menu", ca.Title);
+            Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual("/_layouts/CustomActionsHello.aspx?ActionsMenu", ca.Url);
+            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.IsNull(ca.CommandUIExtension);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_CustomActions_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
+        }
         #endregion
     }
 }

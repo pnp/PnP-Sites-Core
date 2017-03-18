@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static void MapProperties<TDestination>(Object source, TDestination destination, Dictionary<Expression<Func<TDestination, Object>>, IResolver> resolverExpressions = null, Boolean recursive = false)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
-            MapProperties(source, destination, resolvers);
+            MapProperties(source, destination, resolvers, recursive);
         }
 
         /// <summary>
