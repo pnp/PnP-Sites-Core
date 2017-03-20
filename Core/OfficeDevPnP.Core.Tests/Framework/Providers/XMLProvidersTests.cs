@@ -611,10 +611,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(ct.DocumentSetTemplate);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
-            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3")));
-            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc")));
-            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531")));
-            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f")));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3")));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc")));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531")));
+            Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f")));
             Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
             Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
 
@@ -794,7 +794,60 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
 
-            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template.CustomActions.SiteCustomActions);
+            Assert.IsNotNull(template.CustomActions.WebCustomActions);
+
+            var ca = template.CustomActions.SiteCustomActions.FirstOrDefault(c => c.Name == "CA_SITE_SETTINGS_SITECLASSIFICATION");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Site Classification Application", ca.Description);
+            Assert.AreEqual("Microsoft.SharePoint.SiteSettings", ca.Location);
+            Assert.AreEqual("Site Classification", ca.Title);
+            //Assert.AreEqual(1000, ca.Sequence);
+            Assert.AreEqual("ManageWeb", ca.Rights);
+            Assert.AreEqual("https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}", ca.Url);
+            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.IsNotNull(ca.CommandUIExtension);
+            Assert.AreEqual("http://sharepoint.com", ca.ImageUrl);
+            Assert.AreEqual("101", ca.RegistrationId);
+            Assert.AreEqual("alert('boo')", ca.ScriptBlock);
+            Assert.IsNotNull(ca.CommandUIExtension);
+            Assert.IsNotNull(ca.CommandUIExtension.Any);
+            Assert.AreEqual(2, ca.CommandUIExtension.Any.Length);
+
+            ca = template.CustomActions.SiteCustomActions.FirstOrDefault(c => c.Name == "CA_SUBSITE_OVERRIDE");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Override new sub-site link", ca.Description);
+            Assert.AreEqual("ScriptLink", ca.Location);
+            Assert.AreEqual("SubSiteOveride", ca.Title);
+            //Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual("~site/PnP_Provisioning_JS/PnP_EmbeddedJS.js", ca.ScriptSrc);
+            Assert.AreEqual(UserCustomActionRegistrationType.ContentType, ca.RegistrationType);
+            Assert.IsNull(ca.CommandUIExtension);
+
+            ca = template.CustomActions.WebCustomActions.FirstOrDefault(c => c.Name == "CA_WEB_DOCLIB_MENU_SAMPLE");
+            Assert.IsNotNull(ca);
+            Assert.AreEqual("Document Library Custom Menu", ca.Description);
+            Assert.AreEqual("ActionsMenu", ca.Group);
+            Assert.AreEqual("Microsoft.SharePoint.StandardMenu", ca.Location);
+            Assert.AreEqual("DocLib Custom Menu", ca.Title);
+            //Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual("/_layouts/CustomActionsHello.aspx?ActionsMenu", ca.Url);
+            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.IsNull(ca.CommandUIExtension);
         }
         #endregion
     }

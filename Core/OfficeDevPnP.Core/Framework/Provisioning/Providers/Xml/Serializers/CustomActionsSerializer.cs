@@ -30,11 +30,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
             var customActionsName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var customActionName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomAction, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var customActionsType = Type.GetType(customActionsName, true);
 
-            var expressions = new Dictionary<Expression<Func<CustomActions, Object>>, IResolver>();
-            var target = persistence.GetPublicInstanceProperty("CustomActions");
-            //PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
+            var target = Activator.CreateInstance(customActionsType, true);
+
+            var expressions = new Dictionary<string, IResolver>();
+            //expressions.Add($"{customActionName}.CommandUIExtension", new Comm);
+
+            PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
+
+            //expressions.Add(c=> c.SiteCustomActions[0].Sequence, )
+            //expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+            //expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
+            //expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+
+            persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
         }
     }
 }
