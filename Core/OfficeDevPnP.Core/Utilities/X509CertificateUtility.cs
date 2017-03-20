@@ -49,12 +49,12 @@ namespace OfficeDevPnP.Core.Utilities
         {
             if (plainData == null)
             {
-                throw new ArgumentNullException("plainData");
+                throw new ArgumentNullException(nameof(plainData));
             }
 
             if (certificate == null)
             {
-                throw new ArgumentNullException("certificate");
+                throw new ArgumentNullException(nameof(certificate));
             }
 
             using (RSACryptoServiceProvider provider = new RSACryptoServiceProvider())
@@ -77,12 +77,12 @@ namespace OfficeDevPnP.Core.Utilities
         {
             if (encryptedData == null)
             {
-                throw new ArgumentNullException("encryptedData");
+                throw new ArgumentNullException(nameof(encryptedData));
             }
 
             if (certificate == null)
             {
-                throw new ArgumentNullException("certificate");
+                throw new ArgumentNullException(nameof(certificate));
             }
 
             using (RSACryptoServiceProvider provider = (RSACryptoServiceProvider)certificate.PrivateKey)
@@ -101,7 +101,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             if (certificate == null)
             {
-                throw new ArgumentNullException("certificate");
+                throw new ArgumentNullException(nameof(certificate));
             }
 
             return certificate.PublicKey.Key.ToXmlString(false);

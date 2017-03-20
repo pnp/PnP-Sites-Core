@@ -195,4 +195,7 @@
   <data name="LI_1_ViewTitle" xml:space="preserve">
     <value>List View Title</value>
   </data>
+  <data name="NAV_Title" xml:space="preserve">
+    <value>Navigation One</value>
+  </data>
 </root>

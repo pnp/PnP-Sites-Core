@@ -67,6 +67,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.AddSupportedUILanguage(id.LCID);
                 }
                 web.Update();
+                web.Context.Load(web, w => w.SupportedUILanguageIds);
                 web.Context.ExecuteQueryRetry();
             }
 

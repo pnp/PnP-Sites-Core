@@ -35,7 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public static PnPInfo UnpackTemplate(this MemoryStream stream)
         {
             PnPInfo siteTemplate;
-            using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, FileAccess.ReadWrite))
+            using (PnPPackage package = PnPPackage.Open(stream, FileMode.Open, 
+                stream.CanWrite ? FileAccess.ReadWrite : FileAccess.Read))
             {
                 siteTemplate = LoadPnPPackage(package);
             }

@@ -40,11 +40,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
                 var fields = template.SiteFields;
 
+                var currentFieldIndex = 0;
                 foreach (var field in fields)
                 {
+                    currentFieldIndex++;
+
                     XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
-
+                    var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
+                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
@@ -71,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                 }
             }
+            WriteMessage($"Done processing fields", ProvisioningMessageType.Completed);
             return parser;
         }
 
@@ -88,16 +93,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (existingFieldElement.Attribute("Type").Value == templateFieldElement.Attribute("Type").Value) // Is existing field of the same type?
                 {
+                    var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
+
+                    if (listIdentifier != null)
+                    {
+                        // Temporary remove list attribute from list
+                        templateFieldElement.Attribute("List").Remove();
+                    }
+
                     if (IsFieldXmlValid(parser.ParseString(originalFieldXml), parser, web.Context))
                     {
-                        var listIdentifier = templateFieldElement.Attribute("List") != null ? templateFieldElement.Attribute("List").Value : null;
-
-                        if (listIdentifier != null)
-                        {
-                            // Temporary remove list attribute from list
-                            templateFieldElement.Attribute("List").Remove();
-                        }
-
                         foreach (var attribute in templateFieldElement.Attributes())
                         {
                             if (existingFieldElement.Attribute(attribute.Name) != null)
@@ -171,13 +176,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // The field Xml was found invalid
                         var tokenString = parser.GetLeftOverTokens(originalFieldXml).Aggregate(String.Empty, (acc, i) => acc + " " + i);
                         scope.LogError("The field was found invalid: {0}", tokenString);
-                        throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
+                        throw new Exception($"The field was found invalid: {tokenString}");
                     }
                 }
                 else
                 {
                     var fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
-                    WriteWarning(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
+                    WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId), ProvisioningMessageType.Warning);
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_, fieldName, fieldId);
 
                 }
@@ -210,7 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
                         var referencedField = fields.GetFieldByInternalName(fieldInternalName);
-                        formulastring = formulastring.Replace(string.Format("[{0}]", referencedField.Title), string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        formulastring = formulastring.Replace($"[{referencedField.Title}]", $"[{{fieldtitle:{fieldInternalName}}}]");
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
@@ -221,11 +226,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaElement.ToString();
         }
 
+        /// <summary>
+        /// Replace Field Internal name by Display Name in the Validation formula
+        /// (due to a SP issue that when provisioning the field, is expecting the Display name)
+        /// https://github.com/SharePoint/PnP-Sites-Core/issues/849
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="schemaXml"></param>
+        /// <returns></returns>
+        internal static string TokenizeFieldValidationFormula(SPField field, string schemaXml)
+        {
+            var schemaElement = XElement.Parse(field.SchemaXml);
+
+            var validationNode = schemaElement.Elements("Validation").FirstOrDefault();
+            if (validationNode != null)
+            {
+                var validationNodeValue = validationNode.Value;
+                validationNode.Value = validationNodeValue.Replace(field.InternalName, string.Format("[{0}]", field.Title));
+            }
+
+            return schemaElement.ToString();
+        }
+
         private string ParseFieldSchema(string schemaXml, ListCollection lists)
         {
             foreach (var list in lists)
             {
-                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), string.Format("{{listid:{0}}}", list.Title), RegexOptions.IgnoreCase);
+                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
             }
 
             return schemaXml;
@@ -289,11 +316,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // The field Xml was found invalid
                 var tokenString = parser.GetLeftOverTokens(fieldXml).Aggregate(String.Empty, (acc, i) => acc + " " + i);
                 scope.LogError("The field was found invalid: {0}", tokenString);
-                throw new Exception(string.Format("The field was found invalid: {0}", tokenString));
+                throw new Exception($"The field was found invalid: {tokenString}");
             }
         }
 
-       
+
 
         private static void ValidateTaxonomyFieldDefaultValue(TaxonomyField field)
         {
@@ -396,8 +423,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var taxTextFieldsToMoveUp = new List<Guid>();
                 var calculatedFieldsToMoveDown = new List<Guid>();
 
+                var currentFieldIndex = 0;
+                var fieldsToProcessCount = existingFields.Count;
                 foreach (var field in existingFields)
                 {
+                    currentFieldIndex++;
+                    WriteMessage($"Field|{field.InternalName}|{currentFieldIndex}|{fieldsToProcessCount}", ProvisioningMessageType.Progress);
                     if (!BuiltInFieldId.Contains(field.Id))
                     {
                         var fieldXml = field.SchemaXml;
@@ -407,7 +438,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var listIdentifier = element.Attribute("List") != null ? element.Attribute("List").Value : null;
                         if (!string.IsNullOrEmpty(listIdentifier))
                         {
-                            var listGuid = Guid.Empty;
+                            //var listGuid = Guid.Empty;
                             fieldXml = ParseFieldSchema(fieldXml, web.Lists);
                             element = XElement.Parse(fieldXml);
                             //if (Guid.TryParse(listIdentifier, out listGuid))
@@ -425,7 +456,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //}
                             //}
                         }
-                        
+
                         // Check if the field is of type TaxonomyField
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
@@ -466,14 +497,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (persistLanguages)
                             {
                                 var fieldElement = XElement.Parse(fieldXml);
-                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, string.Format("Field_{0}_DisplayName", field.Title.Replace(" ", "_")), template, creationInfo))
+                                var escapedFieldTitle = field.Title.Replace(" ", "_");
+                                if (UserResourceExtensions.PersistResourceValue(field.TitleResource, $"Field_{escapedFieldTitle}_DisplayName", template, creationInfo))
                                 {
-                                    var fieldTitle = string.Format("{{res:Field_{0}_DisplayName}}", field.Title.Replace(" ", "_"));
+                                    var fieldTitle = $"{{res:Field_{escapedFieldTitle}_DisplayName}}";
                                     fieldElement.SetAttributeValue("DisplayName", fieldTitle);
                                 }
-                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, string.Format("Field_{0}_Description", field.Title.Replace(" ", "_")), template, creationInfo))
+                                if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, $"Field_{escapedFieldTitle}_Description", template, creationInfo))
                                 {
-                                    var fieldDescription = string.Format("{{res:Field_{0}_Description}}", field.Title.Replace(" ", "_"));
+                                    var fieldDescription = $"{{res:Field_{escapedFieldTitle}_Description}}";
                                     fieldElement.SetAttributeValue("Description", fieldDescription);
                                 }
 
@@ -506,6 +538,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template = CleanupEntities(template, creationInfo.BaseTemplate);
                 }
             }
+            WriteMessage($"Done processing fields", ProvisioningMessageType.Completed);
+
             return template;
         }
 
@@ -546,7 +580,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
-        }
+        }        
     }
 
     internal static class XElementStringExtensions

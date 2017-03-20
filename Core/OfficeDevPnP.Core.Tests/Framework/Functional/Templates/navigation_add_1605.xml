@@ -1,0 +1,19 @@
+﻿<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="navigation_add_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Navigation>
+    <pnp:GlobalNavigation NavigationType="Managed">
+      <pnp:ManagedNavigation
+        TermStoreId="{sitecollectiontermstoreid}"
+        TermSetId="{termsetid:TG_1:TS_1_1}" />
+    </pnp:GlobalNavigation>
+    <pnp:CurrentNavigation NavigationType="StructuralLocal">
+      <pnp:StructuralNavigation RemoveExistingNodes="true">
+        <pnp:NavigationNode Title="Home1" IsExternal="false" Url="{site}/SitePages/Home.aspx" />
+        <pnp:NavigationNode Title="Libraries1" Url="{site}">
+          <pnp:NavigationNode Title="Shared Docs" IsExternal="false" Url="{site}/Shared Documents/Forms/AllItems.aspx" />
+        </pnp:NavigationNode>
+        <pnp:NavigationNode Title="Privacy1" IsExternal="true" Url="http://www.company.com/privacy/" />
+      </pnp:StructuralNavigation>
+    </pnp:CurrentNavigation>
+  </pnp:Navigation>
+</pnp:ProvisioningTemplate>

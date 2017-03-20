@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<pnp:ProvisioningTemplate ID="files_add_recursive" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Lists>
+    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" EnableFolderCreation="true">
+      <pnp:Fields>
+        <Field ID="{44866EE7-8129-466E-91C5-609B72E40DFB}" Type="Text" Name="CustomNotes" DisplayName="CustomNotes" Description="CustomNotes" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+    </pnp:ListInstance>
+    <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" EnableFolderCreation="true">
+      <pnp:Fields>
+        <Field ID="{2101C503-F96E-4B73-847E-CF50BF873B54}" Type="Text" Name="CustomNotes" DisplayName="CustomNotes" Description="CustomNotes" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+    </pnp:ListInstance>
+  </pnp:Lists>
+  <pnp:Files>
+    <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" Level="Published"/>
+    <pnp:File Src="files_add.xml" Folder="SitePages" Overwrite="true" Level="Published">
+      <pnp:Security>
+        <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute"/>
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:File>
+    <pnp:File Src="garagewhite.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" Level="Published"/>
+    <pnp:Directory Src=".\DirFolder" Folder="LI_2" Overwrite="true" Recursive="true" IncludedExtensions="*.docx,*.pdf" ExcludedExtensions="*.xml,*.txt" MetadataMappingFile=".\DirFolderMetadata.json" />
+    <pnp:Directory Src=".\DirFolder2" Folder="LI_3" Overwrite="true" Recursive="true" IncludedExtensions="*.docx,*.pdf" ExcludedExtensions="*.xml,*.txt" MetadataMappingFile=".\DirFolder2Metadata.json" />
+  </pnp:Files>
+</pnp:ProvisioningTemplate>

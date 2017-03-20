@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private string name;
         public RoleDefinitionToken(Web web, RoleDefinition definition)
-            : base(web, string.Format("{{roledefinition:{0}}}", definition.RoleTypeKind.ToString()))
+            : base(web, $"{{roledefinition:{definition.RoleTypeKind}}}")
         {
             name = definition.EnsureProperty(r => r.Name);
             

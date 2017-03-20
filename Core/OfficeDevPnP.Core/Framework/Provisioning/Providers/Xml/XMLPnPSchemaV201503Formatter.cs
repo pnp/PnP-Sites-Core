@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Load the template into an XDocument
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             V201503.SharePointProvisioningTemplate result = new V201503.SharePointProvisioningTemplate();
@@ -445,7 +445,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Crate a copy of the source stream
