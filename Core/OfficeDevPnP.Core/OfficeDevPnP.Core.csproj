@@ -11,6 +11,7 @@
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -269,6 +270,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
@@ -281,6 +286,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.WebEncoders, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.WebEncoders.1.0.0\lib\netstandard1.0\Microsoft.Extensions.WebEncoders.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Graph, Version=1.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Graph.1.1.1\lib\portable45-net45+win8+wpa81\Microsoft.Graph.dll</HintPath>
       <Private>True</Private>
@@ -289,7 +310,10 @@
       <HintPath>..\packages\Microsoft.Graph.Core.1.2.1\lib\portable45-net45+win8+wpa81\Microsoft.Graph.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
       <Private>True</Private>
@@ -298,7 +322,6 @@
       <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Extensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=69c3241e6f0468ca, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -311,7 +334,11 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.2.0, Culture=neutral, PublicKeyToken=3751622786b357c2, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.2\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -330,6 +357,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -347,46 +378,55 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
-    <Compile Include="AppModelExtensions\ClientObjectExtensions.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\BrandingExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ClientContextExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FeatureExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FileFolderExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ListExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\NavigationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\PageExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SearchExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SecurityExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TenantExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\VariationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WebExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WorkflowExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\ExternalSharingExtensions.cs" />
-    <Compile Include="AppModelExtensions\FieldAndContentTypeExtensions.cs" />
-    <Compile Include="AppModelExtensions\FileFolderExtensions.cs" />
-    <Compile Include="AppModelExtensions\InformationManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListRatingExtensions.cs" />
-    <Compile Include="AppModelExtensions\ProvisioningExtensions.cs" />
-    <Compile Include="AppModelExtensions\RecordsManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\SearchExtensions.cs" />
-    <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
-    <Compile Include="AppModelExtensions\TenantExtensions.cs" />
+    <Compile Include="Extensions\ClientContextExtensions.cs" />
+    <Compile Include="Extensions\ClientObjectExtensions.cs" />
+    <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ClientContextExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FeatureExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FileFolderExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ListExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\NavigationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\PageExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SearchExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SecurityExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TenantExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\VariationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WebExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WorkflowExtensions.deprecated.cs" />
+    <Compile Include="Extensions\ExternalSharingExtensions.cs" />
+    <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
+    <Compile Include="Extensions\FileFolderExtensions.cs" />
+    <Compile Include="Extensions\InformationManagementExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\ListRatingExtensions.cs" />
+    <Compile Include="Extensions\ProvisioningExtensions.cs" />
+    <Compile Include="Extensions\PublishingExtensions.cs" />
+    <Compile Include="Extensions\RecordsManagementExtensions.cs" />
+    <Compile Include="Extensions\SearchExtensions.cs" />
+    <Compile Include="Extensions\TaxonomyExtensions.cs" />
+    <Compile Include="Extensions\TenantExtensions.cs" />
+    <Compile Include="CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\ClientSidePageCanvas.cs" />
+    <Compile Include="Pages\ClientSidePageControls.cs" />
+    <Compile Include="Pages\ClientSidePagesControlData.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
     <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
-    <Compile Include="AppModelExtensions\VariationExtensions.cs" />
-    <Compile Include="AppModelExtensions\WorkflowExtensions.cs" />
+    <Compile Include="Extensions\VariationExtensions.cs" />
+    <Compile Include="Extensions\WorkflowExtensions.cs" />
     <Compile Include="AuthenticationManager.cs" />
-    <Compile Include="AppModelExtensions\BrandingExtensions.cs" />
+    <Compile Include="Extensions\BrandingExtensions.cs" />
     <Compile Include="BuiltInContentTypeId.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Diagnostics\Log.cs" />
@@ -435,11 +475,6 @@
     </Compile>
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\ValidationExtensions.cs" />
-    <Compile Include="CoreResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CoreResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Framework\Provisioning\BaseTemplates\BaseTemplateManager.cs" />
     <Compile Include="Framework\Provisioning\Connectors\AzureStorageConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileConnectorBase.cs" />
@@ -619,11 +654,13 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListViewIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteOwnerToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
@@ -691,7 +728,7 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
-    <Compile Include="AppModelExtensions\PnPClientContext.cs" />
+    <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
@@ -739,13 +776,13 @@
     <Compile Include="Utilities\UrlUtility.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppModelExtensions\FeatureExtensions.cs" />
-    <Compile Include="AppModelExtensions\JavaScriptExtensions.cs" />
-    <Compile Include="AppModelExtensions\NavigationExtensions.cs" />
-    <Compile Include="AppModelExtensions\PageExtensions.cs" />
+    <Compile Include="Extensions\FeatureExtensions.cs" />
+    <Compile Include="Extensions\JavaScriptExtensions.cs" />
+    <Compile Include="Extensions\NavigationExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AppModelExtensions\SecurityExtensions.cs" />
-    <Compile Include="AppModelExtensions\WebExtensions.cs" />
+    <Compile Include="Extensions\SecurityExtensions.cs" />
+    <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Utilities\EncryptionUtility.cs" />
     <Compile Include="Utilities\JsonUtility.cs" />
     <Compile Include="Utilities\MailUtility.cs" />
@@ -913,7 +950,8 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
+    <Content Include="Sites\Dummy.txt" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />

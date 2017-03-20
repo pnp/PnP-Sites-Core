@@ -1,6 +1,7 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
@@ -14,8 +15,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public FeatureTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_b456f6e7-d69d-4a19-abb1-fd7f8be33019";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_b456f6e7-d69d-4a19-abb1-fd7f8be33019/sub";
         }
         #endregion
 
@@ -41,11 +42,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionFeatureActivationDeactivationTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
-                Assert.IsTrue(FeatureValidator.Validate(result.SourceTemplate.Features, result.TargetTemplate.Features));
-            }
+            new FeatureImplementation().SiteCollectionFeatureActivationDeactivation(centralSiteCollectionUrl);
         }
         #endregion
 
@@ -57,11 +54,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebFeatureActivationDeactivationTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "feature_base.xml", Handlers.Features);
-                Assert.IsTrue(FeatureValidator.ValidateFeatures(result.SourceTemplate.Features.WebFeatures, result.TargetTemplate.Features.WebFeatures));
-            }
+            new FeatureImplementation().WebFeatureActivationDeactivation(centralSubSiteUrl);
         }
         #endregion
     }

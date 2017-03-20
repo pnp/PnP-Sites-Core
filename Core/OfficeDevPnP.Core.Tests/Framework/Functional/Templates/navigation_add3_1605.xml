@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="navigation_add3_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Navigation>
+    <pnp:GlobalNavigation NavigationType="Inherit">      
+    </pnp:GlobalNavigation>
+    <pnp:CurrentNavigation NavigationType="Structural">
+    <pnp:StructuralNavigation RemoveExistingNodes="true">
+      <pnp:NavigationNode Title="Home3" IsExternal="false" Url="{site}/SitePages/Home.aspx" />
+      <pnp:NavigationNode Title="Libraries3" Url="{site}">
+        <pnp:NavigationNode Title="Shared Docs" IsExternal="false" Url="{site}/Shared Documents/Forms/AllItems.aspx" />
+      </pnp:NavigationNode>
+      <pnp:NavigationNode Title="Privacy3" IsExternal="true" Url="http://www.company.com/privacy/" />
+    </pnp:StructuralNavigation>
+    </pnp:CurrentNavigation>
+  </pnp:Navigation>
+</pnp:ProvisioningTemplate>

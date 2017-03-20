@@ -45,8 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     if (roleDefinition != null)
                     {
                         roleDefinitionBindingCollection.Add(roleDefinition);
+                        securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
                     }
-                    securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
                 }
             }
             context.ExecuteQueryRetry();

@@ -6,8 +6,8 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
                -Option to deprecate terms + reuse them
 -->
 
-<pnp:ProvisioningTemplate ID="termgroup_delta_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">  
-  <pnp:TermGroups>    
+<pnp:ProvisioningTemplate ID="termgroup_delta_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:TermGroups>
     <!-- tenant/farm term group -->
     <pnp:TermGroup Name="TG_2">
       <pnp:TermSets>
@@ -33,15 +33,33 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
                 <pnp:Term Name="TS_2_2_6_3" CustomSortOrder="3" />
               </pnp:Terms>
             </pnp:Term>
-            <pnp:Term Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" />
+            <pnp:Term Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" IsReused="true" IsSourceTerm="true" SourceTermId="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}">
+              <pnp:Labels>
+                <pnp:Label Language="1033" Value="TS_2_2_7_Label_1" />
+                <pnp:Label Language="1033" Value="TS_2_2_7_Label_2" />
+              </pnp:Labels>
+              <pnp:CustomProperties>
+                <pnp:Property Key="test_shared_1" Value="value_1" />
+              </pnp:CustomProperties>
+              <pnp:LocalCustomProperties>
+                <pnp:Property Key="test_local_1" Value="value_1" />
+                <pnp:Property Key="test_local_2" Value="value_2" />
+              </pnp:LocalCustomProperties>
+            </pnp:Term>
             <!-- Deprecated term-->
             <pnp:Term Name="TS_2_2_8" ID="{C4A1EC3E-2DA4-4D90-990C-12EA9842F77E}" IsDeprecated="true"/>
-          </pnp:Terms>          
+          </pnp:Terms>
         </pnp:TermSet>
         <pnp:TermSet Name="TS_2_4" ID="{B279D248-73A6-42AD-9AF4-A6D5A19DB750}">
           <pnp:Terms>
             <!-- Term reuse requires the ID of the term to match an already created term id + specify the IsReused flag -->
-            <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" IsSourceTerm="false" />
+            <pnp:Term IsReused="true" Name="TS_2_2_7" ID="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}" IsSourceTerm="false" SourceTermId="{9D90ABC9-659D-4D85-8597-6CB332F8DCA0}">
+              <!-- A reused term can have it's own local custom properties -->
+              <pnp:LocalCustomProperties>
+                <pnp:Property Key="test_local_3" Value="value_3" />
+                <pnp:Property Key="test_local_4" Value="value_4" />
+              </pnp:LocalCustomProperties>
+            </pnp:Term>
           </pnp:Terms>
         </pnp:TermSet>
       </pnp:TermSets>
@@ -50,7 +68,7 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
     <!-- Setting description on the site collection term group is not supported -->
     <pnp:TermGroup Name="{sitecollectiontermgroupname}" SiteCollectionTermGroup="true" >
       <!-- Add new term to existing termset-->
-      <pnp:TermSets>        
+      <pnp:TermSets>
         <pnp:TermSet Name="TS_3_1">
           <pnp:Terms>
             <pnp:Term Name="TS_3_C" />
@@ -63,7 +81,7 @@ Base template: goal is to verify the delta behavior + 201605 added functionality
             <pnp:Term Name="TS_3_2_B" />
           </pnp:Terms>
         </pnp:TermSet>
-      </pnp:TermSets>  
+      </pnp:TermSets>
     </pnp:TermGroup>
   </pnp:TermGroups>
 </pnp:ProvisioningTemplate>

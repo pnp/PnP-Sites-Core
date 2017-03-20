@@ -26,7 +26,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         string IXMLSchemaFormatter.NamespaceUri
         {
+#pragma warning disable 618
             get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08); }
+#pragma warning restore 618
         }
 
         string IXMLSchemaFormatter.NamespacePrefix
@@ -38,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Load the template into an XDocument
@@ -51,7 +53,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             // Prepare the XML Schema Set
             XmlSchemaSet schemas = new XmlSchemaSet();
+#pragma warning disable 618
             schemas.Add(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08,
+#pragma warning restore 618
                 new XmlTextReader(stream));
 
             Boolean result = true;
@@ -68,7 +72,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             V201508.ProvisioningTemplate result = new V201508.ProvisioningTemplate();
@@ -81,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             wrappedResult.Templates = new V201508.Templates[] {
                 new V201508.Templates
                 {
-                    ID = String.Format("CONTAINER-{0}", template.Id),
+                    ID = $"CONTAINER-{template.Id}",
                     ProvisioningTemplate = new V201508.ProvisioningTemplate[]
                     {
                         result
@@ -382,6 +386,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                          Description = ct.Description,
                          Group = ct.Group,
                          Name = ct.Name,
+                         Sealed = ct.Sealed,
+                         Hidden =  ct.Hidden,
+                         ReadOnly = ct.ReadOnly,
                          FieldRefs = ct.FieldRefs.Count > 0 ?
                          (from fieldRef in ct.FieldRefs
                           select new V201508.ContentTypeFieldRef
@@ -588,7 +595,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
+#pragma warning disable 618
                              Rights = customAction.RightsValue,
+#pragma warning restore 618
                              RightsSpecified = true,
                              ScriptBlock = customAction.ScriptBlock,
                              ScriptSrc = customAction.ScriptSrc,
@@ -620,7 +629,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                              ImageUrl = customAction.ImageUrl,
                              Location = customAction.Location,
                              Name = customAction.Name,
+#pragma warning disable 618
                              Rights = customAction.RightsValue,
+#pragma warning restore 618
                              RightsSpecified = true,
                              ScriptBlock = customAction.ScriptBlock,
                              ScriptSrc = customAction.ScriptSrc,
@@ -737,8 +748,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.Pages = new V201508.Pages()
                 {
                     Page = pages.ToArray(),
-                    WelcomePage = template.Pages.Any(p => p.WelcomePage = true) ?
-                        template.Pages.Last(p => p.WelcomePage = true).Url : null,
+#pragma warning disable 618
+                    WelcomePage = template.Pages.Any(p => p.WelcomePage = true) ? template.Pages.Last(p => p.WelcomePage = true).Url : null
+#pragma warning restore 618
                 };
             }
 
@@ -788,13 +800,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.ComposedLook = new V201508.ComposedLook
                 {
+#pragma warning disable 618
                     AlternateCSS = template.ComposedLook.AlternateCSS,
+#pragma warning restore 618
                     BackgroundFile = template.ComposedLook.BackgroundFile,
                     ColorFile = template.ComposedLook.ColorFile,
                     FontFile = template.ComposedLook.FontFile,
+#pragma warning disable 618
                     MasterPage = template.ComposedLook.MasterPage,
+#pragma warning restore 618
                     Name = template.ComposedLook.Name,
+#pragma warning disable 618
                     SiteLogo = template.ComposedLook.SiteLogo,
+#pragma warning restore 618
                     Version = template.ComposedLook.Version,
                     VersionSpecified = true,
                 };
@@ -873,11 +891,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             #region Search Settings
 
+#pragma warning disable 618
             if (!String.IsNullOrEmpty(template.SearchSettings))
             {
                 result.SearchSettings = template.SearchSettings.ToXmlElement();
             }
-
+#pragma warning restore 618
             #endregion
 
             #region Publishing
@@ -948,6 +967,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             #region Providers
 
             // Translate Providers, if any
+#pragma warning disable 618
             if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
              {
                 var extensibilityHandlers = template.ExtensibilityHandlers.Union(template.Providers);
@@ -964,7 +984,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
-
+#pragma warning restore 618
             #endregion
 
             XmlSerializerNamespaces ns =
@@ -986,7 +1006,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             // Crate a copy of the source stream
@@ -1003,7 +1023,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             sourceStream.Position = 0;
             XDocument xml = XDocument.Load(sourceStream);
+#pragma warning disable 618
             XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08;
+#pragma warning restore 618
 
             // Prepare a variable to hold the single source formatted template
             V201508.ProvisioningTemplate source = null;
@@ -1450,7 +1472,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
+#pragma warning disable 618
                             RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
+#pragma warning restore 618
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
@@ -1472,7 +1496,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             ImageUrl = customAction.ImageUrl,
                             Location = customAction.Location,
                             Name = customAction.Name,
+#pragma warning disable 618
                             RightsValue = customAction.RightsSpecified ? customAction.Rights : 0,
+#pragma warning restore 618
                             ScriptBlock = customAction.ScriptBlock,
                             ScriptSrc = customAction.ScriptSrc,
                             Sequence = customAction.SequenceSpecified ? customAction.Sequence : 100,
@@ -1548,6 +1574,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             break;
                     }
 
+#pragma warning disable 618
                     result.Pages.Add(new Model.Page(page.Url, page.Overwrite, pageLayout,
                         (page.WebParts != null ?
                             (from wp in page.WebParts
@@ -1562,6 +1589,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         source.Pages.WelcomePage == page.Url,
                         page.Security.FromSchemaToTemplateObjectSecurityV201508()));
                 }
+#pragma warning restore 618
+
             }
 
 
@@ -1603,13 +1632,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Translate ComposedLook, if any
             if (source.ComposedLook != null)
             {
+#pragma warning disable 618
                 result.ComposedLook.AlternateCSS = source.ComposedLook.AlternateCSS;
+#pragma warning restore 618
                 result.ComposedLook.BackgroundFile = source.ComposedLook.BackgroundFile;
                 result.ComposedLook.ColorFile = source.ComposedLook.ColorFile;
                 result.ComposedLook.FontFile = source.ComposedLook.FontFile;
+#pragma warning disable 618
                 result.ComposedLook.MasterPage = source.ComposedLook.MasterPage;
+#pragma warning restore 618
                 result.ComposedLook.Name = source.ComposedLook.Name;
+#pragma warning disable 618
                 result.ComposedLook.SiteLogo = source.ComposedLook.SiteLogo;
+#pragma warning restore 618
                 result.ComposedLook.Version = source.ComposedLook.Version;
             }
 
@@ -1670,7 +1705,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             if (source.SearchSettings != null)
             {
+#pragma warning disable 618
                 result.SearchSettings = source.SearchSettings.OuterXml;
+#pragma warning restore 618
             }
 
             #endregion

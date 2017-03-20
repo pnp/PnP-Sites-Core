@@ -6,7 +6,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private readonly string _value = null;
         public FieldTitleToken(Web web, string InternalName, string Title)
-            : base(web, string.Format("{{fieldtitle:{0}}}", InternalName))
+            : base(web, $"{{fieldtitle:{InternalName}}}")
         {
             _value = Title;
         }

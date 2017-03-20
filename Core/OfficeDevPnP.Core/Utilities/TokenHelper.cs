@@ -1,6 +1,6 @@
 using Microsoft.IdentityModel;
-using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
-using Microsoft.IdentityModel.S2S.Tokens;
+using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
+using SharePointPnP.IdentityModel.Extensions.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
 using System;
@@ -719,7 +719,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             get
             {
-                if (String.IsNullOrEmpty(globalEndPointPrefix))
+                if (globalEndPointPrefix == null)
                 {
                     return "accounts";
                 }
@@ -979,7 +979,14 @@ namespace OfficeDevPnP.Core.Utilities
 
         private static string GetAcsGlobalEndpointUrl()
         {
-            return String.Format(CultureInfo.InvariantCulture, "https://{0}.{1}/", GlobalEndPointPrefix, AcsHostUrl);
+            if (GlobalEndPointPrefix.Length == 0)
+            {
+                return String.Format(CultureInfo.InvariantCulture, "https://{0}/", AcsHostUrl);
+            }
+            else
+            {
+                return String.Format(CultureInfo.InvariantCulture, "https://{0}.{1}/", GlobalEndPointPrefix, AcsHostUrl);
+            }
         }
 
         public static JsonWebSecurityTokenHandler CreateJsonWebSecurityTokenHandler()

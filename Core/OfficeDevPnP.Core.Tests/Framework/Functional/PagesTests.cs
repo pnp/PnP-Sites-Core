@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Linq;
@@ -44,12 +45,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPagesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "pages_add.xml", Handlers.Pages);
-                PagesValidator pv = new PagesValidator();
-                Assert.IsTrue(pv.Validate(result.SourceTemplate.Pages,cc));
-            }
+            new PagesImplementation().SiteCollectionPages(centralSiteCollectionUrl);
         }
         #endregion
 
@@ -61,12 +57,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebPagesTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "pages_add.xml", Handlers.Pages);
-                PagesValidator pv = new PagesValidator();
-                Assert.IsTrue(pv.Validate(result.SourceTemplate.Pages, cc));
-            }
+            new PagesImplementation().WebPages(centralSubSiteUrl);
         }
         #endregion
     }

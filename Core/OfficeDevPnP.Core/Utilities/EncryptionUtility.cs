@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Utilities
         public static SecureString ToSecureString(string input)
         {
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentException("Input string is empty and cannot be made into a SecureString", "input");
+                throw new ArgumentException("Input string is empty and cannot be made into a SecureString", nameof(input));
 
             SecureString secure = new SecureString();
             foreach (char c in input)

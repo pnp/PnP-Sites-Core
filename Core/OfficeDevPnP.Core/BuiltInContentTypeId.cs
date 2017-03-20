@@ -71,9 +71,36 @@ namespace OfficeDevPnP.Core
         public const string XMLDocument = "0x010101";
         public const string XSLStyle = "0x010100734778F2B7DF462491FC91844AE431CF";
 
+        /// <summary>
+        /// Contains the content identifier (ID) for content types used in the publishing infrastructure.
+        /// </summary>
+        public const string ReusableHTML = "0x01002CF74A4DAE39480396EEA7A4BA2BE5FB";
+        public const string PublishedLink = "0x01004613D6562E4C41A7B9DADDAC1689E00D";
+        public const string ReusableText = "0x01004D5A79BAFA4A4576B79C56FF3D0D662D";
+        public const string PageOutputCache = "0x010087D89D279834C94E98E5E1B4A913C67E";
+        public const string DeviceChannel = "0x01009AF87C5C1DF34CA38277FEABCB5018F6";
+        public const string DeviceChannelMappings = "0x010100FDA260FD09A244B183A666F2AE2475A6";
+        public const string SystemPageLayout = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC1";
+        public const string PageLayout = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
+        public const string SystemMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F";
+        public const string ASPNETMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD1";
+        public const string HtmlMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
+        public const string SystemPage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2";
+        public const string Page = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39";
+        public const string ArticlePage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D";
+        public const string EnterpriseWikiPage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4D22B1CDC3DE08CFFB9C";
+        public const string ProjectPage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39004C1F8B46085B4D22B1CDC3DE08CFFB9C0055EF50AAFF2E4BADA437E4BAE09A30F8";
+        public const string WelcomePage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4";
+        public const string ErrorPage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C";
+        public const string RedirectPage = "0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900FD0E870BA06948879DBD5F9813CD8799";
+
+        /// <summary>
+        /// Contains the content identifier (ID) for content types used in the modern page infrastructure
+        /// </summary>
+        public const string ModernArticlePage = "0x0101009D1CB255DA76424F860D91F20E6C4118";
+
 
         private static Dictionary<string, bool> s_dict = (Dictionary<string, bool>) null;
-
 
         public static bool Contains(string id)
         {
@@ -132,6 +159,26 @@ namespace OfficeDevPnP.Core
                 s_dict.Add(WorkflowTask, true);
                 s_dict.Add(XMLDocument, true);
                 s_dict.Add(XSLStyle, true);
+                s_dict.Add(ReusableHTML, true);
+                s_dict.Add(PublishedLink, true);
+                s_dict.Add(ReusableText, true);
+                s_dict.Add(PageOutputCache, true);
+                s_dict.Add(DeviceChannel, true);
+                s_dict.Add(DeviceChannelMappings, true);
+                s_dict.Add(SystemPageLayout, true);
+                s_dict.Add(PageLayout, true);
+                s_dict.Add(SystemMasterPage, true);
+                s_dict.Add(ASPNETMasterPage, true);
+                s_dict.Add(HtmlMasterPage, true);
+                s_dict.Add(SystemPage, true);
+                s_dict.Add(Page, true);
+                s_dict.Add(ArticlePage, true);
+                s_dict.Add(EnterpriseWikiPage, true);
+                s_dict.Add(ProjectPage, true);
+                s_dict.Add(WelcomePage, true);
+                s_dict.Add(ErrorPage, true);
+                s_dict.Add(RedirectPage, true);
+                s_dict.Add(ModernArticlePage, true);
             }
             bool flag = false;
             s_dict.TryGetValue(id, out flag);
