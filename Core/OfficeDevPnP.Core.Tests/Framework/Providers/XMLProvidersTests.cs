@@ -816,10 +816,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Site Classification Application", ca.Description);
             Assert.AreEqual("Microsoft.SharePoint.SiteSettings", ca.Location);
             Assert.AreEqual("Site Classification", ca.Title);
-            //Assert.AreEqual(1000, ca.Sequence);
+            Assert.AreEqual(1000, ca.Sequence);
             Assert.AreEqual("ManageWeb", ca.Rights);
             Assert.AreEqual("https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}", ca.Url);
-            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.None, ca.RegistrationType);
             Assert.IsNotNull(ca.CommandUIExtension);
             Assert.AreEqual("http://sharepoint.com", ca.ImageUrl);
             Assert.AreEqual("101", ca.RegistrationId);
@@ -833,9 +833,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Override new sub-site link", ca.Description);
             Assert.AreEqual("ScriptLink", ca.Location);
             Assert.AreEqual("SubSiteOveride", ca.Title);
-            //Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual(100, ca.Sequence);
             Assert.AreEqual("~site/PnP_Provisioning_JS/PnP_EmbeddedJS.js", ca.ScriptSrc);
-            Assert.AreEqual(UserCustomActionRegistrationType.ContentType, ca.RegistrationType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.ContentType, ca.RegistrationType);
             Assert.IsNull(ca.CommandUIExtension);
 
             ca = template.CustomActions.WebCustomActions.FirstOrDefault(c => c.Name == "CA_WEB_DOCLIB_MENU_SAMPLE");
@@ -844,9 +844,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("ActionsMenu", ca.Group);
             Assert.AreEqual("Microsoft.SharePoint.StandardMenu", ca.Location);
             Assert.AreEqual("DocLib Custom Menu", ca.Title);
-            //Assert.AreEqual(100, ca.Sequence);
+            Assert.AreEqual(100, ca.Sequence);
             Assert.AreEqual("/_layouts/CustomActionsHello.aspx?ActionsMenu", ca.Url);
-            Assert.AreEqual(UserCustomActionRegistrationType.None, ca.RegistrationType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.None, ca.RegistrationType);
             Assert.IsNull(ca.CommandUIExtension);
         }
         #endregion

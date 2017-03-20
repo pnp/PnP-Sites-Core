@@ -29,21 +29,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var customActionsName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var customActionName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomAction, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var customActionsType = Type.GetType(customActionsName, true);
+            var customActionsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var customActionsType = Type.GetType(customActionsTypeName, true);
+            var customActionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomAction, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var customActionType = Type.GetType(customActionTypeName, true);
+            var registrationTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RegistrationType";
+            var registrationTypeType = Type.GetType(registrationTypeTypeName, true);
+            var commandUIExtensionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActionCommandUIExtension";
+            var commandUIExtensionType = Type.GetType(commandUIExtensionTypeName, true);
 
             var target = Activator.CreateInstance(customActionsType, true);
 
             var expressions = new Dictionary<string, IResolver>();
-            //expressions.Add($"{customActionName}.CommandUIExtension", new Comm);
+            expressions.Add($"{customActionType.FullName}.Rights", new FromBasePermissionsToStringValueResolver());
+            expressions.Add($"{customActionType.FullName}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
+            expressions.Add($"{customActionType.FullName}.RegistrationTypeSpecified", new ExpressionValueResolver((s, p) => true));
+            expressions.Add($"{customActionType.FullName}.SequenceSpecified", new ExpressionValueResolver((s,p) => true));
+            expressions.Add($"{customActionType.FullName}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
-
-            //expressions.Add(c=> c.SiteCustomActions[0].Sequence, )
-            //expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
-            //expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
-            //expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
 
             persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
         }
