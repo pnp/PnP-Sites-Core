@@ -40,5 +40,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     System.Reflection.BindingFlags.Public |
                     System.Reflection.BindingFlags.IgnoreCase));
         }
+
+        /// <summary>
+        /// Sets the value of a public, instance property 
+        /// </summary>
+        /// <param name="source">The source object</param>
+        /// <param name="propertyName">The property name, case insensitive</param>
+        public static void SetPublicInstancePropertyValue(this Object source, String propertyName, object value)
+        {
+            source?.GetType()?.GetProperty(propertyName,
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase)?
+                .SetValue(source, value);
+        }
     }
 }

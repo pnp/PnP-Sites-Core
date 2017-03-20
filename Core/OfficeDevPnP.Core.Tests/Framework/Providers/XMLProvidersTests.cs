@@ -602,13 +602,28 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/Forms/DisplayForm.aspx", ct.DisplayFormUrl);
             Assert.AreEqual("/Forms/NewForm.aspx", ct.NewFormUrl);
             Assert.AreEqual("/Forms/EditForm.aspx", ct.EditFormUrl);
-            //Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate);
-            Assert.IsNotNull(ct.DocumentSetTemplate);
+            Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate);
             Assert.IsTrue(ct.Hidden);
             Assert.IsTrue(ct.Overwrite);
             Assert.IsTrue(ct.ReadOnly);
             Assert.IsTrue(ct.Sealed);
 
+            Assert.IsNotNull(ct.DocumentSetTemplate);
+            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
+            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3")));
+            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c == new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc")));
+            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531")));
+            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f")));
+            Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
+            Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
+
+
+
+            var dd = ct.DocumentSetTemplate.DefaultDocuments.FirstOrDefault(d => d.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001");
+            Assert.IsNotNull(dd);
+            Assert.AreEqual("document.dotx", dd.FileSourcePath);
+            Assert.AreEqual("DefaultDocument", dd.Name);
 
             Assert.IsNotNull(ct.FieldRefs);
             Assert.AreEqual(4, ct.FieldRefs.Count);
@@ -635,14 +650,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
 
             var dt = new DocumentSetTemplate();
-            dt.SharedFields.Add(Guid.NewGuid());
-            dt.SharedFields.Add(Guid.NewGuid());
-            dt.WelcomePageFields.Add(Guid.NewGuid());
-            dt.WelcomePageFields.Add(Guid.NewGuid());
+            dt.AllowedContentTypes.Add("0x01005D4F34E4BE7F4B6892AEBE088EDD215E002");
+            dt.SharedFields.Add(new Guid("f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3"));
+            dt.SharedFields.Add(new Guid("a8df65ec-0d06-4df1-8edf-55d48b3936dc"));
+            dt.WelcomePageFields.Add(new Guid("c69d2ffc-0c86-474a-9cc7-dcd7774da531"));
+            dt.WelcomePageFields.Add(new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f"));
             dt.WelcomePage = "home.aspx";
             dt.DefaultDocuments.Add(new DefaultDocument()
             {
-                ContentTypeId = Guid.NewGuid().ToString(),
+                ContentTypeId = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001",
                 FileSourcePath = "document.dotx",
                 Name = "DefaultDocument"
             });
@@ -675,13 +691,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/Forms/DisplayForm.aspx", ct.DisplayFormUrl);
             Assert.AreEqual("/Forms/NewForm.aspx", ct.NewFormUrl);
             Assert.AreEqual("/Forms/EditForm.aspx", ct.EditFormUrl);
-            //Assert.IsNotNull(ct.DocumentTemplate);
-            //Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate.TargetName);
+            Assert.IsNotNull(ct.DocumentTemplate);
+            Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate.TargetName);
             Assert.IsTrue(ct.Hidden);
             Assert.IsTrue(ct.Overwrite);
             Assert.IsTrue(ct.ReadOnly);
             Assert.IsTrue(ct.Sealed);
 
+            Assert.IsNotNull(ct.DocumentSetTemplate);
+            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
+            Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c.ContentTypeID == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c.ID == "f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c.ID == "a8df65ec-0d06-4df1-8edf-55d48b3936dc"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c.ID == "c69d2ffc-0c86-474a-9cc7-dcd7774da531"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c.ID == "b9132b30-2b9e-47d4-b0fc-1ac34a61506f"));
+            Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
+            Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
+
+            var dd = ct.DocumentSetTemplate.DefaultDocuments.FirstOrDefault(d => d.ContentTypeID == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001");
+            Assert.IsNotNull(dd);
+            Assert.AreEqual("document.dotx", dd.FileSourcePath);
+            Assert.AreEqual("DefaultDocument", dd.Name);
 
             Assert.IsNotNull(ct.FieldRefs);
             Assert.AreEqual(4, ct.FieldRefs.Count());
