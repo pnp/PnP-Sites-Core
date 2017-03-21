@@ -172,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 ValidateTaxonomyFieldDefaultValue(taxField);
                             }
-                            UpdateTaxonomyFieldOpenValue(taxField, originalFieldXml);
+                            SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
                         }
                     }
                     else
@@ -315,7 +315,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         ValidateTaxonomyFieldDefaultValue(taxField);
                     }
-                    UpdateTaxonomyFieldOpenValue(taxField, originalFieldXml);
+                    SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
                 }
 
             }
@@ -328,7 +328,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static void UpdateTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
+        private static void SetTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
         {
             bool openValue;
             var taxonomyFieldElement = XElement.Parse(taxonomyFieldXml);
