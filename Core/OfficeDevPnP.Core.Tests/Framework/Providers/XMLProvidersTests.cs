@@ -723,7 +723,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(field.Hidden);
         }
 
-
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_CustomActions_201605()
@@ -848,6 +847,179 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/_layouts/CustomActionsHello.aspx?ActionsMenu", ca.Url);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.None, ca.RegistrationType);
             Assert.IsNull(ca.CommandUIExtension);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Files_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Files);
+
+            var file = result.Files.FirstOrDefault(f => f.Src == "/SitePages/home.aspx");
+            Assert.IsNotNull(file);
+            Assert.AreEqual("SitePages", file.Folder);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Published, file.Level);
+            Assert.IsTrue(file.Overwrite);
+
+            Assert.IsNotNull(file.Properties);
+            var property = file.Properties.FirstOrDefault(p => p.Key == "MyProperty1");
+            Assert.IsNotNull(property);
+            Assert.AreEqual("Value1", property.Value);
+            property = file.Properties.FirstOrDefault(p => p.Key == "MyProperty2");
+            Assert.IsNotNull(property);
+            Assert.AreEqual("Value2", property.Value);
+
+            Assert.IsNotNull(file.Security);
+            Assert.IsTrue(file.Security.ClearSubscopes);
+            Assert.IsTrue(file.Security.CopyRoleAssignments);
+            Assert.IsNotNull(file.Security.RoleAssignments);
+            var assingment = file.Security.RoleAssignments.FirstOrDefault(r => r.Principal == "admin@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("Owner", assingment.RoleDefinition);
+            assingment = file.Security.RoleAssignments.FirstOrDefault(r => r.Principal == "dev@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("Contributor", assingment.RoleDefinition);
+
+            Assert.IsNotNull(file.WebParts);
+            var webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Content");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual((uint)1, webpart.Order);
+            Assert.AreEqual("Main", webpart.Zone);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+
+            Assert.IsNotNull(file.WebParts);
+            webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual((uint)10, webpart.Order);
+            Assert.AreEqual("Left", webpart.Zone);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+
+            file = result.Files.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
+            Assert.IsNotNull(file);
+            Assert.AreEqual("SAMPLE", file.Folder);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Draft, file.Level);
+            Assert.IsFalse(file.Overwrite);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Files_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var newfile = new Core.Framework.Provisioning.Model.File()
+            {
+                Src = "/SitePages/home.aspx",
+                Folder = "SitePages",
+                Level = Core.Framework.Provisioning.Model.FileLevel.Published,
+                Overwrite = true,
+                Security = new ObjectSecurity()
+                {
+                    ClearSubscopes = true,
+                    CopyRoleAssignments = true,
+                }
+            };
+            newfile.Properties.Add("MyProperty1", "MyValue1");
+            newfile.Properties.Add("MyProperty2", "MyValue2");
+            newfile.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "admin@sharepoint.com", RoleDefinition = "Owner" });
+            newfile.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "dev@sharepoint.com", RoleDefinition = "Contributor" });
+            newfile.WebParts.Add(new WebPart() { Title = "My Content", Order = 1, Zone = "Main", Contents = "[!<![CDATA[web part definition goes here]]>" });
+            newfile.WebParts.Add(new WebPart() { Title = "My Editor", Order = 10, Zone = "Left", Contents = "[!<![CDATA[web part definition goes here]]>" });
+            result.Files.Add(newfile);
+
+            newfile = new Core.Framework.Provisioning.Model.File()
+            {
+                Src= "/Resources/Files/SAMPLE.js",
+                Folder = "SAMPLE",
+                Level = Core.Framework.Provisioning.Model.FileLevel.Draft,
+                Overwrite = false
+            };
+            result.Files.Add(newfile);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-files.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-files.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template.Files);
+            Assert.IsNotNull(template.Files.File);
+            var file = template.Files.File.FirstOrDefault(f => f.Src == "/SitePages/home.aspx");
+            Assert.IsNotNull(file);
+            Assert.AreEqual("SitePages", file.Folder);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Published, file.Level);
+            Assert.IsTrue(file.Overwrite);
+
+            Assert.IsNotNull(file.Properties);
+            var property = file.Properties.FirstOrDefault(p => p.Key == "MyProperty1");
+            Assert.IsNotNull(property);
+            Assert.AreEqual("Value1", property.Value);
+            property = file.Properties.FirstOrDefault(p => p.Key == "MyProperty2");
+            Assert.IsNotNull(property);
+            Assert.AreEqual("Value2", property.Value);
+
+            Assert.IsNotNull(file.Security);
+            Assert.IsNotNull(file.Security.BreakRoleInheritance);
+            Assert.IsTrue(file.Security.BreakRoleInheritance.ClearSubscopes);
+            Assert.IsTrue(file.Security.BreakRoleInheritance.CopyRoleAssignments);
+            Assert.IsNotNull(file.Security.BreakRoleInheritance.RoleAssignment);
+            var assingment = file.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "admin@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("Owner", assingment.RoleDefinition);
+            assingment = file.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "dev@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("Contributor", assingment.RoleDefinition);
+
+            Assert.IsNotNull(file.WebParts);
+            var webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Content");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual(1, webpart.Order);
+            Assert.AreEqual("Main", webpart.Zone);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("[!<![CDATA[web part definition goes here]]>", webpart.Contents);
+
+            Assert.IsNotNull(file.WebParts);
+            webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual(10, webpart.Order);
+            Assert.AreEqual("Left", webpart.Zone);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("[!<![CDATA[web part definition goes here]]>", webpart.Contents);
+
+            file = template.Files.File.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
+            Assert.IsNotNull(file);
+            Assert.AreEqual("SAMPLE", file.Folder);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Draft, file.Level);
+            Assert.IsFalse(file.Overwrite);
         }
         #endregion
     }

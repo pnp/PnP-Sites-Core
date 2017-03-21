@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// Typed vesion of PropertyObjectTypeResolver
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class PropertyObjectTypeResolver<T> : PropertyObjectTypeResolver
+    internal class PropertyCollectionTypeResolver<T> : PropertyObjectTypeResolver
     {
-        public PropertyObjectTypeResolver(Expression<Func<T, object>> exp, Func<object, object> sourceValueSelector = null) : 
+        public PropertyCollectionTypeResolver(Expression<Func<T, object>> exp, Func<object, object> sourceValueSelector = null) : 
             base(GetPropertyType(exp), GetPropertyName(exp), sourceValueSelector)
         {
         }
@@ -33,42 +34,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <summary>
     /// Resolves a collection type from Domain Model to Schema
     /// </summary>
-    internal class PropertyObjectTypeResolver : ITypeResolver
+    internal class RoleAssigmentsFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name
         {
             get { return (this.GetType().Name); }
         }
 
-        private Type targetItemType;
-        private string propertyName;
-        private Func<object, object> sourceValueSelector = null;
 
-        public PropertyObjectTypeResolver(Type targetItemType, string propertyName, Func<object, object> sourceValueSelector = null)
+        public RoleAssigmentsFromSchemaToModelTypeResolver()
         {
-            this.targetItemType = targetItemType;
-            this.propertyName = propertyName;
-            if(sourceValueSelector != null)
-            {
-                this.sourceValueSelector = sourceValueSelector;
-            }
         }
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            var sourcePropertyValue = (this.sourceValueSelector == null) ? source.GetPublicInstancePropertyValue(propertyName) :
-                this.sourceValueSelector(source);
-            if (null != sourcePropertyValue)
+            List<RoleAssignment> res = new List<RoleAssignment>();
+            var sourceValue = source.GetPublicInstancePropertyValue("RoleAssignment");
+            if(sourceValue != null)
             {
-                var result = Activator.CreateInstance(this.targetItemType, true);
-                PnPObjectsMapper.MapProperties(sourcePropertyValue, result, resolvers, recursive);
-
-                return (result);
+                res = PnPObjectsMapper.MapObjects(sourceValue, new CollectionFromSchemaToModelTypeResolver(typeof(RoleAssignment)), null, true) as List<RoleAssignment>;
             }
-            else
-            {
-                return (null);
-            }
+            return res;
         }
     }
 }
