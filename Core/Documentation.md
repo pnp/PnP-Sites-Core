@@ -789,6 +789,16 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field
 
+#### GetFieldByInternalName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
+Returns the field if it exists. Null if does not exist.
+> ##### Parameters
+> **web:** Web to be processed
+
+> **internalName:** If true, search parent sites and root site
+
+> ##### Return value
+> 
+
 #### GetFieldByName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -1720,7 +1730,7 @@ Checks if a specific folder exists
 > ##### Return value
 > 
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.Folder,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.Folder,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Ensure that the folder structure is created. This also ensures hierarchy of folders.
 > ##### Parameters
 > **web:** Web to be processed - can be root web or sub site
@@ -1729,10 +1739,12 @@ Ensure that the folder structure is created. This also ensures hierarchy of fold
 
 > **folderPath:** Folder path
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The folder structure
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Web,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
 Checks if the folder exists at the top level of the web site, and if it does not exist creates it. Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
 > ##### Parameters
@@ -1740,10 +1752,12 @@ Checks if the folder exists at the top level of the web site, and if it does not
 
 > **folderName:** Folder name to retrieve or create
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The existing or newly created folder
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Folder,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Folder,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
 Checks if the subfolder exists, and if it does not exist creates it.
 > ##### Parameters
@@ -1751,16 +1765,20 @@ Checks if the subfolder exists, and if it does not exist creates it.
 
 > **folderName:** Folder name to retrieve or create
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The existing or newly created folder
 
-#### EnsureFolderPath(Microsoft.SharePoint.Client.Web,System.String)
+#### EnsureFolderPath(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 If the specified path is inside an existing list, then the folder is created inside that list. Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
 Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
 > ##### Parameters
 > **web:** Web to check for the specified folder
 
 > **webRelativeUrl:** Path to the folder, relative to the web site
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > The existing or newly created folder
@@ -2031,6 +2049,30 @@ Apply a policy to a site
 
 > ##### Return value
 > True if applied, false otherwise
+
+#### IsClosedBySitePolicy(Microsoft.SharePoint.Client.Web)
+Check if a site is closed
+> ##### Parameters
+> **web:** Web to operate on
+
+> ##### Return value
+> True if site is closed, false otherwise
+
+#### SetClosedBySitePolicy(Microsoft.SharePoint.Client.Web)
+Close a site, if it has a site policy applied and is currently not closed
+> ##### Parameters
+> **web:** 
+
+> ##### Return value
+> True if site was closed, false otherwise
+
+#### SetOpenBySitePolicy(Microsoft.SharePoint.Client.Web)
+Open a site, if it has a site policy applied and is currently closed
+> ##### Parameters
+> **web:** 
+
+> ##### Return value
+> True if site was opened, false otherwise
 
 ## SharePoint.Client.JavaScriptExtensions
             
@@ -2531,12 +2573,14 @@ Returns the GUID id of a list
 > **System.ArgumentNullException:** listName is null
 
 
-#### GetListByTitle(Microsoft.SharePoint.Client.Web,System.String)
+#### GetListByTitle(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.List,System.Object}}[])
 Get list by using Title
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site
 
 > **listTitle:** Title of the list to return
+
+> **expressions:** Additional list of lambda expressions of properties to load alike l => l.BaseType
 
 > ##### Return value
 > Loaded list instance matching to title or null
@@ -2546,12 +2590,14 @@ Get list by using Title
 > **System.ArgumentNullException:** listTitle is null
 
 
-#### GetListByUrl(Microsoft.SharePoint.Client.Web,System.String)
+#### GetListByUrl(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.List,System.Object}}[])
 Get list by using Url
 > ##### Parameters
 > **web:** Web (site) to be processed
 
 > **webRelativeUrl:** Url of list relative to the web (site), e.g. lists/testlist
+
+> **expressions:** Additional list of lambda expressions of properties to load alike l => l.BaseType
 
 > ##### Return value
 > 
@@ -2684,22 +2730,26 @@ Create view to existing list
 > **paged:** 
 
 
-#### GetViewById(Microsoft.SharePoint.Client.List,System.Guid)
+#### GetViewById(Microsoft.SharePoint.Client.List,System.Guid,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.View,System.Object}}[])
 Gets a view by Id
 > ##### Parameters
 > **list:** 
 
 > **id:** 
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > returns null if not found
 
-#### GetViewByName(Microsoft.SharePoint.Client.List,System.String)
+#### GetViewByName(Microsoft.SharePoint.Client.List,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.View,System.Object}}[])
 Gets a view by Name
 > ##### Parameters
 > **list:** 
 
 > **name:** 
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > returns null if not found
@@ -2855,18 +2905,22 @@ Adds custom action to a site collection. If the CustomAction exists the item wil
 > ##### Return value
 > True if action was successfull
 
-#### GetCustomActions(Microsoft.SharePoint.Client.Web)
+#### GetCustomActions(Microsoft.SharePoint.Client.Web,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.UserCustomAction,System.Object}}[])
 Returns all custom actions in a web
 > ##### Parameters
 > **web:** The web to process
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > 
 
-#### GetCustomActions(Microsoft.SharePoint.Client.Site)
+#### GetCustomActions(Microsoft.SharePoint.Client.Site,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.UserCustomAction,System.Object}}[])
 Returns all custom actions in a web
 > ##### Parameters
 > **site:** The site to process
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > 
@@ -4911,10 +4965,12 @@ Detects if the site in question has no script enabled or not. Detection is done 
 > ##### Return value
 > True if noscript, false otherwise
 
-#### GetAppInstances(Microsoft.SharePoint.Client.Web)
+#### GetAppInstances(Microsoft.SharePoint.Client.Web,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.AppInstance,System.Object}}[])
 Returns all app instances
 > ##### Parameters
 > **web:** The site to process
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > 
@@ -6090,6 +6146,8 @@ Looks up a localized string similar to Add users failed for group '{0}': {1} : {
 Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
 #### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
 Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+#### Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration
+Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
 #### Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate
 Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
 #### Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate
@@ -17339,6 +17397,11 @@ Get all sites that match the passed query. Batching is done in batches of 500 as
 > ##### Return value
 > Total result rows of the query
 
+## Core.AzureEnvironment
+            
+Enum to identify the supported Office 365 hosting environments
+        
+
 ## Core.AuthenticationManager
             
 This manager class can be used to obtain a SharePointContext object
@@ -17383,6 +17446,20 @@ Returns an app only ClientContext object
 > ##### Return value
 > ClientContext to be used by CSOM code
 
+#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
+Returns an app only ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **environment:** SharePoint environment being used
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
 #### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String)
 Returns an app only ClientContext object
 > ##### Parameters
@@ -17401,6 +17478,56 @@ Returns an app only ClientContext object
 > ##### Return value
 > ClientContext to be used by CSOM code
 
+#### GetAzureADACSEndPoint(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure ASC login end point for the given environment
+> ##### Parameters
+> **environment:** Environment to get the login information for
+
+> ##### Return value
+> Azure ASC login endpoint
+
+#### GetAzureADACSEndPointPrefix(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure ACS login end point prefix for the given environment
+> ##### Parameters
+> **environment:** Environment to get the login information for
+
+> ##### Return value
+> Azure ACS login endpoint prefix
+
+#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
+Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
+
+
+#### GetAccessTokenLease(System.DateTime)
+Get the access token lease time span.
+> ##### Parameters
+> **expiresOn:** The ExpiresOn time of the current access token
+
+> ##### Return value
+> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
+
+#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
+Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **icon:** Optional icon to use for the popup form
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
 #### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.String,System.String)
 Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
 > ##### Parameters
@@ -17415,17 +17542,21 @@ Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext obj
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
-Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
+Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
 
-> **icon:** Optional icon to use for the popup form
+> **user:** User to be used to instantiate the ClientContext object
+
+> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
+
+> **domain:** Domain of the user used to instantiate the ClientContext object
 
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -17436,10 +17567,12 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 
 > **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
 
-> ##### Return value
-> 
+> **environment:** SharePoint environment being used
 
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+> ##### Return value
+> Client context object
+
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -17450,8 +17583,10 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 
 > **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
 
+> **environment:** SharePoint environment being used
+
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
@@ -17461,7 +17596,7 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > **accessTokenGetter:** The AccessToken getter method to use
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAccessTokenAuthenticatedContext(System.String,System.String)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
@@ -17471,7 +17606,7 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > **accessToken:** An explicit value for the AccessToken
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -17488,10 +17623,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **thumbPrint:** The thumbprint of the certificate to locate in the store
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> ClientContext being used
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -17506,10 +17641,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **certificatePassword:** Password to the certificate
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -17524,10 +17659,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **certificatePassword:** Password to the certificate
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -17538,26 +17673,20 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
 
-> **certificate:** 
+> **certificate:** Certificate used to authenticate
 
-> **environment:** 
+> **environment:** SharePoint environment being used
 
 > ##### Return value
 > 
 
-#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
-Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+#### GetAzureADLoginEndPoint(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure AD login end point for the given environment
 > ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **user:** User to be used to instantiate the ClientContext object
-
-> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
-
-> **domain:** Domain of the user used to instantiate the ClientContext object
+> **environment:** Environment to get the login information for
 
 > ##### Return value
-> ClientContext to be used by CSOM code
+> Azure AD login endpoint
 
 #### GetADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
 Returns a SharePoint on-premises ClientContext for sites secured via ADFS
@@ -17597,29 +17726,37 @@ Refreshes the SharePoint FedAuth cookie
 > **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
 
 
-#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
-Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
+#### GetADFSCertificateMixedAuthenticationContext(System.String,System.String,System.String,System.String,System.Int32)
+Returns a SharePoint on-premises ClientContext for sites secured via ADFS
 > ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
 
-> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+> **serialNumber:** Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method
 
-> **appId:** Application ID which is requesting the ClientContext object
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
 
-> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+> **idpId:** Identifier of the ADFS relying party that we're hitting
 
-> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
-
-> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
-
-
-#### GetAccessTokenLease(System.DateTime)
-Get the access token lease time span.
-> ##### Parameters
-> **expiresOn:** The ExpiresOn time of the current access token
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
 
 > ##### Return value
-> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
+> ClientContext to be used by CSOM code
+
+#### RefreshADFSCertificateMixedAuthenticationContext(System.String,System.String,System.String,System.String,System.Int32)
+Refreshes the SharePoint FedAuth cookie
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **serialNumber:** Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method
+
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
+
+> **idpId:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
+
+> ##### Return value
+> ClientContext to be used by CSOM code
 
 ## Core.BuiltInContentTypeId
             
