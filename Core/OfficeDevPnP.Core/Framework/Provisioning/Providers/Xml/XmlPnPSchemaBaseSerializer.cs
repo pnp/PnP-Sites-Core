@@ -243,6 +243,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             // Get all serializers to run in automated mode, ordered by DeserializationSequence
             var currentAssembly = this.GetType().Assembly;
+
+            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
+
             var serializers = currentAssembly.GetTypes()
                 .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
                 .Where(t =>
@@ -250,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (attribute != null &&
                         attribute.Default &&
-                        attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
+                        attribute.MinimalSupportedSchemaVersion >= currentSchemaVersion);
                 }
                 ).OrderBy(t =>
                 {
@@ -359,6 +362,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             // Get all serializers to run in automated mode, ordered by DeserializationSequence
             var currentAssembly = this.GetType().Assembly;
+
+            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
+
             var serializers = currentAssembly.GetTypes()
                 .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
                 .Where(t =>
@@ -366,7 +372,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (attribute != null &&
                         attribute.Default &&
-                        attribute.SchemaTemplates.Contains(typeof(TSchemaTemplate)));
+                        attribute.MinimalSupportedSchemaVersion >= currentSchemaVersion);
                 }
                 ).OrderBy(t =>
                 {
@@ -383,6 +389,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     serializer.Serialize(template, persistenceTemplate);
                 }
             }
+        }
+
+        private static XMLPnPSchemaVersion GetCurrentSchemaVersion()
+        {
+            var currentSchemaTemplateNamespace = typeof(TSchemaTemplate).Namespace;
+            var currentSchemaVersionString = $"V{currentSchemaTemplateNamespace.Substring(currentSchemaTemplateNamespace.IndexOf(".Xml.") + 6)}";
+            var currentSchemaVersion = (XMLPnPSchemaVersion)Enum.Parse(typeof(XMLPnPSchemaVersion), currentSchemaVersionString);
+            return currentSchemaVersion;
         }
     }
 }

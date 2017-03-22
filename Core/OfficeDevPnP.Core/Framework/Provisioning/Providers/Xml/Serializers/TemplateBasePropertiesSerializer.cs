@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the base properties of a template
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 100, DeserializationSequence = 100,
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class TemplateBasePropertiesSerializer : PnPBaseSchemaSerializer
     {

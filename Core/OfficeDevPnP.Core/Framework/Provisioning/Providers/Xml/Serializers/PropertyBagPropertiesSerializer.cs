@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the property bag properties
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 200, DeserializationSequence = 200,
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class PropertyBagPropertiesSerializer : PnPBaseSchemaSerializer
     {

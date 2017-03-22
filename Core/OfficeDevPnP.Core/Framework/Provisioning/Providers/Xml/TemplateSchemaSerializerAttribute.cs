@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <summary>
         /// The schemas supported by the serializer
         /// </summary>
-        public Type[] SchemaTemplates { get; set; }
+        public XMLPnPSchemaVersion MinimalSupportedSchemaVersion { get; set; }
 
         /// <summary>
         /// The sequence number for applying the serializer during serialization

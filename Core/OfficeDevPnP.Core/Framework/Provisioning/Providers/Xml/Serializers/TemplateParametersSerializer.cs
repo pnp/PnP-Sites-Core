@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the parameters of the template
     /// </summary>
     [TemplateSchemaSerializer(
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = false)]
     internal class TemplateParametersSerializer : PnPBaseSchemaSerializer
     {

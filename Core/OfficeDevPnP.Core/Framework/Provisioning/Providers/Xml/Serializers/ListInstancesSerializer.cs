@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the list instances
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 300, DeserializationSequence = 300,
-        SchemaTemplates = new Type[] { typeof(Xml.V201605.ProvisioningTemplate) },
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class ListInstancesSerializer : PnPBaseSchemaSerializer
     {
