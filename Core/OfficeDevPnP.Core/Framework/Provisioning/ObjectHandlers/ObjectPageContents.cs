@@ -152,27 +152,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 catch (ServerException ex)
                 {
-                    if (ex.ServerErrorCode != -2146232832)
+                    
+                    //ignore this error. The default page is not a page but a list view.
+                    if (ex.ServerErrorCode != -2146232832 && ex.HResult != -2146233088)
                     {
                         throw;
                     }
                     else
                     {
-                        if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
+                        if (ex.HResult != -2146233088)
                         {
-                            // Page does not belong to a list, extract the file as is
-                            template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
-                            if (template.WebSettings == null)
+                            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
-                                template.WebSettings = new WebSettings();
+                                // Page does not belong to a list, extract the file as is
+                                template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
+                                if (template.WebSettings == null)
+                                {
+                                    template.WebSettings = new WebSettings();
+                                }
+                                template.WebSettings.WelcomePage = homepageUrl;
                             }
-                            template.WebSettings.WelcomePage = homepageUrl;
-                        }
-                        else
-                        {
-                            WriteMessage(
-                                $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
-                            scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
+                            else
+                            {
+                                WriteMessage(
+                                    $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
+                                scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
+                            }
                         }
                     }
                 }
