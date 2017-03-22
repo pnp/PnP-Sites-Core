@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static void MapProperties<TSource>(TSource source, Object destination, Dictionary<Expression<Func<TSource, Object>>, IResolver> resolverExpressions = null, Boolean recursive = false)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
-            MapProperties(source, destination, resolvers);
+            MapProperties(source, destination, resolvers, recursive);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static void MapProperties<TDestination>(Object source, TDestination destination, Dictionary<Expression<Func<TDestination, Object>>, IResolver> resolverExpressions = null, Boolean recursive = false)
         {
             Dictionary<string, IResolver> resolvers = ConvertExpressionsToResolvers(resolverExpressions);
-            MapProperties(source, destination, resolvers);
+            MapProperties(source, destination, resolvers, recursive);
         }
 
         /// <summary>
@@ -74,13 +74,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             // Just for the properties that are not collection or complex types of the model
             // and that are not array or Xml domain model related
-            foreach (var dp in destinationProperties.Where(
+            var filteredProperties = destinationProperties.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
-                        (p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name || recursive) &&
-                        // p.PropertyType.BaseType.Name != typeof(BaseModel).Name && // TODO: Think about this rule ...
-                        (!p.PropertyType.IsArray || recursive) // &&
-                        // !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)
-                        ))) // TODO: Think about this rule ...
+                (p.PropertyType.BaseType.Name != typeof(ProvisioningTemplateCollection<>).Name || recursive) &&
+                // p.PropertyType.BaseType.Name != typeof(BaseModel).Name && // TODO: Think about this rule ...
+                (!p.PropertyType.IsArray || recursive) // &&
+                // !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)
+                ));
+            foreach (var dp in filteredProperties) // TODO: Think about this rule ...
             {
                 // Let's try to see if we have a custom resolver for the current property
                 var resolverKey = $"{dp.DeclaringType.FullName}.{dp.Name}".ToUpper();
@@ -156,7 +157,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                             new CollectionFromModelToSchemaTypeResolver(dp.PropertyType.IsArray ? dp.PropertyType.GetElementType() : null), 
                                             resolvers, recursive));
                             }
-                            // Whatever else ...
                             else
                             {
                                 object sourceValue = sp.GetValue(source);
