@@ -144,9 +144,9 @@ PnPResponsiveApp.Main = (function () {
             var viewport = document.createElement('meta');
             viewport.name = 'viewport';
             if (window.devicePixelRatio == 2) {
-                viewport.content = 'width=device-width, user-scalable=no, initial-scale=.5, maximum-scale=.5, minimum-scale=.5';
+                viewport.content = 'width=device-width, user-scalable=yes, initial-scale=.5, shrink-to-fit';
             } else {
-                viewport.content = 'width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0';
+                viewport.content = 'width=device-width, user-scalable=yes, initial-scale=1.0, shrink-to-fit';
             }
             var appleMeta = document.createElement('meta');
             appleMeta.name = 'apple-mobile-web-app-capable';
@@ -202,7 +202,7 @@ PnPResponsiveApp.Main = (function () {
                 var expandBtn = document.createElement('button');
                 expandBtn.type = 'button';
                 childs[c].parentNode.insertBefore(expandBtn, childs[c]);
-                expandBtn.addEventListener('click', function (e) {
+                expandBtn.addEventListener('click', function () {
                     toggleClass(this.parentNode, 'expand');
                     return false;
                 });
@@ -291,6 +291,7 @@ PnPResponsiveApp.Main = (function () {
 // Register Responsive Behavior after SP page is loaded
 _spBodyOnLoadFunctionNames.push("responsiveStartup");
 
+/* exported responsiveStartup */
 function responsiveStartup() {
     PnPResponsiveApp.Main.addViewport();
     PnPResponsiveApp.Main.init();
