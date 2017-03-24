@@ -266,7 +266,8 @@ namespace OfficeDevPnP.Core.Pages
     }
 
     /// <summary>
-    /// Controls of type 3 (= client side web parts)
+    /// This class is used to instantiate controls of type 3 (= client side web parts). Using this class you can instantiate a control and 
+    /// add it on a <see cref="ClientSidePage"/>.
     /// </summary>
     public class ClientSideWebPart : CanvasControl
     {
@@ -291,6 +292,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region construction
+        /// <summary>
+        /// Instantiates client side web part from scratch.
+        /// </summary>
         public ClientSideWebPart() : base()
         {
             this.controlType = 3;
@@ -302,6 +306,10 @@ namespace OfficeDevPnP.Core.Pages
             this.SetPropertiesJson("{}");
         }
 
+        /// <summary>
+        /// Instantiates a client side web part based on the information that was obtain from calling the AvailableClientSideComponents methods on the <see cref="ClientSidePage"/> object.
+        /// </summary>
+        /// <param name="component">Component to create a ClientSideWebPart instance for</param>
         public ClientSideWebPart(ClientSideComponent component) : this()
         {
             if (component == null)
@@ -313,6 +321,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Json serialized web part properties
+        /// </summary>
         public string JsonWebPartData
         {
             get
@@ -321,6 +332,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Html properties data
+        /// </summary>
         public string HtmlPropertiesData
         {
             get
@@ -329,6 +343,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the data-sp-htmlproperties attribute
+        /// </summary>
         public string HtmlProperties
         {
             get
@@ -338,6 +355,9 @@ namespace OfficeDevPnP.Core.Pages
 
         }
 
+        /// <summary>
+        /// ID of the client side web part
+        /// </summary>
         public string WebPartId
         {
             get
@@ -346,6 +366,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the data-sp-webpart attribute
+        /// </summary>
         public string WebPartData
         {
             get
@@ -354,6 +377,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Title of the web part
+        /// </summary>
         public string Title
         {
             get
@@ -366,6 +392,10 @@ namespace OfficeDevPnP.Core.Pages
             }
 
         }
+
+        /// <summary>
+        /// Description of the web part
+        /// </summary>
         public string Description
         {
             get
@@ -378,6 +408,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Json serialized web part properties
+        /// </summary>
         public string PropertiesJson
         {
             get
@@ -390,6 +423,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Web properties as configurable <see cref="JObject"/>
+        /// </summary>
         public JObject Properties
         {
             get
@@ -398,6 +434,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Return <see cref="Type"/> of the client side web part
+        /// </summary>
         public override Type Type
         {
             get
@@ -408,6 +447,11 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Imports a <see cref="ClientSideComponent"/> to use it as base for configuring the client side web part instance
+        /// </summary>
+        /// <param name="component"><see cref="ClientSideComponent"/> to import</param>
+        /// <param name="clientSideWebPartPropertiesUpdater">Function callback that allows you to manipulate the client side web part properties after import</param>
         public void Import(ClientSideComponent component, Func<String, String> clientSideWebPartPropertiesUpdater = null)
         {
             this.component = component;
@@ -426,6 +470,10 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Returns a HTML representation of the client side web part
+        /// </summary>
+        /// <returns>HTML representation of the client side web part</returns>
         public override string ToHtml()
         {
             // Obtain the json data
