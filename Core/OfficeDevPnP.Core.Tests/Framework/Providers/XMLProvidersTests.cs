@@ -937,12 +937,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     CopyRoleAssignments = true,
                 }
             };
-            newfile.Properties.Add("MyProperty1", "MyValue1");
-            newfile.Properties.Add("MyProperty2", "MyValue2");
+            newfile.Properties.Add("MyProperty1", "Value1");
+            newfile.Properties.Add("MyProperty2", "Value2");
             newfile.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "admin@sharepoint.com", RoleDefinition = "Owner" });
             newfile.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "dev@sharepoint.com", RoleDefinition = "Contributor" });
-            newfile.WebParts.Add(new WebPart() { Title = "My Content", Order = 1, Zone = "Main", Contents = "[!<![CDATA[web part definition goes here]]>" });
-            newfile.WebParts.Add(new WebPart() { Title = "My Editor", Order = 10, Zone = "Left", Contents = "[!<![CDATA[web part definition goes here]]>" });
+            newfile.WebParts.Add(new WebPart() { Title = "My Content", Order = 1, Zone = "Main", Contents = "<webPart>[!<![CDATA[web part definition goes here]]></webPart>" });
+            newfile.WebParts.Add(new WebPart() { Title = "My Editor", Order = 10, Zone = "Left", Contents = "<webPart>[!<![CDATA[web part definition goes here]]></webPart>" });
             result.Files.Add(newfile);
 
             newfile = new Core.Framework.Provisioning.Model.File()
@@ -976,7 +976,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var file = template.Files.File.FirstOrDefault(f => f.Src == "/SitePages/home.aspx");
             Assert.IsNotNull(file);
             Assert.AreEqual("SitePages", file.Folder);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Published, file.Level);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.FileLevel.Published, file.Level);
             Assert.IsTrue(file.Overwrite);
 
             Assert.IsNotNull(file.Properties);
@@ -1005,7 +1005,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, webpart.Order);
             Assert.AreEqual("Main", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("[!<![CDATA[web part definition goes here]]>", webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.InnerXml);
 
             Assert.IsNotNull(file.WebParts);
             webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -1013,13 +1013,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(10, webpart.Order);
             Assert.AreEqual("Left", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("[!<![CDATA[web part definition goes here]]>", webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.InnerXml);
 
             file = template.Files.File.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
             Assert.IsNotNull(file);
             Assert.AreEqual("SAMPLE", file.Folder);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Draft, file.Level);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.FileLevel.Draft, file.Level);
             Assert.IsFalse(file.Overwrite);
+            Assert.IsNull(file.Properties);
+            Assert.IsNull(file.WebParts);
         }
         #endregion
     }

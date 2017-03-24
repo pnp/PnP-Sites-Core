@@ -10,28 +10,6 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     /// <summary>
-    /// Typed vesion of PropertyObjectTypeResolver
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    internal class PropertyCollectionTypeResolver<T> : PropertyObjectTypeResolver
-    {
-        public PropertyCollectionTypeResolver(Expression<Func<T, object>> exp, Func<object, object> sourceValueSelector = null) : 
-            base(GetPropertyType(exp), GetPropertyName(exp), sourceValueSelector)
-        {
-        }
-
-        private static string GetPropertyName(Expression<Func<T, object>> exp)
-        {
-            return (exp.Body as MemberExpression ?? ((UnaryExpression)exp.Body).Operand as MemberExpression).Member.Name;
-        }
-
-        private static Type GetPropertyType(Expression<Func<T, object>> exp)
-        {
-            return (exp.Body as MemberExpression ?? ((UnaryExpression)exp.Body).Operand as MemberExpression).Type;
-        }
-    }
-
-    /// <summary>
     /// Resolves a collection type from Domain Model to Schema
     /// </summary>
     internal class RoleAssigmentsFromSchemaToModelTypeResolver : ITypeResolver

@@ -48,26 +48,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
-            var filesTypeName = $"{baseNamespace}.ProvisioningTemplateFiles, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var filesType = Type.GetType(filesTypeName, true);
-            var fileTypeName = $"{baseNamespace}.File, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var fileType = Type.GetType(fileTypeName, true);
-
-            var expressions = new Dictionary<string, IResolver>();
-
-            var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
-            if(filesCollection == null)
+            if (template.Files != null && template.Files.Count > 0)
             {
-                persistence.GetPublicInstanceProperty("Files").SetValue(persistence, Activator.CreateInstance(filesType, true));
-                filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+                var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
+                var filesTypeName = $"{baseNamespace}.ProvisioningTemplateFiles, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var filesType = Type.GetType(filesTypeName, true);
+                var fileTypeName = $"{baseNamespace}.File, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var fileType = Type.GetType(fileTypeName, true);
+                var fileLevelTypeName = $"{baseNamespace}.FileLevel, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var fileLevelType = Type.GetType(fileLevelTypeName, true);
+                var objectSecurityTypeName = $"{baseNamespace}.ObjectSecurity, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var objectSecurityType = Type.GetType(objectSecurityTypeName, true);
+
+                var expressions = new Dictionary<string, IResolver>();
+
+                var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
+                var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
+                var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
+
+                expressions.Add($"{fileType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+                expressions.Add($"{fileType}.Level", new FromStringToEnumValueResolver(fileLevelType));
+                expressions.Add($"{fileType}.LevelSpecified", new ExpressionValueResolver((s, v) => true));
+
+                expressions.Add($"{fileType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+
+                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Order", new ExpressionValueResolver((s, v) => (int)(uint)v));
+                //convert webpart content to xml element
+                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Contents", new ExpressionValueResolver((s, v) =>
+                {
+                    var doc = new XmlDocument();
+                    var str = v != null ? v.ToString() : null;
+                    if (!string.IsNullOrEmpty(str))
+                    {
+                        doc.LoadXml(str);
+                    }
+                    return doc.DocumentElement;
+                }));
+
+                var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+                if (filesCollection == null)
+                {
+                    persistence.GetPublicInstanceProperty("Files").SetValue(persistence, Activator.CreateInstance(filesType, true));
+                    filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+                }
+
+                filesCollection.GetPublicInstanceProperty("File").SetValue(
+                    filesCollection,
+                    PnPObjectsMapper.MapObjects(template.Files,
+                    new CollectionFromModelToSchemaTypeResolver(fileType), expressions, true));
             }
-
-            //filesCollection.GetPublicInstanceProperty("File").SetValue(
-            //    filesCollection,
-            //    PnPObjectsMapper.MapObjects(template.Files,
-            //    new CollectionFromModelToSchemaTypeResolver(fileType), expressions, true));
-
         }
     }
 }

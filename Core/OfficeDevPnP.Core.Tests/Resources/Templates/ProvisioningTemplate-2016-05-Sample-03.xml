@@ -254,7 +254,32 @@
         </pnp:WebCustomActions>
       </pnp:CustomActions>
       <pnp:Files>
-        <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE" />
+        <pnp:File Src="/SitePages/home.aspx" Folder="SitePages" Overwrite="true" Level="Published">
+          <pnp:Properties>
+            <pnp:Property Key="MyProperty1" Value="Value1" />
+            <pnp:Property Key="MyProperty2" Value="Value2" />
+          </pnp:Properties>
+          <pnp:WebParts>
+            <pnp:WebPart Title="My Content" Zone="Main" Order="1">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+            <pnp:WebPart Title="My Editor" Zone="Left" Order="10">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="Owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="Contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:File>
+        <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE" Level="Draft">
+        </pnp:File>
       </pnp:Files>
       <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
       <pnp:Providers>
