@@ -280,6 +280,15 @@
         </pnp:File>
         <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE" Level="Draft">
         </pnp:File>
+        <pnp:Directory Folder="MyFolder" Level="Published" Overwrite="true" Src="SiteAssets" ExcludedExtensions=".aspx" IncludedExtensions=".docx" MetadataMappingFile="metafile" Recursive="true">
+           <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>         
+        </pnp:Directory>
+        <pnp:Directory Folder="MyFolder2" Level="Checkout" Overwrite="false" Src="Documents" ExcludedExtensions=".xslx" IncludedExtensions=".txt" MetadataMappingFile="metafile2"/>
       </pnp:Files>
       <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
       <pnp:Providers>

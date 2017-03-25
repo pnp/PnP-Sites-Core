@@ -12,6 +12,7 @@ using Microsoft.SharePoint.Client;
 using System.Threading;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Utilities;
+using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -1102,6 +1103,164 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(file.Overwrite);
             Assert.IsNull(file.Properties);
             Assert.IsNull(file.WebParts);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Directories_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.Directories); new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+             var dir = result.Directories.FirstOrDefault(d => d.Folder == "MyFolder");
+            Assert.IsNotNull(dir);
+            Assert.AreEqual("SiteAssets", dir.Src);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Published, dir.Level);
+            Assert.IsTrue(dir.Overwrite);
+            Assert.IsTrue(dir.Recursive);
+            Assert.AreEqual(".aspx", dir.ExcludedExtensions);
+            Assert.AreEqual(".docx", dir.IncludedExtensions);
+            Assert.AreEqual("metafile", dir.MetadataMappingFile);
+
+            Assert.IsNotNull(dir.Security);
+            Assert.IsTrue(dir.Security.ClearSubscopes);
+            Assert.IsTrue(dir.Security.CopyRoleAssignments);
+            Assert.IsNotNull(dir.Security.RoleAssignments);
+            var assingment = dir.Security.RoleAssignments.FirstOrDefault(r => r.Principal == "admin@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("owner", assingment.RoleDefinition);
+            assingment = dir.Security.RoleAssignments.FirstOrDefault(r => r.Principal == "dev@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("contributor", assingment.RoleDefinition);
+
+            dir = result.Directories.FirstOrDefault(d => d.Folder == "MyFolder2");
+            Assert.IsNotNull(dir);
+            Assert.AreEqual("Documents", dir.Src);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.FileLevel.Checkout, dir.Level);
+            Assert.IsFalse(dir.Overwrite);
+            Assert.IsFalse(dir.Recursive);
+            Assert.AreEqual(".xslx", dir.ExcludedExtensions);
+            Assert.AreEqual(".txt", dir.IncludedExtensions);
+            Assert.AreEqual("metafile2", dir.MetadataMappingFile);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Directories_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var newdir = new Core.Framework.Provisioning.Model.Directory()
+            {
+                Folder = "MyFolder",
+                Level = Core.Framework.Provisioning.Model.FileLevel.Published,
+                Overwrite = true,
+                Src = "SiteAssets",
+                ExcludedExtensions = ".aspx",
+                IncludedExtensions = ".docx",
+                MetadataMappingFile = "metafile",
+                Recursive = true,
+                Security = new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>()
+                {
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal = "admin@sharepoint.com",
+                        RoleDefinition = "owner"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal = "dev@sharepoint.com",
+                        RoleDefinition = "contributor"
+                    }
+                })
+                {
+                    ClearSubscopes = true,
+                    CopyRoleAssignments = true,
+                }
+            };
+            result.Directories.Add(newdir);
+
+            newdir = new Core.Framework.Provisioning.Model.Directory()
+            {
+                Folder = "MyFolder2",
+                Level = Core.Framework.Provisioning.Model.FileLevel.Checkout,
+                Overwrite = false,
+                Src = "Documents",
+                ExcludedExtensions = ".xslx",
+                IncludedExtensions = ".txt",
+                MetadataMappingFile = "metafile2",
+                Recursive = false
+            };
+            result.Directories.Add(newdir);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-dirs.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-dirs.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template.Files);
+            Assert.IsNotNull(template.Files.Directory);
+            var dir = template.Files.Directory.FirstOrDefault(d => d.Folder == "MyFolder");
+            Assert.IsNotNull(dir);
+            Assert.AreEqual("SiteAssets", dir.Src);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.FileLevel.Published, dir.Level);
+            Assert.IsTrue(dir.Overwrite);
+            Assert.IsTrue(dir.Recursive);
+            Assert.AreEqual(".aspx", dir.ExcludedExtensions);
+            Assert.AreEqual(".docx", dir.IncludedExtensions);
+            Assert.AreEqual("metafile", dir.MetadataMappingFile);
+
+            Assert.IsNotNull(dir.Security);
+            Assert.IsNotNull(dir.Security.BreakRoleInheritance);
+            Assert.IsTrue(dir.Security.BreakRoleInheritance.ClearSubscopes);
+            Assert.IsTrue(dir.Security.BreakRoleInheritance.CopyRoleAssignments);
+            Assert.IsNotNull(dir.Security.BreakRoleInheritance.RoleAssignment);
+            var assingment = dir.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "admin@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("owner", assingment.RoleDefinition);
+            assingment = dir.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "dev@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("contributor", assingment.RoleDefinition);
+
+            dir = template.Files.Directory.FirstOrDefault(d => d.Folder == "MyFolder2");
+            Assert.IsNotNull(dir);
+            Assert.AreEqual("Documents", dir.Src);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.FileLevel.Checkout, dir.Level);
+            Assert.IsFalse(dir.Overwrite);
+            Assert.IsFalse(dir.Recursive);
+            Assert.AreEqual(".xslx", dir.ExcludedExtensions);
+            Assert.AreEqual(".txt", dir.IncludedExtensions);
+            Assert.AreEqual("metafile2", dir.MetadataMappingFile);
         }
         #endregion
     }
