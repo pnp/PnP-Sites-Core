@@ -26,26 +26,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
+            object result = null;
             if (null != source)
             {
                 var sourceList = (IList)source;
-                var result = Array.CreateInstance(this._targetItemType, sourceList.Count);
 
-                var index = 0;
-                foreach (var i in sourceList)
+                if (sourceList.Count > 0)
                 {
-                    var targetItem = Activator.CreateInstance(this._targetItemType, true);
-                    PnPObjectsMapper.MapProperties(i, targetItem, resolvers, recursive);
-                    result.SetValue(targetItem, index);
-                    index++;
-                }
+                    var resultArray = Array.CreateInstance(this._targetItemType, sourceList.Count);
 
-                return (result);
+                    var index = 0;
+                    foreach (var i in sourceList)
+                    {
+                        var targetItem = Activator.CreateInstance(this._targetItemType, true);
+                        PnPObjectsMapper.MapProperties(i, targetItem, resolvers, recursive);
+                        resultArray.SetValue(targetItem, index);
+                        index++;
+                    }
+                    result = resultArray;
+                }
             }
-            else
-            {
-                return (null);
-            }
+            return (result);
         }
     }
 }

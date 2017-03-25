@@ -36,6 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, object destination, object sourceValue)
         {
+            object result = null;
             var sourceDictionary = sourceValue != null && sourceValue is IEnumerable<KeyValuePair<TKey, TValue>> ?
                 sourceValue as IEnumerable<KeyValuePair<TKey, TValue>>:
                 source as IEnumerable<KeyValuePair<TKey, TValue>>;
@@ -44,18 +45,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             {
                 throw new ArgumentException("Invalid source object. Expected type implementing IEnumerable<KeyValuePair<TKey, TValue>>", "source");
             }
-
-            var listType = typeof(List<>);
-            var resultType = this._targetArrayItemType.MakeArrayType();
-
-            var result = (Array)Activator.CreateInstance(resultType, sourceDictionary.Count());
-            var i = 0;
-            foreach (var item in sourceDictionary)
+            else if(sourceDictionary.Count() > 0)
             {
-                var resultItem = Activator.CreateInstance(this._targetArrayItemType);
-                resultItem.GetType().GetProperty(this._keyField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Key);
-                resultItem.GetType().GetProperty(this._valueField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Value);
-                result.SetValue(resultItem, i++);
+                var listType = typeof(List<>);
+                var resultType = this._targetArrayItemType.MakeArrayType();
+
+                var resultArray = (Array)Activator.CreateInstance(resultType, sourceDictionary.Count());
+                var i = 0;
+                foreach (var item in sourceDictionary)
+                {
+                    var resultItem = Activator.CreateInstance(this._targetArrayItemType);
+                    resultItem.GetType().GetProperty(this._keyField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Key);
+                    resultItem.GetType().GetProperty(this._valueField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Value);
+                    resultArray.SetValue(resultItem, i++);
+                }
+                result = resultArray;
             }
 
             return (result);

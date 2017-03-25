@@ -647,7 +647,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var serializer = new XMLPnPSchemaV201605Serializer();
-            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var result =  new ProvisioningTemplate();
+
+            var nct = new Core.Framework.Provisioning.Model.ContentType()
+            {
+                Id = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E",
+                Name = "General Project Document",
+                Description = "General Project Document Content Type",
+                Group = "Base Foundation Content Types",
+                DisplayFormUrl = "/Forms/DisplayForm.aspx",
+                NewFormUrl = "/Forms/NewForm.aspx",
+                EditFormUrl = "/Forms/EditForm.aspx",
+                DocumentTemplate = "DocumentTemplate.dotx",
+                Hidden = true,
+                Overwrite = true,
+                ReadOnly = true,
+                Sealed = true
+            };
 
             var dt = new DocumentSetTemplate();
             dt.AllowedContentTypes.Add("0x01005D4F34E4BE7F4B6892AEBE088EDD215E002");
@@ -662,11 +678,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 FileSourcePath = "document.dotx",
                 Name = "DefaultDocument"
             });
-            result.ContentTypes[0].DocumentSetTemplate = dt;
+            nct.DocumentSetTemplate = dt;
+            nct.FieldRefs.Add(new FieldRef("TestField")
+            {
+                Id = new Guid("23203e97-3bfe-40cb-afb4-07aa2b86bf45"),
+                Required = true,
+                Hidden = true
+            });
+            nct.FieldRefs.Add(new FieldRef("TestField1"));
+            nct.FieldRefs.Add(new FieldRef("TestField2"));
+            nct.FieldRefs.Add(new FieldRef("TestField3"));
+            result.ContentTypes.Add(nct);
 
-            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml", serializer);
 
-            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml";
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml";
             Assert.IsTrue(System.IO.File.Exists(path));
             XDocument xml = XDocument.Load(path);
             Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult = 
@@ -789,11 +815,65 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var serializer = new XMLPnPSchemaV201605Serializer();
-            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var result = new ProvisioningTemplate();
+            result.CustomActions = new CustomActions();
 
-            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            var can = new CustomAction() {
+                Name = "CA_SITE_SETTINGS_SITECLASSIFICATION",
+                Description = "Site Classification Application",
+                Location = "Microsoft.SharePoint.SiteSettings",
+                Title = "Site Classification",
+                Url = "https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}",
+                Sequence = 1000,
+                RegistrationType = UserCustomActionRegistrationType.None,
+                Rights = new BasePermissions(),
+                ImageUrl = "http://sharepoint.com",
+                RegistrationId = "101",
+                ScriptBlock = "alert('boo')",
+                CommandUIExtension = XElement.Parse(@"<CommandUIExtension><CommandUIDefinitions>
+                <CommandUIDefinition Location=""Ribbon.Documents.Copies.Controls._children"">
+                  <Button Sequence = ""15"" TemplateAlias = ""o1"" ToolTipDescription = ""Download all files separately"" ToolTipTitle = ""Download All"" Description = ""Download all files separately"" LabelText = ""Download All"" Image32by32 = ""~sitecollection/SiteAssets/DownloadAll32x32.png"" Image16by16 = ""~sitecollection/SiteAssets/DownloadAll16x16.png"" Command = ""OfficeDevPnP.Cmd.DownloadAll"" Id = ""Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"" />
+                </CommandUIDefinition>
+                <CommandUIDefinition Location = ""Ribbon.Documents.Copies.Controls._children"">
+                  <Button Sequence = ""20"" TemplateAlias = ""o1"" ToolTipDescription = ""Download all files as single Zip archive"" ToolTipTitle = ""Download All as Zip"" Description = ""Download all files as single Zip"" LabelText = ""Download All as Zip"" Image32by32 = ""~sitecollection/SiteAssets/DownloadAllAsZip32x32.png"" Image16by16 = ""~sitecollection/SiteAssets/DownloadAllAsZip16x16.png"" Command = ""OfficeDevPnP.Cmd.DownloadAllAsZip"" Id = ""Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"" />
+                </CommandUIDefinition>
+              </CommandUIDefinitions>
+              <CommandUIHandlers>
+                <CommandUIHandler Command = ""OfficeDevPnP.Cmd.DownloadAll"" EnabledScript = ""javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAll');"" CommandAction = ""javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAll');"" />
+                <CommandUIHandler Command = ""OfficeDevPnP.Cmd.DownloadAllAsZip"" EnabledScript = ""javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAllAsZip');"" CommandAction = ""javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAllAsZip');"" />
+              </CommandUIHandlers></CommandUIExtension>")
+            };
+            can.Rights.Set(PermissionKind.ManageWeb);
+            result.CustomActions.SiteCustomActions.Add(can);
 
-            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml";
+            can = new CustomAction()
+            {
+                Name = "CA_SUBSITE_OVERRIDE",
+                Description = "Override new sub-site link",
+                Location = "ScriptLink",
+                Title  = "SubSiteOveride",
+                Sequence = 100,
+                ScriptSrc = "~site/PnP_Provisioning_JS/PnP_EmbeddedJS.js",
+                RegistrationType = UserCustomActionRegistrationType.ContentType
+            };
+            result.CustomActions.SiteCustomActions.Add(can);
+
+            can = new CustomAction()
+            {
+                Name = "CA_WEB_DOCLIB_MENU_SAMPLE",
+                Description = "Document Library Custom Menu",
+                Group = "ActionsMenu",
+                Location = "Microsoft.SharePoint.StandardMenu",
+                Title = "DocLib Custom Menu",
+                Sequence = 100,
+                Url = "/_layouts/CustomActionsHello.aspx?ActionsMenu",
+                RegistrationType = UserCustomActionRegistrationType.None
+            };
+            result.CustomActions.WebCustomActions.Add(can);
+
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-ca.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-ca.xml";
             Assert.IsTrue(System.IO.File.Exists(path));
             XDocument xml = XDocument.Load(path);
             Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
