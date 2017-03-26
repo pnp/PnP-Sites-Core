@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
-    internal class CustomActionsSerializer : PnPBaseSchemaSerializer
+    internal class CustomActionsSerializer : PnPBaseSchemaSerializer<CustomActions>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {

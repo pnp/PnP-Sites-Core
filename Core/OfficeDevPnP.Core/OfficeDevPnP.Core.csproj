@@ -429,6 +429,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FilesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\CustomActionsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Pages\ClientSidePageCanvas.cs" />
     <Compile Include="Pages\ClientSidePageControls.cs" />
     <Compile Include="Pages\ClientSidePagesControlData.cs" />
@@ -750,7 +751,6 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\LocalizationsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\TemplateSchemaSerializerAttribute.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PropertyBagPropertiesSerializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateParametersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />

@@ -14,12 +14,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = false)]
-    internal class TemplateParametersSerializer : PnPBaseSchemaSerializer
+    internal class TemplateParametersSerializer : IPnPSchemaSerializer
     {
-        public override void Deserialize(object persistence, ProvisioningTemplate template)
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
+        public void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
-            
+
             if (preferences != null)
             {
                 var parameters = preferences.GetPublicInstancePropertyValue("Parameters");
@@ -34,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             }
         }
 
-        public override void Serialize(ProvisioningTemplate template, object persistence)
+        public void Serialize(ProvisioningTemplate template, object persistence)
         {
             var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
 

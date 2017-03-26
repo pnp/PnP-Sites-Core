@@ -247,27 +247,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
 
             var serializers = currentAssembly.GetTypes()
-                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
-                .Where(t =>
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
+                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
+                .Where(t => 
                 {
-                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (attribute != null &&
-                        attribute.Default &&
-                        attribute.MinimalSupportedSchemaVersion >= currentSchemaVersion);
-                }
-                ).OrderBy(t =>
+                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.DeserializationSequence >= 0);
+                })
+                .OrderByDescending(s =>
                 {
-                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (attribute.DeserializationSequence);
+                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion);
                 }
-                );
+                )
+                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                .OrderBy(g =>
+                {
+                    var maxInGroup = g.OrderByDescending(s =>
+                    {
+                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                        return (a.MinimalSupportedSchemaVersion);
+                    }
+                    ).FirstOrDefault();
+                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.SerializationSequence);
+                });
 
-            foreach (var serializerType in serializers)
+            foreach (var group in serializers)
             {
-                var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
-                if (serializer != null)
+                var serializerType = group.FirstOrDefault();
+                if (serializerType != null)
                 {
-                    serializer.Deserialize(persistenceTemplate, template);
+                    var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
+                    if (serializer != null)
+                    {
+                        serializer.Deserialize(persistenceTemplate, template);
+                    }
                 }
             }
         }
@@ -366,27 +380,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
 
             var serializers = currentAssembly.GetTypes()
-                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null)
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
+                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
                 .Where(t =>
                 {
-                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (attribute != null &&
-                        attribute.Default &&
-                        attribute.MinimalSupportedSchemaVersion >= currentSchemaVersion);
-                }
-                ).OrderBy(t =>
+                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.SerializationSequence >= 0);
+                })
+                .OrderByDescending(s =>
                 {
-                    var attribute = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (attribute.SerializationSequence);
+                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion);
                 }
-                );
+                )
+                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                .OrderBy(g =>
+                {
+                    var maxInGroup = g.OrderByDescending(s =>
+                    {
+                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                        return (a.MinimalSupportedSchemaVersion);
+                    }
+                    ).FirstOrDefault();
+                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.DeserializationSequence);
+                });
 
-            foreach (var serializerType in serializers)
+            foreach (var group in serializers)
             {
-                var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
-                if (serializer != null)
+                var serializerType = group.FirstOrDefault();
+                if (serializerType != null)
                 {
-                    serializer.Serialize(template, persistenceTemplate);
+                    var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
+                    if (serializer != null)
+                    {
+                        serializer.Serialize(template, persistenceTemplate);
+                    }
                 }
             }
         }

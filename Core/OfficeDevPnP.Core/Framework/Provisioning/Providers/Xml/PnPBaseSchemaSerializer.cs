@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// <summary>
     /// Base class for every Schema Serializer
     /// </summary>
-    internal abstract class PnPBaseSchemaSerializer : IPnPSchemaSerializer
+    internal abstract class PnPBaseSchemaSerializer<TModelType> : IPnPSchemaSerializer
     {
         public string Name
         {
