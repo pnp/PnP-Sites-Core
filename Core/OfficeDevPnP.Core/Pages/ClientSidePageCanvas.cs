@@ -35,6 +35,15 @@ namespace OfficeDevPnP.Core.Pages
     }
 
     /// <summary>
+    /// Available page layouts for a modern page.
+    /// </summary>
+    public enum PageLayoutType
+    {
+        Home,
+        Article
+    }
+
+    /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
     public class ClientSidePage
@@ -52,16 +61,19 @@ namespace OfficeDevPnP.Core.Pages
         private string accessToken;
         private System.Collections.Generic.List<CanvasZone> zones = new System.Collections.Generic.List<CanvasZone>(1);
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
+        private PageLayoutType pageLayoutType;
+
         #endregion
 
         #region construction
-        public ClientSidePage()
+        public ClientSidePage(PageLayoutType pageLayoutType = PageLayoutType.Article)
         {
             this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
             this.pagesLibrary = "SitePages";
+            this.pageLayoutType = pageLayoutType;
         }
 
-        public ClientSidePage(ClientContext cc) : this()
+        public ClientSidePage(ClientContext cc, PageLayoutType pageLayoutType = PageLayoutType.Article) : this(pageLayoutType)
         {
             if (cc == null)
             {
@@ -151,6 +163,13 @@ namespace OfficeDevPnP.Core.Pages
                 return zones.First();
             }
         }
+
+        public PageLayoutType PageLayoutType
+        {
+            get { return pageLayoutType; }
+            set { pageLayoutType = value; }
+        }
+
         #endregion
 
         #region public methods
@@ -382,7 +401,7 @@ namespace OfficeDevPnP.Core.Pages
                 item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
                 item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
                 item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
-                item["PageLayoutType"] = "Article";
+                item["PageLayoutType"] = this.pageLayoutType.ToString();
                 item["PromotedState"] = "0";
                 item["BannerImageUrl"] = "/_layouts/15/images/sitepagethumbnail.png";
                 item.Update();

@@ -12,11 +12,6 @@ using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using OfficeDevPnP.Core.Utilities.WebParts;
 using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
-using System.Net;
-using System.IO;
-using System.Text;
-using System.Web.Configuration;
-using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 using OfficeDevPnP.Core.Pages;
 
 namespace Microsoft.SharePoint.Client
@@ -863,10 +858,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to add the page to</param>
         /// <param name="pageName">Name (e.g. demo.aspx) of the page to be added</param>
         /// <param name="alreadyPersist">Already persist the created, empty, page before returning the instantiated <see cref="ClientSidePage"/> instance</param>
+        /// <param name="pageLayoutType">Set the <see cref="PageLayoutType"/> to be used. 'Article' for a modern page, 'Home' for a modern home page (no header)</param>
         /// <returns>A <see cref="ClientSidePage"/> instance</returns>
-        public static ClientSidePage AddClientSidePage(this Web web, string pageName, bool alreadyPersist = false)
+        public static ClientSidePage AddClientSidePage(this Web web, string pageName, bool alreadyPersist = false, PageLayoutType pageLayoutType = PageLayoutType.Article)
         {
-            var page = new ClientSidePage(web.Context as ClientContext);
+            var page = new ClientSidePage(web.Context as ClientContext, pageLayoutType);
             if (alreadyPersist)
             {
                 page.Save(pageName);
@@ -1226,6 +1222,6 @@ namespace Microsoft.SharePoint.Client
             return (friendlyUrl.Value);
         }
 
-       
+
     }
 }
