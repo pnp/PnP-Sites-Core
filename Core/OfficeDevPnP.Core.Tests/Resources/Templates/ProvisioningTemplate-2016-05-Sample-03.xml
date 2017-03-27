@@ -290,6 +290,84 @@
         </pnp:Directory>
         <pnp:Directory Folder="MyFolder2" Level="Checkout" Overwrite="false" Src="Documents" ExcludedExtensions=".xslx" IncludedExtensions=".txt" MetadataMappingFile="metafile2"/>
       </pnp:Files>
+      <pnp:Pages>
+        <pnp:Page Url="home.aspx" Overwrite="true" Layout="ThreeColumnsHeaderFooter">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner"/>
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor"/>
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+          <pnp:WebParts>
+            <pnp:WebPart Column="2" Row="1" Title="My Content">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+            <pnp:WebPart Column="1" Row="2" Title="My Editor">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+          <pnp:Fields>
+            <pnp:Field FieldName="TestField">Value1</pnp:Field>
+            <pnp:Field FieldName="TestField2">Value2</pnp:Field>
+            <pnp:Field FieldName="TestField3">Value3</pnp:Field>
+            <pnp:Field FieldName="TestField4">Value4</pnp:Field>
+          </pnp:Fields>
+        </pnp:Page>
+        <pnp:Page Url="help.aspx" Overwrite="false" Layout="OneColumnSidebar"/>
+      </pnp:Pages>
+      <pnp:TermGroups>
+        <pnp:TermGroup ID="21d7d506-1783-4aed-abdf-160f37bd0ca9" Name="TestTermGroup" Description="Test Term Group" SiteCollectionTermGroup="true">
+          <pnp:Contributors>
+            <pnp:User Name="contributor1@termgroup1"/>
+            <pnp:User Name="contributor2@termgroup1"/>
+          </pnp:Contributors>
+          <pnp:Managers>
+            <pnp:User Name="manager1@termgroup1"/>
+            <pnp:User Name="manager2@termgroup1"/>
+          </pnp:Managers>
+          <pnp:TermSets>
+            <pnp:TermSet ID="ce70be1b-1772-49e9-a08f-47192d88dd64" Name="TestTermset1TestTermGroup" Description="Test Termset 1 Test Term Group" Owner="termset1owner@termgroup1" Language="1049" IsAvailableForTagging="true" IsOpenForTermCreation="true">
+              <pnp:CustomProperties>
+                <pnp:Property Key="Property1" Value="Value1"/>
+                <pnp:Property Key="Property2" Value="Value2"/>
+              </pnp:CustomProperties>
+              <pnp:Terms>
+                <pnp:Term ID="2194b058-c6e0-4805-b875-78cd7d7dfd39" Name="Term1Set1Group1" Description="Term1 Set1 Group1" CustomSortOrder="101" Language="1055" Owner="term1owner@termgroup1" SourceTermId="bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d" IsAvailableForTagging="true" IsDeprecated="true" IsReused ="true" IsSourceTerm="true">
+                  <pnp:LocalCustomProperties>
+                    <pnp:Property Key="Term1LocalProperty1" Value="Value1"/>
+                    <pnp:Property Key="Term1LocalProperty2" Value="Value2"/>
+                  </pnp:LocalCustomProperties>
+                  <pnp:CustomProperties>
+                    <pnp:Property Key="Term1Property1" Value="Value1"/>
+                    <pnp:Property Key="Term1Property2" Value="Value2"/>
+                  </pnp:CustomProperties>
+                  <pnp:Labels>
+                    <pnp:Label Language="1033" IsDefaultForLanguage="true" Value="Term1Label1033"/>
+                    <pnp:Label Language="1023" IsDefaultForLanguage="true" Value="Term1Label1023"/>
+                    <pnp:Label Language="1053" IsDefaultForLanguage="false" Value="Term1Label1023"/>
+                  </pnp:Labels>
+                  <pnp:Terms>
+                    <pnp:Term ID="48fd66cb-f7ca-4160-be46-b78876626c09" Name="Subterm1Term1Set1Group1">
+                      <pnp:Terms>
+                        <pnp:Term ID="7f43fe4a-7030-4d7e-ab62-5fdaac65ac9b" Name="FirstOrDefault"/>
+                      </pnp:Terms>
+                    </pnp:Term>
+                    <pnp:Term ID="b0d92a3a-cbdf-4c6c-8807-54e23da108ee" Name="Subterm2Term1Set1Group1"/>
+                  </pnp:Terms>
+                </pnp:Term>
+                <pnp:Term ID="382d3cb1-89f5-4809-b607-1634698e027e" Name="Term2Set1Group1" Description="Term2 Set1 Group1" CustomSortOrder="102" Owner="term1owner@term2owner" IsAvailableForTagging="false" IsDeprecated="false" IsReused="false" IsSourceTerm="false" />
+              </pnp:Terms>
+            </pnp:TermSet>
+          </pnp:TermSets>
+        </pnp:TermGroup>
+        <pnp:TermGroup ID="7d4caedf-4ed3-4e2d-ba93-a166b4f173f6" Name="TestTermGroup2" Description="Test Term Group 2" SiteCollectionTermGroup="false">
+          <pnp:TermSets/>
+        </pnp:TermGroup>
+      </pnp:TermGroups>
       <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
       <pnp:Providers>
         <pnp:Provider HandlerType="MyType, Sample">

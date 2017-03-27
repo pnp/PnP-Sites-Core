@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
-    internal class DirectoriesSerializer : PnPBaseSchemaSerializer
+    internal class DirectoriesSerializer : PnPBaseSchemaSerializer<Directory>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
