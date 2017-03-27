@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Pages
 
         private ClientContext context;
         private string pageName;
+        private string pageTitle;
         private string pagesLibrary;
         private ListItem pageListItem;
         private string sitePagesServerRelativeUrl;
@@ -62,18 +63,24 @@ namespace OfficeDevPnP.Core.Pages
         private System.Collections.Generic.List<CanvasZone> zones = new System.Collections.Generic.List<CanvasZone>(1);
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
         private PageLayoutType pageLayoutType;
+        private bool promoteAsNews;
+        private readonly bool keepDefaultWebParts;
 
         #endregion
 
         #region construction
-        public ClientSidePage(PageLayoutType pageLayoutType = PageLayoutType.Article)
+        public ClientSidePage(string pageTitle = "", PageLayoutType pageLayoutType = PageLayoutType.Article, bool keepDefaultWebParts = false, bool promoteAsNews = false)
         {
             this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
             this.pagesLibrary = "SitePages";
             this.pageLayoutType = pageLayoutType;
+            this.keepDefaultWebParts = keepDefaultWebParts;
+            this.promoteAsNews = promoteAsNews;
+            this.pageTitle = pageTitle;
         }
 
-        public ClientSidePage(ClientContext cc, PageLayoutType pageLayoutType = PageLayoutType.Article) : this(pageLayoutType)
+        public ClientSidePage(ClientContext cc, string pageTitle = "", PageLayoutType pageLayoutType = PageLayoutType.Article, bool keepDefaultWebParts = false, bool promoteAsNews = false)
+            : this(pageTitle, pageLayoutType, keepDefaultWebParts, promoteAsNews)
         {
             if (cc == null)
             {
@@ -168,6 +175,12 @@ namespace OfficeDevPnP.Core.Pages
         {
             get { return pageLayoutType; }
             set { pageLayoutType = value; }
+        }
+
+        public string PageTitle
+        {
+            get { return pageTitle; }
+            set { pageTitle = value; }
         }
 
         #endregion
@@ -399,26 +412,54 @@ namespace OfficeDevPnP.Core.Pages
                 item = pagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
-                item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
+                if (string.IsNullOrWhiteSpace(this.pageTitle))
+                {
+                    item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
+                }
+                else
+                {
+                    item["Title"] = pageTitle;
+                }
                 item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
-                item["PageLayoutType"] = this.pageLayoutType.ToString();
-                item["PromotedState"] = "0";
                 item["BannerImageUrl"] = "/_layouts/15/images/sitepagethumbnail.png";
+                if (keepDefaultWebParts)
+                {
+                    // Set canvas to empty and oob parts will be rendered
+                    // The Home layout will have pre-added news wp's
+                    item[ClientSidePage.CanvasField] = string.Empty;
+                }
+                else
+                {
+                    item[ClientSidePage.CanvasField] = this.ToHtml();
+                }
+                SetPageLayoutAndState(item);
                 item.Update();
-                this.Context.Web.Context.Load(item);
-                this.Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
                 item = pageFile.ListItemAllFields;
+                item[ClientSidePage.CanvasField] = this.ToHtml();
+                SetPageLayoutAndState(item);
+                item.Update();
             }
-
-            // Persist to page field
-            item[ClientSidePage.CanvasField] = this.ToHtml();
-            item.Update();
-            this.Context.ExecuteQueryRetry();
-
+            this.Context.Web.Context.Load(item);
+            this.Context.Web.Context.ExecuteQueryRetry();
             this.pageListItem = item;
+        }
+
+        private void SetPageLayoutAndState(ListItem item)
+        {
+            item["PageLayoutType"] = this.pageLayoutType.ToString();
+
+            if (promoteAsNews)
+            {
+                item["PromotedState"] = "2"; //published
+                item["FirstPublishedDate"] = DateTime.UtcNow;
+            }
+            else
+            {
+                item["PromotedState"] = "0";
+            }
         }
 
         public static ClientSidePage FromHtml(string html)
