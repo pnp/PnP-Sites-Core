@@ -1262,6 +1262,88 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(".txt", dir.IncludedExtensions);
             Assert.AreEqual("metafile2", dir.MetadataMappingFile);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Pages_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var newpage = new Core.Framework.Provisioning.Model.Page()
+            {
+                Url = "home.aspx",
+                Overwrite = true,
+            };
+            newpage.Security.CopyRoleAssignments = true;
+            newpage.Security.ClearSubscopes = true;
+            newpage.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "admin@sharepoint.com", RoleDefinition = "owner" });
+            newpage.Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() { Principal = "dev@sharepoint.com", RoleDefinition = "contributor" });
+            newpage.WebParts.Add(new WebPart() { Title = "My Content", Order = 1, Zone = "Main", Contents = "<webPart>[!<![CDATA[web part definition goes here]]></webPart>" });
+            newpage.WebParts.Add(new WebPart() { Title = "My Editor", Order = 10, Zone = "Left", Contents = "<webPart>[!<![CDATA[web part definition goes here]]></webPart>" });
+            newpage.Layout = WikiPageLayout.ThreeColumnsHeaderFooter;
+            newpage.Fields.Add("TestField", "TestField");
+            newpage.Fields.Add("TestField2", "TestField2");
+            newpage.Fields.Add("TestField3", "TestField3");
+            newpage.Fields.Add("TestField4", "TestField4");
+
+            result.Pages.Add(newpage);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-pages.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-pages.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template.Pages);
+            var page = template.Pages.FirstOrDefault(d => d.Url == "home.aspx");
+            Assert.IsNotNull(page);
+            Assert.IsTrue(page.Overwrite);
+
+            Assert.IsNotNull(page.Security);
+            Assert.IsNotNull(page.Security.BreakRoleInheritance);
+            Assert.IsTrue(page.Security.BreakRoleInheritance.ClearSubscopes);
+            Assert.IsTrue(page.Security.BreakRoleInheritance.CopyRoleAssignments);
+            Assert.IsNotNull(page.Security.BreakRoleInheritance.RoleAssignment);
+            var assingment = page.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "admin@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("owner", assingment.RoleDefinition);
+            assingment = page.Security.BreakRoleInheritance.RoleAssignment.FirstOrDefault(r => r.Principal == "dev@sharepoint.com");
+            Assert.IsNotNull(assingment);
+            Assert.AreEqual("contributor", assingment.RoleDefinition);
+
+            Assert.IsNotNull(page.WebParts);
+            var webpart = page.WebParts.FirstOrDefault(wp => wp.Title == "My Content");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual(1, webpart.Row);
+            Assert.AreEqual("Main", webpart.Column);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.InnerXml);
+
+            Assert.IsNotNull(page.WebParts);
+            webpart = page.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
+            Assert.IsNotNull(webpart);
+            Assert.AreEqual(10, webpart.Row);
+            Assert.AreEqual("Left", webpart.Column);
+            Assert.IsNotNull(webpart.Contents);
+            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.InnerXml);
+        }
         #endregion
     }
 }
