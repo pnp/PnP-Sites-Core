@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Pages
 {
@@ -318,7 +319,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 
@@ -412,16 +413,9 @@ namespace OfficeDevPnP.Core.Pages
                 item = pagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
-                if (string.IsNullOrWhiteSpace(this.pageTitle))
-                {
-                    item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
-                }
-                else
-                {
-                    item["Title"] = pageTitle;
-                }
                 item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
                 item["BannerImageUrl"] = "/_layouts/15/images/sitepagethumbnail.png";
+                item["Title"] = string.IsNullOrWhiteSpace(this.pageTitle) ? Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
                 if (keepDefaultWebParts)
                 {
                     // Set canvas to empty and oob parts will be rendered
@@ -781,7 +775,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 
@@ -878,7 +872,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 
