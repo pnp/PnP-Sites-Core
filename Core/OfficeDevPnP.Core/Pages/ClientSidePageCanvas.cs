@@ -447,6 +447,10 @@ namespace OfficeDevPnP.Core.Pages
             this.pageListItem = item;
         }
 
+        /// <summary>
+        /// Allow changing pagelayout and promoting/demoting an article as news
+        /// </summary>
+        /// <param name="item"></param>
         private void SetPageLayoutAndState(ListItem item)
         {
             item["PageLayoutType"] = this.pageLayoutType.ToString();
