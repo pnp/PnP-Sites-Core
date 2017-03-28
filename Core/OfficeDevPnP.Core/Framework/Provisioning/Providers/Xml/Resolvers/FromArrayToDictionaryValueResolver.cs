@@ -21,9 +21,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         private String _keyField;
         private String _valueField;
         private Type _sourceArrayItemType;
+        private String _targetPropertyName;
 
         public FromArrayToDictionaryValueResolver(Type sourceArrayItemType,
-            LambdaExpression keySelector, LambdaExpression valueSelector)
+            LambdaExpression keySelector, LambdaExpression valueSelector, String targetPropertyName = null)
         {
             this._sourceArrayItemType = sourceArrayItemType;
 
@@ -32,13 +33,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
             this._keyField = keyField.Member.Name;
             this._valueField = valueField.Member.Name;
+            this._targetPropertyName = targetPropertyName;
         }
 
         public object Resolve(object source, object destination, object sourceValue)
         {
             var result = new Dictionary<TKey, TValue>();
 
-            if (null == sourceValue && null != source)
+            if (null == sourceValue && null != source && !string.IsNullOrEmpty(_targetPropertyName))
+            {
+                sourceValue = source.GetPublicInstancePropertyValue(_targetPropertyName);
+            }
+            else if (null == sourceValue && null != source)
             {
                 // If we don't have the source value, but we have the source object
                 // we try to retrieve the source value from the source object

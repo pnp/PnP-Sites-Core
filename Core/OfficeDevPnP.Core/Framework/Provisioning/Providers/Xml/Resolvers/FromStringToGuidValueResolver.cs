@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, object destination, object sourceValue)
         {
-            return (Guid.Parse((String)sourceValue));
+            return sourceValue != null ? (Guid.Parse((String)sourceValue)) : default(Guid);
         }
     }
 }

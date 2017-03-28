@@ -14,8 +14,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <typeparam name="T"></typeparam>
     internal class PropertyObjectTypeResolver<T> : PropertyObjectTypeResolver
     {
-        public PropertyObjectTypeResolver(Expression<Func<T, object>> exp, Func<object, object> sourceValueSelector = null) : 
-            base(GetPropertyType(exp), GetPropertyName(exp), sourceValueSelector)
+        public PropertyObjectTypeResolver(Expression<Func<T, object>> exp, Func<object, object> sourceValueSelector = null, ITypeResolver resolver = null) : 
+            base(GetPropertyType(exp), GetPropertyName(exp), sourceValueSelector, resolver)
         {
         }
 
@@ -43,15 +43,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         private Type targetItemType;
         private string propertyName;
         private Func<object, object> sourceValueSelector = null;
+        private ITypeResolver typeResolver = null;
 
-        public PropertyObjectTypeResolver(Type targetItemType, string propertyName, Func<object, object> sourceValueSelector = null)
+        public PropertyObjectTypeResolver(Type targetItemType, string propertyName, Func<object, object> sourceValueSelector = null, ITypeResolver typeResolver = null)
         {
             this.targetItemType = targetItemType;
             this.propertyName = propertyName;
-            if(sourceValueSelector != null)
-            {
-                this.sourceValueSelector = sourceValueSelector;
-            }
+            this.sourceValueSelector = sourceValueSelector;
+            this.typeResolver = typeResolver;
         }
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
@@ -60,9 +59,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 this.sourceValueSelector(source);
             if (null != sourcePropertyValue)
             {
-                var result = Activator.CreateInstance(this.targetItemType, true);
-                PnPObjectsMapper.MapProperties(sourcePropertyValue, result, resolvers, recursive);
-
+                object result = null;
+                if (this.typeResolver == null)
+                {
+                    result = Activator.CreateInstance(this.targetItemType, true);
+                    PnPObjectsMapper.MapProperties(sourcePropertyValue, result, resolvers, recursive);
+                }
+                else
+                {
+                    result = PnPObjectsMapper.MapObjects(sourcePropertyValue, typeResolver, resolvers, recursive);
+                }
                 return (result);
             }
             else

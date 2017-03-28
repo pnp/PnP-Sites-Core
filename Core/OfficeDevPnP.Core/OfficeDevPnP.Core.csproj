@@ -429,6 +429,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentSetTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TermGroupsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FilesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\CustomActionsSerializer.cs" />

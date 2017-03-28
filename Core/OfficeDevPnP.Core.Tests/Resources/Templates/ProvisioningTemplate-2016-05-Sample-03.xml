@@ -353,7 +353,7 @@
                   <pnp:Terms>
                     <pnp:Term ID="48fd66cb-f7ca-4160-be46-b78876626c09" Name="Subterm1Term1Set1Group1">
                       <pnp:Terms>
-                        <pnp:Term ID="7f43fe4a-7030-4d7e-ab62-5fdaac65ac9b" Name="FirstOrDefault"/>
+                        <pnp:Term ID="7f43fe4a-7030-4d7e-ab62-5fdaac65ac9b" Name="Subsubterm1Term1Set1Group1"/>
                       </pnp:Terms>
                     </pnp:Term>
                     <pnp:Term ID="b0d92a3a-cbdf-4c6c-8807-54e23da108ee" Name="Subterm2Term1Set1Group1"/>
@@ -361,6 +361,8 @@
                 </pnp:Term>
                 <pnp:Term ID="382d3cb1-89f5-4809-b607-1634698e027e" Name="Term2Set1Group1" Description="Term2 Set1 Group1" CustomSortOrder="102" Owner="term1owner@term2owner" IsAvailableForTagging="false" IsDeprecated="false" IsReused="false" IsSourceTerm="false" />
               </pnp:Terms>
+            </pnp:TermSet>
+            <pnp:TermSet ID="d0610999-539c-4949-ba60-0375deea3023" Name="TestTermset2TestTermGroup" Description="Test Termset 2 Test Term Group" IsAvailableForTagging="false" IsOpenForTermCreation="false" >
             </pnp:TermSet>
           </pnp:TermSets>
         </pnp:TermGroup>

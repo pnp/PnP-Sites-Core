@@ -1492,7 +1492,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(101, tm.CustomSortOrder);
             Assert.AreEqual(1055, tm.Language);
             Assert.AreEqual("term1owner@termgroup1", tm.Owner);
-            Assert.AreEqual("bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d", tm.SourceTermId);
+            Assert.AreEqual(new Guid("bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d"), tm.SourceTermId);
             Assert.IsTrue(tm.IsAvailableForTagging);
             Assert.IsTrue(tm.IsDeprecated);
             Assert.IsTrue(tm.IsReused);
@@ -1539,9 +1539,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Term2Set1Group1", tm.Name);
             Assert.AreEqual("Term2 Set1 Group1", tm.Description);
             Assert.AreEqual(102, tm.CustomSortOrder);
-            Assert.IsNull(tm.Language);
+            Assert.AreEqual(0, tm.Language);
             Assert.AreEqual("term1owner@term2owner", tm.Owner);
-            Assert.IsNull(tm.SourceTermId);
+            Assert.AreEqual(Guid.Empty, tm.SourceTermId);
             Assert.IsFalse(tm.IsAvailableForTagging);
             Assert.IsFalse(tm.IsDeprecated);
             Assert.IsFalse(tm.IsReused);
