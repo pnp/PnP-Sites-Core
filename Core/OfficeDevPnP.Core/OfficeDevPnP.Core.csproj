@@ -419,6 +419,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromBasePermissionsToStringValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromNullableToSpecifiedValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PropertyObjectTypeResolver.cs" />

@@ -1438,7 +1438,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Deserialize_Taxonomy_201605()
+        public void XMLSerializer_Deserialize_TermGroups_201605()
         {
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -1563,7 +1563,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Serialize_Taxonomy_201605()
+        public void XMLSerializer_Serialize_TermGroups_201605()
         {
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -1763,7 +1763,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Term1Label1023", tm.Labels.FirstOrDefault(l => l.Language == 1023).Value);
             Assert.IsTrue(tm.Labels.FirstOrDefault(l => l.Language == 1023).IsDefaultForLanguage);
             Assert.IsNotNull(tm.Labels.FirstOrDefault(l => l.Language == 1053));
-            Assert.AreEqual("Term1Label1023", tm.Labels.FirstOrDefault(l => l.Language == 1053).Value);
+            Assert.AreEqual("Term1Label1053", tm.Labels.FirstOrDefault(l => l.Language == 1053).Value);
             Assert.IsFalse(tm.Labels.FirstOrDefault(l => l.Language == 1053).IsDefaultForLanguage);
 
             Assert.IsNotNull(tm.Terms);
@@ -1787,7 +1787,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Term2 Set1 Group1", tm.Description);
             Assert.AreEqual(102, tm.CustomSortOrder);
             Assert.IsFalse(tm.LanguageSpecified);
-            Assert.AreEqual("term1owner@term2owner", tm.Owner);
+            Assert.AreEqual("term2owner@termgroup1", tm.Owner);
             Assert.IsNull(tm.SourceTermId);
             Assert.IsFalse(tm.IsAvailableForTagging);
             Assert.IsFalse(tm.IsDeprecated);

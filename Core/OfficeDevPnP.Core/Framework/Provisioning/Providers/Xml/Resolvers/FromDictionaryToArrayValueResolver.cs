@@ -21,9 +21,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         private String _keyField;
         private String _valueField;
         private Type _targetArrayItemType;
+        private String _sourcePropertyName;
 
         public FromDictionaryToArrayValueResolver(Type targetArrayItemType,
-            LambdaExpression keySelector, LambdaExpression valueSelector)
+            LambdaExpression keySelector, LambdaExpression valueSelector, string sourcePropertyName = null)
         {
             this._targetArrayItemType = targetArrayItemType;
 
@@ -32,11 +33,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
             this._keyField = keyField.Member.Name;
             this._valueField = valueField.Member.Name;
+            this._sourcePropertyName = sourcePropertyName;
         }
 
         public object Resolve(object source, object destination, object sourceValue)
         {
             object result = null;
+
+            if (null == sourceValue && null != source && !string.IsNullOrEmpty(_sourcePropertyName))
+            {
+                //get source value from property with non-matching name
+                sourceValue = source.GetPublicInstancePropertyValue(_sourcePropertyName);
+            }
+
             var sourceDictionary = sourceValue != null && sourceValue is IEnumerable<KeyValuePair<TKey, TValue>> ?
                 sourceValue as IEnumerable<KeyValuePair<TKey, TValue>>:
                 source as IEnumerable<KeyValuePair<TKey, TValue>>;
