@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Collections;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
@@ -20,9 +21,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         private String _keyField;
         private String _valueField;
         private Type _targetArrayItemType;
+        private String _sourcePropertyName;
 
         public FromDictionaryToArrayValueResolver(Type targetArrayItemType,
-            LambdaExpression keySelector, LambdaExpression valueSelector)
+            LambdaExpression keySelector, LambdaExpression valueSelector, string sourcePropertyName = null)
         {
             this._targetArrayItemType = targetArrayItemType;
 
@@ -31,28 +33,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
             this._keyField = keyField.Member.Name;
             this._valueField = valueField.Member.Name;
+            this._sourcePropertyName = sourcePropertyName;
         }
 
         public object Resolve(object source, object destination, object sourceValue)
         {
-            var sourceDictionary = source as IEnumerable<KeyValuePair<TKey, TValue>>;
+            object result = null;
+
+            if (null == sourceValue && null != source && !string.IsNullOrEmpty(_sourcePropertyName))
+            {
+                //get source value from property with non-matching name
+                sourceValue = source.GetPublicInstancePropertyValue(_sourcePropertyName);
+            }
+
+            var sourceDictionary = sourceValue != null && sourceValue is IEnumerable<KeyValuePair<TKey, TValue>> ?
+                sourceValue as IEnumerable<KeyValuePair<TKey, TValue>>:
+                source as IEnumerable<KeyValuePair<TKey, TValue>>;
 
             if (null == sourceDictionary)
             {
                 throw new ArgumentException("Invalid source object. Expected type implementing IEnumerable<KeyValuePair<TKey, TValue>>", "source");
             }
-
-            var result = new List<Object>();
-
-            foreach (var item in sourceDictionary)
+            else if(sourceDictionary.Count() > 0)
             {
-                var resultItem = Activator.CreateInstance(this._targetArrayItemType);
-                resultItem.GetType().GetProperty(this._keyField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Key);
-                resultItem.GetType().GetProperty(this._valueField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Value);
-                result.Add(resultItem);
+                var listType = typeof(List<>);
+                var resultType = this._targetArrayItemType.MakeArrayType();
+
+                var resultArray = (Array)Activator.CreateInstance(resultType, sourceDictionary.Count());
+                var i = 0;
+                foreach (var item in sourceDictionary)
+                {
+                    var resultItem = Activator.CreateInstance(this._targetArrayItemType);
+                    resultItem.GetType().GetProperty(this._keyField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Key);
+                    resultItem.GetType().GetProperty(this._valueField, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public).SetValue(resultItem, item.Value);
+                    resultArray.SetValue(resultItem, i++);
+                }
+                result = resultArray;
             }
 
-            return (result.ToArray());
+            return (result);
         }
     }
 }

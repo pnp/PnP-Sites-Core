@@ -17,11 +17,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             get { return (this.GetType().Name); }
         }
 
-        private Action<T, object> expression = null;
+        private Action<T, Dictionary<String, IResolver>, bool, object> expression = null;
 
         private Type targetItemType;
 
         public ExpressionTypeResolver(Type targetItemType, Action<T, object> expression)
+        {
+            this.targetItemType = targetItemType;
+            this.expression = (source, resolvers, recursive, result) => expression.Invoke(source, result);
+        }
+
+        public ExpressionTypeResolver(Type targetItemType, Action<T, Dictionary<String, IResolver>, bool, object> expression)
         {
             this.targetItemType = targetItemType;
             this.expression = expression;
@@ -32,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             if (null != source)
             {
                 var result = Activator.CreateInstance(this.targetItemType, true);
-                expression.Invoke((T)source, result);
+                expression.Invoke((T)source, resolvers, recursive, result);
                 return (result);
             }
             else

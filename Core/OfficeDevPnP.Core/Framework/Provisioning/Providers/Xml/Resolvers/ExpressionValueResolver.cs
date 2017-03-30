@@ -7,9 +7,26 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
-    /// <summary>
-    /// Resolves a Decimal value into a Double
-    /// </summary>
+    internal class ExpressionValueResolver<T> : IValueResolver
+    {
+        public string Name
+        {
+            get { return (this.GetType().Name); }
+        }
+
+        private Func<T, object> expression = null;
+
+        public ExpressionValueResolver(Func<T, object> expression)
+        {
+            this.expression = expression;
+        }
+
+        public object Resolve(object source, object destination, object sourceValue)
+        {
+            return expression.Invoke((T)sourceValue);
+        }
+    }
+
     internal class ExpressionValueResolver : IValueResolver 
     {
         public string Name
