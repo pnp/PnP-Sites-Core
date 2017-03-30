@@ -140,6 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
                         }
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                         web.Context.ExecuteQueryRetry();
                     }
 
@@ -178,6 +179,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
                         }
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                         web.Context.ExecuteQueryRetry();
                     }
                 }
