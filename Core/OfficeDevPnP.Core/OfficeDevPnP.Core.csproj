@@ -436,6 +436,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FilesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\CustomActionsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
     <Compile Include="Pages\ClientSidePageCanvas.cs" />
     <Compile Include="Pages\ClientSidePageControls.cs" />
     <Compile Include="Pages\ClientSidePagesControlData.cs" />
