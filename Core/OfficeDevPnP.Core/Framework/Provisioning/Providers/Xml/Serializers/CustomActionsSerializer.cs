@@ -41,11 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var target = Activator.CreateInstance(customActionsType, true);
 
             var expressions = new Dictionary<string, IResolver>();
-            expressions.Add($"{customActionType.FullName}.Rights", new FromBasePermissionsToStringValueResolver());
-            expressions.Add($"{customActionType.FullName}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
-            expressions.Add($"{customActionType.FullName}.RegistrationTypeSpecified", new ExpressionValueResolver((s, p) => true));
-            expressions.Add($"{customActionType.FullName}.SequenceSpecified", new ExpressionValueResolver((s,p) => true));
-            expressions.Add($"{customActionType.FullName}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
+            expressions.Add($"{customActionType}.Rights", new FromBasePermissionsToStringValueResolver());
+            expressions.Add($"{customActionType}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
+            expressions.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver((s, p) => true));
+            expressions.Add($"{customActionType}.SequenceSpecified", new ExpressionValueResolver((s,p) => true));
+            expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
 

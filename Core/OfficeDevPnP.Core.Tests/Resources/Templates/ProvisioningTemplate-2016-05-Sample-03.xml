@@ -370,7 +370,7 @@
           <pnp:TermSets/>
         </pnp:TermGroup>
       </pnp:TermGroups>
-      <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
+      <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="2" />
       <pnp:Providers>
         <pnp:Provider HandlerType="MyType, Sample">
           <pnp:Configuration><![CDATA[Some custom text that is not XML and that can contain symbols like >, or <, or &, or whatever else.]]></pnp:Configuration>

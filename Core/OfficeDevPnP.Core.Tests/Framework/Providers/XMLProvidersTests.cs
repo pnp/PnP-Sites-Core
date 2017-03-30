@@ -1807,6 +1807,75 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNull(group.Contributors);
             Assert.IsNull(group.Managers);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ComposedLook_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var result = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(result);
+            Assert.IsNotNull(result.ComposedLook);
+            Assert.AreEqual("Resources/Themes/Contoso/contosobg.jpg", result.ComposedLook.BackgroundFile);
+            Assert.AreEqual("Resources/Themes/Contoso/contoso.spcolor", result.ComposedLook.ColorFile);
+            Assert.AreEqual("Resources/Themes/Contoso/contoso.spfont", result.ComposedLook.FontFile);
+            Assert.AreEqual("Contoso", result.ComposedLook.Name);
+            Assert.AreEqual(2, result.ComposedLook.Version);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ComposedLook_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var composedLook = new ComposedLook()
+            {
+                BackgroundFile = "Resources/Themes/Contoso/contosobg.jpg",
+                ColorFile = "Resources/Themes/Contoso/contoso.spcolor",
+                FontFile = "Resources/Themes/Contoso/contoso.spfont",
+                Name = "Contoso",
+                Version = 2
+            };
+            result.ComposedLook = composedLook;
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template.ComposedLook);
+            Assert.AreEqual("Resources/Themes/Contoso/contosobg.jpg", template.ComposedLook.BackgroundFile);
+            Assert.AreEqual("Resources/Themes/Contoso/contoso.spcolor", template.ComposedLook.ColorFile);
+            Assert.AreEqual("Resources/Themes/Contoso/contoso.spfont", template.ComposedLook.FontFile);
+            Assert.AreEqual("Contoso", template.ComposedLook.Name);
+            Assert.AreEqual(2, template.ComposedLook.Version);
+        }
         #endregion
     }
 }
