@@ -47,6 +47,11 @@
         <pnp:SupportedUILanguage LCID="1040"/>
         <pnp:SupportedUILanguage LCID="1033"/>
       </pnp:SupportedUILanguages>
+      <pnp:AuditSettings AuditLogTrimmingRetention="10" TrimAuditLog="true">
+        <pnp:Audit AuditFlag="CheckIn" />
+        <pnp:Audit AuditFlag="CheckOut" />
+        <pnp:Audit AuditFlag="Search" />
+      </pnp:AuditSettings>
       <pnp:WebSettings NoCrawl="false" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
