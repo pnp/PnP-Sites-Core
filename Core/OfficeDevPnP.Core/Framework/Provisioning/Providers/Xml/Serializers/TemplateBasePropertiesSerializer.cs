@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the base properties of a template
+    /// Class to serialize/deserialize the Base Properties of a Template
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 100, DeserializationSequence = 100,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,

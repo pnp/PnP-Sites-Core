@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the list instances
+    /// Class to serialize/deserialize the List Instances
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 300, DeserializationSequence = 300,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the property bag properties
+    /// Class to serialize/deserialize the Property Bag Properties
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 200, DeserializationSequence = 200,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
