@@ -389,6 +389,29 @@
         </pnp:TermGroup>
       </pnp:TermGroups>
       <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="2" />
+      <pnp:Workflows>
+        <pnp:WorkflowDefinitions>
+          <pnp:WorkflowDefinition Id="8fd9de8b-d786-43bf-9b33-d7266eb241b0" AssociationUrl="/workflow1/associate.aspx" Description="Test Workflow Definition" DisplayName="My Workflow 1" DraftVersion="1.0" InitiationUrl="/workflow1/initiate.aspx" Published="true" RequiresAssociationForm="true" RequiresInitiationForm="true" RestrictToScope="List" RestrictToType="Universal" XamlPath="workflow1.xaml">
+            <pnp:Properties>
+              <pnp:Property Key="MyWorkflowProperty1" Value="Value1"/>
+              <pnp:Property Key="MyWorkflowProperty2" Value="Value2"/>
+            </pnp:Properties>
+            <pnp:FormField>
+              <Field></Field>
+            </pnp:FormField>
+          </pnp:WorkflowDefinition>
+          <pnp:WorkflowDefinition Id="13d4bae2-2292-4297-84c5-d56881c529a9" DisplayName="My Workflow 2" XamlPath="workflow2.xaml"></pnp:WorkflowDefinition>
+        </pnp:WorkflowDefinitions>
+        <pnp:WorkflowSubscriptions>
+          <pnp:WorkflowSubscription DefinitionId="c421e3cb-e7b0-489c-b7cc-e0d35d1179e0" Enabled="true" EventSourceId="aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7" WorkflowStartEvent="true" ItemAddedEvent="true" ItemUpdatedEvent="true" ListId="94413de1-850d-4fbf-a8bb-371feefa2ecf" ManualStartBypassesActivationLimit="true" Name="MyWorkflowSubscription1" ParentContentTypeId="0x01" StatusFieldName="MyWorkflow1Status">
+            <pnp:PropertyDefinitions>
+              <pnp:PropertyDefinition Key="MySubscriptionProperty1" Value="Value1"/>
+              <pnp:PropertyDefinition Key="MySubscriptionProperty2" Value="Value2"/>
+            </pnp:PropertyDefinitions>
+          </pnp:WorkflowSubscription>
+          <pnp:WorkflowSubscription DefinitionId="34ae3873-3f8e-41b0-aaab-802fc6199897" Enabled="false" WorkflowStartEvent="false" ItemAddedEvent="false" ItemUpdatedEvent="false" Name="MyWorkflowSubscription2" StatusFieldName="MyWorkflow2Status" />
+        </pnp:WorkflowSubscriptions>
+      </pnp:Workflows>
       <pnp:Providers>
         <pnp:Provider HandlerType="MyType, Sample">
           <pnp:Configuration><![CDATA[Some custom text that is not XML and that can contain symbols like >, or <, or &, or whatever else.]]></pnp:Configuration>

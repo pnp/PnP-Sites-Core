@@ -1876,6 +1876,234 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Contoso", template.ComposedLook.Name);
             Assert.AreEqual(2, template.ComposedLook.Version);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Workflows_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(template.Workflows);
+            Assert.IsNotNull(template.Workflows.WorkflowDefinitions);
+            var wd = template.Workflows.WorkflowDefinitions.FirstOrDefault(d => d.Id == new Guid("8fd9de8b-d786-43bf-9b33-d7266eb241b0"));
+            Assert.IsNotNull(wd);
+            Assert.AreEqual("/workflow1/associate.aspx", wd.AssociationUrl);
+            Assert.AreEqual("Test Workflow Definition", wd.Description);
+            Assert.AreEqual("My Workflow 1", wd.DisplayName);
+            Assert.AreEqual("1.0", wd.DraftVersion);
+            Assert.AreEqual("<Field></Field>", wd.FormField);
+            Assert.AreEqual("/workflow1/initiate.aspx", wd.InitiationUrl);
+            Assert.IsTrue(wd.Published);
+            Assert.IsTrue(wd.RequiresAssociationForm);
+            Assert.IsTrue(wd.RequiresInitiationForm);
+            Assert.AreEqual("List", wd.RestrictToScope);
+            Assert.AreEqual("Document", wd.RestrictToType);
+            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+            Assert.IsNotNull(wd.Properties);
+            Assert.AreEqual(2, wd.Properties.Count());
+            Assert.IsNotNull(wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty1"));
+            Assert.AreEqual("Value1", wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty1").Value);
+            Assert.IsNotNull(wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty2"));
+            Assert.AreEqual("Value2", wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty2").Value);
+
+            wd = template.Workflows.WorkflowDefinitions.FirstOrDefault(d => d.Id == new Guid("13d4bae2-2292-4297-84c5-d56881c529a9"));
+            Assert.IsNotNull(wd);
+            Assert.IsNull(wd.AssociationUrl);
+            Assert.IsNull(wd.Description);
+            Assert.AreEqual("My Workflow 2", wd.DisplayName);
+            Assert.IsNull(wd.DraftVersion);
+            Assert.IsNull(wd.FormField);
+            Assert.IsNull(wd.InitiationUrl);
+            Assert.IsFalse(wd.Published);
+            Assert.IsFalse(wd.RequiresAssociationForm);
+            Assert.IsFalse(wd.RequiresInitiationForm);
+            Assert.IsNull(wd.RestrictToScope);
+            Assert.IsNull(wd.RestrictToType);
+            Assert.IsNull(wd.Properties);
+            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+
+            var ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == new Guid("c421e3cb-e7b0-489c-b7cc-e0d35d1179e0"));
+            Assert.IsNotNull(ws);
+            Assert.IsTrue(ws.Enabled);
+            Assert.AreEqual("aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7", ws.EventSourceId);
+            Assert.IsNotNull(ws.EventTypes);
+            Assert.AreEqual(3, ws.EventTypes.Count);
+            Assert.IsTrue(ws.EventTypes.Contains("ItemAddedEvent"));
+            Assert.IsTrue(ws.EventTypes.Contains("ItemUpdatedEvent"));
+            Assert.IsTrue(ws.EventTypes.Contains("WorkflowStartEvent"));
+            Assert.IsTrue(ws.ManualStartBypassesActivationLimit);
+            Assert.AreEqual("94413de1-850d-4fbf-a8bb-371feefa2ecf", ws.ListId);
+            Assert.AreEqual("MyWorkflowSubscription1", ws.Name);
+            Assert.AreEqual("0x01", ws.ParentContentTypeId);
+            Assert.AreEqual("MyWorkflow1Status", ws.StatusFieldName);
+
+            ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == new Guid("34ae3873-3f8e-41b0-aaab-802fc6199897"));
+            Assert.IsNotNull(ws);
+            Assert.IsFalse(ws.Enabled);
+            Assert.IsNull(ws.EventSourceId);
+            Assert.IsNull(ws.EventTypes);
+            Assert.IsFalse(ws.ManualStartBypassesActivationLimit);
+            Assert.IsNull(ws.ListId);
+            Assert.AreEqual("MyWorkflowSubscription2", ws.Name);
+            Assert.IsNull(ws.ParentContentTypeId);
+            Assert.AreEqual("MyWorkflow2Status", ws.StatusFieldName);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Workflows_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var workflows = new Workflows();
+            workflows.WorkflowDefinitions.Add(new WorkflowDefinition(new Dictionary<string, string>() { { "MyWorkflowProperty1", "Value1" }, { "MyWorkflowProperty2", "Value2" } })
+            {
+                Id = new Guid("8fd9de8b-d786-43bf-9b33-d7266eb241b0"),
+                AssociationUrl = "/workflow1/associate.aspx",
+                Description = "Test Workflow Definition",
+                DisplayName = "My Workflow 1",
+                DraftVersion = "1.0",
+                FormField = "<Field></Field>",
+                InitiationUrl = "/workflow1/initiate.aspx",
+                Published = true,
+                RequiresAssociationForm = true,
+                RequiresInitiationForm = true,
+                RestrictToScope = "List",
+                RestrictToType = "Universal",
+                XamlPath = "workflow1.xaml"
+            });
+
+            workflows.WorkflowDefinitions.Add(new WorkflowDefinition()
+            {
+                Id = new Guid("13d4bae2-2292-4297-84c5-d56881c529a9"),
+                DisplayName = "My Workflow 2",
+                XamlPath = "workflow2.xaml"
+            });
+
+            workflows.WorkflowSubscriptions.Add(new WorkflowSubscription(new Dictionary<string, string>() { { "MySubscriptionProperty1", "Value1" }, { "MySubscriptionProperty2", "Value2" } })
+            {
+                DefinitionId = new Guid("c421e3cb-e7b0-489c-b7cc-e0d35d1179e0"),
+                Enabled = true,
+                EventSourceId = "aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7",
+                EventTypes = new List<string>() { "ItemAddedEvent", "ItemAddedEvent", "WorkflowStartEvent" },
+                ListId = "94413de1-850d-4fbf-a8bb-371feefa2ecf",
+                ManualStartBypassesActivationLimit = true,
+                Name = "MyWorkflowSubscription1",
+                ParentContentTypeId = "0x01",
+                StatusFieldName = "MyWorkflow1Status"
+            });
+            workflows.WorkflowSubscriptions.Add(new WorkflowSubscription()
+            {
+                DefinitionId = new Guid("34ae3873-3f8e-41b0-aaab-802fc6199897"),
+                Enabled = false,
+                Name = "MyWorkflowSubscription2",
+                StatusFieldName = "MyWorkflow2Status"
+            });
+
+            result.Workflows = workflows;
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Workflows);
+            Assert.IsNotNull(template.Workflows.WorkflowDefinitions);
+            var wd = template.Workflows.WorkflowDefinitions.FirstOrDefault(d => d.Id == "8fd9de8b-d786-43bf-9b33-d7266eb241b0");
+            Assert.IsNotNull(wd);
+            Assert.AreEqual("/workflow1/associate.aspx", wd.AssociationUrl);
+            Assert.AreEqual("Test Workflow Definition", wd.Description);
+            Assert.AreEqual("My Workflow 1", wd.DisplayName);
+            Assert.AreEqual("1.0", wd.DraftVersion);
+            Assert.AreEqual("<Field></Field>", wd.FormField);
+            Assert.AreEqual("/workflow1/initiate.aspx", wd.InitiationUrl);
+            Assert.IsTrue(wd.Published);
+            Assert.IsTrue(wd.PublishedSpecified);
+            Assert.IsTrue(wd.RequiresAssociationForm);
+            Assert.IsTrue(wd.RequiresAssociationFormSpecified);
+            Assert.IsTrue(wd.RequiresInitiationForm);
+            Assert.IsTrue(wd.RequiresInitiationFormSpecified);
+            Assert.AreEqual("List", wd.RestrictToScope);
+            Assert.AreEqual("Universal", wd.RestrictToType);
+            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+            Assert.IsNotNull(wd.Properties);
+            Assert.AreEqual(2, wd.Properties.Count());
+            Assert.IsNotNull(wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty1"));
+            Assert.AreEqual("Value1", wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty1").Value);
+            Assert.IsNotNull(wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty2"));
+            Assert.AreEqual("Value2", wd.Properties.FirstOrDefault(p => p.Key == "MyWorkflowProperty2").Value);
+
+            wd = template.Workflows.WorkflowDefinitions.FirstOrDefault(d => d.Id == "13d4bae2-2292-4297-84c5-d56881c529a9");
+            Assert.IsNotNull(wd);
+            Assert.IsNull(wd.AssociationUrl);
+            Assert.IsNull(wd.Description);
+            Assert.AreEqual("My Workflow 2", wd.DisplayName);
+            Assert.IsNull(wd.DraftVersion);
+            Assert.IsNull(wd.FormField);
+            Assert.IsNull(wd.InitiationUrl);
+            Assert.IsFalse(wd.Published);
+            Assert.IsFalse(wd.PublishedSpecified);
+            Assert.IsFalse(wd.RequiresAssociationForm);
+            Assert.IsFalse(wd.RequiresAssociationFormSpecified);
+            Assert.IsFalse(wd.RequiresInitiationForm);
+            Assert.IsFalse(wd.RequiresInitiationFormSpecified);
+            Assert.IsNull(wd.RestrictToScope);
+            Assert.IsNull(wd.RestrictToType);
+            Assert.IsNull(wd.Properties);
+            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+
+            var ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == "c421e3cb-e7b0-489c-b7cc-e0d35d1179e0");
+            Assert.IsNotNull(ws);
+            Assert.IsTrue(ws.Enabled);
+            Assert.AreEqual("aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7", ws.EventSourceId);
+            Assert.IsTrue(ws.ItemAddedEvent);
+            Assert.IsTrue(ws.ItemUpdatedEvent);
+            Assert.IsTrue(ws.WorkflowStartEvent);
+            Assert.IsTrue(ws.ManualStartBypassesActivationLimit);
+            Assert.IsTrue(ws.ManualStartBypassesActivationLimitSpecified);
+            Assert.AreEqual("94413de1-850d-4fbf-a8bb-371feefa2ecf", ws.ListId);
+            Assert.AreEqual("MyWorkflowSubscription1", ws.Name);
+            Assert.AreEqual("0x01", ws.ParentContentTypeId);
+            Assert.AreEqual("MyWorkflow1Status", ws.StatusFieldName);
+
+            ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == "34ae3873-3f8e-41b0-aaab-802fc6199897");
+            Assert.IsNotNull(ws);
+            Assert.IsFalse(ws.Enabled);
+            Assert.IsNull(ws.EventSourceId);
+            Assert.IsFalse(ws.ItemAddedEvent);
+            Assert.IsFalse(ws.ItemUpdatedEvent);
+            Assert.IsFalse(ws.WorkflowStartEvent);
+            Assert.IsFalse(ws.ManualStartBypassesActivationLimit);
+            Assert.IsFalse(ws.ManualStartBypassesActivationLimitSpecified);
+            Assert.IsNull(ws.ListId);
+            Assert.AreEqual("MyWorkflowSubscription2", ws.Name);
+            Assert.IsNull(ws.ParentContentTypeId);
+            Assert.AreEqual("MyWorkflow2Status", ws.StatusFieldName);
+        }
         #endregion
     }
 }
