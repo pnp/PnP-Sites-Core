@@ -431,6 +431,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ComposedLookSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedUILanguagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TermGroupsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PagesSerializer.cs" />

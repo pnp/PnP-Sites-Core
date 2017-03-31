@@ -1904,7 +1904,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(wd.RequiresAssociationForm);
             Assert.IsTrue(wd.RequiresInitiationForm);
             Assert.AreEqual("List", wd.RestrictToScope);
-            Assert.AreEqual("Document", wd.RestrictToType);
+            Assert.AreEqual("Universal", wd.RestrictToType);
             Assert.AreEqual("workflow1.xaml", wd.XamlPath);
             Assert.IsNotNull(wd.Properties);
             Assert.AreEqual(2, wd.Properties.Count());
@@ -1925,9 +1925,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(wd.RequiresAssociationForm);
             Assert.IsFalse(wd.RequiresInitiationForm);
             Assert.IsNull(wd.RestrictToScope);
-            Assert.IsNull(wd.RestrictToType);
-            Assert.IsNull(wd.Properties);
-            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+            Assert.AreEqual("Universal", wd.RestrictToType);
+            Assert.IsTrue(wd.Properties == null || wd.Properties.Count == 0);
+            Assert.AreEqual("workflow2.xaml", wd.XamlPath);
 
             var ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == new Guid("c421e3cb-e7b0-489c-b7cc-e0d35d1179e0"));
             Assert.IsNotNull(ws);
@@ -1935,9 +1935,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7", ws.EventSourceId);
             Assert.IsNotNull(ws.EventTypes);
             Assert.AreEqual(3, ws.EventTypes.Count);
-            Assert.IsTrue(ws.EventTypes.Contains("ItemAddedEvent"));
-            Assert.IsTrue(ws.EventTypes.Contains("ItemUpdatedEvent"));
-            Assert.IsTrue(ws.EventTypes.Contains("WorkflowStartEvent"));
+            Assert.IsTrue(ws.EventTypes.Contains("ItemAdded"));
+            Assert.IsTrue(ws.EventTypes.Contains("ItemUpdated"));
+            Assert.IsTrue(ws.EventTypes.Contains("WorkflowStart"));
             Assert.IsTrue(ws.ManualStartBypassesActivationLimit);
             Assert.AreEqual("94413de1-850d-4fbf-a8bb-371feefa2ecf", ws.ListId);
             Assert.AreEqual("MyWorkflowSubscription1", ws.Name);
@@ -1948,7 +1948,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(ws);
             Assert.IsFalse(ws.Enabled);
             Assert.IsNull(ws.EventSourceId);
-            Assert.IsNull(ws.EventTypes);
+            Assert.IsTrue(ws.EventTypes == null || ws.EventTypes.Count == 0);
             Assert.IsFalse(ws.ManualStartBypassesActivationLimit);
             Assert.IsNull(ws.ListId);
             Assert.AreEqual("MyWorkflowSubscription2", ws.Name);
@@ -1982,7 +1982,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 RequiresAssociationForm = true,
                 RequiresInitiationForm = true,
                 RestrictToScope = "List",
-                RestrictToType = "Universal",
+                RestrictToType = "List",
                 XamlPath = "workflow1.xaml"
             });
 
@@ -1998,7 +1998,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 DefinitionId = new Guid("c421e3cb-e7b0-489c-b7cc-e0d35d1179e0"),
                 Enabled = true,
                 EventSourceId = "aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7",
-                EventTypes = new List<string>() { "ItemAddedEvent", "ItemAddedEvent", "WorkflowStartEvent" },
+                EventTypes = new List<string>() { "ItemAdded", "ItemUpdated", "WorkflowStart" },
                 ListId = "94413de1-850d-4fbf-a8bb-371feefa2ecf",
                 ManualStartBypassesActivationLimit = true,
                 Name = "MyWorkflowSubscription1",
@@ -2039,7 +2039,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Test Workflow Definition", wd.Description);
             Assert.AreEqual("My Workflow 1", wd.DisplayName);
             Assert.AreEqual("1.0", wd.DraftVersion);
-            Assert.AreEqual("<Field></Field>", wd.FormField);
+            Assert.IsNotNull(wd.FormField);
+            Assert.AreEqual("<Field></Field>", wd.FormField.OuterXml);
             Assert.AreEqual("/workflow1/initiate.aspx", wd.InitiationUrl);
             Assert.IsTrue(wd.Published);
             Assert.IsTrue(wd.PublishedSpecified);
@@ -2048,7 +2049,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(wd.RequiresInitiationForm);
             Assert.IsTrue(wd.RequiresInitiationFormSpecified);
             Assert.AreEqual("List", wd.RestrictToScope);
-            Assert.AreEqual("Universal", wd.RestrictToType);
+            Assert.AreEqual(OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605.WorkflowsWorkflowDefinitionRestrictToType.List, wd.RestrictToType);
             Assert.AreEqual("workflow1.xaml", wd.XamlPath);
             Assert.IsNotNull(wd.Properties);
             Assert.AreEqual(2, wd.Properties.Count());
@@ -2072,9 +2073,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(wd.RequiresInitiationForm);
             Assert.IsFalse(wd.RequiresInitiationFormSpecified);
             Assert.IsNull(wd.RestrictToScope);
-            Assert.IsNull(wd.RestrictToType);
+            Assert.IsFalse(wd.RestrictToTypeSpecified);
             Assert.IsNull(wd.Properties);
-            Assert.AreEqual("workflow1.xaml", wd.XamlPath);
+            Assert.AreEqual("workflow2.xaml", wd.XamlPath);
 
             var ws = template.Workflows.WorkflowSubscriptions.FirstOrDefault(d => d.DefinitionId == "c421e3cb-e7b0-489c-b7cc-e0d35d1179e0");
             Assert.IsNotNull(ws);
