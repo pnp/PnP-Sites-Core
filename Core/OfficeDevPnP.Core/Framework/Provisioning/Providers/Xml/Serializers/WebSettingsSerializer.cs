@@ -18,8 +18,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var webSettings = persistence.GetPublicInstancePropertyValue("WebSettings");
-            template.WebSettings = new WebSettings();
-            PnPObjectsMapper.MapProperties(webSettings, template.WebSettings, null, true);
+            if (webSettings != null)
+            {
+                template.WebSettings = new WebSettings();
+                PnPObjectsMapper.MapProperties(webSettings, template.WebSettings, null, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
