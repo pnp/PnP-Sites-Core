@@ -18,6 +18,10 @@
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
       <pnp:WebSettings NoCrawl="false" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" />
       <pnp:RegionalSettings AdjustHijriDays="2" AlternateCalendarType="Gregorian Arabic Calendar" CalendarType="Gregorian" Collation="1" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="0" WorkDayEndHour="6:00PM" WorkDays="5" WorkDayStartHour="9:00AM" />
+      <pnp:SupportedUILanguages>
+        <pnp:SupportedUILanguage LCID="1040" />
+        <pnp:SupportedUILanguage LCID="1033" />
+      </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
