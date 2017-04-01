@@ -412,6 +412,14 @@
           <pnp:WorkflowSubscription DefinitionId="34ae3873-3f8e-41b0-aaab-802fc6199897" Enabled="false" WorkflowStartEvent="false" ItemAddedEvent="false" ItemUpdatedEvent="false" Name="MyWorkflowSubscription2" StatusFieldName="MyWorkflow2Status" />
         </pnp:WorkflowSubscriptions>
       </pnp:Workflows>
+      <pnp:SearchSettings>
+        <pnp:SiteSearchSettings>
+          <SiteSearchSettings></SiteSearchSettings>
+        </pnp:SiteSearchSettings>
+        <pnp:WebSearchSettings>
+          <WebSearchSettings></WebSearchSettings>
+        </pnp:WebSearchSettings>
+      </pnp:SearchSettings>
       <pnp:Providers>
         <pnp:Provider HandlerType="MyType, Sample">
           <pnp:Configuration><![CDATA[Some custom text that is not XML and that can contain symbols like >, or <, or &, or whatever else.]]></pnp:Configuration>

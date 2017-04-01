@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -31,6 +32,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add(t => t.Properties,
                 new FromArrayToDictionaryValueResolver<String, String>(
                     propertiesType, propertiesKeySelector, propertiesValueSelector));
+
+            //search settings
+            expressions.Add(t => t.SiteSearchSettings,
+                new ExpressionValueResolver((s, v) =>
+                s.GetPublicInstancePropertyValue("SearchSettings")?
+                .GetPublicInstancePropertyValue("SiteSearchSettings")?
+                .GetPublicInstancePropertyValue("OuterXml")));
+            expressions.Add(t => t.WebSearchSettings,
+                new ExpressionValueResolver((s, v) =>
+                s.GetPublicInstancePropertyValue("SearchSettings")?
+                .GetPublicInstancePropertyValue("WebSearchSettings")?
+                .GetPublicInstancePropertyValue("OuterXml")));
+
             PnPObjectsMapper.MapProperties(persistence, template, expressions);
         }
 
@@ -47,7 +61,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add(t => t.Properties,
                 new FromDictionaryToArrayValueResolver<String, String>(
                     propertiesType, keySelector, valueSelector));
+
             PnPObjectsMapper.MapProperties(template, persistence, expressions);
+
+            //search settings
+            if(!string.IsNullOrEmpty(template.SiteSearchSettings)||!string.IsNullOrEmpty(template.WebSearchSettings))
+            {
+                var searchSettingType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateSearchSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+                var searchSettings = Activator.CreateInstance(searchSettingType, true);
+                if(!string.IsNullOrEmpty(template.SiteSearchSettings))
+                {
+                    searchSettings.GetPublicInstanceProperty("SiteSearchSettings").SetValue(searchSettings, XElement.Parse(template.SiteSearchSettings).ToXmlElement());
+                }
+                if (!string.IsNullOrEmpty(template.WebSearchSettings))
+                {
+                    searchSettings.GetPublicInstanceProperty("WebSearchSettings").SetValue(searchSettings, XElement.Parse(template.WebSearchSettings).ToXmlElement());
+                }
+                persistence.GetPublicInstanceProperty("SearchSettings").SetValue(persistence, searchSettings);
+            }
+
         }
     }
 }

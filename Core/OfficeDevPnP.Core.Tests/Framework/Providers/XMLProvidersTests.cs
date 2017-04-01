@@ -2016,9 +2016,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             result.Workflows = workflows;
 
             var serializer = new XMLPnPSchemaV201605Serializer();
-            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml", serializer);
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-wf.xml", serializer);
 
-            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-look.xml";
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-wf.xml";
             Assert.IsTrue(System.IO.File.Exists(path));
             XDocument xml = XDocument.Load(path);
             Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
@@ -2104,6 +2104,60 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("MyWorkflowSubscription2", ws.Name);
             Assert.IsNull(ws.ParentContentTypeId);
             Assert.AreEqual("MyWorkflow2Status", ws.StatusFieldName);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SearchSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.AreEqual("<SiteSearchSettings></SiteSearchSettings>", template.SiteSearchSettings);
+            Assert.AreEqual("<WebSearchSettings></WebSearchSettings>", template.WebSearchSettings);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SearchSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.SiteSearchSettings = "<SiteSearchSettings></SiteSearchSettings>";
+            result.WebSearchSettings = "<WebSearchSettings></WebSearchSettings>";
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-srch.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-srch.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.SearchSettings);
+            Assert.IsNotNull(template.SearchSettings.SiteSearchSettings);
+            Assert.IsNotNull(template.SearchSettings.WebSearchSettings);
+            Assert.AreEqual("<SiteSearchSettings></SiteSearchSettings>", template.SearchSettings.SiteSearchSettings.OuterXml);
+            Assert.AreEqual("<WebSearchSettings></WebSearchSettings>", template.SearchSettings.WebSearchSettings.OuterXml);
         }
         #endregion
     }
