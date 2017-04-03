@@ -9,10 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     internal class ExpressionValueResolver<T> : IValueResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
+        public string Name => this.GetType().Name;
 
         private Func<T, object> expression = null;
 

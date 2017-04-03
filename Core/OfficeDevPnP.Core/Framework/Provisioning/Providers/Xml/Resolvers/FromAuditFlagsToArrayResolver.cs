@@ -12,11 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class FromAuditFlagsToArrayResolver : IValueResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
-
+        public string Name => this.GetType().Name;
 
         public object Resolve(object source, object destination, object sourceValue)
         {
