@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the content types
+    /// Class to serialize/deserialize the Custom Actions
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
