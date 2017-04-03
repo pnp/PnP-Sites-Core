@@ -118,6 +118,19 @@
           </pnp:UserCustomActions>
         </pnp:ListInstance>
       </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
       <pnp:CustomActions>
         <pnp:SiteCustomActions>
           <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" ScriptBlock="alert('boo')" ImageUrl="http://sharepoint.com" RegistrationId="101" RegistrationType="None">

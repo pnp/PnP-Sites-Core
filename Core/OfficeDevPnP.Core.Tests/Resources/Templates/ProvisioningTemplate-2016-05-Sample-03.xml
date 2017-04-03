@@ -109,7 +109,7 @@
           </pnp:DocumentSetTemplate>
         </pnp:ContentType>
       </pnp:ContentTypes>
-        <pnp:Lists>
+      <pnp:Lists>
         <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="10" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
