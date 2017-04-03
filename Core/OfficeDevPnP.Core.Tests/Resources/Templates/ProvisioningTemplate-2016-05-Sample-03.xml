@@ -420,9 +420,28 @@
           <WebSearchSettings></WebSearchSettings>
         </pnp:WebSearchSettings>
       </pnp:SearchSettings>
+      <pnp:Publishing AutoCheckRequirements="SkipIfNotCompliant">
+        <pnp:DesignPackage DesignPackagePath="mypackage" MajorVersion="2" MinorVersion="3" PackageGuid="306ab10d-981d-471d-a8f9-16e1260ad4eb" PackageName="MyTestPackage" />
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate TemplateName="Template1033"/>
+          <pnp:WebTemplate LanguageCode="1049" TemplateName="Template1049"/>
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="mypagelayout1.aspx">
+          <pnp:PageLayout Path="mypagelayout1.aspx"/>
+          <pnp:PageLayout Path="mypagelayout2.aspx"/>
+        </pnp:PageLayouts>
+      </pnp:Publishing>
+      <pnp:AddIns>
+        <pnp:Addin PackagePath="myaddin1.app" Source="DeveloperSite"/>
+        <pnp:Addin PackagePath="myaddin2.app" Source="Marketplace"/>
+      </pnp:AddIns>
       <pnp:Providers>
-        <pnp:Provider HandlerType="MyType, Sample">
-          <pnp:Configuration><![CDATA[Some custom text that is not XML and that can contain symbols like >, or <, or &, or whatever else.]]></pnp:Configuration>
+        <pnp:Provider HandlerType="MyType1, MyAssembly1" Enabled="true">
+          <pnp:Configuration>
+            <TestConfiguration xmlns="MyHandler">Value</TestConfiguration>
+          </pnp:Configuration>
+        </pnp:Provider>
+        <pnp:Provider HandlerType="MyType2, MyAssembly2" Enabled="false">
         </pnp:Provider>
       </pnp:Providers>
     </pnp:ProvisioningTemplate>

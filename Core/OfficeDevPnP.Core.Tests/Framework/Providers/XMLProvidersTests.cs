@@ -2159,6 +2159,282 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("<SiteSearchSettings></SiteSearchSettings>", template.SearchSettings.SiteSearchSettings.OuterXml);
             Assert.AreEqual("<WebSearchSettings></WebSearchSettings>", template.SearchSettings.WebSearchSettings.OuterXml);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Publishing_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(template.Publishing);
+            Assert.AreEqual(AutoCheckRequirementsOptions.SkipIfNotCompliant, template.Publishing.AutoCheckRequirements);
+            Assert.IsNotNull(template.Publishing.DesignPackage);
+            Assert.AreEqual("mypackage", template.Publishing.DesignPackage.DesignPackagePath);
+            Assert.AreEqual(2, template.Publishing.DesignPackage.MajorVersion);
+            Assert.AreEqual(3, template.Publishing.DesignPackage.MinorVersion);
+            Assert.AreEqual(new Guid("306ab10d-981d-471d-a8f9-16e1260ad4eb"), template.Publishing.DesignPackage.PackageGuid);
+            Assert.AreEqual("MyTestPackage", template.Publishing.DesignPackage.PackageName);
+
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates);
+            Assert.AreEqual(2, template.Publishing.AvailableWebTemplates.Count());
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1033));
+            Assert.AreEqual("Template1033", template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1033).TemplateName);
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1049));
+            Assert.AreEqual("Template1049", template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1049).TemplateName);
+
+            Assert.IsNotNull(template.Publishing.PageLayouts);
+            Assert.IsNotNull(template.Publishing.PageLayouts);
+            Assert.AreEqual(2, template.Publishing.PageLayouts.Count());
+            Assert.IsNotNull(template.Publishing.PageLayouts.FirstOrDefault(p => p.Path == "mypagelayout1.aspx"));
+            Assert.IsTrue(template.Publishing.PageLayouts.FirstOrDefault(p => p.Path == "mypagelayout1.aspx").IsDefault);
+            Assert.IsNotNull(template.Publishing.PageLayouts.FirstOrDefault(p => p.Path == "mypagelayout2.aspx"));
+            Assert.IsFalse(template.Publishing.PageLayouts.FirstOrDefault(p => p.Path == "mypagelayout2.aspx").IsDefault);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Publishing_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Publishing = new Publishing()
+            {
+                AutoCheckRequirements = AutoCheckRequirementsOptions.SkipIfNotCompliant,
+                DesignPackage = new DesignPackage() {
+                    DesignPackagePath ="mypackage",
+                    MajorVersion = 2,
+                    MinorVersion = 3,
+                    PackageGuid = new Guid("306ab10d-981d-471d-a8f9-16e1260ad4eb"),
+                    PackageName = "MyTestPackage"
+                }
+            };
+            result.Publishing.AvailableWebTemplates.Add(new AvailableWebTemplate()
+            {
+                TemplateName = "Template1033"
+            });
+            result.Publishing.AvailableWebTemplates.Add(new AvailableWebTemplate()
+            {
+                LanguageCode = 1049,
+                TemplateName = "Template1049"
+            });
+            result.Publishing.PageLayouts.Add(new PageLayout()
+            {
+                IsDefault = true,
+                Path = "mypagelayout1.aspx"
+            });
+            result.Publishing.PageLayouts.Add(new PageLayout()
+            {
+                IsDefault = false,
+                Path = "mypagelayout2.aspx"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-pub.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-pub.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Publishing);
+            Assert.AreEqual(OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605.PublishingAutoCheckRequirements.SkipIfNotCompliant, template.Publishing.AutoCheckRequirements);
+            Assert.IsNotNull(template.Publishing.DesignPackage);
+            Assert.AreEqual("mypackage", template.Publishing.DesignPackage.DesignPackagePath);
+            Assert.AreEqual(2, template.Publishing.DesignPackage.MajorVersion);
+            Assert.IsTrue(template.Publishing.DesignPackage.MajorVersionSpecified);
+            Assert.AreEqual(3, template.Publishing.DesignPackage.MinorVersion);
+            Assert.IsTrue(template.Publishing.DesignPackage.MinorVersionSpecified);
+            Assert.AreEqual("306ab10d-981d-471d-a8f9-16e1260ad4eb", template.Publishing.DesignPackage.PackageGuid);
+            Assert.AreEqual("MyTestPackage", template.Publishing.DesignPackage.PackageName);
+
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates);
+            Assert.AreEqual(2, template.Publishing.AvailableWebTemplates.Count());
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 0));
+            Assert.AreEqual("Template1033", template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 0).TemplateName);
+            Assert.IsNotNull(template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1049));
+            Assert.AreEqual("Template1049", template.Publishing.AvailableWebTemplates.FirstOrDefault(t => t.LanguageCode == 1049).TemplateName);
+
+            Assert.IsNotNull(template.Publishing.PageLayouts);
+            Assert.AreEqual("mypagelayout1.aspx", template.Publishing.PageLayouts.Default);
+            Assert.IsNotNull(template.Publishing.PageLayouts.PageLayout);
+            Assert.AreEqual(2, template.Publishing.PageLayouts.PageLayout.Count());
+            Assert.IsNotNull(template.Publishing.PageLayouts.PageLayout.FirstOrDefault(p => p.Path == "mypagelayout1.aspx"));
+            Assert.IsNotNull(template.Publishing.PageLayouts.PageLayout.FirstOrDefault(p => p.Path == "mypagelayout2.aspx"));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_AddIns_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(template.AddIns);
+            Assert.AreEqual(2, template.AddIns.Count());
+            Assert.IsNotNull(template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin1.app"));
+            Assert.AreEqual("DeveloperSite", template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin1.app").Source);
+            Assert.IsNotNull(template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin2.app"));
+            Assert.AreEqual("Marketplace", template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin2.app").Source);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_AddIns_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.AddIns.Add(new AddIn()
+            {
+                PackagePath = "myaddin1.app",
+                Source = "DeveloperSite"
+            });
+
+            result.AddIns.Add(new AddIn()
+            {
+                PackagePath = "myaddin2.app",
+                Source = "Marketplace"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-addin.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-addin.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.AddIns);
+            Assert.AreEqual(2, template.AddIns.Count());
+            Assert.IsNotNull(template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin1.app"));
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.AddInsAddinSource.DeveloperSite, template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin1.app").Source);
+            Assert.IsNotNull(template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin2.app"));
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.AddInsAddinSource.Marketplace, template.AddIns.FirstOrDefault(a => a.PackagePath == "myaddin2.app").Source);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ExtensibilityHandlers_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.ExtensibilityHandlers);
+            Assert.AreEqual(2, template.ExtensibilityHandlers.Count());
+            var handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "MyType1");
+            Assert.IsNotNull(handler);
+            Assert.AreEqual("MyAssembly1", handler.Assembly);
+            Assert.IsTrue(handler.Enabled);
+            Assert.AreEqual("<TestConfiguration xmlns=\"MyHandler\">Value</TestConfiguration>", handler.Configuration.Trim());
+
+            handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "MyType2");
+            Assert.IsNotNull(handler);
+            Assert.AreEqual("MyAssembly2", handler.Assembly);
+            Assert.IsFalse(handler.Enabled);
+            Assert.IsNull(handler.Configuration);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ExtensibilityHandlers_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.ExtensibilityHandlers.Add(new ExtensibilityHandler()
+            {
+                Type = "MyType",
+                Assembly = "MyAssembly",
+                Enabled = true,
+                Configuration = "<TestConfiguration>Value</TestConfiguration>"
+
+            });
+
+            result.ExtensibilityHandlers.Add(new ExtensibilityHandler()
+            {
+                Type = "MyType2",
+                Assembly = "MyAssembly2",
+                Enabled = false
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-addin.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-addin.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Providers);
+            Assert.AreEqual(2, template.Providers.Count());
+            var handler = template.Providers.FirstOrDefault(p => p.HandlerType == "MyType1, MyAssembly1");
+            Assert.IsNotNull(handler);
+            Assert.IsTrue(handler.Enabled);
+            Assert.AreEqual("<TestConfiguration>Value</TestConfiguration>", handler.Configuration);
+
+            handler = template.Providers.FirstOrDefault(p => p.HandlerType == "MyType2, MyAssembly2");
+            Assert.IsNotNull(handler);
+            Assert.IsFalse(handler.Enabled);
+            Assert.IsNull(handler.Configuration.OuterXml);
+        }
         #endregion
     }
 }
