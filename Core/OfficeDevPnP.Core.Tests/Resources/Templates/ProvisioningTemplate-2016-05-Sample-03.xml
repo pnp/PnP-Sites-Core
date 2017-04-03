@@ -178,7 +178,7 @@
               </pnp:CommandUIExtension>
             </pnp:CustomAction>
           </pnp:UserCustomActions>
-          <pnp:Views>
+          <pnp:Views RemoveExistingViews="true">
             <View DisplayName="View One">
               <ViewFields>
                 <FieldRef Name="ID" />

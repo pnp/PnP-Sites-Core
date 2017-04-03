@@ -434,6 +434,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentSetTemplateFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ComposedLookSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\NavigationSerializer.cs" />

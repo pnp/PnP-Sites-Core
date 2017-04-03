@@ -105,7 +105,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0101" />
             <pnp:ContentTypeBinding ContentTypeID="0x0102" />
           </pnp:ContentTypeBindings>
-          <pnp:Views>
+          <pnp:Views RemoveExistingViews="true">
             <View DisplayName="View One">
               <ViewFields>
                 <FieldRef Name="ID" />
@@ -139,14 +139,53 @@
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" Name="ProjectManager" Required="true" DisplayName="Project Manager" />
           </pnp:FieldRefs>
           <pnp:DataRows>
-            <pnp:DataRow />
-            <pnp:DataRow />
-            <pnp:DataRow />
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value01-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value01-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value01-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value01-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value02-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value02-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value02-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value02-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value03-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value03-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value03-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value03-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:DataRow>
           </pnp:DataRows>
           <pnp:Folders>
             <pnp:Folder Name="Folder01" />
             <pnp:Folder Name="Folder02" />
           </pnp:Folders>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
           <pnp:UserCustomActions>
             <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101" />
           </pnp:UserCustomActions>
