@@ -19,9 +19,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var security = persistence.GetPublicInstancePropertyValue("Security");
 
-            //var expressions = new Dictionary<Expression<Func<SiteSecurity, Object>>, IResolver>();
-            //expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
-
             PnPObjectsMapper.MapProperties(security, template.Security, null, true);
         }
 
