@@ -342,6 +342,22 @@
         </pnp:Page>
         <pnp:Page Url="help.aspx" Overwrite="false" Layout="OneColumnSidebar"/>
       </pnp:Pages>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermSetId="415185a1-ee1c-4ce9-9e38-cea3f854e802" TermStoreId="c1175ad1-c710-4131-a6c9-aa854a5cc4c4"/>
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode IsExternal="false" IsVisible="true" Title="Node 1" Url="/Node1.aspx">
+              <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.1" Url="http://aka.ms/SharePointPnP">
+                <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" />
+              </pnp:NavigationNode>
+              <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.2" Url="/Node1-2.aspx" />
+            </pnp:NavigationNode>            
+            <pnp:NavigationNode IsExternal="false" IsVisible="true" Title="Node 2" Url="/Node1.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
       <pnp:TermGroups>
         <pnp:TermGroup ID="21d7d506-1783-4aed-abdf-160f37bd0ca9" Name="TestTermGroup" Description="Test Term Group" SiteCollectionTermGroup="true">
           <pnp:Contributors>
