@@ -61,7 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
 
                 expressions.Add($"{directoryType}.Level", new FromStringToEnumValueResolver(fileLevelType));
-                expressions.Add($"{directoryType}.LevelSpecified", new ExpressionValueResolver((s, v) => true));
+                expressions.Add($"{directoryType}.LevelSpecified", new ExpressionValueResolver(() => true));
 
                 expressions.Add($"{directoryType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
                 expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());

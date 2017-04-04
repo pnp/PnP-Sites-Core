@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var webSettingsType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.WebSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
                 var target = Activator.CreateInstance(webSettingsType, true);
                 var expressions = new Dictionary<string, IResolver>();
-                expressions.Add($"{webSettingsType}.NoCrawlSpecified", new ExpressionValueResolver((s, p) => true));
+                expressions.Add($"{webSettingsType}.NoCrawlSpecified", new ExpressionValueResolver(() => true));
 
                 PnPObjectsMapper.MapProperties(template.WebSettings, target, expressions, recursive: true);
 

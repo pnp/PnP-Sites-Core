@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(f => f.Security, new PropertyObjectTypeResolver<File>(fl => fl.Security, 
                     fl => fl.GetPublicInstancePropertyValue("Security")?.GetPublicInstancePropertyValue("BreakRoleInheritance")));
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
-                expressions.Add(f => f.WebParts[0].Order, new ExpressionValueResolver((s, v) => (uint)(int)v));
+                expressions.Add(f => f.WebParts[0].Order, new ExpressionValueResolver<int>((v) => (uint)v));
                 expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
 
                 template.Files.AddRange(
@@ -69,23 +69,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 expressions.Add($"{fileType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
                 expressions.Add($"{fileType}.Level", new FromStringToEnumValueResolver(fileLevelType));
-                expressions.Add($"{fileType}.LevelSpecified", new ExpressionValueResolver((s, v) => true));
+                expressions.Add($"{fileType}.LevelSpecified", new ExpressionValueResolver(() => true));
 
                 expressions.Add($"{fileType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
                 expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
 
-                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Order", new ExpressionValueResolver((s, v) => (int)(uint)v));
+                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Order", new ExpressionValueResolver<uint>((v) => (int)v));
                 //convert webpart content to xml element
-                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Contents", new ExpressionValueResolver((s, v) =>
-                {
-                    var doc = new XmlDocument();
-                    var str = v != null ? v.ToString() : null;
-                    if (!string.IsNullOrEmpty(str))
-                    {
-                        doc.LoadXml(str);
-                    }
-                    return doc.DocumentElement;
-                }));
+                expressions.Add($"{baseNamespace}.WebPartPageWebPart.Contents", new ExpressionValueResolver<string>((v) => v?.ToXmlElement()));
 
                 var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
                 if (filesCollection == null)

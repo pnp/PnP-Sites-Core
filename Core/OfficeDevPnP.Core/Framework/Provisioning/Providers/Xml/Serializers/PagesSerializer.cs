@@ -70,19 +70,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{pageType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
                 expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
 
-                expressions.Add($"{baseNamespace}.WikiPageWebPart.Row", new ExpressionValueResolver((s, v) => (int)(uint)v));
-                expressions.Add($"{baseNamespace}.WikiPageWebPart.Column", new ExpressionValueResolver((s, v) => (int)(uint)v));
-                //convert webpart content to xml element
-                expressions.Add($"{baseNamespace}.WikiPageWebPart.Contents", new ExpressionValueResolver((s, v) =>
-                {
-                    var doc = new XmlDocument();
-                    var str = v != null ? v.ToString() : null;
-                    if (!string.IsNullOrEmpty(str))
-                    {
-                        doc.LoadXml(str);
-                    }
-                    return doc.DocumentElement;
-                }));
+                expressions.Add($"{baseNamespace}.WikiPageWebPart.Row", new ExpressionValueResolver<uint>((v) => (int)v));
+                expressions.Add($"{baseNamespace}.WikiPageWebPart.Column", new ExpressionValueResolver<uint>((v) => (int)v));
+                expressions.Add($"{baseNamespace}.WikiPageWebPart.Contents", new ExpressionValueResolver<string>((v) => v?.ToXmlElement()));
 
                 persistence.GetPublicInstanceProperty("Pages").SetValue(
                     persistence,
