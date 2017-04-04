@@ -14,11 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class RoleAssigmentsFromModelToSchemaTypeResolver : ITypeResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
-
+        public string Name => this.GetType().Name;
 
         public RoleAssigmentsFromModelToSchemaTypeResolver()
         {

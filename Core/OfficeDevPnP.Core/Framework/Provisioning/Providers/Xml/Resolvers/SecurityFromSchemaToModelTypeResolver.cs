@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
+    /// <summary>
+    /// Resolver for Security settings from schema to model
+    /// </summary>
     internal class SecurityFromSchemaToModelTypeResolver : ITypeResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
+        public string Name => this.GetType().Name;
 
         public object Resolve(object source, Dictionary<string, IResolver> resolvers = null, bool recursive = false)
         {

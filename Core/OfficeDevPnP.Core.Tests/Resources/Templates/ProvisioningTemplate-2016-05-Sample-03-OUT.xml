@@ -22,10 +22,55 @@
         <pnp:SupportedUILanguage LCID="1040" />
         <pnp:SupportedUILanguage LCID="1033" />
       </pnp:SupportedUILanguages>
+      <pnp:AuditSettings AuditLogTrimmingRetention="10" TrimAuditLog="true">
+        <pnp:Audit AuditFlag="CheckOut" />
+        <pnp:Audit AuditFlag="CheckIn" />
+        <pnp:Audit AuditFlag="Search" />
+      </pnp:AuditSettings>
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
       </pnp:PropertyBagEntries>
+      <pnp:Security>
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+      </pnp:Security>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermStoreId="c1175ad1-c710-4131-a6c9-aa854a5cc4c4" TermSetId="415185a1-ee1c-4ce9-9e38-cea3f854e802" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode Title="Node 1" Url="/Node1.aspx">
+              <pnp:NavigationNode Title="Node 1.1" Url="http://aka.ms/SharePointPnP" IsExternal="true">
+                <pnp:NavigationNode Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" IsExternal="true" />
+              </pnp:NavigationNode>
+              <pnp:NavigationNode Title="Node 1.2" Url="/Node1-2.aspx" IsExternal="true" />
+            </pnp:NavigationNode>
+            <pnp:NavigationNode Title="Node 2" Url="/Node1.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
+      <pnp:SiteFields>
+        <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" Required="TRUE" />
+        <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="My Columns " MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types" Hidden="true" Sealed="true" ReadOnly="true" Overwrite="true" NewFormUrl="/Forms/NewForm.aspx" EditFormUrl="/Forms/EditForm.aspx" DisplayFormUrl="/Forms/DisplayForm.aspx">
           <pnp:FieldRefs>
@@ -60,7 +105,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0101" />
             <pnp:ContentTypeBinding ContentTypeID="0x0102" />
           </pnp:ContentTypeBindings>
-          <pnp:Views>
+          <pnp:Views RemoveExistingViews="true">
             <View DisplayName="View One">
               <ViewFields>
                 <FieldRef Name="ID" />
@@ -94,19 +139,71 @@
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" Name="ProjectManager" Required="true" DisplayName="Project Manager" />
           </pnp:FieldRefs>
           <pnp:DataRows>
-            <pnp:DataRow />
-            <pnp:DataRow />
-            <pnp:DataRow />
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value01-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value01-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value01-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value01-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value02-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value02-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value02-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value02-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value03-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value03-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value03-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value03-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:DataRow>
           </pnp:DataRows>
           <pnp:Folders>
             <pnp:Folder Name="Folder01" />
             <pnp:Folder Name="Folder02" />
           </pnp:Folders>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
           <pnp:UserCustomActions>
             <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101" />
           </pnp:UserCustomActions>
         </pnp:ListInstance>
       </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
       <pnp:CustomActions>
         <pnp:SiteCustomActions>
           <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" ScriptBlock="alert('boo')" ImageUrl="http://sharepoint.com" RegistrationId="101" RegistrationType="None">

@@ -47,6 +47,11 @@
         <pnp:SupportedUILanguage LCID="1040"/>
         <pnp:SupportedUILanguage LCID="1033"/>
       </pnp:SupportedUILanguages>
+      <pnp:AuditSettings AuditLogTrimmingRetention="10" TrimAuditLog="true">
+        <pnp:Audit AuditFlag="CheckIn" />
+        <pnp:Audit AuditFlag="CheckOut" />
+        <pnp:Audit AuditFlag="Search" />
+      </pnp:AuditSettings>
       <pnp:WebSettings NoCrawl="false" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
@@ -104,7 +109,7 @@
           </pnp:DocumentSetTemplate>
         </pnp:ContentType>
       </pnp:ContentTypes>
-        <pnp:Lists>
+      <pnp:Lists>
         <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="10" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
@@ -173,7 +178,7 @@
               </pnp:CommandUIExtension>
             </pnp:CustomAction>
           </pnp:UserCustomActions>
-          <pnp:Views>
+          <pnp:Views RemoveExistingViews="true">
             <View DisplayName="View One">
               <ViewFields>
                 <FieldRef Name="ID" />
@@ -337,6 +342,22 @@
         </pnp:Page>
         <pnp:Page Url="help.aspx" Overwrite="false" Layout="OneColumnSidebar"/>
       </pnp:Pages>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermSetId="415185a1-ee1c-4ce9-9e38-cea3f854e802" TermStoreId="c1175ad1-c710-4131-a6c9-aa854a5cc4c4"/>
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode IsExternal="false" IsVisible="true" Title="Node 1" Url="/Node1.aspx">
+              <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.1" Url="http://aka.ms/SharePointPnP">
+                <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" />
+              </pnp:NavigationNode>
+              <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.2" Url="/Node1-2.aspx" />
+            </pnp:NavigationNode>            
+            <pnp:NavigationNode IsExternal="false" IsVisible="true" Title="Node 2" Url="/Node1.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
       <pnp:TermGroups>
         <pnp:TermGroup ID="21d7d506-1783-4aed-abdf-160f37bd0ca9" Name="TestTermGroup" Description="Test Term Group" SiteCollectionTermGroup="true">
           <pnp:Contributors>

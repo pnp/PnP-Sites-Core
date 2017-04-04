@@ -418,10 +418,16 @@
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToAuditFlagsResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromBasePermissionsToStringValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromNullableToSpecifiedValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PropertyObjectTypeResolver.cs" />
@@ -430,13 +436,19 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentSetTemplateFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ExtensibilityHandlersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AddInsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PublishingSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ComposedLookSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\NavigationSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FeaturesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedUILanguagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TermGroupsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PagesSerializer.cs" />

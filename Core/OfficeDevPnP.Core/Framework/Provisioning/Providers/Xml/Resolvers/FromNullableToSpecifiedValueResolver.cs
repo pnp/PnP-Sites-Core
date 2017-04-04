@@ -16,10 +16,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         where T : struct
     {
         private string propertySpecifiedName;
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
+
+        public string Name => this.GetType().Name;
 
         public FromNullableToSpecifiedValueResolver(string propertySpecifiedName)
         {
