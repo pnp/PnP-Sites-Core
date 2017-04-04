@@ -29,7 +29,7 @@
         <pnp:Property Key="Key5" Value="Value5"/>
       </pnp:Properties>
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:RegionalSettings AdjustHijriDays="2" 
+      <pnp:RegionalSettings AdjustHijriDays="2"
                             AlternateCalendarType="Gregorian Arabic Calendar"
                             CalendarType="Gregorian"
                             Collation="1"
@@ -304,12 +304,12 @@
         <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE" Level="Draft">
         </pnp:File>
         <pnp:Directory Folder="MyFolder" Level="Published" Overwrite="true" Src="SiteAssets" ExcludedExtensions=".aspx" IncludedExtensions=".docx" MetadataMappingFile="metafile" Recursive="true">
-           <pnp:Security>
+          <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
               <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner" />
               <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor" />
             </pnp:BreakRoleInheritance>
-          </pnp:Security>         
+          </pnp:Security>
         </pnp:Directory>
         <pnp:Directory Folder="MyFolder2" Level="Checkout" Overwrite="false" Src="Documents" ExcludedExtensions=".xslx" IncludedExtensions=".txt" MetadataMappingFile="metafile2"/>
       </pnp:Files>
@@ -353,7 +353,7 @@
                 <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" />
               </pnp:NavigationNode>
               <pnp:NavigationNode IsExternal="true" IsVisible="true" Title="Node 1.2" Url="/Node1-2.aspx" />
-            </pnp:NavigationNode>            
+            </pnp:NavigationNode>
             <pnp:NavigationNode IsExternal="false" IsVisible="true" Title="Node 2" Url="/Node1.aspx" />
           </pnp:StructuralNavigation>
         </pnp:CurrentNavigation>

@@ -176,9 +176,37 @@
             </pnp:DataRow>
           </pnp:DataRows>
           <pnp:Folders>
-            <pnp:Folder Name="Folder01" />
-            <pnp:Folder Name="Folder02" />
+            <pnp:Folder Name="Folder01">
+              <pnp:Folder Name="Folder01.01">
+                <pnp:Security>
+                  <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+                    <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                    <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                    <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                  </pnp:BreakRoleInheritance>
+                </pnp:Security>
+              </pnp:Folder>
+              <pnp:Folder Name="Folder01.02">
+                <pnp:Security>
+                  <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+                </pnp:Security>
+              </pnp:Folder>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:Folder>
+            <pnp:Folder Name="Folder02">
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:Folder>
           </pnp:Folders>
+          <pnp:FieldDefaults>
+            <pnp:FieldDefault FieldName="Field01">DefaultValue01</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field02">DefaultValue02</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field03">DefaultValue03</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field04">DefaultValue04</pnp:FieldDefault>
+          </pnp:FieldDefaults>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
               <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
@@ -187,7 +215,13 @@
             </pnp:BreakRoleInheritance>
           </pnp:Security>
           <pnp:UserCustomActions>
-            <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101" />
+            <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101">
+              <pnp:CommandUIExtension>
+                <customElement>
+                  <!-- Whatever you like here -->
+                </customElement>
+              </pnp:CommandUIExtension>
+            </pnp:CustomAction>
           </pnp:UserCustomActions>
         </pnp:ListInstance>
       </pnp:Lists>
@@ -348,6 +382,58 @@
         <pnp:TermGroup Name="TestTermGroup2" ID="7d4caedf-4ed3-4e2d-ba93-a166b4f173f6" Description="Test Term Group 2" />
       </pnp:TermGroups>
       <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="2" />
+      <pnp:Workflows>
+        <pnp:WorkflowDefinitions>
+          <pnp:WorkflowDefinition Id="8fd9de8b-d786-43bf-9b33-d7266eb241b0" AssociationUrl="/workflow1/associate.aspx" Description="Test Workflow Definition" DisplayName="My Workflow 1" DraftVersion="1.0" InitiationUrl="/workflow1/initiate.aspx" Published="true" RequiresAssociationForm="true" RequiresInitiationForm="true" RestrictToScope="List" RestrictToType="Universal" XamlPath="workflow1.xaml">
+            <pnp:Properties>
+              <pnp:Property Key="MyWorkflowProperty1" Value="Value1" />
+              <pnp:Property Key="MyWorkflowProperty2" Value="Value2" />
+            </pnp:Properties>
+            <pnp:FormField>
+              <Field>
+              </Field>
+            </pnp:FormField>
+          </pnp:WorkflowDefinition>
+          <pnp:WorkflowDefinition Id="13d4bae2-2292-4297-84c5-d56881c529a9" DisplayName="My Workflow 2" RestrictToType="Universal" XamlPath="workflow2.xaml" />
+        </pnp:WorkflowDefinitions>
+        <pnp:WorkflowSubscriptions>
+          <pnp:WorkflowSubscription DefinitionId="c421e3cb-e7b0-489c-b7cc-e0d35d1179e0" ListId="94413de1-850d-4fbf-a8bb-371feefa2ecf" Enabled="true" EventSourceId="aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7" WorkflowStartEvent="true" ItemAddedEvent="true" ItemUpdatedEvent="true" ManualStartBypassesActivationLimit="true" Name="MyWorkflowSubscription1" ParentContentTypeId="0x01" StatusFieldName="MyWorkflow1Status" />
+          <pnp:WorkflowSubscription DefinitionId="34ae3873-3f8e-41b0-aaab-802fc6199897" Enabled="false" WorkflowStartEvent="false" ItemAddedEvent="false" ItemUpdatedEvent="false" Name="MyWorkflowSubscription2" StatusFieldName="MyWorkflow2Status" />
+        </pnp:WorkflowSubscriptions>
+      </pnp:Workflows>
+      <pnp:SearchSettings>
+        <pnp:SiteSearchSettings>
+          <SiteSearchSettings>
+          </SiteSearchSettings>
+        </pnp:SiteSearchSettings>
+        <pnp:WebSearchSettings>
+          <WebSearchSettings>
+          </WebSearchSettings>
+        </pnp:WebSearchSettings>
+      </pnp:SearchSettings>
+      <pnp:Publishing AutoCheckRequirements="SkipIfNotCompliant">
+        <pnp:DesignPackage DesignPackagePath="mypackage" MajorVersion="2" MinorVersion="3" PackageGuid="306ab10d-981d-471d-a8f9-16e1260ad4eb" PackageName="MyTestPackage" />
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="Template1033" />
+          <pnp:WebTemplate LanguageCode="1049" TemplateName="Template1049" />
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="mypagelayout1.aspx">
+          <pnp:PageLayout Path="mypagelayout1.aspx" />
+          <pnp:PageLayout Path="mypagelayout2.aspx" />
+        </pnp:PageLayouts>
+      </pnp:Publishing>
+      <pnp:AddIns>
+        <pnp:Addin PackagePath="myaddin1.app" Source="DeveloperSite" />
+        <pnp:Addin PackagePath="myaddin2.app" Source="Marketplace" />
+      </pnp:AddIns>
+      <pnp:Providers>
+        <pnp:Provider Enabled="true" HandlerType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <pnp:Configuration>
+            <TestConfiguration xmlns="MyHandler">Value</TestConfiguration>
+          </pnp:Configuration>
+        </pnp:Provider>
+        <pnp:Provider HandlerType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      </pnp:Providers>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
 </pnp:Provisioning>

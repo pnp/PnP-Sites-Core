@@ -93,11 +93,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             resolvers.Add($"{listInstanceDataRowType}.Security", new SecurityFromModelToSchemaTypeResolver());
 
             // Define custom resolver for Fields Defaults
+            var fieldDefaultTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FieldDefault, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var fieldDefaultType = Type.GetType(fieldDefaultTypeName, true);
+            var fieldDefaultKeySelector = CreateSelectorLambda(fieldDefaultType, "FieldName");
+            var fieldDefaultValueSelector = CreateSelectorLambda(fieldDefaultType, "Value");
+
+            resolvers.Add($"{listInstanceType}.FieldDefaults", new FromDictionaryToArrayValueResolver<string, string>(fieldDefaultType, fieldDefaultKeySelector, fieldDefaultValueSelector));
 
             // Define custom resolver for Security
             resolvers.Add($"{listInstanceType}.Security", new SecurityFromModelToSchemaTypeResolver());
 
             // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
+            var customActionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomAction, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var customActionType = Type.GetType(customActionTypeName, true);
+            var commandUIExtensionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActionCommandUIExtension";
+            var commandUIExtensionType = Type.GetType(commandUIExtensionTypeName, true);
+
+            resolvers.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
 
             // Define custom resolver for Views (XML Any + RemoveExistingViews)
             var listInstanceViewsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstanceViews, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -109,6 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 new ExpressionValueResolver((s, v) => (Boolean)s.GetPublicInstancePropertyValue("RemoveExistingViews")));
 
             // Define custom resolver for recursive Folders
+            resolvers.Add($"{listInstanceType}.Folders", new FoldersFromModelToSchemaTypeResolver());
 
             persistence.GetPublicInstanceProperty("Lists")
                 .SetValue(
