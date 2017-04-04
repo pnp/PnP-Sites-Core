@@ -728,6 +728,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(ct.DocumentSetTemplate);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes.FirstOrDefault(c => c.ContentTypeID == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E002"));
+            Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields);
             Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c.ID == "f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3"));
             Assert.IsNotNull(ct.DocumentSetTemplate.SharedFields.FirstOrDefault(c => c.ID == "a8df65ec-0d06-4df1-8edf-55d48b3936dc"));
             Assert.IsNotNull(ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c.ID == "c69d2ffc-0c86-474a-9cc7-dcd7774da531"));
@@ -2366,15 +2367,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
             Assert.IsNotNull(template.ExtensibilityHandlers);
             Assert.AreEqual(2, template.ExtensibilityHandlers.Count());
-            var handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "MyType1");
+            var handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "System.Guid");
             Assert.IsNotNull(handler);
-            Assert.AreEqual("MyAssembly1", handler.Assembly);
+            Assert.AreEqual("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", handler.Assembly);
             Assert.IsTrue(handler.Enabled);
             Assert.AreEqual("<TestConfiguration xmlns=\"MyHandler\">Value</TestConfiguration>", handler.Configuration.Trim());
 
-            handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "MyType2");
+            handler = template.ExtensibilityHandlers.FirstOrDefault(p => p.Type == "System.String");
             Assert.IsNotNull(handler);
-            Assert.AreEqual("MyAssembly2", handler.Assembly);
+            Assert.AreEqual("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", handler.Assembly);
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
         }
@@ -2425,15 +2426,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
             Assert.IsNotNull(template.Providers);
             Assert.AreEqual(2, template.Providers.Count());
-            var handler = template.Providers.FirstOrDefault(p => p.HandlerType == "MyType1, MyAssembly1");
+            var handler = template.Providers.FirstOrDefault(p => p.HandlerType == "MyType, MyAssembly");
             Assert.IsNotNull(handler);
             Assert.IsTrue(handler.Enabled);
-            Assert.AreEqual("<TestConfiguration>Value</TestConfiguration>", handler.Configuration);
+            Assert.IsNotNull(handler.Configuration);
+            Assert.AreEqual("<TestConfiguration>Value</TestConfiguration>", handler.Configuration.OuterXml);
 
             handler = template.Providers.FirstOrDefault(p => p.HandlerType == "MyType2, MyAssembly2");
             Assert.IsNotNull(handler);
             Assert.IsFalse(handler.Enabled);
-            Assert.IsNull(handler.Configuration.OuterXml);
+            Assert.IsNull(handler.Configuration);
         }
         #endregion
     }

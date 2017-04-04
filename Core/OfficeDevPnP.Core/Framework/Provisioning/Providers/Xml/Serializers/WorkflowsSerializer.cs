@@ -58,21 +58,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var target = Activator.CreateInstance(workflowsType, true);
 
                 var expressions = new Dictionary<string, IResolver>();
-                expressions.Add($"{workflowDefinitionType}.FormField", new ExpressionValueResolver((s, v) => v != null ? XElement.Parse(v.ToString()).ToXmlElement() : new XmlDocument().DocumentElement));
-                expressions.Add($"{workflowDefinitionType}.PublishedSpecified", new ExpressionValueResolver((s, v) => ((WorkflowDefinition)s).Published));
-                expressions.Add($"{workflowDefinitionType}.RequiresAssociationFormSpecified", new ExpressionValueResolver((s, v) => ((WorkflowDefinition)s).RequiresAssociationForm));
-                expressions.Add($"{workflowDefinitionType}.RequiresInitiationFormSpecified", new ExpressionValueResolver((s, v) => ((WorkflowDefinition)s).RequiresInitiationForm));
+                expressions.Add($"{workflowDefinitionType}.FormField", new ExpressionValueResolver<string>((v) => v?.ToXmlElement()));
+                expressions.Add($"{workflowDefinitionType}.PublishedSpecified", new ExpressionValueResolver<WorkflowDefinition>((s, v) => s.Published));
+                expressions.Add($"{workflowDefinitionType}.RequiresAssociationFormSpecified", new ExpressionValueResolver<WorkflowDefinition>((s, v) => s.RequiresAssociationForm));
+                expressions.Add($"{workflowDefinitionType}.RequiresInitiationFormSpecified", new ExpressionValueResolver<WorkflowDefinition>((s, v) => s.RequiresInitiationForm));
                 expressions.Add($"{workflowDefinitionType}.RestrictToType", new FromStringToEnumValueResolver(restrictToType));
-                expressions.Add($"{workflowDefinitionType}.RestrictToTypeSpecified", new ExpressionValueResolver((s, v) => !string.IsNullOrEmpty(((WorkflowDefinition)s).RestrictToType) ));
+                expressions.Add($"{workflowDefinitionType}.RestrictToTypeSpecified", new ExpressionValueResolver<WorkflowDefinition>((s, v) => !string.IsNullOrEmpty(s.RestrictToType)));
                 var dictionaryItemType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
                 var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
                 var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
                 expressions.Add($"{workflowDefinitionType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
-                expressions.Add($"{workflowSubscriptionType}.ManualStartBypassesActivationLimitSpecified", new ExpressionValueResolver((s, v) => ((WorkflowSubscription)s).ManualStartBypassesActivationLimit));
-                expressions.Add($"{workflowSubscriptionType}.ItemAddedEvent", new ExpressionValueResolver((s, v) => ((WorkflowSubscription)s).EventTypes.Contains("ItemAdded")));
-                expressions.Add($"{workflowSubscriptionType}.ItemUpdatedEvent", new ExpressionValueResolver((s, v) => ((WorkflowSubscription)s).EventTypes.Contains("ItemUpdated")));
-                expressions.Add($"{workflowSubscriptionType}.WorkflowStartEvent", new ExpressionValueResolver((s, v) => ((WorkflowSubscription)s).EventTypes.Contains("WorkflowStart")));
+                expressions.Add($"{workflowSubscriptionType}.ManualStartBypassesActivationLimitSpecified", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.ManualStartBypassesActivationLimit));
+                expressions.Add($"{workflowSubscriptionType}.ItemAddedEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("ItemAdded")));
+                expressions.Add($"{workflowSubscriptionType}.ItemUpdatedEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("ItemUpdated")));
+                expressions.Add($"{workflowSubscriptionType}.WorkflowStartEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("WorkflowStart")));
 
                 PnPObjectsMapper.MapProperties(template.Workflows, target, expressions, recursive: true);
 

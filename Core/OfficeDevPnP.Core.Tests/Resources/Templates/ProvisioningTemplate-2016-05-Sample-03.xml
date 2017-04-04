@@ -436,12 +436,14 @@
         <pnp:Addin PackagePath="myaddin2.app" Source="Marketplace"/>
       </pnp:AddIns>
       <pnp:Providers>
-        <pnp:Provider HandlerType="MyType1, MyAssembly1" Enabled="true">
+        <pnp:Provider HandlerType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Enabled="true">
           <pnp:Configuration>
             <TestConfiguration xmlns="MyHandler">Value</TestConfiguration>
           </pnp:Configuration>
         </pnp:Provider>
-        <pnp:Provider HandlerType="MyType2, MyAssembly2" Enabled="false">
+        <pnp:Provider HandlerType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" Enabled="false">
+        </pnp:Provider>
+        <pnp:Provider HandlerType="UnknownType, UnknownAssembly" Enabled="false">
         </pnp:Provider>
       </pnp:Providers>
     </pnp:ProvisioningTemplate>

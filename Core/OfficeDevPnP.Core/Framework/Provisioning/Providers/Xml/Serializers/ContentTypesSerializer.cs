@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
             expressions.Add(c => c.FieldRefs[0].Id, new FromStringToGuidValueResolver());
             //document template
-            expressions.Add(c => c.DocumentTemplate, new ExpressionValueResolver((s,v) => v.GetPublicInstancePropertyValue("TargetName")));
+            expressions.Add(c => c.DocumentTemplate, new ExpressionValueResolver((s, v) => v.GetPublicInstancePropertyValue("TargetName")));
             //document set template
             expressions.Add(c => c.DocumentSetTemplate, new PropertyObjectTypeResolver<ContentType>(ct => ct.DocumentSetTemplate));
             //document set template - allowed content types

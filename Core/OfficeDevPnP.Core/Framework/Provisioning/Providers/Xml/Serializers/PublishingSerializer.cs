@@ -45,9 +45,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var expressions = new Dictionary<string, IResolver>();
 
                 expressions.Add($"{publishingType}.DesignPackage", new PropertyObjectTypeResolver(designPackageType, "DesignPackage"));
-                expressions.Add($"{designPackageType}.MajorVersionSpecified", new ExpressionValueResolver((s, v) => true));
-                expressions.Add($"{designPackageType}.MinorVersionSpecified", new ExpressionValueResolver((s, v) => true));
-                expressions.Add($"{webTemplateType}.LanguageCodeSpecified", new ExpressionValueResolver((s, v) => true));
+                expressions.Add($"{designPackageType}.MajorVersionSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{designPackageType}.MinorVersionSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{webTemplateType}.LanguageCodeSpecified", new ExpressionValueResolver(() => true));
                 expressions.Add($"{publishingType}.PageLayouts", new PageLayoutsFromModelToSchemaTypeResolver());
 
                 PnPObjectsMapper.MapProperties(template.Publishing, target, expressions, recursive: true);
