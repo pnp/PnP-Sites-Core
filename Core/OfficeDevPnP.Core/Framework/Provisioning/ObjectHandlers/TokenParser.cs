@@ -303,7 +303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public IEnumerable<string> GetLeftOverTokens(string input)
         {
             List<string> values = new List<string>();
-            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})|(?<token>\\{.+?\\})").OfType<Match>().Select(m => m.Value);
+            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})").OfType<Match>().Select(m => m.Value);
             foreach (var match in matches)
             {
                 Guid gout;
