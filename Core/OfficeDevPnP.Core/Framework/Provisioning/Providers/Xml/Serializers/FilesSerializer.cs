@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the Files
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 1400, DeserializationSequence = 1400,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class FilesSerializer : PnPBaseSchemaSerializer<File>

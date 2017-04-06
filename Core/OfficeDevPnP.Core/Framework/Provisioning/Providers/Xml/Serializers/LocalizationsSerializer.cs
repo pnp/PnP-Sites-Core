@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        SerializationSequence = -1,
+        SerializationSequence = -1, DeserializationSequence = -1,
         Default = false)]
     internal class LocalizationsSerializer : PnPBaseSchemaSerializer<Localization>
     {

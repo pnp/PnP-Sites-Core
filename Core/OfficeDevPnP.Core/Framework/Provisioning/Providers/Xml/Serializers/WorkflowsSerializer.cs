@@ -11,9 +11,9 @@ using System.Xml.Linq;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the content types
+    /// Class to serialize/deserialize the Workflows
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
+    [TemplateSchemaSerializer(SerializationSequence = 1800, DeserializationSequence = 1800,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class WorkflowsActionsSerializer : PnPBaseSchemaSerializer<Workflows>

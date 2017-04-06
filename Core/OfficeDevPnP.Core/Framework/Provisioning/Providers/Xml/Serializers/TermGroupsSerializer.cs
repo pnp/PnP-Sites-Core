@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the Term Groups
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 1600, DeserializationSequence = 1600,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class TermGroupsSerializer : PnPBaseSchemaSerializer<TermGroup>

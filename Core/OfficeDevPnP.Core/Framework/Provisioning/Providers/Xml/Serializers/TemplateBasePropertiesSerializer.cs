@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 new FromArrayToDictionaryValueResolver<String, String>(
                     propertiesType, propertiesKeySelector, propertiesValueSelector));
 
-            //search settings
+            // Search settings
             expressions.Add(t => t.SiteSearchSettings,
                 new ExpressionValueResolver((s, v) =>
                 s.GetPublicInstancePropertyValue("SearchSettings")?
@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             PnPObjectsMapper.MapProperties(template, persistence, expressions);
 
-            //search settings
+            // Search settings
             if(!string.IsNullOrEmpty(template.SiteSearchSettings)||!string.IsNullOrEmpty(template.WebSearchSettings))
             {
                 var searchSettingType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateSearchSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);

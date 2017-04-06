@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the Content Types
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 1000, DeserializationSequence = 1000,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class ContentTypesSerializer : PnPBaseSchemaSerializer<ContentType>

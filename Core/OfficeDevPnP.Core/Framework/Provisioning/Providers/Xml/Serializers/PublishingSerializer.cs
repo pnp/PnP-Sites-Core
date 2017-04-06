@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the content types
+    /// Class to serialize/deserialize the Publishing settings
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
+    [TemplateSchemaSerializer(SerializationSequence = 1900, DeserializationSequence = 1900,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class PublishingSerializer : PnPBaseSchemaSerializer<Publishing>

@@ -10,9 +10,9 @@ using System.Xml;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the content types
+    /// Class to serialize/deserialize the Providers for Extensibility
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 2100, DeserializationSequence = 2100,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class ExtensibilityHandlersSerializer : PnPBaseSchemaSerializer<ExtensibilityHandler>

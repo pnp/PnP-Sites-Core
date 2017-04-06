@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the ComposedLook settings
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
+    [TemplateSchemaSerializer(SerializationSequence = 1700, DeserializationSequence = 1700,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class ComposedLookSerializer : PnPBaseSchemaSerializer<ComposedLook>

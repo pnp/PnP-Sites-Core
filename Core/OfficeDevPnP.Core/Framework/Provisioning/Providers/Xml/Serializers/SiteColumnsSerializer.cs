@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        SerializationSequence = 400, DeserializationSequence = 400,
+        SerializationSequence = 900, DeserializationSequence = 900,
         Default = false)]
     internal class SiteColumnsSerializer : PnPBaseSchemaSerializer<Field>
     {

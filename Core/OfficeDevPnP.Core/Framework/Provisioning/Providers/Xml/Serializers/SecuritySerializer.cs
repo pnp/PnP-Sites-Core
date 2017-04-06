@@ -8,9 +8,9 @@ using System.Linq.Expressions;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the Features
+    /// Class to serialize/deserialize the Security settings
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
+    [TemplateSchemaSerializer(SerializationSequence = 700, DeserializationSequence = 700,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class SecuritySerializer : PnPBaseSchemaSerializer<SiteSecurity>

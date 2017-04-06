@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// <summary>
     /// Class to serialize/deserialize the Pages
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 1500, DeserializationSequence = 1500,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class PagesSerializer : PnPBaseSchemaSerializer<Page>

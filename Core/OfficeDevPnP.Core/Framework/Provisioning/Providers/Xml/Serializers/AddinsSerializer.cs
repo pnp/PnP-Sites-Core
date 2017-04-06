@@ -9,9 +9,9 @@ using System.Xml;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the content types
+    /// Class to serialize/deserialize the AddIns
     /// </summary>
-    [TemplateSchemaSerializer(SerializationSequence = 250, DeserializationSequence = 250,
+    [TemplateSchemaSerializer(SerializationSequence = 2000, DeserializationSequence = 2000,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
     internal class AddInsSerializer : PnPBaseSchemaSerializer<AddIn>
