@@ -319,7 +319,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception), "The field was found invalid:  {fieldtitle:DemoField}")]
         public void CanProvisionCalculatedFieldLocallyInListInstance()
         {
             //This test will fail as tokens does not support this scenario.
