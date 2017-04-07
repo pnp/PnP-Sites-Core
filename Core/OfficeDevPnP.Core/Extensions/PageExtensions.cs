@@ -1080,8 +1080,13 @@ namespace Microsoft.SharePoint.Client
             {
                 using (var context = currentContext.Clone(fileWeb.Url))
                 {
+#if !SP2013
                     webPartPage.EnsureProperties(f => f.UniqueId);
                     var file = context.Web.GetFileById(webPartPage.UniqueId);
+#else
+                    webPartPage.EnsureProperties(f => f.ServerRelativeUrl);
+                    var file = context.Web.GetFileByServerRelativeUrl(webPartPage.ServerRelativeUrl);
+#endif
                     webPartPostProcessor.Process(wpdNew, file);
                 }
             }
