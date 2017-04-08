@@ -140,6 +140,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var termSet in termGroup.TermSets)
                     {
                         _tokens.Add(new TermSetIdToken(web, termGroup.Name, termSet.Name, termSet.Id));
+                        var allTerms = termSet.GetAllTerms();
+                        web.Context.Load(allTerms,
+                            tc => tc.Include(
+                                t => t.Name,
+                                t => t.Id,
+                                t => t.PathOfTerm
+                            ));
+                        web.Context.ExecuteQueryRetry();
+                        foreach (var term in allTerms)
+                        {
+                            _tokens.Add(new TermIdToken(web, termGroup.Name, termSet.Name, term.PathOfTerm, term.Id));
+                        }
                     }
                 }
             }
@@ -163,6 +175,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var termSet in siteCollectionTermGroup.TermSets)
                         {
                             _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                            var allTerms = termSet.GetAllTerms();
+                            web.Context.Load(allTerms,
+                                tc => tc.Include(
+                                    t => t.Name,
+                                    t => t.Id,
+                                    t => t.PathOfTerm
+                                ));
+                            web.Context.ExecuteQueryRetry();
+                            foreach (var term in allTerms)
+                            {
+                                _tokens.Add(new SiteCollectionTermIdToken(web, termSet.Name, term.PathOfTerm, term.Id));
+                            }
                         }
                     }
                 }

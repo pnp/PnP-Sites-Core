@@ -126,9 +126,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var listUrl = "Lists/TestList";
                 var webPartTitle = @"Webpart (\*+?|{[()^$.#";
                 var webPartId = Guid.NewGuid();
+                var termPath = @"Test Term (\*+?{[()^$.#";
+                var subTermPath = @"Test Term (\*+?{[()^$.#;Test SubTerm (\*+?{[()^$.#";
                 var termSetName = @"Test TermSet (\*+?{[()^$.#";
                 var termGroupName = @"Group Name (\*+?{[()^$.#";
                 var termStoreName = @"Test TermStore (\*+?{[()^$.#";
+                var termId = Guid.NewGuid();
+                var subTermId = Guid.NewGuid();
                 var termSetId = Guid.NewGuid();
                 var termStoreId = Guid.NewGuid();
 
@@ -138,6 +142,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 parser.AddToken(new ListIdToken(web, listTitle, listGuid));
                 parser.AddToken(new ListUrlToken(web, listTitle, listUrl));
                 parser.AddToken(new WebPartIdToken(web, webPartTitle, webPartId));
+                parser.AddToken(new TermIdToken(web, termGroupName, termSetName, termPath, termId));
+                parser.AddToken(new TermIdToken(web, termGroupName, termSetName, subTermPath, subTermId));
                 parser.AddToken(new TermSetIdToken(web, termGroupName, termSetName, termSetId));
                 parser.AddToken(new TermStoreIdToken(web, termStoreName, termStoreId));
 
@@ -149,6 +155,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var parameterTest1 = parser.ParseString("abc{parameter:TEST(T)}/test");
                 var parameterTest2 = parser.ParseString("abc{$test(T)}/test");
                 var resolvedWebpartId = parser.ParseString($"{{webpartid:{webPartTitle}}}");
+                var resolvedTermId = parser.ParseString($"{{termid:{termGroupName}:{termSetName}:{termPath}}}");
+                var resolvedSubTermId = parser.ParseString($"{{termid:{termGroupName}:{termSetName}:{subTermPath}}}");
                 var resolvedTermSetId = parser.ParseString($"{{termsetid:{termGroupName}:{termSetName}}}");
                 var resolvedTermStoreId = parser.ParseString($"{{termstoreid:{termStoreName}}}");
 
@@ -160,6 +168,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(parameterTest1 == parameterExpectedResult);
                 Assert.IsTrue(parameterTest2 == parameterExpectedResult);
                 Assert.IsTrue(Guid.TryParse(resolvedWebpartId, out outGuid));
+                Assert.IsTrue(Guid.TryParse(resolvedTermId, out outGuid));
+                Assert.IsTrue(Guid.TryParse(resolvedSubTermId, out outGuid));
                 Assert.IsTrue(Guid.TryParse(resolvedTermSetId, out outGuid));
                 Assert.IsTrue(Guid.TryParse(resolvedTermStoreId, out outGuid));
 
