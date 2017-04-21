@@ -2437,6 +2437,256 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_AuditSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(template.AuditSettings);
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.CheckIn));
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.CheckOut));
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.Search));
+            Assert.AreEqual(10, template.AuditSettings.AuditLogTrimmingRetention);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLog);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_AuditSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.AuditSettings = new AuditSettings() {
+                AuditFlags = AuditMaskType.ProfileChange | AuditMaskType.Move,
+                AuditLogTrimmingRetention = 10,
+                TrimAuditLog = true
+
+            };
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-audit.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-audit.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.AuditSettings);
+            Assert.IsNotNull(template.AuditSettings.Audit);
+            Assert.AreEqual(2, template.AuditSettings.Audit.Length);
+            Assert.IsNotNull(template.AuditSettings.Audit.FirstOrDefault(a=> a.AuditFlag == Core.Framework.Provisioning.Providers.Xml.V201605.AuditSettingsAuditAuditFlag.ProfileChange));
+            Assert.IsNotNull(template.AuditSettings.Audit.FirstOrDefault(a => a.AuditFlag == Core.Framework.Provisioning.Providers.Xml.V201605.AuditSettingsAuditAuditFlag.Move));
+            Assert.AreEqual(10, template.AuditSettings.AuditLogTrimmingRetention);
+            Assert.IsTrue(template.AuditSettings.AuditLogTrimmingRetentionSpecified);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLog);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLogSpecified);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Features_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Features);
+            Assert.IsNotNull(template.Features.SiteFeatures);
+            Assert.AreEqual(3, template.Features.SiteFeatures.Count);
+            var feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("b50e3104-6812-424f-a011-cc90e6327318"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("9c0834e1-ba47-4d49-812b-7d4fb6fea211"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("0af5989a-3aea-4519-8ab0-85d91abe39ff"));
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+
+            Assert.IsNotNull(template.Features.WebFeatures);
+            Assert.AreEqual(4, template.Features.WebFeatures.Count);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("7201d6a4-a5d3-49a1-8c19-19c4bac6e668"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("961d6a9c-4388-4cf2-9733-38ee8c89afd4"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("e2f2bb18-891d-4812-97df-c265afdba297"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("4aec7207-0d02-4f4f-aa07-b370199cd0c7"));
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Features_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Features = new Features();
+
+            result.Features.SiteFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("d8f187e3-2bf3-43a3-99a0-024edaffab5e")
+            });
+            result.Features.SiteFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("89c029c5-d289-4936-8ba6-6f3386a8a03f"),
+                Deactivate = true
+            });
+            result.Features.WebFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("a22d7848-6d17-47b5-9c1c-cecc98a6b258")
+            });
+            result.Features.WebFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("d60aed53-05f3-4d1c-a12f-677da19a8c31"),
+                Deactivate = true
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-features.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-features.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Features);
+            Assert.IsNotNull(template.Features.SiteFeatures);
+            Assert.AreEqual(2, template.Features.SiteFeatures.Length);
+            var feature = template.Features.SiteFeatures.FirstOrDefault(f => f.ID == "d8f187e3-2bf3-43a3-99a0-024edaffab5e");
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.ID == "89c029c5-d289-4936-8ba6-6f3386a8a03f");
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+
+            Assert.IsNotNull(template.Features.WebFeatures);
+            Assert.AreEqual(2, template.Features.WebFeatures.Length);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.ID == "a22d7848-6d17-47b5-9c1c-cecc98a6b258");
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.ID == "d60aed53-05f3-4d1c-a12f-677da19a8c31");
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_LocalizationSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var localizations = template.Localizations;
+            Assert.AreEqual(2, localizations.Count);
+            var locale = localizations.FirstOrDefault(l => l.LCID == 1033);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("en-US", locale.Name);
+            Assert.AreEqual("template.en-US.resx", locale.ResourceFile);
+
+            locale = localizations.FirstOrDefault(l => l.LCID == 1040);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("it-IT", locale.Name);
+            Assert.AreEqual("template.it-It.resx", locale.ResourceFile);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_LocalizationSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Localizations.Add(new Localization()
+            {
+                LCID = 1033,
+                Name = "en-US",
+                ResourceFile = "template.en-US.resx"
+            });
+            result.Localizations.Add(new Localization()
+            {
+                LCID = 1040,
+                Name = "it-IT",
+                ResourceFile = "template.it-It.resx"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-local.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-local.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            var localizations = wrappedResult.Localizations;
+            Assert.AreEqual(2, localizations.Length);
+            var locale = localizations.FirstOrDefault(l => l.LCID == 1033);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("en-US", locale.Name);
+            Assert.AreEqual("template.en-US.resx", locale.ResourceFile);
+
+            locale = localizations.FirstOrDefault(l => l.LCID == 1040);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("it-IT", locale.Name);
+            Assert.AreEqual("template.it-It.resx", locale.ResourceFile);
+        }
         #endregion
     }
 }
