@@ -167,7 +167,7 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(webPartPage);
             web.Context.ExecuteQueryRetry();
 
-            return AddWebPart(webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
+            return AddWebPart(web, webPartPage, webPart, webPart.WebPartZone, webPart.WebPartIndex);
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace Microsoft.SharePoint.Client
 
             string wikiField = (string)webPartPage.ListItemAllFields["WikiField"];
 
-            var wpdNew = AddWebPart(webPartPage, webPart, "wpz", 0);
+            var wpdNew = AddWebPart(web, webPartPage, webPart, "wpz", 0);
 
             //HTML structure in default team site home page (W16)
             //<div class="ExternalClass284FC748CB4242F6808DE69314A7C981">
@@ -1055,7 +1055,7 @@ namespace Microsoft.SharePoint.Client
             SetWebPartPropertyInternal(web, key, value, id, serverRelativePageUrl);
         }
 
-        private static WebPartDefinition AddWebPart(File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
+        private static WebPartDefinition AddWebPart(Web fileWeb, File webPartPage, WebPartEntity webPart, string zoneId, int zoneIndex)
         {
             var limitedWebPartManager = webPartPage.GetLimitedWebPartManager(PersonalizationScope.Shared);
             var oWebPartDefinition = limitedWebPartManager.ImportWebPart(webPart.WebPartXml);
@@ -1063,8 +1063,33 @@ namespace Microsoft.SharePoint.Client
             var wpdNew = limitedWebPartManager.AddWebPart(oWebPartDefinition.WebPart, zoneId, zoneIndex);
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
+            
+            var webPartPostProcessor = WebPartPostProcessorFactory.Resolve(webPart.WebPartXml);
 
-            WebPartPostProcessorFactory.Resolve(webPart.WebPartXml).Process(wpdNew, webPartPage);
+            var currentContext = ((ClientContext) webPartPage.Context);
+            var contextWeb = currentContext.Web;
+
+            contextWeb.EnsureProperties(w => w.Url, w => w.Id);
+            fileWeb.EnsureProperties(w => w.Url, w => w.Id);
+
+            if (contextWeb.Id.Equals(fileWeb.Id))
+            {
+                webPartPostProcessor.Process(wpdNew, webPartPage);
+            }
+            else
+            {
+                using (var context = currentContext.Clone(fileWeb.Url))
+                {
+#if !SP2013
+                    webPartPage.EnsureProperties(f => f.UniqueId);
+                    var file = context.Web.GetFileById(webPartPage.UniqueId);
+#else
+                    webPartPage.EnsureProperties(f => f.ServerRelativeUrl);
+                    var file = context.Web.GetFileByServerRelativeUrl(webPartPage.ServerRelativeUrl);
+#endif
+                    webPartPostProcessor.Process(wpdNew, file);
+                }
+            }
 
             return wpdNew;
         }

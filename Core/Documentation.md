@@ -2525,6 +2525,16 @@ Sets JS link customization for a list form
 > **jslink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
 
 
+#### SetJSLinkCustomizations(Microsoft.SharePoint.Client.List,System.String,System.String)
+Sets JS link customization for a list view page
+> ##### Parameters
+> **list:** SharePoint list
+
+> **serverRelativeUrl:** url of the view page
+
+> **jslink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+
+
 #### SetLocalizationLabelsForList(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.String)
 Can be used to set translations for different cultures.
 > ##### Parameters
@@ -2755,11 +2765,17 @@ Gets a view by Name
 > returns null if not found
 
 #### SetDefaultColumnValues(Microsoft.SharePoint.Client.List,System.Collections.Generic.IEnumerable{OfficeDevPnP.Core.Entities.IDefaultColumnValue})
-Sets default values for column values. In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword") Column values are defined by the DefaultColumnValue class that has 3 properties: RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field Terms : A collection of Taxonomy terms to set
+Sets default values for column values. In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword") Column values are defined by the DefaultColumnValue class that has 3 properties: RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field Terms : A collection of Taxonomy terms to set Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency
 > ##### Parameters
 > **list:** 
 
 > **columnValues:** 
+
+
+#### GetDefaultColumnValues(Microsoft.SharePoint.Client.List)
+Gets default values for column values. The returned list contains one dictionary per default setting per folder. Each dictionary has the following keys set: Path, Field, Value Path: Relative path to the library/folder Field: Internal name of the field which has a default value Value: The default value for the field
+> ##### Parameters
+> **list:** 
 
 
 #### ReIndexList(Microsoft.SharePoint.Client.List)
@@ -3215,6 +3231,28 @@ Deletes a web part from a page
 
 > **System.ArgumentNullException:** Thrown when serverRelativePageUrl or title is null
 
+
+#### AddClientSidePage(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
+Adds a client side "modern" page to a "classic" or "modern" site
+> ##### Parameters
+> **web:** Web to add the page to
+
+> **pageName:** Name (e.g. demo.aspx) of the page to be added
+
+> **alreadyPersist:** Already persist the created, empty, page before returning the instantiated instance
+
+> ##### Return value
+> A instance
+
+#### LoadClientSidePage(Microsoft.SharePoint.Client.Web,System.String)
+Loads a client side "modern" page
+> ##### Parameters
+> **web:** Web to load the page from
+
+> **pageName:** Name (e.g. demo.aspx) of the page to be loaded
+
+> ##### Return value
+> A instance
 
 #### AddWikiPage(Microsoft.SharePoint.Client.Web,System.String,System.String)
 Adds a blank Wiki page to the site pages library
@@ -4583,7 +4621,7 @@ Returns the Id for a term if present in the TaxonomyHiddenList. Otherwise return
 > ##### Return value
 > 
 
-#### SetTaxonomyFieldDefaultValue(Microsoft.SharePoint.Client.Field,Microsoft.SharePoint.Client.Taxonomy.TaxonomyItem,System.String)
+#### SetTaxonomyFieldDefaultValue(Microsoft.SharePoint.Client.Field,Microsoft.SharePoint.Client.Taxonomy.TaxonomyItem,System.String,System.Boolean)
 Sets the default value for a managed metadata field
 > ##### Parameters
 > **field:** Field to be wired up
@@ -4591,6 +4629,8 @@ Sets the default value for a managed metadata field
 > **taxonomyItem:** Taxonomy TermSet or Term
 
 > **defaultValue:** default value for the field
+
+> **pushChangesToLists:** push changes to lists
 
 
 ## SharePoint.Client.TenantExtensions
@@ -4811,6 +4851,8 @@ Returns all site collections in the current Tenant based on a startIndex. Includ
 
 > **includeDetail:** Option to return a limited set of data
 
+> **includeOD4BSites:** Also return the OD4B sites
+
 > ##### Return value
 > An IList of SiteEntity objects
 
@@ -4829,6 +4871,24 @@ Gets the UserProfileService proxy to enable calls to the UPA web service.
 
 > ##### Return value
 > UserProfileService web service client
+
+#### DeployApplicationPackageToAppCatalog(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.String,System.Boolean,System.Boolean)
+Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+> ##### Parameters
+> **tenant:** Tenant to operate against
+
+> **appCatalogSiteUrl:** Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps)
+
+> **spPkgName:** Name of the package to upload (e.g. demo.sppkg)
+
+> **spPkgPath:** Path on the filesystem where this package is stored
+
+> **autoDeploy:** Automatically deploy the package, only applies to client side packages (sppkg)
+
+> **overwrite:** Overwrite the package if it was already listed in the app catalog
+
+> ##### Return value
+> The ListItem of the added package row
 
 ## SharePoint.Client.WebExtensions
             
@@ -5027,7 +5087,7 @@ Returns all site collections that are indexed. In MT the search center, mysite h
 > **web:** Site to be processed - can be root web or sub site
 
 > ##### Return value
-> All site collections - Duplicates are not being trimmed.
+> All site collections
 
 #### SiteSearch(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
 Returns the site collections that comply with the passed keyword query
@@ -5036,7 +5096,7 @@ Returns the site collections that comply with the passed keyword query
 
 > **keywordQueryValue:** Keyword query
 
-> **trimDuplicates:** Indicates if duplicates should be trimmed or not. Defaults to false
+> **trimDuplicates:** Indicates if dublicates should be trimmed or not
 
 > ##### Return value
 > All found site collections
@@ -5061,7 +5121,7 @@ Returns all site collection that match with the provided title
 > ##### Return value
 > All found site collections
 
-#### ProcessQuery(Microsoft.SharePoint.Client.Web,System.String,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.SiteEntity},Microsoft.SharePoint.Client.Search.Query.KeywordQuery,System.Int32)
+#### ProcessQuery(Microsoft.SharePoint.Client.Web,System.String,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.SiteEntity},Microsoft.SharePoint.Client.Search.Query.KeywordQuery)
 Runs a query
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site
@@ -5071,8 +5131,6 @@ Runs a query
 > **sites:** sites variable that hold the resulting sites
 
 > **keywordQuery:** KeywordQuery object
-
-> **startRow:** Start row of the resultset to be returned
 
 > ##### Return value
 > Total number of rows for the query
@@ -5667,25 +5725,7 @@ Add required key/value settings on List Root-Folder
 > **experience:** 
 
 
-## SharePoint.Client.BaseTemplateManager
-            
-This class will be used to provide access to the right base template configuration
-        
-
-## SharePoint.Client.ManagedNavigationKind
-            
-Defines the kind of Managed Navigation for a site
-        
-### Fields
-
-#### Current
-Current Navigation
-#### Global
-Global Navigation
-
-## Core.AppModelExtensions.VariationExtensions
-            
-Class that holds deprecated methods for variations
+## SharePoint.Client.VariationExtensions
             
 Class that provides methods for variations
         
@@ -5750,6 +5790,27 @@ Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020
 > ##### Return value
 > True, if hierarchy is created for the variation label
 
+## SharePoint.Client.BaseTemplateManager
+            
+This class will be used to provide access to the right base template configuration
+        
+
+## SharePoint.Client.ManagedNavigationKind
+            
+Defines the kind of Managed Navigation for a site
+        
+### Fields
+
+#### Current
+Current Navigation
+#### Global
+Global Navigation
+
+## Core.AppModelExtensions.VariationExtensions
+            
+Class that holds deprecated methods for variations
+        
+
 ## Core.CoreResources
             
 A strongly-typed resource class, for looking up localized strings, etc.
@@ -5798,6 +5859,8 @@ Looks up a localized string similar to Url of the site is required..
 Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
 #### ClientContextExtensions_ExecuteQueryRetryException
 Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+#### ClientContextExtensions_HasMinimalServerLibraryVersion_Error
+Looks up a localized string similar to The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}..
 #### Exception_Message_EmptyString_Arg
 Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
 #### FeatureExtensions_ActivateSiteCollectionFeature
@@ -5858,6 +5921,8 @@ Looks up a localized string similar to The argument must be a single file name a
 Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
 #### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
 Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### GraphExtensions_ErrorOccured
+Looks up a localized string similar to Graph call returned the following error: {0}..
 #### GraphExtensions_GroupLogoFileDoesNotExist
 Looks up a localized string similar to The group logo file does not exist..
 #### GraphExtensions_SendAsyncRetry
@@ -5868,6 +5933,8 @@ Looks up a localized string similar to SendAsync threw following exception: {0}.
 Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
 #### ListExtensions_GetWebRelativeUrl
 Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
+#### ListExtensions_IncorrectValueFormat
+Looks up a localized string similar to Value should be in the format of <id>;#<value> (Example 1: 1;#Foo Bar Example 2: 1;#Foo Bar;#2;#Bar Foo).
 #### ListExtensions_SkipNoCrawlLists
 Looks up a localized string similar to Skipping reindexing of the list because it's marked as a 'no crawl' list..
 #### LoggingUtility_MessageWithException
@@ -6000,6 +6067,8 @@ Looks up a localized string similar to Skipping custom form urls for contenttype
 Looks up a localized string similar to Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites..
 #### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
 Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed
+Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value..
 #### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
 Looks up a localized string similar to Adding custom action '{0}' to scope Site.
 #### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
@@ -6072,6 +6141,8 @@ Looks up a localized string similar to DraftVersionVisibility not applied becaus
 Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
 #### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
 Looks up a localized string similar to Field schema has no ID attribute: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_
+Looks up a localized string similar to Updating list {0} with FieldRef {1}.
 #### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
 Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
 #### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
@@ -6114,6 +6185,8 @@ Looks up a localized string similar to Missing Current Structural Navigation set
 Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
 #### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
 Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_SkipProvisioning
+Looks up a localized string similar to Skip applying of navigation settings on NoScript sites..
 #### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
 Looks up a localized string similar to Creating new page {0}.
 #### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
@@ -6145,7 +6218,7 @@ Looks up a localized string similar to Add users failed for group '{0}': {1} : {
 #### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
 Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
 #### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
-Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore.
 #### Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration
 Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
 #### Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate
@@ -6200,8 +6273,6 @@ Looks up a localized string similar to PersistBrandingFiles is set to true.
 Looks up a localized string similar to PersistComposedLookFiles is set to true.
 #### SiteToTemplateConversion_ProgressDelegate_registered
 Looks up a localized string similar to ProgressDelegate registered.
-#### SP_Responsive_UI
-Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $ [rest of string was truncated]";.
 #### TaxonomyExtension_CreateTerm01UnderParent2
 Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
 #### TaxonomyExtension_CreateTermGroup0InStore1
@@ -6387,6 +6458,147 @@ Looks up a localized string similar to Site search error. Error = {0}.
 #### WebExtensions_UninstallSolution
 Looks up a localized string similar to Removing sandbox solution '{0}'..
 
+## Core.Pages.DefaultClientSideWebParts
+            
+List of possible OOB web parts
+        
+
+## Core.Pages.ClientSidePage
+            
+Represents a modern client side page with all it's contents
+        
+
+## Core.Pages.CanvasZoneTemplate
+            
+The type of canvas being used
+        
+
+## Core.Pages.CanvasZone
+            
+Represents a zone on the canvas
+        
+
+## Core.Pages.CanvasSection
+            
+Represents a section in a canvas zone
+        
+
+## Core.Pages.AvailableClientSideComponents
+            
+Class holding a collection of client side webparts (retrieved via the _api/web/GetClientSideWebParts REST call)
+        
+
+## Core.Pages.ClientSideComponent
+            
+Client side webpart object (retrieved via the _api/web/GetClientSideWebParts REST call)
+        
+
+## Core.Pages.CanvasControl
+            
+Base control
+        
+### Methods
+
+
+#### ToHtml
+Converts a control object to it's html representation
+> ##### Return value
+> Html representation of a control
+
+#### Delete
+Removes the control from the page
+
+#### GetType(System.String)
+Receives data-sp-controldata content and detects the type of the control
+> ##### Parameters
+> **controlDataJson:** data-sp-controldata json string
+
+> ##### Return value
+> Type of the control represented by the json string
+
+## Core.Pages.ClientSideText
+            
+Controls of type 4 ( = text control)
+        
+### Methods
+
+
+#### ToHtml
+Converts this control to it's html representation
+> ##### Return value
+> Html representation of this control
+
+## Core.Pages.ClientSideWebPart
+            
+This class is used to instantiate controls of type 3 (= client side web parts). Using this class you can instantiate a control and add it on a .
+        
+### Properties
+
+#### JsonWebPartData
+Json serialized web part properties
+#### HtmlPropertiesData
+Html properties data
+#### HtmlProperties
+Value of the data-sp-htmlproperties attribute
+#### WebPartId
+ID of the client side web part
+#### WebPartData
+Value of the data-sp-webpart attribute
+#### Title
+Title of the web part
+#### Description
+Description of the web part
+#### PropertiesJson
+Json serialized web part properties
+#### Properties
+Web properties as configurable
+#### Type
+Return of the client side web part
+### Methods
+
+
+#### Constructor
+Instantiates client side web part from scratch.
+
+#### Constructor
+Instantiates a client side web part based on the information that was obtain from calling the AvailableClientSideComponents methods on the object.
+> ##### Parameters
+> **component:** Component to create a ClientSideWebPart instance for
+
+
+#### Import(OfficeDevPnP.Core.Pages.ClientSideComponent,System.Func{System.String,System.String})
+Imports a to use it as base for configuring the client side web part instance
+> ##### Parameters
+> **component:** to import
+
+> **clientSideWebPartPropertiesUpdater:** Function callback that allows you to manipulate the client side web part properties after import
+
+
+#### ToHtml
+Returns a HTML representation of the client side web part
+> ##### Return value
+> HTML representation of the client side web part
+
+## Core.Pages.ClientSideCanvasControlData
+            
+Abstract base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
+        
+
+## Core.Pages.ClientSideTextControlData
+            
+Control data for controls of type 4 (= text control)
+        
+
+## Core.Pages.ClientSideWebPartControlData
+            
+Control data for controls of type 3 (= client side web parts)
+        
+
+## Core.Pages.ClientSideWebPartData
+            
+Json web part data that will be included in each client side web part (de-)serialization (data-sp-webpartdata)
+        
+
 ## Core.Entities.UnifiedGroupEntity
             
 Defines a Unified Group
@@ -6526,6 +6738,8 @@ The site description
 The site owner
 #### CurrentResourceUsage
 The current resource usage points
+#### IndexDocId
+IndexDocId for Search Paging
 #### Lcid
 The site locale. See http://technet.microsoft.com/en-us/library/ff463597.aspx for a complete list of Lcid's
 #### StorageMaximumLevel
@@ -17768,6 +17982,10 @@ A class that returns strings that represent identifiers (IDs) for built-in conte
 Contains the content identifier (ID) for the DocumentSet content type. To get content type from a list, use BestMatchContentTypeId().
 #### Item
 Contains the content identifier (ID) for the Item content type.
+#### ReusableHTML
+Contains the content identifier (ID) for content types used in the publishing infrastructure.
+#### ModernArticlePage
+Contains the content identifier (ID) for content types used in the modern page infrastructure
 
 ## Core.Constants
             
