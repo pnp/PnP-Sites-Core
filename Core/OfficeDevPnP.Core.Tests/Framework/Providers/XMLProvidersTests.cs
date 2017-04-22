@@ -2687,6 +2687,571 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("it-IT", locale.Name);
             Assert.AreEqual("template.it-It.resx", locale.ResourceFile);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_WebSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.WebSettings);
+            Assert.AreEqual("Resources/Themes/Contoso/Contoso.css", template.WebSettings.AlternateCSS);
+            Assert.AreEqual("seattle.master", template.WebSettings.MasterPageUrl);
+            Assert.AreEqual("custom.master", template.WebSettings.CustomMasterPageUrl);
+            Assert.IsTrue(template.WebSettings.NoCrawl);
+            Assert.AreEqual("admin@contoso.com", template.WebSettings.RequestAccessEmail);
+            Assert.AreEqual("Resources/Themes/Contoso/contosologo.png", template.WebSettings.SiteLogo);
+            Assert.AreEqual("Contoso Portal", template.WebSettings.Title);
+            Assert.AreEqual("/Pages/home.aspx", template.WebSettings.WelcomePage);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_WebSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.WebSettings = new WebSettings() {
+                AlternateCSS = "Resources/Themes/Contoso/Contoso.css",
+                MasterPageUrl= "seattle.master",
+                CustomMasterPageUrl="custom.master",
+                Description="Test site",
+                NoCrawl=true,
+                RequestAccessEmail="admin@contoso.com",
+                SiteLogo = "Resources/Themes/Contoso/contosologo.png",
+                Title="Contoso Portal",
+                WelcomePage="/Pages/home.aspx"
+            };
+            
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-web.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-web.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.WebSettings);
+            Assert.AreEqual("Resources/Themes/Contoso/Contoso.css", template.WebSettings.AlternateCSS);
+            Assert.AreEqual("seattle.master", template.WebSettings.MasterPageUrl);
+            Assert.AreEqual("custom.master", template.WebSettings.CustomMasterPageUrl);
+            Assert.IsTrue(template.WebSettings.NoCrawl);
+            Assert.AreEqual("admin@contoso.com", template.WebSettings.RequestAccessEmail);
+            Assert.AreEqual("Resources/Themes/Contoso/contosologo.png", template.WebSettings.SiteLogo);
+            Assert.AreEqual("Contoso Portal", template.WebSettings.Title);
+            Assert.AreEqual("/Pages/home.aspx", template.WebSettings.WelcomePage);
+            Assert.AreEqual("Test site", template.WebSettings.Description);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_RegionalSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.RegionalSettings);
+            Assert.AreEqual(2, template.RegionalSettings.AdjustHijriDays);
+            Assert.AreEqual(CalendarType.GregorianArabic, template.RegionalSettings.AlternateCalendarType);
+            Assert.AreEqual(CalendarType.Gregorian, template.RegionalSettings.CalendarType);
+            Assert.AreEqual(1, template.RegionalSettings.Collation);
+            Assert.AreEqual(DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
+            Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
+            Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeks);
+            Assert.IsTrue(template.RegionalSettings.Time24);
+            Assert.AreEqual(2, template.RegionalSettings.TimeZone);
+            Assert.AreEqual(WorkHour.PM0600, template.RegionalSettings.WorkDayEndHour);
+            Assert.AreEqual(5, template.RegionalSettings.WorkDays);
+            Assert.AreEqual(WorkHour.AM0900, template.RegionalSettings.WorkDayStartHour);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_RegionalSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.RegionalSettings = new Core.Framework.Provisioning.Model.RegionalSettings()
+            {
+                AdjustHijriDays = 2,
+                AlternateCalendarType = CalendarType.GregorianArabic,
+                CalendarType = CalendarType.Gregorian,
+                Collation = 1,
+                FirstDayOfWeek = DayOfWeek.Sunday,
+                FirstWeekOfYear = 1,
+                LocaleId = 1040,
+                ShowWeeks = true,
+                Time24 = true,
+                TimeZone = 2,
+                WorkDayEndHour = WorkHour.PM0600,
+                WorkDays = 5,
+                WorkDayStartHour = WorkHour.AM0900
+            };
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-region.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-region.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.RegionalSettings);
+            Assert.AreEqual(2, template.RegionalSettings.AdjustHijriDays);
+            Assert.IsTrue(template.RegionalSettings.AdjustHijriDaysSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.CalendarType.GregorianArabicCalendar, template.RegionalSettings.AlternateCalendarType);
+            Assert.IsTrue(template.RegionalSettings.AlternateCalendarTypeSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.CalendarType.Gregorian, template.RegionalSettings.CalendarType);
+            Assert.IsTrue(template.RegionalSettings.CalendarTypeSpecified);
+            Assert.AreEqual(1, template.RegionalSettings.Collation);
+            Assert.IsTrue(template.RegionalSettings.CollationSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
+            Assert.IsFalse(template.RegionalSettings.FirstDayOfWeekSpecified);
+            Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
+            Assert.IsTrue(template.RegionalSettings.FirstWeekOfYearSpecified);
+            Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
+            Assert.IsTrue(template.RegionalSettings.LocaleIdSpecified);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeks);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeksSpecified);
+            Assert.IsTrue(template.RegionalSettings.Time24);
+            Assert.IsTrue(template.RegionalSettings.Time24Specified);
+            Assert.AreEqual(2, template.RegionalSettings.TimeZone);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.WorkHour.Item600PM, template.RegionalSettings.WorkDayEndHour);
+            Assert.IsTrue(template.RegionalSettings.WorkDayEndHourSpecified);
+            Assert.AreEqual(5, template.RegionalSettings.WorkDays);
+            Assert.IsTrue(template.RegionalSettings.WorkDaysSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.WorkHour.Item900AM, template.RegionalSettings.WorkDayStartHour);
+            Assert.IsTrue(template.RegionalSettings.WorkDayStartHourSpecified);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SupportedUILanguages_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.SupportedUILanguages);
+            Assert.AreEqual(2, template.SupportedUILanguages.Count);
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1033));
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1040));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SupportedUILanguages_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.SupportedUILanguages.Add(new SupportedUILanguage() { LCID = 1040 });
+            result.SupportedUILanguages.Add(new SupportedUILanguage() { LCID = 1033 });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-lang.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-lang.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.SupportedUILanguages);
+            Assert.AreEqual(2, template.SupportedUILanguages.Length);
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1033));
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1040));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_PropertyBagEntries_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.PropertyBagEntries);
+            Assert.AreEqual(2, template.PropertyBagEntries.Count);
+            var prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY1");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value1", prop.Value);
+            Assert.IsTrue(prop.Indexed);
+            Assert.IsTrue(prop.Overwrite);
+            prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY2");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value2", prop.Value);
+            Assert.IsFalse(prop.Indexed);
+            Assert.IsFalse(prop.Overwrite);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_PropertyBagEntries_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.PropertyBagEntries.Add(new PropertyBagEntry() {
+                Key = "KEY1",
+                Value = "value1",
+                Overwrite = true,
+                Indexed = true
+            });
+            result.PropertyBagEntries.Add(new PropertyBagEntry()
+            {
+                Key = "KEY2",
+                Value = "value2"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-propbag.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-propbag.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.PropertyBagEntries);
+            Assert.AreEqual(2, template.PropertyBagEntries.Length);
+            var prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY1");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value1", prop.Value);
+            Assert.IsTrue(prop.Indexed);
+            Assert.IsTrue(prop.Overwrite);
+            Assert.IsTrue(prop.OverwriteSpecified);
+            prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY2");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value2", prop.Value);
+            Assert.IsFalse(prop.Indexed);
+            Assert.IsFalse(prop.Overwrite);
+            Assert.IsFalse(prop.OverwriteSpecified);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateParameters_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter1", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter2", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter3", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter4", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateParameters_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Parameters.Add("Parameter1", "ValueParameter1");
+            result.Parameters.Add("Parameter2", "ValueParameter2");
+            result.Parameters.Add("Parameter3", "ValueParameter3");
+            result.Parameters.Add("Parameter4", "ValueParameter4");
+            result.Parameters.Add("Parameter5", "ValueParameter5");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-temppar.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-temppar.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Preferences);
+            Assert.IsNotNull(wrappedResult.Preferences.Parameters);
+            Assert.AreEqual(5, wrappedResult.Preferences.Parameters.Length);
+
+            var param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter1");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter1", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter2");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter2", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter3");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter3", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter4");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter4", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter5");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter5", param.Text.First());
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateBaseProperties_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.AreEqual(1.2, template.Version);
+            var param = template.Properties.FirstOrDefault(p => p.Key == "Key1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value1", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value2", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value3", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value4", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateBaseProperties_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Version = 1.2;
+            result.Properties.Add("Key1", "Value1");
+            result.Properties.Add("Key2", "Value2");
+            result.Properties.Add("Key3", "Value3");
+            result.Properties.Add("Key4", "Value4");
+            result.Properties.Add("Key5", "Value5");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.AreEqual((decimal)1.2, template.Version);
+            var param = template.Properties.FirstOrDefault(p => p.Key == "Key1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value1", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value2", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value3", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value4", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteFields_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.SiteFields);
+            Assert.AreEqual(4, template.SiteFields.Count);
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteFields_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-flds.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-flds.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.SiteFields);
+            Assert.IsNotNull(template.SiteFields.Any);
+            Assert.AreEqual(4, template.SiteFields.Any.Length);
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+        }
         #endregion
     }
 }
+
+
+
+
+
+
+
+
+

@@ -16,7 +16,7 @@
     <pnp:Localization LCID="1040" Name="it-IT" ResourceFile="template.it-It.resx" />
   </pnp:Localizations>
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
-    <pnp:ProvisioningTemplate ID="SPECIALTEAM-01" Version="1"
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM-01" Version="1.2"
                               BaseSiteTemplate="STS#0"
                               Description="Sample Template #01 Description"
                               DisplayName="Sample Template #01"
@@ -52,10 +52,10 @@
         <pnp:Audit AuditFlag="CheckOut" />
         <pnp:Audit AuditFlag="Search" />
       </pnp:AuditSettings>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" />
+      <pnp:WebSettings NoCrawl="true" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" CustomMasterPageUrl="custom.master" RequestAccessEmail="admin@contoso.com" Title="Contoso Portal" WelcomePage="/Pages/home.aspx" Description="Test site"/>
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" Indexed="true"/>
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
         <pnp:AdditionalAdministrators>
