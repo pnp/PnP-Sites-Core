@@ -179,7 +179,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set { this.propertyBagPropertiesToPreserve = value; }
         }
 
-        internal List<String> ContentTypeGroupsToInclude {
+        public List<String> ContentTypeGroupsToInclude {
             get { return this.contentTypeGroupsToInclude; }
             set { this.contentTypeGroupsToInclude = value; }
         }
