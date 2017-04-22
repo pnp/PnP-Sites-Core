@@ -643,6 +643,7 @@
     </Content>
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-NOT-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />

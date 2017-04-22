@@ -16,8 +16,7 @@ using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
-    internal class XMLPnPSchemaV201605Formatter :
-        IXMLSchemaFormatter, ITemplateFormatter
+    internal class XMLPnPSchemaV201605Formatter : IXMLSchemaFormatter, ITemplateFormatter
     {
         private TemplateProviderBase _provider;
 
@@ -47,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XDocument xml = XDocument.Load(template);
 
             // Load the XSD embedded resource
-            Stream stream = typeof(XMLPnPSchemaV201605Formatter)
+            Stream stream = typeof(XMLPnPSchemaV201605Serializer)
                 .Assembly
                 .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2016-05.xsd");
 
