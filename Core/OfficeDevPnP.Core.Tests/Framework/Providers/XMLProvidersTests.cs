@@ -514,7 +514,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         public void XMLSerializer_Deserialize_201605()
         {
             var _expectedID = "SPECIALTEAM-01";
-            var _expectedVersion = 1.0;
+            var _expectedVersion = 1.2;
 
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
