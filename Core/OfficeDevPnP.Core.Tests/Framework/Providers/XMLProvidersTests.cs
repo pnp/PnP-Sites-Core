@@ -3428,6 +3428,491 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(n2.IsExternal);
             Assert.IsNull(n2.NavigationNode1);
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Security_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Security);
+            Assert.IsTrue(template.Security.BreakRoleInheritance);
+            Assert.IsTrue(template.Security.ClearSubscopes);
+            Assert.IsTrue(template.Security.CopyRoleAssignments);
+
+            Assert.IsNotNull(template.Security.AdditionalAdministrators);
+            Assert.AreEqual(2, template.Security.AdditionalAdministrators.Count);
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalOwners);
+            Assert.AreEqual(2, template.Security.AdditionalOwners.Count);
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalMembers);
+            Assert.AreEqual(2, template.Security.AdditionalMembers.Count);
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors);
+            Assert.AreEqual(2, template.Security.AdditionalVisitors.Count);
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions);
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions.RoleDefinitions);
+            Assert.AreEqual(2, template.Security.SiteSecurityPermissions.RoleDefinitions.Count);
+            var role = template.Security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(r => r.Name == "User");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("User Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(2, role.Permissions.Count);
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.AddListItems));
+
+            role = template.Security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(r => r.Name == "EmptyRole");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Empty Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(1, role.Permissions.Count);
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.EmptyMask));
+
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions.RoleAssignments);
+            Assert.AreEqual(2, template.Security.SiteSecurityPermissions.RoleAssignments.Count);
+            var assign = template.Security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "admin@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Owner", assign.RoleDefinition);
+            assign = template.Security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("User", assign.RoleDefinition);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Security_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Security = new SiteSecurity()
+            {
+                BreakRoleInheritance = true,
+                ClearSubscopes = true,
+                CopyRoleAssignments = true
+            };
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind>() {
+                PermissionKind.ViewListItems,
+                PermissionKind.AddListItems
+            })
+            {
+                Name = "User",
+                Description = "User Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind>() {
+                PermissionKind.EmptyMask
+            })
+            {
+                Name = "EmptyRole",
+                Description = "Empty Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() {
+                Principal = "admin@contoso.com",
+                RoleDefinition = "Owner"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
+            {
+                Principal = "user@contoso.com",
+                RoleDefinition = "User"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-sec.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-sec.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Security);
+            Assert.IsTrue(template.Security.BreakRoleInheritance);
+            Assert.IsTrue(template.Security.ClearSubscopes);
+            Assert.IsTrue(template.Security.CopyRoleAssignments);
+
+            Assert.IsNotNull(template.Security.AdditionalAdministrators);
+            Assert.AreEqual(2, template.Security.AdditionalAdministrators.Length);
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalOwners);
+            Assert.AreEqual(2, template.Security.AdditionalOwners.Length);
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalMembers);
+            Assert.AreEqual(2, template.Security.AdditionalMembers.Length);
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors);
+            Assert.AreEqual(2, template.Security.AdditionalVisitors.Length);
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleDefinitions);
+            Assert.AreEqual(2, template.Security.Permissions.RoleDefinitions.Length);
+            var role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "User");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("User Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(2, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.AddListItems));
+
+            role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "EmptyRole");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Empty Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(1, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.EmptyMask));
+
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleAssignments);
+            Assert.AreEqual(2, template.Security.Permissions.RoleAssignments.Length);
+            var assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "admin@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Owner", assign.RoleDefinition);
+            assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("User", assign.RoleDefinition);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ListInstances_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            var list = new ListInstance()
+            {
+                Title = "Project Documents",
+                ContentTypesEnabled = true,//add
+                Description= "Project Documents are stored here",
+                DocumentTemplate = "document.dotx",//add
+                DraftVersionVisibility = 1, //add
+                EnableAttachments = true, //
+                EnableFolderCreation = true,
+                EnableMinorVersions = true,
+                EnableModeration = true,
+                EnableVersioning = true,
+                ForceCheckout = true,
+                Hidden = true,
+                MaxVersionLimit = 10,
+                MinorVersionLimit = 2,
+                OnQuickLaunch = true,
+                RemoveExistingContentTypes = true,
+                RemoveExistingViews = true,
+                TemplateFeatureID = new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"),
+                TemplateType = 101,
+                Url = "/Lists/ProjectDocuments",
+                Security = new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>()
+                {
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal01",
+                        RoleDefinition ="Read"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal02",
+                        RoleDefinition ="Contribute"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal03",
+                        RoleDefinition ="FullControl"
+                    }
+                })
+                {
+                    ClearSubscopes = true,
+                    CopyRoleAssignments = true,
+                    
+                }
+            };
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E",
+                Default = true
+            });
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x0102",
+                Remove = true
+            });
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x0102"
+            });
+
+            list.FieldDefaults.Add("Field01", "DefaultValue01");
+            list.FieldDefaults.Add("Field02", "DefaultValue02");
+            list.FieldDefaults.Add("Field03", "DefaultValue03");
+            list.FieldDefaults.Add("Field04", "DefaultValue04");
+
+            #region data rows
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value01-01" },
+                { "Field02", "Value01-02" },
+                { "Field03", "Value01-03" },
+                { "Field04", "Value01-04" },
+            },
+            new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal01",
+                    RoleDefinition ="Read"
+                },
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal02",
+                    RoleDefinition ="Contribute"
+                }
+                ,
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal03",
+                    RoleDefinition ="FullControl"
+                }
+            })
+            {
+                ClearSubscopes = true,
+                CopyRoleAssignments = true
+            }));
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value02-01" },
+                { "Field02", "Value02-02" },
+                { "Field03", "Value02-03" },
+                { "Field04", "Value02-04" },
+            },
+            new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal01",
+                    RoleDefinition ="Read"
+                },
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal02",
+                    RoleDefinition ="Contribute"
+                }
+                ,
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal03",
+                    RoleDefinition ="FullControl"
+                }
+            })
+            {
+                ClearSubscopes = false,
+                CopyRoleAssignments = false
+            }));
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value03-01" },
+                { "Field02", "Value03-02" },
+                { "Field03", "Value03-03" },
+                { "Field04", "Value03-04" },
+            }));
+            #endregion
+
+            var ca = new CustomAction()
+            {
+                Name = "SampleCustomAction",
+                Description = "Just a sample custom action",
+                Enabled = true,
+                Group = "Samples",
+                ImageUrl = "OneImage.png",
+                Location = "Any",
+                RegistrationId = "0x0101",
+                RegistrationType = UserCustomActionRegistrationType.ContentType,
+                Sequence = 100,
+                ScriptBlock = "scriptblock",
+                ScriptSrc = "script.js",
+                Url = "http://somewhere.com/",
+                Rights = new BasePermissions(),
+                Title = "Sample Action",
+                Remove = true,
+                CommandUIExtension = XElement.Parse("<customElement><!--Whateveryoulikehere--></customElement>")
+            };
+            ca.Rights.Set(PermissionKind.AddListItems);
+            list.UserCustomActions.Add(ca);
+
+            #region views
+            list.Views.Add(new Core.Framework.Provisioning.Model.View()
+            {
+                SchemaXml = @"<View DisplayName=""View One"">
+                  <ViewFields>
+                    <FieldRef Name=""ID"" />
+                    <FieldRef Name=""Title"" />
+                    <FieldRef Name=""ProjectID"" />
+                    <FieldRef Name=""ProjectName"" />
+                    <FieldRef Name=""ProjectManager"" />
+                    <FieldRef Name=""DocumentDescription"" />
+                  </ViewFields>
+                  <Query>
+                    <Where>
+                      <Eq>
+                        <FieldRef Name=""ProjectManager"" />
+                        <Value Type=""Text"">[Me]</Value>
+                      </Eq>
+                    </Where>
+                  </Query>
+                </View>"
+            });
+            list.Views.Add(new Core.Framework.Provisioning.Model.View()
+            { 
+                SchemaXml = @"<View DisplayName=""View Two"">
+                  <ViewFields>
+                    <FieldRef Name=""ID"" />
+                    <FieldRef Name=""Title"" />
+                    <FieldRef Name=""ProjectID"" />
+                    <FieldRef Name=""ProjectName"" />
+                  </ViewFields>
+                </View>"
+            });
+            #endregion
+
+            #region fieldrefs
+            list.FieldRefs.Add(new FieldRef("ProjectID")
+            {
+                Id = new Guid("{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}"),
+                DisplayName = "Project ID",
+                Hidden = false,
+                Required = true
+            });
+            list.FieldRefs.Add(new FieldRef("ProjectName")
+            {
+                Id = new Guid("{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}"),
+                DisplayName = "Project Name",
+                Hidden = true,
+                Required = false
+            });
+            list.FieldRefs.Add(new FieldRef("ProjectManager")
+            {
+                Id = new Guid("{A5DE9600-B7A6-42DD-A05E-10D4F1500208}"),
+                DisplayName = "Project Manager",
+                Hidden = false,
+                Required = true
+            });
+            #endregion
+
+            #region folders
+            var folder01 = new Core.Framework.Provisioning.Model.Folder("Folder01");
+            var folder02 = new Core.Framework.Provisioning.Model.Folder("Folder02");
+            folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.01",
+                security: new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal01",
+                        RoleDefinition ="Read"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal02",
+                        RoleDefinition ="Contribute"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal03",
+                        RoleDefinition ="FullControl"
+                    }
+                })
+                {
+                    CopyRoleAssignments = true,
+                    ClearSubscopes = true
+                }));
+            folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
+            list.Folders.Add(folder01);
+            list.Folders.Add(folder02);
+            #endregion
+
+            list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+            });
+            list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+
+            result.Lists.Add(list);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-lst.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-lst.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Lists);
+            Assert.AreEqual(1, template.Lists.Length);
+
+            var l = template.Lists.FirstOrDefault(ls => ls.Title == "Project Documents");
+            Assert.IsNotNull(l);
+            Assert.IsTrue(l.ContentTypesEnabled);
+            Assert.AreEqual("Project Documents are stored here", l.Description);
+            Assert.AreEqual("document.dotx", l.DocumentTemplate);
+            Assert.AreEqual(1, l.DraftVersionVisibility);
+            Assert.IsTrue(l.EnableAttachments);
+            Assert.IsTrue(l.EnableFolderCreation);
+            Assert.IsTrue(l.EnableMinorVersions);
+            Assert.IsTrue(l.EnableModeration);
+            Assert.IsTrue(l.EnableVersioning);
+            Assert.IsTrue(l.ForceCheckout);
+            Assert.IsTrue(l.Hidden);
+            Assert.AreEqual(10, l.MaxVersionLimit);
+            Assert.AreEqual(2, l.MinorVersionLimit);
+            Assert.IsTrue(l.OnQuickLaunch);
+            Assert.IsTrue(l.RemoveExistingContentTypes);
+            Assert.AreEqual("30FB193E-016E-45A6-B6FD-C6C2B31AA150", l.TemplateFeatureID);
+            Assert.AreEqual(101, l.TemplateType);
+            Assert.AreEqual("/Lists/ProjectDocuments", l.Url);
+        }
         #endregion
     }
 }

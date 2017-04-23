@@ -57,7 +57,7 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" Indexed="true"/>
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
       </pnp:PropertyBagEntries>
-      <pnp:Security>
+      <pnp:Security BreakRoleInheritance="true" ClearSubscopes="true" CopyRoleAssignments="true">  
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -74,7 +74,25 @@
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
         </pnp:AdditionalVisitors>
-        <pnp:Permissions />
+        <pnp:Permissions>
+          <pnp:RoleDefinitions>
+            <pnp:RoleDefinition Name="User" Description="User Role">
+              <pnp:Permissions>
+                <pnp:Permission>ViewListItems</pnp:Permission>
+                <pnp:Permission>AddListItems</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+            <pnp:RoleDefinition Name="EmptyRole" Description="Empty Role">
+              <pnp:Permissions>
+                <pnp:Permission>EmptyMask</pnp:Permission>
+              </pnp:Permissions>
+            </pnp:RoleDefinition>
+          </pnp:RoleDefinitions>
+          <pnp:RoleAssignments>
+            <pnp:RoleAssignment Principal="admin@contoso.com" RoleDefinition="Owner"/>
+            <pnp:RoleAssignment Principal="user@contoso.com" RoleDefinition="User"/>
+          </pnp:RoleAssignments>
+        </pnp:Permissions>
       </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" Required="TRUE" />
@@ -110,10 +128,29 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="10" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
+        <pnp:ListInstance 
+          Title="Project Documents" 
+          Description="Project Documents are stored here" 
+          DocumentTemplate="document.dotx" 
+          TemplateType="101" 
+          Url="Lists/ProjectDocuments" 
+          EnableVersioning="true" 
+          MinorVersionLimit="0" 
+          MaxVersionLimit="10" 
+          DraftVersionVisibility="1" 
+          RemoveExistingContentTypes="true"
+          ContentTypesEnabled="true"
+          EnableAttachments="true"
+          EnableFolderCreation="true"
+          EnableMinorVersions="true"
+          EnableModeration="true"
+          ForceCheckout="true"
+          Hidden="true"
+          OnQuickLaunch="true"
+          TemplateFeatureID="30FB193E-016E-45A6-B6FD-C6C2B31AA150">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
-            <pnp:ContentTypeBinding ContentTypeID="0x0101" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" Remove="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0102" />
           </pnp:ContentTypeBindings>
           <pnp:FieldDefaults>
@@ -169,8 +206,9 @@
                               ScriptBlock="scriptblock"
                               ScriptSrc="script.js"
                               Url="http://somewhere.com/"
-                              Rights="Contribute"
-                              Title="Sample Action">
+                              Rights="AddListItems"
+                              Title="Sample Action"
+                              Remove="true">
               <pnp:CommandUIExtension>
                 <customElement>
                   <!-- Whatever you like here -->
@@ -233,6 +271,10 @@
             </pnp:Folder>
             <pnp:Folder Name="Folder02" />
           </pnp:Folders>
+        <pnp:Fields>
+          <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" Required="TRUE" />
+          <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+        </pnp:Fields>
         </pnp:ListInstance>
       </pnp:Lists>
       <pnp:Features>
