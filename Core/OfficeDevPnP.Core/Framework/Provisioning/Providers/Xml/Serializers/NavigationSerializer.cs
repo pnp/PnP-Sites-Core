@@ -32,20 +32,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var navigationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Navigation, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var navigationType = Type.GetType(navigationTypeName, true);
-            var target = Activator.CreateInstance(navigationType, true);
+            if (template.Navigation != null)
+            {
+                var navigationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Navigation, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var navigationType = Type.GetType(navigationTypeName, true);
+                var target = Activator.CreateInstance(navigationType, true);
 
-            var resolvers = new Dictionary<String, IResolver>();
+                var resolvers = new Dictionary<String, IResolver>();
 
-            resolvers.Add($"{navigationType}.GlobalNavigation",
-                new NavigationFromModelToSchemaTypeResolver("GlobalNavigation"));
-            resolvers.Add($"{navigationType}.CurrentNavigation",
-                new NavigationFromModelToSchemaTypeResolver("CurrentNavigation"));
+                resolvers.Add($"{navigationType}.GlobalNavigation",
+                    new NavigationFromModelToSchemaTypeResolver("GlobalNavigation"));
+                resolvers.Add($"{navigationType}.CurrentNavigation",
+                    new NavigationFromModelToSchemaTypeResolver("CurrentNavigation"));
 
-            PnPObjectsMapper.MapProperties(template.Navigation, target, resolvers, recursive: true);
+                PnPObjectsMapper.MapProperties(template.Navigation, target, resolvers, recursive: true);
 
-            persistence.GetPublicInstanceProperty("Navigation").SetValue(persistence, target);
+                persistence.GetPublicInstanceProperty("Navigation").SetValue(persistence, target);
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         private const string TEST_CATEGORY = "Framework Provisioning XML Providers";
 
-        #endregion
+        #endregion=
 
         #region Test initialize and cleanup
         [ClassInitialize()]
@@ -3243,15 +3243,191 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
             Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
         }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Navigation_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Navigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation);
+            Assert.AreEqual(GlobalNavigationType.Managed, template.Navigation.GlobalNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.GlobalNavigation.StructuralNavigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation.ManagedNavigation);
+            Assert.AreEqual("415185a1-ee1c-4ce9-9e38-cea3f854e802", template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId);
+            Assert.AreEqual("c1175ad1-c710-4131-a6c9-aa854a5cc4c4", template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId);
+
+            Assert.IsNotNull(template.Navigation.CurrentNavigation);
+            Assert.AreEqual(CurrentNavigationType.Structural, template.Navigation.CurrentNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.CurrentNavigation.ManagedNavigation);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation);
+            Assert.IsTrue(template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes);
+            Assert.AreEqual(2, template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Count);
+
+            var n1 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1");
+            Assert.IsNotNull(n1);
+            Assert.AreEqual("/Node1.aspx", n1.Url);
+            Assert.IsFalse(n1.IsExternal);
+            Assert.IsNotNull(n1.NavigationNodes);
+            Assert.AreEqual(2, n1.NavigationNodes.Count);
+
+            var n11 = n1.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.1");
+            Assert.IsNotNull(n11);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", n11.Url);
+            Assert.IsTrue(n11.IsExternal);
+            Assert.IsNotNull(n11.NavigationNodes);
+            Assert.AreEqual(1, n11.NavigationNodes.Count);
+
+            var n111 = n11.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.1.1");
+            Assert.IsNotNull(n111);
+            Assert.AreEqual("http://aka.ms/OfficeDevPnP", n111.Url);
+            Assert.IsTrue(n111.IsExternal);
+            Assert.IsNotNull(n111.NavigationNodes);
+            Assert.AreEqual(0, n111.NavigationNodes.Count);
+
+            var n12 = n1.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.2");
+            Assert.IsNotNull(n12);
+            Assert.AreEqual("/Node1-2.aspx", n12.Url);
+            Assert.IsTrue(n12.IsExternal);
+            Assert.IsNotNull(n12.NavigationNodes);
+            Assert.AreEqual(0, n12.NavigationNodes.Count);
+
+            var n2 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.FirstOrDefault(n => n.Title == "Node 2");
+            Assert.IsNotNull(n2);
+            Assert.AreEqual("/Node1.aspx", n2.Url);
+            Assert.IsFalse(n2.IsExternal);
+            Assert.IsNotNull(n2.NavigationNodes);
+            Assert.AreEqual(0, n2.NavigationNodes.Count);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Navigation_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Navigation = new Core.Framework.Provisioning.Model.Navigation(
+                new GlobalNavigation(GlobalNavigationType.Managed, null, new ManagedNavigation()), 
+                new CurrentNavigation(CurrentNavigationType.Structural, new StructuralNavigation(), null));
+            
+            result.Navigation.GlobalNavigation.ManagedNavigation.TermSetId = "415185a1-ee1c-4ce9-9e38-cea3f854e802";
+            result.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId = "c1175ad1-c710-4131-a6c9-aa854a5cc4c4";
+
+            result.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes = true;
+            var node1 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = false,
+                Title = "Node 1",
+                Url = "/Node1.aspx",
+                
+            };
+            var node11 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.1",
+                Url = "http://aka.ms/SharePointPnP"
+            };
+            var node111 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.1.1",
+                Url = "http://aka.ms/OfficeDevPnP"
+            };
+            var node12 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.2",
+                Url = "/Node1-2.aspx"
+            };
+            var node2 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = false,
+                Title = "Node 2",
+                Url = "/Node1.aspx"
+            };
+            node11.NavigationNodes.Add(node111);
+            node1.NavigationNodes.Add(node11);
+            node1.NavigationNodes.Add(node12);
+            result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node1);
+            result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node2);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Navigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.NavigationGlobalNavigationNavigationType.Managed, template.Navigation.GlobalNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.GlobalNavigation.StructuralNavigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation.ManagedNavigation);
+            Assert.AreEqual("415185a1-ee1c-4ce9-9e38-cea3f854e802", template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId);
+            Assert.AreEqual("c1175ad1-c710-4131-a6c9-aa854a5cc4c4", template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId);
+
+            Assert.IsNotNull(template.Navigation.CurrentNavigation);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.NavigationCurrentNavigationNavigationType.Structural, template.Navigation.CurrentNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.CurrentNavigation.ManagedNavigation);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation);
+            Assert.IsTrue(template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode);
+            Assert.AreEqual(2, template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.Length);
+
+            var n1 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.FirstOrDefault(n => n.Title == "Node 1");
+            Assert.IsNotNull(n1);
+            Assert.AreEqual("/Node1.aspx", n1.Url);
+            Assert.IsFalse(n1.IsExternal);
+            Assert.IsNotNull(n1.NavigationNode1);
+            Assert.AreEqual(2, n1.NavigationNode1.Length);
+
+            var n11 = n1.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.1");
+            Assert.IsNotNull(n11);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", n11.Url);
+            Assert.IsTrue(n11.IsExternal);
+            Assert.IsNotNull(n11.NavigationNode1);
+            Assert.AreEqual(1, n11.NavigationNode1.Length);
+
+            var n111 = n11.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.1.1");
+            Assert.IsNotNull(n111);
+            Assert.AreEqual("http://aka.ms/OfficeDevPnP", n111.Url);
+            Assert.IsTrue(n111.IsExternal);
+            Assert.IsNull(n111.NavigationNode1);
+
+            var n12 = n1.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.2");
+            Assert.IsNotNull(n12);
+            Assert.AreEqual("/Node1-2.aspx", n12.Url);
+            Assert.IsTrue(n12.IsExternal);
+            Assert.IsNull(n12.NavigationNode1);
+
+            var n2 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.FirstOrDefault(n => n.Title == "Node 2");
+            Assert.IsNotNull(n2);
+            Assert.AreEqual("/Node1.aspx", n2.Url);
+            Assert.IsFalse(n2.IsExternal);
+            Assert.IsNull(n2.NavigationNode1);
+        }
         #endregion
     }
 }
-
-
-
-
-
-
-
-
-
