@@ -3154,6 +3154,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
             Assert.AreEqual((decimal)1.2, template.Version);
+
+            Assert.IsNotNull(template.Properties);
+            Assert.AreEqual(5, template.Properties.Length);
             var param = template.Properties.FirstOrDefault(p => p.Key == "Key1");
             Assert.IsNotNull(param);
             Assert.AreEqual("Value1", param.Value);
