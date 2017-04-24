@@ -135,7 +135,7 @@
           TemplateType="101" 
           Url="Lists/ProjectDocuments" 
           EnableVersioning="true" 
-          MinorVersionLimit="0" 
+          MinorVersionLimit="2" 
           MaxVersionLimit="10" 
           DraftVersionVisibility="1" 
           RemoveExistingContentTypes="true"

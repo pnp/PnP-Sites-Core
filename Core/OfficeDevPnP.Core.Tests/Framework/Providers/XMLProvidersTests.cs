@@ -3611,6 +3611,259 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ListInstances_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Lists);
+            Assert.AreEqual(1, template.Lists.Count);
+
+            var l = template.Lists.FirstOrDefault(ls => ls.Title == "Project Documents");
+            Assert.IsNotNull(l);
+            Assert.IsTrue(l.ContentTypesEnabled);
+            Assert.AreEqual("Project Documents are stored here", l.Description);
+            Assert.AreEqual("document.dotx", l.DocumentTemplate);
+            Assert.AreEqual(1, l.DraftVersionVisibility);
+            Assert.IsTrue(l.EnableAttachments);
+            Assert.IsTrue(l.EnableFolderCreation);
+            Assert.IsTrue(l.EnableMinorVersions);
+            Assert.IsTrue(l.EnableModeration);
+            Assert.IsTrue(l.EnableVersioning);
+            Assert.IsTrue(l.ForceCheckout);
+            Assert.IsTrue(l.Hidden);
+            Assert.AreEqual(10, l.MaxVersionLimit);
+            Assert.AreEqual(2, l.MinorVersionLimit);
+            Assert.IsTrue(l.OnQuickLaunch);
+            Assert.IsTrue(l.RemoveExistingContentTypes);
+            Assert.AreEqual(new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"), l.TemplateFeatureID);
+            Assert.AreEqual(101, l.TemplateType);
+            Assert.AreEqual("/Lists/ProjectDocuments", l.Url);
+
+            var security = l.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            var ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(l.ContentTypeBindings);
+            Assert.AreEqual(3, l.ContentTypeBindings.Count);
+            var ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E");
+            Assert.IsNotNull(ct);
+            Assert.IsTrue(ct.Default);
+            Assert.IsFalse(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x0101");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsTrue(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x0102");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsFalse(ct.Remove);
+
+            Assert.IsNotNull(l.FieldDefaults);
+            Assert.AreEqual(4, l.FieldDefaults.Count);
+            var fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field01");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue01", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field02");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue02", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field03");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue03", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field04");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue04", fd.Value);
+
+            Assert.IsNotNull(l.DataRows);
+            Assert.AreEqual(3, l.DataRows.Count);
+            #region data row 1 asserts
+            var dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value01")));
+            Assert.IsNotNull(dr);
+            security = dr.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            var dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-04", dv.Value);
+            #endregion
+            #region data row 2 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value02")));
+            Assert.IsNotNull(dr);
+            security = dr.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-04", dv.Value);
+            #endregion
+            #region data row 3 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value03")));
+            Assert.IsNotNull(dr);
+            Assert.IsNull(dr.Security);
+
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-04", dv.Value);
+            #endregion
+
+            #region user custom action
+            Assert.IsNotNull(l.UserCustomActions);
+            Assert.AreEqual(1, l.UserCustomActions.Count);
+            var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
+            Assert.IsNotNull(ua);
+            Assert.AreEqual("Just a sample custom action", ua.Description);
+            Assert.IsTrue(ua.Enabled);
+            Assert.AreEqual("Samples", ua.Group);
+            Assert.AreEqual("OneImage.png", ua.ImageUrl);
+            Assert.AreEqual("Any", ua.Location);
+            Assert.AreEqual("0x0101", ua.RegistrationId);
+            Assert.AreEqual(UserCustomActionRegistrationType.ContentType, ua.RegistrationType);
+            Assert.AreEqual(100, ua.Sequence);
+            Assert.AreEqual("scriptblock", ua.ScriptBlock);
+            Assert.AreEqual("script.js", ua.ScriptSrc);
+            Assert.AreEqual("http://somewhere.com/", ua.Url);
+            Assert.AreEqual("Sample Action", ua.Title);
+            Assert.IsTrue(ua.Remove);
+            Assert.IsNotNull(ua.CommandUIExtension);
+            Assert.AreEqual(1, ua.CommandUIExtension.Nodes().Count());
+            Assert.IsNotNull(ua.Rights);
+            Assert.IsTrue(ua.Rights.Has(PermissionKind.AddListItems));
+            #endregion
+
+            Assert.IsNotNull(l.Views);
+            Assert.AreEqual(2, l.Views.Count);
+
+            #region field refs
+            Assert.IsNotNull(l.FieldRefs);
+            Assert.AreEqual(3, l.FieldRefs.Count);
+            var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("23203E97-3BFE-40CB-AFB4-07AA2B86BF45"), fr.Id);
+            Assert.AreEqual("Project ID", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectName");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("B01B3DBC-4630-4ED1-B5BA-321BC7841E3D"), fr.Id);
+            Assert.AreEqual("Project Name", fr.DisplayName);
+            Assert.IsTrue(fr.Hidden);
+            Assert.IsFalse(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectManager");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("A5DE9600-B7A6-42DD-A05E-10D4F1500208"), fr.Id);
+            Assert.AreEqual("Project Manager", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            #endregion
+
+            #region folders
+            Assert.IsNotNull(l.Folders);
+            Assert.AreEqual(2, l.Folders.Count);
+            var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
+            Assert.IsNotNull(fl);
+            Assert.IsTrue(fl.Folders == null || fl.Folders.Count == 0);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder01");
+            Assert.IsNotNull(fl);
+            Assert.IsNotNull(fl.Folders);
+            var fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.02");
+            Assert.IsNotNull(fl1);
+            Assert.IsTrue(fl.Folders == null || fl.Folders.Count == 0);
+            fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.01");
+            Assert.IsTrue(fl1.Folders == null || fl.Folders.Count == 0);
+            security = fl1.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+            #endregion
+
+            Assert.IsNotNull(l.Fields);
+            Assert.AreEqual(2, l.Fields.Count);
+            Assert.IsTrue(l.Fields.All(x => x.SchemaXml.StartsWith("<Field")));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_ListInstances_201605()
         {
             XMLTemplateProvider provider =
@@ -3673,7 +3926,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             });
             list.ContentTypeBindings.Add(new ContentTypeBinding()
             {
-                ContentTypeId = "0x0102",
+                ContentTypeId = "0x0101",
                 Remove = true
             });
             list.ContentTypeBindings.Add(new ContentTypeBinding()
@@ -3909,9 +4162,235 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, l.MinorVersionLimit);
             Assert.IsTrue(l.OnQuickLaunch);
             Assert.IsTrue(l.RemoveExistingContentTypes);
-            Assert.AreEqual("30FB193E-016E-45A6-B6FD-C6C2B31AA150", l.TemplateFeatureID);
+            Assert.AreEqual("30FB193E-016E-45A6-B6FD-C6C2B31AA150".ToLower(), l.TemplateFeatureID);
             Assert.AreEqual(101, l.TemplateType);
             Assert.AreEqual("/Lists/ProjectDocuments", l.Url);
+
+            Assert.IsNotNull(l.Security);
+            var security = l.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            var ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(list.ContentTypeBindings);
+            Assert.AreEqual(3, list.ContentTypeBindings.Count);
+            var ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E");
+            Assert.IsNotNull(ct);
+            Assert.IsTrue(ct.Default);
+            Assert.IsFalse(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x0101");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsTrue(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x0102");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsFalse(ct.Remove);
+
+            Assert.IsNotNull(l.FieldDefaults);
+            Assert.AreEqual(4, l.FieldDefaults.Length);
+            var fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field01");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue01", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field02");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue02", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field03");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue03", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field04");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue04", fd.Value);
+
+            Assert.IsNotNull(l.DataRows);
+            Assert.AreEqual(3, l.DataRows.Length);
+            #region data row 1 asserts
+            var dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value01")));
+            Assert.IsNotNull(dr);
+            Assert.IsNotNull(dr.Security);
+            security = dr.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(dr.DataValue);
+            var dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-04", dv.Value);
+            #endregion
+            #region data row 2 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value02")));
+            Assert.IsNotNull(dr);
+            Assert.IsNotNull(dr.Security);
+            security = dr.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(dr.DataValue);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-04", dv.Value);
+            #endregion
+            #region data row 3 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value03")));
+            Assert.IsNotNull(dr);
+            Assert.IsNull(dr.Security);
+            
+            Assert.IsNotNull(dr.DataValue);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-04", dv.Value);
+            #endregion
+
+            #region user custom action
+            Assert.IsNotNull(l.UserCustomActions);
+            Assert.AreEqual(1, l.UserCustomActions.Length);
+            var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
+            Assert.IsNotNull(ua);
+            Assert.AreEqual("Just a sample custom action", ua.Description);
+            Assert.IsTrue(ua.Enabled);
+            Assert.AreEqual("Samples", ua.Group);
+            Assert.AreEqual("OneImage.png", ua.ImageUrl);
+            Assert.AreEqual("Any", ua.Location);
+            Assert.AreEqual("0x0101", ua.RegistrationId);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.ContentType, ua.RegistrationType);
+            Assert.AreEqual(100, ua.Sequence);
+            Assert.AreEqual("scriptblock", ua.ScriptBlock);
+            Assert.AreEqual("script.js", ua.ScriptSrc);
+            Assert.AreEqual("http://somewhere.com/", ua.Url);
+            Assert.AreEqual("Sample Action", ua.Title);
+            Assert.IsTrue(ua.Remove);
+            Assert.IsNotNull(ua.CommandUIExtension);
+            Assert.IsNotNull(ua.CommandUIExtension.Any);
+            Assert.AreEqual(1, ua.CommandUIExtension.Any.Length);
+            Assert.IsNotNull(ua.Rights);
+            Assert.IsTrue(ua.Rights.Contains("AddListItems"));
+            #endregion
+
+            Assert.IsNotNull(l.Views);
+            Assert.IsNotNull(l.Views.Any);
+            Assert.AreEqual(2, l.Views.Any.Length);
+
+            #region field refs
+            Assert.IsNotNull(l.FieldRefs);
+            Assert.AreEqual(3, l.FieldRefs.Length);
+            var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("23203E97-3BFE-40CB-AFB4-07AA2B86BF45".ToLower(), fr.ID);
+            Assert.AreEqual("Project ID", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectName");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("B01B3DBC-4630-4ED1-B5BA-321BC7841E3D".ToLower(), fr.ID);
+            Assert.AreEqual("Project Name", fr.DisplayName);
+            Assert.IsTrue(fr.Hidden);
+            Assert.IsFalse(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectManager");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("A5DE9600-B7A6-42DD-A05E-10D4F1500208".ToLower(), fr.ID);
+            Assert.AreEqual("Project Manager", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            #endregion
+
+            #region folders
+            Assert.IsNotNull(l.Folders);
+            Assert.AreEqual(2, l.Folders.Length);
+            var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
+            Assert.IsNotNull(fl);
+            Assert.IsNull(fl.Folder1);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder01");
+            Assert.IsNotNull(fl);
+            Assert.IsNotNull(fl.Folder1);
+            var fl1 = fl.Folder1.FirstOrDefault(f=>f.Name == "Folder01.02");
+            Assert.IsNotNull(fl1);
+            Assert.IsNull(fl1.Folder1);
+            fl1 = fl.Folder1.FirstOrDefault(f => f.Name == "Folder01.01");
+            Assert.IsNull(fl1.Folder1);
+            Assert.IsNotNull(fl1.Security);
+            security = fl1.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+            #endregion
+
+            Assert.IsNotNull(l.Fields);
+            Assert.IsNotNull(l.Fields.Any);
+            Assert.AreEqual(2, l.Fields.Any.Length);
+            Assert.IsTrue(l.Fields.Any.All(x => x.OuterXml.StartsWith("<Field")));
         }
         #endregion
     }
