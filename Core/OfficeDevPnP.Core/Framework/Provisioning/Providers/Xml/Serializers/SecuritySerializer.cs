@@ -18,19 +18,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var security = persistence.GetPublicInstancePropertyValue("Security");
+            if (security != null)
+            {
+                var expressions = new Dictionary<Expression<Func<SiteSecurity, Object>>, IResolver>();
 
-            PnPObjectsMapper.MapProperties(security, template.Security, null, true);
+                expressions.Add(s => s.SiteSecurityPermissions, new PropertyObjectTypeResolver<SiteSecurity>(s => s.SiteSecurityPermissions, o => o.GetPublicInstancePropertyValue("Permissions")));
+                expressions.Add(s => s.SiteSecurityPermissions.RoleDefinitions[0].Permissions, 
+                    new ExpressionCollectionValueResolver<PermissionKind>((i) => (PermissionKind)Enum.Parse(typeof(PermissionKind), i.ToString())));
+
+                PnPObjectsMapper.MapProperties(security, template.Security, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var securityTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Security, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var securityType = Type.GetType(securityTypeName, true);
-            var target = Activator.CreateInstance(securityType, true);
+            if (template.Security != null)
+            {
+                var securityTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Security, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var securityType = Type.GetType(securityTypeName, true);
+                var securityPermissionsType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SecurityPermissions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
+                var roleDefinitionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinition, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
+                var roleDefinitionPermissionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinitionPermission, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
+                var siteGroupType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteGroup, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
 
-            PnPObjectsMapper.MapProperties(template.Security, target, null, recursive: true);
+                var target = Activator.CreateInstance(securityType, true);
 
-            persistence.GetPublicInstanceProperty("Security").SetValue(persistence, target);
+                var expressions = new Dictionary<string, IResolver>();
+                expressions.Add($"{securityType}.Permissions", new PropertyObjectTypeResolver(securityPermissionsType, "SiteSecurityPermissions"));
+                expressions.Add($"{roleDefinitionType}.Permissions", new ExpressionCollectionValueResolver((i) => Enum.Parse(roleDefinitionPermissionType, i.ToString()), roleDefinitionPermissionType));
+
+                expressions.Add($"{siteGroupType}.AllowMembersEditMembershipSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{siteGroupType}.AllowRequestToJoinLeaveSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{siteGroupType}.AutoAcceptRequestToJoinLeaveSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{siteGroupType}.OnlyAllowMembersViewMembershipSpecified", new ExpressionValueResolver(() => true));
+                PnPObjectsMapper.MapProperties(template.Security, target, expressions, recursive: true);
+
+                persistence.GetPublicInstanceProperty("Security").SetValue(persistence, target);
+            }
         }
     }
 }

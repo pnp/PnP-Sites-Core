@@ -3492,6 +3492,34 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             assign = template.Security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
             Assert.IsNotNull(assign);
             Assert.AreEqual("User", assign.RoleDefinition);
+
+            Assert.IsNotNull(template.Security.SiteGroups);
+            Assert.AreEqual(2, template.Security.SiteGroups.Count);
+            var group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.Count);
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+
+            group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup2");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("user2@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.Description));
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.IsTrue(group.Members == null || group.Members.Count == 0);
+
         }
 
         [TestMethod]
@@ -3543,6 +3571,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             {
                 Principal = "user@contoso.com",
                 RoleDefinition = "User"
+            });
+
+            result.Security.SiteGroups.Add(new SiteGroup(new List<Core.Framework.Provisioning.Model.User>()
+            {
+                new Core.Framework.Provisioning.Model.User()
+                {
+                     Name = "user1@contoso.com"
+                },
+                new Core.Framework.Provisioning.Model.User()
+                {
+                     Name = "user2@contoso.com"
+                }
+            })
+            {
+                AllowMembersEditMembership = true,
+                AllowRequestToJoinLeave = true,
+                AutoAcceptRequestToJoinLeave = true,
+                Description = "Test Group 1",
+                OnlyAllowMembersViewMembership = true,
+                Owner = "user1@contoso.com",
+                RequestToJoinLeaveEmailSetting = "group1@contoso.com",
+                Title = "TestGroup1"
+            });
+            result.Security.SiteGroups.Add(new SiteGroup()
+            {
+                Title = "TestGroup2",
+                Owner = "user2@contoso.com"
             });
 
             var serializer = new XMLPnPSchemaV201605Serializer();
@@ -3610,6 +3665,37 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
             Assert.IsNotNull(assign);
             Assert.AreEqual("User", assign.RoleDefinition);
+
+            Assert.IsNotNull(template.Security.SiteGroups);
+            Assert.AreEqual(2, template.Security.SiteGroups.Length);
+            var group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowMembersEditMembershipSpecified);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AllowRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembershipSpecified);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.Length);
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+
+            group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup2");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("user2@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.Description));
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.IsNull(group.Members);
         }
 
         [TestMethod]

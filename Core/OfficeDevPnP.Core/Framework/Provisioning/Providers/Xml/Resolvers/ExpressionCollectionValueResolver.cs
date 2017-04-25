@@ -9,7 +9,52 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     /// <summary>
-    /// Resolves a Decimal value into a Double
+    /// Resolve collection from model to schema with expression
+    /// </summary>
+    internal class ExpressionCollectionValueResolver : IValueResolver
+    {
+        public string Name => this.GetType().Name;
+
+        private Type targetItemType = null;
+        private Func<object, object> expression = null;
+
+        public ExpressionCollectionValueResolver(Expression<Func<object, object>> expression, Type targetItemType)
+        {
+            if (targetItemType == null)
+            {
+                throw new ArgumentException("targetItemType");
+            }
+            if (expression == null)
+            {
+                throw new ArgumentException("expression");
+            }
+            this.expression = expression.Compile();
+            this.targetItemType = targetItemType;
+        }
+
+        public object Resolve(object source, object destination, object sourceValue)
+        {
+            object result = null;
+
+            if ((null != sourceValue)&&(sourceValue is IList))
+            {
+                var sourceList = (IList)sourceValue;
+                var resultArray = Array.CreateInstance(this.targetItemType, sourceList.Count);
+
+                int index = 0;
+                foreach (var i in (IEnumerable)sourceValue)
+                {
+                    var targetItem = this.expression.Invoke(i);
+                    resultArray.SetValue(targetItem, index++);
+                }
+                result = resultArray;
+            }
+            return (result);
+        }
+    }
+
+    /// <summary>
+    /// Resolve collection from schema to model with expression
     /// </summary>
     internal class ExpressionCollectionValueResolver<T> : IValueResolver 
     {
