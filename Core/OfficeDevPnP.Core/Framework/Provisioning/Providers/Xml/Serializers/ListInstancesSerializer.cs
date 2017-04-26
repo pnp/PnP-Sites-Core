@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -25,6 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
             expressions.Add(l => l.FieldRefs[0].Id, new FromStringToGuidValueResolver());
+            expressions.Add(l => l.TemplateFeatureID, new FromStringToGuidValueResolver());
 
             // Define custom resolvers for DataRows Values and Security
             var dataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -50,8 +53,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
             // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
-            expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, 
-                new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+            expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+            expressions.Add(l => l.UserCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
+            expressions.Add(l => l.UserCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
 
             // Define custom resolver for Views (XML Any + RemoveExistingViews)
             expressions.Add(l => l.Views,
@@ -62,6 +66,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             // Define custom resolver for recursive Folders
             expressions.Add(l => l.Folders,
                new FoldersFromSchemaToModelTypeResolver());
+
+            // Fields
+            expressions.Add(l => l.Fields, new ExpressionValueResolver((s, v) => {
+                var fields = new Model.FieldCollection(template);
+                var sourceFields = s.GetPublicInstancePropertyValue("Fields")?.GetPublicInstancePropertyValue("Any") as System.Xml.XmlElement[];
+                if (sourceFields != null)
+                {
+                    foreach (var f in sourceFields)
+                    {
+                        fields.Add(new Model.Field { SchemaXml = f.OuterXml });
+                    }
+                }
+                return fields;
+            }));
 
             template.Lists.AddRange(
                 PnPObjectsMapper.MapObjects<ListInstance>(lists,
@@ -108,8 +126,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var customActionType = Type.GetType(customActionTypeName, true);
             var commandUIExtensionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CustomActionCommandUIExtension";
             var commandUIExtensionType = Type.GetType(commandUIExtensionTypeName, true);
-
+            var registrationTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RegistrationType";
+            var registrationTypeType = Type.GetType(registrationTypeTypeName, true);
             resolvers.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
+            resolvers.Add($"{customActionType}.Rights", new FromBasePermissionsToStringValueResolver());
+            resolvers.Add($"{customActionType}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
+            resolvers.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver(() => true));
+            resolvers.Add($"{customActionType}.SequenceSpecified", new ExpressionValueResolver(() => true));
+
 
             // Define custom resolver for Views (XML Any + RemoveExistingViews)
             var listInstanceViewsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstanceViews, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -122,6 +146,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             // Define custom resolver for recursive Folders
             resolvers.Add($"{listInstanceType}.Folders", new FoldersFromModelToSchemaTypeResolver());
+
+            // Fields
+            var fieldsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstanceFields, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var fieldsType = Type.GetType(fieldsTypeName, true);
+            resolvers.Add($"{listInstanceType}.Fields", new ExpressionValueResolver<ListInstance>((s, v) => {
+                if (s.Fields != null && s.Fields.Count > 0)
+                {
+                    var fields = Activator.CreateInstance(fieldsType);
+                    var xmlFields = from f in s.Fields
+                                    select XElement.Parse(f.SchemaXml).ToXmlElement();
+
+                    fields.SetPublicInstancePropertyValue("Any", xmlFields.ToArray());
+                    return fields;
+                }
+                else
+                {
+                    return null;
+                }
+            }));
+
+            resolvers.Add($"{listInstanceType}.DraftVersionVisibilitySpecified", new ExpressionValueResolver(() => true));
+            resolvers.Add($"{listInstanceType}.MaxVersionLimitSpecified", new ExpressionValueResolver(() => true));
+            resolvers.Add($"{listInstanceType}.MinorVersionLimitSpecified", new ExpressionValueResolver(() => true));
 
             persistence.GetPublicInstanceProperty("Lists")
                 .SetValue(

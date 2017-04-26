@@ -3730,7 +3730,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(l.RemoveExistingContentTypes);
             Assert.AreEqual(new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"), l.TemplateFeatureID);
             Assert.AreEqual(101, l.TemplateType);
-            Assert.AreEqual("/Lists/ProjectDocuments", l.Url);
+            Assert.AreEqual("Lists/ProjectDocuments", l.Url);
 
             var security = l.Security;
             Assert.IsNotNull(security);
@@ -3817,8 +3817,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(dr);
             security = dr.Security;
             Assert.IsNotNull(security);
-            Assert.IsTrue(security.ClearSubscopes);
-            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsFalse(security.ClearSubscopes);
+            Assert.IsFalse(security.CopyRoleAssignments);
             Assert.IsNotNull(security.RoleAssignments);
             Assert.AreEqual(3, security.RoleAssignments.Count);
             ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
@@ -3847,7 +3847,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             #region data row 3 asserts
             dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value03")));
             Assert.IsNotNull(dr);
-            Assert.IsNull(dr.Security);
+            Assert.IsTrue(dr.Security == null || dr.Security.RoleAssignments == null || dr.Security.RoleAssignments.Count == 0);
 
             dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
             Assert.IsNotNull(dv);
@@ -3924,9 +3924,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(fl.Folders);
             var fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.02");
             Assert.IsNotNull(fl1);
-            Assert.IsTrue(fl.Folders == null || fl.Folders.Count == 0);
+            Assert.IsTrue(fl1.Folders == null || fl1.Folders.Count == 0);
             fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.01");
-            Assert.IsTrue(fl1.Folders == null || fl.Folders.Count == 0);
+            Assert.IsTrue(fl1.Folders == null || fl1.Folders.Count == 0);
             security = fl1.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -3963,11 +3963,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var list = new ListInstance()
             {
                 Title = "Project Documents",
-                ContentTypesEnabled = true,//add
+                ContentTypesEnabled = true,
                 Description= "Project Documents are stored here",
-                DocumentTemplate = "document.dotx",//add
-                DraftVersionVisibility = 1, //add
-                EnableAttachments = true, //
+                DocumentTemplate = "document.dotx",
+                DraftVersionVisibility = 1, 
+                EnableAttachments = true,
                 EnableFolderCreation = true,
                 EnableMinorVersions = true,
                 EnableModeration = true,
@@ -4108,7 +4108,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 Rights = new BasePermissions(),
                 Title = "Sample Action",
                 Remove = true,
-                CommandUIExtension = XElement.Parse("<customElement><!--Whateveryoulikehere--></customElement>")
+                CommandUIExtension = XElement.Parse("<CommandUIExtension><customElement><!--Whateveryoulikehere--></customElement></CommandUIExtension>")
             };
             ca.Rights.Set(PermissionKind.AddListItems);
             list.UserCustomActions.Add(ca);
@@ -4238,6 +4238,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Project Documents are stored here", l.Description);
             Assert.AreEqual("document.dotx", l.DocumentTemplate);
             Assert.AreEqual(1, l.DraftVersionVisibility);
+            Assert.IsTrue(l.DraftVersionVisibilitySpecified);
             Assert.IsTrue(l.EnableAttachments);
             Assert.IsTrue(l.EnableFolderCreation);
             Assert.IsTrue(l.EnableMinorVersions);
@@ -4246,7 +4247,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(l.ForceCheckout);
             Assert.IsTrue(l.Hidden);
             Assert.AreEqual(10, l.MaxVersionLimit);
+            Assert.IsTrue(l.MaxVersionLimitSpecified);
             Assert.AreEqual(2, l.MinorVersionLimit);
+            Assert.IsTrue(l.MinorVersionLimitSpecified);
             Assert.IsTrue(l.OnQuickLaunch);
             Assert.IsTrue(l.RemoveExistingContentTypes);
             Assert.AreEqual("30FB193E-016E-45A6-B6FD-C6C2B31AA150".ToLower(), l.TemplateFeatureID);
@@ -4342,8 +4345,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(dr.Security);
             security = dr.Security.BreakRoleInheritance;
             Assert.IsNotNull(security);
-            Assert.IsTrue(security.ClearSubscopes);
-            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsFalse(security.ClearSubscopes);
+            Assert.IsFalse(security.CopyRoleAssignments);
             Assert.IsNotNull(security.RoleAssignment);
             Assert.AreEqual(3, security.RoleAssignment.Length);
             ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
