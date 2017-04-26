@@ -31,11 +31,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var propertyBagTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PropertyBagEntry, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var propertyBagType = Type.GetType(propertyBagTypeName, true);
 
+
+            var expressions = new Dictionary<string, IResolver>();
+            expressions.Add($"{propertyBagType}.OverwriteSpecified", new ExpressionValueResolver(() => true));
+
             persistence.GetPublicInstanceProperty("PropertyBagEntries")
                 .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.PropertyBagEntries,
-                        new CollectionFromModelToSchemaTypeResolver(propertyBagType)));
+                    new CollectionFromModelToSchemaTypeResolver(propertyBagType),
+                    expressions));
         }
     }
 }

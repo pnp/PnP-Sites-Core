@@ -2846,7 +2846,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, template.RegionalSettings.Collation);
             Assert.IsTrue(template.RegionalSettings.CollationSpecified);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
-            Assert.IsFalse(template.RegionalSettings.FirstDayOfWeekSpecified);
+            Assert.IsTrue(template.RegionalSettings.FirstDayOfWeekSpecified);
             Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
             Assert.IsTrue(template.RegionalSettings.FirstWeekOfYearSpecified);
             Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
@@ -2855,7 +2855,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(template.RegionalSettings.ShowWeeksSpecified);
             Assert.IsTrue(template.RegionalSettings.Time24);
             Assert.IsTrue(template.RegionalSettings.Time24Specified);
-            Assert.AreEqual(2, template.RegionalSettings.TimeZone);
+            Assert.AreEqual("2", template.RegionalSettings.TimeZone);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.WorkHour.Item600PM, template.RegionalSettings.WorkDayEndHour);
             Assert.IsTrue(template.RegionalSettings.WorkDayEndHourSpecified);
             Assert.AreEqual(5, template.RegionalSettings.WorkDays);
@@ -2998,7 +2998,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("value2", prop.Value);
             Assert.IsFalse(prop.Indexed);
             Assert.IsFalse(prop.Overwrite);
-            Assert.IsFalse(prop.OverwriteSpecified);
         }
 
         [TestMethod]

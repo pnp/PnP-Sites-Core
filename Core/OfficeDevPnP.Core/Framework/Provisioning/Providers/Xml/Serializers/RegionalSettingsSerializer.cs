@@ -21,7 +21,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             if (regionalSettings != null)
             {
                 template.RegionalSettings = new Model.RegionalSettings();
-                PnPObjectsMapper.MapProperties(regionalSettings, template.RegionalSettings, null, true);
+                var expressions = new Dictionary<Expression<Func<Model.RegionalSettings, Object>>, IResolver>();
+
+                expressions.Add(s => s.WorkDayStartHour, new WorkHourFromSchemaToModelValueResolver());
+                expressions.Add(s => s.WorkDayEndHour, new WorkHourFromSchemaToModelValueResolver());
+                expressions.Add(s => s.CalendarType, new CalendarTypeFromSchemaToModelValueResolver());
+                expressions.Add(s => s.AlternateCalendarType, new CalendarTypeFromSchemaToModelValueResolver());
+                expressions.Add(s => s.TimeZone, new ExpressionValueResolver((s, v) =>
+                      !String.IsNullOrEmpty(v as string) ? Int32.Parse(v as string) : 0
+                ));
+
+                PnPObjectsMapper.MapProperties(regionalSettings, template.RegionalSettings, expressions, true);
             }
         }
 
@@ -44,6 +54,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{regionalSettingsType}.WorkDayEndHourSpecified", new ExpressionValueResolver((s, p) => true));
                 expressions.Add($"{regionalSettingsType}.WorkDaysSpecified", new ExpressionValueResolver((s, p) => true));
                 expressions.Add($"{regionalSettingsType}.WorkDayStartHourSpecified", new ExpressionValueResolver((s, p) => true));
+                expressions.Add($"{regionalSettingsType}.WorkDayStartHour", new ExpressionValueResolver<Model.WorkHour>(v => v.FromTemplateToSchemaWorkHourV201605()));
+                expressions.Add($"{regionalSettingsType}.WorkDayEndHour", new ExpressionValueResolver<Model.WorkHour>(v => v.FromTemplateToSchemaWorkHourV201605()));
+                expressions.Add($"{regionalSettingsType}.CalendarType", new ExpressionValueResolver<CalendarType>(v => v.FromTemplateToSchemaCalendarTypeV201605()));
+                expressions.Add($"{regionalSettingsType}.AlternateCalendarType", new ExpressionValueResolver<CalendarType>(v => v.FromTemplateToSchemaCalendarTypeV201605()));
+
 
                 PnPObjectsMapper.MapProperties(template.RegionalSettings, target, expressions, recursive: true);
 
