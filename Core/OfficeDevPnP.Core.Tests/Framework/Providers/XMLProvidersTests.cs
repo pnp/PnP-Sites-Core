@@ -619,8 +619,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
             Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
 
-
-
             var dd = ct.DocumentSetTemplate.DefaultDocuments.FirstOrDefault(d => d.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001");
             Assert.IsNotNull(dd);
             Assert.AreEqual("document.dotx", dd.FileSourcePath);
@@ -1804,7 +1802,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Test Term Group 2", group.Description);
             Assert.AreEqual("TestTermGroup2", group.Name);
             Assert.IsFalse(group.SiteCollectionTermGroup);
-            Assert.IsNull(group.TermSets);
+            Assert.IsNotNull(group.TermSets);
+            Assert.AreEqual(0, group.TermSets.Length);
             Assert.IsNull(group.Contributors);
             Assert.IsNull(group.Managers);
         }

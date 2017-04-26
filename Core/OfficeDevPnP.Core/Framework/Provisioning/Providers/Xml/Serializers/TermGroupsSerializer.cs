@@ -64,7 +64,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
 
                 expressions.Add($"{termGroupType}.SiteCollectionTermGroupSpecified", new ExpressionValueResolver((s, v) => (bool)s.GetPublicInstancePropertyValue("SiteCollectionTermGroup")));
-                
+                expressions.Add($"{termGroupType}.TermSets", new TermSetFromModelToSchemaTypeResolver());
+
                 expressions.Add($"{termSetType}.Language", new FromNullableToSpecifiedValueResolver<int>("LanguageSpecified"));
                 expressions.Add($"{termSetType}.CustomProperties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "Properties"));
                 expressions.Add($"{termType}.Language", new FromNullableToSpecifiedValueResolver<int>("LanguageSpecified"));
