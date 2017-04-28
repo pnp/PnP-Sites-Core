@@ -1,11 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Data.SqlClient;
 using System.Data;
@@ -22,9 +18,15 @@ namespace OfficeDevPnP.Core.Tests
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
             DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
 
-            if (string.IsNullOrEmpty(TenantUrl) || string.IsNullOrEmpty(DevSiteUrl))
+#if !ONPREMISES
+            if (string.IsNullOrEmpty(TenantUrl))
             {
-                throw new ConfigurationErrorsException("Tenant site Url or Dev site url in App.config are not set up.");
+                throw new ConfigurationErrorsException("Tenant site Url in App.config are not set up.");
+            }
+#endif
+            if (string.IsNullOrEmpty(DevSiteUrl))
+            {
+                throw new ConfigurationErrorsException("Dev site url in App.config are not set up.");
             }
 
             // Trim trailing slashes
@@ -70,22 +72,40 @@ namespace OfficeDevPnP.Core.Tests
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     AppSecret = ConfigurationManager.AppSettings["AppSecret"];
                 }
+                else if(!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
+                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePath"]) &&
+                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePassword"]))
+                {
+                    AppId = ConfigurationManager.AppSettings["AppId"];
+                    HighTrustCertificatePassword = ConfigurationManager.AppSettings["HighTrustCertificatePassword"];
+                    HighTrustCertificatePath = ConfigurationManager.AppSettings["HighTrustCertificatePath"];
+                }
                 else
                 {
                     throw new ConfigurationErrorsException("Tenant credentials in App.config are not set up.");
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
         public static string TenantUrl { get; set; }
         public static string DevSiteUrl { get; set; }
         static string UserName { get; set; }
         static SecureString Password { get; set; }
         public static ICredentials Credentials { get; set; }
-        static string AppId { get; set; }
+        public static string AppId { get; set; }
         static string AppSecret { get; set; }
+
+        /// <summary>
+        /// The path to the PFX file for the High Trust
+        /// </summary>
+        public static String HighTrustCertificatePath { get; set; }
+
+        /// <summary>
+        /// The password of the PFX file for the High Trust
+        /// </summary>
+        public static String HighTrustCertificatePassword { get; set; }
 
         public static String AzureStorageKey
         {
@@ -129,9 +149,9 @@ namespace OfficeDevPnP.Core.Tests
                 return ConfigurationManager.AppSettings["ScriptSite"];
             }
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
         public static ClientContext CreateClientContext()
         {
             return CreateContext(DevSiteUrl, Credentials);
@@ -260,6 +280,6 @@ namespace OfficeDevPnP.Core.Tests
 
             return secureString;
         }
-        #endregion
+#endregion
     }
 }

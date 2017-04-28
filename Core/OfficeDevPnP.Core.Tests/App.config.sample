@@ -61,7 +61,12 @@
     <add key="AzureStorageKey" value="" />
     <!-- Support for storing file change tracking information into a database-->
     <add key="TestAutomationDatabaseConnectionString" value="" />
-
+    
+    <!-- Support for High Trust certificate testing -->
+    <!-- Full path to the PFX to be used for the high trust certificate testing -->
+    <add key="HighTrustCertificatePath" value="" />
+    <!-- Password of the PFX provided through the HighTrustCertificatePath setting -->
+    <add key="HighTrustCertificatePassword" value="" />
   </appSettings>
   <system.diagnostics>
     <sharedListeners>

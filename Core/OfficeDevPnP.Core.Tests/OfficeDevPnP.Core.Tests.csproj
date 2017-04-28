@@ -309,6 +309,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Authentication\HighTrustAuthenticationTests.cs" />
     <Compile Include="Extensions\BrandingExtensionsTests.cs" />
     <Compile Include="Extensions\ClientObjectExtensionsTests.cs" />
     <Compile Include="Extensions\FeatureExtensionsTests.cs" />
