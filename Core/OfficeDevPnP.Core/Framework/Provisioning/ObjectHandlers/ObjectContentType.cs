@@ -490,7 +490,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 currentCtIndex++;
                 WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{cts.Count()}", ProvisioningMessageType.Progress);
 
-                if (!BuiltInContentTypeId.Contains(ct.StringId))
+                if (!BuiltInContentTypeId.Contains(ct.StringId) && 
+                    (creationInfo.ContentTypeGroupsToInclude.Count == 0 || creationInfo.ContentTypeGroupsToInclude.Contains(ct.Group)))
                 {
                     string ctDocumentTemplate = null;
                     if (!string.IsNullOrEmpty(ct.DocumentTemplate))
