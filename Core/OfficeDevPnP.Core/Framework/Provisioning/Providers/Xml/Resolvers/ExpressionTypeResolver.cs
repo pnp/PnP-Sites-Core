@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
-    /// <summary>
-    /// Resolves a Decimal value into a Double
-    /// </summary>
+
     internal class ExpressionTypeResolver<T> : ITypeResolver
     {
         public string Name => this.GetType().Name;

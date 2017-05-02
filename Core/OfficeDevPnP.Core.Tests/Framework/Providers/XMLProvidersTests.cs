@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         private const string TEST_CATEGORY = "Framework Provisioning XML Providers";
 
-        #endregion
+        #endregion=
 
         #region Test initialize and cleanup
         [ClassInitialize()]
@@ -515,7 +515,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         public void XMLSerializer_Deserialize_201605()
         {
             var _expectedID = "SPECIALTEAM-01";
-            var _expectedVersion = 1.0;
+            var _expectedVersion = 1.2;
 
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -619,8 +619,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreNotEqual(Guid.Empty, ct.DocumentSetTemplate.WelcomePageFields.FirstOrDefault(c => c == new Guid("b9132b30-2b9e-47d4-b0fc-1ac34a61506f")));
             Assert.AreEqual("home.aspx", ct.DocumentSetTemplate.WelcomePage);
             Assert.IsNotNull(ct.DocumentSetTemplate.DefaultDocuments);
-
-
 
             var dd = ct.DocumentSetTemplate.DefaultDocuments.FirstOrDefault(d => d.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E001");
             Assert.IsNotNull(dd);
@@ -1805,7 +1803,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Test Term Group 2", group.Description);
             Assert.AreEqual("TestTermGroup2", group.Name);
             Assert.IsFalse(group.SiteCollectionTermGroup);
-            Assert.IsNull(group.TermSets);
+            Assert.IsNotNull(group.TermSets);
+            Assert.AreEqual(0, group.TermSets.Length);
             Assert.IsNull(group.Contributors);
             Assert.IsNull(group.Managers);
         }
@@ -2437,6 +2436,2052 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(handler);
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_AuditSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+
+            Assert.IsNotNull(template.AuditSettings);
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.CheckIn));
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.CheckOut));
+            Assert.IsTrue(template.AuditSettings.AuditFlags.Has(AuditMaskType.Search));
+            Assert.AreEqual(10, template.AuditSettings.AuditLogTrimmingRetention);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLog);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_AuditSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.AuditSettings = new AuditSettings() {
+                AuditFlags = AuditMaskType.ProfileChange | AuditMaskType.Move,
+                AuditLogTrimmingRetention = 10,
+                TrimAuditLog = true
+
+            };
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-audit.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-audit.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.AuditSettings);
+            Assert.IsNotNull(template.AuditSettings.Audit);
+            Assert.AreEqual(2, template.AuditSettings.Audit.Length);
+            Assert.IsNotNull(template.AuditSettings.Audit.FirstOrDefault(a=> a.AuditFlag == Core.Framework.Provisioning.Providers.Xml.V201605.AuditSettingsAuditAuditFlag.ProfileChange));
+            Assert.IsNotNull(template.AuditSettings.Audit.FirstOrDefault(a => a.AuditFlag == Core.Framework.Provisioning.Providers.Xml.V201605.AuditSettingsAuditAuditFlag.Move));
+            Assert.AreEqual(10, template.AuditSettings.AuditLogTrimmingRetention);
+            Assert.IsTrue(template.AuditSettings.AuditLogTrimmingRetentionSpecified);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLog);
+            Assert.IsTrue(template.AuditSettings.TrimAuditLogSpecified);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Features_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Features);
+            Assert.IsNotNull(template.Features.SiteFeatures);
+            Assert.AreEqual(3, template.Features.SiteFeatures.Count);
+            var feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("b50e3104-6812-424f-a011-cc90e6327318"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("9c0834e1-ba47-4d49-812b-7d4fb6fea211"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.Id == new Guid("0af5989a-3aea-4519-8ab0-85d91abe39ff"));
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+
+            Assert.IsNotNull(template.Features.WebFeatures);
+            Assert.AreEqual(4, template.Features.WebFeatures.Count);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("7201d6a4-a5d3-49a1-8c19-19c4bac6e668"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("961d6a9c-4388-4cf2-9733-38ee8c89afd4"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("e2f2bb18-891d-4812-97df-c265afdba297"));
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.Id == new Guid("4aec7207-0d02-4f4f-aa07-b370199cd0c7"));
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Features_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Features = new Features();
+
+            result.Features.SiteFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("d8f187e3-2bf3-43a3-99a0-024edaffab5e")
+            });
+            result.Features.SiteFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("89c029c5-d289-4936-8ba6-6f3386a8a03f"),
+                Deactivate = true
+            });
+            result.Features.WebFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("a22d7848-6d17-47b5-9c1c-cecc98a6b258")
+            });
+            result.Features.WebFeatures.Add(new Core.Framework.Provisioning.Model.Feature()
+            {
+                Id = new Guid("d60aed53-05f3-4d1c-a12f-677da19a8c31"),
+                Deactivate = true
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-features.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-features.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Features);
+            Assert.IsNotNull(template.Features.SiteFeatures);
+            Assert.AreEqual(2, template.Features.SiteFeatures.Length);
+            var feature = template.Features.SiteFeatures.FirstOrDefault(f => f.ID == "d8f187e3-2bf3-43a3-99a0-024edaffab5e");
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.SiteFeatures.FirstOrDefault(f => f.ID == "89c029c5-d289-4936-8ba6-6f3386a8a03f");
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+
+            Assert.IsNotNull(template.Features.WebFeatures);
+            Assert.AreEqual(2, template.Features.WebFeatures.Length);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.ID == "a22d7848-6d17-47b5-9c1c-cecc98a6b258");
+            Assert.IsNotNull(feature);
+            Assert.IsFalse(feature.Deactivate);
+            feature = template.Features.WebFeatures.FirstOrDefault(f => f.ID == "d60aed53-05f3-4d1c-a12f-677da19a8c31");
+            Assert.IsNotNull(feature);
+            Assert.IsTrue(feature.Deactivate);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_LocalizationSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var localizations = template.Localizations;
+            Assert.AreEqual(2, localizations.Count);
+            var locale = localizations.FirstOrDefault(l => l.LCID == 1033);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("en-US", locale.Name);
+            Assert.AreEqual("template.en-US.resx", locale.ResourceFile);
+
+            locale = localizations.FirstOrDefault(l => l.LCID == 1040);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("it-IT", locale.Name);
+            Assert.AreEqual("template.it-It.resx", locale.ResourceFile);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_LocalizationSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Localizations.Add(new Localization()
+            {
+                LCID = 1033,
+                Name = "en-US",
+                ResourceFile = "template.en-US.resx"
+            });
+            result.Localizations.Add(new Localization()
+            {
+                LCID = 1040,
+                Name = "it-IT",
+                ResourceFile = "template.it-It.resx"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-local.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-local.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            var localizations = wrappedResult.Localizations;
+            Assert.AreEqual(2, localizations.Length);
+            var locale = localizations.FirstOrDefault(l => l.LCID == 1033);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("en-US", locale.Name);
+            Assert.AreEqual("template.en-US.resx", locale.ResourceFile);
+
+            locale = localizations.FirstOrDefault(l => l.LCID == 1040);
+            Assert.IsNotNull(locale);
+            Assert.AreEqual("it-IT", locale.Name);
+            Assert.AreEqual("template.it-It.resx", locale.ResourceFile);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_WebSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.WebSettings);
+            Assert.AreEqual("Resources/Themes/Contoso/Contoso.css", template.WebSettings.AlternateCSS);
+            Assert.AreEqual("seattle.master", template.WebSettings.MasterPageUrl);
+            Assert.AreEqual("custom.master", template.WebSettings.CustomMasterPageUrl);
+            Assert.IsTrue(template.WebSettings.NoCrawl);
+            Assert.AreEqual("admin@contoso.com", template.WebSettings.RequestAccessEmail);
+            Assert.AreEqual("Resources/Themes/Contoso/contosologo.png", template.WebSettings.SiteLogo);
+            Assert.AreEqual("Contoso Portal", template.WebSettings.Title);
+            Assert.AreEqual("/Pages/home.aspx", template.WebSettings.WelcomePage);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_WebSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.WebSettings = new WebSettings() {
+                AlternateCSS = "Resources/Themes/Contoso/Contoso.css",
+                MasterPageUrl= "seattle.master",
+                CustomMasterPageUrl="custom.master",
+                Description="Test site",
+                NoCrawl=true,
+                RequestAccessEmail="admin@contoso.com",
+                SiteLogo = "Resources/Themes/Contoso/contosologo.png",
+                Title="Contoso Portal",
+                WelcomePage="/Pages/home.aspx"
+            };
+            
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-web.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-web.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.WebSettings);
+            Assert.AreEqual("Resources/Themes/Contoso/Contoso.css", template.WebSettings.AlternateCSS);
+            Assert.AreEqual("seattle.master", template.WebSettings.MasterPageUrl);
+            Assert.AreEqual("custom.master", template.WebSettings.CustomMasterPageUrl);
+            Assert.IsTrue(template.WebSettings.NoCrawl);
+            Assert.AreEqual("admin@contoso.com", template.WebSettings.RequestAccessEmail);
+            Assert.AreEqual("Resources/Themes/Contoso/contosologo.png", template.WebSettings.SiteLogo);
+            Assert.AreEqual("Contoso Portal", template.WebSettings.Title);
+            Assert.AreEqual("/Pages/home.aspx", template.WebSettings.WelcomePage);
+            Assert.AreEqual("Test site", template.WebSettings.Description);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_RegionalSettings_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.RegionalSettings);
+            Assert.AreEqual(2, template.RegionalSettings.AdjustHijriDays);
+            Assert.AreEqual(CalendarType.GregorianArabic, template.RegionalSettings.AlternateCalendarType);
+            Assert.AreEqual(CalendarType.Gregorian, template.RegionalSettings.CalendarType);
+            Assert.AreEqual(1, template.RegionalSettings.Collation);
+            Assert.AreEqual(DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
+            Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
+            Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeks);
+            Assert.IsTrue(template.RegionalSettings.Time24);
+            Assert.AreEqual(2, template.RegionalSettings.TimeZone);
+            Assert.AreEqual(WorkHour.PM0600, template.RegionalSettings.WorkDayEndHour);
+            Assert.AreEqual(5, template.RegionalSettings.WorkDays);
+            Assert.AreEqual(WorkHour.AM0900, template.RegionalSettings.WorkDayStartHour);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_RegionalSettings_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.RegionalSettings = new Core.Framework.Provisioning.Model.RegionalSettings()
+            {
+                AdjustHijriDays = 2,
+                AlternateCalendarType = CalendarType.GregorianArabic,
+                CalendarType = CalendarType.Gregorian,
+                Collation = 1,
+                FirstDayOfWeek = DayOfWeek.Sunday,
+                FirstWeekOfYear = 1,
+                LocaleId = 1040,
+                ShowWeeks = true,
+                Time24 = true,
+                TimeZone = 2,
+                WorkDayEndHour = WorkHour.PM0600,
+                WorkDays = 5,
+                WorkDayStartHour = WorkHour.AM0900
+            };
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-region.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-region.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.RegionalSettings);
+            Assert.AreEqual(2, template.RegionalSettings.AdjustHijriDays);
+            Assert.IsTrue(template.RegionalSettings.AdjustHijriDaysSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.CalendarType.GregorianArabicCalendar, template.RegionalSettings.AlternateCalendarType);
+            Assert.IsTrue(template.RegionalSettings.AlternateCalendarTypeSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.CalendarType.Gregorian, template.RegionalSettings.CalendarType);
+            Assert.IsTrue(template.RegionalSettings.CalendarTypeSpecified);
+            Assert.AreEqual(1, template.RegionalSettings.Collation);
+            Assert.IsTrue(template.RegionalSettings.CollationSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
+            Assert.IsTrue(template.RegionalSettings.FirstDayOfWeekSpecified);
+            Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
+            Assert.IsTrue(template.RegionalSettings.FirstWeekOfYearSpecified);
+            Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
+            Assert.IsTrue(template.RegionalSettings.LocaleIdSpecified);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeks);
+            Assert.IsTrue(template.RegionalSettings.ShowWeeksSpecified);
+            Assert.IsTrue(template.RegionalSettings.Time24);
+            Assert.IsTrue(template.RegionalSettings.Time24Specified);
+            Assert.AreEqual("2", template.RegionalSettings.TimeZone);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.WorkHour.Item600PM, template.RegionalSettings.WorkDayEndHour);
+            Assert.IsTrue(template.RegionalSettings.WorkDayEndHourSpecified);
+            Assert.AreEqual(5, template.RegionalSettings.WorkDays);
+            Assert.IsTrue(template.RegionalSettings.WorkDaysSpecified);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.WorkHour.Item900AM, template.RegionalSettings.WorkDayStartHour);
+            Assert.IsTrue(template.RegionalSettings.WorkDayStartHourSpecified);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SupportedUILanguages_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.SupportedUILanguages);
+            Assert.AreEqual(2, template.SupportedUILanguages.Count);
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1033));
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1040));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SupportedUILanguages_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.SupportedUILanguages.Add(new SupportedUILanguage() { LCID = 1040 });
+            result.SupportedUILanguages.Add(new SupportedUILanguage() { LCID = 1033 });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-lang.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-lang.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.SupportedUILanguages);
+            Assert.AreEqual(2, template.SupportedUILanguages.Length);
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1033));
+            Assert.IsNotNull(template.SupportedUILanguages.FirstOrDefault(l => l.LCID == 1040));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_PropertyBagEntries_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.PropertyBagEntries);
+            Assert.AreEqual(2, template.PropertyBagEntries.Count);
+            var prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY1");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value1", prop.Value);
+            Assert.IsTrue(prop.Indexed);
+            Assert.IsTrue(prop.Overwrite);
+            prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY2");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value2", prop.Value);
+            Assert.IsFalse(prop.Indexed);
+            Assert.IsFalse(prop.Overwrite);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_PropertyBagEntries_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.PropertyBagEntries.Add(new PropertyBagEntry() {
+                Key = "KEY1",
+                Value = "value1",
+                Overwrite = true,
+                Indexed = true
+            });
+            result.PropertyBagEntries.Add(new PropertyBagEntry()
+            {
+                Key = "KEY2",
+                Value = "value2"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-propbag.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-propbag.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.PropertyBagEntries);
+            Assert.AreEqual(2, template.PropertyBagEntries.Length);
+            var prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY1");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value1", prop.Value);
+            Assert.IsTrue(prop.Indexed);
+            Assert.IsTrue(prop.Overwrite);
+            Assert.IsTrue(prop.OverwriteSpecified);
+            prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY2");
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("value2", prop.Value);
+            Assert.IsFalse(prop.Indexed);
+            Assert.IsFalse(prop.Overwrite);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateParameters_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            var param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter1", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter2", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter3", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter4", param.Value);
+            param = template.Parameters.FirstOrDefault(p => p.Key == "Parameter5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("ValueParameter5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateParameters_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Parameters.Add("Parameter1", "ValueParameter1");
+            result.Parameters.Add("Parameter2", "ValueParameter2");
+            result.Parameters.Add("Parameter3", "ValueParameter3");
+            result.Parameters.Add("Parameter4", "ValueParameter4");
+            result.Parameters.Add("Parameter5", "ValueParameter5");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-temppar.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-temppar.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Preferences);
+            Assert.IsNotNull(wrappedResult.Preferences.Parameters);
+            Assert.AreEqual(5, wrappedResult.Preferences.Parameters.Length);
+
+            var param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter1");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter1", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter2");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter2", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter3");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter3", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter4");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter4", param.Text.First());
+            param = wrappedResult.Preferences.Parameters.FirstOrDefault(p => p.Key == "Parameter5");
+            Assert.IsNotNull(param);
+            Assert.IsNotNull(param.Text);
+            Assert.AreEqual(1, param.Text.Length);
+            Assert.AreEqual("ValueParameter5", param.Text.First());
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateBaseProperties_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.AreEqual(1.2, template.Version);
+            var param = template.Properties.FirstOrDefault(p => p.Key == "Key1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value1", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value2", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value3", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value4", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateBaseProperties_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Version = 1.2;
+            result.Properties.Add("Key1", "Value1");
+            result.Properties.Add("Key2", "Value2");
+            result.Properties.Add("Key3", "Value3");
+            result.Properties.Add("Key4", "Value4");
+            result.Properties.Add("Key5", "Value5");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-tempprop.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.AreEqual((decimal)1.2, template.Version);
+
+            Assert.IsNotNull(template.Properties);
+            Assert.AreEqual(5, template.Properties.Length);
+            var param = template.Properties.FirstOrDefault(p => p.Key == "Key1");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value1", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key2");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value2", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key3");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value3", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key4");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value4", param.Value);
+            param = template.Properties.FirstOrDefault(p => p.Key == "Key5");
+            Assert.IsNotNull(param);
+            Assert.AreEqual("Value5", param.Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteFields_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.SiteFields);
+            Assert.AreEqual(4, template.SiteFields.Count);
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.FirstOrDefault(e => e.SchemaXml == "<Field ID=\"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteFields_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+            result.SiteFields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID = \"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-flds.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-flds.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.SiteFields);
+            Assert.IsNotNull(template.SiteFields.Any);
+            Assert.AreEqual(4, template.SiteFields.Any.Length);
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{A5DE9600-B7A6-42DD-A05E-10D4F1500208}\" Type=\"Text\" Name=\"ProjectManager\" DisplayName=\"Project Manager\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+            Assert.IsNotNull(template.SiteFields.Any.FirstOrDefault(e => e.OuterXml == "<Field ID=\"{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}\" Type=\"Text\" Name=\"DocumentDescription\" DisplayName=\"Document Description\" Group=\"My Columns \" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Navigation_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Navigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation);
+            Assert.AreEqual(GlobalNavigationType.Managed, template.Navigation.GlobalNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.GlobalNavigation.StructuralNavigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation.ManagedNavigation);
+            Assert.AreEqual("415185a1-ee1c-4ce9-9e38-cea3f854e802", template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId);
+            Assert.AreEqual("c1175ad1-c710-4131-a6c9-aa854a5cc4c4", template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId);
+
+            Assert.IsNotNull(template.Navigation.CurrentNavigation);
+            Assert.AreEqual(CurrentNavigationType.Structural, template.Navigation.CurrentNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.CurrentNavigation.ManagedNavigation);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation);
+            Assert.IsTrue(template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes);
+            Assert.AreEqual(2, template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Count);
+
+            var n1 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1");
+            Assert.IsNotNull(n1);
+            Assert.AreEqual("/Node1.aspx", n1.Url);
+            Assert.IsFalse(n1.IsExternal);
+            Assert.IsNotNull(n1.NavigationNodes);
+            Assert.AreEqual(2, n1.NavigationNodes.Count);
+
+            var n11 = n1.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.1");
+            Assert.IsNotNull(n11);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", n11.Url);
+            Assert.IsTrue(n11.IsExternal);
+            Assert.IsNotNull(n11.NavigationNodes);
+            Assert.AreEqual(1, n11.NavigationNodes.Count);
+
+            var n111 = n11.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.1.1");
+            Assert.IsNotNull(n111);
+            Assert.AreEqual("http://aka.ms/OfficeDevPnP", n111.Url);
+            Assert.IsTrue(n111.IsExternal);
+            Assert.IsNotNull(n111.NavigationNodes);
+            Assert.AreEqual(0, n111.NavigationNodes.Count);
+
+            var n12 = n1.NavigationNodes.FirstOrDefault(n => n.Title == "Node 1.2");
+            Assert.IsNotNull(n12);
+            Assert.AreEqual("/Node1-2.aspx", n12.Url);
+            Assert.IsTrue(n12.IsExternal);
+            Assert.IsNotNull(n12.NavigationNodes);
+            Assert.AreEqual(0, n12.NavigationNodes.Count);
+
+            var n2 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.FirstOrDefault(n => n.Title == "Node 2");
+            Assert.IsNotNull(n2);
+            Assert.AreEqual("/Node1.aspx", n2.Url);
+            Assert.IsFalse(n2.IsExternal);
+            Assert.IsNotNull(n2.NavigationNodes);
+            Assert.AreEqual(0, n2.NavigationNodes.Count);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Navigation_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Navigation = new Core.Framework.Provisioning.Model.Navigation(
+                new GlobalNavigation(GlobalNavigationType.Managed, null, new ManagedNavigation()), 
+                new CurrentNavigation(CurrentNavigationType.Structural, new StructuralNavigation(), null));
+            
+            result.Navigation.GlobalNavigation.ManagedNavigation.TermSetId = "415185a1-ee1c-4ce9-9e38-cea3f854e802";
+            result.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId = "c1175ad1-c710-4131-a6c9-aa854a5cc4c4";
+
+            result.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes = true;
+            var node1 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = false,
+                Title = "Node 1",
+                Url = "/Node1.aspx",
+                
+            };
+            var node11 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.1",
+                Url = "http://aka.ms/SharePointPnP"
+            };
+            var node111 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.1.1",
+                Url = "http://aka.ms/OfficeDevPnP"
+            };
+            var node12 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = true,
+                Title = "Node 1.2",
+                Url = "/Node1-2.aspx"
+            };
+            var node2 = new Core.Framework.Provisioning.Model.NavigationNode()
+            {
+                IsExternal = false,
+                Title = "Node 2",
+                Url = "/Node1.aspx"
+            };
+            node11.NavigationNodes.Add(node111);
+            node1.NavigationNodes.Add(node11);
+            node1.NavigationNodes.Add(node12);
+            result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node1);
+            result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node2);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Navigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.NavigationGlobalNavigationNavigationType.Managed, template.Navigation.GlobalNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.GlobalNavigation.StructuralNavigation);
+            Assert.IsNotNull(template.Navigation.GlobalNavigation.ManagedNavigation);
+            Assert.AreEqual("415185a1-ee1c-4ce9-9e38-cea3f854e802", template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId);
+            Assert.AreEqual("c1175ad1-c710-4131-a6c9-aa854a5cc4c4", template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId);
+
+            Assert.IsNotNull(template.Navigation.CurrentNavigation);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.NavigationCurrentNavigationNavigationType.Structural, template.Navigation.CurrentNavigation.NavigationType);
+            Assert.IsNull(template.Navigation.CurrentNavigation.ManagedNavigation);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation);
+            Assert.IsTrue(template.Navigation.CurrentNavigation.StructuralNavigation.RemoveExistingNodes);
+            Assert.IsNotNull(template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode);
+            Assert.AreEqual(2, template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.Length);
+
+            var n1 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.FirstOrDefault(n => n.Title == "Node 1");
+            Assert.IsNotNull(n1);
+            Assert.AreEqual("/Node1.aspx", n1.Url);
+            Assert.IsFalse(n1.IsExternal);
+            Assert.IsNotNull(n1.NavigationNode1);
+            Assert.AreEqual(2, n1.NavigationNode1.Length);
+
+            var n11 = n1.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.1");
+            Assert.IsNotNull(n11);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", n11.Url);
+            Assert.IsTrue(n11.IsExternal);
+            Assert.IsNotNull(n11.NavigationNode1);
+            Assert.AreEqual(1, n11.NavigationNode1.Length);
+
+            var n111 = n11.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.1.1");
+            Assert.IsNotNull(n111);
+            Assert.AreEqual("http://aka.ms/OfficeDevPnP", n111.Url);
+            Assert.IsTrue(n111.IsExternal);
+            Assert.IsNull(n111.NavigationNode1);
+
+            var n12 = n1.NavigationNode1.FirstOrDefault(n => n.Title == "Node 1.2");
+            Assert.IsNotNull(n12);
+            Assert.AreEqual("/Node1-2.aspx", n12.Url);
+            Assert.IsTrue(n12.IsExternal);
+            Assert.IsNull(n12.NavigationNode1);
+
+            var n2 = template.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode.FirstOrDefault(n => n.Title == "Node 2");
+            Assert.IsNotNull(n2);
+            Assert.AreEqual("/Node1.aspx", n2.Url);
+            Assert.IsFalse(n2.IsExternal);
+            Assert.IsNull(n2.NavigationNode1);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Security_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Security);
+            Assert.IsTrue(template.Security.BreakRoleInheritance);
+            Assert.IsTrue(template.Security.ClearSubscopes);
+            Assert.IsTrue(template.Security.CopyRoleAssignments);
+
+            Assert.IsNotNull(template.Security.AdditionalAdministrators);
+            Assert.AreEqual(2, template.Security.AdditionalAdministrators.Count);
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalOwners);
+            Assert.AreEqual(2, template.Security.AdditionalOwners.Count);
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalMembers);
+            Assert.AreEqual(2, template.Security.AdditionalMembers.Count);
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors);
+            Assert.AreEqual(2, template.Security.AdditionalVisitors.Count);
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions);
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions.RoleDefinitions);
+            Assert.AreEqual(2, template.Security.SiteSecurityPermissions.RoleDefinitions.Count);
+            var role = template.Security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(r => r.Name == "User");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("User Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(2, role.Permissions.Count);
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.AddListItems));
+
+            role = template.Security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(r => r.Name == "EmptyRole");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Empty Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(1, role.Permissions.Count);
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.EmptyMask));
+
+            Assert.IsNotNull(template.Security.SiteSecurityPermissions.RoleAssignments);
+            Assert.AreEqual(2, template.Security.SiteSecurityPermissions.RoleAssignments.Count);
+            var assign = template.Security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "admin@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Owner", assign.RoleDefinition);
+            assign = template.Security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("User", assign.RoleDefinition);
+
+            Assert.IsNotNull(template.Security.SiteGroups);
+            Assert.AreEqual(2, template.Security.SiteGroups.Count);
+            var group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.Count);
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+
+            group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup2");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("user2@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.Description));
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.IsTrue(group.Members == null || group.Members.Count == 0);
+
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Security_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Security = new SiteSecurity()
+            {
+                BreakRoleInheritance = true,
+                ClearSubscopes = true,
+                CopyRoleAssignments = true
+            };
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind>() {
+                PermissionKind.ViewListItems,
+                PermissionKind.AddListItems
+            })
+            {
+                Name = "User",
+                Description = "User Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind>() {
+                PermissionKind.EmptyMask
+            })
+            {
+                Name = "EmptyRole",
+                Description = "Empty Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment() {
+                Principal = "admin@contoso.com",
+                RoleDefinition = "Owner"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
+            {
+                Principal = "user@contoso.com",
+                RoleDefinition = "User"
+            });
+
+            result.Security.SiteGroups.Add(new SiteGroup(new List<Core.Framework.Provisioning.Model.User>()
+            {
+                new Core.Framework.Provisioning.Model.User()
+                {
+                     Name = "user1@contoso.com"
+                },
+                new Core.Framework.Provisioning.Model.User()
+                {
+                     Name = "user2@contoso.com"
+                }
+            })
+            {
+                AllowMembersEditMembership = true,
+                AllowRequestToJoinLeave = true,
+                AutoAcceptRequestToJoinLeave = true,
+                Description = "Test Group 1",
+                OnlyAllowMembersViewMembership = true,
+                Owner = "user1@contoso.com",
+                RequestToJoinLeaveEmailSetting = "group1@contoso.com",
+                Title = "TestGroup1"
+            });
+            result.Security.SiteGroups.Add(new SiteGroup()
+            {
+                Title = "TestGroup2",
+                Owner = "user2@contoso.com"
+            });
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-sec.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-sec.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Security);
+            Assert.IsTrue(template.Security.BreakRoleInheritance);
+            Assert.IsTrue(template.Security.ClearSubscopes);
+            Assert.IsTrue(template.Security.CopyRoleAssignments);
+
+            Assert.IsNotNull(template.Security.AdditionalAdministrators);
+            Assert.AreEqual(2, template.Security.AdditionalAdministrators.Length);
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalOwners);
+            Assert.AreEqual(2, template.Security.AdditionalOwners.Length);
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalOwners.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalMembers);
+            Assert.AreEqual(2, template.Security.AdditionalMembers.Length);
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalMembers.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors);
+            Assert.AreEqual(2, template.Security.AdditionalVisitors.Length);
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleDefinitions);
+            Assert.AreEqual(2, template.Security.Permissions.RoleDefinitions.Length);
+            var role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "User");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("User Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(2, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.AddListItems));
+
+            role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "EmptyRole");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Empty Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(1, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(Core.Framework.Provisioning.Providers.Xml.V201605.RoleDefinitionPermission.EmptyMask));
+
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleAssignments);
+            Assert.AreEqual(2, template.Security.Permissions.RoleAssignments.Length);
+            var assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "admin@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Owner", assign.RoleDefinition);
+            assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("User", assign.RoleDefinition);
+
+            Assert.IsNotNull(template.Security.SiteGroups);
+            Assert.AreEqual(2, template.Security.SiteGroups.Length);
+            var group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowMembersEditMembershipSpecified);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AllowRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembershipSpecified);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.Length);
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+
+            group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup2");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("user2@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.Description));
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.IsNull(group.Members);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ListInstances_201605()
+        {
+            XMLTemplateProvider provider =
+               new XMLFileSystemTemplateProvider(
+                   String.Format(@"{0}\..\..\Resources",
+                   AppDomain.CurrentDomain.BaseDirectory),
+                   "Templates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            var template = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03.xml", serializer);
+            Assert.IsNotNull(template.Lists);
+            Assert.AreEqual(1, template.Lists.Count);
+
+            var l = template.Lists.FirstOrDefault(ls => ls.Title == "Project Documents");
+            Assert.IsNotNull(l);
+            Assert.IsTrue(l.ContentTypesEnabled);
+            Assert.AreEqual("Project Documents are stored here", l.Description);
+            Assert.AreEqual("document.dotx", l.DocumentTemplate);
+            Assert.AreEqual(1, l.DraftVersionVisibility);
+            Assert.IsTrue(l.EnableAttachments);
+            Assert.IsTrue(l.EnableFolderCreation);
+            Assert.IsTrue(l.EnableMinorVersions);
+            Assert.IsTrue(l.EnableModeration);
+            Assert.IsTrue(l.EnableVersioning);
+            Assert.IsTrue(l.ForceCheckout);
+            Assert.IsTrue(l.Hidden);
+            Assert.AreEqual(10, l.MaxVersionLimit);
+            Assert.AreEqual(2, l.MinorVersionLimit);
+            Assert.IsTrue(l.OnQuickLaunch);
+            Assert.IsTrue(l.RemoveExistingContentTypes);
+            Assert.AreEqual(new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"), l.TemplateFeatureID);
+            Assert.AreEqual(101, l.TemplateType);
+            Assert.AreEqual("Lists/ProjectDocuments", l.Url);
+
+            var security = l.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            var ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(l.ContentTypeBindings);
+            Assert.AreEqual(3, l.ContentTypeBindings.Count);
+            var ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E");
+            Assert.IsNotNull(ct);
+            Assert.IsTrue(ct.Default);
+            Assert.IsFalse(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x0101");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsTrue(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeId == "0x0102");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsFalse(ct.Remove);
+
+            Assert.IsNotNull(l.FieldDefaults);
+            Assert.AreEqual(4, l.FieldDefaults.Count);
+            var fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field01");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue01", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field02");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue02", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field03");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue03", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.Key == "Field04");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue04", fd.Value);
+
+            Assert.IsNotNull(l.DataRows);
+            Assert.AreEqual(3, l.DataRows.Count);
+            #region data row 1 asserts
+            var dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value01")));
+            Assert.IsNotNull(dr);
+            security = dr.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            var dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-04", dv.Value);
+            #endregion
+            #region data row 2 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value02")));
+            Assert.IsNotNull(dr);
+            security = dr.Security;
+            Assert.IsNotNull(security);
+            Assert.IsFalse(security.ClearSubscopes);
+            Assert.IsFalse(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-04", dv.Value);
+            #endregion
+            #region data row 3 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value03")));
+            Assert.IsNotNull(dr);
+            Assert.IsTrue(dr.Security == null || dr.Security.RoleAssignments == null || dr.Security.RoleAssignments.Count == 0);
+
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-01", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-02", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-03", dv.Value);
+            dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-04", dv.Value);
+            #endregion
+
+            #region user custom action
+            Assert.IsNotNull(l.UserCustomActions);
+            Assert.AreEqual(1, l.UserCustomActions.Count);
+            var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
+            Assert.IsNotNull(ua);
+            Assert.AreEqual("Just a sample custom action", ua.Description);
+            Assert.IsTrue(ua.Enabled);
+            Assert.AreEqual("Samples", ua.Group);
+            Assert.AreEqual("OneImage.png", ua.ImageUrl);
+            Assert.AreEqual("Any", ua.Location);
+            Assert.AreEqual("0x0101", ua.RegistrationId);
+            Assert.AreEqual(UserCustomActionRegistrationType.ContentType, ua.RegistrationType);
+            Assert.AreEqual(100, ua.Sequence);
+            Assert.AreEqual("scriptblock", ua.ScriptBlock);
+            Assert.AreEqual("script.js", ua.ScriptSrc);
+            Assert.AreEqual("http://somewhere.com/", ua.Url);
+            Assert.AreEqual("Sample Action", ua.Title);
+            Assert.IsTrue(ua.Remove);
+            Assert.IsNotNull(ua.CommandUIExtension);
+            Assert.AreEqual(1, ua.CommandUIExtension.Nodes().Count());
+            Assert.IsNotNull(ua.Rights);
+            Assert.IsTrue(ua.Rights.Has(PermissionKind.AddListItems));
+            #endregion
+
+            Assert.IsNotNull(l.Views);
+            Assert.AreEqual(2, l.Views.Count);
+
+            #region field refs
+            Assert.IsNotNull(l.FieldRefs);
+            Assert.AreEqual(3, l.FieldRefs.Count);
+            var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("23203E97-3BFE-40CB-AFB4-07AA2B86BF45"), fr.Id);
+            Assert.AreEqual("Project ID", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectName");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("B01B3DBC-4630-4ED1-B5BA-321BC7841E3D"), fr.Id);
+            Assert.AreEqual("Project Name", fr.DisplayName);
+            Assert.IsTrue(fr.Hidden);
+            Assert.IsFalse(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectManager");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual(new Guid("A5DE9600-B7A6-42DD-A05E-10D4F1500208"), fr.Id);
+            Assert.AreEqual("Project Manager", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            #endregion
+
+            #region folders
+            Assert.IsNotNull(l.Folders);
+            Assert.AreEqual(2, l.Folders.Count);
+            var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
+            Assert.IsNotNull(fl);
+            Assert.IsTrue(fl.Folders == null || fl.Folders.Count == 0);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder01");
+            Assert.IsNotNull(fl);
+            Assert.IsNotNull(fl.Folders);
+            var fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.02");
+            Assert.IsNotNull(fl1);
+            Assert.IsTrue(fl1.Folders == null || fl1.Folders.Count == 0);
+            fl1 = fl.Folders.FirstOrDefault(f => f.Name == "Folder01.01");
+            Assert.IsTrue(fl1.Folders == null || fl1.Folders.Count == 0);
+            security = fl1.Security;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignments);
+            Assert.AreEqual(3, security.RoleAssignments.Count);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+            #endregion
+
+            Assert.IsNotNull(l.Fields);
+            Assert.AreEqual(2, l.Fields.Count);
+            Assert.IsTrue(l.Fields.All(x => x.SchemaXml.StartsWith("<Field")));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ListInstances_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var result = new ProvisioningTemplate();
+            var list = new ListInstance()
+            {
+                Title = "Project Documents",
+                ContentTypesEnabled = true,
+                Description= "Project Documents are stored here",
+                DocumentTemplate = "document.dotx",
+                DraftVersionVisibility = 1, 
+                EnableAttachments = true,
+                EnableFolderCreation = true,
+                EnableMinorVersions = true,
+                EnableModeration = true,
+                EnableVersioning = true,
+                ForceCheckout = true,
+                Hidden = true,
+                MaxVersionLimit = 10,
+                MinorVersionLimit = 2,
+                OnQuickLaunch = true,
+                RemoveExistingContentTypes = true,
+                RemoveExistingViews = true,
+                TemplateFeatureID = new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"),
+                TemplateType = 101,
+                Url = "/Lists/ProjectDocuments",
+                Security = new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>()
+                {
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal01",
+                        RoleDefinition ="Read"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal02",
+                        RoleDefinition ="Contribute"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal03",
+                        RoleDefinition ="FullControl"
+                    }
+                })
+                {
+                    ClearSubscopes = true,
+                    CopyRoleAssignments = true,
+                    
+                }
+            };
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x01005D4F34E4BE7F4B6892AEBE088EDD215E",
+                Default = true
+            });
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x0101",
+                Remove = true
+            });
+            list.ContentTypeBindings.Add(new ContentTypeBinding()
+            {
+                ContentTypeId = "0x0102"
+            });
+
+            list.FieldDefaults.Add("Field01", "DefaultValue01");
+            list.FieldDefaults.Add("Field02", "DefaultValue02");
+            list.FieldDefaults.Add("Field03", "DefaultValue03");
+            list.FieldDefaults.Add("Field04", "DefaultValue04");
+
+            #region data rows
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value01-01" },
+                { "Field02", "Value01-02" },
+                { "Field03", "Value01-03" },
+                { "Field04", "Value01-04" },
+            },
+            new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal01",
+                    RoleDefinition ="Read"
+                },
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal02",
+                    RoleDefinition ="Contribute"
+                }
+                ,
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal03",
+                    RoleDefinition ="FullControl"
+                }
+            })
+            {
+                ClearSubscopes = true,
+                CopyRoleAssignments = true
+            }));
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value02-01" },
+                { "Field02", "Value02-02" },
+                { "Field03", "Value02-03" },
+                { "Field04", "Value02-04" },
+            },
+            new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal01",
+                    RoleDefinition ="Read"
+                },
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal02",
+                    RoleDefinition ="Contribute"
+                }
+                ,
+                new Core.Framework.Provisioning.Model.RoleAssignment()
+                {
+                    Principal ="Principal03",
+                    RoleDefinition ="FullControl"
+                }
+            })
+            {
+                ClearSubscopes = false,
+                CopyRoleAssignments = false
+            }));
+            list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
+                { "Field01", "Value03-01" },
+                { "Field02", "Value03-02" },
+                { "Field03", "Value03-03" },
+                { "Field04", "Value03-04" },
+            }));
+            #endregion
+
+            var ca = new CustomAction()
+            {
+                Name = "SampleCustomAction",
+                Description = "Just a sample custom action",
+                Enabled = true,
+                Group = "Samples",
+                ImageUrl = "OneImage.png",
+                Location = "Any",
+                RegistrationId = "0x0101",
+                RegistrationType = UserCustomActionRegistrationType.ContentType,
+                Sequence = 100,
+                ScriptBlock = "scriptblock",
+                ScriptSrc = "script.js",
+                Url = "http://somewhere.com/",
+                Rights = new BasePermissions(),
+                Title = "Sample Action",
+                Remove = true,
+                CommandUIExtension = XElement.Parse("<CommandUIExtension><customElement><!--Whateveryoulikehere--></customElement></CommandUIExtension>")
+            };
+            ca.Rights.Set(PermissionKind.AddListItems);
+            list.UserCustomActions.Add(ca);
+
+            #region views
+            list.Views.Add(new Core.Framework.Provisioning.Model.View()
+            {
+                SchemaXml = @"<View DisplayName=""View One"">
+                  <ViewFields>
+                    <FieldRef Name=""ID"" />
+                    <FieldRef Name=""Title"" />
+                    <FieldRef Name=""ProjectID"" />
+                    <FieldRef Name=""ProjectName"" />
+                    <FieldRef Name=""ProjectManager"" />
+                    <FieldRef Name=""DocumentDescription"" />
+                  </ViewFields>
+                  <Query>
+                    <Where>
+                      <Eq>
+                        <FieldRef Name=""ProjectManager"" />
+                        <Value Type=""Text"">[Me]</Value>
+                      </Eq>
+                    </Where>
+                  </Query>
+                </View>"
+            });
+            list.Views.Add(new Core.Framework.Provisioning.Model.View()
+            { 
+                SchemaXml = @"<View DisplayName=""View Two"">
+                  <ViewFields>
+                    <FieldRef Name=""ID"" />
+                    <FieldRef Name=""Title"" />
+                    <FieldRef Name=""ProjectID"" />
+                    <FieldRef Name=""ProjectName"" />
+                  </ViewFields>
+                </View>"
+            });
+            #endregion
+
+            #region fieldrefs
+            list.FieldRefs.Add(new FieldRef("ProjectID")
+            {
+                Id = new Guid("{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}"),
+                DisplayName = "Project ID",
+                Hidden = false,
+                Required = true
+            });
+            list.FieldRefs.Add(new FieldRef("ProjectName")
+            {
+                Id = new Guid("{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}"),
+                DisplayName = "Project Name",
+                Hidden = true,
+                Required = false
+            });
+            list.FieldRefs.Add(new FieldRef("ProjectManager")
+            {
+                Id = new Guid("{A5DE9600-B7A6-42DD-A05E-10D4F1500208}"),
+                DisplayName = "Project Manager",
+                Hidden = false,
+                Required = true
+            });
+            #endregion
+
+            #region folders
+            var folder01 = new Core.Framework.Provisioning.Model.Folder("Folder01");
+            var folder02 = new Core.Framework.Provisioning.Model.Folder("Folder02");
+            folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.01",
+                security: new ObjectSecurity(new List<Core.Framework.Provisioning.Model.RoleAssignment>() {
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal01",
+                        RoleDefinition ="Read"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal02",
+                        RoleDefinition ="Contribute"
+                    },
+                    new Core.Framework.Provisioning.Model.RoleAssignment()
+                    {
+                        Principal="Principal03",
+                        RoleDefinition ="FullControl"
+                    }
+                })
+                {
+                    CopyRoleAssignments = true,
+                    ClearSubscopes = true
+                }));
+            folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
+            list.Folders.Add(folder01);
+            list.Folders.Add(folder02);
+            #endregion
+
+            list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+            });
+            list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = "<Field ID=\"{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}\" Type=\"Text\" Name=\"ProjectName\" DisplayName=\"Project Name\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" />"
+            });
+
+            result.Lists.Add(list);
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-lst.xml", serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-lst.xml";
+            Assert.IsTrue(System.IO.File.Exists(path));
+            XDocument xml = XDocument.Load(path);
+            Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Core.Framework.Provisioning.Providers.Xml.V201605.Provisioning>(xml);
+
+            Assert.IsNotNull(wrappedResult);
+            Assert.IsNotNull(wrappedResult.Templates);
+            Assert.AreEqual(1, wrappedResult.Templates.Count());
+            Assert.IsNotNull(wrappedResult.Templates[0].ProvisioningTemplate);
+            Assert.AreEqual(1, wrappedResult.Templates[0].ProvisioningTemplate.Count());
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            Assert.IsNotNull(template.Lists);
+            Assert.AreEqual(1, template.Lists.Length);
+
+            var l = template.Lists.FirstOrDefault(ls => ls.Title == "Project Documents");
+            Assert.IsNotNull(l);
+            Assert.IsTrue(l.ContentTypesEnabled);
+            Assert.AreEqual("Project Documents are stored here", l.Description);
+            Assert.AreEqual("document.dotx", l.DocumentTemplate);
+            Assert.AreEqual(1, l.DraftVersionVisibility);
+            Assert.IsTrue(l.DraftVersionVisibilitySpecified);
+            Assert.IsTrue(l.EnableAttachments);
+            Assert.IsTrue(l.EnableFolderCreation);
+            Assert.IsTrue(l.EnableMinorVersions);
+            Assert.IsTrue(l.EnableModeration);
+            Assert.IsTrue(l.EnableVersioning);
+            Assert.IsTrue(l.ForceCheckout);
+            Assert.IsTrue(l.Hidden);
+            Assert.AreEqual(10, l.MaxVersionLimit);
+            Assert.IsTrue(l.MaxVersionLimitSpecified);
+            Assert.AreEqual(2, l.MinorVersionLimit);
+            Assert.IsTrue(l.MinorVersionLimitSpecified);
+            Assert.IsTrue(l.OnQuickLaunch);
+            Assert.IsTrue(l.RemoveExistingContentTypes);
+            Assert.AreEqual("30FB193E-016E-45A6-B6FD-C6C2B31AA150".ToLower(), l.TemplateFeatureID);
+            Assert.AreEqual(101, l.TemplateType);
+            Assert.AreEqual("/Lists/ProjectDocuments", l.Url);
+
+            Assert.IsNotNull(l.Security);
+            var security = l.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            var ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(list.ContentTypeBindings);
+            Assert.AreEqual(3, list.ContentTypeBindings.Count);
+            var ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x01005D4F34E4BE7F4B6892AEBE088EDD215E");
+            Assert.IsNotNull(ct);
+            Assert.IsTrue(ct.Default);
+            Assert.IsFalse(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x0101");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsTrue(ct.Remove);
+            ct = l.ContentTypeBindings.FirstOrDefault(c => c.ContentTypeID == "0x0102");
+            Assert.IsNotNull(ct);
+            Assert.IsFalse(ct.Default);
+            Assert.IsFalse(ct.Remove);
+
+            Assert.IsNotNull(l.FieldDefaults);
+            Assert.AreEqual(4, l.FieldDefaults.Length);
+            var fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field01");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue01", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field02");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue02", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field03");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue03", fd.Value);
+            fd = l.FieldDefaults.FirstOrDefault(f => f.FieldName == "Field04");
+            Assert.IsNotNull(fd);
+            Assert.AreEqual("DefaultValue04", fd.Value);
+
+            Assert.IsNotNull(l.DataRows);
+            Assert.AreEqual(3, l.DataRows.Length);
+            #region data row 1 asserts
+            var dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value01")));
+            Assert.IsNotNull(dr);
+            Assert.IsNotNull(dr.Security);
+            security = dr.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(dr.DataValue);
+            var dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value01-04", dv.Value);
+            #endregion
+            #region data row 2 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value02")));
+            Assert.IsNotNull(dr);
+            Assert.IsNotNull(dr.Security);
+            security = dr.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsFalse(security.ClearSubscopes);
+            Assert.IsFalse(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+
+            Assert.IsNotNull(dr.DataValue);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value02-04", dv.Value);
+            #endregion
+            #region data row 3 asserts
+            dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value03")));
+            Assert.IsNotNull(dr);
+            Assert.IsNull(dr.Security);
+            
+            Assert.IsNotNull(dr.DataValue);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field01");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-01", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field02");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-02", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field03");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-03", dv.Value);
+            dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
+            Assert.IsNotNull(dv);
+            Assert.AreEqual("Value03-04", dv.Value);
+            #endregion
+
+            #region user custom action
+            Assert.IsNotNull(l.UserCustomActions);
+            Assert.AreEqual(1, l.UserCustomActions.Length);
+            var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
+            Assert.IsNotNull(ua);
+            Assert.AreEqual("Just a sample custom action", ua.Description);
+            Assert.IsTrue(ua.Enabled);
+            Assert.AreEqual("Samples", ua.Group);
+            Assert.AreEqual("OneImage.png", ua.ImageUrl);
+            Assert.AreEqual("Any", ua.Location);
+            Assert.AreEqual("0x0101", ua.RegistrationId);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201605.RegistrationType.ContentType, ua.RegistrationType);
+            Assert.AreEqual(100, ua.Sequence);
+            Assert.AreEqual("scriptblock", ua.ScriptBlock);
+            Assert.AreEqual("script.js", ua.ScriptSrc);
+            Assert.AreEqual("http://somewhere.com/", ua.Url);
+            Assert.AreEqual("Sample Action", ua.Title);
+            Assert.IsTrue(ua.Remove);
+            Assert.IsNotNull(ua.CommandUIExtension);
+            Assert.IsNotNull(ua.CommandUIExtension.Any);
+            Assert.AreEqual(1, ua.CommandUIExtension.Any.Length);
+            Assert.IsNotNull(ua.Rights);
+            Assert.IsTrue(ua.Rights.Contains("AddListItems"));
+            #endregion
+
+            Assert.IsNotNull(l.Views);
+            Assert.IsNotNull(l.Views.Any);
+            Assert.AreEqual(2, l.Views.Any.Length);
+
+            #region field refs
+            Assert.IsNotNull(l.FieldRefs);
+            Assert.AreEqual(3, l.FieldRefs.Length);
+            var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("23203E97-3BFE-40CB-AFB4-07AA2B86BF45".ToLower(), fr.ID);
+            Assert.AreEqual("Project ID", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectName");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("B01B3DBC-4630-4ED1-B5BA-321BC7841E3D".ToLower(), fr.ID);
+            Assert.AreEqual("Project Name", fr.DisplayName);
+            Assert.IsTrue(fr.Hidden);
+            Assert.IsFalse(fr.Required);
+            fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectManager");
+            Assert.IsNotNull(fr);
+            Assert.AreEqual("A5DE9600-B7A6-42DD-A05E-10D4F1500208".ToLower(), fr.ID);
+            Assert.AreEqual("Project Manager", fr.DisplayName);
+            Assert.IsFalse(fr.Hidden);
+            Assert.IsTrue(fr.Required);
+            #endregion
+
+            #region folders
+            Assert.IsNotNull(l.Folders);
+            Assert.AreEqual(2, l.Folders.Length);
+            var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
+            Assert.IsNotNull(fl);
+            Assert.IsNull(fl.Folder1);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder01");
+            Assert.IsNotNull(fl);
+            Assert.IsNotNull(fl.Folder1);
+            var fl1 = fl.Folder1.FirstOrDefault(f=>f.Name == "Folder01.02");
+            Assert.IsNotNull(fl1);
+            Assert.IsNull(fl1.Folder1);
+            fl1 = fl.Folder1.FirstOrDefault(f => f.Name == "Folder01.01");
+            Assert.IsNull(fl1.Folder1);
+            Assert.IsNotNull(fl1.Security);
+            security = fl1.Security.BreakRoleInheritance;
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsTrue(security.CopyRoleAssignments);
+            Assert.IsNotNull(security.RoleAssignment);
+            Assert.AreEqual(3, security.RoleAssignment.Length);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal01");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Read", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal02");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("Contribute", ra.RoleDefinition);
+            ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
+            Assert.IsNotNull(ra);
+            Assert.AreEqual("FullControl", ra.RoleDefinition);
+            #endregion
+
+            Assert.IsNotNull(l.Fields);
+            Assert.IsNotNull(l.Fields.Any);
+            Assert.AreEqual(2, l.Fields.Any.Length);
+            Assert.IsTrue(l.Fields.Any.All(x => x.OuterXml.StartsWith("<Field")));
         }
         #endregion
     }

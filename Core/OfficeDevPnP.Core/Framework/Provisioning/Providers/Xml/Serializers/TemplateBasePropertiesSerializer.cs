@@ -52,17 +52,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var propertiesTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var propertiesType = Type.GetType(propertiesTypeName, true);
+            var templateType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
 
             var keySelector = CreateSelectorLambda(propertiesType, "Key");
             var valueSelector = CreateSelectorLambda(propertiesType, "Value");
 
-            var expressions = new Dictionary<Expression<Func<ProvisioningTemplate, Object>>, IResolver>();
-            expressions.Add(t => t.Version, new FromDoubleToDecimalValueResolver());
-            expressions.Add(t => t.Properties,
+            var expressions = new Dictionary<string, IResolver>();
+            expressions.Add($"{templateType}.Version", new FromDoubleToDecimalValueResolver());
+            expressions.Add($"{templateType}.VersionSpecified", new ExpressionValueResolver(() => true));
+            expressions.Add($"{templateType}.Properties",
                 new FromDictionaryToArrayValueResolver<String, String>(
                     propertiesType, keySelector, valueSelector));
 
-            PnPObjectsMapper.MapProperties(template, persistence, expressions);
+            PnPObjectsMapper.MapProperties(template, persistence, expressions, true);
 
             // Search settings
             if(!string.IsNullOrEmpty(template.SiteSearchSettings)||!string.IsNullOrEmpty(template.WebSearchSettings))
