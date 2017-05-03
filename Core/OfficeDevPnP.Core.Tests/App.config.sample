@@ -69,6 +69,13 @@
     <add key="HighTrustCertificatePassword" value="" />
     <!-- The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer -->
     <add key="HighTrustIssuerId" value="" />
+    <!-- The name of the store in the Windows certificate store where the High Trust certificate is stored. Possible values: AddressBook, AuthRoot, CertificateAuthority, Disallowed, My, Root, TrustedPeople, TrustedPublisher -->
+    <add key="HighTrustCertificateStoreName" value="My" />
+    <!-- The location of the High Trust certificate in the Windows certificate store. Possible values: CurrentUser, LocalMachine -->
+    <add key="HighTrustCertificateStoreLocation" value="CurrentUser" />
+    <!-- The thumbprint / hash of the High Trust certificate in the Windows certificate store -->
+    <add key="HighTrustCertificateStoreThumbprint" value="bef80ea8c46391873e00a0ea588bd8feadd01d22" />
+
   </appSettings>
   <system.diagnostics>
     <sharedListeners>

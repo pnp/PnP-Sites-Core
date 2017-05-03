@@ -6,6 +6,7 @@ using System.Net;
 using System.Data.SqlClient;
 using System.Data;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OfficeDevPnP.Core.Tests
 {
@@ -73,14 +74,28 @@ namespace OfficeDevPnP.Core.Tests
                     AppSecret = ConfigurationManager.AppSettings["AppSecret"];
                 }
                 else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
-                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePath"]) &&
-                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePassword"]) &&
                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustIssuerId"]))
                 {
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     HighTrustCertificatePassword = ConfigurationManager.AppSettings["HighTrustCertificatePassword"];
                     HighTrustCertificatePath = ConfigurationManager.AppSettings["HighTrustCertificatePath"];
                     HighTrustIssuerId = ConfigurationManager.AppSettings["HighTrustIssuerId"];
+
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"]))
+                    {
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"], out StoreName result))
+                        {
+                            HighTrustCertificateStoreName = result;
+                        }
+                    }
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"]))
+                    {
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"], out StoreLocation result))
+                        {
+                            HighTrustCertificateStoreLocation = result;
+                        }
+                    }
+                    HighTrustCertificateStoreThumbprint = ConfigurationManager.AppSettings["HighTrustCertificateStoreThumbprint"].Replace(" ", string.Empty);
                 }
                 else
                 {
@@ -113,6 +128,21 @@ namespace OfficeDevPnP.Core.Tests
         /// The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
         /// </summary>
         public static String HighTrustIssuerId { get; set; }
+
+        /// <summary>
+        /// The name of the store in the Windows certificate store where the High Trust certificate is stored
+        /// </summary>
+        public static StoreName? HighTrustCertificateStoreName { get; set; }
+
+        /// <summary>
+        /// The location of the High Trust certificate in the Windows certificate store
+        /// </summary>
+        public static StoreLocation? HighTrustCertificateStoreLocation { get; set; }
+
+        /// <summary>
+        /// The thumbprint / hash of the High Trust certificate in the Windows certificate store
+        /// </summary>
+        public static string HighTrustCertificateStoreThumbprint { get; set; }
 
         public static String AzureStorageKey
         {
