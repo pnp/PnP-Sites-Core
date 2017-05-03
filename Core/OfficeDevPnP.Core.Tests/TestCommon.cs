@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests
                 else
                 {
                     Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
-                }                                
+                }
             }
             else
             {
@@ -72,13 +72,15 @@ namespace OfficeDevPnP.Core.Tests
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     AppSecret = ConfigurationManager.AppSettings["AppSecret"];
                 }
-                else if(!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
+                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePath"]) &&
-                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePassword"]))
+                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificatePassword"]) &&
+                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustIssuerId"]))
                 {
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     HighTrustCertificatePassword = ConfigurationManager.AppSettings["HighTrustCertificatePassword"];
                     HighTrustCertificatePath = ConfigurationManager.AppSettings["HighTrustCertificatePath"];
+                    HighTrustIssuerId = ConfigurationManager.AppSettings["HighTrustIssuerId"];
                 }
                 else
                 {
@@ -86,9 +88,9 @@ namespace OfficeDevPnP.Core.Tests
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Properties
+        #region Properties
         public static string TenantUrl { get; set; }
         public static string DevSiteUrl { get; set; }
         static string UserName { get; set; }
@@ -106,6 +108,11 @@ namespace OfficeDevPnP.Core.Tests
         /// The password of the PFX file for the High Trust
         /// </summary>
         public static String HighTrustCertificatePassword { get; set; }
+
+        /// <summary>
+        /// The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+        /// </summary>
+        public static String HighTrustIssuerId { get; set; }
 
         public static String AzureStorageKey
         {

@@ -27,10 +27,12 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             string clientId = TestCommon.AppId;
             string certificatePath = TestCommon.HighTrustCertificatePath;
             string certificatePassword = TestCommon.HighTrustCertificatePassword;
+            string certificateIssuerId = TestCommon.HighTrustIssuerId;
 
             if (String.IsNullOrEmpty(clientId) ||
                 String.IsNullOrEmpty(certificatePath) ||
                 String.IsNullOrEmpty(certificatePassword) ||
+                String.IsNullOrEmpty(certificateIssuerId) ||
                 String.IsNullOrEmpty(siteUrl))
             {
                 Assert.Inconclusive("Not enough information to execute this test is passed via the app.config file.");
@@ -41,7 +43,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             try
             {
                 // Instantiate a ClientContext object based on the defined high trust certificate
-                cc = new AuthenticationManager().GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificatePath, certificatePassword);
+                cc = new AuthenticationManager().GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificatePath, certificatePassword, certificateIssuerId);
 
                 // Check if we can read a property from the site
                 cc.Load(cc.Web, w => w.Title);
