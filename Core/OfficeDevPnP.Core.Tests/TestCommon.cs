@@ -83,14 +83,16 @@ namespace OfficeDevPnP.Core.Tests
 
                     if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"]))
                     {
-                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"], out StoreName result))
+                        StoreName result;
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"], out result))
                         {
                             HighTrustCertificateStoreName = result;
                         }
                     }
                     if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"]))
                     {
-                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"], out StoreLocation result))
+                        StoreLocation result;
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"], out result))
                         {
                             HighTrustCertificateStoreLocation = result;
                         }
