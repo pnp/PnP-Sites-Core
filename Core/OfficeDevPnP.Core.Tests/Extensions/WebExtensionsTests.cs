@@ -450,6 +450,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 // Arrange
                 var creationInfo = new ProvisioningTemplateCreationInformation(web);
                 creationInfo.ContentTypeGroupsToInclude.Add(contentTypeGroupName);
+                creationInfo.HandlersToProcess = Handlers.ContentTypes;
 
                 // Act
                 var template = web.GetProvisioningTemplate(creationInfo);
@@ -469,12 +470,13 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Arrange
                 var creationInfo = new ProvisioningTemplateCreationInformation(web);
+                creationInfo.HandlersToProcess = Handlers.ContentTypes;
 
                 // Act
                 var template = web.GetProvisioningTemplate(creationInfo);
 
                 // Assert
-                Assert.IsTrue(template.ContentTypes.Count > 1);
+                Assert.IsTrue(template.ContentTypes.Count >= 1);
             }
         }
         #endregion
