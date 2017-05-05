@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webPart.Title);
                                     var wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
-                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents).Trim(new[] { '\n', ' ' });
+                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents, "~site", "~sitecollection").Trim(new[] { '\n', ' ' });
                                     wpEntity.WebPartZone = webPart.Zone;
                                     wpEntity.WebPartIndex = (int)webPart.Order;
                                     var wpd = web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
