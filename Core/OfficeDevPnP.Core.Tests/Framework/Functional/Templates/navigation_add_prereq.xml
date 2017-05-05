@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="navigation_add_prereq" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Features>
+    <pnp:SiteFeatures>
+      <pnp:Feature ID="f6924d36-2fa8-4f0b-b16d-06b7250180fa" Description="Publishing site feature" />
+    </pnp:SiteFeatures>
+    <pnp:WebFeatures>
+      <pnp:Feature ID="94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb" Description="Publishing web feature" />
+    </pnp:WebFeatures>
+  </pnp:Features>
+  <pnp:TermGroups>
+    <!-- tenant/farm term group -->
+    <pnp:TermGroup Name="TG_1">
+      <pnp:TermSets>
+        <!-- Basic term set -->
+        <pnp:TermSet Name="TS_1_1" >
+          <pnp:Terms>
+            <!-- Terms with custom sort ordering-->
+            <pnp:Term Name="TS_1_1_1" CustomSortOrder="2" />
+            <pnp:Term Name="TS_1_1_2" CustomSortOrder="1" />
+          </pnp:Terms>
+        </pnp:TermSet>
+      </pnp:TermSets>
+    </pnp:TermGroup>
+  </pnp:TermGroups>
+</pnp:ProvisioningTemplate>

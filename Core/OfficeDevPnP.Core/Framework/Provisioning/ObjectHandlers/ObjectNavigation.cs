@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     internal class ObjectNavigation : ObjectHandlerBase
     {
         const string NavigationShowSiblings = "__NavigationShowSiblings";
-
+        private bool ClearWarningShown = false;
         public override string Name
         {
             get { return "Navigation"; }
@@ -101,6 +101,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         return parser;
                     }
 
+                    // Check if this is not a noscript site as navigation features are not supported
+                    if (web.IsNoScriptSite())
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Navigation_SkipProvisioning);
+                        return parser;
+                    }
+
                     // Retrieve the current web navigation settings
                     var navigationSettings = new WebNavigationSettings(web.Context, web);
                     web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
@@ -112,6 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             case GlobalNavigationType.Inherit:
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                                web.Navigation.UseShared = true;
                                 break;
                             case GlobalNavigationType.Managed:
                                 if (template.Navigation.GlobalNavigation.ManagedNavigation == null)
@@ -129,9 +137,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, scope);
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
                         }
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                         web.Context.ExecuteQueryRetry();
                     }
 
@@ -158,7 +167,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, scope);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -167,9 +176,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, scope);
+                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
                         }
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                         web.Context.ExecuteQueryRetry();
                     }
                 }
@@ -236,37 +246,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return siblingsEnabled;
         }
 
-        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, PnPMonitoredScope scope)
+        private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, false, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, false, clearNavigation, scope);
         }
 
-        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, PnPMonitoredScope scope)
+        private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation,  scope);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, PnPMonitoredScope scope)
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, bool clearNavigation, PnPMonitoredScope scope)
         {
             // Determine the target structural navigation
             var navigationType = currentNavigation ?
                 Enums.NavigationType.QuickLaunch :
                 Enums.NavigationType.TopNavigationBar;
-
-            // Remove existing nodes, if requested
-            if (structuralNavigation.RemoveExistingNodes)
+            if (structuralNavigation != null)
             {
-                web.DeleteAllNavigationNodes(navigationType);
-            }
+                // Remove existing nodes, if requested
+                if (structuralNavigation.RemoveExistingNodes || clearNavigation)
+                {
+                    if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
+                    {
+                        WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation", ProvisioningMessageType.Warning);
+                        ClearWarningShown = true;
+                    }
+                    web.DeleteAllNavigationNodes(navigationType);
+                }
 
-            // Provision root level nodes, and children recursively
-            ProvisionStructuralNavigationNodes(
-                web,
-                parser,
-                navigationType,
-                structuralNavigation.NavigationNodes,
-                scope
-                );
+                // Provision root level nodes, and children recursively
+                if (structuralNavigation.NavigationNodes.Any())
+                {
+                    ProvisionStructuralNavigationNodes(
+                        web,
+                        parser,
+                        navigationType,
+                        structuralNavigation.NavigationNodes,
+                        scope
+                    );
+                }
+            }
         }
 
         private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null)
@@ -418,7 +438,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
-            return (template.Navigation != null && 
+            return (template.Navigation != null &&
                 WebSupportsProvisionNavigation(web, template));
         }
     }
@@ -427,7 +447,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web)
         {
-            
+
             var result = new Model.NavigationNode
             {
                 Title = node.Title,

@@ -253,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     ((ServerException)ex).Message.Contains("A connection that was expected to be kept alive was closed by the server.")
                                     )
                                 {
-                                    WriteWarning($"Connection closed whilst adding Workflow Definition, trying again in {delay}ms", ProvisioningMessageType.Warning);
+                                    WriteMessage($"Connection closed whilst adding Workflow Definition, trying again in {delay}ms", ProvisioningMessageType.Warning);
 
                                     Thread.Sleep(delay);
 
@@ -284,7 +284,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingWorkflowSubscriptions.Any(s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId))
                         {
                             // Thus, delete it before adding it again!
-                            WriteWarning($"Workflow Subscription '{subscription.Name}' already exists. It will be updated.", ProvisioningMessageType.Warning);
+                            WriteMessage($"Workflow Subscription '{subscription.Name}' already exists. It will be updated.", ProvisioningMessageType.Warning);
                             workflowSubscription = existingWorkflowSubscriptions.FirstOrDefault((s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId));
 
                             if (workflowSubscription != null)

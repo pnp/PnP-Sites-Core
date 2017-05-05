@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Linq;
@@ -57,17 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionWorkflowsTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = Handlers.Lists | Handlers.Workflows;
-                ptci.FileConnector= new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-
-
-                var result = TestProvisioningTemplate(cc, "workflows_add_1605.xml", Handlers.Lists | Handlers.Workflows, null, ptci);
-                WorkflowValidator wv = new WorkflowValidator();
-                Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows, result.TargetTemplate.Workflows, result.TargetTokenParser));
-            }
+            new WorkflowImplementation().Workflows(centralSiteCollectionUrl);
         }
         #endregion
 
@@ -79,17 +70,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void WebWorkflowsTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.HandlersToProcess = Handlers.Lists | Handlers.Workflows;
-                ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
-
-
-                var result = TestProvisioningTemplate(cc, "workflows_add_1605.xml", Handlers.Lists | Handlers.Workflows, null, ptci);
-                WorkflowValidator wv = new WorkflowValidator();
-                Assert.IsTrue(wv.Validate(result.SourceTemplate.Workflows, result.TargetTemplate.Workflows, result.TargetTokenParser));
-            }
+            new WorkflowImplementation().Workflows(centralSubSiteUrl);
         }
         #endregion
     }

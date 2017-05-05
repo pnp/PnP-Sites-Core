@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Collections;
@@ -49,12 +50,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionPublishingTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                var result = TestProvisioningTemplate(cc, "publishing_add.xml", Handlers.Publishing);
-                PublishingValidator pubVal = new PublishingValidator();
-                Assert.IsTrue(pubVal.Validate(result.SourceTemplate.Publishing, result.TargetTemplate.Publishing, cc));
-            }
+            new PublishingImplementation().SiteCollectionPublishing(centralSiteCollectionUrl);
         }
         #endregion        
     }

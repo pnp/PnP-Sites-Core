@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,11 +21,41 @@ namespace System
             return ToDetailedString(exception, ExceptionOptions.Default);
         }
 
+        public static string ToDetailedString(this Exception exception, ClientRuntimeContext cc)
+        {
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
+
+            return ToDetailedString(exception, cc, ExceptionOptions.Default);
+        }
+
         public static string ToDetailedString(this Exception exception, ExceptionOptions options)
         {
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
+
+            return ToDetailedString(exception, null, ExceptionOptions.Default);
+        }
+
+        public static string ToDetailedString(this Exception exception, ClientRuntimeContext cc, ExceptionOptions options)
+        {
+            if (exception == null)
+            {
+                throw new ArgumentNullException(nameof(exception));
+            }
+
             var stringBuilder = new StringBuilder();
 
             AppendValue(stringBuilder, "Type", exception.GetType().FullName, options);
+
+            if (cc != null && !String.IsNullOrEmpty(cc.TraceCorrelationId))
+            {
+                AppendValue(stringBuilder, "TraceCorrelationId", cc.TraceCorrelationId, options);
+            }
 
             foreach (PropertyInfo property in exception
                 .GetType()

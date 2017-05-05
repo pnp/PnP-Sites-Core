@@ -26,10 +26,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 		public bool OverwriteSystemPropertyBagValues { get; set; }
 
         /// <summary>
+        /// If true, existing navigation nodes of the site (where applicable) will be cleared out before applying the navigation nodes from the template (if any). This setting will override any settings made in the template.
+        /// </summary>
+        public bool ClearNavigation { get; set; }
+        /// <summary>
         /// If true then duplicate id errors when the same importing datarows simply generate a warning don't stop the engine. Reason for this is being able to apply the same template multiple times (Delta handling)
         /// without that failing cause the same record is being added twice
         /// </summary>
         public bool IgnoreDuplicateDataRowErrors { get; set; }
+
+        /// <summary>
+        /// If true then any content types in the template will be provisioned to subwebs
+        /// </summary>
+        public bool ProvisionContentTypesToSubWebs { get; set; }
 
         public Handlers HandlersToProcess
         {

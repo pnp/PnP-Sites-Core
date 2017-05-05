@@ -153,15 +153,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var site = (web.Context as ClientContext).Site;
                 var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
                 web.Context.Load(siteCollectionTermGroup);
-                web.Context.ExecuteQueryRetry();
-                if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+                try
                 {
-                    web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
                     web.Context.ExecuteQueryRetry();
-                    foreach (var termSet in siteCollectionTermGroup.TermSets)
+                    if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                     {
-                        _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                        web.Context.ExecuteQueryRetry();
+                        foreach (var termSet in siteCollectionTermGroup.TermSets)
+                        {
+                            _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        }
                     }
+                }
+                catch (NullReferenceException)
+                {
+                    // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
                 }
             }
 
@@ -296,7 +303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public IEnumerable<string> GetLeftOverTokens(string input)
         {
             List<string> values = new List<string>();
-            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})|(?<token>\\{.+?\\})").OfType<Match>().Select(m => m.Value);
+            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})").OfType<Match>().Select(m => m.Value);
             foreach (var match in matches)
             {
                 Guid gout;
@@ -317,9 +324,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (tokensToSkip != null)
                     {
-                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
+                        if (filteredTokens.Any())
                         {
-                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            foreach (var filteredToken in filteredTokens)
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))
@@ -347,9 +355,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     origInput = input;
                     if (tokensToSkip != null)
                     {
-                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
+                        if (filteredTokens.Any())
                         {
-                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            foreach (var filteredToken in filteredTokens)
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))

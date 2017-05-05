@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
 using System.Collections;
@@ -51,16 +52,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [Timeout(15 * 60 * 1000)]
         public void SiteCollectionSecurityTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
-                ptci.IncludeSiteGroups = true;
-                ptci.HandlersToProcess = Handlers.SiteSecurity;
-
-                var result = TestProvisioningTemplate(cc, "security_add.xml", Handlers.SiteSecurity,null,ptci);
-                SecurityValidator sv= new SecurityValidator();
-                Assert.IsTrue(sv.Validate(result.SourceTemplate.Security, result.TargetTemplate.Security,result.TargetTokenParser,cc));
-            }
+            new SecurityImplementation().SiteCollectionSecurity(centralSiteCollectionUrl);
         }
         #endregion
     }
