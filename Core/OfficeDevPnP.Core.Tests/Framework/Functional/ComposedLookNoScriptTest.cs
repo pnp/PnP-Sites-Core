@@ -23,7 +23,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public ComposedLookNoScriptTest()
         {
-            isNoScriptSite = true;
             //debugMode = true;
             //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/bert1";
             //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/bert1/sub";
@@ -34,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            ClassInitBase(context);
+            ClassInitBase(context, true);
         }
 
         [ClassCleanup()]
