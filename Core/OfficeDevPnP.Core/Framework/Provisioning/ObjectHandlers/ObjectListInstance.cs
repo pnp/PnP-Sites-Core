@@ -1443,7 +1443,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var ct in contentTypesToRemove)
                 {
                     var shouldDelete = true;
-                    shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
+                    shouldDelete &= ((createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary
+                        && createdList.BaseTemplate != 851)
+                        || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
 
                     if (shouldDelete)
                     {

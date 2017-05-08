@@ -145,6 +145,43 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
+        public void DefaultContentTypeShouldBeRemovedFromProvisionedAssetLibraries()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Arrange
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = $"lists/{listName}";
+                listInstance.Title = listName;
+                // An asset must be created by using the 
+                // template type AND the template feature id
+                listInstance.TemplateType = 851;
+                listInstance.TemplateFeatureID = new Guid("4bcccd62-dcaf-46dc-a7d4-e38277ef33f4");
+                // Also attachements are not allowed on an asset list
+                listInstance.EnableAttachments = false;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.RemoveExistingContentTypes = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding
+                {
+                    ContentTypeId = BuiltInContentTypeId.DublinCoreName,
+                    Default = true
+                });
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+
+                // Act
+                ctx.Web.ApplyProvisioningTemplate(template);
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                var contentTypes = list.EnsureProperty(l => l.ContentTypes);
+                // Assert
+                // Asset list should only have the custom content type we defined
+                // and the folder content type
+                Assert.AreEqual(contentTypes.Count, 2);
+            }
+
+        }
+
+        [TestMethod]
         public void UpdatedListTitleShouldBeAvailableAsToken()
         {
             var listUrl = string.Format("lists/{0}", listName);
