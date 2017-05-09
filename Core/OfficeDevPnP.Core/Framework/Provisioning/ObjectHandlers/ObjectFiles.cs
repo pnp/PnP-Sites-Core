@@ -178,6 +178,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                         }
 
+                        //Add Publish support
+                        if (file.Level == Model.FileLevel.Published)
+                        {
+                            Log.Debug(Constants.LOGGING_SOURCE, "Publishing file");
+                            targetFile.Publish("");
+                            web.Context.ExecuteQueryRetry();
+                            Log.Debug(Constants.LOGGING_SOURCE, "Published file done");
+                        }
+
                         // Don't set security when nothing is defined. This otherwise breaks on files set outside of a list
                         if (file.Security != null &&
                             (file.Security.ClearSubscopes == true || file.Security.CopyRoleAssignments == true || file.Security.RoleAssignments.Count > 0))
