@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Tests;
 using System.IO;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
@@ -21,6 +22,8 @@ namespace Microsoft.SharePoint.Client.Tests
         private string _value_string = null;
         private int _value_int = 12345;
         const string APPNAME = "HelloWorldApp";
+        const string contentTypeName = "PnP Test Content Type";
+        const string contentTypeGroupName = "PnP Web Extensions Test";
         private ClientContext clientContext;
 
         #region Test initialize and cleanup
@@ -36,6 +39,22 @@ namespace Microsoft.SharePoint.Client.Tests
             clientContext.Load(clientContext.Site, s => s.Id);
             clientContext.ExecuteQueryRetry();
             clientContext.Site.ActivateFeature(Constants.FeatureId_Site_AppSideLoading);
+
+            var provisionTemplate = new ProvisioningTemplate();
+            var contentType = new OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType()
+            {
+                Id = "0x010100503B9E20E5455344BFAC2292DC6FAB81",
+                Name = contentTypeName,
+                Group = contentTypeGroupName,
+                Description = "Test Description",
+                Overwrite = true,
+                Hidden = false
+            };
+
+            provisionTemplate.ContentTypes.Add(contentType);
+            TokenParser parser = new TokenParser(clientContext.Web, provisionTemplate);
+            new ObjectContentType().ProvisionObjects(clientContext.Web, provisionTemplate, parser,
+                new ProvisioningTemplateApplyingInformation());
         }
 
         [TestCleanup()]
@@ -98,6 +117,14 @@ namespace Microsoft.SharePoint.Client.Tests
                     break;
                 }
             }
+
+            var ct = clientContext.Web.GetContentTypeByName(contentTypeName);
+            if (ct != null)
+            {
+                ct.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+
             clientContext.Dispose();
         }
         #endregion
@@ -410,6 +437,46 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 var template = clientContext.Web.GetProvisioningTemplate();
                 Assert.IsInstanceOfType(template, typeof(ProvisioningTemplate));
+            }
+        }
+
+        [TestMethod]
+        public void GetProvisioningTemplateWithSelectedContentTypesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // Arrange
+                var creationInfo = new ProvisioningTemplateCreationInformation(web);
+                creationInfo.ContentTypeGroupsToInclude.Add(contentTypeGroupName);
+                creationInfo.HandlersToProcess = Handlers.ContentTypes;
+
+                // Act
+                var template = web.GetProvisioningTemplate(creationInfo);
+
+                // Assert
+                Assert.AreEqual(1, template.ContentTypes.Count);
+                StringAssert.Equals(contentTypeGroupName, template.ContentTypes[0].Group);
+            }
+        }
+
+        [TestMethod]
+        public void GetProvisioningTemplateWithOutSelectedContentTypesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // Arrange
+                var creationInfo = new ProvisioningTemplateCreationInformation(web);
+                creationInfo.HandlersToProcess = Handlers.ContentTypes;
+
+                // Act
+                var template = web.GetProvisioningTemplate(creationInfo);
+
+                // Assert
+                Assert.IsTrue(template.ContentTypes.Count >= 1);
             }
         }
         #endregion

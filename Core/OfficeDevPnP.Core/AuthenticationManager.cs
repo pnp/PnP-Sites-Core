@@ -28,7 +28,6 @@ namespace OfficeDevPnP.Core
         USGovernment=4
     }
 
-
     /// <summary>
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
@@ -371,6 +370,82 @@ namespace OfficeDevPnP.Core
         {
             ClientContext clientContext = new ClientContext(siteUrl);
             clientContext.Credentials = new NetworkCredential(user, password, domain);
+            return clientContext;
+        }
+
+        /// <summary>
+        /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="clientId">The SharePoint Client ID</param>
+        /// <param name="certificatePath">Full path to the private key certificate (.pfx) used to authenticate</param>
+        /// <param name="certificatePassword">Password used for the private key certificate (.pfx)</param>
+        /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
+        /// <returns>Authenticated SharePoint ClientContext</returns>
+        public ClientContext GetHighTrustCertificateAppOnlyAuthenticatedContext(string siteUrl, string clientId, string certificatePath, string certificatePassword, string certificateIssuerId)
+        {
+            var certPassword = Utilities.EncryptionUtility.ToSecureString(certificatePassword);
+            return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificatePath, certPassword, certificateIssuerId);
+        }
+
+        /// <summary>
+        /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="clientId">The SharePoint Client ID</param>
+        /// <param name="certificatePath">Full path to the private key certificate (.pfx) used to authenticate</param>
+        /// <param name="certificatePassword">Password used for the private key certificate (.pfx)</param>
+        /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
+        /// <returns>Authenticated SharePoint ClientContext</returns>
+        public ClientContext GetHighTrustCertificateAppOnlyAuthenticatedContext(string siteUrl, string clientId, string certificatePath, SecureString certificatePassword, string certificateIssuerId)
+        {
+            var certificate = new X509Certificate2(certificatePath, certificatePassword);
+            return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificate, certificateIssuerId);
+        }
+
+        /// <summary>
+        /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="clientId">The SharePoint Client ID</param>
+        /// <param name="storeName">The name of the store for the certificate</param>
+        /// <param name="storeLocation">The location of the store for the certificate</param>
+        /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
+        /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
+        /// <returns>Authenticated SharePoint ClientContext</returns>
+        public ClientContext GetHighTrustCertificateAppOnlyAuthenticatedContext(string siteUrl, string clientId, StoreName storeName, StoreLocation storeLocation, string thumbPrint, string certificateIssuerId)
+        {
+            // Retrieve the certificate from the Windows Certificate Store
+            var cert = Utilities.X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
+            return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, cert, certificateIssuerId);
+        }
+
+        /// <summary>
+        /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+        /// </summary>
+        /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
+        /// <param name="clientId">The SharePoint Client ID</param>
+        /// <param name="certificate">Private key certificate (.pfx) used to authenticate</param>
+        /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
+        /// <returns>Authenticated SharePoint ClientContext</returns>
+        public ClientContext GetHighTrustCertificateAppOnlyAuthenticatedContext(string siteUrl, string clientId, X509Certificate2 certificate, string certificateIssuerId)
+        {
+            var siteUri = new Uri(siteUrl);
+            var clientContext = new ClientContext(siteUri);
+
+            // Feed the TokenHelper the SharePoint information so it doesn't try to fetch it from the config file
+            TokenHelper.Realm = TokenHelper.GetRealmFromTargetUrl(siteUri);
+            TokenHelper.ClientId = clientId;
+            TokenHelper.ClientCertificate = certificate;
+            TokenHelper.IssuerId = certificateIssuerId;
+
+            // Configure the handler to generate the Bearer Access Token on each request and add it to the request
+            clientContext.ExecutingWebRequest += (sender, args) =>
+            {
+                var accessToken = TokenHelper.GetS2SAccessTokenWithWindowsIdentity(siteUri, null);
+                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
+            };
+
             return clientContext;
         }
         #endregion
