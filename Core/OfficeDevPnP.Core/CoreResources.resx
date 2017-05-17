@@ -1078,4 +1078,7 @@
   <data name="Provisioning_ObjectHandlers_Navigation_SkipProvisioning" xml:space="preserve">
     <value>Skip applying of navigation settings on NoScript sites.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout" xml:space="preserve">
+    <value>Updating field {0} received a timeout when pushing changes to lists</value>
+  </data>
 </root>
