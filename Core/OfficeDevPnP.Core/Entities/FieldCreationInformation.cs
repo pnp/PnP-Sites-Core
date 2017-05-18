@@ -15,6 +15,16 @@ namespace OfficeDevPnP.Core.Entities
         public string Group { get; set; }
         public bool Required { get; set; }
 
+#if !SP2013
+        /// <summary>
+        /// Ignored currently for SP2016
+        /// </summary>
+        public Guid ClientSideComponentId { get; set; }
+        /// <summary>
+        /// Ignored currently for SP2016
+        /// </summary>
+        public string ClientSideComponentProperties { get; set; }
+#endif
         public FieldCreationInformation(string fieldType)
         {
             FieldType = fieldType;
