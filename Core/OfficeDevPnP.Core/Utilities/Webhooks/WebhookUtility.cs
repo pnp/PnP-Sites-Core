@@ -25,7 +25,6 @@ namespace OfficeDevPnP.Core.Utilities
     /// <summary>
     /// Class containing utility methods to manage Webhook on a SharePoint resource
     /// Adapted from https://github.com/SharePoint/sp-dev-samples/blob/master/Samples/WebHooks.List/SharePoint.WebHooks.Common/WebHookManager.cs
-    /// 
     /// </summary>
     internal class WebhookUtility
     {
@@ -35,6 +34,14 @@ namespace OfficeDevPnP.Core.Utilities
         // TODO Implement with upcoming support of other types
         //private const string WebIdentifierFormat = @"{0}/_api/web('{1}')";
 
+        /// <summary>
+        /// Add a Webhook subscription to a SharePoint resource
+        /// </summary>
+        /// <param name="webUrl">Url of the site holding the list</param>
+        /// <param name="resourceType">The type of Hookable SharePoint resource</param>
+        /// <param name="accessToken">Access token to authenticate against SharePoint</param>
+        /// <param name="subscription">The Webhook subscription to add</param>
+        /// <returns>The added subscription object</returns>
         public static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl,
             EHookableResourceType resourceType,
         string accessToken, WebhookSubscription subscription)
@@ -71,6 +78,17 @@ namespace OfficeDevPnP.Core.Utilities
             return JsonConvert.DeserializeObject<WebhookSubscription>(responseString);
         }
 
+        /// <summary>
+        /// Add a Webhook subscription to a SharePoint resource
+        /// </summary>
+        /// <param name="webUrl">Url of the site holding the list</param>
+        /// <param name="resourceType">The type of Hookable SharePoint resource</param>
+        /// <param name="accessToken">Access token to authenticate against SharePoint</param>
+        /// <param name="resourceId">The Unique Identifier of the resource</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="validityInMonths">The validity of the subscriptions in months</param>
+        /// <returns>The added subscription object</returns>
         public static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl,
             EHookableResourceType resourceType, string accessToken,
             string resourceId, string notificationUrl, string clientState = null, int validityInMonths = 3)
@@ -164,6 +182,15 @@ namespace OfficeDevPnP.Core.Utilities
             return JsonConvert.DeserializeObject<ResponseModel<WebhookSubscription>>(responseString);
         }
 
+        /// <summary>
+        /// Get the proper identifier Url according to the resource type
+        /// (No great utility currently with the support for lists only, 
+        /// but will be later with the support for other resources)
+        /// </summary>
+        /// <param name="resourceType">The type of resource</param>
+        /// <param name="webUrl">The URL of the SharePoint web</param>
+        /// <param name="id">The id part of the resource</param>
+        /// <returns>The well forned resource identifier URL</returns>
         private static string GetResourceIdentifier(EHookableResourceType resourceType, string webUrl, string id)
         {
             switch (resourceType)

@@ -141,6 +141,16 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Webhooks
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="expirationDate">The expiration date of the subscription</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
         public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl,
             DateTime expirationDate, string clientState = null, string accessToken = null)
         {
@@ -157,6 +167,16 @@ namespace Microsoft.SharePoint.Client
                 }).Result;
         }
 
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="validityInMonths">The validity of the subscriptions in months</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
         public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl,
             int validityInMonths = 3, string clientState = null, string accessToken = null)
         {
@@ -168,6 +188,14 @@ namespace Microsoft.SharePoint.Client
                 notificationUrl, clientState, validityInMonths).Result;
         }
 
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
         public static bool RemoveWebhookSubscription(this List list, string subscriptionId, string accessToken = null)
         {
             // Get the access from the client context if not specified.
@@ -177,17 +205,39 @@ namespace Microsoft.SharePoint.Client
                 subscriptionId, accessToken).Result;
         }
 
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
         public static bool RemoveWebhookSubscription(this List list, Guid subscriptionId, string accessToken = null)
         {
             return RemoveWebhookSubscription(list, subscriptionId.ToString(), accessToken);
         }
 
-
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscription">The subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
         public static bool RemoveWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
         {
             return RemoveWebhookSubscription(list, subscription.Id, accessToken);
         }
 
+        /// <summary>
+        /// Get all the existing Webhooks subscriptions of the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to get the subscriptions of</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The collection of Webhooks subscriptions of the list</returns>
         public static IList<WebhookSubscription> GetAllWebhookSubscriptions(this List list, string accessToken = null)
         {
             // Get the access from the client context if not specified.
