@@ -14,6 +14,8 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.Webhooks;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -134,6 +136,65 @@ namespace Microsoft.SharePoint.Client
                 return eventReceiverDefinitions.FirstOrDefault();
             }
             return null;
+        }
+
+        #endregion
+
+        #region Webhooks
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl,
+            DateTime expirationDate, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? Utility.GetAccessTokenFromClientContext(list.Context);
+
+            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                EHookableResourceType.List, accessToken, new WebhookSubscription()
+                {
+                    Resource = list.Id.ToString(),
+                    ExpirationDateTime = expirationDate,
+                    NotificationUrl = notificationUrl,
+                    ClientState = clientState
+                }).Result;
+        }
+
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl,
+            int validityInMonths = 3, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? Utility.GetAccessTokenFromClientContext(list.Context);
+
+            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                EHookableResourceType.List, accessToken, list.Id.ToString(),
+                notificationUrl, clientState, validityInMonths).Result;
+        }
+
+        public static bool RemoveWebhookSubscription(this List list, string subscriptionId, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? Utility.GetAccessTokenFromClientContext(list.Context);
+
+            return WebhookUtility.DeleteWebhookSubscriptionAsync(list.Context.Url, EHookableResourceType.List, list.Id.ToString(),
+                subscriptionId, accessToken).Result;
+        }
+
+        public static bool RemoveWebhookSubscription(this List list, Guid subscriptionId, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscriptionId.ToString(), accessToken);
+        }
+
+
+        public static bool RemoveWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscription.Id, accessToken);
+        }
+
+        public static IList<WebhookSubscription> GetAllWebhookSubscriptions(this List list, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? Utility.GetAccessTokenFromClientContext(list.Context);
+
+            return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url,
+                EHookableResourceType.List, list.Id.ToString(), accessToken).Result.Value;
         }
 
         #endregion
@@ -615,7 +676,7 @@ namespace Microsoft.SharePoint.Client
                 var wp = wpd.WebPart;
 
                 if (wp.Properties.FieldValues.Keys.Contains("JSLink"))
-                { 
+                {
                     wp.Properties["JSLink"] = jslink;
                     wpd.SaveWebPartChanges();
 
@@ -903,7 +964,7 @@ namespace Microsoft.SharePoint.Client
 
             // Get role type
             var roleDefinition = web.RoleDefinitions.GetByType(roleType);
-            var rdbColl = new RoleDefinitionBindingCollection(web.Context) {roleDefinition};
+            var rdbColl = new RoleDefinitionBindingCollection(web.Context) { roleDefinition };
 
             // Set custom permission to the list
             list.RoleAssignments.Add(principal, rdbColl);
