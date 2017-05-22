@@ -21,12 +21,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = web.Context as ClientContext;
 
-                // if this is a sub site then we're not enabling the site collection scoped features
-                if (!web.IsSubSite())
-                {
-                    var siteFeatures = template.Features.SiteFeatures;
-                    ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures, scope);
-                }
+                var siteFeatures = template.Features.SiteFeatures;
+                ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures, scope);
 
                 var webFeatures = template.Features.WebFeatures;
                 ProvisionFeaturesImplementation<Web>(web, webFeatures, scope);
