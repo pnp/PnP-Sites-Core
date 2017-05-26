@@ -140,13 +140,39 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                 {
                                     DropAttribute(targetTerm, "SourceTermId");
                                 }
+                                if (sourceTerm.Attribute("IsSourceTerm") == null)
+                                {
+                                    DropAttribute(targetTerm, "IsSourceTerm");
+                                }
                                 if (sourceTerm.Attribute("IsReused") == null)
                                 {
                                     DropAttribute(targetTerm, "IsReused");
                                 }
-                                if (sourceTerm.Attribute("IsSourceTerm") == null)
+                                else
                                 {
-                                    DropAttribute(targetTerm, "IsSourceTerm");
+                                    if ((sourceTerm.Attribute("IsReused").Value.ToBoolean() && 
+                                        (sourceTerm.Attribute("IsSourceTerm") != null && !sourceTerm.Attribute("IsSourceTerm").Value.ToBoolean())))
+                                    {
+                                        // When a reused term had custom local properties defined then we'll export both the local properties of the "base" term and the local properties 
+                                        // of reused term. This needs to be taken in account in comparison.
+                                        var sourceLocalCustomProperties = sourceTerm.Descendants(ns + "LocalCustomProperties");
+                                        if (sourceLocalCustomProperties != null && sourceLocalCustomProperties.Any())
+                                        {
+                                            var targetLocalCustomProperties = targetTerm.Descendants(ns + "LocalCustomProperties");
+                                            if (targetLocalCustomProperties != null && targetLocalCustomProperties.Any())
+                                            {
+                                                // get target local properties
+                                                foreach(var targetLocalCustomProperty in targetLocalCustomProperties.Descendants().ToList())
+                                                {
+                                                    var sourceLocalCustomProperty = sourceLocalCustomProperties.Descendants().FirstOrDefault(p => p.Attribute("Key").Value.Equals(targetLocalCustomProperty.Attribute("Key").Value, StringComparison.InvariantCultureIgnoreCase));
+                                                    if (sourceLocalCustomProperty == null)
+                                                    {
+                                                        targetLocalCustomProperty.Remove();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }

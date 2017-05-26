@@ -589,7 +589,7 @@ namespace OfficeDevPnP.Core.Utilities
 		/// <returns>String representation of the realm GUID</returns>
 		public static string GetRealmFromTargetUrl(Uri targetApplicationUri)
         {
-            WebRequest request = WebRequest.Create(targetApplicationUri + "/_vti_bin/client.svc");
+            WebRequest request = WebRequest.Create(targetApplicationUri.ToString().TrimEnd(new[] { '/' }) + "/_vti_bin/client.svc");
             request.Headers.Add("Authorization: Bearer ");
 
             try
@@ -935,8 +935,14 @@ namespace OfficeDevPnP.Core.Utilities
 
 		private static readonly string ClientSigningCertificatePath = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePath");
         private static readonly string ClientSigningCertificatePassword = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePassword");
-        private static readonly X509Certificate2 ClientCertificate = (string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword);
-        private static readonly X509SigningCredentials SigningCredentials = (ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
+        public static X509Certificate2 ClientCertificate = (string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword);
+        private static X509SigningCredentials SigningCredentials
+        {
+            get
+            {
+                return (ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
+            }
+        }
 
         #endregion
 

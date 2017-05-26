@@ -55,7 +55,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 case XMLPnPSchemaVersion.V201512:
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLPnPSchemaVersion.V201605:
-                    return (new XMLPnPSchemaV201605Formatter());
                 default:
                     return (new XMLPnPSchemaV201605Formatter());
             }
@@ -81,7 +80,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12:
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05:
-                    return (new XMLPnPSchemaV201605Formatter());
                 default:
                     return (new XMLPnPSchemaV201605Formatter());
             }

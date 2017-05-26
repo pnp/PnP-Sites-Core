@@ -753,6 +753,9 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_" xml:space="preserve">
     <value>Updating list {0} failed: {1} : {2}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_" xml:space="preserve">
+    <value>Updating list {0} with FieldRef {1}</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_" xml:space="preserve">
     <value>Field schema has no ID attribute: {0}</value>
   </data>
@@ -832,7 +835,7 @@
     <value>Add users failed for group '{0}': {1} : {2}</value>
   </data>
   <data name="Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_" xml:space="preserve">
-    <value>Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}</value>
+    <value>Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore</value>
   </data>
   <data name="SiteToTemplateConversion_Base_template_available___0_" xml:space="preserve">
     <value>Base template available: {0}</value>
@@ -1006,6 +1009,9 @@
   <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
     <value>SendAsync threw following exception: {0}.</value>
   </data>
+  <data name="GraphExtensions_ErrorOccured" xml:space="preserve">
+    <value>Graph call returned the following error: {0}.</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript" xml:space="preserve">
     <value>Custom action '{0}' was not added/updated because the site was configured for noscript.</value>
   </data>
@@ -1048,6 +1054,9 @@
   <data name="ListExtensions_SkipNoCrawlLists" xml:space="preserve">
     <value>Skipping reindexing of the list because it's marked as a 'no crawl' list.</value>
   </data>
+  <data name="ListExtensions_IncorrectValueFormat" xml:space="preserve">
+    <value>Value should be in the format of &lt;id&gt;;#&lt;value&gt; (Example 1: 1;#Foo Bar   Example 2: 1;#Foo Bar;#2;#Bar Foo)</value>
+  </data>
   <data name="WebExtensions_CreatePublishingImageRendition" xml:space="preserve">
     <value>Creating Image Rendition '{0}' of width '{1}' and height '{2}'.</value>
   </data>
@@ -1059,5 +1068,14 @@
   </data>
   <data name="Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration" xml:space="preserve">
     <value>The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed" xml:space="preserve">
+    <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
+  </data>
+  <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
+    <value>The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_SkipProvisioning" xml:space="preserve">
+    <value>Skip applying of navigation settings on NoScript sites.</value>
   </data>
 </root>

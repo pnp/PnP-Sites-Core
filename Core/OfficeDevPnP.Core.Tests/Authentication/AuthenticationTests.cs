@@ -34,6 +34,11 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         }
         #endregion
 
+        /// <summary>
+        /// Important: the Azure AD you're using here needs to be consented first, otherwise you'll get an access denied.
+        /// Consenting can be done by taking this URL and replacing the client_id parameter value with yours: https://login.microsoftonline.com/common/oauth2/authorize?state=e82ea723-7112-472c-94d4-6e66c0ca52b6&response_type=code+id_token&scope=openid&nonce=c328d2df-43d1-4e4d-a884-7cfb492beadc&client_id=b77caa50-d9ba-4b30-aad6-a40effa2ecd0&redirect_uri=https:%2f%2flocalhost:44304%2fHome%2f&resource=https:%2f%2fgraph.windows.net%2f&prompt=admin_consent&response_mode=form_post
+        /// To debug this catch the returned access token and look http://jwt.calebb.net/ to see if the token contains roles claims
+        /// </summary>
         [TestMethod]
         public void AzureADAuthFullControlPermissionTest()
         {

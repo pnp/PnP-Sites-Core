@@ -789,6 +789,16 @@ Returns the field if it exists. Null if it does not exist.
 > ##### Return value
 > Field
 
+#### GetFieldByInternalName(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
+Returns the field if it exists. Null if does not exist.
+> ##### Parameters
+> **web:** Web to be processed
+
+> **internalName:** If true, search parent sites and root site
+
+> ##### Return value
+> 
+
 #### GetFieldByName``1(Microsoft.SharePoint.Client.FieldCollection,System.String)
 Returns the field if it exists. Null if it does not exist.
 > ##### Parameters
@@ -1720,7 +1730,7 @@ Checks if a specific folder exists
 > ##### Return value
 > 
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.Folder,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Web,Microsoft.SharePoint.Client.Folder,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Ensure that the folder structure is created. This also ensures hierarchy of folders.
 > ##### Parameters
 > **web:** Web to be processed - can be root web or sub site
@@ -1729,10 +1739,12 @@ Ensure that the folder structure is created. This also ensures hierarchy of fold
 
 > **folderPath:** Folder path
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The folder structure
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Web,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
 Checks if the folder exists at the top level of the web site, and if it does not exist creates it. Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
 > ##### Parameters
@@ -1740,10 +1752,12 @@ Checks if the folder exists at the top level of the web site, and if it does not
 
 > **folderName:** Folder name to retrieve or create
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The existing or newly created folder
 
-#### EnsureFolder(Microsoft.SharePoint.Client.Folder,System.String)
+#### EnsureFolder(Microsoft.SharePoint.Client.Folder,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
 Checks if the subfolder exists, and if it does not exist creates it.
 > ##### Parameters
@@ -1751,16 +1765,20 @@ Checks if the subfolder exists, and if it does not exist creates it.
 
 > **folderName:** Folder name to retrieve or create
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > The existing or newly created folder
 
-#### EnsureFolderPath(Microsoft.SharePoint.Client.Web,System.String)
+#### EnsureFolderPath(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.Folder,System.Object}}[])
 If the specified path is inside an existing list, then the folder is created inside that list. Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
 Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
 > ##### Parameters
 > **web:** Web to check for the specified folder
 
 > **webRelativeUrl:** Path to the folder, relative to the web site
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > The existing or newly created folder
@@ -2031,6 +2049,30 @@ Apply a policy to a site
 
 > ##### Return value
 > True if applied, false otherwise
+
+#### IsClosedBySitePolicy(Microsoft.SharePoint.Client.Web)
+Check if a site is closed
+> ##### Parameters
+> **web:** Web to operate on
+
+> ##### Return value
+> True if site is closed, false otherwise
+
+#### SetClosedBySitePolicy(Microsoft.SharePoint.Client.Web)
+Close a site, if it has a site policy applied and is currently not closed
+> ##### Parameters
+> **web:** 
+
+> ##### Return value
+> True if site was closed, false otherwise
+
+#### SetOpenBySitePolicy(Microsoft.SharePoint.Client.Web)
+Open a site, if it has a site policy applied and is currently closed
+> ##### Parameters
+> **web:** 
+
+> ##### Return value
+> True if site was opened, false otherwise
 
 ## SharePoint.Client.JavaScriptExtensions
             
@@ -2483,6 +2525,16 @@ Sets JS link customization for a list form
 > **jslink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
 
 
+#### SetJSLinkCustomizations(Microsoft.SharePoint.Client.List,System.String,System.String)
+Sets JS link customization for a list view page
+> ##### Parameters
+> **list:** SharePoint list
+
+> **serverRelativeUrl:** url of the view page
+
+> **jslink:** JSLink to set to the form. Set to empty string to remove the set JSLink customization. Specify multiple values separated by pipe symbol. For e.g.: ~sitecollection/_catalogs/masterpage/jquery-2.1.0.min.js|~sitecollection/_catalogs/masterpage/custom.js
+
+
 #### SetLocalizationLabelsForList(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.String)
 Can be used to set translations for different cultures.
 > ##### Parameters
@@ -2531,12 +2583,14 @@ Returns the GUID id of a list
 > **System.ArgumentNullException:** listName is null
 
 
-#### GetListByTitle(Microsoft.SharePoint.Client.Web,System.String)
+#### GetListByTitle(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.List,System.Object}}[])
 Get list by using Title
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site
 
 > **listTitle:** Title of the list to return
+
+> **expressions:** Additional list of lambda expressions of properties to load alike l => l.BaseType
 
 > ##### Return value
 > Loaded list instance matching to title or null
@@ -2546,12 +2600,14 @@ Get list by using Title
 > **System.ArgumentNullException:** listTitle is null
 
 
-#### GetListByUrl(Microsoft.SharePoint.Client.Web,System.String)
+#### GetListByUrl(Microsoft.SharePoint.Client.Web,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.List,System.Object}}[])
 Get list by using Url
 > ##### Parameters
 > **web:** Web (site) to be processed
 
 > **webRelativeUrl:** Url of list relative to the web (site), e.g. lists/testlist
+
+> **expressions:** Additional list of lambda expressions of properties to load alike l => l.BaseType
 
 > ##### Return value
 > 
@@ -2684,32 +2740,42 @@ Create view to existing list
 > **paged:** 
 
 
-#### GetViewById(Microsoft.SharePoint.Client.List,System.Guid)
+#### GetViewById(Microsoft.SharePoint.Client.List,System.Guid,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.View,System.Object}}[])
 Gets a view by Id
 > ##### Parameters
 > **list:** 
 
 > **id:** 
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > returns null if not found
 
-#### GetViewByName(Microsoft.SharePoint.Client.List,System.String)
+#### GetViewByName(Microsoft.SharePoint.Client.List,System.String,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.View,System.Object}}[])
 Gets a view by Name
 > ##### Parameters
 > **list:** 
 
 > **name:** 
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > returns null if not found
 
 #### SetDefaultColumnValues(Microsoft.SharePoint.Client.List,System.Collections.Generic.IEnumerable{OfficeDevPnP.Core.Entities.IDefaultColumnValue})
-Sets default values for column values. In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword") Column values are defined by the DefaultColumnValue class that has 3 properties: RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field Terms : A collection of Taxonomy terms to set
+Sets default values for column values. In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword") Column values are defined by the DefaultColumnValue class that has 3 properties: RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field Terms : A collection of Taxonomy terms to set Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency
 > ##### Parameters
 > **list:** 
 
 > **columnValues:** 
+
+
+#### GetDefaultColumnValues(Microsoft.SharePoint.Client.List)
+Gets default values for column values. The returned list contains one dictionary per default setting per folder. Each dictionary has the following keys set: Path, Field, Value Path: Relative path to the library/folder Field: Internal name of the field which has a default value Value: The default value for the field
+> ##### Parameters
+> **list:** 
 
 
 #### ReIndexList(Microsoft.SharePoint.Client.List)
@@ -2780,6 +2846,8 @@ Add a node to quick launch, top navigation bar or search navigation. The node wi
 
 > **asLastNode:** true if the link should be added as the last node of the collection
 
+> ##### Return value
+> Newly added NavigationNode
 
 #### DeleteNavigationNode(Microsoft.SharePoint.Client.Web,System.String,System.String,OfficeDevPnP.Core.Enums.NavigationType)
 Deletes a navigation node from the quickLaunch or top navigation bar
@@ -2853,18 +2921,22 @@ Adds custom action to a site collection. If the CustomAction exists the item wil
 > ##### Return value
 > True if action was successfull
 
-#### GetCustomActions(Microsoft.SharePoint.Client.Web)
+#### GetCustomActions(Microsoft.SharePoint.Client.Web,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.UserCustomAction,System.Object}}[])
 Returns all custom actions in a web
 > ##### Parameters
 > **web:** The web to process
 
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
+
 > ##### Return value
 > 
 
-#### GetCustomActions(Microsoft.SharePoint.Client.Site)
+#### GetCustomActions(Microsoft.SharePoint.Client.Site,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.UserCustomAction,System.Object}}[])
 Returns all custom actions in a web
 > ##### Parameters
 > **site:** The site to process
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > 
@@ -3160,6 +3232,28 @@ Deletes a web part from a page
 > **System.ArgumentNullException:** Thrown when serverRelativePageUrl or title is null
 
 
+#### AddClientSidePage(Microsoft.SharePoint.Client.Web,System.String,System.Boolean)
+Adds a client side "modern" page to a "classic" or "modern" site
+> ##### Parameters
+> **web:** Web to add the page to
+
+> **pageName:** Name (e.g. demo.aspx) of the page to be added
+
+> **alreadyPersist:** Already persist the created, empty, page before returning the instantiated instance
+
+> ##### Return value
+> A instance
+
+#### LoadClientSidePage(Microsoft.SharePoint.Client.Web,System.String)
+Loads a client side "modern" page
+> ##### Parameters
+> **web:** Web to load the page from
+
+> **pageName:** Name (e.g. demo.aspx) of the page to be loaded
+
+> ##### Return value
+> A instance
+
 #### AddWikiPage(Microsoft.SharePoint.Client.Web,System.String,System.String)
 Adds a blank Wiki page to the site pages library
 > ##### Parameters
@@ -3281,33 +3375,6 @@ Returns web part properties
 > **System.ArgumentNullException:** Thrown when key or serverRelativePageUrl is null
 
 
-#### AddPublishingPage(Microsoft.SharePoint.Client.Web,System.String,System.String,System.String,System.Boolean,Microsoft.SharePoint.Client.Folder,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Boolean)
-Adds the publishing page.
-> ##### Parameters
-> **web:** The web.
-
-> **pageName:** Name of the page.
-
-> **pageTemplateName:** Name of the page template/layout excluded the .aspx file extension.
-
-> **title:** The title of the target publishing page.
-
-> **publish:** Should the page be published or not?
-
-> **folder:** The target folder for the page, within the Pages library.
-
-> **startDate:** Start date for scheduled publishing.
-
-> **endDate:** End date for scheduled publishing.
-
-> **schedule:** Defines whether to define a schedule or not.
-
-> ##### Exceptions
-> **System.ArgumentNullException:** Thrown when key or pageName is a zero-length string or contains only white space
-
-> **System.ArgumentException:** Thrown when key or pageName is null
-
-
 #### AddNavigationFriendlyUrl(Microsoft.SharePoint.Client.Publishing.PublishingPage,Microsoft.SharePoint.Client.Web,System.String,System.String,Microsoft.SharePoint.Client.Publishing.Navigation.NavigationTermSetItem,System.Boolean,System.Boolean)
 Adds a user-friendly URL for a PublishingPage object.
 > ##### Parameters
@@ -3327,38 +3394,6 @@ Adds a user-friendly URL for a PublishingPage object.
 
 > ##### Return value
 > The simple link URL just created.
-
-#### GetPublishingPage(Microsoft.SharePoint.Client.Web,System.String)
-Gets a Publishing Page from the root folder of the Pages library.
-> ##### Parameters
-> **web:** The web.
-
-> **fileLeafRef:** The file leaf reference.
-
-> ##### Return value
-> The PublishingPage object, if any. Otherwise null.
-> ##### Exceptions
-> **System.ArgumentNullException:** fileLeafRef
-
-> **System.ArgumentException:** fileLeafRef
-
-
-#### GetPublishingPage(Microsoft.SharePoint.Client.Web,System.String,Microsoft.SharePoint.Client.Folder)
-Gets a Publishing Page from any folder in the Pages library.
-> ##### Parameters
-> **web:** The web.
-
-> **fileLeafRef:** The file leaf reference.
-
-> **folder:** The folder where to search the page.
-
-> ##### Return value
-> The PublishingPage object, if any. Otherwise null.
-> ##### Exceptions
-> **System.ArgumentNullException:** fileLeafRef
-
-> **System.ArgumentException:** fileLeafRef
-
 
 ## SharePoint.Client.ProvisioningExtensions
             
@@ -4586,7 +4621,7 @@ Returns the Id for a term if present in the TaxonomyHiddenList. Otherwise return
 > ##### Return value
 > 
 
-#### SetTaxonomyFieldDefaultValue(Microsoft.SharePoint.Client.Field,Microsoft.SharePoint.Client.Taxonomy.TaxonomyItem,System.String)
+#### SetTaxonomyFieldDefaultValue(Microsoft.SharePoint.Client.Field,Microsoft.SharePoint.Client.Taxonomy.TaxonomyItem,System.String,System.Boolean)
 Sets the default value for a managed metadata field
 > ##### Parameters
 > **field:** Field to be wired up
@@ -4594,6 +4629,8 @@ Sets the default value for a managed metadata field
 > **taxonomyItem:** Taxonomy TermSet or Term
 
 > **defaultValue:** default value for the field
+
+> **pushChangesToLists:** push changes to lists
 
 
 ## SharePoint.Client.TenantExtensions
@@ -4603,7 +4640,7 @@ Class for deprecated tenant extension methods
 ### Methods
 
 
-#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,OfficeDevPnP.Core.Entities.SiteEntity,System.Boolean,System.Boolean)
+#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,OfficeDevPnP.Core.Entities.SiteEntity,System.Boolean,System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Adds a SiteEntity by launching site collection creation and waits for the creation to finish
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4614,10 +4651,12 @@ Adds a SiteEntity by launching site collection creation and waits for the creati
 
 > **wait:** If true, processing will halt until the site collection has been created
 
-> ##### Return value
-> Guid of the created site collection and Guid.Empty is the wait parameter is specified as false
+> **timeoutFunction:** An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.
 
-#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt32,System.Boolean,System.Boolean)
+> ##### Return value
+> Guid of the created site collection and Guid.Empty is the wait parameter is specified as false. Returns Guid.Empty if the wait is cancelled.
+
+#### CreateSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.String,System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.UInt32,System.Boolean,System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Launches a site collection creation and waits for the creation to finish
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4645,6 +4684,8 @@ Launches a site collection creation and waits for the creation to finish
 > **removeFromRecycleBin:** If true, any existing site with the same URL will be removed from the recycle bin
 
 > **wait:** Wait for the site to be created before continuing processing
+
+> **timeoutFunction:** An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.
 
 > ##### Return value
 > 
@@ -4691,7 +4732,7 @@ Checks if a sub site exists
 > ##### Return value
 > True if existing, false if not
 
-#### DeleteSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean)
+#### DeleteSiteCollection(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Deletes a site collection
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4700,10 +4741,12 @@ Deletes a site collection
 
 > **useRecycleBin:** Leave the deleted site collection in the site collection recycle bin
 
+> **timeoutFunction:** An optional function that will be called while waiting for the site to be created. Return true to cancel the wait loop.
+
 > ##### Return value
 > True if deleted
 
-#### DeleteSiteCollectionFromRecycleBin(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean)
+#### DeleteSiteCollectionFromRecycleBin(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Deletes a site collection from the site collection recycle bin
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4712,8 +4755,8 @@ Deletes a site collection from the site collection recycle bin
 
 > **wait:** If true, processing will halt until the site collection has been deleted from the recycle bin
 
-> ##### Return value
-> True if deleted
+> **timeoutFunction:** An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.
+
 
 #### GetSiteGuidByUrl(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String)
 Gets the ID of site collection with specified URL
@@ -4747,7 +4790,7 @@ Returns available webtemplates/site definitions
 > ##### Return value
 > 
 
-#### SetSiteProperties(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Boolean})
+#### SetSiteProperties(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.Nullable{System.Boolean},System.Nullable{Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities},System.Nullable{System.Int64},System.Nullable{System.Int64},System.Nullable{System.Double},System.Nullable{System.Double},System.Nullable{System.Boolean},System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Sets tenant site Properties
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site
@@ -4771,7 +4814,7 @@ Sets tenant site Properties
 > **noScriptSite:** 
 
 
-#### SetSiteLockState(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,OfficeDevPnP.Core.SiteLockState,System.Boolean)
+#### SetSiteLockState(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,OfficeDevPnP.Core.SiteLockState,System.Boolean,System.Func{OfficeDevPnP.Core.TenantOperationMessage,System.Boolean})
 Sets a site to Unlock access or NoAccess. This operation may occur immediately, but the site lock may take a short while before it goes into effect.
 > ##### Parameters
 > **tenant:** A tenant object pointing to the context of a Tenant Administration site (i.e. https://[tenant]-admin.sharepoint.com)
@@ -4781,6 +4824,8 @@ Sets a site to Unlock access or NoAccess. This operation may occur immediately, 
 > **lockState:** The target state the site should be changed to.
 
 > **wait:** If true, processing will halt until the site collection lock state has been implemented
+
+> **timeoutFunction:** An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.
 
 
 #### AddAdministrators(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.Collections.Generic.IEnumerable{OfficeDevPnP.Core.Entities.UserEntity},System.Uri,System.Boolean)
@@ -4806,6 +4851,8 @@ Returns all site collections in the current Tenant based on a startIndex. Includ
 
 > **includeDetail:** Option to return a limited set of data
 
+> **includeOD4BSites:** Also return the OD4B sites
+
 > ##### Return value
 > An IList of SiteEntity objects
 
@@ -4824,6 +4871,24 @@ Gets the UserProfileService proxy to enable calls to the UPA web service.
 
 > ##### Return value
 > UserProfileService web service client
+
+#### DeployApplicationPackageToAppCatalog(Microsoft.Online.SharePoint.TenantAdministration.Tenant,System.String,System.String,System.String,System.Boolean,System.Boolean)
+Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+> ##### Parameters
+> **tenant:** Tenant to operate against
+
+> **appCatalogSiteUrl:** Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps)
+
+> **spPkgName:** Name of the package to upload (e.g. demo.sppkg)
+
+> **spPkgPath:** Path on the filesystem where this package is stored
+
+> **autoDeploy:** Automatically deploy the package, only applies to client side packages (sppkg)
+
+> **overwrite:** Overwrite the package if it was already listed in the app catalog
+
+> ##### Return value
+> The ListItem of the added package row
 
 ## SharePoint.Client.WebExtensions
             
@@ -4960,10 +5025,12 @@ Detects if the site in question has no script enabled or not. Detection is done 
 > ##### Return value
 > True if noscript, false otherwise
 
-#### GetAppInstances(Microsoft.SharePoint.Client.Web)
+#### GetAppInstances(Microsoft.SharePoint.Client.Web,System.Linq.Expressions.Expression{System.Func{Microsoft.SharePoint.Client.AppInstance,System.Object}}[])
 Returns all app instances
 > ##### Parameters
 > **web:** The site to process
+
+> **expressions:** List of lambda expressions of properties to load when retrieving the object
 
 > ##### Return value
 > 
@@ -5029,7 +5096,7 @@ Returns the site collections that comply with the passed keyword query
 
 > **keywordQueryValue:** Keyword query
 
-> **trimDublicates:** Indicates if dublicates should be trimmed or not
+> **trimDuplicates:** Indicates if dublicates should be trimmed or not
 
 > ##### Return value
 > All found site collections
@@ -5054,7 +5121,7 @@ Returns all site collection that match with the provided title
 > ##### Return value
 > All found site collections
 
-#### ProcessQuery(Microsoft.SharePoint.Client.Web,System.String,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.SiteEntity},Microsoft.SharePoint.Client.Search.Query.KeywordQuery,System.Int32)
+#### ProcessQuery(Microsoft.SharePoint.Client.Web,System.String,System.Collections.Generic.List{OfficeDevPnP.Core.Entities.SiteEntity},Microsoft.SharePoint.Client.Search.Query.KeywordQuery)
 Runs a query
 > ##### Parameters
 > **web:** Site to be processed - can be root web or sub site
@@ -5064,8 +5131,6 @@ Runs a query
 > **sites:** sites variable that hold the resulting sites
 
 > **keywordQuery:** KeywordQuery object
-
-> **startRow:** Start row of the resultset to be returned
 
 > ##### Return value
 > Total number of rows for the query
@@ -5221,7 +5286,7 @@ Unmarks a property bag key for indexing
 > Returns True if succeeded
 
 #### ReIndexWeb(Microsoft.SharePoint.Client.Web)
-Queues a web for a full crawl the next incremental crawl
+Queues a web for a full crawl the next incremental/continous crawl
 > ##### Parameters
 > **web:** Site to be processed
 
@@ -5660,25 +5725,7 @@ Add required key/value settings on List Root-Folder
 > **experience:** 
 
 
-## SharePoint.Client.BaseTemplateManager
-            
-This class will be used to provide access to the right base template configuration
-        
-
-## SharePoint.Client.ManagedNavigationKind
-            
-Defines the kind of Managed Navigation for a site
-        
-### Fields
-
-#### Current
-Current Navigation
-#### Global
-Global Navigation
-
-## Core.AppModelExtensions.VariationExtensions
-            
-Class that holds deprecated methods for variations
+## SharePoint.Client.VariationExtensions
             
 Class that provides methods for variations
         
@@ -5743,2338 +5790,1076 @@ Checks if hierarchy is created for the variation label. Get the "Hierarchy_x0020
 > ##### Return value
 > True, if hierarchy is created for the variation label
 
-## Core.Entities.UnifiedGroupEntity
+## SharePoint.Client.BaseTemplateManager
             
-Defines a Unified Group
+This class will be used to provide access to the right base template configuration
         
 
-## Core.Entities.AreaNavigationEntity
+## SharePoint.Client.ManagedNavigationKind
             
-Entity description navigation
-        
-### Properties
-
-#### GlobalNavigation
-Specifies the Global Navigation (top bar navigation)
-#### CurrentNavigation
-Specifies the Current Navigation (quick launch navigation)
-#### Sorting
-Defines the sorting
-#### SortAscending
-Defines if sorted ascending
-#### SortBy
-Defines sorted by value
-### Methods
-
-
-#### Constructor
-ctor
-
-## Core.Entities.CustomActionEntity
-            
-CustomActionEntity class describes the information for a Custom Action
-        
-### Properties
-
-#### CommandUIExtension
-Gets or sets a value that specifies an implementation specific XML fragment that determines user interface properties of the custom action
-#### RegistrationId
-Gets or sets the value that specifies the identifier of the object associated with the custom action.
-#### RegistrationType
-Specifies the type of object associated with the custom action. A Nullable Type
-#### Name
-Gets or sets the name of the custom action.
-#### Description
-Description of the custom action
-#### Title
-Custom action title
-#### Location
-Custom action location (A string that contains the location; for example, Microsoft.SharePoint.SiteSettings)
-#### ScriptBlock
-The JavaScript to be executed by this custom action
-#### Sequence
-The sequence number of this custom action
-#### ImageUrl
-The URL to the image used for this custom action
-#### Group
-The group of this custom action
-#### Url
-The URL this custom action should navigate the user to
-#### Rights
-Gets or sets the value that specifies the permissions needed for the custom action.
-#### Remove
-Indicates if the custom action will need to be removed
-#### ScriptSrc
-Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
-
-## Core.Entities.DefaultColumnTermPathValue
-            
-Specifies a default column value for a document library
-        
-### Properties
-
-#### FolderRelativePath
-The Path of the folder, Rootfolder of the document library is "/"
-#### FieldInternalName
-The internal name of the field
-#### TermPaths
-Taxonomy paths in the shape of "TermGroup|TermSet|Term"
-### Methods
-
-
-#### Constructor
-ctor
-
-## Core.Entities.IDefaultColumnValue
-            
-IDefaultColumnValue
-        
-### Properties
-
-#### FolderRelativePath
-Folder relative path
-#### FieldInternalName
-Field internal name
-
-## Core.Entities.DefaultColumnTermValue
-            
-Specifies a default column value for a document library
-        
-### Properties
-
-#### Terms
-Taxonomy paths in the shape of "TermGroup|TermSet|Term"
-
-## Core.Entities.DefaultColumnTextValue
-            
-DefaultColumnTextValue
-        
-
-## Core.Entities.DefaultColumnValue
-            
-DefaultColumnValue
-        
-### Properties
-
-#### FolderRelativePath
-The Path of the folder, Rootfolder of the document library is "/"
-#### FieldInternalName
-The internal name of the field
-
-## Core.Entities.ExternalUserEntity
-            
-External user entity
-        
-
-## Core.Entities.SiteEntity
-            
-SiteEntity class describes the information for a SharePoint site (collection)
-        
-### Properties
-
-#### Url
-The SPO url
-#### Title
-The site title
-#### Description
-The site description
-#### SiteOwnerLogin
-The site owner
-#### CurrentResourceUsage
-The current resource usage points
-#### Lcid
-The site locale. See http://technet.microsoft.com/en-us/library/ff463597.aspx for a complete list of Lcid's
-#### StorageMaximumLevel
-Site quota in MB
-#### StorageUsage
-The storage quota usage in MB
-#### StorageWarningLevel
-Site quota warning level in MB
-#### LastContentModifiedDate
-The last modified date/time of the site collection's content
-#### Template
-Site template being used
-#### TimeZoneId
-TimeZoneID for the site. "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" = 3 See http://blog.jussipalo.com/2013/10/list-of-sharepoint-timezoneid-values.html for a complete list
-#### UserCodeMaximumLevel
-The user code quota in points
-#### UserCodeWarningLevel
-The user code quota warning level in points
-#### WebsCount
-The count of the SPWeb objects in the site collection
-
-## Core.Entities.SitePolicyEntity
-            
-Properties of a site policy object
-        
-### Properties
-
-#### Description
-The description of the policy
-#### EmailBody
-The body of the notification email if there is no site mailbox associated with the site.
-#### EmailBodyWithTeamMailbox
-The body of the notification email if there is a site mailbox associated with the site.
-#### EmailSubject
-The subject of the notification email.
-#### Name
-The name of the policy
-
-## Core.Entities.VariationInformation
-            
-Class containing variation configuration information
-        
-### Properties
-
-#### AutomaticCreation
-Automatic creation Mapped to property "EnableAutoSpawnPropertyName"
-#### RecreateDeletedTargetPage
-Recreate Deleted Target Page; set to false to enable recreation Mapped to property "AutoSpawnStopAfterDeletePropertyName"
-#### UpdateTargetPageWebParts
-Update Target Page Web Parts Mapped to property "UpdateWebPartsPropertyName"
-#### CopyResources
-Copy resources Mapped to property "CopyResourcesPropertyName"
-#### SendNotificationEmail
-Send email notification Mapped to property "SendNotificationEmailPropertyName"
-#### RootWebTemplate
-Configuration setting site template to be used for the top sites of each label Mapped to property "SourceVarRootWebTemplatePropertyName"
-
-## Core.Entities.VariationLabelEntity
-            
-Class represents variation label
-        
-### Properties
-
-#### Title
-The variation label title
-#### Description
-The variation label description
-#### FlagControlDisplayName
-The flag to control display name
-#### Language
-The variation label language
-#### Locale
-The variation label locale
-#### HierarchyCreationMode
-The hierarchy creation mode
-#### IsSource
-Set as source variation
-#### IsCreated
-Gets a value indicating whether the variation label has been created
-
-## Core.Entities.WebPartEntity
-            
-Class that describes information about a web part
-        
-### Properties
-
-#### WebPartXml
-XML representation of the web part
-#### WebPartZone
-Zone that will need to hold the web part
-#### WebPartIndex
-Index (order) of the web part in it's zone
-#### WebPartTitle
-Title of the web part
-
-## Core.Entities.YammerGroup
-            
-Represents Yammer Group information Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
-        
-
-## Core.Entities.YammerUser
-            
-Represents YammerUser Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
-        
-
-## Core.Framework.Provisioning.Connectors.AzureStorageConnector
-            
-Connector for files in Azure blob storage
-        
-### Methods
-
-
-#### Constructor
-Base constructor
-
-#### Constructor
-AzureStorageConnector constructor. Allows to directly set Azure Storage key and container
-> ##### Parameters
-> **connectionString:** Azure Storage Key (DefaultEndpointsProtocol=https;AccountName=yyyy;AccountKey=xxxx)
-
-> **container:** Name of the Azure container to operate against
-
-
-#### GetFiles
-Get the files available in the default container
-> ##### Return value
-> List of files
-
-#### GetFiles(System.String)
-Get the files available in the specified container
-> ##### Parameters
-> **container:** Name of the container to get the files from
-
-> ##### Return value
-> List of files
-
-#### GetFolders
-Get the folders of the default container
-> ##### Return value
-> List of folders
-
-#### GetFolders(System.String)
-Get the folders of a specified container
-> ##### Parameters
-> **container:** Name of the container to get the folders from
-
-> ##### Return value
-> List of folders
-
-#### GetFile(System.String)
-Gets a file as string from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFile(System.String,System.String)
-Gets a file as string from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String)
-Gets a file as stream from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String,System.String)
-Gets a file as stream from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### SaveFileStream(System.String,System.IO.Stream)
-Saves a stream to the default container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **stream:** Stream containing the file contents
-
-
-#### SaveFileStream(System.String,System.String,System.IO.Stream)
-Saves a stream to the specified container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **container:** Name of the container to save the file to
-
-> **stream:** Stream containing the file contents
-
-
-#### DeleteFile(System.String)
-Deletes a file from the default container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-
-#### DeleteFile(System.String,System.String)
-Deletes a file from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-> **container:** Name of the container to delete the file from
-
-
-## Core.Framework.Provisioning.Connectors.FileConnectorBase
-            
-Base file connector class
-        
-### Methods
-
-
-#### GetFiles
-Get the files available in the default container
-> ##### Return value
-> List of files
-
-#### GetFiles(System.String)
-Get the files available in the specified container
-> ##### Parameters
-> **container:** Name of the container to get the files from
-
-> ##### Return value
-> List of files
-
-#### GetFolders
-Get the folders of the default container
-> ##### Return value
-> List of folders
-
-#### GetFolders(System.String)
-Get the folders of a specified container
-> ##### Parameters
-> **container:** Name of the container to get the folders from
-
-> ##### Return value
-> List of folders
-
-#### GetFile(System.String)
-Gets a file as string from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFile(System.String,System.String)
-Gets a file as string from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String)
-Gets a file as stream from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String,System.String)
-Gets a file as stream from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### SaveFileStream(System.String,System.IO.Stream)
-Saves a stream to the default container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **stream:** Stream containing the file contents
-
-
-#### SaveFileStream(System.String,System.String,System.IO.Stream)
-Saves a stream to the specified container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **container:** Name of the container to save the file to
-
-> **stream:** Stream containing the file contents
-
-
-#### DeleteFile(System.String)
-Deletes a file from the default container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-
-#### DeleteFile(System.String,System.String)
-Deletes a file from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-> **container:** Name of the container to delete the file from
-
-
-#### GetFilenamePart(System.String)
-Returns a filename without a path
-> ##### Parameters
-> **fileName:** Path to the file to retrieve the filename from
-
-
-## Core.Framework.Provisioning.Connectors.FileSystemConnector
-            
-Connector for files in file system
-        
-### Methods
-
-
-#### Constructor
-Base constructor
-
-#### Constructor
-FileSystemConnector constructor. Allows to directly set root folder and sub folder
-> ##### Parameters
-> **connectionString:** Root folder (e.g. c:\temp or .\resources or . or .\resources\templates)
-
-> **container:** Sub folder (e.g. templates or resources\templates or blank
-
-
-#### GetFiles
-Get the files available in the default container
-> ##### Return value
-> List of files
-
-#### GetFiles(System.String)
-Get the files available in the specified container
-> ##### Parameters
-> **container:** Name of the container to get the files from
-
-> ##### Return value
-> List of files
-
-#### GetFolders
-Get the folders of the default container
-> ##### Return value
-> List of folders
-
-#### GetFolders(System.String)
-Get the folders of a specified container
-> ##### Parameters
-> **container:** Name of the container to get the folders from
-
-> ##### Return value
-> List of folders
-
-#### GetFile(System.String)
-Gets a file as string from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFile(System.String,System.String)
-Gets a file as string from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String)
-Gets a file as stream from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String,System.String)
-Gets a file as stream from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### SaveFileStream(System.String,System.IO.Stream)
-Saves a stream to the default container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **stream:** Stream containing the file contents
-
-
-#### SaveFileStream(System.String,System.String,System.IO.Stream)
-Saves a stream to the specified container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **container:** Name of the container to save the file to
-
-> **stream:** Stream containing the file contents
-
-
-#### DeleteFile(System.String)
-Deletes a file from the default container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-
-#### DeleteFile(System.String,System.String)
-Deletes a file from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-> **container:** Name of the container to delete the file from
-
-
-## Core.Framework.Provisioning.Connectors.ICommitableFileConnector
-            
-Interface for File Connectors
-        
-
-## Core.Framework.Provisioning.Connectors.OpenXMLConnector
-            
-Connector that stores all the files into a unique .PNP OpenXML package
-        
-### Methods
-
-
-#### Constructor
-OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
-> ##### Parameters
-> **packageStream:** 
-
-
-#### Constructor
-OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
-> ##### Parameters
-> **packageFileName:** The name of the .PNP package file. If the .PNP extension is missing, it will be added
-
-> **persistenceConnector:** The FileConnector object that will be used for physical persistence of the file
-
-> **author:** The Author of the .PNP package file, if any. Optional
-
-> **signingCertificate:** The X.509 certificate to use for digital signature of the template, optional
-
-
-#### GetFiles
-Get the files available in the default container
-> ##### Return value
-> List of files
-
-#### GetFiles(System.String)
-Get the files available in the specified container
-> ##### Parameters
-> **container:** Name of the container to get the files from (something like: "\images\subfolder")
-
-> ##### Return value
-> List of files
-
-#### GetFolders
-Get the folders of the default container
-> ##### Return value
-> List of folders
-
-#### GetFolders(System.String)
-Get the folders of a specified container
-> ##### Parameters
-> **container:** Name of the container to get the folders from
-
-> ##### Return value
-> List of folders
-
-#### GetFile(System.String)
-Gets a file as string from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFile(System.String,System.String)
-Gets a file as string from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String)
-Gets a file as stream from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String,System.String)
-Gets a file as stream from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### SaveFileStream(System.String,System.IO.Stream)
-Saves a stream to the default container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **stream:** Stream containing the file contents
-
-
-#### SaveFileStream(System.String,System.String,System.IO.Stream)
-Saves a stream to the specified container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **container:** Name of the container to save the file to
-
-> **stream:** Stream containing the file contents
-
-
-#### DeleteFile(System.String)
-Deletes a file from the default container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-
-#### DeleteFile(System.String,System.String)
-Deletes a file from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-> **container:** Name of the container to delete the file from
-
-
-#### GetFileFromInsidePackage(System.String,System.String)
-Will first try to find the file based on container/filename from the mapped file names. As a fallback it will try to find by container/filename in the pnp file structure, which was the original format.
-
-## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFileInfo
-            
-File descriptor for every single file in the PnP OpenXML file
-        
-### Properties
-
-#### InternalName
-The Internal Name of the file in the PnP OpenXML file
-#### OriginalName
-The Original Name of the file in the source template
-#### Folder
-The name of the folder within the PnP OpenXML file
-#### Content
-The binary content of the file
-
-## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFilesMap
-            
-Defines the mapping between original file names and OpenXML file names
-        
-
-## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPInfo
-            
-Global container of the PnP OpenXML file
-        
-### Properties
-
-#### Manifest
-The Manifest of the PnP OpenXML file
-#### Properties
-Custom properties of the PnP OpenXML file
-#### Files
-Files contained in the PnP OpenXML file
-#### FilesMap
-Defines the mapping between original file names and OpenXML file names
-
-## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPManifest
-            
-Manifest of a PnP OpenXML file
-        
-### Properties
-
-#### Type
-The Type of the package file defined by the current manifest
-
-## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPProperties
-            
-Properties of the PnP OpenXML container
-        
-### Properties
-
-#### Id
-Unique ID for the PnP OpenXML file
-#### Author
-Author of the PnP OpenXML file
-#### CreationDateTime
-Date and Time of creation for the PnP OpenXML file
-#### Generator
-Name of the Generator (engine) of the PnP OpenXML file
-
-## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackage
-            
-Defines a PnP OpenXML package file
-        
-### Properties
-
-#### ManifestPart
-The Manifest Part of the package file
-#### Manifest
-The Manifest of the package file
-#### Properties
-The Properties of the package
-#### FilesMap
-The File Map for files stored in the OpenXML file
-#### FilesOriginPart
-The Files origin
-#### FilesPackageParts
-The Files Parts of the package
-#### Files
-The Files of the package
-
-## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFileItem
-            
-Defines a single file in the PnP Open XML file package
-        
-
-## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFormatException
-            
-Custom Exception type for PnP Packaging handling
-        
-
-## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageExtensions
-            
-Extension class for PnP OpenXML package files
-        
-
-## Core.Framework.Provisioning.Connectors.SharePointConnector
-            
-Connector for files in SharePoint
-        
-### Methods
-
-
-#### Constructor
-Base constructor
-
-#### Constructor
-SharePointConnector constructor. Allows to directly set root folder and sub folder
-> ##### Parameters
-> **clientContext:** 
-
-> **connectionString:** Site collection URL (e.g. https://yourtenant.sharepoint.com/sites/dev)
-
-> **container:** Library + folder that holds the files (mydocs/myfolder)
-
-
-#### GetFiles
-Get the files available in the default container
-> ##### Return value
-> List of files
-
-#### GetFiles(System.String)
-Get the files available in the specified container
-> ##### Parameters
-> **container:** Name of the container to get the files from
-
-> ##### Return value
-> List of files
-
-#### GetFolders
-Get the folders of the default container
-> ##### Return value
-> List of folders
-
-#### GetFolders(System.String)
-Get the folders of a specified container
-> ##### Parameters
-> **container:** Name of the container to get the folders from
-
-> ##### Return value
-> List of folders
-
-#### GetFile(System.String)
-Gets a file as string from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFile(System.String,System.String)
-Gets a file as string from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String)
-Gets a file as stream from the default container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> ##### Return value
-> String containing the file contents
-
-#### GetFileStream(System.String,System.String)
-Gets a file as stream from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to get
-
-> **container:** Name of the container to get the file from
-
-> ##### Return value
-> String containing the file contents
-
-#### SaveFileStream(System.String,System.IO.Stream)
-Saves a stream to the default container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **stream:** Stream containing the file contents
-
-
-#### SaveFileStream(System.String,System.String,System.IO.Stream)
-Saves a stream to the specified container with the given name. If the file exists it will be overwritten
-> ##### Parameters
-> **fileName:** Name of the file to save
-
-> **container:** Name of the container to save the file to
-
-> **stream:** Stream containing the file contents
-
-
-#### DeleteFile(System.String)
-Deletes a file from the default container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-
-#### DeleteFile(System.String,System.String)
-Deletes a file from the specified container
-> ##### Parameters
-> **fileName:** Name of the file to delete
-
-> **container:** Name of the container to delete the file from
-
-
-## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
-            
-Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
-            
-Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
-        
-### Methods
-
-
-#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **handler:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **provider:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-#### ExecuteExtensibilityProvisionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
-Ensure the ClientContext is not disposed in the custom provider.
-Method to Invoke Custom Provisioning Handlers.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **handler:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> **applyingInformation:** The Provisioning Template application information object
-
-> **tokenParser:** The Token Parser used by the engine during template provisioning
-
-> **scope:** The PnPMonitoredScope of the current step in the pipeline
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-#### ExecuteExtensibilityExtractionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
-Ensure the ClientContext is not disposed in the custom provider.
-Method to Invoke Custom Extraction Handlers.
-> ##### Parameters
-> **ctx:** Authenticated ClientContext that is passed to the custom provider.
-
-> **handler:** A custom Extensibility Provisioning Provider
-
-> **template:** ProvisioningTemplate that is passed to the custom provider
-
-> **creationInformation:** The Provisioning Template creation information object
-
-> **scope:** The PnPMonitoredScope of the current step in the pipeline
-
-> ##### Exceptions
-> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
-
-> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
-
-> **System.ArgumentNullException:** ClientContext is Null>
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
-            
-Defines a interface that accepts requests from the provisioning processing component
-        
-### Methods
-
-
-#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Defines a interface that accepts requests from the provisioning processing component
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
-
-## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
-            
-Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
-        
-### Methods
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
-> ##### Parameters
-> **message:** A string that describes the exception.
-
-> **innerException:** The exception that is the cause of the current exception.
-
-
-#### Constructor
-Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
-> ##### Parameters
-> **info:** The object that contains the serialized data.
-
-> **context:** The stream that contains the serialized data.
-
-> ##### Exceptions
-> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
-            
-Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipeline
-        
-### Methods
-
-
-#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
-Provides Token Definitions to the template provisioning pipeline
-> ##### Parameters
-> **ctx:** 
-
-> **template:** 
-
-> **configurationData:** 
-
-
-## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityHandler
-            
-Defines an interface which allows to plugin custom Provisioning Extensibility Handlers to the template extraction/provisioning pipeline
-        
-### Methods
-
-
-#### Provision(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
-Execute custom actions during provisioning of a template
-> ##### Parameters
-> **ctx:** The target ClientContext
-
-> **template:** The current Provisioning Template
-
-> **applyingInformation:** The Provisioning Template application information object
-
-> **tokenParser:** Token parser instance
-
-> **scope:** The PnPMonitoredScope of the current step in the pipeline
-
-> **configurationData:** The configuration data, if any, for the handler
-
-
-#### Extract(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
-Execute custom actions during extraction of a template
-> ##### Parameters
-> **ctx:** The target ClientContext
-
-> **template:** The current Provisioning Template
-
-> **creationInformation:** The Provisioning Template creation information object
-
-> **scope:** The PnPMonitoredScope of the current step in the pipeline
-
-> **configurationData:** The configuration data, if any, for the handler
-
-> ##### Return value
-> The Provisioning Template eventually enriched by the handler during extraction
-
-## Core.Framework.Provisioning.Model.ComposedLook
-            
-Domain Object that defines a Composed Look in the Provision Template
-        
-### Properties
-
-#### SiteLogo
-Gets or sets the Site Logo
-#### AlternateCSS
-Gets or sets the AlternateCSS
-#### MasterPage
-Gets or sets the MasterPage for the Composed Look
-#### Name
-Gets or sets the Name
-#### ColorFile
-Gets or sets the ColorFile
-#### FontFile
-Gets or sets the FontFile
-#### BackgroundFile
-Gets or sets the Background Image
-#### Version
-Gets or sets the Version of the ComposedLook.
-
-## Core.Framework.Provisioning.Model.ContentType
-            
-Domain Object used in the Provisioning template that defines a Content Type https://msdn.microsoft.com/en-us/library/office/ms463449.aspx
-        
-### Properties
-
-#### Id
-The Id of the Content Type
-#### Name
-The name of the Content Type
-#### Description
-The description of the Content Type
-#### Group
-The group name of the content type
-#### FieldRefs
-The FieldRefs entries of the List Instance
-#### Hidden
-True to define the content type as hidden. If you define a content type as hidden, SharePoint Foundation does not display that content type on the New button in list views.
-#### Sealed
-True to prevent changes to this content type. You cannot change the value of this attribute through the user interface, but you can change it in code if you have sufficient rights. You must have site collection administrator rights to unseal a content type.
-#### ReadOnly
-True to specify that the content type cannot be edited without explicitly removing the read-only setting. This can be done either in the user interface or in code.
-#### Overwrite
-True to overwrite an existing content type with the same ID.
-#### DocumentTemplate
-Specifies the document template for the content type
-#### DocumentSetTemplate
-Specifies the properties of the DocumentSet Template if the ContentType defines a DocumentSet
-#### DisplayFormUrl
-Specifies the URL of a custom display form to use for list items that have been assigned the content type
-#### EditFormUrl
-Specifies the URL of a custom edit form to use for list items that have been assigned the content type
-#### NewFormUrl
-Specifies the URL of a custom new form to use for list items that have been assigned the content type
-#### 
-Gets or Sets the Content Type ID
-#### 
-Gets or Sets if the Content Type should be the default Content Type in the library
-#### 
-Declares if the Content Type should be Removed from the list or library
-
-## Core.Framework.Provisioning.Model.ContentTypeBinding
-            
-Domain Object for Content Type Binding in the Provisioning Template
-        
-### Properties
-
-#### ContentTypeId
-Gets or Sets the Content Type ID
-#### Default
-Gets or Sets if the Content Type should be the default Content Type in the library
-#### Remove
-Declares if the Content Type should be Removed from the list or library
-
-## Core.Framework.Provisioning.Model.Feature
-            
-Domain Object that represents an Feature.
-            
-Domain Object that represents an Feature.
-        
-### Properties
-
-#### Id
-Gets or sets the feature Id
-#### Deactivate
-Gets or sets if the feature should be deactivated
-#### 
-A Collection of Features at the Site level
-#### 
-A Collection of Features at the Web level
-
-## Core.Framework.Provisioning.Model.FieldRef
-            
-Represents a Field XML Markup that is used to define information about a field
-            
-Represents a Field XML Markup that is used to define information about a field
-        
-### Properties
-
-#### Id
-Gets ot sets the ID of the referenced field
-#### Name
-Gets or sets the name of the field link. This will not change the internal name of the field.
-#### DisplayName
-Gets or sets the Display Name of the field. Only applicable to fields associated with lists.
-#### Required
-Gets or sets if the field is Required
-#### Hidden
-Gets or sets if the field is Hidden
-
-## Core.Framework.Provisioning.Model.ListInstance
-            
-This class holds deprecated ListInstance properties and methods
-            
-Domain Object that specifies the properties of the new list.
-        
-### Properties
-
-#### Title
-Gets or sets the list title
-#### Description
-Gets or sets the description of the list
-#### DocumentTemplate
-Gets or sets a value that specifies the identifier of the document template for the new list.
-#### OnQuickLaunch
-Gets or sets a value that specifies whether the new list is displayed on the Quick Launch of the site.
-#### TemplateType
-Gets or sets a value that specifies the list server template of the new list. https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.listtemplatetype.aspx
-#### Url
-Gets or sets a value that specifies whether the new list is displayed on the Quick Launch of the site.
-#### EnableVersioning
-Gets or sets whether verisioning is enabled on the list
-#### EnableMinorVersions
-Gets or sets whether minor verisioning is enabled on the list
-#### DraftVersionVisibility
-Gets or sets the DraftVersionVisibility for the list
-#### EnableModeration
-Gets or sets whether moderation/content approval is enabled on the list
-#### MinorVersionLimit
-Gets or sets the MinorVersionLimit for versioning, just in case it is enabled on the list
-#### MaxVersionLimit
-Gets or sets the MinorVersionLimit for verisioning, just in case it is enabled on the list
-#### RemoveExistingContentTypes
-Gets or sets whether existing content types should be removed
-#### RemoveExistingViews
-Gets or sets whether existing views should be removed
-#### ContentTypesEnabled
-Gets or sets whether content types are enabled
-#### Hidden
-Gets or sets whether to hide the list
-#### ForceCheckout
-Gets or sets whether to force checkout of documents in the library
-#### EnableAttachments
-Gets or sets whether attachments are enabled. Defaults to true.
-#### EnableFolderCreation
-Gets or sets whether folder is enabled. Defaults to true.
-#### ContentTypeBindings
-Gets or sets the content types to associate to the list
-#### Views
-Gets or sets the content types to associate to the list
-#### FieldDefaults
-Defines a list of default values for the Fields of the List Instance
-#### Security
-Defines the Security rules for the List Instance
-#### Folders
-Defines a collection of folders (eventually nested) that will be provisioned into the target list/library
-#### UserCustomActions
-Defines a collection of user custom actions that will be provisioned into the target list/library
-
-## Core.Framework.Provisioning.Model.ProvisioningTemplate
-            
-Domain Object for the Provisioning Template
-            
-Domain Object for the Provisioning Template
-        
-### Properties
-
-#### Providers
-Gets a collection of Providers that are used during the extensibility pipeline
-#### SearchSettings
-The Search Settings for the Provisioning Template
-#### Parameters
-Any parameters that can be used throughout the template
-#### Id
-Gets or sets the ID of the Provisioning Template
-#### Version
-Gets or sets the Version of the Provisioning Template
-#### SitePolicy
-Gets or Sets the Site Policy
-#### Security
-Security Groups Members for the Template
-#### Navigation
-The Navigation configurations of the Provisioning Template
-#### SiteFields
-Gets a collection of fields
-#### ContentTypes
-Gets a collection of Content Types to create
-#### Features
-Gets or sets a list of features to activate or deactivate
-#### CustomActions
-Gets or sets CustomActions for the template
-#### Files
-Gets a collection of files for the template
-#### Directories
-Gets a collection of directories from which upload files for the template
-#### ComposedLook
-Gets or Sets the composed look of the template
-#### Pages
-Gets a collection of Wiki Pages for the template
-#### TermGroups
-Gets a collection of termgroups to deploy to the site
-#### WebSettings
-The Web Settings of the Provisioning Template
-#### RegionalSettings
-The Regional Settings of the Provisioning Template
-#### SupportedUILanguages
-The Supported UI Languages for the Provisioning Template
-#### AuditSettings
-The Audit Settings for the Provisioning Template
-#### Workflows
-Defines the Workflows to provision
-#### SiteSearchSettings
-The Site Collection level Search Settings for the Provisioning Template
-#### WebSearchSettings
-The Web level Search Settings for the Provisioning Template
-#### AddIns
-Defines the SharePoint Add-ins to provision
-#### Publishing
-Defines the Publishing configuration to provision
-#### Properties
-A set of custom Properties for the Provisioning Template
-#### ImagePreviewUrl
-The Image Preview Url of the Provisioning Template
-#### DisplayName
-The Display Name of the Provisioning Template
-#### Description
-The Description of the Provisioning Template
-#### BaseSiteTemplate
-The Base SiteTemplate of the Provisioning Template
-#### 
-References the parent ProvisioningTemplate for the current provisioning artifact
-#### 
-References the parent ProvisioningTemplate for the current provisioning artifact
-### Methods
-
-
-#### ToXML(OfficeDevPnP.Core.Framework.Provisioning.Providers.ITemplateFormatter)
-Serializes a template to XML
-> ##### Parameters
-> **formatter:** 
-
-> ##### Return value
-> 
-
-#### Constructor
-Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
-> ##### Parameters
-> **parentTemplate:** 
-
-
-#### Constructor
-Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
-> ##### Parameters
-> **parentTemplate:** 
-
-
-#### 
-We implemented this to adhere to the generic List of T behavior
-Finds an item matching a search predicate
-> ##### Parameters
-> **match:** The matching predicate to use for finding any target item
-
-> ##### Return value
-> The target item matching the find predicate
-
-## Core.Framework.Provisioning.Model.BaseNavigationKind
-            
-Base abstract class for the navigation kinds (global or current)
-        
-### Properties
-
-#### StructuralNavigation
-Defines the Structural Navigation settings of the site
-#### ManagedNavigation
-Defines the Managed Navigation settings of the site
-
-## Core.Framework.Provisioning.Model.CurrentNavigation
-            
-The Current Navigation settings for the Provisioning Template
+Defines the kind of Managed Navigation for a site
         
 ### Fields
 
-#### 
-The site inherits the Global Navigation settings from its parent
-#### 
-The site uses Structural Global Navigation
-#### 
-The site uses Structural Local Current Navigation
-#### 
-The site uses Managed Global Navigation
-### Properties
+#### Current
+Current Navigation
+#### Global
+Global Navigation
 
-#### NavigationType
-Defines the type of Current Navigation
-
-## Core.Framework.Provisioning.Model.CurrentNavigationType
+## Core.AppModelExtensions.VariationExtensions
             
-Defines the type of Current Navigation
+Class that holds deprecated methods for variations
         
-### Fields
 
-#### Inherit
-The site inherits the Global Navigation settings from its parent
-#### Structural
-The site uses Structural Global Navigation
-#### StructuralLocal
-The site uses Structural Local Current Navigation
-#### Managed
-The site uses Managed Global Navigation
-
-## Core.Framework.Provisioning.Model.CustomAction
+## Core.CoreResources
             
-Domain Object for custom actions associated with a SharePoint list, Web site, or subsite.
-            
-Domain Object for custom actions associated with a SharePoint list, Web site, or subsite.
+A strongly-typed resource class, for looking up localized strings, etc.
         
 ### Properties
 
-#### RightsValue
-Gets or sets the value that specifies the permissions needed for the custom action. https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.permissionkind.aspx
-#### Name
-Gets or sets the name of the custom action.
-#### Description
-Gets or sets the description of the custom action.
-#### Group
-Gets or sets a value that specifies an implementation-specific value that determines the position of the custom action in the page.
-#### Location
-Gets or sets the location of the custom action. A string that contains the location; for example, Microsoft.SharePoint.SiteSettings.
-#### Title
-Gets or sets the display title of the custom action.
-#### Sequence
-Gets or sets the value that specifies an implementation-specific value that determines the order of the custom action that appears on the page.
-#### Rights
-Gets or sets the value that specifies the permissions needed for the custom action.
-#### Url
-Gets or sets the URL, URI, or ECMAScript (JScript, JavaScript) function associated with the action.
-#### ScriptBlock
-Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.
-#### ImageUrl
-Gets or sets the URL of the image associated with the custom action.
-#### ScriptSrc
-Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
-#### Remove
-Gets or sets a value that specifies whether to Remove the CustomAction from the target
-#### 
-A Collection of CustomActions at the Site level
-#### 
-A Collection of CustomActions at the Web level
-
-## Core.Framework.Provisioning.Model.Directory
-            
-Defines a Directory element, to describe a folder in the current repository that will be used to upload files into the target Site
-        
-### Properties
-
-#### Src
-The Src of the Directory
-#### Folder
-The TargetFolder of the Directory
-#### Overwrite
-The Overwrite flag for the files in the Directory
-#### Level
-The Level status for the files in the Directory
-#### Recursive
-Defines whether to recursively browse through all the child folders of the Directory
-#### IncludedExtensions
-The file Extensions to include while uploading the Directory
-#### ExcludedExtensions
-The file Extensions to exclude while uploading the Directory
-#### MetadataMappingFile
-The file path of JSON mapping file with metadata for files to upload in the Directory
-#### Security
-Defines the Security rules for the File
-
-## Core.Framework.Provisioning.Model.DirectoryCollection
-            
-Collection of Directory objects
-        
-
-## Core.Framework.Provisioning.Model.ExtensibilityHandler
-            
-Domain Object for Extensiblity Call out
-        
-
-## Core.Framework.Provisioning.Model.FeatureCollection
-            
-Collection of Feature objects
-        
-
-## Core.Framework.Provisioning.Model.AddIn
-            
-Defines an Add-in to provision
-        
-### Properties
-
-#### PackagePath
-Defines the .app file of the SharePoint Add-in to provision
-#### Source
-Defines the Source of the SharePoint Add-in to provision Possible values are: CorporateCatalog, DeveloperSite, InvalidSource, Marketplace, ObjectModel, RemoteObjectModel
-
-## Core.Framework.Provisioning.Model.AddInCollection
-            
-A collection of AddIn objects
-        
-
-## Core.Framework.Provisioning.Model.AuditSettings
-            
-The Audit Settings for the Provisioning Template
-        
-### Properties
-
-#### AuditFlags
-Audit Flags configured for the Site
-#### AuditLogTrimmingRetention
-The Audit Log Trimming Retention for Audits
-#### TrimAuditLog
-A flag to enable Audit Log Trimming
-
-## Core.Framework.Provisioning.Model.AvailableWebTemplate
-            
-Defines an available Web Template for the current Publishing site
-        
-### Properties
-
-#### LanguageCode
-The Language Code for the Web Template
-#### TemplateName
-The Name of the Web Template
-
-## Core.Framework.Provisioning.Model.AvailableWebTemplateCollection
-            
-A collection of AvailableWebTemplate objects
-        
-
-## Core.Framework.Provisioning.Model.BaseModel
-            
-Base type for any Domain Model object (excluded the ProvisioningTemplate type)
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-
-## Core.Framework.Provisioning.Model.ContentTypeBindingCollection
-            
-Collection of ContentTypeBinding objects
-        
-
-## Core.Framework.Provisioning.Model.ContentTypeCollection
-            
-Collection of ContentType objects
-        
-
-## Core.Framework.Provisioning.Model.CustomActionCollection
-            
-Collection of CustomAction objects
-        
-
-## Core.Framework.Provisioning.Model.CustomActions
-            
-Domain Object that represents a Collections of Custom Actions
-        
-### Properties
-
-#### SiteCustomActions
-A Collection of CustomActions at the Site level
-#### WebCustomActions
-A Collection of CustomActions at the Web level
-
-## Core.Framework.Provisioning.Model.DataRowCollection
-            
-Collection of DataRow objects
-        
-
-## Core.Framework.Provisioning.Model.DefaultDocument
-            
-A default document for a Document Set
-        
-### Properties
-
-#### Name
-The name (including the relative path) of the Default Document for a Document Set
-#### ContentTypeId
-The value of the ContentTypeID of the Default Document for the Document Set
-#### FileSourcePath
-The path of the file to upload as a Default Document for the Document Set
-
-## Core.Framework.Provisioning.Model.DesignPackage
-            
-Defines a Design Package to import into the current Publishing site
-        
-### Properties
-
-#### DesignPackagePath
-Defines the path of the Design Package to import into the current Publishing site
-#### MajorVersion
-The Major Version of the Design Package to import into the current Publishing site
-#### MinorVersion
-The Minor Version of the Design Package to import into the current Publishing site
-#### PackageGuid
-The ID of the Design Package to import into the current Publishing site
-#### PackageName
-The Name of the Design Package to import into the current Publishing site
-
-## Core.Framework.Provisioning.Model.DocumentSetTemplate
-            
-Defines a DocumentSet Template for creating multiple DocumentSet instances
-        
-### Properties
-
-#### AllowedContentTypes
-The list of allowed Content Types for the Document Set
-#### DefaultDocuments
-The list of default Documents for the Document Set
-#### SharedFields
-The list of Shared Fields for the Document Set
-#### WelcomePageFields
-The list of Welcome Page Fields for the Document Set
-#### WelcomePage
-Defines the custom WelcomePage for the Document Set
-
-## Core.Framework.Provisioning.Model.Features
-            
-Domain Object that is used in the Site Template for OOB Features
-        
-### Properties
-
-#### SiteFeatures
-A Collection of Features at the Site level
-#### WebFeatures
-A Collection of Features at the Web level
-
-## Core.Framework.Provisioning.Model.Field
-            
-Represents a Field XML Markup that is used to define information about a field
-        
-### Properties
-
-#### 
-Gets ot sets the ID of the referenced field
-#### 
-Gets or sets the name of the field link. This will not change the internal name of the field.
-#### 
-Gets or sets the Display Name of the field. Only applicable to fields associated with lists.
-#### 
-Gets or sets if the field is Required
-#### 
-Gets or sets if the field is Hidden
-#### SchemaXml
-Gets a value that specifies the XML Schema representing the Field type. https://msdn.microsoft.com/en-us/library/office/ff407271.aspx
-
-## Core.Framework.Provisioning.Model.FieldRefCollection
-            
-Collection of FieldRef objects
-        
-
-## Core.Framework.Provisioning.Model.FieldCollection
-            
-Collection of Field objects
-        
-
-## Core.Framework.Provisioning.Model.FileCollection
-            
-Collection of File objects
-        
-
-## Core.Framework.Provisioning.Model.FileLevel
-            
-The File Level for a File element
-        
-### Fields
-
-#### Draft
-The file will be stored as a draft
-#### Checkout
-The file will be stored as a checked out item
-#### Published
-The file will be stored as a published item
-
-## Core.Framework.Provisioning.Model.Folder
-            
-Defines a folder that will be provisioned into the target list/library
-        
-### Properties
-
-#### Name
-The Name of the Folder
-#### Security
-Defines the security rules for the current Folder
-#### Folders
-Defines the child folders of the current Folder, if any
-
-## Core.Framework.Provisioning.Model.FolderCollection
-            
-Collection of Folder objects
-        
-
-## Core.Framework.Provisioning.Model.GlobalNavigation
-            
-The Global Navigation settings for the Provisioning Template
-        
-### Fields
-
-#### 
-The site inherits the Global Navigation settings from its parent
-#### 
-The site uses Structural Global Navigation
-#### 
-The site uses Managed Global Navigation
-### Properties
-
-#### NavigationType
-Defines the type of Global Navigation
-
-## Core.Framework.Provisioning.Model.GlobalNavigationType
-            
-Defines the type of Global Navigation
-        
-### Fields
-
-#### Inherit
-The site inherits the Global Navigation settings from its parent
-#### Structural
-The site uses Structural Global Navigation
-#### Managed
-The site uses Managed Global Navigation
-
-## Core.Framework.Provisioning.Model.IProvisioningTemplateDescendant
-            
-Interface implemented by any descendant of a ProvisioningTemplate
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-
-## Core.Framework.Provisioning.Model.ListInstanceCollection
-            
-Collection of ListInstance objects
-        
-
-## Core.Framework.Provisioning.Model.Localization
-            
-Domain Object used in the Provisioning template that defines a Localization item
-        
-### Properties
-
-#### LCID
-The Locale ID of a Localization Language
-#### Name
-The Name of a Localization Language
-#### ResourceFile
-The path to the .RESX (XML) resource file for the current Localization
-
-## Core.Framework.Provisioning.Model.LocalizationCollection
-            
-Collection of Localization objects
-        
-
-## Core.Framework.Provisioning.Model.ManagedNavigation
-            
-Defines the Managed Navigation settings of a site
-        
-### Properties
-
-#### TermStoreId
-Defines the TermStore ID for the Managed Navigation
-#### TermSetId
-Defines the TermSet ID for the Managed Navigation
-
-## Core.Framework.Provisioning.Model.Navigation
-            
-The Navigation configurations of the Provisioning Template
-        
-### Properties
-
-#### GlobalNavigation
-The Global Navigation settings for the Provisioning Template
-#### CurrentNavigation
-The Current Navigation settings for the Provisioning Template
-#### 
-A collection of navigation nodes children of the current NavigatioNode
-#### 
-Defines the Title of a Navigation Node
-#### 
-Defines the Url of a Navigation Node
-#### 
-Defines whether the Navigation Node for the Structural Navigation targets an External resource
-
-## Core.Framework.Provisioning.Model.NavigationNode
-            
-Defines a Navigation Node for the Structural Navigation of a site
-        
-### Properties
-
-#### NavigationNodes
-A collection of navigation nodes children of the current NavigatioNode
-#### Title
-Defines the Title of a Navigation Node
-#### Url
-Defines the Url of a Navigation Node
-#### IsExternal
-Defines whether the Navigation Node for the Structural Navigation targets an External resource
-
-## Core.Framework.Provisioning.Model.NavigationNodeCollection
-            
-A collection of NavigationNode objects
-        
-
-## Core.Framework.Provisioning.Model.PageLayout
-            
-Defines an available Page Layout for the current Publishing site
-        
-### Properties
-
-#### Path
-Defines the path of the Page Layout for the current Publishing site
-#### IsDefault
-Defines whether the Page Layout is the default for the current Publishing site
-
-## Core.Framework.Provisioning.Model.PageLayoutCollection
-            
-Collection of PageLayout objects
-        
-
-## Core.Framework.Provisioning.Model.PageCollection
-            
-Collection of Page objects
-        
-
-## Core.Framework.Provisioning.Model.PropertyBagEntryCollection
-            
-Collection of PropertyBagEntry objects
-        
-
-## Core.Framework.Provisioning.Model.ExtensibilityHandlerCollection
-            
-Collection of ExtensibilityHandler objects
-        
-
-## Core.Framework.Provisioning.Model.ProviderCollection
-            
-Collection of Provider objects
-        
-
-## Core.Framework.Provisioning.Model.ProvisioningTemplateDictionary`2
-            
-Generic keyed collection of items stored in the ProvisioningTemplate graph
-            The type of the Key for the keyed collection
-            The type of the Item for the keyed collection
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-### Methods
-
-
-#### Constructor
-Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
-> ##### Parameters
-> **parentTemplate:** 
-
-
-## Core.Framework.Provisioning.Model.ProvisioningTemplateCollection`1
-            
-Generic collection of items stored in the ProvisioningTemplate graph
-            The type of Item for the collection
-        
-### Properties
-
-#### ParentTemplate
-References the parent ProvisioningTemplate for the current provisioning artifact
-### Methods
-
-
-#### Constructor
-Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
-> ##### Parameters
-> **parentTemplate:** 
-
-
-#### Find(System.Predicate{`0})
-We implemented this to adhere to the generic List of T behavior
-Finds an item matching a search predicate
-> ##### Parameters
-> **match:** The matching predicate to use for finding any target item
-
-> ##### Return value
-> The target item matching the find predicate
-
-## Core.Framework.Provisioning.Model.Publishing
-            
-Defines the Publishing configuration to provision
-        
-### Properties
-
-#### DesignPackage
-Defines a Design Package to import into the current Publishing site
-#### AvailableWebTemplates
-Defines the Available Web Templates for the current Publishing site
-#### PageLayouts
-Defines the Available Page Layouts for the current Publishing site
-#### AutoCheckRequirements
-Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site
-
-## Core.Framework.Provisioning.Model.AutoCheckRequirementsOptions
-            
-Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site
-        
-### Fields
-
-#### MakeCompliant
-Instructs the engine to make the target site compliant with the requirements
-#### SkipIfNotCompliant
-Instructs the engine to skip the Publishing section if the target site is not compliant with the requirements
-#### FailIfNotCompliant
-Instructs the engine to throw an exception/failure if the target site is not compliant with the requirements
-
-## Core.Framework.Provisioning.Model.RoleAssignment
-            
-Role Assignment for a target Principal
-        
-### Properties
-
-#### Principal
-Defines the Role to which the assignment will apply
-#### RoleDefinition
-Defines the Role to which the assignment will apply
-
-## Core.Framework.Provisioning.Model.RoleAssignmentCollection
-            
-Collection of RoleAssignment objects
-        
-
-## Core.Framework.Provisioning.Model.RoleDefinitionCollection
-            
-Collection of RoleDefinition objects
-        
-
-## Core.Framework.Provisioning.Model.SiteGroupCollection
-            
-Collection of SiteGroup objects
-        
-
-## Core.Framework.Provisioning.Model.SiteSecurityPermissions
-            
-Permission settings for the target Site
-        
-### Properties
-
-#### RoleDefinitions
-List of Role Definitions for the Site
-#### RoleAssignments
-List of Role Assignments for the Site
-
-## Core.Framework.Provisioning.Model.RegionalSettings
-            
-Defines the Regional Settings for a site
-        
-### Properties
-
-#### AdjustHijriDays
-The number of days to extend or reduce the current month in Hijri calendars
-#### AlternateCalendarType
-The Alternate Calendar type that is used on the server
-#### CalendarType
-The Calendar Type that is used on the server
-#### Collation
-The Collation that is used on the site
-#### FirstDayOfWeek
-The First Day of the Week used in calendars on the server
-#### FirstWeekOfYear
-The First Week of the Year used in calendars on the server
-#### LocaleId
-The Locale Identifier in use on the server
-#### ShowWeeks
-Defines whether to display the week number in day or week views of a calendar
-#### Time24
-Defines whether to use a 24-hour time format in representing the hours of the day
-#### TimeZone
-The Time Zone that is used on the server
-#### WorkDayEndHour
-The the default hour at which the work day ends on the calendar that is in use on the server
-#### WorkDays
-The work days of Web site calendars
-#### WorkDayStartHour
-The the default hour at which the work day starts on the calendar that is in use on the server
-
-## Core.Framework.Provisioning.Model.WorkHour
-            
-The Work Hours of a Day
-        
-
-## Core.Framework.Provisioning.Model.SiteGroup
-            
-The base type for a Site Group
-        
-### Properties
-
-#### Members
-The list of members of the Site Group
-#### Title
-The Title of the Site Group
-#### Description
-The Description of the Site Group
-#### Owner
-The Owner of the Site Group
-#### AllowMembersEditMembership
-Defines whether the members can edit membership of the Site Group
-#### AllowRequestToJoinLeave
-Defines whether to allow requests to join or leave the Site Group
-#### AutoAcceptRequestToJoinLeave
-Defines whether to auto-accept requests to join or leave the Site Group
-#### OnlyAllowMembersViewMembership
-Defines whether to allow members only to view the membership of the Site Group
-#### RequestToJoinLeaveEmailSetting
-Defines the email address used for membership requests to join or leave will be sent for the Site Group
-
-## Core.Framework.Provisioning.Model.StructuralNavigation
-            
-Defines the Structural Navigation settings of a site
-        
-### Properties
-
-#### RemoveExistingNodes
-Defines whether to remove existing nodes before creating those described through this element
-#### NavigationNodes
-A collection of navigation nodes for the site
-
-## Core.Framework.Provisioning.Model.SupportedUILanguage
-            
-Defines a single Supported UI Language for a site
-        
-### Properties
-
-#### LCID
-The Locale ID of a Supported UI Language
-
-## Core.Framework.Provisioning.Model.SupportedUILanguageCollection
-            
-Collection of SupportedUILanguage objects
-        
-
-## Core.Framework.Provisioning.Model.TermCollection
-            
-Collection of Term objects
-        
-
-## Core.Framework.Provisioning.Model.TermGroupCollection
-            
-Collection of TermGroup objects
-        
-
-## Core.Framework.Provisioning.Model.TermLabelCollection
-            
-Collection of TermLabel objects
-        
-
-## Core.Framework.Provisioning.Model.TermSetCollection
-            
-Collection of TermSete objects
-        
-
-## Core.Framework.Provisioning.Model.UserCollection
-            
-Collection of User objects
-        
-
-## Core.Framework.Provisioning.Model.ViewCollection
-            
-Collection of View objects
-        
-
-## Core.Framework.Provisioning.Model.File
-            
-Defines a File element, to describe a file that will be provisioned into the target Site
-        
-### Fields
-
-#### 
-The file will be stored as a draft
-#### 
-The file will be stored as a checked out item
-#### 
-The file will be stored as a published item
-### Properties
-
-#### Src
-The Src of the File
-#### Folder
-The TargetFolder of the File
-#### Overwrite
-The Overwrite flag for the File
-#### Level
-The Level status for the File
-#### Security
-Defines the Security rules for the File
-
-## Core.Framework.Provisioning.Model.Provider
-            
-Domain Object for Extensiblity Call out
-        
-
-## Core.Framework.Provisioning.Model.SiteSecurity
-            
-Domain Object that is used in the site template
-        
-### Properties
-
-#### 
-List of Role Definitions for the Site
-#### 
-List of Role Assignments for the Site
-#### AdditionalAdministrators
-A Collection of users that are associated as site collection adminsitrators
-#### AdditionalOwners
-A Collection of users that are associated to the sites owners group
-#### AdditionalMembers
-A Collection of users that are associated to the sites members group
-#### AdditionalVisitors
-A Collection of users taht are associated to the sites visitors group
-#### SiteGroups
-List of additional Groups for the Site
-#### SiteSecurityPermissions
-List of Site Security Permissions for the Site
-#### BreakRoleInheritance
-Declares whether the to break role inheritance for the site, if it is a sub-site
-#### CopyRoleAssignments
-Defines whether to copy role assignments or not while breaking role inheritance
-#### ClearSubscopes
-Defines whether to clear subscopes or not while breaking role inheritance for the site
-
-## Core.Framework.Provisioning.Model.User
-            
-Domain Object that defines a User or group in the provisioning template
-        
-### Properties
-
-#### Name
-The User email Address or the group name.
-
-## Core.Framework.Provisioning.Model.WebPartCollection
-            
-Collection of WebPart objects
-        
-
-## Core.Framework.Provisioning.Model.WebSettings
-            
-Domain Object used in the Provisioning template that defines a Section of Settings for the current Web Site
-        
-### Properties
-
-#### NoCrawl
-Defines whether the site has to be crawled or not
-#### RequestAccessEmail
-The email address to which any access request will be sent
-#### WelcomePage
-Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied.
-#### Title
-The Title of the Site, optional attribute.
-#### Description
-The Description of the Site, optional attribute.
-#### SiteLogo
-The SiteLogo of the Site, optional attribute.
-#### AlternateCSS
-The AlternateCSS of the Site, optional attribute.
-#### MasterPageUrl
-The MasterPage Url of the Site, optional attribute.
-#### CustomMasterPageUrl
-The Custom MasterPage Url of the Site, optional attribute.
-
-## Core.Framework.Provisioning.Model.WorkflowDefinition
-            
-Defines a Workflow Definition to provision
-        
-### Properties
-
-#### Properties
-Defines the Properties of the Workflows to provision
-#### FormField
-Defines the FormField XML of the Workflow to provision
-#### Id
-Defines the ID of the Workflow Definition for the current Subscription
-#### AssociationUrl
-Defines the URL of the Workflow Association page
-#### Description
-The Description of the Workflow
-#### DisplayName
-The Display Name of the Workflow
-#### DraftVersion
-Defines the DraftVersion of the Workflow, optional attribute.
-#### InitiationUrl
-Defines the URL of the Workflow Initiation page
-#### Published
-Defines if the Workflow is Published, optional attribute.
-#### RequiresAssociationForm
-Defines if the Workflow requires the Association Form
-#### RequiresInitiationForm
-Defines if the Workflow requires the Initiation Form
-#### RestrictToScope
-Defines the Scope Restriction for the Workflow
-#### RestrictToType
-Defines the Type of Scope Restriction for the Workflow
-#### XamlPath
-Defines path of the XAML of the Workflow to provision
-
-## Core.Framework.Provisioning.Model.WorkflowDefinitionCollection
-            
-Defines a collection of objects of type WorkflowDefinition
-        
-
-## Core.Framework.Provisioning.Model.Workflows
-            
-Defines the Workflows to provision
-        
-### Properties
-
-#### WorkflowDefinitions
-Defines the Workflows Definitions to provision
-#### WorkflowSubscriptions
-Defines the Workflows Subscriptions to provision
-
-## Core.Framework.Provisioning.Model.WorkflowSubscription
-            
-Defines a Workflow Subscription to provision
-        
-### Properties
-
-#### PropertyDefinitions
-Defines the Property Definitions of the Workflows to provision
-#### DefinitionId
-Defines the ID of the Workflow Definition for the current Subscription
-#### ListId
-Defines the ID of the target list/library for the current Subscription, Optional and if it is missing, the workflow subscription will be at Site level
-#### Enabled
-Defines if the Workflow Definition is enabled for the current Subscription
-#### EventSourceId
-Defines the ID of the Event Source for the current Subscription
-#### EventTypes
-Defines the list of events that will start the workflow instance Possible values in the list: WorkflowStartEvent, ItemAddedEvent, ItemUpdatedEvent
-#### ManualStartBypassesActivationLimit
-Defines if the Workflow can be manually started bypassing the activation limit
-#### Name
-Defines the Name of the Workflow Subscription
-#### ParentContentTypeId
-Defines the Parent ContentType Id of the Workflow Subscription
-#### StatusFieldName
-Defines the Status Field Name of the Workflow Subscription
-
-## Core.Framework.Provisioning.Model.WorkflowSubscriptionCollection
-            
-Defines a collection of objects of type WorkflowSubscription
-        
-
-## Core.Framework.Provisioning.ObjectHandlers.ObjectExtensibilityHandlers
-            
-Extensibility Provider CallOut
-        
-
-## Core.Framework.Provisioning.Providers.ITemplateFormatter
-            
-Interface for basic capabilites that any Template Formatter should provide/support
+#### ResourceManager
+Returns the cached ResourceManager instance used by this class.
+#### Culture
+Overrides the current thread's CurrentUICulture property for all resource lookups using this strongly typed resource class.
+#### AuthenticationManager_GetContext
+Looks up a localized string similar to Getting authentication context for '{0}'.
+#### AuthenticationManager_TenantUser
+Looks up a localized string similar to Tenant user '{0}'.
+#### AuthenticationManger_ProblemDeterminingTokenLease
+Looks up a localized string similar to Could not determine lease for appOnlyAccessToken. Error = {0}.
+#### BrandingExtension_ApplyTheme
+Looks up a localized string similar to Applying theme '{0}' in '{1}'.
+#### BrandingExtension_ComposedLookMissing
+Looks up a localized string similar to Composed look '{0}' not found..
+#### BrandingExtension_CreateComposedLook
+Looks up a localized string similar to Creating composed look '{0}' in '{1}'.
+#### BrandingExtension_DeployMasterPage
+Looks up a localized string similar to Deploying masterpage '{0}' to '{1}'..
+#### BrandingExtension_DeployPageLayout
+Looks up a localized string similar to Deploying page layout '{0}' to '{1}'..
+#### BrandingExtension_DeployTheme
+Looks up a localized string similar to Deploying theme '{0}' to '{1}'.
+#### BrandingExtension_InvalidPageLayoutName
+Looks up a localized string similar to Cannot find Page Layout with name '{0}'..
+#### BrandingExtension_SetCustomMasterUrl
+Looks up a localized string similar to Setting custom master URL '{0}' in '{1}'..
+#### BrandingExtension_SetMasterUrl
+Looks up a localized string similar to Setting master URL '{0}' in '{1}'..
+#### BrandingExtension_UpdateComposedLook
+Looks up a localized string similar to Updating composed look '{0}' in '{1}'.
+#### BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_
+Looks up a localized string similar to Destination file name is required..
+#### BrandingExtensions_UploadThemeFile_Source_file_path_is_required_
+Looks up a localized string similar to Source file path is required..
+#### BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### ClientContextExtensions_Clone_Url_of_the_site_is_required_
+Looks up a localized string similar to Url of the site is required..
+#### ClientContextExtensions_ExecuteQueryRetry
+Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+#### ClientContextExtensions_ExecuteQueryRetryException
+Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+#### ClientContextExtensions_HasMinimalServerLibraryVersion_Error
+Looks up a localized string similar to The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}..
+#### Exception_Message_EmptyString_Arg
+Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
+#### FeatureExtensions_ActivateSiteCollectionFeature
+Looks up a localized string similar to Activating feature {0} in site collection..
+#### FeatureExtensions_ActivateWebFeature
+Looks up a localized string similar to Activating feature {0} in web..
+#### FeatureExtensions_DeactivateSiteCollectionFeature
+Looks up a localized string similar to Deactivating feature {0} in site collection..
+#### FeatureExtensions_DeactivateWebFeature
+Looks up a localized string similar to Deactivating feature {0} in web..
+#### FeatureExtensions_FeatureActivationProblem
+Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActivationState
+Looks up a localized string similar to Activation state for feature with id {1} was {0}..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureActive
+Looks up a localized string similar to Feature activation for {0} returned success..
+#### FeatureExtensions_ProcessFeatureInternal_FeatureException
+Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
+#### FieldAndContentTypeExtensions_AddField0ToContentType1
+Looks up a localized string similar to Adding field ({0}) to content type ({1})..
+#### FieldAndContentTypeExtensions_ContentType01AlreadyExists
+Looks up a localized string similar to Content type '{0}' ({1}) already exists; no changes made..
+#### FieldAndContentTypeExtensions_CreateContentType01
+Looks up a localized string similar to Creating content type '{0}' ({1})..
+#### FieldAndContentTypeExtensions_CreateDocumentSet
+Looks up a localized string similar to Creating document set '{0}'..
+#### FieldAndContentTypeExtensions_CreateField01
+Looks up a localized string similar to Creating field '{0}' ({1})..
+#### FieldAndContentTypeExtensions_CreateFieldBase
+Looks up a localized string similar to New Field as XML: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeById
+Looks up a localized string similar to Could not find content type with id: {0}.
+#### FieldAndContentTypeExtensions_DeleteContentTypeByName
+Looks up a localized string similar to Could not find content type with name: {0}.
+#### FieldAndContentTypeExtensions_Field01AlreadyExists
+Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
+#### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single document set name and cannot contain path characters..
+#### FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single folder name and cannot contain path characters..
+#### FileFolderExtensions_CreateFolder0Under12
+Looks up a localized string similar to Creating folder '{0}' under {1} '{2}'..
+#### FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_
+Looks up a localized string similar to Folder URL is required..
+#### FileFolderExtensions_FolderMissing
+Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
+#### FileFolderExtensions_LibraryMissing
+Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
+#### FileFolderExtensions_SetFileProperties_Error
+Looks up a localized string similar to Content Type {0} does not exist in target list!.
+#### FileFolderExtensions_UpdateFile0Properties1
+Looks up a localized string similar to Update file '{0}', change properties: {1}..
+#### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
+Looks up a localized string similar to Destination file name is required..
+#### FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### FileFolderExtensions_UploadFile0ToFolder1
+Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
+#### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
+Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+#### GraphExtensions_ErrorOccured
+Looks up a localized string similar to Graph call returned the following error: {0}..
+#### GraphExtensions_GroupLogoFileDoesNotExist
+Looks up a localized string similar to The group logo file does not exist..
+#### GraphExtensions_SendAsyncRetry
+Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+#### GraphExtensions_SendAsyncRetryException
+Looks up a localized string similar to SendAsync threw following exception: {0}..
+#### ListExtensions_CreateList0Template12
+Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
+#### ListExtensions_GetWebRelativeUrl
+Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
+#### ListExtensions_IncorrectValueFormat
+Looks up a localized string similar to Value should be in the format of <id>;#<value> (Example 1: 1;#Foo Bar Example 2: 1;#Foo Bar;#2;#Bar Foo).
+#### ListExtensions_SkipNoCrawlLists
+Looks up a localized string similar to Skipping reindexing of the list because it's marked as a 'no crawl' list..
+#### LoggingUtility_MessageWithException
+Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
+#### MailUtility_SendException
+Looks up a localized string similar to Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
+#### MailUtility_SendExceptionRethrow0
+Looks up a localized string similar to Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
+#### MailUtility_SendFailed
+Looks up a localized string similar to Mail message could not be sent. Send completed with error {0}..
+#### MailUtility_SendMailCancelled
+Looks up a localized string similar to Mail message was canceled..
+#### PnPMonitoredScope_Code_execution_ended
+Looks up a localized string similar to Code execution scope ended.
+#### PnPMonitoredScope_Code_execution_started
+Looks up a localized string similar to Code execution scope started.
+#### PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_
+Looks up a localized string similar to Updating property {0}.
+#### Provisioning_Asymmetric_Base_Templates
+Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+#### Provisioning_Connectors_Azure_FailedToInitialize
+Looks up a localized string similar to Could not initialize AzureStorageConnector. Error = {0}.
+#### Provisioning_Connectors_Azure_FileDeleted
+Looks up a localized string similar to File {0} was deleted from Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1}. Error = {2}.
+#### Provisioning_Connectors_Azure_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from Azure storage container {1} because it was not available.
+#### Provisioning_Connectors_Azure_FileNotFound
+Looks up a localized string similar to File {0} not found in Azure storage container {1}. Exception = {2}.
+#### Provisioning_Connectors_Azure_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileSaved
+Looks up a localized string similar to File {0} saved to Azure storage container {1}.
+#### Provisioning_Connectors_Azure_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to Azure storage container {1}. Error = {2}.
+#### Provisioning_Connectors_FileSystem_FileDeleted
+Looks up a localized string similar to File {0} deleted from folder {1}.
+#### Provisioning_Connectors_FileSystem_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+#### Provisioning_Connectors_FileSystem_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+#### Provisioning_Connectors_FileSystem_FileNotFound
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+#### Provisioning_Connectors_FileSystem_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from folder {1}.
+#### Provisioning_Connectors_FileSystem_FileSaved
+Looks up a localized string similar to File {0} saved to folder {1}.
+#### Provisioning_Connectors_FileSystem_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleted
+Looks up a localized string similar to File {0} deleted from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
+#### Provisioning_Connectors_OpenXML_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
+#### Provisioning_Connectors_OpenXML_FileNotFound
+Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
+#### Provisioning_Connectors_OpenXML_FileRetrieved
+Looks up a localized string similar to File {0} retrieved from folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaved
+Looks up a localized string similar to File {0} saved to folder {1}.
+#### Provisioning_Connectors_OpenXML_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
+#### Provisioning_Connectors_SharePoint_FileDeleted
+Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileDeleteFailed
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2}. Error = {3}.
+#### Provisioning_Connectors_SharePoint_FileDeleteNotFound
+Looks up a localized string similar to File {0} was not deleted from site {1}, library {2} because it was not available.
+#### Provisioning_Connectors_SharePoint_FileNotFound
+Looks up a localized string similar to File {0} not found in site {1}, library {2}. Exception = {3}.
+#### Provisioning_Connectors_SharePoint_FileRetrieved
+Looks up a localized string similar to File {0} found in site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileSaved
+Looks up a localized string similar to File {0} saved to site {1}, library {2}.
+#### Provisioning_Connectors_SharePoint_FileSaveFailed
+Looks up a localized string similar to File {0} was not saved to site {1}, library {2}. Error = {3}.
+#### Provisioning_Extensibility_Pipeline_BeforeInvocation
+Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
+#### Provisioning_Extensibility_Pipeline_ClientCtxNull
+Looks up a localized string similar to ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Exception
+Looks up a localized string similar to There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
+#### Provisioning_Extensibility_Pipeline_Missing_AssemblyName
+Looks up a localized string similar to Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Missing_TypeName
+Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
+#### Provisioning_Extensibility_Pipeline_Success
+Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
+#### Provisioning_Extensions_ViewLocalization_Skip
+Looks up a localized string similar to Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
+#### Provisioning_Extensions_WebPartLocalization_Skip
+Looks up a localized string similar to Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
+#### Provisioning_Formatter_Invalid_Template_URI
+Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
+#### Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention
+Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_
+Looks up a localized string similar to Downloading asset: {0}.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize
+Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector
+Looks up a localized string similar to Creating SharePointConnector.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look
+Looks up a localized string similar to Retrieving current composed look.
+#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag
+Looks up a localized string similar to Using Composed Look Information from Property Bag.
+#### Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck
+Looks up a localized string similar to Skipping composed look handling because the site is marked as 'nosite'..
+#### Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_
+Looks up a localized string similar to Adding content type to template: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type
+Looks up a localized string similar to Adding field {0} to content type.
+#### Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_
+Looks up a localized string similar to Context web is subweb. Skipping content types..
+#### Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_
+Looks up a localized string similar to Creating new Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
+#### Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type
+Looks up a localized string similar to Field {0} exists in content type.
+#### Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request
+Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
+#### Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_
+Looks up a localized string similar to Recreating existing Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls
+Looks up a localized string similar to Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites..
+#### Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments
+Looks up a localized string similar to Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites..
+#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
+Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
+#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed
+Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value..
+#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
+Looks up a localized string similar to Adding custom action '{0}' to scope Site.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
+Looks up a localized string similar to Adding custom action '{0}' to scope Web.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template
+Looks up a localized string similar to Adding site scoped custom action '{0}' to template.
+#### Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template
+Looks up a localized string similar to Adding web scoped custom action '{0}' to template.
+#### Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template
+Looks up a localized string similar to Removing site scoped custom action '{0}' from template because already available in base template.
+#### Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template
+Looks up a localized string similar to Removing web scoped custom action '{0}' from template because already available in base template.
+#### Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript
+Looks up a localized string similar to Custom action '{0}' was not added/updated because the site was configured for noscript..
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_
+Looks up a localized string similar to Calling extensibility callout {0}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_
+Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_
+Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_
+Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_Extraction
+Looks up a localized string similar to Extraction.
+#### Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_
+Looks up a localized string similar to Activating {0} scoped feature {1}.
+#### Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_
+Looks up a localized string similar to Deactivating {0} scoped feature {1}.
+#### Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_
+Looks up a localized string similar to Adding field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site
+Looks up a localized string similar to Adding field {0} to site.
+#### Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns
+Looks up a localized string similar to Context web is subweb, skipping site columns.
+#### Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_
+Looks up a localized string similar to Field {0} ({1}) exists but is of different type. Skipping field..
+#### Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site
+Looks up a localized string similar to Updating field {0} in site.
+#### Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page
+Looks up a localized string similar to Adding webpart '{0}' to page.
+#### Provisioning_ObjectHandlers_Files_SkipFileUpload
+Looks up a localized string similar to Skipping upload of file '{0}' to '{1}'..
+#### Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_
+Looks up a localized string similar to Uploading and overwriting existing file {0}.
+#### Provisioning_ObjectHandlers_Files_Uploading_file__0_
+Looks up a localized string similar to Uploading file {0}.
+#### Provisioning_ObjectHandlers_FinishExtraction
+Looks up a localized string similar to FINISH - Template Extraction.
+#### Provisioning_ObjectHandlers_FinishProvisioning
+Looks up a localized string similar to FINISH - Provisioning.
+#### Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_
+Looks up a localized string similar to Adding list: {0} - {1}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0_
+Looks up a localized string similar to Creating field {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_
+Looks up a localized string similar to Creating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0_
+Looks up a localized string similar to Creating list {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_
+Looks up a localized string similar to Creating list {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_view__0_
+Looks up a localized string similar to Creating view {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_
+Looks up a localized string similar to Creating view failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true
+Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
+#### Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_
+Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
+#### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
+Looks up a localized string similar to Field schema has no ID attribute: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_
+Looks up a localized string similar to Updating list {0} with FieldRef {1}.
+#### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
+Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
+#### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
+Looks up a localized string similar to ID for field is not a valid Guid: {0}.
+#### Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference
+Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
+#### Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_
+Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
+#### Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions
+Looks up a localized string similar to Skip adding/updating custom actions because the site has "noscript" enabled..
+#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0_
+Looks up a localized string similar to Updating field {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_
+Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0_
+Looks up a localized string similar to Updating list {0}.
+#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_
+Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows
+Looks up a localized string similar to Data Rows.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
+Looks up a localized string similar to Creating list item {0}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate
+Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
+Looks up a localized string similar to Creating listitem failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
+Looks up a localized string similar to Processing data rows for {0}.
+#### Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0
+Looks up a localized string similar to Unable to find lookup list with Id: {0}.
+#### Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_
+Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
+#### Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing
+Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
+#### Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation
+Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation
+Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation
+Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
+Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
+#### Provisioning_ObjectHandlers_Navigation_SkipProvisioning
+Looks up a localized string similar to Skip applying of navigation settings on NoScript sites..
+#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
+Looks up a localized string similar to Creating new page {0}.
+#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
+Looks up a localized string similar to Creating new page {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_
+Looks up a localized string similar to Overwriting existing page {0}.
+#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_
+Looks up a localized string similar to Overwriting existing page {0} failed: {1} : {2}.
+#### Provisioning_ObjectHandlers_Pages_SkipAddingWebParts
+Looks up a localized string similar to Skipped adding web parts to page '{0}' because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_PersistTemplateInformation
+Looks up a localized string similar to Persist Template Information.
+#### Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_
+Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
+#### Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_
+Looks up a localized string similar to Overwriting existing propertybag entry {0} with value {1}.
+#### Provisioning_ObjectHandlers_Provisioning
+Looks up a localized string similar to Provisioning.
+#### Provisioning_ObjectHandlers_Publishing_SkipProvisioning
+Looks up a localized string similar to Skip provisioning of publishing settings because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_RetrieveTemplateInfo
+Looks up a localized string similar to Retrieve Template Info.
+#### Provisioning_ObjectHandlers_SitePolicy_PolicyAdded
+Looks up a localized string similar to Site policy '{0}' applied to site.
+#### Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound
+Looks up a localized string similar to Site policy '{0}' not found.
+#### Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_
+Looks up a localized string similar to Add users failed for group '{0}': {1} : {2}.
+#### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
+Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
+#### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
+Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore.
+#### Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration
+Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
+#### Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate
+Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate
+Looks up a localized string similar to Skipping master page update because the site is configured for noscript..
+#### Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate
+Looks up a localized string similar to Skipping NoCrawl update because the site is configured for noscript..
+#### Provisioning_Providers_XML_InvalidFileFormat
+Looks up a localized string similar to Cannot process XML file {0}..
+#### ProvisioningExtensions_ErrorProvisioningModule0File1
+Looks up a localized string similar to Error provisioning module '{0}' file '{1}'. Error = {2}.
+#### ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required
+Looks up a localized string similar to Path to the element file is required.
+#### ProvisioningExtensions_ProvisionElementFile0
+Looks up a localized string similar to Provisioning Elements file '{0}'..
+#### ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__
+Looks up a localized string similar to Expected element 'Elements'..
+#### ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__
+Looks up a localized string similar to Expected element 'File'..
+#### ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__
+Looks up a localized string similar to Expected element 'Module'..
+#### SecurityExtensions_Error_VisitingSecurableObject
+Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
+#### SecurityExtensions_Info_VisitingSecurableObject
+Looks up a localized string similar to Visiting securable object: {0}.
+#### SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects
+Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
+#### Service_RegistrationFailed
+Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
+#### Services_AccessDenied
+Looks up a localized string similar to Service requestor is not registered: access denied.
+#### Services_CookieWithCachKeyNotFound
+Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
+#### Services_Registered
+Looks up a localized string similar to Service {0} has been registered for endpoint {1} using cachekey {2}..
+#### Services_TokenRefreshed
+Looks up a localized string similar to Token for cachekey {0} and hostweburl {1} has been refreshed..
+#### SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true
+Looks up a localized string similar to OverwriteSystemPropertyBagValues is to true.
+#### SiteToTemplateConversion_Base_template_available___0_
+Looks up a localized string similar to Base template available: {0}.
+#### SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true
+Looks up a localized string similar to IncludeAllTermGroups is set to true.
+#### SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true
+Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
+#### SiteToTemplateConversion_MessagesDelegate_registered
+Looks up a localized string similar to MessagesDelegate registered.
+#### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
+Looks up a localized string similar to PersistBrandingFiles is set to true.
+#### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
+Looks up a localized string similar to PersistComposedLookFiles is set to true.
+#### SiteToTemplateConversion_ProgressDelegate_registered
+Looks up a localized string similar to ProgressDelegate registered.
+#### TaxonomyExtension_CreateTerm01UnderParent2
+Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
+#### TaxonomyExtension_CreateTermGroup0InStore1
+Looks up a localized string similar to Creating term group '{0}' in term store '{1}'..
+#### TaxonomyExtension_CreateTermSet0InGroup1
+Looks up a localized string similar to Creating term set '{0}' in term group '{1}'..
+#### TaxonomyExtension_DeleteTerm01
+Looks up a localized string similar to Deleting term '{0}|{1}'..
+#### TaxonomyExtension_ExceptionUpdateDescriptionGroup01
+Looks up a localized string similar to Error setting description for term group '{0}' ({1}). Error = {2}.
+#### TaxonomyExtension_ExceptionUpdateDescriptionSet01
+Looks up a localized string similar to Error setting description for term set '{0}' ({1}). Error = {2}.
+#### TaxonomyExtension_ImportErrorDeleteId0Line1
+Looks up a localized string similar to Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
+#### TaxonomyExtension_ImportErrorDescription0Line1
+Looks up a localized string similar to Error encountered during import. The description '{0}' on line {1} is not valid..
+#### TaxonomyExtension_ImportErrorName0Line1
+Looks up a localized string similar to Error encountered during import. The name '{0}' is not valid on line {1}..
+#### TaxonomyExtension_ImportErrorTaggingLine0
+Looks up a localized string similar to Error encountered during import. The available for tagging entry on line {0} is not valid..
+#### TaxonomyExtension_ImportTermSet
+Looks up a localized string similar to Importing term set from file stream..
+#### TaxonomyExtension_TermGroup0Id1DoesNotMatchSpecifiedId2
+Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
+Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
+#### TaxonomyExtensions_Field_Is_Not_Multivalues
+Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
+#### TaxonomyExtensions_ImportTermSet_File_path_is_required_
+Looks up a localized string similar to File path is required..
+#### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
+Looks up a localized string similar to Invalid CSV format; was expecting a comma in the first (header) line..
+#### TenantExtensions_ClosedContextWarning
+Looks up a localized string similar to ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
+#### TenantExtensions_SetLockState
+Looks up a localized string similar to SetSiteLockState: Current: {0} Target: {1}.
+#### TenantExtensions_UnknownExceptionAccessingSite
+Looks up a localized string similar to Could not determine if site exists in tenant. Error = {0}.
+#### TimerJob_AddSite_Done
+Looks up a localized string similar to Site {0} url/wildcard added.
+#### TimerJob_AddSite_InvalidUrl
+Looks up a localized string similar to Site url ({0}) contains invalid characters.
+#### TimerJob_Authentication_AppOnly
+Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
+#### TimerJob_Authentication_AzureADAppOnly
+Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
+#### TimerJob_Authentication_Network
+Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
+#### TimerJob_Authentication_O365
+Looks up a localized string similar to Timer job authentication set to type Office 365 with user {0}.
+#### TimerJob_Authentication_RetrieveFromCredMan
+Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
+#### TimerJob_Authentication_RetrieveFromCredManFailed
+Looks up a localized string similar to Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
+#### TimerJob_Authentication_TenantAdmin
+Looks up a localized string similar to Tenant admin site set to {0}..
+#### TimerJob_ClearAddedSites
+Looks up a localized string similar to All added sites are cleared.
+#### TimerJob_Clone
+Looks up a localized string similar to Timer job {0} settings cloned to timer job {0}.
+#### TimerJob_Constructor
+Looks up a localized string similar to Timer job constructed with name {0}, version {1}.
+#### TimerJob_DoWork_Done
+Looks up a localized string similar to Work for site {0} done.
+#### TimerJob_DoWork_NoEventHandler
+Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
+#### TimerJob_DoWork_Start
+Looks up a localized string similar to Doing work for site {0}.
+#### TimerJob_Enumeration_Network
+Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
+#### TimerJob_Enumeration_NoDomain
+Looks up a localized string similar to No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_NoPassword
+Looks up a localized string similar to No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_NoUser
+Looks up a localized string similar to No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
+#### TimerJob_Enumeration_O365
+Looks up a localized string similar to Enumeration credentials specified for Office 365 enumeration with user {0}.
+#### TimerJob_ExpandSite_EatException
+Looks up a localized string similar to Eating exception {0} for site {1}.
+#### TimerJob_ExpandSubSites
+Looks up a localized string similar to ExpandSubSites set to {0}.
+#### TimerJob_ManageState
+Looks up a localized string similar to Manage state set to {0}.
+#### TimerJob_MaxThread1
+Looks up a localized string similar to If you only want 1 thread then set the UseThreading property to false.
+#### TimerJob_MaxThread100
+Looks up a localized string similar to You cannot use more than 100 threads.
+#### TimerJob_MaxThreadLessThan1
+Looks up a localized string similar to Number of threads must be between 2 and 100.
+#### TimerJob_MaxThreadSet
+Looks up a localized string similar to MaximumThreads set to {0}.
+#### TimerJob_OnTimerJobRun_CallEventHandler
+Looks up a localized string similar to Calling the eventhandler for site {0}.
+#### TimerJob_OnTimerJobRun_CallEventHandlerDone
+Looks up a localized string similar to Eventhandler called for site {0}.
+#### TimerJob_OnTimerJobRun_Error
+Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
+#### TimerJob_OnTimerJobRun_PrevRunRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRun = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRun to {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSuccessRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunSuccessful = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunSuccessSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
+#### TimerJob_OnTimerJobRun_PrevRunVersionRead
+Looks up a localized string similar to Timerjob for site {1}, PreviousRunVersion = {0}.
+#### TimerJob_OnTimerJobRun_PrevRunVersionSet
+Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunVersion to {0}.
+#### TimerJob_OnTimerJobRun_PropertiesRead
+Looks up a localized string similar to Timerjob properties read using key {0} for site {1}.
+#### TimerJob_OnTimerJobRun_PropertiesSet
+Looks up a localized string similar to Timerjob properties written using key {0} for site {1}.
+#### TimerJob_Realm
+Looks up a localized string similar to Realm set to {0}.
+#### TimerJob_ResolveSites_Done
+Looks up a localized string similar to Resolving sites done, sub sites have been expanded.
+#### TimerJob_ResolveSites_DoneNoExpansionNeeded
+Looks up a localized string similar to Resolving sites done, no expansion needed.
+#### TimerJob_ResolveSites_LaunchThreadPerBatch
+Looks up a localized string similar to Expand subsites by launching a thread for each of the {0} work batches.
+#### TimerJob_ResolveSites_ResolveSite
+Looks up a localized string similar to Resolving wildcard site {0}.
+#### TimerJob_ResolveSites_ResolveSiteDone
+Looks up a localized string similar to Done resolving wildcard site {0}.
+#### TimerJob_ResolveSites_SequentialExpandDone
+Looks up a localized string similar to Done sequentially expanding all sites.
+#### TimerJob_ResolveSites_Started
+Looks up a localized string similar to Resolving sites started.
+#### TimerJob_ResolveSites_StartSequentialExpand
+Looks up a localized string similar to Start sequentially expanding all sites.
+#### TimerJob_ResolveSites_ThreadLaunched
+Looks up a localized string similar to Thread started to expand a batch of {0} sites.
+#### TimerJob_ResolveSites_ThreadsAreDone
+Looks up a localized string similar to Done waiting for all site expanding threads.
+#### TimerJob_Run_AfterResolveAddedSites
+Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_AfterUpdateAddedSites
+Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_BeforeResolveAddedSites
+Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_BeforeStartWorkBatches
+Looks up a localized string similar to Ready to start a thread for each of the {0} work batches.
+#### TimerJob_Run_BeforeUpdateAddedSites
+Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
+#### TimerJob_Run_Done
+Looks up a localized string similar to Run of timer job has ended.
+#### TimerJob_Run_DoneProcessingWorkBatches
+Looks up a localized string similar to Done processing the {0} work batches.
+#### TimerJob_Run_NoSites
+Looks up a localized string similar to Job does not have sites to process, bailing out.
+#### TimerJob_Run_ProcessSequentially
+Looks up a localized string similar to Ready to process each of the {0} sites in a sequential manner.
+#### TimerJob_Run_ProcessSequentiallyDone
+Looks up a localized string similar to Done with sequentially processing each of the {0} sites.
+#### TimerJob_Run_Started
+Looks up a localized string similar to Run of timer job has started.
+#### TimerJob_Run_ThreadLaunched
+Looks up a localized string similar to Thread launched for processing {0} sites.
+#### TimerJob_SharePointVersion
+Looks up a localized string similar to SharePointVersion set to {0}.
+#### TimerJob_SharePointVersion_Versions
+Looks up a localized string similar to SharePoint version must be 15 or 16.
+#### TimerJob_UseThreading
+Looks up a localized string similar to UseThreading set to {0}.
+#### WebExtensions_CreatePublishingImageRendition
+Looks up a localized string similar to Creating Image Rendition '{0}' of width '{1}' and height '{2}'..
+#### WebExtensions_CreatePublishingImageRendition_Error
+Looks up a localized string similar to Unable to create Image Rendition '{0}'..
+#### WebExtensions_CreateWeb
+Looks up a localized string similar to Creating web '{0}' with template '{1}'..
+#### WebExtensions_DeleteWeb
+Looks up a localized string similar to Deleting web '{0}'..
+#### WebExtensions_InstallSolution
+Looks up a localized string similar to Installing sandbox solution '{0}' to '{1}'..
+#### WebExtensions_RemoveAppInstance
+Looks up a localized string similar to Removing app '{0}' instance {1}..
+#### WebExtensions_RequestAccessEmailLimitExceeded
+Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
+#### WebExtensions_SiteSearchUnhandledException
+Looks up a localized string similar to Site search error. Error = {0}.
+#### WebExtensions_UninstallSolution
+Looks up a localized string similar to Removing sandbox solution '{0}'..
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.TermSetFromModelToSchemaTypeResolver
+            
+Resolves a TermSet collection type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.ExpressionCollectionValueResolver
+            
+Resolve collection from model to schema with expression
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.ExpressionCollectionValueResolver`1
+            
+Resolve collection from schema to model with expression
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromAuditFlagsToArrayResolver
+            
+Resolves an enum bit mask of AuditFlags into an array of Strings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromArrayToAuditFlagsResolver
+            
+Resolves an array of Strings into an enum bit mask of AuditFlags
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromBasePermissionsToStringValueResolver
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromNullableToSpecifiedValueResolver`1
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.PageLayoutsFromModelToSchemaTypeResolver
+            
+Resolves a list of Views from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.PageLayoutsFromSchemaToModelTypeResolver
+            
+Resolves a list of Views from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.NavigationFromModelToSchemaTypeResolver
+            
+Resolves a Navigation type from model to schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.NavigationFromSchemaToModelTypeResolver
+            
+Resolves a Navigation type from schema to model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.NavigationNodeFromModelToSchemaTypeResolver
+            
+Type resolver for Navigation Node from model to schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.NavigationNodeFromSchemaToModelTypeResolver
+            
+Type resolver for Navigation Node from schema to model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.RoleAssigmentsFromModelToSchemaTypeResolver
+            
+Resolves a collection type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.RoleAssigmentsFromSchemaToModelTypeResolver
+            
+Resolves a collection type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.PropertyObjectTypeResolver`1
+            
+Typed vesion of PropertyObjectTypeResolver
+            
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.PropertyObjectTypeResolver
+            
+Resolves a collection type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromStringToBasePermissionsValueResolver
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromStringToEnumValueResolver
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.DocumentSetTemplateFromModelToSchemaTypeResolver
+            
+Resolves a Template Parameter type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.SecurityFromModelToSchemaTypeResolver
+            
+Resolver for Security settings from model to schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.XmlAnyFromModeToSchemalValueResolver
+            
+Resolves a Dictionary into an Array of objects
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.CollectionFromModelToSchemaTypeResolver
+            
+Resolves a collection type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.RemoveExistingViewsFromSchemaToModelValueResolver
+            
+Resolves a list of Views from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.ListViewsFromSchemaToModelTypeResolver
+            
+Resolves a list of Views from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.CollectionFromSchemaToModelTypeResolver
+            
+Resolves a type from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromArrayToDictionaryValueResolver`2
+            
+Resolves an Array of object into a Dictionary
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromStringToGuidValueResolver
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromDecimalToDoubleValueResolver
+            
+Resolves a Decimal value into a Double
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromDictionaryToArrayValueResolver`2
+            
+Resolves a Dictionary into an Array of objects
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.FromDoubleToDecimalValueResolver
+            
+Resolves a Double value into a Decimal
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.ResolversExtensions
+            
+Extension type for resolvers
         
 ### Methods
 
 
-#### Initialize(OfficeDevPnP.Core.Framework.Provisioning.Providers.TemplateProviderBase)
-Method to initialize the formatter with the proper TemplateProvider instance
+#### GetPublicInstancePropertyValue(System.Object,System.String)
+Retrieves the value of a public, instance property
 > ##### Parameters
-> **provider:** The provider that is calling the current template formatter
+> **source:** The source object
 
-
-#### IsValid(System.IO.Stream)
-Method to validate the content of a formatted template instace
-> ##### Parameters
-> **template:** The formatted template instance as a Stream
+> **propertyName:** The property name, case insensitive
 
 > ##### Return value
-> Boolean result of the validation
+> The property value, if any
 
-#### ToFormattedTemplate(OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
-Method to format a ProvisioningTemplate into a formatted template
+#### GetPublicInstanceProperty(System.Object,System.String)
+Retrieves a public, instance property
 > ##### Parameters
-> **template:** The input ProvisioningTemplate
+> **source:** The source object
+
+> **propertyName:** The property name, case insensitive
 
 > ##### Return value
-> The output formatted template as a Stream
+> The property, if any
 
-#### ToProvisioningTemplate(System.IO.Stream)
-Method to convert a formatted template into a ProvisioningTemplate
+#### SetPublicInstancePropertyValue(System.Object,System.String,System.Object)
+Sets the value of a public, instance property
 > ##### Parameters
-> **template:** The input formatted template as a Stream
+> **source:** The source object
 
-> ##### Return value
-> The output ProvisioningTemplate
+> **propertyName:** The property name, case insensitive
 
-#### ToProvisioningTemplate(System.IO.Stream,System.String)
-Method to convert a formatted template into a ProvisioningTemplate, based on a specific ID
-> ##### Parameters
-> **template:** The input formatted template as a Stream
 
-> **identifier:** The identifier of the template to convert
-
-> ##### Return value
-> The output ProvisioningTemplate
-
-## Core.Framework.Provisioning.Providers.Json.JsonTemplateProvider
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.SecurityFromSchemaToModelTypeResolver
             
-Provider for JSON based configurations
+Resolver for Security settings from schema to model
         
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.TemplateParameterFromModelToSchemaTypeResolver
+            
+Resolves a Template Parameter type from Domain Model to Schema
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.TemplateParameterFromSchemaToModelTypeResolver
+            
+Resolves a Template Parameter type from Schema to Domain Model
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Resolvers.XmlAnyFromSchemaToModelValueResolver
+            
+Resolves a Dictionary into an Array of objects
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.ExtensibilityHandlersSerializer
+            
+Class to serialize/deserialize the Providers for Extensibility
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.AddInsSerializer
+            
+Class to serialize/deserialize the AddIns
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.PublishingSerializer
+            
+Class to serialize/deserialize the Publishing settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.ComposedLookSerializer
+            
+Class to serialize/deserialize the ComposedLook settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.NavigationSerializer
+            
+Class to serialize/deserialize the Navigation settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.SecuritySerializer
+            
+Class to serialize/deserialize the Security settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.FeaturesSerializer
+            
+Class to serialize/deserialize the Features
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.DirectoriesSerializer
+            
+Class to serialize/deserialize the Directories
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.WorkflowsActionsSerializer
+            
+Class to serialize/deserialize the Workflows
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.AuditSettingsSerializer
+            
+Class to serialize/deserialize the Audit Settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.SiteColumnsSerializer
+            
+Class to serialize/deserialize the Site Columns
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.SupportedUILanguagesSerializer
+            
+Class to serialize/deserialize the Supported UI Languages
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.TermGroupsSerializer
+            
+Class to serialize/deserialize the Term Groups
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.PagesSerializer
+            
+Class to serialize/deserialize the Pages
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.FilesSerializer
+            
+Class to serialize/deserialize the Files
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.CustomActionsSerializer
+            
+Class to serialize/deserialize the Custom Actions
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.TemplateBasePropertiesSerializer
+            
+Class to serialize/deserialize the Base Properties of a Template
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.RegionalSettingsSerializer
+            
+Class to serialize/deserialize the Regional Settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.WebSettingsSerializer
+            
+Class to serialize/deserialize the Web Settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.ContentTypesSerializer
+            
+Class to serialize/deserialize the Content Types
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.ListInstancesSerializer
+            
+Class to serialize/deserialize the List Instances
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.LocalizationsSerializer
+            
+Class to serialize/deserialize the Localization Settings
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.PropertyBagPropertiesSerializer
+            
+Class to serialize/deserialize the Property Bag Properties
+        
+
+## Core.Framework.Provisioning.Providers.Xml.Serializers.TemplateParametersSerializer
+            
+Class to serialize/deserialize the Parameters of the Template
+        
+
+## Core.Framework.Provisioning.Providers.Xml.IPnPSchemaSerializer
+            
+Basic interface for every Schema Serializer type
+        
+### Properties
+
+#### Name
+Provides the name of the serializer type
+### Methods
+
+
+#### Deserialize(System.Object,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+The method to deserialize an XML Schema based object into a Domain Model object
+> ##### Parameters
+> **persistence:** The persistence layer object
+
+> **template:** The PnP Provisioning Template object
+
+
+#### Serialize(OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.Object)
+The method to serialize a Domain Model object into an XML Schema based object
+> ##### Parameters
+> **template:** The PnP Provisioning Template object
+
+> **persistence:** The persistence layer object
+
+
+## Core.Framework.Provisioning.Providers.Xml.IResolver
+            
+Basic interface for all the resolver types
+        
+### Properties
+
+#### Name
+Provides the name of the Resolver
+
+## Core.Framework.Provisioning.Providers.Xml.ITypeResolver
+            
+Handles custom type resolving rules for PnPObjectsMapper
+        
+### Methods
+
+
+#### Resolve(System.Object,System.Collections.Generic.Dictionary{System.String,OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Resolves a source type into a result
+> ##### Parameters
+> **source:** The full source object to resolve
+
+> **resolvers:** 
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+
+## Core.Framework.Provisioning.Providers.Xml.IValueResolver
+            
+Handles custom value resolving rules for PnPObjectsMapper
+        
+### Methods
+
+
+#### Resolve(System.Object,System.Object,System.Object)
+Resolves a source value into a result
+> ##### Parameters
+> **source:** The full source object to resolve
+
+> **destination:** The full destination object to resolve
+
+> **sourceValue:** The source value to resolve
+
+> ##### Return value
+> The resolved value
 
 ## Core.Framework.Provisioning.Providers.Xml.IXMLSchemaFormatter
             
@@ -8086,6 +6871,112 @@ Interface for template formatters that read and write XML documents
 The URI of the target XML Namespace
 #### NamespacePrefix
 The default namespace prefix of the target XML Namespace
+
+## Core.Framework.Provisioning.Providers.Xml.PnPBaseSchemaSerializer`1
+            
+Base class for every Schema Serializer
+        
+### Methods
+
+
+#### CreateSelectorLambda(System.Type,System.String)
+Protected method to create a Lambda Expression like: i => i.Property
+> ##### Parameters
+> **targetType:** The Type of the .NET property to apply the Lambda Expression to
+
+> **propertyName:** The name of the property of the target object
+
+> ##### Return value
+> 
+
+## Core.Framework.Provisioning.Providers.Xml.PnPObjectsMapper
+            
+Utility class that maps one object to another
+        
+### Methods
+
+
+#### MapProperties``1(``0,System.Object,System.Collections.Generic.Dictionary{System.Linq.Expressions.Expression{System.Func{``0,System.Object}},OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Maps the properties of a typed source object, to the properties of an untyped destination object
+> ##### Parameters
+> **source:** The source object
+
+> **destination:** The destination object
+
+> **resolverExpressions:** Any custom resolver, optional
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+
+#### MapProperties``1(System.Object,``0,System.Collections.Generic.Dictionary{System.Linq.Expressions.Expression{System.Func{``0,System.Object}},OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Maps the properties of an untyped source object object, to the properties of a typed destination object
+> ##### Parameters
+> **source:** The source object
+
+> **destination:** The destination object
+
+> **resolverExpressions:** Any custom resolver, optional
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+
+#### MapProperties(System.Object,System.Object,System.Collections.Generic.Dictionary{System.String,OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Maps the properties of a source object, to the properties of a destination object
+> ##### Parameters
+> **source:** The source object
+
+> **destination:** The destination object
+
+> **resolvers:** Any custom resolver, optional
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+
+#### MapObjects``1(System.Object,OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ITypeResolver,System.Collections.Generic.Dictionary{System.Linq.Expressions.Expression{System.Func{``0,System.Object}},OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Maps a source object, into a destination object
+> ##### Parameters
+> **source:** The source object
+
+> **resolver:** A custom resolver
+
+> **resolverExpressions:** Any custom resolver, optional
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+> ##### Return value
+> The mapped destination object
+
+#### MapObjects(System.Object,OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ITypeResolver,System.Collections.Generic.Dictionary{System.String,OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver},System.Boolean)
+Maps a source object, into a destination object
+> ##### Parameters
+> **source:** The source object
+
+> **resolver:** A custom resolver
+
+> **resolvers:** Any custom resolver, optional
+
+> **recursive:** Defines whether to apply the mapping recursively, optional and by default false
+
+> ##### Return value
+> The mapped destination object
+
+#### ConvertExpressionsToResolvers``1(System.Collections.Generic.Dictionary{System.Linq.Expressions.Expression{System.Func{``0,System.Object}},OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.IResolver})
+Transforms a Dictionary of IValueResolver instances by Expression into a Dictionary by String (property name)
+> ##### Parameters
+> **resolverExpressions:** The Dictionary to transform
+
+> ##### Return value
+> The transformed dictionary
+
+## Core.Framework.Provisioning.Providers.Xml.PnPSerializationScope
+            
+Internal class to handle a Provisioning Template serialization scope
+        
+### Methods
+
+
+#### Dispose
+Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
 
 ## Core.Framework.Provisioning.Providers.Xml.V201503.SharePointProvisioningTemplate
             
@@ -16015,6 +14906,21 @@ The default namespace prefix of the target XML Namespace
 #### ResourceFile
 
 
+## Core.Framework.Provisioning.Providers.Xml.TemplateSchemaSerializerAttribute
+            
+Attribute for Template Schema Serializers
+        
+### Properties
+
+#### MinimalSupportedSchemaVersion
+The schemas supported by the serializer
+#### SerializationSequence
+The sequence number for applying the serializer during serialization Should be a multiple of 100, to make room for future new insertions
+#### DeserializationSequence
+The sequence number for applying the serializer during deserialization Should be a multiple of 100, to make room for future new insertions
+#### Default
+Defines whether to automatically include the serializer in the serialization process or not
+
 ## Core.Framework.Provisioning.Providers.Xml.XMLPnPSchemaFormatter
             
 Helper class that abstracts from any specific version of XMLPnPSchemaFormatter
@@ -16042,9 +14948,66 @@ Static method to retrieve a specific XMLPnPSchemaFormatter instance
 > ##### Return value
 > 
 
+## Core.Framework.Provisioning.Providers.Xml.XMLPnPSchemaV201605Serializer
+            
+Implements the logic to serialize a schema of version 201605
+        
+
 ## Core.Framework.Provisioning.Providers.Xml.XMLTemplateProvider
             
 Provider for xml based configurations
+        
+
+## Core.Framework.Provisioning.Providers.ITemplateFormatter
+            
+Interface for basic capabilites that any Template Formatter should provide/support
+        
+### Methods
+
+
+#### Initialize(OfficeDevPnP.Core.Framework.Provisioning.Providers.TemplateProviderBase)
+Method to initialize the formatter with the proper TemplateProvider instance
+> ##### Parameters
+> **provider:** The provider that is calling the current template formatter
+
+
+#### IsValid(System.IO.Stream)
+Method to validate the content of a formatted template instace
+> ##### Parameters
+> **template:** The formatted template instance as a Stream
+
+> ##### Return value
+> Boolean result of the validation
+
+#### ToFormattedTemplate(OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to format a ProvisioningTemplate into a formatted template
+> ##### Parameters
+> **template:** The input ProvisioningTemplate
+
+> ##### Return value
+> The output formatted template as a Stream
+
+#### ToProvisioningTemplate(System.IO.Stream)
+Method to convert a formatted template into a ProvisioningTemplate
+> ##### Parameters
+> **template:** The input formatted template as a Stream
+
+> ##### Return value
+> The output ProvisioningTemplate
+
+#### ToProvisioningTemplate(System.IO.Stream,System.String)
+Method to convert a formatted template into a ProvisioningTemplate, based on a specific ID
+> ##### Parameters
+> **template:** The input formatted template as a Stream
+
+> **identifier:** The identifier of the template to convert
+
+> ##### Return value
+> The output ProvisioningTemplate
+
+## Core.Framework.Provisioning.Providers.Json.JsonTemplateProvider
+            
+Provider for JSON based configurations
         
 
 ## Core.Framework.Provisioning.Providers.ITemplateProviderExtension
@@ -16101,6 +15064,2043 @@ Method invoked after serializing the template and before it is saved onto the ta
 
 > ##### Return value
 > The resulting stream, after pre-processing
+
+## Core.Framework.Provisioning.Connectors.AzureStorageConnector
+            
+Connector for files in Azure blob storage
+        
+### Methods
+
+
+#### Constructor
+Base constructor
+
+#### Constructor
+AzureStorageConnector constructor. Allows to directly set Azure Storage key and container
+> ##### Parameters
+> **connectionString:** Azure Storage Key (DefaultEndpointsProtocol=https;AccountName=yyyy;AccountKey=xxxx)
+
+> **container:** Name of the Azure container to operate against
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from
+
+> ##### Return value
+> List of files
+
+#### GetFolders
+Get the folders of the default container
+> ##### Return value
+> List of folders
+
+#### GetFolders(System.String)
+Get the folders of a specified container
+> ##### Parameters
+> **container:** Name of the container to get the folders from
+
+> ##### Return value
+> List of folders
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+## Core.Framework.Provisioning.Connectors.FileConnectorBase
+            
+Base file connector class
+        
+### Methods
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from
+
+> ##### Return value
+> List of files
+
+#### GetFolders
+Get the folders of the default container
+> ##### Return value
+> List of folders
+
+#### GetFolders(System.String)
+Get the folders of a specified container
+> ##### Parameters
+> **container:** Name of the container to get the folders from
+
+> ##### Return value
+> List of folders
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+#### GetFilenamePart(System.String)
+Returns a filename without a path
+> ##### Parameters
+> **fileName:** Path to the file to retrieve the filename from
+
+
+## Core.Framework.Provisioning.Connectors.FileSystemConnector
+            
+Connector for files in file system
+        
+### Methods
+
+
+#### Constructor
+Base constructor
+
+#### Constructor
+FileSystemConnector constructor. Allows to directly set root folder and sub folder
+> ##### Parameters
+> **connectionString:** Root folder (e.g. c:\temp or .\resources or . or .\resources\templates)
+
+> **container:** Sub folder (e.g. templates or resources\templates or blank
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from
+
+> ##### Return value
+> List of files
+
+#### GetFolders
+Get the folders of the default container
+> ##### Return value
+> List of folders
+
+#### GetFolders(System.String)
+Get the folders of a specified container
+> ##### Parameters
+> **container:** Name of the container to get the folders from
+
+> ##### Return value
+> List of folders
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+## Core.Framework.Provisioning.Connectors.ICommitableFileConnector
+            
+Interface for File Connectors
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXMLConnector
+            
+Connector that stores all the files into a unique .PNP OpenXML package
+        
+### Methods
+
+
+#### Constructor
+OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
+> ##### Parameters
+> **packageStream:** 
+
+
+#### Constructor
+OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
+> ##### Parameters
+> **packageFileName:** The name of the .PNP package file. If the .PNP extension is missing, it will be added
+
+> **persistenceConnector:** The FileConnector object that will be used for physical persistence of the file
+
+> **author:** The Author of the .PNP package file, if any. Optional
+
+> **signingCertificate:** The X.509 certificate to use for digital signature of the template, optional
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from (something like: "\images\subfolder")
+
+> ##### Return value
+> List of files
+
+#### GetFolders
+Get the folders of the default container
+> ##### Return value
+> List of folders
+
+#### GetFolders(System.String)
+Get the folders of a specified container
+> ##### Parameters
+> **container:** Name of the container to get the folders from
+
+> ##### Return value
+> List of folders
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+#### GetFileFromInsidePackage(System.String,System.String)
+Will first try to find the file based on container/filename from the mapped file names. As a fallback it will try to find by container/filename in the pnp file structure, which was the original format.
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFileInfo
+            
+File descriptor for every single file in the PnP OpenXML file
+        
+### Properties
+
+#### InternalName
+The Internal Name of the file in the PnP OpenXML file
+#### OriginalName
+The Original Name of the file in the source template
+#### Folder
+The name of the folder within the PnP OpenXML file
+#### Content
+The binary content of the file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPFilesMap
+            
+Defines the mapping between original file names and OpenXML file names
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPInfo
+            
+Global container of the PnP OpenXML file
+        
+### Properties
+
+#### Manifest
+The Manifest of the PnP OpenXML file
+#### Properties
+Custom properties of the PnP OpenXML file
+#### Files
+Files contained in the PnP OpenXML file
+#### FilesMap
+Defines the mapping between original file names and OpenXML file names
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPManifest
+            
+Manifest of a PnP OpenXML file
+        
+### Properties
+
+#### Type
+The Type of the package file defined by the current manifest
+
+## Core.Framework.Provisioning.Connectors.OpenXML.Model.PnPProperties
+            
+Properties of the PnP OpenXML container
+        
+### Properties
+
+#### Id
+Unique ID for the PnP OpenXML file
+#### Author
+Author of the PnP OpenXML file
+#### CreationDateTime
+Date and Time of creation for the PnP OpenXML file
+#### Generator
+Name of the Generator (engine) of the PnP OpenXML file
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackage
+            
+Defines a PnP OpenXML package file
+        
+### Properties
+
+#### ManifestPart
+The Manifest Part of the package file
+#### Manifest
+The Manifest of the package file
+#### Properties
+The Properties of the package
+#### FilesMap
+The File Map for files stored in the OpenXML file
+#### FilesOriginPart
+The Files origin
+#### FilesPackageParts
+The Files Parts of the package
+#### Files
+The Files of the package
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFileItem
+            
+Defines a single file in the PnP Open XML file package
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageFormatException
+            
+Custom Exception type for PnP Packaging handling
+        
+
+## Core.Framework.Provisioning.Connectors.OpenXML.PnPPackageExtensions
+            
+Extension class for PnP OpenXML package files
+        
+
+## Core.Framework.Provisioning.Connectors.SharePointConnector
+            
+Connector for files in SharePoint
+        
+### Methods
+
+
+#### Constructor
+Base constructor
+
+#### Constructor
+SharePointConnector constructor. Allows to directly set root folder and sub folder
+> ##### Parameters
+> **clientContext:** 
+
+> **connectionString:** Site collection URL (e.g. https://yourtenant.sharepoint.com/sites/dev)
+
+> **container:** Library + folder that holds the files (mydocs/myfolder)
+
+
+#### GetFiles
+Get the files available in the default container
+> ##### Return value
+> List of files
+
+#### GetFiles(System.String)
+Get the files available in the specified container
+> ##### Parameters
+> **container:** Name of the container to get the files from
+
+> ##### Return value
+> List of files
+
+#### GetFolders
+Get the folders of the default container
+> ##### Return value
+> List of folders
+
+#### GetFolders(System.String)
+Get the folders of a specified container
+> ##### Parameters
+> **container:** Name of the container to get the folders from
+
+> ##### Return value
+> List of folders
+
+#### GetFile(System.String)
+Gets a file as string from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFile(System.String,System.String)
+Gets a file as string from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String)
+Gets a file as stream from the default container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> ##### Return value
+> String containing the file contents
+
+#### GetFileStream(System.String,System.String)
+Gets a file as stream from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to get
+
+> **container:** Name of the container to get the file from
+
+> ##### Return value
+> String containing the file contents
+
+#### SaveFileStream(System.String,System.IO.Stream)
+Saves a stream to the default container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **stream:** Stream containing the file contents
+
+
+#### SaveFileStream(System.String,System.String,System.IO.Stream)
+Saves a stream to the specified container with the given name. If the file exists it will be overwritten
+> ##### Parameters
+> **fileName:** Name of the file to save
+
+> **container:** Name of the container to save the file to
+
+> **stream:** Stream containing the file contents
+
+
+#### DeleteFile(System.String)
+Deletes a file from the default container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+
+#### DeleteFile(System.String,System.String)
+Deletes a file from the specified container
+> ##### Parameters
+> **fileName:** Name of the file to delete
+
+> **container:** Name of the container to delete the file from
+
+
+## Core.Framework.Provisioning.Extensibility.ExtensibilityManager
+            
+Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
+            
+Provisioning Framework Component that is used for invoking custom providers during the provisioning process.
+        
+### Methods
+
+
+#### ExecuteExtensibilityCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Providers. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteTokenProviderCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate)
+Method to Invoke Custom Provisioning Token Providers which implement the IProvisioningExtensibilityTokenProvider interface. Ensure the ClientContext is not disposed in the custom provider.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **provider:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteExtensibilityProvisionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
+Ensure the ClientContext is not disposed in the custom provider.
+Method to Invoke Custom Provisioning Handlers.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> **applyingInformation:** The Provisioning Template application information object
+
+> **tokenParser:** The Token Parser used by the engine during template provisioning
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+#### ExecuteExtensibilityExtractionCallOut(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ExtensibilityHandler,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope)
+Ensure the ClientContext is not disposed in the custom provider.
+Method to Invoke Custom Extraction Handlers.
+> ##### Parameters
+> **ctx:** Authenticated ClientContext that is passed to the custom provider.
+
+> **handler:** A custom Extensibility Provisioning Provider
+
+> **template:** ProvisioningTemplate that is passed to the custom provider
+
+> **creationInformation:** The Provisioning Template creation information object
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> ##### Exceptions
+> **OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException:** 
+
+> **System.ArgumentException:** Provider.Assembly or Provider.Type is NullOrWhiteSpace>
+
+> **System.ArgumentNullException:** ClientContext is Null>
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityProvider
+            
+Defines a interface that accepts requests from the provisioning processing component
+        
+### Methods
+
+
+#### ProcessRequest(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Defines a interface that accepts requests from the provisioning processing component
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
+## Core.Framework.Provisioning.Extensibility.ExtensiblityPipelineException
+            
+Initializes a new instance of the ExtensiblityPipelineException class. This Exception occurs when there is an exception invoking a custom Extensibility Providers
+        
+### Methods
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a system supplied message
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with the specified message string.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class with a specified error message and a reference to the inner exception that is the cause of this exception.
+> ##### Parameters
+> **message:** A string that describes the exception.
+
+> **innerException:** The exception that is the cause of the current exception.
+
+
+#### Constructor
+Initializes a new instance of the ExtensiblityPipelineException class from serialized data.
+> ##### Parameters
+> **info:** The object that contains the serialized data.
+
+> **context:** The stream that contains the serialized data.
+
+> ##### Exceptions
+> **System.ArgumentNullException:** The info parameter is null.-or-The context parameter is null.
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityTokenProvider
+            
+Defines an interface which allows to plugin custom TokenDefinitions to the template provisioning pipeline
+        
+### Methods
+
+
+#### GetTokens(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,System.String)
+Provides Token Definitions to the template provisioning pipeline
+> ##### Parameters
+> **ctx:** 
+
+> **template:** 
+
+> **configurationData:** 
+
+
+## Core.Framework.Provisioning.Extensibility.IProvisioningExtensibilityHandler
+            
+Defines an interface which allows to plugin custom Provisioning Extensibility Handlers to the template extraction/provisioning pipeline
+        
+### Methods
+
+
+#### Provision(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateApplyingInformation,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenParser,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
+Execute custom actions during provisioning of a template
+> ##### Parameters
+> **ctx:** The target ClientContext
+
+> **template:** The current Provisioning Template
+
+> **applyingInformation:** The Provisioning Template application information object
+
+> **tokenParser:** Token parser instance
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> **configurationData:** The configuration data, if any, for the handler
+
+
+#### Extract(Microsoft.SharePoint.Client.ClientContext,OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate,OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ProvisioningTemplateCreationInformation,OfficeDevPnP.Core.Diagnostics.PnPMonitoredScope,System.String)
+Execute custom actions during extraction of a template
+> ##### Parameters
+> **ctx:** The target ClientContext
+
+> **template:** The current Provisioning Template
+
+> **creationInformation:** The Provisioning Template creation information object
+
+> **scope:** The PnPMonitoredScope of the current step in the pipeline
+
+> **configurationData:** The configuration data, if any, for the handler
+
+> ##### Return value
+> The Provisioning Template eventually enriched by the handler during extraction
+
+## Core.Framework.Provisioning.Model.ComposedLook
+            
+Domain Object that defines a Composed Look in the Provision Template
+        
+### Properties
+
+#### SiteLogo
+Gets or sets the Site Logo
+#### AlternateCSS
+Gets or sets the AlternateCSS
+#### MasterPage
+Gets or sets the MasterPage for the Composed Look
+#### Name
+Gets or sets the Name
+#### ColorFile
+Gets or sets the ColorFile
+#### FontFile
+Gets or sets the FontFile
+#### BackgroundFile
+Gets or sets the Background Image
+#### Version
+Gets or sets the Version of the ComposedLook.
+
+## Core.Framework.Provisioning.Model.ContentType
+            
+Domain Object used in the Provisioning template that defines a Content Type https://msdn.microsoft.com/en-us/library/office/ms463449.aspx
+        
+### Properties
+
+#### Id
+The Id of the Content Type
+#### Name
+The name of the Content Type
+#### Description
+The description of the Content Type
+#### Group
+The group name of the content type
+#### FieldRefs
+The FieldRefs entries of the List Instance
+#### Hidden
+True to define the content type as hidden. If you define a content type as hidden, SharePoint Foundation does not display that content type on the New button in list views.
+#### Sealed
+True to prevent changes to this content type. You cannot change the value of this attribute through the user interface, but you can change it in code if you have sufficient rights. You must have site collection administrator rights to unseal a content type.
+#### ReadOnly
+True to specify that the content type cannot be edited without explicitly removing the read-only setting. This can be done either in the user interface or in code.
+#### Overwrite
+True to overwrite an existing content type with the same ID.
+#### DocumentTemplate
+Specifies the document template for the content type
+#### DocumentSetTemplate
+Specifies the properties of the DocumentSet Template if the ContentType defines a DocumentSet
+#### DisplayFormUrl
+Specifies the URL of a custom display form to use for list items that have been assigned the content type
+#### EditFormUrl
+Specifies the URL of a custom edit form to use for list items that have been assigned the content type
+#### NewFormUrl
+Specifies the URL of a custom new form to use for list items that have been assigned the content type
+#### 
+Gets or Sets the Content Type ID
+#### 
+Gets or Sets if the Content Type should be the default Content Type in the library
+#### 
+Declares if the Content Type should be Removed from the list or library
+
+## Core.Framework.Provisioning.Model.ContentTypeBinding
+            
+Domain Object for Content Type Binding in the Provisioning Template
+        
+### Properties
+
+#### ContentTypeId
+Gets or Sets the Content Type ID
+#### Default
+Gets or Sets if the Content Type should be the default Content Type in the library
+#### Remove
+Declares if the Content Type should be Removed from the list or library
+
+## Core.Framework.Provisioning.Model.Feature
+            
+Domain Object that represents an Feature.
+            
+Domain Object that represents an Feature.
+        
+### Properties
+
+#### Id
+Gets or sets the feature Id
+#### Deactivate
+Gets or sets if the feature should be deactivated
+#### 
+A Collection of Features at the Site level
+#### 
+A Collection of Features at the Web level
+
+## Core.Framework.Provisioning.Model.FieldRef
+            
+Represents a Field XML Markup that is used to define information about a field
+            
+Represents a Field XML Markup that is used to define information about a field
+        
+### Properties
+
+#### Id
+Gets ot sets the ID of the referenced field
+#### Name
+Gets or sets the name of the field link. This will not change the internal name of the field.
+#### DisplayName
+Gets or sets the Display Name of the field. Only applicable to fields associated with lists.
+#### Required
+Gets or sets if the field is Required
+#### Hidden
+Gets or sets if the field is Hidden
+
+## Core.Framework.Provisioning.Model.ListInstance
+            
+This class holds deprecated ListInstance properties and methods
+            
+Domain Object that specifies the properties of the new list.
+        
+### Properties
+
+#### Title
+Gets or sets the list title
+#### Description
+Gets or sets the description of the list
+#### DocumentTemplate
+Gets or sets a value that specifies the identifier of the document template for the new list.
+#### OnQuickLaunch
+Gets or sets a value that specifies whether the new list is displayed on the Quick Launch of the site.
+#### TemplateType
+Gets or sets a value that specifies the list server template of the new list. https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.listtemplatetype.aspx
+#### Url
+Gets or sets a value that specifies whether the new list is displayed on the Quick Launch of the site.
+#### EnableVersioning
+Gets or sets whether verisioning is enabled on the list
+#### EnableMinorVersions
+Gets or sets whether minor verisioning is enabled on the list
+#### DraftVersionVisibility
+Gets or sets the DraftVersionVisibility for the list
+#### EnableModeration
+Gets or sets whether moderation/content approval is enabled on the list
+#### MinorVersionLimit
+Gets or sets the MinorVersionLimit for versioning, just in case it is enabled on the list
+#### MaxVersionLimit
+Gets or sets the MinorVersionLimit for verisioning, just in case it is enabled on the list
+#### RemoveExistingContentTypes
+Gets or sets whether existing content types should be removed
+#### RemoveExistingViews
+Gets or sets whether existing views should be removed
+#### ContentTypesEnabled
+Gets or sets whether content types are enabled
+#### Hidden
+Gets or sets whether to hide the list
+#### ForceCheckout
+Gets or sets whether to force checkout of documents in the library
+#### EnableAttachments
+Gets or sets whether attachments are enabled. Defaults to true.
+#### EnableFolderCreation
+Gets or sets whether folder is enabled. Defaults to true.
+#### ContentTypeBindings
+Gets or sets the content types to associate to the list
+#### Views
+Gets or sets the content types to associate to the list
+#### FieldDefaults
+Defines a list of default values for the Fields of the List Instance
+#### Security
+Defines the Security rules for the List Instance
+#### Folders
+Defines a collection of folders (eventually nested) that will be provisioned into the target list/library
+#### UserCustomActions
+Defines a collection of user custom actions that will be provisioned into the target list/library
+
+## Core.Framework.Provisioning.Model.ProvisioningTemplate
+            
+Domain Object for the Provisioning Template
+            
+Domain Object for the Provisioning Template
+        
+### Properties
+
+#### Providers
+Gets a collection of Providers that are used during the extensibility pipeline
+#### SearchSettings
+The Search Settings for the Provisioning Template
+#### Parameters
+Any parameters that can be used throughout the template
+#### Id
+Gets or sets the ID of the Provisioning Template
+#### Version
+Gets or sets the Version of the Provisioning Template
+#### SitePolicy
+Gets or Sets the Site Policy
+#### Security
+Security Groups Members for the Template
+#### Navigation
+The Navigation configurations of the Provisioning Template
+#### SiteFields
+Gets a collection of fields
+#### ContentTypes
+Gets a collection of Content Types to create
+#### Features
+Gets or sets a list of features to activate or deactivate
+#### CustomActions
+Gets or sets CustomActions for the template
+#### Files
+Gets a collection of files for the template
+#### Directories
+Gets a collection of directories from which upload files for the template
+#### ComposedLook
+Gets or Sets the composed look of the template
+#### Pages
+Gets a collection of Wiki Pages for the template
+#### TermGroups
+Gets a collection of termgroups to deploy to the site
+#### WebSettings
+The Web Settings of the Provisioning Template
+#### RegionalSettings
+The Regional Settings of the Provisioning Template
+#### SupportedUILanguages
+The Supported UI Languages for the Provisioning Template
+#### AuditSettings
+The Audit Settings for the Provisioning Template
+#### Workflows
+Defines the Workflows to provision
+#### SiteSearchSettings
+The Site Collection level Search Settings for the Provisioning Template
+#### WebSearchSettings
+The Web level Search Settings for the Provisioning Template
+#### AddIns
+Defines the SharePoint Add-ins to provision
+#### Publishing
+Defines the Publishing configuration to provision
+#### Properties
+A set of custom Properties for the Provisioning Template
+#### ImagePreviewUrl
+The Image Preview Url of the Provisioning Template
+#### DisplayName
+The Display Name of the Provisioning Template
+#### Description
+The Description of the Provisioning Template
+#### BaseSiteTemplate
+The Base SiteTemplate of the Provisioning Template
+#### 
+References the parent ProvisioningTemplate for the current provisioning artifact
+#### 
+References the parent ProvisioningTemplate for the current provisioning artifact
+### Methods
+
+
+#### ToXML(OfficeDevPnP.Core.Framework.Provisioning.Providers.ITemplateFormatter)
+Serializes a template to XML
+> ##### Parameters
+> **formatter:** 
+
+> ##### Return value
+> 
+
+#### Constructor
+Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
+> ##### Parameters
+> **parentTemplate:** 
+
+
+#### Constructor
+Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
+> ##### Parameters
+> **parentTemplate:** 
+
+
+#### 
+We implemented this to adhere to the generic List of T behavior
+Finds an item matching a search predicate
+> ##### Parameters
+> **match:** The matching predicate to use for finding any target item
+
+> ##### Return value
+> The target item matching the find predicate
+
+## Core.Framework.Provisioning.Model.BaseNavigationKind
+            
+Base abstract class for the navigation kinds (global or current)
+        
+### Properties
+
+#### StructuralNavigation
+Defines the Structural Navigation settings of the site
+#### ManagedNavigation
+Defines the Managed Navigation settings of the site
+
+## Core.Framework.Provisioning.Model.CurrentNavigation
+            
+The Current Navigation settings for the Provisioning Template
+        
+### Fields
+
+#### 
+The site inherits the Global Navigation settings from its parent
+#### 
+The site uses Structural Global Navigation
+#### 
+The site uses Structural Local Current Navigation
+#### 
+The site uses Managed Global Navigation
+### Properties
+
+#### NavigationType
+Defines the type of Current Navigation
+
+## Core.Framework.Provisioning.Model.CurrentNavigationType
+            
+Defines the type of Current Navigation
+        
+### Fields
+
+#### Inherit
+The site inherits the Global Navigation settings from its parent
+#### Structural
+The site uses Structural Global Navigation
+#### StructuralLocal
+The site uses Structural Local Current Navigation
+#### Managed
+The site uses Managed Global Navigation
+
+## Core.Framework.Provisioning.Model.CustomAction
+            
+Domain Object for custom actions associated with a SharePoint list, Web site, or subsite.
+            
+Domain Object for custom actions associated with a SharePoint list, Web site, or subsite.
+        
+### Properties
+
+#### RightsValue
+Gets or sets the value that specifies the permissions needed for the custom action. https://msdn.microsoft.com/en-us/library/office/microsoft.sharepoint.client.permissionkind.aspx
+#### Name
+Gets or sets the name of the custom action.
+#### Description
+Gets or sets the description of the custom action.
+#### Group
+Gets or sets a value that specifies an implementation-specific value that determines the position of the custom action in the page.
+#### Location
+Gets or sets the location of the custom action. A string that contains the location; for example, Microsoft.SharePoint.SiteSettings.
+#### Title
+Gets or sets the display title of the custom action.
+#### Sequence
+Gets or sets the value that specifies an implementation-specific value that determines the order of the custom action that appears on the page.
+#### Rights
+Gets or sets the value that specifies the permissions needed for the custom action.
+#### Url
+Gets or sets the URL, URI, or ECMAScript (JScript, JavaScript) function associated with the action.
+#### ScriptBlock
+Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.
+#### ImageUrl
+Gets or sets the URL of the image associated with the custom action.
+#### ScriptSrc
+Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
+#### Remove
+Gets or sets a value that specifies whether to Remove the CustomAction from the target
+#### 
+A Collection of CustomActions at the Site level
+#### 
+A Collection of CustomActions at the Web level
+
+## Core.Framework.Provisioning.Model.Directory
+            
+Defines a Directory element, to describe a folder in the current repository that will be used to upload files into the target Site
+        
+### Properties
+
+#### Src
+The Src of the Directory
+#### Folder
+The TargetFolder of the Directory
+#### Overwrite
+The Overwrite flag for the files in the Directory
+#### Level
+The Level status for the files in the Directory
+#### Recursive
+Defines whether to recursively browse through all the child folders of the Directory
+#### IncludedExtensions
+The file Extensions to include while uploading the Directory
+#### ExcludedExtensions
+The file Extensions to exclude while uploading the Directory
+#### MetadataMappingFile
+The file path of JSON mapping file with metadata for files to upload in the Directory
+#### Security
+Defines the Security rules for the File
+
+## Core.Framework.Provisioning.Model.DirectoryCollection
+            
+Collection of Directory objects
+        
+
+## Core.Framework.Provisioning.Model.ExtensibilityHandler
+            
+Domain Object for Extensiblity Call out
+        
+
+## Core.Framework.Provisioning.Model.FeatureCollection
+            
+Collection of Feature objects
+        
+
+## Core.Framework.Provisioning.Model.AddIn
+            
+Defines an Add-in to provision
+        
+### Properties
+
+#### PackagePath
+Defines the .app file of the SharePoint Add-in to provision
+#### Source
+Defines the Source of the SharePoint Add-in to provision Possible values are: CorporateCatalog, DeveloperSite, InvalidSource, Marketplace, ObjectModel, RemoteObjectModel
+
+## Core.Framework.Provisioning.Model.AddInCollection
+            
+A collection of AddIn objects
+        
+
+## Core.Framework.Provisioning.Model.AuditSettings
+            
+The Audit Settings for the Provisioning Template
+        
+### Properties
+
+#### AuditFlags
+Audit Flags configured for the Site
+#### AuditLogTrimmingRetention
+The Audit Log Trimming Retention for Audits
+#### TrimAuditLog
+A flag to enable Audit Log Trimming
+
+## Core.Framework.Provisioning.Model.AvailableWebTemplate
+            
+Defines an available Web Template for the current Publishing site
+        
+### Properties
+
+#### LanguageCode
+The Language Code for the Web Template
+#### TemplateName
+The Name of the Web Template
+
+## Core.Framework.Provisioning.Model.AvailableWebTemplateCollection
+            
+A collection of AvailableWebTemplate objects
+        
+
+## Core.Framework.Provisioning.Model.BaseModel
+            
+Base type for any Domain Model object (excluded the ProvisioningTemplate type)
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+
+## Core.Framework.Provisioning.Model.ContentTypeBindingCollection
+            
+Collection of ContentTypeBinding objects
+        
+
+## Core.Framework.Provisioning.Model.ContentTypeCollection
+            
+Collection of ContentType objects
+        
+
+## Core.Framework.Provisioning.Model.CustomActionCollection
+            
+Collection of CustomAction objects
+        
+
+## Core.Framework.Provisioning.Model.CustomActions
+            
+Domain Object that represents a Collections of Custom Actions
+        
+### Properties
+
+#### SiteCustomActions
+A Collection of CustomActions at the Site level
+#### WebCustomActions
+A Collection of CustomActions at the Web level
+
+## Core.Framework.Provisioning.Model.DataRowCollection
+            
+Collection of DataRow objects
+        
+
+## Core.Framework.Provisioning.Model.DefaultDocument
+            
+A default document for a Document Set
+        
+### Properties
+
+#### Name
+The name (including the relative path) of the Default Document for a Document Set
+#### ContentTypeId
+The value of the ContentTypeID of the Default Document for the Document Set
+#### FileSourcePath
+The path of the file to upload as a Default Document for the Document Set
+
+## Core.Framework.Provisioning.Model.DesignPackage
+            
+Defines a Design Package to import into the current Publishing site
+        
+### Properties
+
+#### DesignPackagePath
+Defines the path of the Design Package to import into the current Publishing site
+#### MajorVersion
+The Major Version of the Design Package to import into the current Publishing site
+#### MinorVersion
+The Minor Version of the Design Package to import into the current Publishing site
+#### PackageGuid
+The ID of the Design Package to import into the current Publishing site
+#### PackageName
+The Name of the Design Package to import into the current Publishing site
+
+## Core.Framework.Provisioning.Model.DocumentSetTemplate
+            
+Defines a DocumentSet Template for creating multiple DocumentSet instances
+        
+### Properties
+
+#### AllowedContentTypes
+The list of allowed Content Types for the Document Set
+#### DefaultDocuments
+The list of default Documents for the Document Set
+#### SharedFields
+The list of Shared Fields for the Document Set
+#### WelcomePageFields
+The list of Welcome Page Fields for the Document Set
+#### WelcomePage
+Defines the custom WelcomePage for the Document Set
+
+## Core.Framework.Provisioning.Model.Features
+            
+Domain Object that is used in the Site Template for OOB Features
+        
+### Properties
+
+#### SiteFeatures
+A Collection of Features at the Site level
+#### WebFeatures
+A Collection of Features at the Web level
+
+## Core.Framework.Provisioning.Model.Field
+            
+Represents a Field XML Markup that is used to define information about a field
+        
+### Properties
+
+#### 
+Gets ot sets the ID of the referenced field
+#### 
+Gets or sets the name of the field link. This will not change the internal name of the field.
+#### 
+Gets or sets the Display Name of the field. Only applicable to fields associated with lists.
+#### 
+Gets or sets if the field is Required
+#### 
+Gets or sets if the field is Hidden
+#### SchemaXml
+Gets a value that specifies the XML Schema representing the Field type. https://msdn.microsoft.com/en-us/library/office/ff407271.aspx
+
+## Core.Framework.Provisioning.Model.FieldRefCollection
+            
+Collection of FieldRef objects
+        
+
+## Core.Framework.Provisioning.Model.FieldCollection
+            
+Collection of Field objects
+        
+
+## Core.Framework.Provisioning.Model.FileCollection
+            
+Collection of File objects
+        
+
+## Core.Framework.Provisioning.Model.FileLevel
+            
+The File Level for a File element
+        
+### Fields
+
+#### Draft
+The file will be stored as a draft
+#### Checkout
+The file will be stored as a checked out item
+#### Published
+The file will be stored as a published item
+
+## Core.Framework.Provisioning.Model.Folder
+            
+Defines a folder that will be provisioned into the target list/library
+        
+### Properties
+
+#### Name
+The Name of the Folder
+#### Security
+Defines the security rules for the current Folder
+#### Folders
+Defines the child folders of the current Folder, if any
+
+## Core.Framework.Provisioning.Model.FolderCollection
+            
+Collection of Folder objects
+        
+
+## Core.Framework.Provisioning.Model.GlobalNavigation
+            
+The Global Navigation settings for the Provisioning Template
+        
+### Fields
+
+#### 
+The site inherits the Global Navigation settings from its parent
+#### 
+The site uses Structural Global Navigation
+#### 
+The site uses Managed Global Navigation
+### Properties
+
+#### NavigationType
+Defines the type of Global Navigation
+
+## Core.Framework.Provisioning.Model.GlobalNavigationType
+            
+Defines the type of Global Navigation
+        
+### Fields
+
+#### Inherit
+The site inherits the Global Navigation settings from its parent
+#### Structural
+The site uses Structural Global Navigation
+#### Managed
+The site uses Managed Global Navigation
+
+## Core.Framework.Provisioning.Model.IProvisioningTemplateDescendant
+            
+Interface implemented by any descendant of a ProvisioningTemplate
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+
+## Core.Framework.Provisioning.Model.ListInstanceCollection
+            
+Collection of ListInstance objects
+        
+
+## Core.Framework.Provisioning.Model.Localization
+            
+Domain Object used in the Provisioning template that defines a Localization item
+        
+### Properties
+
+#### LCID
+The Locale ID of a Localization Language
+#### Name
+The Name of a Localization Language
+#### ResourceFile
+The path to the .RESX (XML) resource file for the current Localization
+
+## Core.Framework.Provisioning.Model.LocalizationCollection
+            
+Collection of Localization objects
+        
+
+## Core.Framework.Provisioning.Model.ManagedNavigation
+            
+Defines the Managed Navigation settings of a site
+        
+### Properties
+
+#### TermStoreId
+Defines the TermStore ID for the Managed Navigation
+#### TermSetId
+Defines the TermSet ID for the Managed Navigation
+
+## Core.Framework.Provisioning.Model.Navigation
+            
+The Navigation configurations of the Provisioning Template
+        
+### Properties
+
+#### GlobalNavigation
+The Global Navigation settings for the Provisioning Template
+#### CurrentNavigation
+The Current Navigation settings for the Provisioning Template
+#### 
+A collection of navigation nodes children of the current NavigatioNode
+#### 
+Defines the Title of a Navigation Node
+#### 
+Defines the Url of a Navigation Node
+#### 
+Defines whether the Navigation Node for the Structural Navigation targets an External resource
+
+## Core.Framework.Provisioning.Model.NavigationNode
+            
+Defines a Navigation Node for the Structural Navigation of a site
+        
+### Properties
+
+#### NavigationNodes
+A collection of navigation nodes children of the current NavigatioNode
+#### Title
+Defines the Title of a Navigation Node
+#### Url
+Defines the Url of a Navigation Node
+#### IsExternal
+Defines whether the Navigation Node for the Structural Navigation targets an External resource
+
+## Core.Framework.Provisioning.Model.NavigationNodeCollection
+            
+A collection of NavigationNode objects
+        
+
+## Core.Framework.Provisioning.Model.PageLayout
+            
+Defines an available Page Layout for the current Publishing site
+        
+### Properties
+
+#### Path
+Defines the path of the Page Layout for the current Publishing site
+#### IsDefault
+Defines whether the Page Layout is the default for the current Publishing site
+
+## Core.Framework.Provisioning.Model.PageLayoutCollection
+            
+Collection of PageLayout objects
+        
+
+## Core.Framework.Provisioning.Model.PageCollection
+            
+Collection of Page objects
+        
+
+## Core.Framework.Provisioning.Model.PropertyBagEntryCollection
+            
+Collection of PropertyBagEntry objects
+        
+
+## Core.Framework.Provisioning.Model.ExtensibilityHandlerCollection
+            
+Collection of ExtensibilityHandler objects
+        
+
+## Core.Framework.Provisioning.Model.ProviderCollection
+            
+Collection of Provider objects
+        
+
+## Core.Framework.Provisioning.Model.ProvisioningTemplateDictionary`2
+            
+Generic keyed collection of items stored in the ProvisioningTemplate graph
+            The type of the Key for the keyed collection
+            The type of the Item for the keyed collection
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+### Methods
+
+
+#### Constructor
+Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
+> ##### Parameters
+> **parentTemplate:** 
+
+
+## Core.Framework.Provisioning.Model.ProvisioningTemplateCollection`1
+            
+Generic collection of items stored in the ProvisioningTemplate graph
+            The type of Item for the collection
+        
+### Properties
+
+#### ParentTemplate
+References the parent ProvisioningTemplate for the current provisioning artifact
+### Methods
+
+
+#### Constructor
+Custom constructor to manage the ParentTemplate for the collection and all the children of the collection
+> ##### Parameters
+> **parentTemplate:** 
+
+
+#### Find(System.Predicate{`0})
+We implemented this to adhere to the generic List of T behavior
+Finds an item matching a search predicate
+> ##### Parameters
+> **match:** The matching predicate to use for finding any target item
+
+> ##### Return value
+> The target item matching the find predicate
+
+## Core.Framework.Provisioning.Model.Publishing
+            
+Defines the Publishing configuration to provision
+        
+### Properties
+
+#### DesignPackage
+Defines a Design Package to import into the current Publishing site
+#### AvailableWebTemplates
+Defines the Available Web Templates for the current Publishing site
+#### PageLayouts
+Defines the Available Page Layouts for the current Publishing site
+#### AutoCheckRequirements
+Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site
+
+## Core.Framework.Provisioning.Model.AutoCheckRequirementsOptions
+            
+Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site
+        
+### Fields
+
+#### MakeCompliant
+Instructs the engine to make the target site compliant with the requirements
+#### SkipIfNotCompliant
+Instructs the engine to skip the Publishing section if the target site is not compliant with the requirements
+#### FailIfNotCompliant
+Instructs the engine to throw an exception/failure if the target site is not compliant with the requirements
+
+## Core.Framework.Provisioning.Model.RoleAssignment
+            
+Role Assignment for a target Principal
+        
+### Properties
+
+#### Principal
+Defines the Role to which the assignment will apply
+#### RoleDefinition
+Defines the Role to which the assignment will apply
+
+## Core.Framework.Provisioning.Model.RoleAssignmentCollection
+            
+Collection of RoleAssignment objects
+        
+
+## Core.Framework.Provisioning.Model.RoleDefinitionCollection
+            
+Collection of RoleDefinition objects
+        
+
+## Core.Framework.Provisioning.Model.SiteGroupCollection
+            
+Collection of SiteGroup objects
+        
+
+## Core.Framework.Provisioning.Model.SiteSecurityPermissions
+            
+Permission settings for the target Site
+        
+### Properties
+
+#### RoleDefinitions
+List of Role Definitions for the Site
+#### RoleAssignments
+List of Role Assignments for the Site
+
+## Core.Framework.Provisioning.Model.RegionalSettings
+            
+Defines the Regional Settings for a site
+        
+### Properties
+
+#### AdjustHijriDays
+The number of days to extend or reduce the current month in Hijri calendars
+#### AlternateCalendarType
+The Alternate Calendar type that is used on the server
+#### CalendarType
+The Calendar Type that is used on the server
+#### Collation
+The Collation that is used on the site
+#### FirstDayOfWeek
+The First Day of the Week used in calendars on the server
+#### FirstWeekOfYear
+The First Week of the Year used in calendars on the server
+#### LocaleId
+The Locale Identifier in use on the server
+#### ShowWeeks
+Defines whether to display the week number in day or week views of a calendar
+#### Time24
+Defines whether to use a 24-hour time format in representing the hours of the day
+#### TimeZone
+The Time Zone that is used on the server
+#### WorkDayEndHour
+The the default hour at which the work day ends on the calendar that is in use on the server
+#### WorkDays
+The work days of Web site calendars
+#### WorkDayStartHour
+The the default hour at which the work day starts on the calendar that is in use on the server
+
+## Core.Framework.Provisioning.Model.WorkHour
+            
+The Work Hours of a Day
+        
+
+## Core.Framework.Provisioning.Model.SiteGroup
+            
+The base type for a Site Group
+        
+### Properties
+
+#### Members
+The list of members of the Site Group
+#### Title
+The Title of the Site Group
+#### Description
+The Description of the Site Group
+#### Owner
+The Owner of the Site Group
+#### AllowMembersEditMembership
+Defines whether the members can edit membership of the Site Group
+#### AllowRequestToJoinLeave
+Defines whether to allow requests to join or leave the Site Group
+#### AutoAcceptRequestToJoinLeave
+Defines whether to auto-accept requests to join or leave the Site Group
+#### OnlyAllowMembersViewMembership
+Defines whether to allow members only to view the membership of the Site Group
+#### RequestToJoinLeaveEmailSetting
+Defines the email address used for membership requests to join or leave will be sent for the Site Group
+
+## Core.Framework.Provisioning.Model.StructuralNavigation
+            
+Defines the Structural Navigation settings of a site
+        
+### Properties
+
+#### RemoveExistingNodes
+Defines whether to remove existing nodes before creating those described through this element
+#### NavigationNodes
+A collection of navigation nodes for the site
+
+## Core.Framework.Provisioning.Model.SupportedUILanguage
+            
+Defines a single Supported UI Language for a site
+        
+### Properties
+
+#### LCID
+The Locale ID of a Supported UI Language
+
+## Core.Framework.Provisioning.Model.SupportedUILanguageCollection
+            
+Collection of SupportedUILanguage objects
+        
+
+## Core.Framework.Provisioning.Model.TermCollection
+            
+Collection of Term objects
+        
+
+## Core.Framework.Provisioning.Model.TermGroupCollection
+            
+Collection of TermGroup objects
+        
+
+## Core.Framework.Provisioning.Model.TermLabelCollection
+            
+Collection of TermLabel objects
+        
+
+## Core.Framework.Provisioning.Model.TermSetCollection
+            
+Collection of TermSete objects
+        
+
+## Core.Framework.Provisioning.Model.UserCollection
+            
+Collection of User objects
+        
+
+## Core.Framework.Provisioning.Model.ViewCollection
+            
+Collection of View objects
+        
+
+## Core.Framework.Provisioning.Model.File
+            
+Defines a File element, to describe a file that will be provisioned into the target Site
+        
+### Fields
+
+#### 
+The file will be stored as a draft
+#### 
+The file will be stored as a checked out item
+#### 
+The file will be stored as a published item
+### Properties
+
+#### Src
+The Src of the File
+#### Folder
+The TargetFolder of the File
+#### Overwrite
+The Overwrite flag for the File
+#### Level
+The Level status for the File
+#### Security
+Defines the Security rules for the File
+
+## Core.Framework.Provisioning.Model.Provider
+            
+Domain Object for Extensiblity Call out
+        
+
+## Core.Framework.Provisioning.Model.SiteSecurity
+            
+Domain Object that is used in the site template
+        
+### Properties
+
+#### 
+List of Role Definitions for the Site
+#### 
+List of Role Assignments for the Site
+#### AdditionalAdministrators
+A Collection of users that are associated as site collection adminsitrators
+#### AdditionalOwners
+A Collection of users that are associated to the sites owners group
+#### AdditionalMembers
+A Collection of users that are associated to the sites members group
+#### AdditionalVisitors
+A Collection of users taht are associated to the sites visitors group
+#### SiteGroups
+List of additional Groups for the Site
+#### SiteSecurityPermissions
+List of Site Security Permissions for the Site
+#### BreakRoleInheritance
+Declares whether the to break role inheritance for the site, if it is a sub-site
+#### CopyRoleAssignments
+Defines whether to copy role assignments or not while breaking role inheritance
+#### ClearSubscopes
+Defines whether to clear subscopes or not while breaking role inheritance for the site
+
+## Core.Framework.Provisioning.Model.User
+            
+Domain Object that defines a User or group in the provisioning template
+        
+### Properties
+
+#### Name
+The User email Address or the group name.
+
+## Core.Framework.Provisioning.Model.WebPartCollection
+            
+Collection of WebPart objects
+        
+
+## Core.Framework.Provisioning.Model.WebSettings
+            
+Domain Object used in the Provisioning template that defines a Section of Settings for the current Web Site
+        
+### Properties
+
+#### NoCrawl
+Defines whether the site has to be crawled or not
+#### RequestAccessEmail
+The email address to which any access request will be sent
+#### WelcomePage
+Defines the Welcome Page (Home Page) of the site to which the Provisioning Template is applied.
+#### Title
+The Title of the Site, optional attribute.
+#### Description
+The Description of the Site, optional attribute.
+#### SiteLogo
+The SiteLogo of the Site, optional attribute.
+#### AlternateCSS
+The AlternateCSS of the Site, optional attribute.
+#### MasterPageUrl
+The MasterPage Url of the Site, optional attribute.
+#### CustomMasterPageUrl
+The Custom MasterPage Url of the Site, optional attribute.
+
+## Core.Framework.Provisioning.Model.WorkflowDefinition
+            
+Defines a Workflow Definition to provision
+        
+### Properties
+
+#### Properties
+Defines the Properties of the Workflows to provision
+#### FormField
+Defines the FormField XML of the Workflow to provision
+#### Id
+Defines the ID of the Workflow Definition for the current Subscription
+#### AssociationUrl
+Defines the URL of the Workflow Association page
+#### Description
+The Description of the Workflow
+#### DisplayName
+The Display Name of the Workflow
+#### DraftVersion
+Defines the DraftVersion of the Workflow, optional attribute.
+#### InitiationUrl
+Defines the URL of the Workflow Initiation page
+#### Published
+Defines if the Workflow is Published, optional attribute.
+#### RequiresAssociationForm
+Defines if the Workflow requires the Association Form
+#### RequiresInitiationForm
+Defines if the Workflow requires the Initiation Form
+#### RestrictToScope
+Defines the Scope Restriction for the Workflow
+#### RestrictToType
+Defines the Type of Scope Restriction for the Workflow
+#### XamlPath
+Defines path of the XAML of the Workflow to provision
+
+## Core.Framework.Provisioning.Model.WorkflowDefinitionCollection
+            
+Defines a collection of objects of type WorkflowDefinition
+        
+
+## Core.Framework.Provisioning.Model.Workflows
+            
+Defines the Workflows to provision
+        
+### Properties
+
+#### WorkflowDefinitions
+Defines the Workflows Definitions to provision
+#### WorkflowSubscriptions
+Defines the Workflows Subscriptions to provision
+
+## Core.Framework.Provisioning.Model.WorkflowSubscription
+            
+Defines a Workflow Subscription to provision
+        
+### Properties
+
+#### PropertyDefinitions
+Defines the Property Definitions of the Workflows to provision
+#### DefinitionId
+Defines the ID of the Workflow Definition for the current Subscription
+#### ListId
+Defines the ID of the target list/library for the current Subscription, Optional and if it is missing, the workflow subscription will be at Site level
+#### Enabled
+Defines if the Workflow Definition is enabled for the current Subscription
+#### EventSourceId
+Defines the ID of the Event Source for the current Subscription
+#### EventTypes
+Defines the list of events that will start the workflow instance Possible values in the list: WorkflowStartEvent, ItemAddedEvent, ItemUpdatedEvent
+#### ManualStartBypassesActivationLimit
+Defines if the Workflow can be manually started bypassing the activation limit
+#### Name
+Defines the Name of the Workflow Subscription
+#### ParentContentTypeId
+Defines the Parent ContentType Id of the Workflow Subscription
+#### StatusFieldName
+Defines the Status Field Name of the Workflow Subscription
+
+## Core.Framework.Provisioning.Model.WorkflowSubscriptionCollection
+            
+Defines a collection of objects of type WorkflowSubscription
+        
+
+## Core.Framework.Provisioning.ObjectHandlers.ObjectExtensibilityHandlers
+            
+Extensibility Provider CallOut
+        
 
 ## Core.Framework.TimerJobs.Enums.AuthenticationType
             
@@ -16753,6 +17753,398 @@ Get all sites that match the passed query. Batching is done in batches of 500 as
 > ##### Return value
 > Total result rows of the query
 
+## Core.Pages.DefaultClientSideWebParts
+            
+List of possible OOB web parts
+        
+
+## Core.Pages.ClientSidePage
+            
+Represents a modern client side page with all it's contents
+        
+
+## Core.Pages.CanvasZoneTemplate
+            
+The type of canvas being used
+        
+
+## Core.Pages.CanvasZone
+            
+Represents a zone on the canvas
+        
+
+## Core.Pages.CanvasSection
+            
+Represents a section in a canvas zone
+        
+
+## Core.Pages.AvailableClientSideComponents
+            
+Class holding a collection of client side webparts (retrieved via the _api/web/GetClientSideWebParts REST call)
+        
+
+## Core.Pages.ClientSideComponent
+            
+Client side webpart object (retrieved via the _api/web/GetClientSideWebParts REST call)
+        
+
+## Core.Pages.CanvasControl
+            
+Base control
+        
+### Methods
+
+
+#### ToHtml
+Converts a control object to it's html representation
+> ##### Return value
+> Html representation of a control
+
+#### Delete
+Removes the control from the page
+
+#### GetType(System.String)
+Receives data-sp-controldata content and detects the type of the control
+> ##### Parameters
+> **controlDataJson:** data-sp-controldata json string
+
+> ##### Return value
+> Type of the control represented by the json string
+
+## Core.Pages.ClientSideText
+            
+Controls of type 4 ( = text control)
+        
+### Methods
+
+
+#### ToHtml
+Converts this control to it's html representation
+> ##### Return value
+> Html representation of this control
+
+## Core.Pages.ClientSideWebPart
+            
+This class is used to instantiate controls of type 3 (= client side web parts). Using this class you can instantiate a control and add it on a .
+        
+### Properties
+
+#### JsonWebPartData
+Json serialized web part properties
+#### HtmlPropertiesData
+Html properties data
+#### HtmlProperties
+Value of the data-sp-htmlproperties attribute
+#### WebPartId
+ID of the client side web part
+#### WebPartData
+Value of the data-sp-webpart attribute
+#### Title
+Title of the web part
+#### Description
+Description of the web part
+#### PropertiesJson
+Json serialized web part properties
+#### Properties
+Web properties as configurable
+#### Type
+Return of the client side web part
+### Methods
+
+
+#### Constructor
+Instantiates client side web part from scratch.
+
+#### Constructor
+Instantiates a client side web part based on the information that was obtain from calling the AvailableClientSideComponents methods on the object.
+> ##### Parameters
+> **component:** Component to create a ClientSideWebPart instance for
+
+
+#### Import(OfficeDevPnP.Core.Pages.ClientSideComponent,System.Func{System.String,System.String})
+Imports a to use it as base for configuring the client side web part instance
+> ##### Parameters
+> **component:** to import
+
+> **clientSideWebPartPropertiesUpdater:** Function callback that allows you to manipulate the client side web part properties after import
+
+
+#### ToHtml
+Returns a HTML representation of the client side web part
+> ##### Return value
+> HTML representation of the client side web part
+
+## Core.Pages.ClientSideCanvasControlData
+            
+Abstract base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
+        
+
+## Core.Pages.ClientSideTextControlData
+            
+Control data for controls of type 4 (= text control)
+        
+
+## Core.Pages.ClientSideWebPartControlData
+            
+Control data for controls of type 3 (= client side web parts)
+        
+
+## Core.Pages.ClientSideWebPartData
+            
+Json web part data that will be included in each client side web part (de-)serialization (data-sp-webpartdata)
+        
+
+## Core.Entities.UnifiedGroupEntity
+            
+Defines a Unified Group
+        
+
+## Core.Entities.AreaNavigationEntity
+            
+Entity description navigation
+        
+### Properties
+
+#### GlobalNavigation
+Specifies the Global Navigation (top bar navigation)
+#### CurrentNavigation
+Specifies the Current Navigation (quick launch navigation)
+#### Sorting
+Defines the sorting
+#### SortAscending
+Defines if sorted ascending
+#### SortBy
+Defines sorted by value
+### Methods
+
+
+#### Constructor
+ctor
+
+## Core.Entities.CustomActionEntity
+            
+CustomActionEntity class describes the information for a Custom Action
+        
+### Properties
+
+#### CommandUIExtension
+Gets or sets a value that specifies an implementation specific XML fragment that determines user interface properties of the custom action
+#### RegistrationId
+Gets or sets the value that specifies the identifier of the object associated with the custom action.
+#### RegistrationType
+Specifies the type of object associated with the custom action. A Nullable Type
+#### Name
+Gets or sets the name of the custom action.
+#### Description
+Description of the custom action
+#### Title
+Custom action title
+#### Location
+Custom action location (A string that contains the location; for example, Microsoft.SharePoint.SiteSettings)
+#### ScriptBlock
+The JavaScript to be executed by this custom action
+#### Sequence
+The sequence number of this custom action
+#### ImageUrl
+The URL to the image used for this custom action
+#### Group
+The group of this custom action
+#### Url
+The URL this custom action should navigate the user to
+#### Rights
+Gets or sets the value that specifies the permissions needed for the custom action.
+#### Remove
+Indicates if the custom action will need to be removed
+#### ScriptSrc
+Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
+
+## Core.Entities.DefaultColumnTermPathValue
+            
+Specifies a default column value for a document library
+        
+### Properties
+
+#### FolderRelativePath
+The Path of the folder, Rootfolder of the document library is "/"
+#### FieldInternalName
+The internal name of the field
+#### TermPaths
+Taxonomy paths in the shape of "TermGroup|TermSet|Term"
+### Methods
+
+
+#### Constructor
+ctor
+
+## Core.Entities.IDefaultColumnValue
+            
+IDefaultColumnValue
+        
+### Properties
+
+#### FolderRelativePath
+Folder relative path
+#### FieldInternalName
+Field internal name
+
+## Core.Entities.DefaultColumnTermValue
+            
+Specifies a default column value for a document library
+        
+### Properties
+
+#### Terms
+Taxonomy paths in the shape of "TermGroup|TermSet|Term"
+
+## Core.Entities.DefaultColumnTextValue
+            
+DefaultColumnTextValue
+        
+
+## Core.Entities.DefaultColumnValue
+            
+DefaultColumnValue
+        
+### Properties
+
+#### FolderRelativePath
+The Path of the folder, Rootfolder of the document library is "/"
+#### FieldInternalName
+The internal name of the field
+
+## Core.Entities.ExternalUserEntity
+            
+External user entity
+        
+
+## Core.Entities.SiteEntity
+            
+SiteEntity class describes the information for a SharePoint site (collection)
+        
+### Properties
+
+#### Url
+The SPO url
+#### Title
+The site title
+#### Description
+The site description
+#### SiteOwnerLogin
+The site owner
+#### CurrentResourceUsage
+The current resource usage points
+#### IndexDocId
+IndexDocId for Search Paging
+#### Lcid
+The site locale. See http://technet.microsoft.com/en-us/library/ff463597.aspx for a complete list of Lcid's
+#### StorageMaximumLevel
+Site quota in MB
+#### StorageUsage
+The storage quota usage in MB
+#### StorageWarningLevel
+Site quota warning level in MB
+#### LastContentModifiedDate
+The last modified date/time of the site collection's content
+#### Template
+Site template being used
+#### TimeZoneId
+TimeZoneID for the site. "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" = 3 See http://blog.jussipalo.com/2013/10/list-of-sharepoint-timezoneid-values.html for a complete list
+#### UserCodeMaximumLevel
+The user code quota in points
+#### UserCodeWarningLevel
+The user code quota warning level in points
+#### WebsCount
+The count of the SPWeb objects in the site collection
+
+## Core.Entities.SitePolicyEntity
+            
+Properties of a site policy object
+        
+### Properties
+
+#### Description
+The description of the policy
+#### EmailBody
+The body of the notification email if there is no site mailbox associated with the site.
+#### EmailBodyWithTeamMailbox
+The body of the notification email if there is a site mailbox associated with the site.
+#### EmailSubject
+The subject of the notification email.
+#### Name
+The name of the policy
+
+## Core.Entities.VariationInformation
+            
+Class containing variation configuration information
+        
+### Properties
+
+#### AutomaticCreation
+Automatic creation Mapped to property "EnableAutoSpawnPropertyName"
+#### RecreateDeletedTargetPage
+Recreate Deleted Target Page; set to false to enable recreation Mapped to property "AutoSpawnStopAfterDeletePropertyName"
+#### UpdateTargetPageWebParts
+Update Target Page Web Parts Mapped to property "UpdateWebPartsPropertyName"
+#### CopyResources
+Copy resources Mapped to property "CopyResourcesPropertyName"
+#### SendNotificationEmail
+Send email notification Mapped to property "SendNotificationEmailPropertyName"
+#### RootWebTemplate
+Configuration setting site template to be used for the top sites of each label Mapped to property "SourceVarRootWebTemplatePropertyName"
+
+## Core.Entities.VariationLabelEntity
+            
+Class represents variation label
+        
+### Properties
+
+#### Title
+The variation label title
+#### Description
+The variation label description
+#### FlagControlDisplayName
+The flag to control display name
+#### Language
+The variation label language
+#### Locale
+The variation label locale
+#### HierarchyCreationMode
+The hierarchy creation mode
+#### IsSource
+Set as source variation
+#### IsCreated
+Gets a value indicating whether the variation label has been created
+
+## Core.Entities.WebPartEntity
+            
+Class that describes information about a web part
+        
+### Properties
+
+#### WebPartXml
+XML representation of the web part
+#### WebPartZone
+Zone that will need to hold the web part
+#### WebPartIndex
+Index (order) of the web part in it's zone
+#### WebPartTitle
+Title of the web part
+
+## Core.Entities.YammerGroup
+            
+Represents Yammer Group information Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
+        
+
+## Core.Entities.YammerUser
+            
+Represents YammerUser Generated based on Yammer response on 30th of June 2014 and using http://json2csharp.com/ service
+        
+
+## Core.AzureEnvironment
+            
+Enum to identify the supported Office 365 hosting environments
+        
+
 ## Core.AuthenticationManager
             
 This manager class can be used to obtain a SharePointContext object
@@ -16797,6 +18189,20 @@ Returns an app only ClientContext object
 > ##### Return value
 > ClientContext to be used by CSOM code
 
+#### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
+Returns an app only ClientContext object
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **environment:** SharePoint environment being used
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
 #### GetAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String)
 Returns an app only ClientContext object
 > ##### Parameters
@@ -16815,6 +18221,56 @@ Returns an app only ClientContext object
 > ##### Return value
 > ClientContext to be used by CSOM code
 
+#### GetAzureADACSEndPoint(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure ASC login end point for the given environment
+> ##### Parameters
+> **environment:** Environment to get the login information for
+
+> ##### Return value
+> Azure ASC login endpoint
+
+#### GetAzureADACSEndPointPrefix(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure ACS login end point prefix for the given environment
+> ##### Parameters
+> **environment:** Environment to get the login information for
+
+> ##### Return value
+> Azure ACS login endpoint prefix
+
+#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
+Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+
+> **appId:** Application ID which is requesting the ClientContext object
+
+> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+
+> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
+
+> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
+
+
+#### GetAccessTokenLease(System.DateTime)
+Get the access token lease time span.
+> ##### Parameters
+> **expiresOn:** The ExpiresOn time of the current access token
+
+> ##### Return value
+> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
+
+#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
+Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **icon:** Optional icon to use for the popup form
+
+> ##### Return value
+> ClientContext to be used by CSOM code
+
 #### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.String,System.String)
 Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
 > ##### Parameters
@@ -16829,17 +18285,85 @@ Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext obj
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetWebLoginClientContext(System.String,System.Drawing.Icon)
-Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
+#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
+Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
 
-> **icon:** Optional icon to use for the popup form
+> **user:** User to be used to instantiate the ClientContext object
+
+> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
+
+> **domain:** Domain of the user used to instantiate the ClientContext object
 
 > ##### Return value
 > ClientContext to be used by CSOM code
 
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+#### GetHighTrustCertificateAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String)
+Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The SharePoint Client ID
+
+> **certificatePath:** Full path to the private key certificate (.pfx) used to authenticate
+
+> **certificatePassword:** Password used for the private key certificate (.pfx)
+
+> **certificateIssuerId:** The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+
+> ##### Return value
+> Authenticated SharePoint ClientContext
+
+#### GetHighTrustCertificateAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.SecureString,System.String)
+Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The SharePoint Client ID
+
+> **certificatePath:** Full path to the private key certificate (.pfx) used to authenticate
+
+> **certificatePassword:** Password used for the private key certificate (.pfx)
+
+> **certificateIssuerId:** The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+
+> ##### Return value
+> Authenticated SharePoint ClientContext
+
+#### GetHighTrustCertificateAppOnlyAuthenticatedContext(System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,System.String)
+Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The SharePoint Client ID
+
+> **storeName:** The name of the store for the certificate
+
+> **storeLocation:** The location of the store for the certificate
+
+> **thumbPrint:** The thumbprint of the certificate to locate in the store
+
+> **certificateIssuerId:** The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+
+> ##### Return value
+> Authenticated SharePoint ClientContext
+
+#### GetHighTrustCertificateAppOnlyAuthenticatedContext(System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,System.String)
+Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
+> ##### Parameters
+> **siteUrl:** Site for which the ClientContext object will be instantiated
+
+> **clientId:** The SharePoint Client ID
+
+> **certificate:** Private key certificate (.pfx) used to authenticate
+
+> **certificateIssuerId:** The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+
+> ##### Return value
+> Authenticated SharePoint ClientContext
+
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.String,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -16850,10 +18374,12 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 
 > **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
 
-> ##### Return value
-> 
+> **environment:** SharePoint environment being used
 
-#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache)
+> ##### Return value
+> Client context object
+
+#### GetAzureADNativeApplicationAuthenticatedContext(System.String,System.String,System.Uri,Microsoft.IdentityModel.Clients.ActiveDirectory.TokenCache,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
 > ##### Parameters
 > **siteUrl:** Site for which the ClientContext object will be instantiated
@@ -16864,8 +18390,10 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 
 > **tokenCache:** Optional token cache. If not specified an in-memory token cache will be used
 
+> **environment:** SharePoint environment being used
+
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADWebApplicationAuthenticatedContext(System.String,System.Func{System.String,System.String})
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
@@ -16875,7 +18403,7 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > **accessTokenGetter:** The AccessToken getter method to use
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAccessTokenAuthenticatedContext(System.String,System.String)
 Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging an explicit OAuth 2.0 Access Token value.
@@ -16885,7 +18413,7 @@ Returns a SharePoint ClientContext using Azure Active Directory authentication. 
 > **accessToken:** An explicit value for the AccessToken
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.StoreName,System.Security.Cryptography.X509Certificates.StoreLocation,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -16902,10 +18430,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **thumbPrint:** The thumbprint of the certificate to locate in the store
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> ClientContext being used
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -16920,10 +18448,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **certificatePassword:** Password to the certificate
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.String,System.Security.SecureString,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -16938,10 +18466,10 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **certificatePassword:** Password to the certificate
 
-> **environment:** Indicates which Azure AD environment is being used
+> **environment:** SharePoint environment being used
 
 > ##### Return value
-> 
+> Client context object
 
 #### GetAzureADAppOnlyAuthenticatedContext(System.String,System.String,System.String,System.Security.Cryptography.X509Certificates.X509Certificate2,OfficeDevPnP.Core.AzureEnvironment)
 Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -16952,26 +18480,20 @@ Returns a SharePoint ClientContext using Azure Active Directory App Only Authent
 
 > **tenant:** The Azure AD Tenant, e.g. mycompany.onmicrosoft.com
 
-> **certificate:** 
+> **certificate:** Certificate used to authenticate
 
-> **environment:** 
+> **environment:** SharePoint environment being used
 
 > ##### Return value
 > 
 
-#### GetNetworkCredentialAuthenticatedContext(System.String,System.String,System.Security.SecureString,System.String)
-Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
+#### GetAzureADLoginEndPoint(OfficeDevPnP.Core.AzureEnvironment)
+Get's the Azure AD login end point for the given environment
 > ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
-
-> **user:** User to be used to instantiate the ClientContext object
-
-> **password:** Password (SecureString) of the user used to instantiate the ClientContext object
-
-> **domain:** Domain of the user used to instantiate the ClientContext object
+> **environment:** Environment to get the login information for
 
 > ##### Return value
-> ClientContext to be used by CSOM code
+> Azure AD login endpoint
 
 #### GetADFSUserNameMixedAuthenticatedContext(System.String,System.String,System.String,System.String,System.String,System.String,System.Int32)
 Returns a SharePoint on-premises ClientContext for sites secured via ADFS
@@ -17011,29 +18533,37 @@ Refreshes the SharePoint FedAuth cookie
 > **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
 
 
-#### EnsureToken(System.String,System.String,System.String,System.String,System.String,System.String)
-Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
+#### GetADFSCertificateMixedAuthenticationContext(System.String,System.String,System.String,System.String,System.Int32)
+Returns a SharePoint on-premises ClientContext for sites secured via ADFS
 > ##### Parameters
-> **siteUrl:** Site for which the ClientContext object will be instantiated
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
 
-> **realm:** Realm of the environment (tenant) that requests the ClientContext object
+> **serialNumber:** Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method
 
-> **appId:** Application ID which is requesting the ClientContext object
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
 
-> **appSecret:** Application secret of the Application which is requesting the ClientContext object
+> **idpId:** Identifier of the ADFS relying party that we're hitting
 
-> **acsHostUrl:** Azure ACS host, defaults to accesscontrol.windows.net but internal pre-production environments use other hosts
-
-> **globalEndPointPrefix:** Azure ACS endpoint prefix, defaults to accounts but internal pre-production environments use other prefixes
-
-
-#### GetAccessTokenLease(System.DateTime)
-Get the access token lease time span.
-> ##### Parameters
-> **expiresOn:** The ExpiresOn time of the current access token
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
 
 > ##### Return value
-> Returns a TimeSpan represents the time interval within which the current access token is valid thru.
+> ClientContext to be used by CSOM code
+
+#### RefreshADFSCertificateMixedAuthenticationContext(System.String,System.String,System.String,System.String,System.Int32)
+Refreshes the SharePoint FedAuth cookie
+> ##### Parameters
+> **siteUrl:** Url of the SharePoint site that's secured via ADFS
+
+> **serialNumber:** Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method
+
+> **sts:** Hostname of the ADFS server (e.g. sts.company.com)
+
+> **idpId:** Identifier of the ADFS relying party that we're hitting
+
+> **logonTokenCacheExpirationWindow:** Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.
+
+> ##### Return value
+> ClientContext to be used by CSOM code
 
 ## Core.BuiltInContentTypeId
             
@@ -17045,6 +18575,10 @@ A class that returns strings that represent identifiers (IDs) for built-in conte
 Contains the content identifier (ID) for the DocumentSet content type. To get content type from a list, use BestMatchContentTypeId().
 #### Item
 Contains the content identifier (ID) for the Item content type.
+#### ReusableHTML
+Contains the content identifier (ID) for content types used in the publishing infrastructure.
+#### ModernArticlePage
+Contains the content identifier (ID) for content types used in the modern page infrastructure
 
 ## Core.Constants
             
@@ -17137,633 +18671,6 @@ Compares to instances of IEnumerable<T>
 
 > ##### Return value
 > Wether the two enumerations are deep equal
-
-## Core.CoreResources
-            
-A strongly-typed resource class, for looking up localized strings, etc.
-        
-### Properties
-
-#### ResourceManager
-Returns the cached ResourceManager instance used by this class.
-#### Culture
-Overrides the current thread's CurrentUICulture property for all resource lookups using this strongly typed resource class.
-#### AuthenticationManager_GetContext
-Looks up a localized string similar to Getting authentication context for '{0}'.
-#### AuthenticationManager_TenantUser
-Looks up a localized string similar to Tenant user '{0}'.
-#### AuthenticationManger_ProblemDeterminingTokenLease
-Looks up a localized string similar to Could not determine lease for appOnlyAccessToken. Error = {0}.
-#### BrandingExtension_ApplyTheme
-Looks up a localized string similar to Applying theme '{0}' in '{1}'.
-#### BrandingExtension_ComposedLookMissing
-Looks up a localized string similar to Composed look '{0}' not found..
-#### BrandingExtension_CreateComposedLook
-Looks up a localized string similar to Creating composed look '{0}' in '{1}'.
-#### BrandingExtension_DeployMasterPage
-Looks up a localized string similar to Deploying masterpage '{0}' to '{1}'..
-#### BrandingExtension_DeployPageLayout
-Looks up a localized string similar to Deploying page layout '{0}' to '{1}'..
-#### BrandingExtension_DeployTheme
-Looks up a localized string similar to Deploying theme '{0}' to '{1}'.
-#### BrandingExtension_SetCustomMasterUrl
-Looks up a localized string similar to Setting custom master URL '{0}' in '{1}'..
-#### BrandingExtension_SetMasterUrl
-Looks up a localized string similar to Setting master URL '{0}' in '{1}'..
-#### BrandingExtension_UpdateComposedLook
-Looks up a localized string similar to Updating composed look '{0}' in '{1}'.
-#### BrandingExtensions_UploadThemeFile_Destination_file_name_is_required_
-Looks up a localized string similar to Destination file name is required..
-#### BrandingExtensions_UploadThemeFile_Source_file_path_is_required_
-Looks up a localized string similar to Source file path is required..
-#### BrandingExtensions_UploadThemeFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### ClientContextExtensions_Clone_Url_of_the_site_is_required_
-Looks up a localized string similar to Url of the site is required..
-#### ClientContextExtensions_ExecuteQueryRetry
-Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
-#### ClientContextExtensions_ExecuteQueryRetryException
-Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
-#### Exception_Message_EmptyString_Arg
-Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
-#### FeatureExtensions_ActivateSiteCollectionFeature
-Looks up a localized string similar to Activating feature {0} in site collection..
-#### FeatureExtensions_ActivateWebFeature
-Looks up a localized string similar to Activating feature {0} in web..
-#### FeatureExtensions_DeactivateSiteCollectionFeature
-Looks up a localized string similar to Deactivating feature {0} in site collection..
-#### FeatureExtensions_DeactivateWebFeature
-Looks up a localized string similar to Deactivating feature {0} in web..
-#### FeatureExtensions_FeatureActivationProblem
-Looks up a localized string similar to Problem with activation for feature id {0}. Error = {1}.
-#### FeatureExtensions_ProcessFeatureInternal_FeatureActivationState
-Looks up a localized string similar to Activation state for feature with id {1} was {0}..
-#### FeatureExtensions_ProcessFeatureInternal_FeatureActive
-Looks up a localized string similar to Feature activation for {0} returned success..
-#### FeatureExtensions_ProcessFeatureInternal_FeatureException
-Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
-#### FieldAndContentTypeExtensions_AddField0ToContentType1
-Looks up a localized string similar to Adding field ({0}) to content type ({1})..
-#### FieldAndContentTypeExtensions_ContentType01AlreadyExists
-Looks up a localized string similar to Content type '{0}' ({1}) already exists; no changes made..
-#### FieldAndContentTypeExtensions_CreateContentType01
-Looks up a localized string similar to Creating content type '{0}' ({1})..
-#### FieldAndContentTypeExtensions_CreateDocumentSet
-Looks up a localized string similar to Creating document set '{0}'..
-#### FieldAndContentTypeExtensions_CreateField01
-Looks up a localized string similar to Creating field '{0}' ({1})..
-#### FieldAndContentTypeExtensions_CreateFieldBase
-Looks up a localized string similar to New Field as XML: {0}.
-#### FieldAndContentTypeExtensions_DeleteContentTypeById
-Looks up a localized string similar to Could not find content type with id: {0}.
-#### FieldAndContentTypeExtensions_DeleteContentTypeByName
-Looks up a localized string similar to Could not find content type with name: {0}.
-#### FieldAndContentTypeExtensions_Field01AlreadyExists
-Looks up a localized string similar to Field '{0}' ({1}) already exists; no changes made..
-#### FileFolderExtensions_CreateDocumentSet_The_argument_must_be_a_single_document_set_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single document set name and cannot contain path characters..
-#### FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single folder name and cannot contain path characters..
-#### FileFolderExtensions_CreateFolder0Under12
-Looks up a localized string similar to Creating folder '{0}' under {1} '{2}'..
-#### FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_
-Looks up a localized string similar to Folder URL is required..
-#### FileFolderExtensions_FolderMissing
-Looks up a localized string similar to Target folder does not exist in the web. Web: {0}, Folder: {1}.
-#### FileFolderExtensions_LibraryMissing
-Looks up a localized string similar to Target library does not exist in the web. Web: {0}, List: {1}.
-#### FileFolderExtensions_SetFileProperties_Error
-Looks up a localized string similar to Content Type {0} does not exist in target list!.
-#### FileFolderExtensions_UpdateFile0Properties1
-Looks up a localized string similar to Update file '{0}', change properties: {1}..
-#### FileFolderExtensions_UploadFile_Destination_file_name_is_required_
-Looks up a localized string similar to Destination file name is required..
-#### FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### FileFolderExtensions_UploadFile0ToFolder1
-Looks up a localized string similar to Uploading file '{0}' to folder '{1}'..
-#### FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_
-Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
-#### GraphExtensions_GroupLogoFileDoesNotExist
-Looks up a localized string similar to The group logo file does not exist..
-#### GraphExtensions_SendAsyncRetry
-Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
-#### GraphExtensions_SendAsyncRetryException
-Looks up a localized string similar to SendAsync threw following exception: {0}..
-#### ListExtensions_CreateList0Template12
-Looks up a localized string similar to Creating list '{0}' from template {1}{2}..
-#### ListExtensions_GetWebRelativeUrl
-Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
-#### LoggingUtility_MessageWithException
-Looks up a localized string similar to {0}; EXCEPTION: {{{1}}}.
-#### MailUtility_SendException
-Looks up a localized string similar to Mail message could not be sent. SMTP exception attempting to send. Error = {0}.
-#### MailUtility_SendExceptionRethrow0
-Looks up a localized string similar to Mail message could not be sent. Exception attempting to send email, rethrowing. Exception: {0}.
-#### MailUtility_SendFailed
-Looks up a localized string similar to Mail message could not be sent. Send completed with error {0}..
-#### MailUtility_SendMailCancelled
-Looks up a localized string similar to Mail message was canceled..
-#### PnPMonitoredScope_Code_execution_ended
-Looks up a localized string similar to Code execution scope ended.
-#### PnPMonitoredScope_Code_execution_started
-Looks up a localized string similar to Code execution scope started.
-#### PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_
-Looks up a localized string similar to Updating property {0}.
-#### Provisioning_Asymmetric_Base_Templates
-Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
-#### Provisioning_Connectors_Azure_FailedToInitialize
-Looks up a localized string similar to Could not initialize AzureStorageConnector. Error = {0}.
-#### Provisioning_Connectors_Azure_FileDeleted
-Looks up a localized string similar to File {0} was deleted from Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from Azure storage container {1}. Error = {2}.
-#### Provisioning_Connectors_Azure_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from Azure storage container {1} because it was not available.
-#### Provisioning_Connectors_Azure_FileNotFound
-Looks up a localized string similar to File {0} not found in Azure storage container {1}. Exception = {2}.
-#### Provisioning_Connectors_Azure_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileSaved
-Looks up a localized string similar to File {0} saved to Azure storage container {1}.
-#### Provisioning_Connectors_Azure_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to Azure storage container {1}. Error = {2}.
-#### Provisioning_Connectors_FileSystem_FileDeleted
-Looks up a localized string similar to File {0} deleted from folder {1}.
-#### Provisioning_Connectors_FileSystem_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
-#### Provisioning_Connectors_FileSystem_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
-#### Provisioning_Connectors_FileSystem_FileNotFound
-Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
-#### Provisioning_Connectors_FileSystem_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from folder {1}.
-#### Provisioning_Connectors_FileSystem_FileSaved
-Looks up a localized string similar to File {0} saved to folder {1}.
-#### Provisioning_Connectors_FileSystem_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
-#### Provisioning_Connectors_OpenXML_FileDeleted
-Looks up a localized string similar to File {0} deleted from folder {1}.
-#### Provisioning_Connectors_OpenXML_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from folder {1}. Error = {2}.
-#### Provisioning_Connectors_OpenXML_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from folder {1} because it was not available.
-#### Provisioning_Connectors_OpenXML_FileNotFound
-Looks up a localized string similar to File {0} not found in directory {1}. Exception = {2}.
-#### Provisioning_Connectors_OpenXML_FileRetrieved
-Looks up a localized string similar to File {0} retrieved from folder {1}.
-#### Provisioning_Connectors_OpenXML_FileSaved
-Looks up a localized string similar to File {0} saved to folder {1}.
-#### Provisioning_Connectors_OpenXML_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to folder {1}. Error = {2}.
-#### Provisioning_Connectors_SharePoint_FileDeleted
-Looks up a localized string similar to File {0} deleted from site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileDeleteFailed
-Looks up a localized string similar to File {0} was not deleted from site {1}, library {2}. Error = {3}.
-#### Provisioning_Connectors_SharePoint_FileDeleteNotFound
-Looks up a localized string similar to File {0} was not deleted from site {1}, library {2} because it was not available.
-#### Provisioning_Connectors_SharePoint_FileNotFound
-Looks up a localized string similar to File {0} not found in site {1}, library {2}. Exception = {3}.
-#### Provisioning_Connectors_SharePoint_FileRetrieved
-Looks up a localized string similar to File {0} found in site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileSaved
-Looks up a localized string similar to File {0} saved to site {1}, library {2}.
-#### Provisioning_Connectors_SharePoint_FileSaveFailed
-Looks up a localized string similar to File {0} was not saved to site {1}, library {2}. Error = {3}.
-#### Provisioning_Extensibility_Pipeline_BeforeInvocation
-Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
-#### Provisioning_Extensibility_Pipeline_ClientCtxNull
-Looks up a localized string similar to ClientContext is NULL. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Exception
-Looks up a localized string similar to There was an exception invoking the custom extensibility provider. Assembly: {0}, Type: {1}. Exception {2}.
-#### Provisioning_Extensibility_Pipeline_Missing_AssemblyName
-Looks up a localized string similar to Provider.Assembly missing value. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Missing_TypeName
-Looks up a localized string similar to Provider.Type missing value. Unable to Invoke Extensibility Pipeline..
-#### Provisioning_Extensibility_Pipeline_Success
-Looks up a localized string similar to Provisioning extensibility pipline invocation successful, Assembly {0}, Type {1}.
-#### Provisioning_Extensions_ViewLocalization_Skip
-Looks up a localized string similar to Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
-#### Provisioning_Extensions_WebPartLocalization_Skip
-Looks up a localized string similar to Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions..
-#### Provisioning_Formatter_Invalid_Template_URI
-Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
-#### Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention
-Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
-#### Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_
-Looks up a localized string similar to Downloading asset: {0}.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_ComposedLookInfoFailedToDeserialize
-Looks up a localized string similar to Composed Look Information in Property Bag failed to deserialize. Falling back to detection of current composed look.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Creating_SharePointConnector
-Looks up a localized string similar to Creating SharePointConnector.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Retrieving_current_composed_look
-Looks up a localized string similar to Retrieving current composed look.
-#### Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFromPropertyBag
-Looks up a localized string similar to Using Composed Look Information from Property Bag.
-#### Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck
-Looks up a localized string similar to Skipping composed look handling because the site is marked as 'nosite'..
-#### Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_
-Looks up a localized string similar to Adding content type to template: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type
-Looks up a localized string similar to Adding field {0} to content type.
-#### Provisioning_ObjectHandlers_ContentTypes_Context_web_is_subweb__Skipping_content_types_
-Looks up a localized string similar to Context web is subweb. Skipping content types..
-#### Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_
-Looks up a localized string similar to Creating new Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold
-Looks up a localized string similar to Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold..
-#### Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type
-Looks up a localized string similar to Field {0} exists in content type.
-#### Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request
-Looks up a localized string similar to Content Type {0} with ID {1} cannot be transformed into a DocumentSet.
-#### Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_
-Looks up a localized string similar to Recreating existing Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls
-Looks up a localized string similar to Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites..
-#### Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments
-Looks up a localized string similar to Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites..
-#### Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_
-Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site
-Looks up a localized string similar to Adding custom action '{0}' to scope Site.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web
-Looks up a localized string similar to Adding custom action '{0}' to scope Web.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_site_scoped_custom_action___0___to_template
-Looks up a localized string similar to Adding site scoped custom action '{0}' to template.
-#### Provisioning_ObjectHandlers_CustomActions_Adding_web_scoped_custom_action___0___to_template
-Looks up a localized string similar to Adding web scoped custom action '{0}' to template.
-#### Provisioning_ObjectHandlers_CustomActions_Removing_site_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Looks up a localized string similar to Removing site scoped custom action '{0}' from template because already available in base template.
-#### Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0___from_template_because_already_available_in_base_template
-Looks up a localized string similar to Removing web scoped custom action '{0}' from template because already available in base template.
-#### Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript
-Looks up a localized string similar to Custom action '{0}' was not added/updated because the site was configured for noscript..
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_extensibility_callout__0_
-Looks up a localized string similar to Calling extensibility callout {0}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_Calling_tokenprovider_extensibility_callout__0_
-Looks up a localized string similar to Calling extensibility tokenprovider callout {0}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_callout_failed___0_____1_
-Looks up a localized string similar to Extensibility callout failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ExtensibilityProviders_tokenprovider_callout_failed___0_____1_
-Looks up a localized string similar to Extensibility tokenprovider callout failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_Extraction
-Looks up a localized string similar to Extraction.
-#### Provisioning_ObjectHandlers_Features_Activating__0__scoped_feature__1_
-Looks up a localized string similar to Activating {0} scoped feature {1}.
-#### Provisioning_ObjectHandlers_Features_Deactivating__0__scoped_feature__1_
-Looks up a localized string similar to Deactivating {0} scoped feature {1}.
-#### Provisioning_ObjectHandlers_Fields_Adding_field__0__failed___1_____2_
-Looks up a localized string similar to Adding field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Fields_Adding_field__0__to_site
-Looks up a localized string similar to Adding field {0} to site.
-#### Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns
-Looks up a localized string similar to Context web is subweb, skipping site columns.
-#### Provisioning_ObjectHandlers_Fields_Field__0____1___exists_but_is_of_different_type__Skipping_field_
-Looks up a localized string similar to Field {0} ({1}) exists but is of different type. Skipping field..
-#### Provisioning_ObjectHandlers_Fields_Updating_field__0__failed___1_____2_
-Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Fields_Updating_field__0__in_site
-Looks up a localized string similar to Updating field {0} in site.
-#### Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page
-Looks up a localized string similar to Adding webpart '{0}' to page.
-#### Provisioning_ObjectHandlers_Files_SkipFileUpload
-Looks up a localized string similar to Skipping upload of file '{0}' to '{1}'..
-#### Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_
-Looks up a localized string similar to Uploading and overwriting existing file {0}.
-#### Provisioning_ObjectHandlers_Files_Uploading_file__0_
-Looks up a localized string similar to Uploading file {0}.
-#### Provisioning_ObjectHandlers_FinishExtraction
-Looks up a localized string similar to FINISH - Template Extraction.
-#### Provisioning_ObjectHandlers_FinishProvisioning
-Looks up a localized string similar to FINISH - Provisioning.
-#### Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_
-Looks up a localized string similar to Adding list: {0} - {1}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0_
-Looks up a localized string similar to Creating field {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_field__0__failed___1_____2_
-Looks up a localized string similar to Creating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0_
-Looks up a localized string similar to Creating list {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_
-Looks up a localized string similar to Creating list {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_view__0_
-Looks up a localized string similar to Creating view {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_
-Looks up a localized string similar to Creating view failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true
-Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
-#### Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_
-Looks up a localized string similar to Field {0} ({1}) exists in list {2} ({3}) but is of different type. Skipping field..
-#### Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_
-Looks up a localized string similar to Field schema has no ID attribute: {0}.
-#### Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists
-Looks up a localized string similar to Folder '{0}' already exists in parent folder '{1}'..
-#### Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_
-Looks up a localized string similar to ID for field is not a valid Guid: {0}.
-#### Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference
-Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
-#### Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_
-Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
-#### Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions
-Looks up a localized string similar to Skip adding/updating custom actions because the site has "noscript" enabled..
-#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0_
-Looks up a localized string similar to Updating field {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_
-Looks up a localized string similar to Updating field {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0_
-Looks up a localized string similar to Updating list {0}.
-#### Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_
-Looks up a localized string similar to Updating list {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows
-Looks up a localized string similar to Data Rows.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_
-Looks up a localized string similar to Creating list item {0}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate
-Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_
-Looks up a localized string similar to Creating listitem failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_
-Looks up a localized string similar to Processing data rows for {0}.
-#### Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0
-Looks up a localized string similar to Unable to find lookup list with Id: {0}.
-#### Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____1_
-Looks up a localized string similar to Processing lookup fields failed: {0} : {1}.
-#### Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing
-Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
-#### Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation
-Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation
-Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation
-Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation
-Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
-#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0_
-Looks up a localized string similar to Creating new page {0}.
-#### Provisioning_ObjectHandlers_Pages_Creating_new_page__0__failed___1_____2_
-Looks up a localized string similar to Creating new page {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_
-Looks up a localized string similar to Overwriting existing page {0}.
-#### Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0__failed___1_____2_
-Looks up a localized string similar to Overwriting existing page {0} failed: {1} : {2}.
-#### Provisioning_ObjectHandlers_Pages_SkipAddingWebParts
-Looks up a localized string similar to Skipped adding web parts to page '{0}' because the site is configured for noscript..
-#### Provisioning_ObjectHandlers_PersistTemplateInformation
-Looks up a localized string similar to Persist Template Information.
-#### Provisioning_ObjectHandlers_PropertyBagEntries_Creating_new_propertybag_entry__0__with_value__1__2_
-Looks up a localized string similar to Creating new propertybag entry {0} with value {1}{2}.
-#### Provisioning_ObjectHandlers_PropertyBagEntries_Overwriting_existing_propertybag_entry__0__with_value__1_
-Looks up a localized string similar to Overwriting existing propertybag entry {0} with value {1}.
-#### Provisioning_ObjectHandlers_Provisioning
-Looks up a localized string similar to Provisioning.
-#### Provisioning_ObjectHandlers_Publishing_SkipProvisioning
-Looks up a localized string similar to Skip provisioning of publishing settings because the site is configured for noscript..
-#### Provisioning_ObjectHandlers_RetrieveTemplateInfo
-Looks up a localized string similar to Retrieve Template Info.
-#### Provisioning_ObjectHandlers_SitePolicy_PolicyAdded
-Looks up a localized string similar to Site policy '{0}' applied to site.
-#### Provisioning_ObjectHandlers_SitePolicy_PolicyNotFound
-Looks up a localized string similar to Site policy '{0}' not found.
-#### Provisioning_ObjectHandlers_SiteSecurity_Add_users_failed_for_group___0_____1_____2_
-Looks up a localized string similar to Add users failed for group '{0}': {1} : {2}.
-#### Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_security_provisioning
-Looks up a localized string similar to Context web is subweb, skipping site security provisioning.
-#### Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_
-Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
-#### Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate
-Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
-#### Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate
-Looks up a localized string similar to Skipping master page update because the site is configured for noscript..
-#### Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate
-Looks up a localized string similar to Skipping NoCrawl update because the site is configured for noscript..
-#### Provisioning_Providers_XML_InvalidFileFormat
-Looks up a localized string similar to Cannot process XML file {0}..
-#### ProvisioningExtensions_ErrorProvisioningModule0File1
-Looks up a localized string similar to Error provisioning module '{0}' file '{1}'. Error = {2}.
-#### ProvisioningExtensions_ProvisionElementFile_Path_to_the_element_file_is_required
-Looks up a localized string similar to Path to the element file is required.
-#### ProvisioningExtensions_ProvisionElementFile0
-Looks up a localized string similar to Provisioning Elements file '{0}'..
-#### ProvisioningExtensions_ProvisionElementXml_Expected_element__Elements__
-Looks up a localized string similar to Expected element 'Elements'..
-#### ProvisioningExtensions_ProvisionFileInternal_Expected_element__File__
-Looks up a localized string similar to Expected element 'File'..
-#### ProvisioningExtensions_ProvisionModuleInternal_Expected_element__Module__
-Looks up a localized string similar to Expected element 'Module'..
-#### SecurityExtensions_Error_VisitingSecurableObject
-Looks up a localized string similar to Something wrong happened while visiting securable object: {0}, details: {1}.
-#### SecurityExtensions_Info_VisitingSecurableObject
-Looks up a localized string similar to Visiting securable object: {0}.
-#### SecurityExtensions_Warning_SkipFurtherVisitingForTooManyChildObjects
-Looks up a localized string similar to Skip visiting the child securable objects for {0}, unique_permission_item_count = {1}, leaf_breadth_limit = {2}.
-#### Service_RegistrationFailed
-Looks up a localized string similar to Service registration for {0} using endpoint {1} and cachekey {2} failed..
-#### Services_AccessDenied
-Looks up a localized string similar to Service requestor is not registered: access denied.
-#### Services_CookieWithCachKeyNotFound
-Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
-#### Services_Registered
-Looks up a localized string similar to Service {0} has been registered for endpoint {1} using cachekey {2}..
-#### Services_TokenRefreshed
-Looks up a localized string similar to Token for cachekey {0} and hostweburl {1} has been refreshed..
-#### SiteToTemplateConversion_ApplyRemoteTemplate_OverwriteSystemPropertyBagValues_is_to_true
-Looks up a localized string similar to OverwriteSystemPropertyBagValues is to true.
-#### SiteToTemplateConversion_Base_template_available___0_
-Looks up a localized string similar to Base template available: {0}.
-#### SiteToTemplateConversion_IncludeAllTermGroups_is_set_to_true
-Looks up a localized string similar to IncludeAllTermGroups is set to true.
-#### SiteToTemplateConversion_IncludeSiteCollectionTermGroup_is_set_to_true
-Looks up a localized string similar to IncludeSiteCollectionTermGroup is set to true.
-#### SiteToTemplateConversion_MessagesDelegate_registered
-Looks up a localized string similar to MessagesDelegate registered.
-#### SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true
-Looks up a localized string similar to PersistBrandingFiles is set to true.
-#### SiteToTemplateConversion_PersistComposedLookFiles_is_set_to_true
-Looks up a localized string similar to PersistComposedLookFiles is set to true.
-#### SiteToTemplateConversion_ProgressDelegate_registered
-Looks up a localized string similar to ProgressDelegate registered.
-#### SP_Responsive_UI
-Looks up a localized string similar to /* PnP SharePoint - Responsiveness */ var PnPResponsiveApp = PnPResponsiveApp || {}; PnPResponsiveApp.responsivizeSettings = function () { // return if no longer on Settings page if (window.location.href.indexOf('/settings.aspx') < 0) return; // find the Settings root element, or wait if not available yet var settingsRoot = $(".ms-siteSettings-root"); if (!settingsRoot.length) { setTimeout(PnPResponsiveApp.responsivizeSettings, 100); return; } $ [rest of string was truncated]";.
-#### TaxonomyExtension_CreateTerm01UnderParent2
-Looks up a localized string similar to Creating term '{0}|{1}' under parent '{2}'..
-#### TaxonomyExtension_CreateTermGroup0InStore1
-Looks up a localized string similar to Creating term group '{0}' in term store '{1}'..
-#### TaxonomyExtension_CreateTermSet0InGroup1
-Looks up a localized string similar to Creating term set '{0}' in term group '{1}'..
-#### TaxonomyExtension_DeleteTerm01
-Looks up a localized string similar to Deleting term '{0}|{1}'..
-#### TaxonomyExtension_ExceptionUpdateDescriptionGroup01
-Looks up a localized string similar to Error setting description for term group '{0}' ({1}). Error = {2}.
-#### TaxonomyExtension_ExceptionUpdateDescriptionSet01
-Looks up a localized string similar to Error setting description for term set '{0}' ({1}). Error = {2}.
-#### TaxonomyExtension_ImportErrorDeleteId0Line1
-Looks up a localized string similar to Error encountered during import when attempting to delete invalid term with id {0} on line {1}. Error = {2}.
-#### TaxonomyExtension_ImportErrorDescription0Line1
-Looks up a localized string similar to Error encountered during import. The description '{0}' on line {1} is not valid..
-#### TaxonomyExtension_ImportErrorName0Line1
-Looks up a localized string similar to Error encountered during import. The name '{0}' is not valid on line {1}..
-#### TaxonomyExtension_ImportErrorTaggingLine0
-Looks up a localized string similar to Error encountered during import. The available for tagging entry on line {0} is not valid..
-#### TaxonomyExtension_ImportTermSet
-Looks up a localized string similar to Importing term set from file stream..
-#### TaxonomyExtension_TermGroup0Id1DoesNotMatchSpecifiedId2
-Looks up a localized string similar to Term group '{0}' ID ({1}) does not match specified ID ({2})..
-#### TaxonomyExtension_TermSet0Id1DoesNotMatchSpecifiedId2
-Looks up a localized string similar to Term set '{0}' ID ({1}) does not match specified ID ({2})..
-#### TaxonomyExtensions_Field_Is_Not_Multivalues
-Looks up a localized string similar to The taxonomy field {0} does not support multiple values..
-#### TaxonomyExtensions_ImportTermSet_File_path_is_required_
-Looks up a localized string similar to File path is required..
-#### TaxonomyExtensions_ImportTermSetImplementation_Invalid_CSV_format__was_expecting_a_comma_in_the_first__header__line_
-Looks up a localized string similar to Invalid CSV format; was expecting a comma in the first (header) line..
-#### TenantExtensions_ClosedContextWarning
-Looks up a localized string similar to ClientContext gets closed after action is completed. Calling ExecuteQuery again returns an error. Verify that you have an open ClientContext object. Error = {0}.
-#### TenantExtensions_SetLockState
-Looks up a localized string similar to SetSiteLockState: Current: {0} Target: {1}.
-#### TenantExtensions_UnknownExceptionAccessingSite
-Looks up a localized string similar to Could not determine if site exists in tenant. Error = {0}.
-#### TimerJob_AddSite_Done
-Looks up a localized string similar to Site {0} url/wildcard added.
-#### TimerJob_AddSite_InvalidUrl
-Looks up a localized string similar to Site url ({0}) contains invalid characters.
-#### TimerJob_Authentication_AppOnly
-Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
-#### TimerJob_Authentication_AzureADAppOnly
-Looks up a localized string similar to Timer job authentication set to type Azure AD App-Only with clientId {0} and certificate {1}.
-#### TimerJob_Authentication_Network
-Looks up a localized string similar to Timer job authentication set to type NetworkCredentials with user {0} in domain {1}.
-#### TimerJob_Authentication_O365
-Looks up a localized string similar to Timer job authentication set to type Office 365 with user {0}.
-#### TimerJob_Authentication_RetrieveFromCredMan
-Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
-#### TimerJob_Authentication_RetrieveFromCredManFailed
-Looks up a localized string similar to Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set.
-#### TimerJob_Authentication_TenantAdmin
-Looks up a localized string similar to Tenant admin site set to {0}..
-#### TimerJob_ClearAddedSites
-Looks up a localized string similar to All added sites are cleared.
-#### TimerJob_Clone
-Looks up a localized string similar to Timer job {0} settings cloned to timer job {0}.
-#### TimerJob_Constructor
-Looks up a localized string similar to Timer job constructed with name {0}, version {1}.
-#### TimerJob_DoWork_Done
-Looks up a localized string similar to Work for site {0} done.
-#### TimerJob_DoWork_NoEventHandler
-Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
-#### TimerJob_DoWork_Start
-Looks up a localized string similar to Doing work for site {0}.
-#### TimerJob_Enumeration_Network
-Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
-#### TimerJob_Enumeration_NoDomain
-Looks up a localized string similar to No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_NoPassword
-Looks up a localized string similar to No password specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_NoUser
-Looks up a localized string similar to No user specified that can be used for site enumeration. Use the SetEnumeration... method to provide credentials as app-only does not work with search.
-#### TimerJob_Enumeration_O365
-Looks up a localized string similar to Enumeration credentials specified for Office 365 enumeration with user {0}.
-#### TimerJob_ExpandSite_EatException
-Looks up a localized string similar to Eating exception {0} for site {1}.
-#### TimerJob_ExpandSubSites
-Looks up a localized string similar to ExpandSubSites set to {0}.
-#### TimerJob_ManageState
-Looks up a localized string similar to Manage state set to {0}.
-#### TimerJob_MaxThread1
-Looks up a localized string similar to If you only want 1 thread then set the UseThreading property to false.
-#### TimerJob_MaxThread100
-Looks up a localized string similar to You cannot use more than 100 threads.
-#### TimerJob_MaxThreadLessThan1
-Looks up a localized string similar to Number of threads must be between 2 and 100.
-#### TimerJob_MaxThreadSet
-Looks up a localized string similar to MaximumThreads set to {0}.
-#### TimerJob_OnTimerJobRun_CallEventHandler
-Looks up a localized string similar to Calling the eventhandler for site {0}.
-#### TimerJob_OnTimerJobRun_CallEventHandlerDone
-Looks up a localized string similar to Eventhandler called for site {0}.
-#### TimerJob_OnTimerJobRun_Error
-Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
-#### TimerJob_OnTimerJobRun_PrevRunRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRun = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRun to {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSuccessRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRunSuccessful = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunSuccessSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunSuccessful to {0}.
-#### TimerJob_OnTimerJobRun_PrevRunVersionRead
-Looks up a localized string similar to Timerjob for site {1}, PreviousRunVersion = {0}.
-#### TimerJob_OnTimerJobRun_PrevRunVersionSet
-Looks up a localized string similar to Set Timerjob for site {1}, PreviousRunVersion to {0}.
-#### TimerJob_OnTimerJobRun_PropertiesRead
-Looks up a localized string similar to Timerjob properties read using key {0} for site {1}.
-#### TimerJob_OnTimerJobRun_PropertiesSet
-Looks up a localized string similar to Timerjob properties written using key {0} for site {1}.
-#### TimerJob_Realm
-Looks up a localized string similar to Realm set to {0}.
-#### TimerJob_ResolveSites_Done
-Looks up a localized string similar to Resolving sites done, sub sites have been expanded.
-#### TimerJob_ResolveSites_DoneNoExpansionNeeded
-Looks up a localized string similar to Resolving sites done, no expansion needed.
-#### TimerJob_ResolveSites_LaunchThreadPerBatch
-Looks up a localized string similar to Expand subsites by launching a thread for each of the {0} work batches.
-#### TimerJob_ResolveSites_ResolveSite
-Looks up a localized string similar to Resolving wildcard site {0}.
-#### TimerJob_ResolveSites_ResolveSiteDone
-Looks up a localized string similar to Done resolving wildcard site {0}.
-#### TimerJob_ResolveSites_SequentialExpandDone
-Looks up a localized string similar to Done sequentially expanding all sites.
-#### TimerJob_ResolveSites_Started
-Looks up a localized string similar to Resolving sites started.
-#### TimerJob_ResolveSites_StartSequentialExpand
-Looks up a localized string similar to Start sequentially expanding all sites.
-#### TimerJob_ResolveSites_ThreadLaunched
-Looks up a localized string similar to Thread started to expand a batch of {0} sites.
-#### TimerJob_ResolveSites_ThreadsAreDone
-Looks up a localized string similar to Done waiting for all site expanding threads.
-#### TimerJob_Run_AfterResolveAddedSites
-Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_AfterUpdateAddedSites
-Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_BeforeResolveAddedSites
-Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_BeforeStartWorkBatches
-Looks up a localized string similar to Ready to start a thread for each of the {0} work batches.
-#### TimerJob_Run_BeforeUpdateAddedSites
-Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}.
-#### TimerJob_Run_Done
-Looks up a localized string similar to Run of timer job has ended.
-#### TimerJob_Run_DoneProcessingWorkBatches
-Looks up a localized string similar to Done processing the {0} work batches.
-#### TimerJob_Run_NoSites
-Looks up a localized string similar to Job does not have sites to process, bailing out.
-#### TimerJob_Run_ProcessSequentially
-Looks up a localized string similar to Ready to process each of the {0} sites in a sequential manner.
-#### TimerJob_Run_ProcessSequentiallyDone
-Looks up a localized string similar to Done with sequentially processing each of the {0} sites.
-#### TimerJob_Run_Started
-Looks up a localized string similar to Run of timer job has started.
-#### TimerJob_Run_ThreadLaunched
-Looks up a localized string similar to Thread launched for processing {0} sites.
-#### TimerJob_SharePointVersion
-Looks up a localized string similar to SharePointVersion set to {0}.
-#### TimerJob_SharePointVersion_Versions
-Looks up a localized string similar to SharePoint version must be 15 or 16.
-#### TimerJob_UseThreading
-Looks up a localized string similar to UseThreading set to {0}.
-#### WebExtensions_CreateWeb
-Looks up a localized string similar to Creating web '{0}' with template '{1}'..
-#### WebExtensions_DeleteWeb
-Looks up a localized string similar to Deleting web '{0}'..
-#### WebExtensions_InstallSolution
-Looks up a localized string similar to Installing sandbox solution '{0}' to '{1}'..
-#### WebExtensions_RemoveAppInstance
-Looks up a localized string similar to Removing app '{0}' instance {1}..
-#### WebExtensions_RequestAccessEmailLimitExceeded
-Looks up a localized string similar to Request access email addresses exceed 255 characters. Skipping: {0}.
-#### WebExtensions_SiteSearchUnhandledException
-Looks up a localized string similar to Site search error. Error = {0}.
-#### WebExtensions_UninstallSolution
-Looks up a localized string similar to Removing sandbox solution '{0}'..
 
 ## Core.IdentityModel.TokenProviders.ADFS.CertificateMixed
             
