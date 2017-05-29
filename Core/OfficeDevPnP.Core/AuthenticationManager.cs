@@ -121,7 +121,14 @@ namespace OfficeDevPnP.Core
         /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetAppOnlyAuthenticatedContext(string siteUrl, string realm, string appId, string appSecret, string acsHostUrl = "accesscontrol.windows.net", string globalEndPointPrefix = "accounts")
         {
+
+#if ONPREMISES
+            //As in Kirk Evans blog the app only context is created this way for S2S
+            //https://blogs.msdn.microsoft.com/kaevans/2013/02/23/sharepoint-2013-app-only-policy-made-easy/
+            appOnlyAccessToken = TokenHelper.GetS2SAccessTokenWithWindowsIdentity(new Uri(siteUrl), null);             
+#else
             EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
+#endif
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
             return clientContext;
         }
