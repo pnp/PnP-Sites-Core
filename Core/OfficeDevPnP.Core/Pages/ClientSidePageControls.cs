@@ -527,8 +527,8 @@ namespace OfficeDevPnP.Core.Pages
             // Decode the html encoded string
             var decoded = WebUtility.HtmlDecode(wpDiv.GetAttribute(ClientSideWebPart.WebPartDataAttribute));
             JObject wpJObject = JObject.Parse(decoded);
-            this.title = wpJObject["title"].Value<string>();
-            this.description = wpJObject["description"].Value<string>();
+            this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
+            this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             this.propertiesJson = wpJObject["properties"].ToString(Formatting.None);
             this.webPartId = wpJObject["id"].Value<string>();
 

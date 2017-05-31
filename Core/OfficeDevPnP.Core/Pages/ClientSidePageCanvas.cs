@@ -35,33 +35,78 @@ namespace OfficeDevPnP.Core.Pages
     }
 
     /// <summary>
+    /// Types of client side pages that can be created
+    /// </summary>
+    public enum ClientSidePageLayoutType
+    {
+        /// <summary>
+        /// Custom article page, used for user created pages
+        /// </summary>
+        Article,
+        /// <summary>
+        /// Home page of modern team sites
+        /// </summary>
+        Home
+    }
+
+    public enum PromotedState
+    {
+        NotPromoted = 0,
+        PromoteOnPublish = 1,
+        Promoted = 2
+    }
+
+    /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
     public class ClientSidePage
     {
         #region variables
+        // fields
         public const string CanvasField = "CanvasContent1";
+        public const string PageLayoutType = "PageLayoutType";
+        public const string ApprovalStatus = "_ModerationStatus";
+        public const string ContentTypeId = "ContentTypeId";
+        public const string Title = "Title";
+        public const string ClientSideApplicationId = "ClientSideApplicationId";
+        public const string PromotedStateField = "PromotedState";
+        public const string BannerImageUrl = "BannerImageUrl";
+        public const string FirstPublishedDate = "FirstPublishedDate";
+
+        // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
 
         private ClientContext context;
         private string pageName;
         private string pagesLibrary;
+        private List spPagesLibrary;
         private ListItem pageListItem;
         private string sitePagesServerRelativeUrl;
         private bool securityInitialized = false;
         private string accessToken;
         private System.Collections.Generic.List<CanvasZone> zones = new System.Collections.Generic.List<CanvasZone>(1);
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
+        private ClientSidePageLayoutType layoutType;
+        private bool keepDefaultWebParts;
+        private string pageTitle;
         #endregion
 
         #region construction
-        public ClientSidePage()
+        public ClientSidePage(ClientSidePageLayoutType clientSidePageLayoutType = ClientSidePageLayoutType.Article)
         {
+            this.layoutType = clientSidePageLayoutType;
+
+            if (this.layoutType == ClientSidePageLayoutType.Home)
+            {
+                // By default we're assuming you want to have a customized home page, change this to true in case you want to create a home page holding the default OOB web parts
+                this.keepDefaultWebParts = false;
+            }
+
             this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
             this.pagesLibrary = "SitePages";
         }
 
-        public ClientSidePage(ClientContext cc) : this()
+        public ClientSidePage(ClientContext cc, ClientSidePageLayoutType clientSidePageLayoutType = ClientSidePageLayoutType.Article) : this(clientSidePageLayoutType)
         {
             if (cc == null)
             {
@@ -72,6 +117,18 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        public string PageTitle
+        {
+            get
+            {
+                return this.pageTitle;
+            }
+            set
+            {
+                this.pageTitle = value;
+            }
+        }
+
         public System.Collections.Generic.List<CanvasZone> Zones
         {
             get
@@ -85,6 +142,30 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.controls;
+            }
+        }
+
+        public ClientSidePageLayoutType LayoutType
+        {
+            get
+            {
+                return this.layoutType;
+            }
+            set
+            {
+                this.layoutType = value;
+            }
+        }
+
+        public bool KeepDefaultWebParts
+        {
+            get
+            {
+                return this.keepDefaultWebParts;
+            }
+            set
+            {
+                this.keepDefaultWebParts = value;
             }
         }
 
@@ -315,8 +396,10 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentException("Passed pageName object cannot be null or empty");
             }
 
-            ClientSidePage page = new ClientSidePage(cc);
-            page.pageName = pageName;
+            ClientSidePage page = new ClientSidePage(cc)
+            {
+                pageName = pageName
+            };
 
             var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
@@ -331,60 +414,45 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var item = file.ListItemAllFields;
-            var html = item[ClientSidePage.CanvasField].ToString();
-
-            if (String.IsNullOrEmpty(html))
+            page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+            if (!(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
             {
-                throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+                var html = item[ClientSidePage.CanvasField].ToString();
+
+                if (string.IsNullOrEmpty(html))
+                {
+                    throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+                }
+
+                page.pageListItem = item;
+                page.LoadFromHtml(html);
             }
-
-            page.pageListItem = item;
-
-            page.LoadFromHtml(html);
             return page;
         }
 
         public void Save(string pageName = null)
         {
-            // Save page contents to SharePoint
-            if (this.Context == null)
-            {
-                throw new Exception("No valid ClientContext object connected, can't save this page to SharePoint");
-            }
-
-            // Grab pages library reference
-            List pagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
-
-            // Build up server relative page url
-            if (String.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
-            {
-                this.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
-            }
-
-            if (!String.IsNullOrEmpty(pageName))
-            {
-                this.pageName = pageName;
-            }
-
-            string serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
-
-            // ensure page exists
-            var pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
-            this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
-            this.Context.Web.Context.ExecuteQueryRetry();
-
+            string serverRelativePageName;
+            File pageFile;
             ListItem item;
+
+            // Try to load the page
+            LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+
             if (!pageFile.Exists)
             {
                 // create page listitem
-                item = pagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
+                item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
-                item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
-                item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
-                item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
-                item["PageLayoutType"] = "Article";
-                item["PromotedState"] = "0";
-                item["BannerImageUrl"] = "/_layouts/15/images/sitepagethumbnail.png";
+                item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
+                item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
+                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                if (this.layoutType == ClientSidePageLayoutType.Article)
+                {
+                    item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
+                    item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
+                }
                 item.Update();
                 this.Context.Web.Context.Load(item);
                 this.Context.Web.Context.ExecuteQueryRetry();
@@ -395,11 +463,75 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Persist to page field
-            item[ClientSidePage.CanvasField] = this.ToHtml();
+            if (this.layoutType == ClientSidePageLayoutType.Home && this.KeepDefaultWebParts)
+            {
+                item[ClientSidePage.CanvasField] = "";
+            }
+            else
+            {
+                item[ClientSidePage.CanvasField] = this.ToHtml();
+            }
             item.Update();
             this.Context.ExecuteQueryRetry();
 
             this.pageListItem = item;
+        }
+
+        public void Publish()
+        {
+            Publish("");
+        }
+
+        public void Publish(string publishMessage)
+        {
+            // Load the page
+            string serverRelativePageName;
+            File pageFile;
+
+            LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+
+            if (pageFile.Exists)
+            {
+                // connect up the page list item for future reference
+                this.pageListItem = pageFile.ListItemAllFields;
+                // publish the page
+                pageFile.Publish(publishMessage);
+                this.Context.ExecuteQueryRetry();
+            }
+        }
+
+        public void DemoteAsNewsArticle()
+        {
+            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            {
+                throw new Exception("You can't promote a home page as news article");
+            }
+
+            // ensure we do have the page list item loaded
+            EnsurePageListItem();
+
+            // Set promoted state
+            this.pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
+            this.pageListItem.Update();
+            this.Context.ExecuteQueryRetry();
+        }
+
+        public void PromoteAsNewsArticle()
+        {
+            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            {
+                throw new Exception("You can't promote a home page as news article");
+            }
+
+            // ensure we do have the page list item loaded
+            EnsurePageListItem();
+
+            // Set promoted state
+            this.pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.Promoted;
+            // Set publication date
+            this.pageListItem[ClientSidePage.FirstPublishedDate] = DateTime.UtcNow;
+            this.pageListItem.Update();
+            this.Context.ExecuteQueryRetry();
         }
 
         public static ClientSidePage FromHtml(string html)
@@ -475,6 +607,59 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Internal and private methods
+        private void EnsurePageListItem()
+        {
+            if (this.pageListItem == null)
+            {
+                string serverRelativePageName;
+                File pageFile;
+                LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+                if (pageFile.Exists)
+                {
+                    // connect up the page list item for future reference
+                    this.pageListItem = pageFile.ListItemAllFields;
+                }
+            }
+        }
+
+        private void LoadPageFile(string pageName, out string serverRelativePageName, out File pageFile)
+        {
+            // Save page contents to SharePoint
+            if (this.Context == null)
+            {
+                throw new Exception("No valid ClientContext object connected, can't save this page to SharePoint");
+            }
+
+            // Grab pages library reference
+            if (this.spPagesLibrary == null)
+            {
+                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+            }
+
+            // Build up server relative page url
+            if (string.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
+            {
+                this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
+            }
+
+            if (!String.IsNullOrWhiteSpace(pageName))
+            {
+                this.pageName = pageName;
+            }
+
+            if (string.IsNullOrWhiteSpace(this.pageName))
+            {
+                throw new Exception("No valid page name specified, can't save this page to SharePoint");
+            }
+
+            serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
+
+            // ensure page exists
+            pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
+            this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
+            this.Context.Web.Context.ExecuteQueryRetry();
+        }
+
         private void LoadFromHtml(string html)
         {
             if (String.IsNullOrEmpty(html))
