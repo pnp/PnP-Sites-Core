@@ -5,8 +5,40 @@ namespace OfficeDevPnP.Core.Pages
 #if !ONPREMISES
     #region Classes to support json (de-)serialization of control/webpart data
     #region Control data
+
     /// <summary>
-    /// Abstract base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
+    /// Base class representing the json control data that will describe a control versus the zones and sections on a page
+    /// </summary>
+    public class ClientSideCanvasPosition
+    {
+        [JsonProperty(PropertyName = "zoneIndex")]
+        public float ZoneIndex { get; set; }
+        [JsonProperty(PropertyName = "sectionIndex")]
+        public int SectionIndex { get; set; }
+        [JsonProperty(PropertyName = "sectionFactor")]
+        public int SectionFactor { get; set; }
+    }
+
+    /// <summary>
+    /// Class representing the json control data that will describe a control versus the zones and sections on a page
+    /// </summary>
+    public class ClientSideCanvasControlPosition: ClientSideCanvasPosition
+    {
+        [JsonProperty(PropertyName = "controlIndex")]
+        public int ControlIndex { get; set; }
+    }
+
+    /// <summary>
+    /// Base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
+    /// </summary>
+    public class ClientSideCanvasData
+    {
+        [JsonProperty(PropertyName = "position")]
+        public ClientSideCanvasPosition Position { get; set; }
+    }
+
+    /// <summary>
+    /// Base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
     /// </summary>
     public class ClientSideCanvasControlData
     {
@@ -15,6 +47,9 @@ namespace OfficeDevPnP.Core.Pages
 
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
+
+        [JsonProperty(PropertyName = "position")]
+        public ClientSideCanvasControlPosition Position { get; set; }
     }
 
     /// <summary>

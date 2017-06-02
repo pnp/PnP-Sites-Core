@@ -144,8 +144,10 @@ namespace OfficeDevPnP.Core.Pages
             var decoded = WebUtility.HtmlDecode(controlDataJson);
 
             // Deserialize the json string
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
             var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(decoded, jsonSerializerSettings);
 
             if (controlData.ControlType == 3)
@@ -156,6 +158,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 return typeof(ClientSideText);
             }
+            else if (controlData.ControlType == 0)
+            {
+                return typeof(CanvasSection);
+            }
 
             return null;
         }
@@ -165,8 +171,11 @@ namespace OfficeDevPnP.Core.Pages
         internal virtual void FromHtml(IElement element)
         {
             // deserialize control data
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+
             var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
 
             // populate base object
@@ -175,6 +184,7 @@ namespace OfficeDevPnP.Core.Pages
             this.controlType = controlData.ControlType;
             this.instanceId = new Guid(controlData.Id);
         }
+
         #endregion
     }
 
@@ -187,6 +197,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string TextRteAttribute = "data-sp-rte";
 
         private string rte;
+        private ClientSideTextControlData spControlData;
         #endregion
 
         #region construction
@@ -215,6 +226,14 @@ namespace OfficeDevPnP.Core.Pages
                 return typeof(ClientSideText);
             }
         }
+
+        public ClientSideTextControlData SpControlData
+        {
+            get
+            {
+                return this.spControlData;
+            }
+        }
         #endregion
 
         #region public methods
@@ -225,7 +244,17 @@ namespace OfficeDevPnP.Core.Pages
         public override string ToHtml()
         {
             // Obtain the json data
-            ClientSideTextControlData controlData = new ClientSideTextControlData() { ControlType = this.ControlType, Id = this.InstanceId.ToString("D"), EditorType = "CKEditor" };
+            ClientSideTextControlData controlData = new ClientSideTextControlData() {
+                ControlType = this.ControlType,
+                Id = this.InstanceId.ToString("D"),
+                Position = new ClientSideCanvasControlPosition()
+                {
+                    ZoneIndex = this.Zone.Order,
+                    SectionIndex = this.Section.Order,
+                    SectionFactor = this.Section.SectionFactor,
+                    ControlIndex = 1,
+                },
+                EditorType = "CKEditor" };
             jsonControlData = JsonConvert.SerializeObject(controlData);
 
             StringBuilder html = new StringBuilder(100);
@@ -261,6 +290,14 @@ namespace OfficeDevPnP.Core.Pages
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
             this.rte = div.GetAttribute(TextRteAttribute);
             this.Text = div.InnerHtml;
+
+            // load data from the data-sp-controldata attribute
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            this.spControlData = JsonConvert.DeserializeObject<ClientSideTextControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
+            this.controlType = this.spControlData.ControlType;
         }
         #endregion
     }
@@ -288,6 +325,7 @@ namespace OfficeDevPnP.Core.Pages
         private string title;
         private string description;
         private string propertiesJson;
+        private ClientSideWebPartControlData spControlData;
         private JObject properties;
         #endregion
 
@@ -444,6 +482,13 @@ namespace OfficeDevPnP.Core.Pages
                 return typeof(ClientSideWebPart);
             }
         }
+        public ClientSideWebPartControlData SpControlData
+        {
+            get
+            {
+                return this.spControlData;
+            }
+        }
         #endregion
 
         #region public methods
@@ -520,6 +565,15 @@ namespace OfficeDevPnP.Core.Pages
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
+
+            // load data from the data-sp-controldata attribute
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            this.spControlData = JsonConvert.DeserializeObject<ClientSideWebPartControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
+            this.controlType = this.spControlData.ControlType;
+
 
             var wpDiv = element.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartDataAttribute)).FirstOrDefault();
             this.webPartData = wpDiv.GetAttribute(ClientSideWebPart.WebPartAttribute);
