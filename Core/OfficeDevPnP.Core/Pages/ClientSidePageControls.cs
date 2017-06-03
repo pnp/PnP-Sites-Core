@@ -117,8 +117,9 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Converts a control object to it's html representation
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of a control</returns>
-        public abstract string ToHtml();
+        public abstract string ToHtml(int controlIndex);
 
         /// <summary>
         /// Removes the control from the page
@@ -240,8 +241,9 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Converts this <see cref="ClientSideText"/> control to it's html representation
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of this <see cref="ClientSideText"/> control</returns>
-        public override string ToHtml()
+        public override string ToHtml(int controlIndex)
         {
             // Obtain the json data
             ClientSideTextControlData controlData = new ClientSideTextControlData() {
@@ -252,7 +254,7 @@ namespace OfficeDevPnP.Core.Pages
                     ZoneIndex = this.Zone.Order,
                     SectionIndex = this.Section.Order,
                     SectionFactor = this.Section.SectionFactor,
-                    ControlIndex = 1,
+                    ControlIndex = controlIndex,
                 },
                 EditorType = "CKEditor" };
             jsonControlData = JsonConvert.SerializeObject(controlData);
@@ -518,16 +520,29 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Returns a HTML representation of the client side web part
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>HTML representation of the client side web part</returns>
-        public override string ToHtml()
+        public override string ToHtml(int controlIndex)
         {
             // Obtain the json data
-            ClientSideWebPartControlData controlData = new ClientSideWebPartControlData() { ControlType = this.ControlType, Id = this.InstanceId.ToString("D"), WebPartId = this.WebPartId };
+            ClientSideWebPartControlData controlData = new ClientSideWebPartControlData()
+            {
+                ControlType = this.ControlType,
+                Id = this.InstanceId.ToString("D"),
+                WebPartId = this.WebPartId,
+                Position = new ClientSideCanvasControlPosition()
+                {
+                    ZoneIndex = this.Zone.Order,
+                    SectionIndex = this.Section.Order,
+                    SectionFactor = this.Section.SectionFactor,
+                    ControlIndex = controlIndex,
+                },
+            };
             ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
 
-            jsonControlData = JsonConvert.SerializeObject(controlData);
-            jsonWebPartData = JsonConvert.SerializeObject(webpartData);
-            jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+            this.jsonControlData = JsonConvert.SerializeObject(controlData);
+            this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
+            this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
 
             StringBuilder html = new StringBuilder(100);
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))

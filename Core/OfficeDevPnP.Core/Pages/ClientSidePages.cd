@@ -3,7 +3,7 @@
   <Class Name="OfficeDevPnP.Core.Pages.ClientSidePage">
     <Position X="13" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AhECgIBAQgANQEAERhIICQAiASkkCCEJAAEiUAAQEWA=</HashCode>
+      <HashCode>AhECgIBAQgANQECERhIICQAiASkkCCEJAAEiUAAQEWA=</HashCode>
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -22,7 +22,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="OfficeDevPnP.Core.Pages.AvailableClientSideComponents">
-    <Position X="18.5" Y="4.25" Width="1.5" />
+    <Position X="18.5" Y="4.25" Width="3" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
@@ -57,21 +57,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="OfficeDevPnP.Core.Pages.ClientSideCanvasData">
-    <Position X="1.75" Y="0.75" Width="1.5" />
+    <Position X="0.75" Y="0.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Pages\ClientSidePagesControlData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OfficeDevPnP.Core.Pages.ClientSideTextControlData">
-    <Position X="2.75" Y="3" Width="1.5" />
+    <Position X="0.75" Y="3.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>Pages\ClientSidePagesControlData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OfficeDevPnP.Core.Pages.ClientSideWebPartControlData">
-    <Position X="0.5" Y="3" Width="1.5" />
+    <Position X="0.75" Y="2" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Pages\ClientSidePagesControlData.cs</FileName>
@@ -87,7 +87,7 @@
   <Enum Name="OfficeDevPnP.Core.Pages.DefaultClientSideWebParts" Collapsed="true">
     <Position X="18.5" Y="7" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAABAAAAAAAAAAwAABAAAAAgAAAAAAAI=</HashCode>
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
     </TypeIdentifier>
   </Enum>

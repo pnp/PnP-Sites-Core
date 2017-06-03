@@ -199,7 +199,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// When a page of type Home is created you can opt to keep the default client side web parts by setting this to true 
+        /// When a page of type Home is created you can opt to only keep the default client side web parts by setting this to true. This also is a way to reset your home page back the the stock one.
         /// </summary>
         public bool KeepDefaultWebParts
         {
@@ -930,7 +930,14 @@ namespace OfficeDevPnP.Core.Pages
             {
                 if (zone.Sections.Count == 1)
                 {
-                    zone.Type = CanvasZoneTemplate.OneColumn;
+                    if (zone.Sections[0].SectionFactor == 0)
+                    {
+                        zone.Type = CanvasZoneTemplate.OneColumnFullWidth;
+                    }
+                    else
+                    {
+                        zone.Type = CanvasZoneTemplate.OneColumn;
+                    }
                 }
                 else if (zone.Sections.Count == 2)
                 {
@@ -1074,10 +1081,12 @@ namespace OfficeDevPnP.Core.Pages
     public enum CanvasZoneTemplate
     {
         OneColumn = 0,
-        TwoColumn = 1,
-        ThreeColumn = 2,
-        TwoColumnLeft = 3,
-        TwoColumnRight = 4
+        OneColumnFullWidth =1,
+        TwoColumn = 2,
+        ThreeColumn = 3,
+        TwoColumnLeft = 4,
+        TwoColumnRight = 5,
+
     }
 
     /// <summary>
@@ -1117,6 +1126,9 @@ namespace OfficeDevPnP.Core.Pages
             {
                 case CanvasZoneTemplate.OneColumn:
                     goto default;
+                case CanvasZoneTemplate.OneColumnFullWidth:
+                    this.sections.Add(new CanvasSection(this, 1, 0));
+                    break;
                 case CanvasZoneTemplate.TwoColumn:
                     this.sections.Add(new CanvasSection(this, 1, 6));
                     this.sections.Add(new CanvasSection(this, 2, 6));
@@ -1305,9 +1317,11 @@ namespace OfficeDevPnP.Core.Pages
                 htmlWriter.NewLine = string.Empty;
 
                 bool controlWrittenToSection = false;
+                int controlIndex = 0;
                 foreach (var control in this.Zone.Page.Controls.Where(p => p.Zone == this.Zone && p.Section == this).OrderBy(z => z.Order))
                 {
-                    htmlWriter.Write(control.ToHtml());
+                    controlIndex++;
+                    htmlWriter.Write(control.ToHtml(controlIndex));
                     controlWrittenToSection = true;
                 }
 
