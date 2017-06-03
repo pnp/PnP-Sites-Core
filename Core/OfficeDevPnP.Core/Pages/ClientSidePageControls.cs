@@ -245,6 +245,12 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>Html representation of this <see cref="ClientSideText"/> control</returns>
         public override string ToHtml(int controlIndex)
         {
+            // Can this control be hosted in this zone type?
+            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            {
+                throw new Exception("You cannot host text controls inside a one column full width zone, only an image web part or hero web part are allowed");
+            }
+
             // Obtain the json data
             ClientSideTextControlData controlData = new ClientSideTextControlData() {
                 ControlType = this.ControlType,
@@ -524,6 +530,16 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>HTML representation of the client side web part</returns>
         public override string ToHtml(int controlIndex)
         {
+            // Can this control be hosted in this zone type?
+            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            {
+                if (!this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
+                    !this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new Exception("You cannot host this web part inside a one column full width zone, only an image web part or hero web part are allowed");
+                }
+            }
+
             // Obtain the json data
             ClientSideWebPartControlData controlData = new ClientSideWebPartControlData()
             {

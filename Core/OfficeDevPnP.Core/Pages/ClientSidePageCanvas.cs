@@ -573,6 +573,9 @@ namespace OfficeDevPnP.Core.Pages
             File pageFile;
             ListItem item;
 
+            // Validate we're not using "wrong" layouts for the given site type
+            ValidateOneColumnFullWidthZoneUsage();
+
             // Try to load the page
             LoadPageFile(pageName, out serverRelativePageName, out pageFile);
 
@@ -632,13 +635,47 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Return the name (=guid) for a given first party out of the box web part
+        /// </summary>
+        /// <param name="webPart">First party web part</param>
+        /// <returns>Name(=guid) for the given web part</returns>
+        public static string ClientSideWebPartEnumToName(DefaultClientSideWebParts webPart)
+        {
+            switch (webPart)
+            {
+                case DefaultClientSideWebParts.ContentRollup: return "daf0b71c-6de8-4ef7-b511-faae7c388708";
+                case DefaultClientSideWebParts.BingMap: return "e377ea37-9047-43b9-8cdb-a761be2f8e09";
+                case DefaultClientSideWebParts.ContentEmbed: return "490d7c76-1824-45b2-9de3-676421c997fa";
+                case DefaultClientSideWebParts.DocumentEmbed: return "b7dd04e1-19ce-4b24-9132-b60a1c2b910d";
+                case DefaultClientSideWebParts.Image: return "d1d91016-032f-456d-98a4-721247c305e8";
+                case DefaultClientSideWebParts.ImageGallery: return "af8be689-990e-492a-81f7-ba3e4cd3ed9c";
+                case DefaultClientSideWebParts.LinkPreview: return "6410b3b6-d440-4663-8744-378976dc041e";
+                case DefaultClientSideWebParts.NewsFeed: return "0ef418ba-5d19-4ade-9db0-b339873291d0";
+                case DefaultClientSideWebParts.NewsReel: return "a5df8fdf-b508-4b66-98a6-d83bc2597f63";
+                case DefaultClientSideWebParts.PowerBIReportEmbed: return "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2";
+                case DefaultClientSideWebParts.QuickChart: return "91a50c94-865f-4f5c-8b4e-e49659e69772";
+                case DefaultClientSideWebParts.SiteActivity: return "eb95c819-ab8f-4689-bd03-0c2d65d47b1f";
+                case DefaultClientSideWebParts.VideoEmbed: return "275c0095-a77e-4f6d-a2a0-6a7626911518";
+                case DefaultClientSideWebParts.YammerEmbed: return "31e9537e-f9dc-40a4-8834-0e3b7df418bc";
+                case DefaultClientSideWebParts.Events: return "20745d7d-8581-4a6c-bf26-68279bc123fc";
+                case DefaultClientSideWebParts.GroupCalendar: return "6676088b-e28e-4a90-b9cb-d0d0303cd2eb";
+                case DefaultClientSideWebParts.Hero: return "c4bd7b2f-7b6e-4599-8485-16504575f590";
+                case DefaultClientSideWebParts.List: return "f92bf067-bc19-489e-a556-7fe95f508720";
+                case DefaultClientSideWebParts.PageTitle: return "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788";
+                case DefaultClientSideWebParts.People: return "7f718435-ee4d-431c-bdbf-9c4ff326f46e";
+                case DefaultClientSideWebParts.QuickLinks: return "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd";
+                default: return "";
+            }
+        }
+
+        /// <summary>
         /// Creates an instance of an out of the box (default, first party) client side web part
         /// </summary>
         /// <param name="webPart">The out of the box web part you want to instantiate</param>
         /// <returns><see cref="ClientSideWebPart"/> instance</returns>
         public ClientSideWebPart InstantiateDefaultWebPart(DefaultClientSideWebParts webPart)
         {
-            var webPartName = this.ClientSideWebPartEnumToName(webPart);
+            var webPartName = ClientSidePage.ClientSideWebPartEnumToName(webPart);
             var webParts = this.AvailableClientSideComponents(webPartName);
 
             if (webParts.Count() == 1)
@@ -665,7 +702,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents(DefaultClientSideWebParts webPart)
         {
-            return this.AvailableClientSideComponents(this.ClientSideWebPartEnumToName(webPart));
+            return this.AvailableClientSideComponents(ClientSidePage.ClientSideWebPartEnumToName(webPart));
         }
 
         /// <summary>
@@ -799,6 +836,27 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Internal and private methods
+        private void ValidateOneColumnFullWidthZoneUsage()
+        {
+            bool hasOneColumnFullWidthZone = false;
+            foreach (var zone in this.zones)
+            {
+                if (zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+                {
+                    hasOneColumnFullWidthZone = true;
+                    break;
+                }
+            }
+            if (hasOneColumnFullWidthZone)
+            {
+                this.Context.Web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
+                if (!this.Context.Web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new Exception($"You can't use a OneColumnFullWidth zone in this site template ({this.Context.Web.WebTemplate})");
+                }
+            }
+        }
+
         private void EnsurePageListItem()
         {
             if (this.pageListItem == null)
@@ -1041,35 +1099,6 @@ namespace OfficeDevPnP.Core.Pages
             if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
             {
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
-            }
-        }
-
-        private string ClientSideWebPartEnumToName(DefaultClientSideWebParts webPart)
-        {
-            switch (webPart)
-            {
-                case DefaultClientSideWebParts.ContentRollup: return "daf0b71c-6de8-4ef7-b511-faae7c388708";
-                case DefaultClientSideWebParts.BingMap: return "e377ea37-9047-43b9-8cdb-a761be2f8e09";
-                case DefaultClientSideWebParts.ContentEmbed: return "490d7c76-1824-45b2-9de3-676421c997fa";
-                case DefaultClientSideWebParts.DocumentEmbed: return "b7dd04e1-19ce-4b24-9132-b60a1c2b910d";
-                case DefaultClientSideWebParts.Image: return "d1d91016-032f-456d-98a4-721247c305e8";
-                case DefaultClientSideWebParts.ImageGallery: return "af8be689-990e-492a-81f7-ba3e4cd3ed9c";
-                case DefaultClientSideWebParts.LinkPreview: return "6410b3b6-d440-4663-8744-378976dc041e";
-                case DefaultClientSideWebParts.NewsFeed: return "0ef418ba-5d19-4ade-9db0-b339873291d0";
-                case DefaultClientSideWebParts.NewsReel: return "a5df8fdf-b508-4b66-98a6-d83bc2597f63";
-                case DefaultClientSideWebParts.PowerBIReportEmbed: return "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2";
-                case DefaultClientSideWebParts.QuickChart: return "91a50c94-865f-4f5c-8b4e-e49659e69772";
-                case DefaultClientSideWebParts.SiteActivity: return "eb95c819-ab8f-4689-bd03-0c2d65d47b1f";
-                case DefaultClientSideWebParts.VideoEmbed: return "275c0095-a77e-4f6d-a2a0-6a7626911518";
-                case DefaultClientSideWebParts.YammerEmbed: return "31e9537e-f9dc-40a4-8834-0e3b7df418bc";
-                case DefaultClientSideWebParts.Events : return "20745d7d-8581-4a6c-bf26-68279bc123fc";
-                case DefaultClientSideWebParts.GroupCalendar: return "6676088b-e28e-4a90-b9cb-d0d0303cd2eb";
-                case DefaultClientSideWebParts.Hero: return "c4bd7b2f-7b6e-4599-8485-16504575f590";
-                case DefaultClientSideWebParts.List: return "f92bf067-bc19-489e-a556-7fe95f508720";
-                case DefaultClientSideWebParts.PageTitle: return "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788";
-                case DefaultClientSideWebParts.People: return "7f718435-ee4d-431c-bdbf-9c4ff326f46e";
-                case DefaultClientSideWebParts.QuickLinks: return "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd";
-                default: return "";
             }
         }
         #endregion
