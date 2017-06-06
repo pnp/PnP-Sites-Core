@@ -616,7 +616,6 @@
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\publishing_add.xml" />
     <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
-    <Content Include="Pages\XMLFile1.xml" />
     <Content Include="Resources\EditForm.aspx" />
     <Content Include="Resources\garagebg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

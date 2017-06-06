@@ -288,6 +288,26 @@ namespace OfficeDevPnP.Core.Pages
                 return zones.First();
             }
         }
+
+        /// <summary>
+        /// Does this page have comments disabled
+        /// </summary>
+        public bool CommentsDisabled
+        {
+            get
+            {
+                EnsurePageListItem();
+                if (this.PageListItem != null)
+                {
+                    this.PageListItem.EnsureProperty(p => p.CommentsDisabled);
+                    return this.PageListItem.CommentsDisabled;
+                }
+                else
+                {
+                    throw new Exception("You first need to save the page before you check for CommentsEnabled status");
+                }
+            }
+        }
         #endregion
 
         #region public methods
@@ -777,6 +797,22 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Enable commenting on this page
+        /// </summary>
+        public void EnableComments()
+        {
+            EnableCommentsImplementation(true);
+        }
+
+        /// <summary>
+        /// Disable commenting on this page
+        /// </summary>
+        public void DisableComments()
+        {
+            EnableCommentsImplementation(false);
+        }
+
+        /// <summary>
         /// Demotes an client side <see cref="ClientSidePageLayoutType.Article"/> news page as a regular client side page
         /// </summary>
         public void DemoteNewsArticle()
@@ -836,6 +872,21 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Internal and private methods
+        private void EnableCommentsImplementation(bool enable)
+        {
+            // ensure we do have the page list item loaded
+            EnsurePageListItem();
+            if (this.PageListItem != null)
+            {
+                this.pageListItem.SetCommentsDisabled(!enable);
+                this.Context.ExecuteQueryRetry();
+            }
+            else
+            {
+                throw new Exception("This page first needs to be saved before comments can be enabled or disabled");
+            }
+        }
+
         private void ValidateOneColumnFullWidthZoneUsage()
         {
             bool hasOneColumnFullWidthZone = false;
@@ -863,7 +914,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 string serverRelativePageName;
                 File pageFile;
-                LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+                LoadPageFile(this.pageName, out serverRelativePageName, out pageFile);
                 if (pageFile.Exists)
                 {
                     // connect up the page list item for future reference
@@ -1109,11 +1160,29 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public enum CanvasZoneTemplate
     {
+        /// <summary>
+        /// One column
+        /// </summary>
         OneColumn = 0,
+        /// <summary>
+        /// One column, full browser width. This one only works for communication sites in combination with image or hero webparts
+        /// </summary>
         OneColumnFullWidth =1,
+        /// <summary>
+        /// Two columns of the same size
+        /// </summary>
         TwoColumn = 2,
+        /// <summary>
+        /// Three columns of the same size
+        /// </summary>
         ThreeColumn = 3,
+        /// <summary>
+        /// Two columns, left one is 2/3, right one 1/3
+        /// </summary>
         TwoColumnLeft = 4,
+        /// <summary>
+        /// Two columns, left one is 1/3, right one 2/3
+        /// </summary>
         TwoColumnRight = 5,
 
     }
@@ -1140,6 +1209,12 @@ namespace OfficeDevPnP.Core.Pages
             Order = 0;
         }
 
+        /// <summary>
+        /// Creates a new canvas zone
+        /// </summary>
+        /// <param name="page"><see cref="ClientSidePage"/> instance that holds this zone</param>
+        /// <param name="canvasSectionTemplate">Type of zone to create</param>
+        /// <param name="order">Order of this zone in the collection of zones on the page</param>
         public CanvasZone(ClientSidePage page, CanvasZoneTemplate canvasSectionTemplate, int order)
         {
             if (page == null)
@@ -1183,10 +1258,19 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Type of the zone
+        /// </summary>
         public CanvasZoneTemplate Type { get; set; }
 
+        /// <summary>
+        /// Order in which this zone is presented on the page
+        /// </summary>
         public float Order { get; set; }
 
+        /// <summary>
+        /// <see cref="CanvasSection"/> instances that are part of this zone
+        /// </summary>
         public System.Collections.Generic.List<CanvasSection> Sections
         {
             get
@@ -1195,6 +1279,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The <see cref="ClientSidePage"/> instance holding this zone
+        /// </summary>
         public ClientSidePage Page
         {
             get
@@ -1203,6 +1290,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Controls hosted in this zone
+        /// </summary>
         public System.Collections.Generic.List<CanvasControl> Controls
         {
             get
@@ -1211,6 +1301,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The default <see cref="CanvasSection"/> of this zone
+        /// </summary>
         public CanvasSection DefaultSection
         {
             get
@@ -1226,6 +1319,10 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Renders this zone as a HTML fragment
+        /// </summary>
+        /// <returns>HTML string representing this zone</returns>
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
@@ -1310,8 +1407,11 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
-        public int Order { get; set; }
+        internal int Order { get; set; }
 
+        /// <summary>
+        /// <see cref="CanvasZone"/> this section belongs to
+        /// </summary>
         public CanvasZone Zone
         {
             get
@@ -1320,6 +1420,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Section size factor. Max value is 12 (= one column), other options are 8,6,4 or 0
+        /// </summary>
         public int SectionFactor
         {
             get
@@ -1328,6 +1431,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// List of <see cref="CanvasControl"/> instances that are hosted in this section
+        /// </summary>
         public System.Collections.Generic.List<CanvasControl> Controls
         {
             get
@@ -1338,6 +1444,10 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Renders a HTML presentation of this section
+        /// </summary>
+        /// <returns>The HTML presentation of this section</returns>
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);

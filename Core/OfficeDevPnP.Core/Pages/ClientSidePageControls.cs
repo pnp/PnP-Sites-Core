@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Pages
 #if !ONPREMISES
     #region Client Side control classes
     /// <summary>
-    /// Base control
+    /// Base class for a canvas control 
     /// </summary>
     public abstract class CanvasControl
     {
@@ -32,6 +32,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region construction
+        /// <summary>
+        /// Constructs the canvas control
+        /// </summary>
         public CanvasControl()
         {
             this.dataVersion = "1.0";
@@ -42,6 +45,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// The <see cref="CanvasZone"/> hosting this control
+        /// </summary>
         public CanvasZone Zone
         {
             get
@@ -50,6 +56,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The <see cref="CanvasSection"/> hosting this control
+        /// </summary>
         public CanvasSection Section
         {
             get
@@ -58,6 +67,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The internal storage version used for this control
+        /// </summary>
         public string DataVersion
         {
             get
@@ -66,6 +78,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the control's "data-sp-canvascontrol" attribute
+        /// </summary>
         public string CanvasControlData
         {
             get
@@ -74,6 +89,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type of the control: 3 is a text part, 4 is a client side web part
+        /// </summary>
         public int ControlType
         {
             get
@@ -82,6 +100,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the control's "data-sp-controldata" attribute
+        /// </summary>
         public string JsonControlData
         {
             get
@@ -90,6 +111,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Instance ID of the control
+        /// </summary>
         public Guid InstanceId
         {
             get
@@ -98,6 +122,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Order of the control in the control collection
+        /// </summary>
         public int Order
         {
             get
@@ -110,6 +137,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type if the control (<see cref="ClientSideText"/> or <see cref="ClientSideWebPart"/>)
+        /// </summary>
         public abstract Type Type { get; }
         #endregion
 
@@ -130,7 +160,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Receives data-sp-controldata content and detects the type of the control
+        /// Receives "data-sp-controldata" content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
         /// <returns>Type of the control represented by the json string</returns>
@@ -202,6 +232,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region construction
+        /// <summary>
+        /// Creates a <see cref="ClientSideText"/> instance
+        /// </summary>
         public ClientSideText() : base()
         {
             this.controlType = 4;
@@ -210,8 +243,14 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Text value of the client side text control
+        /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// Value of the "data-sp-rte" attribute
+        /// </summary>
         public string Rte
         {
             get
@@ -220,6 +259,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type of the control (= <see cref="ClientSideText"/>)
+        /// </summary>
         public override Type Type
         {
             get
@@ -228,6 +270,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Deserialized value of the "data-sp-controldata" attribute
+        /// </summary>
         public ClientSideTextControlData SpControlData
         {
             get
@@ -368,7 +413,7 @@ namespace OfficeDevPnP.Core.Pages
 
         #region Properties
         /// <summary>
-        /// Json serialized web part properties
+        /// Value of the "data-sp-webpartdata" attribute
         /// </summary>
         public string JsonWebPartData
         {
@@ -379,7 +424,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Html properties data
+        /// Value of the "data-sp-htmlproperties" element
         /// </summary>
         public string HtmlPropertiesData
         {
@@ -390,7 +435,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Value of the data-sp-htmlproperties attribute
+        /// Value of the "data-sp-htmlproperties" attribute
         /// </summary>
         public string HtmlProperties
         {
@@ -413,7 +458,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Value of the data-sp-webpart attribute
+        /// Value of the "data-sp-webpart" attribute
         /// </summary>
         public string WebPartData
         {
@@ -490,6 +535,11 @@ namespace OfficeDevPnP.Core.Pages
                 return typeof(ClientSideWebPart);
             }
         }
+
+
+        /// <summary>
+        /// Value of the "data-sp-controldata" attribute
+        /// </summary>
         public ClientSideWebPartControlData SpControlData
         {
             get

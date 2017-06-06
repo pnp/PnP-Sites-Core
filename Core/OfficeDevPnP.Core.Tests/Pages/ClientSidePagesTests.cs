@@ -127,6 +127,22 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         }
 
         [TestMethod]
+        public void BertTest5()
+        {
+            using (var cc = TestCommon.CreateClientContext("https://a830edad9050849523e17050400.sharepoint.com/sites/modern"))
+            {
+                var page = cc.Web.LoadClientSidePage("b6.aspx");
+                //page.DemoteNewsArticle();
+                //page.PromoteAsNewsArticle();
+                //page.Publish();
+                //page.PromoteAsHomePage();
+                var commentsDisabled = page.CommentsDisabled;
+                page.DisableComments();
+
+            }
+        }
+
+        [TestMethod]
         public void BertTest4()
         {
             using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/uiscannermodernteam"))
