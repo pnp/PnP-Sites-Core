@@ -30,8 +30,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Set default values for Template ID and Version
-                template.Id = String.Format("TEMPLATE-{0:N}", Guid.NewGuid()).ToUpper();
+                template.Id = $"TEMPLATE-{Guid.NewGuid():N}".ToUpper();
                 template.Version = 1;
+
+                template.BaseSiteTemplate = web.GetBaseTemplateId();
 
                 // Retrieve original Template ID and remove it from Property Bag Entries
                 int provisioningTemplateIdIndex = template.PropertyBagEntries.FindIndex(f => f.Key.Equals("_PnP_ProvisioningTemplateId"));

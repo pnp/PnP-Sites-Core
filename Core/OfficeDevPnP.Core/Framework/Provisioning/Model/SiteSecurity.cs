@@ -101,20 +101,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Declares whether the to break role inheritance for the site, if it is a sub-site
+        /// </summary>
+        public Boolean BreakRoleInheritance { get; set; } = false;
+
+        /// <summary>
+        /// Defines whether to copy role assignments or not while breaking role inheritance
+        /// </summary>
+        public Boolean CopyRoleAssignments { get; set; } = false;
+
+        /// <summary>
+        /// Defines whether to clear subscopes or not while breaking role inheritance for the site
+        /// </summary>
+        public Boolean ClearSubscopes { get; set; } = false;
+
         #endregion
 
         #region Comparison code
 
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}",
                 this.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.AdditionalOwners.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.AdditionalMembers.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.AdditionalVisitors.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.SiteGroups.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleAssignments.Aggregate(0, (acc, next) => acc += next.GetHashCode()) : 0),
-                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()) : 0)
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.Aggregate(0, (acc, next) => acc += next.GetHashCode()) : 0),
+                this.BreakRoleInheritance.GetHashCode(),
+                this.CopyRoleAssignments.GetHashCode(),
+                this.ClearSubscopes.GetHashCode()
             ).GetHashCode());
         }
 
@@ -141,7 +159,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AdditionalVisitors.DeepEquals(other.AdditionalVisitors) &&
                 this.SiteGroups.DeepEquals(other.SiteGroups) &&
                 (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleAssignments.DeepEquals(other.SiteSecurityPermissions.RoleAssignments) : true) &&
-                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.DeepEquals(other.SiteSecurityPermissions.RoleDefinitions) : true)
+                (this.SiteSecurityPermissions != null ? this.SiteSecurityPermissions.RoleDefinitions.DeepEquals(other.SiteSecurityPermissions.RoleDefinitions) : true) &&
+                this.BreakRoleInheritance == other.BreakRoleInheritance &&
+                this.CopyRoleAssignments == other.CopyRoleAssignments &&
+                this.ClearSubscopes == other.ClearSubscopes
                 );
         }
 

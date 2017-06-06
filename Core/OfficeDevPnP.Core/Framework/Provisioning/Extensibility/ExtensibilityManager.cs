@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template)
+        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, ExtensibilityHandler provider, ProvisioningTemplate template)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteTokenProviderCallOut";
 
@@ -106,14 +106,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             {
 
                 var _instance = GetProviderInstance(handler);
+#pragma warning disable 618
                 if (_instance is IProvisioningExtensibilityProvider)
+#pragma warning restore 618
                 {
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
                         handler.Assembly,
                         handler.Type);
 
+#pragma warning disable 618
                     (_instance as IProvisioningExtensibilityProvider).ProcessRequest(ctx, template, handler.Configuration);
+#pragma warning restore 618
 
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,

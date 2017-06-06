@@ -24,6 +24,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region Constructors
 
         /// <summary>
+        /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
+        /// </summary>
+        /// <param name="packageStream"></param>
+        public OpenXMLConnector(Stream packageStream): base()
+        {
+            if (packageStream == null)
+            {
+                throw new ArgumentNullException(nameof(packageStream));
+            }
+
+            if (!packageStream.CanRead)
+            {
+                throw new ArgumentException("package");
+            }
+
+            // If the .PNP package exists unpack it into PnP OpenXML package info object
+            MemoryStream ms = packageStream.ToMemoryStream();
+            this.pnpInfo = ms.UnpackTemplate();
+        }
+
+        /// <summary>
         /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
         /// </summary>
         /// <param name="packageFileName">The name of the .PNP package file. If the .PNP extension is missing, it will be added</param>
@@ -104,10 +125,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+			container = container.Replace(@"\", @"/").Trim('/');
+			var result = (from file in this.pnpInfo.Files
+                          where string.Equals(file.Folder, container, StringComparison.OrdinalIgnoreCase)
+                          select file.OriginalName).ToList();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                container = "";
+            }
 
             var result = (from file in this.pnpInfo.Files
-                          where file.Folder == container
-                          select file.OriginalName).ToList();
+                          where file.Folder.StartsWith(container, StringComparison.InvariantCultureIgnoreCase) 
+                            && !file.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase)
+                          select file.Folder).ToList();
 
             return result;
         }
@@ -124,6 +174,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         public override string GetFilenamePart(string fileName)
         {
+            fileName = fileName.Replace(@"/", @"\");
+
             if (fileName.Contains(@"\"))
             {
                 var parts = fileName.Split(new[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
@@ -225,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentException("fileName");
+                throw new ArgumentException(nameof(fileName));
             }
 
             if (String.IsNullOrEmpty(container))
@@ -233,9 +285,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 container = "";
             }
 
-            if (stream == null)
+			container = container.Replace(@"\", "/").Trim('/');
+
+			if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             try
@@ -353,9 +407,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         private PnPFileInfo GetFileFromInsidePackage(string fileName, string container)
         {
             string mappedPath = Path.Combine(container, fileName).Replace('\\', '/');
-            var file = (from item in pnpInfo.FilesMap.Map
-                        where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
-                        select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+			PnPFileInfo file = null;
+			if (pnpInfo.FilesMap != null)
+			{
+				 file = (from item in pnpInfo.FilesMap.Map
+						 where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
+						 select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+			}
             if (file != null) return file;
             return pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
         }

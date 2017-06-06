@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <param name="ctx">The target ClientContext</param>
         /// <param name="template">The current Provisioning Template</param>
         /// <param name="applyingInformation">The Provisioning Template application information object</param>
+        /// <param name="tokenParser">Token parser instance</param>
         /// <param name="scope">The PnPMonitoredScope of the current step in the pipeline</param>
         /// <param name="configurationData">The configuration data, if any, for the handler</param>
         void Provision(ClientContext ctx, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation, TokenParser tokenParser, PnPMonitoredScope scope, string configurationData);

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Delta template: goal is to verify that all properties that can be updated are updated. Please keep this XML up to date if additional properties are added.
+-->
+
+<pnp:ProvisioningTemplate ID="propertybag_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:PropertyBagEntries>
+
+    <!-- PropertyBag properties that can be updated via delta handling:
+         Value (*) (parsed)
+         -->
+    
+    <pnp:PropertyBagEntry Key="PROP_1" Value ="Hi {sitename}" Overwrite="true" />
+    <pnp:PropertyBagEntry Key="PROP_2" Value ="Hi {sitename}" Overwrite="false" />
+  </pnp:PropertyBagEntries>
+</pnp:ProvisioningTemplate>

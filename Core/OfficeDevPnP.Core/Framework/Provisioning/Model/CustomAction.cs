@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class CustomAction : BaseModel, IEquatable<CustomAction>
     {
-        #region Properties
+        #region Public Members
 
         public System.Xml.Linq.XElement CommandUIExtension { get; set; }
 
@@ -53,14 +53,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public UserCustomActionRegistrationType RegistrationType { get; set; }
 
-        public bool Remove { get; set; }
-
         /// <summary>
         /// Gets or sets the URL, URI, or ECMAScript (JScript, JavaScript) function associated with the action.
         /// </summary>
         public string Url { get; set; }
 
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.
@@ -76,6 +74,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
         /// </summary>
         public string ScriptSrc { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that specifies whether to Remove the CustomAction from the target
+        /// </summary>
+        public bool Remove { get; set; } = false;
+
         #endregion
 
         #region Comparison code

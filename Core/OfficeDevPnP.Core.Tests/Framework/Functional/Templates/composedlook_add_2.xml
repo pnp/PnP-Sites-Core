@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="composedlook_add_2" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <!-- Set custom composed look -->
+  <pnp:ComposedLook Name="CL_2" Version="1" 
+                    BackgroundFile="{sitecollection}/SiteAssets/garagebg.jpg" 
+                    ColorFile="{sitecollection}/SiteAssets/garagewhite.spcolor"
+                    FontFile="" />
+</pnp:ProvisioningTemplate>

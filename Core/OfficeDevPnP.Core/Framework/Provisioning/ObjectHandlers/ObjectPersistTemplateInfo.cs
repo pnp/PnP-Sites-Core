@@ -22,6 +22,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Check if this is not a noscript site as we're not allowed to write to the web property bag is that one
+                bool isNoScriptSite = web.IsNoScriptSite();
+                if (isNoScriptSite)
+                {
+
+                    return parser;
+                }
+
                 web.SetPropertyBagValue("_PnP_ProvisioningTemplateId", template.Id != null ? template.Id : "");
                 web.AddIndexedPropertyBagKey("_PnP_ProvisioningTemplateId");
 
@@ -41,8 +49,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override Model.ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            //using (var scope = new PnPMonitoredScope(this.Name))
-            //{ }
             return template;
         }
 
@@ -50,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = true;
+                _willProvision = !web.IsNoScriptSite();
             }
             return _willProvision.Value;
         }

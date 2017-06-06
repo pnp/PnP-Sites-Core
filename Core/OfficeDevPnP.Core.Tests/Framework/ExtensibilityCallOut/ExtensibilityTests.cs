@@ -161,14 +161,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                     Enabled = true
                 };
 
+                var provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                provisioningInfo.HandlersToProcess = Handlers.All;
+                provisioningInfo.ExtensibilityHandlers.Add(_mockProvider);
+
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Parameters.Add("MOCKPARAM", "MOCKPARAMVALUE");
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
-                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
+                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, provisioningInfo);
 
                 Assert.AreSame(ctx, ExtensibilityMockTokenProvider.ReceivedCtx, "Wrong clientContext passed to the provider.");
                 Assert.AreSame(_mockTemplate, ExtensibilityMockTokenProvider.ReceivedProvisioningTemplate, "Wrong template passed to the provider.");
@@ -190,13 +194,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                     Enabled = true
                 };
 
+                var provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                provisioningInfo.HandlersToProcess = Handlers.All;
+                provisioningInfo.ExtensibilityHandlers.Add(_mockProvider);
+
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
-                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
+                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, provisioningInfo);
 
                 var parsedValue = parser.ParseString(MockToken.MockTokenKey);
                 Assert.AreEqual(MockToken.MockTokenValue, parsedValue);
@@ -217,13 +225,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
                     Enabled = false
                 };
 
+                var provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                provisioningInfo.HandlersToProcess = Handlers.All;
+                provisioningInfo.ExtensibilityHandlers.Add(_mockProvider);
+
                 var _mockTemplate = new ProvisioningTemplate();
                 _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
-                _mockTemplate.Providers.Add(_mockProvider);
+                _mockTemplate.ExtensibilityHandlers.Add(_mockProvider);
 
                 var extensibilityHandler = new ObjectExtensibilityHandlers();
                 var parser = new TokenParser(ctx.Web, _mockTemplate);
-                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, null);
+                extensibilityHandler.AddExtendedTokens(ctx.Web, _mockTemplate, parser, provisioningInfo);
 
                 var parsedValue = parser.ParseString(MockToken.MockTokenKey);
                 Assert.AreEqual(MockToken.MockTokenKey, parsedValue, "Disabled tokenprovider should not have provided tokens!");

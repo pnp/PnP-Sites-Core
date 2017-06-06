@@ -43,6 +43,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         public abstract List<string> GetFiles(string container);
 
         /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public abstract List<string> GetFolders();
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public abstract List<string> GetFolders(string container);
+
+        /// <summary>
         /// Gets a file as string from the default container
         /// </summary>
         /// <param name="fileName">Name of the file to get</param>

@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.NoCrawl,
                     w => w.RequestAccessEmail,
 #endif
+                    //w => w.Title,
+                    //w => w.Description,
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
@@ -40,6 +42,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 #endif
+                // We're not extracting Title and Description
+                //webSettings.Title = Tokenize(web.Title, web.Url);
+                //webSettings.Description = Tokenize(web.Description, web.Url);
                 webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
                 webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
                 webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
@@ -102,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var webServerUrl = web.EnsureProperty(w => w.Url);
             var serverUri = new Uri(webServerUrl);
-            var serverUrl = string.Format("{0}://{1}", serverUri.Scheme, serverUri.Authority);
+            var serverUrl = $"{serverUri.Scheme}://{serverUri.Authority}";
             var fullUri = new Uri(UrlUtility.Combine(serverUrl, serverRelativeUrl));
 
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
@@ -125,6 +130,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (creationInfo.FileConnector != null)
                 {
+                    if (UrlUtility.IsIisVirtualDirectory(serverRelativeUrl))
+                    {
+                        scope.LogWarning("File is not located in the content database. Not retrieving {0}", serverRelativeUrl);
+                        return success;
+                    }
 
                     try
                     {
@@ -166,7 +176,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                    WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
                     scope.LogError("No connector present to persist homepage");
                 }
             }
@@ -195,43 +205,84 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.WebSettings != null)
                 {
-                    var webSettings = template.WebSettings;
-#if !ONPREMISES
-                    web.NoCrawl = webSettings.NoCrawl;
+                    // Check if this is not a noscript site as we're not allowed to update some properties
+                    bool isNoScriptSite = web.IsNoScriptSite();
 
                     web.EnsureProperty(w => w.HasUniqueRoleAssignments);
+
+                    var webSettings = template.WebSettings;
+#if !ONPREMISES
+                    if (!isNoScriptSite)
+                    {
+                        web.NoCrawl = webSettings.NoCrawl;
+                    }
+                    else
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
+                    }
+
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
-                    String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
-                    {
-                        requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
-                    }
-                    if (!String.IsNullOrEmpty(requestAccessEmailValue))
-                    {
-                        web.RequestAccessEmail = requestAccessEmailValue;
-                    }
+                        String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue) && requestAccessEmailValue.Length >= 255)
+                        {
+                            requestAccessEmailValue = requestAccessEmailValue.Substring(0, 255);
+                        }
+                        if (!String.IsNullOrEmpty(requestAccessEmailValue))
+                        {
+                            web.RequestAccessEmail = requestAccessEmailValue;
+
+                            web.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
                     {
-                        web.MasterUrl = masterUrl;
+                        if (!isNoScriptSite)
+                        {
+                            web.MasterUrl = masterUrl;
+                        }
+                        else
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate);
+                        }
                     }
                     var customMasterUrl = parser.ParseString(webSettings.CustomMasterPageUrl);
                     if (!string.IsNullOrEmpty(customMasterUrl))
                     {
-                        web.CustomMasterUrl = customMasterUrl;
+                        if (!isNoScriptSite)
+                        {
+                            web.CustomMasterUrl = customMasterUrl;
+                        }
+                        else
+                        {
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate);
+                        }
                     }
-                    web.Description = parser.ParseString(webSettings.Description);
-                    web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    if (webSettings.Title != null)
+                    {
+                        web.Title = parser.ParseString(webSettings.Title);
+                    }
+                    if (webSettings.Description != null)
+                    {
+                        web.Description = parser.ParseString(webSettings.Description);
+                    }
+                    if (webSettings.SiteLogo != null)
+                    {
+                        web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                    }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
                     {
                         web.RootFolder.WelcomePage = welcomePage;
                         web.RootFolder.Update();
                     }
-                    web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    if (webSettings.AlternateCSS != null)
+                    {
+                        web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
+                    }
 
                     web.Update();
                     web.Context.ExecuteQueryRetry();

@@ -148,7 +148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var ct = list.GetContentTypeById(value);
                             if (ct != null)
                             {
-                                value = string.Format("{{contenttypeid:{0}}}", ct.Name);
+                                value = $"{{contenttypeid:{ct.Name}}}";
                             }
                         }
 
@@ -170,23 +170,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 SharePointConnector connector = new SharePointConnector(web.Context, web.Url, "dummy");
 
+                
                 Uri u = new Uri(web.Url);
-                if (folderPath.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+
+                if (u.PathAndQuery != "/")
                 {
-                    folderPath = folderPath.Replace(u.PathAndQuery, "");
+                    if (folderPath.IndexOf(u.PathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    {
+                        folderPath = folderPath.Replace(u.PathAndQuery, "");
+                    }
                 }
+
+                String container = folderPath.Trim('/').Replace("%20", " ").Replace("/", "\\");
+                String persistenceFileName = (decodeFileName ? HttpUtility.UrlDecode(fileName) : fileName).Replace("%20", " ");
 
                 using (Stream s = connector.GetFileStream(fileName, folderPath))
                 {
                     if (s != null)
                     {
-                        creationInfo.FileConnector.SaveFileStream(decodeFileName ? HttpUtility.UrlDecode(fileName) : fileName, s);
+                        creationInfo.FileConnector.SaveFileStream(
+                            persistenceFileName, container, s);
                     }
                 }
             }
             else
             {
-                WriteWarning("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
                 scope.LogError("No connector present to persist homepage");
             }
         }

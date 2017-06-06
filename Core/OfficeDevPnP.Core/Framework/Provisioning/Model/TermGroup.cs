@@ -8,15 +8,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public partial class TermGroup : BaseModel, IEquatable<TermGroup>
     {
         #region Private Members
+
         private TermSetCollection _termSets;
         private Guid _id;
+        private UserCollection _contributors;
+        private UserCollection _managers;
+
         #endregion
 
         #region Public Members
+
+        /// <summary>
+        /// The ID of the TermGroup
+        /// </summary>
         public Guid Id { get { return _id; } set { _id = value; } }
+
+        /// <summary>
+        /// The Name of the TermGroup
+        /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// The Description of the TermGroup
+        /// </summary>
         public string Description { get; set; }
 
+        /// <summary>
+        /// Is this a site collection term group
+        /// </summary>
+        public bool SiteCollectionTermGroup { get; set; } = false;
+
+        /// <summary>
+        /// List of TermGroup Contributors
+        /// </summary>
+        public UserCollection Contributors
+        {
+            get { return (this._contributors); }
+            private set { this._contributors = value; }
+        }
+
+        /// <summary>
+        /// List of TermGroup Managers
+        /// </summary>
+        public UserCollection Managers
+        {
+            get { return (this._managers); }
+            private set { this._managers = value; }
+        }
+
+        /// <summary>
+        /// The collection of TermSet items in the TermGroup
+        /// </summary>
         public TermSetCollection TermSets
         {
             get { return _termSets; }
@@ -30,14 +72,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public TermGroup()
         {
             this._termSets = new TermSetCollection(this.ParentTemplate);
+            this._contributors = new UserCollection(this.ParentTemplate);
+            this._managers = new UserCollection(this.ParentTemplate);
         }
 
-        public TermGroup(Guid id, string name, List<TermSet> termSets):
+        public TermGroup(Guid id, string name, List<TermSet> termSets,
+            bool siteCollectionTermGroup = false,
+            IEnumerable<User> contributors = null, 
+            IEnumerable<User> managers = null):
             this()
         {
             this.Id = id;
             this.Name = name;
+            this.SiteCollectionTermGroup = siteCollectionTermGroup;
             this.TermSets.AddRange(termSets);
+            this.Contributors.AddRange(contributors);
+            this.Managers.AddRange(managers);
         }
         #endregion
 

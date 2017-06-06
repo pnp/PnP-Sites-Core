@@ -142,6 +142,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot find Page Layout with name &apos;{0}&apos;..
+        /// </summary>
+        internal static string BrandingExtension_InvalidPageLayoutName {
+            get {
+                return ResourceManager.GetString("BrandingExtension_InvalidPageLayoutName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Setting custom master URL &apos;{0}&apos; in &apos;{1}&apos;..
         /// </summary>
         internal static string BrandingExtension_SetCustomMasterUrl {
@@ -206,11 +215,29 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
+        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
         /// </summary>
         internal static string ClientContextExtensions_ExecuteQueryRetry {
             get {
                 return ResourceManager.GetString("ClientContextExtensions_ExecuteQueryRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ExecuteQuery threw following exception: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_ExecuteQueryRetryException {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_ExecuteQueryRetryException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}..
+        /// </summary>
+        internal static string ClientContextExtensions_HasMinimalServerLibraryVersion_Error {
+            get {
+                return ResourceManager.GetString("ClientContextExtensions_HasMinimalServerLibraryVersion_Error", resourceCulture);
             }
         }
         
@@ -265,6 +292,33 @@ namespace OfficeDevPnP.Core {
         internal static string FeatureExtensions_FeatureActivationProblem {
             get {
                 return ResourceManager.GetString("FeatureExtensions_FeatureActivationProblem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Activation state for feature with id {1}  was {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActivationState {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActivationState", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feature activation for {0} returned success..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureActive {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureActive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}..
+        /// </summary>
+        internal static string FeatureExtensions_ProcessFeatureInternal_FeatureException {
+            get {
+                return ResourceManager.GetString("FeatureExtensions_ProcessFeatureInternal_FeatureException", resourceCulture);
             }
         }
         
@@ -406,6 +460,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Type {0} does not exist in target list!.
+        /// </summary>
+        internal static string FileFolderExtensions_SetFileProperties_Error {
+            get {
+                return ResourceManager.GetString("FileFolderExtensions_SetFileProperties_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Update file &apos;{0}&apos;, change properties: {1}..
         /// </summary>
         internal static string FileFolderExtensions_UpdateFile0Properties1 {
@@ -453,11 +516,74 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Graph call returned the following error: {0}..
+        /// </summary>
+        internal static string GraphExtensions_ErrorOccured {
+            get {
+                return ResourceManager.GetString("GraphExtensions_ErrorOccured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The group logo file does not exist..
+        /// </summary>
+        internal static string GraphExtensions_GroupLogoFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("GraphExtensions_GroupLogoFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+        /// </summary>
+        internal static string GraphExtensions_SendAsyncRetry {
+            get {
+                return ResourceManager.GetString("GraphExtensions_SendAsyncRetry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to SendAsync threw following exception: {0}..
+        /// </summary>
+        internal static string GraphExtensions_SendAsyncRetryException {
+            get {
+                return ResourceManager.GetString("GraphExtensions_SendAsyncRetryException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating list &apos;{0}&apos; from template {1}{2}..
         /// </summary>
         internal static string ListExtensions_CreateList0Template12 {
             get {
                 return ResourceManager.GetString("ListExtensions_CreateList0Template12", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI..
+        /// </summary>
+        internal static string ListExtensions_GetWebRelativeUrl {
+            get {
+                return ResourceManager.GetString("ListExtensions_GetWebRelativeUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Value should be in the format of &lt;id&gt;;#&lt;value&gt; (Example 1: 1;#Foo Bar   Example 2: 1;#Foo Bar;#2;#Bar Foo).
+        /// </summary>
+        internal static string ListExtensions_IncorrectValueFormat {
+            get {
+                return ResourceManager.GetString("ListExtensions_IncorrectValueFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping reindexing of the list because it&apos;s marked as a &apos;no crawl&apos; list..
+        /// </summary>
+        internal static string ListExtensions_SkipNoCrawlLists {
+            get {
+                return ResourceManager.GetString("ListExtensions_SkipNoCrawlLists", resourceCulture);
             }
         }
         
@@ -530,6 +656,15 @@ namespace OfficeDevPnP.Core {
         internal static string PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_ {
             get {
                 return ResourceManager.GetString("PnPMonitoredScopeExtensions_LogPropertyUpdate_Updating_property__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+        /// </summary>
+        internal static string Provisioning_Asymmetric_Base_Templates {
+            get {
+                return ResourceManager.GetString("Provisioning_Asymmetric_Base_Templates", resourceCulture);
             }
         }
         
@@ -849,11 +984,38 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping view localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        /// </summary>
+        internal static string Provisioning_Extensions_ViewLocalization_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_ViewLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping web part localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        /// </summary>
+        internal static string Provisioning_Extensions_WebPartLocalization_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_WebPartLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The Provisioning Template URI {0} is not valid..
         /// </summary>
         internal static string Provisioning_Formatter_Invalid_Template_URI {
             get {
                 return ResourceManager.GetString("Provisioning_Formatter_Invalid_Template_URI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention", resourceCulture);
             }
         }
         
@@ -903,6 +1065,15 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_ExtractObjects_Using_ComposedLookInfoFr" +
                         "omPropertyBag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping composed look handling because the site is marked as &apos;nosite&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck", resourceCulture);
             }
         }
         
@@ -982,12 +1153,39 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping custom form urls for contenttype &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping adding default documements to document set &apos;{0}&apos; because this is not supported on &apos;noscript&apos; sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating existing Content Type: {0} - {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1" +
                         "_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Existing content type with Id {0} and name {1} will not be updated because it&apos;s marked as sealed and the template is not changing the sealed value..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed", resourceCulture);
             }
         }
         
@@ -1048,6 +1246,15 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_CustomActions_Removing_web_scoped_custom_action___0__" +
                         "_from_template_because_already_available_in_base_template", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Custom action &apos;{0}&apos; was not added/updated because the site was configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript", resourceCulture);
             }
         }
         
@@ -1182,6 +1389,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipping upload of file &apos;{0}&apos; to &apos;{1}&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Files_SkipFileUpload {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Files_SkipFileUpload", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Uploading and overwriting existing file {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_ {
@@ -1310,6 +1526,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating list {0} with FieldRef {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_ {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Folder &apos;{0}&apos; already exists in parent folder &apos;{1}&apos;..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_FolderAlreadyExists {
@@ -1328,12 +1553,30 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to List {0} ({1}, {2}) exists but is of a different type. Skipping list..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_" +
                         "different_type__Skipping_list_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip adding/updating custom actions because the site has &quot;noscript&quot; enabled..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions", resourceCulture);
             }
         }
         
@@ -1392,6 +1635,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating listitem failed: {0} : {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_ {
@@ -1426,6 +1678,60 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_LookupFields_Processing_lookup_fields_failed___0_____" +
                         "1_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Context web does not have the publishing features enabled, skipping navigation settings.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Current Structural Navigation settings in the current template.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Global Managed Navigation settings in the current template.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Missing Global Structural Navigation settings in the current template.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip applying of navigation settings on NoScript sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_SkipProvisioning {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_SkipProvisioning", resourceCulture);
             }
         }
         
@@ -1467,6 +1773,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Skipped adding web parts to page &apos;{0}&apos; because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Pages_SkipAddingWebParts {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Pages_SkipAddingWebParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Persist Template Information.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_PersistTemplateInformation {
@@ -1501,6 +1816,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_Provisioning {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_Provisioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip provisioning of publishing settings because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Publishing_SkipProvisioning {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Publishing_SkipProvisioning", resourceCulture);
             }
         }
         
@@ -1552,12 +1876,48 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}.
+        ///   Looks up a localized string similar to Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_def" +
                         "ault_for_language__1__while_the_default_termstore_language_is_also__1_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping custom master page update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping master page update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping NoCrawl update because the site is configured for noscript..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate", resourceCulture);
             }
         }
         
@@ -1770,22 +2130,27 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /* PnP SharePoint - Responsiveness */
+        ///   Looks up a localized string similar to /**
+        /// * PnP SharePoint - Responsiveness
+        /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
+        /// * @see {@link http://usejsdoc.org/|JSDoc}
+        /// */
         ///
-        ///var PnPResponsiveApp = PnPResponsiveApp || {};
+        ////*
+        /// * PnPResponsiveApp
+        /// * @namespace
+        /// */
+        ///if (window.hasOwnProperty(&apos;Type&apos;)) {
+        ///    Type.registerNamespace(&apos;PnPResponsiveApp&apos;);
+        ///} else {
+        ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
+        ///}
         ///
-        ///PnPResponsiveApp.responsivizeSettings = function () {
-        ///	// return if no longer on Settings page
-        ///	if (window.location.href.indexOf(&apos;/settings.aspx&apos;) &lt; 0) return;
-        ///	
-        ///	// find the Settings root element, or wait if not available yet
-        ///	var settingsRoot = $(&quot;.ms-siteSettings-root&quot;);
-        ///	if (!settingsRoot.length) {
-        ///		setTimeout(PnPResponsiveApp.responsivizeSettings, 100);
-        ///        return;
-        ///	}
-        ///	
-        ///	$(&quot;.ms-siteSettings-root . [rest of string was truncated]&quot;;.
+        ////**
+        /// * PnP Responsive
+        /// * @class
+        /// */
+        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -1807,7 +2172,7 @@ namespace OfficeDevPnP.Core {
         ///}
         ///
         ///#contentBox {
-        ///	min-width: auto;
+        ///    min-width: auto;
         ///}
         ///
         ////* Make sure dialog windows don&apos;t break */
@@ -1821,7 +2186,7 @@ namespace OfficeDevPnP.Core {
         ///
         ///.ms-dialog #s4-bodyContainer {
         ///    min-width: 0;
-        ///    f [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI_CSS {
             get {
@@ -2574,6 +2939,24 @@ namespace OfficeDevPnP.Core {
         internal static string TimerJob_UseThreading {
             get {
                 return ResourceManager.GetString("TimerJob_UseThreading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Creating Image Rendition &apos;{0}&apos; of width &apos;{1}&apos; and height &apos;{2}&apos;..
+        /// </summary>
+        internal static string WebExtensions_CreatePublishingImageRendition {
+            get {
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to create Image Rendition &apos;{0}&apos;..
+        /// </summary>
+        internal static string WebExtensions_CreatePublishingImageRendition_Error {
+            get {
+                return ResourceManager.GetString("WebExtensions_CreatePublishingImageRendition_Error", resourceCulture);
             }
         }
         

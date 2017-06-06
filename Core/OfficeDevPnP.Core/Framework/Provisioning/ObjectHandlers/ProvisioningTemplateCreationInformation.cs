@@ -16,10 +16,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
+        private bool includeTermGroupsSecurity = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
+        private List<String> contentTypeGroupsToInclude;
         private bool persistPublishingFiles = false;
         private bool includeNativePublishingFiles = false;
+        private bool skipVersionCheck = false;
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
 
@@ -30,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             this.baseTemplate = web.GetBaseTemplate();
             this.propertyBagPropertiesToPreserve = new List<String>();
+            this.contentTypeGroupsToInclude = new List<String>();
         }
 
         /// <summary>
@@ -163,10 +167,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set { this.includeSiteCollectionTermGroup = value; }
         }
 
+        public bool IncludeTermGroupsSecurity
+        {
+            get { return this.includeTermGroupsSecurity; }
+            set { this.includeTermGroupsSecurity = value; }
+        }
+
         internal List<String> PropertyBagPropertiesToPreserve
         {
             get { return this.propertyBagPropertiesToPreserve; }
             set { this.propertyBagPropertiesToPreserve = value; }
+        }
+
+        public List<String> ContentTypeGroupsToInclude {
+            get { return this.contentTypeGroupsToInclude; }
+            set { this.contentTypeGroupsToInclude = value; }
         }
 
         public bool IncludeSiteGroups
@@ -213,6 +228,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 extensibilityHandlers = value;
             }
+        }
+
+        public bool SkipVersionCheck
+        {
+            get { return skipVersionCheck; }
+            set { skipVersionCheck = value; }
         }
     }
 }

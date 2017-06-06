@@ -1,9 +1,9 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using OfficeDevPnP.Core.Entities;
 
 namespace OfficeDevPnP.Core.Utilities
 {
@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Utilities
             YammerUser user = GetYammerUser(accessToken);
 
             //get the users groups to check for the group
-            var response = GetYammerJson(String.Format("https://www.yammer.com/api/v1/groups/for_user/{0}.json", user.id), accessToken);
+            var response = GetYammerJson($"https://www.yammer.com/api/v1/groups/for_user/{user.id}.json", accessToken);
             List<YammerGroup> groups = JsonUtility.Deserialize<List<YammerGroup>>(response);
 
             // Updated network information to the group data
@@ -78,7 +78,7 @@ namespace OfficeDevPnP.Core.Utilities
         public static YammerUser GetYammerUser(string accessToken)
         {
             //get service account token
-            var response = GetYammerJson(String.Format("https://www.yammer.com/api/v1/users/current.json?access_token={0}", accessToken), accessToken);
+            var response = GetYammerJson($"https://www.yammer.com/api/v1/users/current.json?access_token={accessToken}", accessToken);
             return JsonUtility.Deserialize<YammerUser>(response);
         }
 
@@ -96,7 +96,7 @@ namespace OfficeDevPnP.Core.Utilities
             if (yamGroup == null)
             {
                 //Create yammer group
-                string url = String.Format("https://www.yammer.com/api/v1/groups.json?name={0}&private={1}", groupName, isPrivate.ToString().ToLower());
+                string url = $"https://www.yammer.com/api/v1/groups.json?name={groupName}&private={isPrivate.ToString().ToLower()}";
                 PostYammerJson(url, accessToken);
                 yamGroup = GetYammerGroupByName(groupName, accessToken);
             }
@@ -296,6 +296,7 @@ namespace OfficeDevPnP.Core.Utilities
             string json = null;
             HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
             request.Method = "POST";
+            request.ContentLength = 0;
             request.Headers.Add("Authorization", "Bearer" + " " + accessToken);
             using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
             {

@@ -753,6 +753,9 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_" xml:space="preserve">
     <value>Updating list {0} failed: {1} : {2}</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_" xml:space="preserve">
+    <value>Updating list {0} with FieldRef {1}</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_" xml:space="preserve">
     <value>Field schema has no ID attribute: {0}</value>
   </data>
@@ -832,7 +835,7 @@
     <value>Add users failed for group '{0}': {1} : {2}</value>
   </data>
   <data name="Provisioning_ObjectHandlers_TermGroups_Skipping_label__0___label_is_to_set_to_default_for_language__1__while_the_default_termstore_language_is_also__1_" xml:space="preserve">
-    <value>Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1}</value>
+    <value>Skipping label {0}, label is to set to default for language {1} while the default termstore language is also {1} or language {1} is not defined for the termstore</value>
   </data>
   <data name="SiteToTemplateConversion_Base_template_available___0_" xml:space="preserve">
     <value>Base template available: {0}</value>
@@ -919,7 +922,7 @@
     <value>Could not find content type with id: {0}</value>
   </data>
   <data name="ClientContextExtensions_ExecuteQueryRetry" xml:space="preserve">
-    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.</value>
+    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
   </data>
   <data name="Provisioning_Connectors_OpenXML_FileDeleted" xml:space="preserve">
     <value>File {0} deleted from folder {1}</value>
@@ -951,5 +954,128 @@
   </data>
   <data name="SiteToTemplateConversion_PersistBrandingFiles_is_set_to_true" xml:space="preserve">
     <value>PersistBrandingFiles is set to true</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_Context_web_is_not_publishing" xml:space="preserve">
+    <value>Context web does not have the publishing features enabled, skipping navigation settings</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation" xml:space="preserve">
+    <value>Missing Current Managed Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation" xml:space="preserve">
+    <value>Missing Current Structural Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_global_managed_navigation" xml:space="preserve">
+    <value>Missing Global Managed Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation" xml:space="preserve">
+    <value>Missing Global Structural Navigation settings in the current template</value>
+  </data>
+  <data name="Provisioning_Asymmetric_Base_Templates" xml:space="preserve">
+    <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template.</value>
+  </data>
+  <data name="ListExtensions_GetWebRelativeUrl" xml:space="preserve">
+    <value>Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference" xml:space="preserve">
+    <value>The List {0} references site field {1} ({2}) which could not be found in the site. Use of the site field has been aborted.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActivationState" xml:space="preserve">
+    <value>Activation state for feature with id {1}  was {0}.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureActive" xml:space="preserve">
+    <value>Feature activation for {0} returned success.</value>
+  </data>
+  <data name="FeatureExtensions_ProcessFeatureInternal_FeatureException" xml:space="preserve">
+    <value>Error caught while waiting for ExecuteQueryRetry to complete. Error = {0}.</value>
+  </data>
+  <data name="ClientContextExtensions_ExecuteQueryRetryException" xml:space="preserve">
+    <value>ExecuteQuery threw following exception: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Files_SkipFileUpload" xml:space="preserve">
+    <value>Skipping upload of file '{0}' to '{1}'.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls" xml:space="preserve">
+    <value>Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
+    <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions" xml:space="preserve">
+    <value>Skip adding/updating custom actions because the site has "noscript" enabled.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetry" xml:space="preserve">
+    <value>Microsoft Graph API request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
+  </data>
+  <data name="GraphExtensions_SendAsyncRetryException" xml:space="preserve">
+    <value>SendAsync threw following exception: {0}.</value>
+  </data>
+  <data name="GraphExtensions_ErrorOccured" xml:space="preserve">
+    <value>Graph call returned the following error: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript" xml:space="preserve">
+    <value>Custom action '{0}' was not added/updated because the site was configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Pages_SkipAddingWebParts" xml:space="preserve">
+    <value>Skipped adding web parts to page '{0}' because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention" xml:space="preserve">
+    <value>Audit log trimming retention is not set because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Publishing_SkipProvisioning" xml:space="preserve">
+    <value>Skip provisioning of publishing settings because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipCustomMasterPageUpdate" xml:space="preserve">
+    <value>Skipping custom master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipMasterPageUpdate" xml:space="preserve">
+    <value>Skipping master page update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate" xml:space="preserve">
+    <value>Skipping NoCrawl update because the site is configured for noscript.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ComposedLooks_NoSiteCheck" xml:space="preserve">
+    <value>Skipping composed look handling because the site is marked as 'nosite'.</value>
+  </data>
+  <data name="GraphExtensions_GroupLogoFileDoesNotExist" xml:space="preserve">
+    <value>The group logo file does not exist.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate" xml:space="preserve">
+    <value>This row already exists and will be skipped because the IgnoreDuplicateDataRowErrors flag is set to true.</value>
+  </data>
+  <data name="FileFolderExtensions_SetFileProperties_Error" xml:space="preserve">
+    <value>Content Type {0} does not exist in target list!</value>
+  </data>
+  <data name="Provisioning_Extensions_WebPartLocalization_Skip" xml:space="preserve">
+    <value>Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
+    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="ListExtensions_SkipNoCrawlLists" xml:space="preserve">
+    <value>Skipping reindexing of the list because it's marked as a 'no crawl' list.</value>
+  </data>
+  <data name="ListExtensions_IncorrectValueFormat" xml:space="preserve">
+    <value>Value should be in the format of &lt;id&gt;;#&lt;value&gt; (Example 1: 1;#Foo Bar   Example 2: 1;#Foo Bar;#2;#Bar Foo)</value>
+  </data>
+  <data name="WebExtensions_CreatePublishingImageRendition" xml:space="preserve">
+    <value>Creating Image Rendition '{0}' of width '{1}' and height '{2}'.</value>
+  </data>
+  <data name="WebExtensions_CreatePublishingImageRendition_Error" xml:space="preserve">
+    <value>Unable to create Image Rendition '{0}'.</value>
+  </data>
+  <data name="BrandingExtension_InvalidPageLayoutName" xml:space="preserve">
+    <value>Cannot find Page Layout with name '{0}'.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration" xml:space="preserve">
+    <value>The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed" xml:space="preserve">
+    <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
+  </data>
+  <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
+    <value>The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_SkipProvisioning" xml:space="preserve">
+    <value>Skip applying of navigation settings on NoScript sites.</value>
   </data>
 </root>

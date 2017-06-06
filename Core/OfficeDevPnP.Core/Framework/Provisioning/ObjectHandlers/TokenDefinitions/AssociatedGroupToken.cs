@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private AssociatedGroupType _groupType;
 
         public AssociatedGroupToken(Web web, AssociatedGroupType groupType)
-            : base(web, string.Format("{{associated{0}group}}", groupType.ToString().TrimEnd('s')))
+            : base(web, $"{{associated{groupType.ToString().TrimEnd('s')}group}}")
         {
             _groupType = groupType;
         }
@@ -17,26 +17,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 
             if (string.IsNullOrEmpty(CacheValue))
             {
-                var context = this.Web.Context as ClientContext;
-                context.Load(Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
-                context.ExecuteQueryRetry();
-                switch (_groupType)
+                this.Web.EnsureProperty(w => w.Url);
+                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
                 {
-                    case AssociatedGroupType.owners:
-                        {
-                            CacheValue = Web.AssociatedOwnerGroup.Title;
-                            break;
-                        }
-                    case AssociatedGroupType.members:
-                        {
-                            CacheValue = Web.AssociatedMemberGroup.Title;
-                            break;
-                        }
-                    case AssociatedGroupType.visitors:
-                        {
-                            CacheValue = Web.AssociatedVisitorGroup.Title;
-                            break;
-                        }
+                    context.Load(context.Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
+                    context.ExecuteQueryRetry();
+                    switch (_groupType)
+                    {
+                        case AssociatedGroupType.owners:
+                            {
+                                CacheValue = context.Web.AssociatedOwnerGroup.Title;
+                                break;
+                            }
+                        case AssociatedGroupType.members:
+                            {
+                                CacheValue = context.Web.AssociatedMemberGroup.Title;
+                                break;
+                            }
+                        case AssociatedGroupType.visitors:
+                            {
+                                CacheValue = context.Web.AssociatedVisitorGroup.Title;
+                                break;
+                            }
+                    }
                 }
             }
             return CacheValue;

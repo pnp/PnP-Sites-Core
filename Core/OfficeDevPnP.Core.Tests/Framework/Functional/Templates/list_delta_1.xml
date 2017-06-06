@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that delta handling of all list properties and elements work as expected. 
+               
+               Possible Lists attributes that support delta handling are (TODO):
+               Title                (*) (parsed for resource, resource)
+               Description              (parsed for resource, resource)
+               DocumentTemplate         (parsed)
+               OnQuickLaunch
+               EnableVersioning
+               EnableMinorVersions
+               EnableModeration
+               MinorVersionLimit
+               MaxVersionLimit
+               DraftVersionVisibility  
+               Hidden
+               EnableAttachments
+               EnableFolderCreation               
+               ContentTypeBindings (e)               
+               Fields (e)               
+               FieldRefs (e)               
+               DataRows (e)             (not tested since it's identical to add...one can add new rows only)
+               Folders (e)               
+               Security (e)
+
+               Possible ContentTypeBindings delta changes are:
+               Adding a new ContentTypeBinding 
+
+               Possible ContentTypeBinding delta attributes are:
+               Default                   
+
+               Possible FieldRefs delta changes are:
+               Adding a new FieldRef binding 
+
+               Possible FieldRef delta attributes are:
+               DisplayName
+               Hidden
+               Required
+
+               Possible Field delta attributes are:
+               A lot (see field tests)
+               
+               Possible Folder delta attributes are:
+               Folders can be added, not removed
+-->
+
+<pnp:ProvisioningTemplate ID="list_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Lists>
+    <!-- Document Libraries-->
+    <!-- Delta attributes: Description, DocumentTemplate, OnQuickLaunch-->
+    <pnp:ListInstance Title="LI_1" TemplateType="101" Url="LI_1" Description="updated LI 1" DocumentTemplate="{site}/LI_1/Forms/ct1document.docx" />
+    <!-- Delta attributes: OnQuickLaunch, MaxVersionLimit, MinorVersionLimit, DraftVersionVisibility, EnableFolderCreation, EnableModeration-->
+    <pnp:ListInstance Title="LI_2" TemplateType="101" Url="LI_2" OnQuickLaunch="false" EnableVersioning="true" EnableMinorVersions="true" MaxVersionLimit="5" MinorVersionLimit="5"
+                      DraftVersionVisibility="0" EnableFolderCreation="false" EnableModeration="false" />
+    <!-- Delta attributes: Hidden, EnableVersioning, EnableMinorVersions-->
+    <pnp:ListInstance Title="LI_3" TemplateType="101" Url="LI_3" Hidden="false" EnableVersioning="true" EnableMinorVersions="true" MaxVersionLimit="5" MinorVersionLimit="5" />
+
+    <!-- Delta attributes: Default -->
+    <pnp:ListInstance Title="LI_4" TemplateType="101" Url="LI_4" ContentTypesEnabled="true" RemoveExistingContentTypes="true">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Default="true"/>
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <!-- Delta attributes: Additional binding -->
+    <pnp:ListInstance Title="LI_5" TemplateType="101" Url="LI_5" ContentTypesEnabled="true" RemoveExistingContentTypes="false">
+      <pnp:ContentTypeBindings>
+        <pnp:ContentTypeBinding ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E" />
+        <pnp:ContentTypeBinding ContentTypeID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Default="true" />
+      </pnp:ContentTypeBindings>
+    </pnp:ListInstance>
+    <!-- Delta FieldRef attributes: DisplayName, Hidden, Required  
+         Add FieldRef element 
+         Add Security element -->
+    <pnp:ListInstance Title="LI_6" TemplateType="101" Url="LI_6">
+      <pnp:FieldRefs>
+        <pnp:FieldRef ID="92BC6A41-D501-4FE2-938E-17FBF574A7CB" DisplayName="Fld CT 1 for LI_6 updated" Required="false" />
+        <pnp:FieldRef ID="56407FDD-C7FA-4321-8FA5-06B7AF970519" Hidden="false" />
+        <pnp:FieldRef ID="B46D91E2-C755-4C3A-AC72-7FD3E4853476" />
+      </pnp:FieldRefs>
+      <pnp:Folders>
+        <pnp:Folder Name="F1">
+          <pnp:Folder Name="F1.2" />
+        </pnp:Folder>
+        <pnp:Folder Name="F3">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance ClearSubscopes="true" CopyRoleAssignments="true">
+              <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Folder>
+      </pnp:Folders>      
+    </pnp:ListInstance>
+    <!-- Delta Field attributes: all except Type, Name and ID  
+         Add FieldRef, Security elements  -->
+    <pnp:ListInstance Title="LI_7" TemplateType="101" Url="LI_7">
+      <pnp:Fields>
+        <Field ID="{D0D84128-8340-4F5A-BE23-F0F6155B797A}" Type="Text" Name="FLD_LI_7_1" DisplayName="Fld LI 7 1 updated" Description="Fld LI 7 1 updated" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{E67D1A23-7644-44CF-A962-38AE86CF9E54}" Type="Text" Name="FLD_LI_7_2" DisplayName="Fld LI 7 2 updated" Description="Fld LI 7 2 updated" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{37A07407-5757-45F5-9277-7E807AA0007F}" Type="Text" Name="FLD_LI_7_3" DisplayName="Fld LI 7 3 new" Description="Fld LI 7 3 new" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:Fields>
+      <pnp:Security>
+        <pnp:BreakRoleInheritance ClearSubscopes="false" CopyRoleAssignments="false">
+          <pnp:RoleAssignment Principal="c:0(.s|true" RoleDefinition="Contribute" />
+        </pnp:BreakRoleInheritance>
+      </pnp:Security>
+    </pnp:ListInstance>
+
+    <!-- Lists -->
+    <!-- Delta attributes: EnableVersioning -->
+    <pnp:ListInstance Title="LI_11" TemplateType="100" Url="Lists/LI_11" EnableVersioning="false" DraftVersionVisibility="0" EnableModeration="false" />
+    <!-- Delta attributes: EnableAttachments -->
+    <pnp:ListInstance Title="LI_12" TemplateType="100" Url="Lists/LI_12" Hidden="false" EnableAttachments="false" EnableModeration="true"/>
+
+    <!-- Feature based -->    
+
+  </pnp:Lists>
+</pnp:ProvisioningTemplate>

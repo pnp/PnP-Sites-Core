@@ -26,6 +26,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.RootFolder.WelcomePage);
 
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 foreach (var page in template.Pages)
                 {
                     var url = parser.ParseString(page.Url);
@@ -58,7 +61,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
+#pragma warning disable 618
                                 if (page.WelcomePage && url.Contains(web.RootFolder.WelcomePage))
+#pragma warning restore 618
                                     web.SetHomePage(string.Empty);
 
                                 file.DeleteObject();
@@ -68,7 +73,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
                                 }
-                                else {
+                                else
+                                {
                                     web.AddLayoutToWikiPage(page.Layout, url);
                                 }
                             }
@@ -89,7 +95,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 web.AddLayoutToWikiPage(WikiPageLayout.OneColumn, url);
                             }
-                            else {
+                            else
+                            {
                                 web.AddLayoutToWikiPage(page.Layout, url);
                             }
                         }
@@ -99,33 +106,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+#pragma warning disable 618
                     if (page.WelcomePage)
+#pragma warning restore 618
                     {
                         web.RootFolder.EnsureProperty(p => p.ServerRelativeUrl);
                         var rootFolderRelativeUrl = url.Substring(web.RootFolder.ServerRelativeUrl.Length);
                         web.SetHomePage(rootFolderRelativeUrl);
                     }
 
+#if !SP2013
+                    bool webPartsNeedLocalization = false;
+#endif
                     if (page.WebParts != null & page.WebParts.Any())
                     {
-                        var existingWebParts = web.GetWebParts(url);
-
-                        foreach (var webpart in page.WebParts)
+                        if (!isNoScriptSite)
                         {
-                            if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == webpart.Title) == null)
+                            var existingWebParts = web.GetWebParts(url);
+
+                            foreach (var webPart in page.WebParts)
                             {
-                                WebPartEntity wpEntity = new WebPartEntity();
-                                wpEntity.WebPartTitle = webpart.Title;
-                                wpEntity.WebPartXml = parser.ParseString(webpart.Contents.Trim(new[] { '\n', ' ' }));
-                                web.AddWebPartToWikiPage(url, wpEntity, (int)webpart.Row, (int)webpart.Column, false);
+                                if (existingWebParts.FirstOrDefault(w => w.WebPart.Title == parser.ParseString(webPart.Title)) == null)
+                                {
+                                    WebPartEntity wpEntity = new WebPartEntity();
+                                    wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
+                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents.Trim(new[] { '\n', ' ' }),"~sitecollection", "~site");
+                                    var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
+#if !SP2013
+                                    if (webPart.Title.ContainsResourceToken())
+                                    {
+                                        // update data based on where it was added - needed in order to localize wp title
+#if !SP2016
+                                        wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
+                                        webPart.Zone = wpd.ZoneId;
+#else
+                                        wpd.EnsureProperties(w => w.WebPart, w => w.WebPart.Properties);
+#endif
+                                        webPart.Order = (uint)wpd.WebPart.ZoneIndex;
+                                        webPartsNeedLocalization = true;
+                                   }
+#endif
+                                    }
+                                }
+                            var allWebParts = web.GetWebParts(url);
+                            foreach (var webpart in allWebParts)
+                            {
+                                parser.AddToken(new WebPartIdToken(web, webpart.WebPart.Title, webpart.Id));
                             }
                         }
-                        var allWebParts = web.GetWebParts(url);
-                        foreach (var webpart in allWebParts)
+                        else
                         {
-                            parser.AddToken(new WebPartIdToken(web, webpart.WebPart.Title, webpart.Id));
+                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Pages_SkipAddingWebParts, page.Url);
                         }
                     }
+
+#if !SP2013
+                    if (webPartsNeedLocalization)
+                    {
+                        page.LocalizeWebParts(web, parser, scope);
+                    }
+#endif
 
                     file = web.GetFileByServerRelativeUrl(url);
                     file.EnsureProperty(f => f.ListItemAllFields);
@@ -151,7 +191,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -169,7 +208,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
         {
-
             return template;
         }
 

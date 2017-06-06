@@ -96,7 +96,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Url != null ? this.Url.GetHashCode() : 0),
                 this.Overwrite.GetHashCode(),
                 this.Layout.GetHashCode(),
+#pragma warning disable 618
                 this.WelcomePage.GetHashCode(),
+#pragma warning restore 618
                 this.WebParts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode())
@@ -122,7 +124,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Url == other.Url &&
                 this.Overwrite == other.Overwrite &&
                 this.Layout == other.Layout &&
+#pragma warning disable 618
                 this.WelcomePage == other.WelcomePage &&
+#pragma warning restore 618
                 this.WebParts.DeepEquals(other.WebParts) &&
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Fields.DeepEquals(other.Fields)
