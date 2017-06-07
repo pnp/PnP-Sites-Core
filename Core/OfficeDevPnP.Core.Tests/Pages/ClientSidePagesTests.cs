@@ -4,7 +4,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using OfficeDevPnP.Core.Entities;
 using System.Linq;
+#if !ONPREMISES
 using OfficeDevPnP.Core.Pages;
+#endif
 
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
@@ -13,7 +15,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
     public class ClientSidePagesTests
     {
 
-        #region Test initialization
+#region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -28,11 +30,11 @@ namespace OfficeDevPnP.Core.Tests.Authentication
                 
             }
         }
-        #endregion
+#endregion
 
 
-        #region Helper methods
-        #endregion
+#region Helper methods
+#endregion
     }
 #endif
 }

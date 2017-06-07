@@ -15,7 +15,10 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
+#if !ONPREMISES
 using OfficeDevPnP.Core.Utilities.Webhooks;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -29,7 +32,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         private static readonly char[] UrlDelimiters = { '\\', '/' };
 
-        #region Event Receivers
+#region Event Receivers
 
         /// <summary>
         /// Registers a remote event receiver
@@ -138,9 +141,9 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
-        #endregion
+#endregion
 
-        #region Webhooks
+#region Webhooks
 #if !ONPREMISES
         /// <summary>
         /// Add the a Webhook subscription to a list
@@ -288,9 +291,9 @@ namespace Microsoft.SharePoint.Client
             return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), accessToken, list.Context as ClientContext).Result.Value;
         }
 #endif
-        #endregion
+#endregion
 
-        #region List Properties
+#region List Properties
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -416,7 +419,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Removes a content type from a list/library by name
@@ -1002,7 +1005,7 @@ namespace Microsoft.SharePoint.Client
             return listWebRelativeUrl.Trim(UrlDelimiters);
         }
 
-        #region List Permissions
+#region List Permissions
 
         /// <summary>
         /// Set custom permission to the list
@@ -1062,9 +1065,9 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+#endregion
 
-        #region List view
+#region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1302,7 +1305,7 @@ namespace Microsoft.SharePoint.Client
 
         }
 
-        #endregion
+#endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
