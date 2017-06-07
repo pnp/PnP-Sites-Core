@@ -197,6 +197,27 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Gets an access token from a <see cref="ClientContext"/> instance. Only works when using an add-in or app-only authentication flow.
+        /// </summary>
+        /// <param name="clientContext"><see cref="ClientContext"/> instance to obtain an access token for</param>
+        /// <returns>Access token for the given <see cref="ClientContext"/> instance</returns>
+        public static string GetAccessToken(this ClientRuntimeContext clientContext)
+        {
+            string accessToken = null;
+            // Issue a dummy request to get it from the Authorization header
+            clientContext.ExecutingWebRequest += (s, e) =>
+            {
+                string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
+                if (!string.IsNullOrEmpty(authorization))
+                {
+                    accessToken = authorization.Replace("Bearer ", string.Empty);
+                }
+            };
+            clientContext.ExecuteQueryRetry();
+            return accessToken;
+        }
+
+        /// <summary>
         /// Defines a Maximum Retry Attemped Exception
         /// </summary>
         [Serializable]

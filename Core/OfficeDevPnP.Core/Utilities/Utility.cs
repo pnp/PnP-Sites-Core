@@ -8,19 +8,6 @@ namespace OfficeDevPnP.Core.Utilities
     public static partial class Utility
     {
 
-        public static string GetAccessTokenFromClientContext(ClientRuntimeContext clientContext)
-        {
-            string accessToken = null;
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += (s, e) =>
-            {
-                string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
-                accessToken = authorization.Replace("Bearer ", string.Empty);
-            };
-            clientContext.ExecuteQueryRetry();
-            return accessToken;
-        }
-
         /// <summary>
         /// Returns the healthscore for a SharePoint Server
         /// </summary>

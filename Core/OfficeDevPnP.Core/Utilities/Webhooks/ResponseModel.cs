@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿#if !ONPREMISES
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities.Webhooks
 {
@@ -18,3 +15,4 @@ namespace OfficeDevPnP.Core.Utilities.Webhooks
         public List<T> Value { get; set; }
     }
 }
+#endif

@@ -78,7 +78,7 @@
 
 
     <!--Testing for Webhook test endpoint-->
-    <add key="TestWebhookUrl" value="https://[test-functions].azurewebsites.net" />
+    <add key="WebHookTestUrl" value="https://[test-functions].azurewebsites.net" />
   </appSettings>
   <system.diagnostics>
     <sharedListeners>

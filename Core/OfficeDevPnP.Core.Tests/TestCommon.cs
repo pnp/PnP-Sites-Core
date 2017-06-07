@@ -17,8 +17,7 @@ namespace OfficeDevPnP.Core.Tests
         {
             // Read configuration data
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
-            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
-            TestWebhookUrl = ConfigurationManager.AppSettings["TestWebhookUrl"];
+            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];            
 
 #if !ONPREMISES
             if (string.IsNullOrEmpty(TenantUrl))
@@ -149,7 +148,13 @@ namespace OfficeDevPnP.Core.Tests
         /// </summary>
         public static string HighTrustCertificateStoreThumbprint { get; set; }
 
-        public static string TestWebhookUrl { get; set; }
+        public static string TestWebhookUrl
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["WebHookTestUrl"];
+            }
+        }
 
         public static String AzureStorageKey
         {

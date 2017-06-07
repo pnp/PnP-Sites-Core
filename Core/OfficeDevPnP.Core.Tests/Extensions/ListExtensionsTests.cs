@@ -24,11 +24,20 @@ namespace Microsoft.SharePoint.Client.Tests
         private Guid _textFieldId;
 
         private Guid _listId; // For easy reference
+        private Guid webHookListId;
 
         #region Test initialize and cleanup
         [TestInitialize()]
         public void Initialize()
         {
+            // Let's do webhook testing for both app-only as credential flows
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
+                list.EnsureProperty(p => p.Id);
+                webHookListId = list.Id;
+            }
+
             if (!TestCommon.AppOnlyTesting())
             {
                 /*** Make sure that the user defined in the App.config has permissions to Manage Terms ***/
@@ -93,6 +102,14 @@ namespace Microsoft.SharePoint.Client.Tests
         [TestCleanup]
         public void Cleanup()
         {
+            // Let's do webhook testing for both app-only as credential flows
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var list = clientContext.Web.Lists.GetById(webHookListId);
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+
             if (!TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -307,12 +324,13 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region Webhooks tests
+#if !ONPREMISES
         [TestMethod]
-        public void SubscribeWebhookTest()
+        public void AddWebhookTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
-                var testList = clientContext.Web.Lists.GetById(_listId);
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
 
@@ -320,63 +338,46 @@ namespace Microsoft.SharePoint.Client.Tests
                 {
                     ExpirationDateTime = DateTime.Today.AddMonths(3),
                     NotificationUrl = TestCommon.TestWebhookUrl,
-                    Resource = TestCommon.DevSiteUrl + string.Format("/_api/lists('{0}')", _listId)
+                    Resource = TestCommon.DevSiteUrl + string.Format("/_api/lists('{0}')", webHookListId)
                 };
                 WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
 
                 // Compare properties of expected and actual
                 Assert.IsTrue(Equals(expectedSubscription.ClientState, actualSubscription.ClientState) 
-                    && Equals(expectedSubscription.ExpirationDateTime, actualSubscription.ExpirationDateTime)
+                    && Equals(expectedSubscription.ExpirationDateTime.Date, actualSubscription.ExpirationDateTime.Date)
                     && Equals(expectedSubscription.NotificationUrl, actualSubscription.NotificationUrl)
-                    && Equals(expectedSubscription.Resource, actualSubscription.Resource));
+                    && expectedSubscription.Resource.Contains(actualSubscription.Resource));
             }
         }
 
         [TestMethod]
-        public void UnsubscribeWebhookTestFromGuid()
+        public void UpdateWebhookTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
-                var testList = clientContext.Web.Lists.GetById(_listId);
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
 
-
                 WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
 
-                bool result = testList.RemoveWebhookSubscription(Guid.Parse(actualSubscription.Id));
+                // Change the expiration time
+                actualSubscription.ExpirationDateTime = actualSubscription.ExpirationDateTime.AddDays(7);
+
+                bool result = testList.UpdateWebhookSubscription(actualSubscription);
 
                 Assert.IsTrue(result);
             }
         }
 
         [TestMethod]
-        public void UnsubscribeWebhookTestFromEntity()
+        public void RemoveWebhookTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
-                var testList = clientContext.Web.Lists.GetById(_listId);
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
-
-
-                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
-
-                bool result = testList.RemoveWebhookSubscription(actualSubscription);
-
-                Assert.IsTrue(result);
-            }
-        }
-
-        [TestMethod]
-        public void UnsubscribeWebhookTestFromString()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                var testList = clientContext.Web.Lists.GetById(_listId);
-                clientContext.Load(testList);
-                clientContext.ExecuteQueryRetry();
-
 
                 WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
 
@@ -391,19 +392,19 @@ namespace Microsoft.SharePoint.Client.Tests
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
-                var testList = clientContext.Web.Lists.GetById(_listId);
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
 
-
                 WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
 
-                IList<WebhookSubscription> actualSubscriptions = testList.GetAllWebhookSubscriptions();
+                IList<WebhookSubscription> actualSubscriptions = testList.GetWebhookSubscriptions();
 
-                Assert.IsTrue(actualSubscriptions.Any(s => s == createdSubscription));
+                Assert.IsTrue(actualSubscriptions.Count > 0);
             }
         }
-        #endregion
+#endif
+    #endregion
 
     }
 }
