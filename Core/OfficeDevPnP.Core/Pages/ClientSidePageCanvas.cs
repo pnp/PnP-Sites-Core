@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.UI;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Pages
 {
@@ -35,6 +36,15 @@ namespace OfficeDevPnP.Core.Pages
     }
 
     /// <summary>
+    /// Available page layouts for a modern page.
+    /// </summary>
+    public enum PageLayoutType
+    {
+        Home,
+        Article
+    }
+
+    /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
     public class ClientSidePage
@@ -45,6 +55,7 @@ namespace OfficeDevPnP.Core.Pages
 
         private ClientContext context;
         private string pageName;
+        private string pageTitle;
         private string pagesLibrary;
         private ListItem pageListItem;
         private string sitePagesServerRelativeUrl;
@@ -52,16 +63,25 @@ namespace OfficeDevPnP.Core.Pages
         private string accessToken;
         private System.Collections.Generic.List<CanvasZone> zones = new System.Collections.Generic.List<CanvasZone>(1);
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
+        private PageLayoutType pageLayoutType;
+        private bool promoteAsNews;
+        private readonly bool keepDefaultWebParts;
+
         #endregion
 
         #region construction
-        public ClientSidePage()
+        public ClientSidePage(string pageTitle = "", PageLayoutType pageLayoutType = PageLayoutType.Article, bool keepDefaultWebParts = false, bool promoteAsNews = false)
         {
             this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
             this.pagesLibrary = "SitePages";
+            this.pageLayoutType = pageLayoutType;
+            this.keepDefaultWebParts = keepDefaultWebParts;
+            this.promoteAsNews = promoteAsNews;
+            this.pageTitle = pageTitle;
         }
 
-        public ClientSidePage(ClientContext cc) : this()
+        public ClientSidePage(ClientContext cc, string pageTitle = "", PageLayoutType pageLayoutType = PageLayoutType.Article, bool keepDefaultWebParts = false, bool promoteAsNews = false)
+            : this(pageTitle, pageLayoutType, keepDefaultWebParts, promoteAsNews)
         {
             if (cc == null)
             {
@@ -151,6 +171,19 @@ namespace OfficeDevPnP.Core.Pages
                 return zones.First();
             }
         }
+
+        public PageLayoutType PageLayoutType
+        {
+            get { return pageLayoutType; }
+            set { pageLayoutType = value; }
+        }
+
+        public string PageTitle
+        {
+            get { return pageTitle; }
+            set { pageTitle = value; }
+        }
+
         #endregion
 
         #region public methods
@@ -286,7 +319,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 
@@ -380,26 +413,51 @@ namespace OfficeDevPnP.Core.Pages
                 item = pagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item["ContentTypeId"] = BuiltInContentTypeId.ModernArticlePage;
-                item["Title"] = System.IO.Path.GetFileNameWithoutExtension(this.pageName);
                 item["ClientSideApplicationId"] = ClientSidePage.SitePagesFeatureId;
-                item["PageLayoutType"] = "Article";
-                item["PromotedState"] = "0";
                 item["BannerImageUrl"] = "/_layouts/15/images/sitepagethumbnail.png";
+                item["Title"] = string.IsNullOrWhiteSpace(this.pageTitle) ? Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
+                if (keepDefaultWebParts)
+                {
+                    // Set canvas to empty and oob parts will be rendered
+                    // The Home layout will have pre-added news wp's
+                    item[ClientSidePage.CanvasField] = string.Empty;
+                }
+                else
+                {
+                    item[ClientSidePage.CanvasField] = this.ToHtml();
+                }
+                SetPageLayoutAndState(item);
                 item.Update();
-                this.Context.Web.Context.Load(item);
-                this.Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
                 item = pageFile.ListItemAllFields;
+                item[ClientSidePage.CanvasField] = this.ToHtml();
+                SetPageLayoutAndState(item);
+                item.Update();
             }
-
-            // Persist to page field
-            item[ClientSidePage.CanvasField] = this.ToHtml();
-            item.Update();
-            this.Context.ExecuteQueryRetry();
-
+            this.Context.Web.Context.Load(item);
+            this.Context.Web.Context.ExecuteQueryRetry();
             this.pageListItem = item;
+        }
+
+        /// <summary>
+        /// Allow changing pagelayout and promoting/demoting an article as news
+        /// </summary>
+        /// <param name="item"></param>
+        private void SetPageLayoutAndState(ListItem item)
+        {
+            item["PageLayoutType"] = this.pageLayoutType.ToString();
+
+            if (promoteAsNews)
+            {
+                item["PromotedState"] = "2"; //published
+                item["FirstPublishedDate"] = DateTime.UtcNow;
+            }
+            else
+            {
+                item["PromotedState"] = "0";
+            }
         }
 
         public static ClientSidePage FromHtml(string html)
@@ -717,7 +775,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 
@@ -814,7 +872,7 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
+            using (var htmlWriter = new HtmlTextWriter(new StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
 

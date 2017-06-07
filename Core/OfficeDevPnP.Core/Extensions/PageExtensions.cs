@@ -12,11 +12,6 @@ using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using OfficeDevPnP.Core.Utilities.WebParts;
 using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.PersonalizationScope;
-using System.Net;
-using System.IO;
-using System.Text;
-using System.Web.Configuration;
-using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 using OfficeDevPnP.Core.Pages;
 
 namespace Microsoft.SharePoint.Client
@@ -862,11 +857,15 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to add the page to</param>
         /// <param name="pageName">Name (e.g. demo.aspx) of the page to be added</param>
+        /// <param name="pageTitle">Title of the page</param>
         /// <param name="alreadyPersist">Already persist the created, empty, page before returning the instantiated <see cref="ClientSidePage"/> instance</param>
+        /// <param name="pageLayoutType">Set the <see cref="PageLayoutType"/> to be used. 'Article' for a modern page, 'Home' for a modern home page (no header)</param>
+        /// <param name="keepDefaultWebParts">Keep any default web parts providided by the layout</param>
+        /// <param name="promoteAsNews">Promote the page as a news article</param>
         /// <returns>A <see cref="ClientSidePage"/> instance</returns>
-        public static ClientSidePage AddClientSidePage(this Web web, string pageName, bool alreadyPersist = false)
+        public static ClientSidePage AddClientSidePage(this Web web, string pageName, string pageTitle = "", bool alreadyPersist = false, PageLayoutType pageLayoutType = PageLayoutType.Article, bool keepDefaultWebParts = false, bool promoteAsNews = false)
         {
-            var page = new ClientSidePage(web.Context as ClientContext);
+            var page = new ClientSidePage(web.Context as ClientContext,pageTitle, pageLayoutType, keepDefaultWebParts, promoteAsNews);
             if (alreadyPersist)
             {
                 page.Save(pageName);
@@ -1251,6 +1250,6 @@ namespace Microsoft.SharePoint.Client
             return (friendlyUrl.Value);
         }
 
-       
+
     }
 }
