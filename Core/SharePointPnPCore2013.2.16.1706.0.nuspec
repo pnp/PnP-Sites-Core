@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>SharePointPnPCore2013</id>
-        <version>2.15.1705.0</version>
+        <version>2.16.1706.0</version>
         <title>SharePoint PnP Core library for SharePoint 2013</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>
