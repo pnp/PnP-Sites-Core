@@ -83,7 +83,7 @@ namespace Microsoft.SharePoint.Client
 
             IEnumerable<WebPartDefinition> query;
 
-#if SP2016
+#if ONPREMISES
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
             query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
 #else
