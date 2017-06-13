@@ -1167,8 +1167,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
-        /// <param name="web"></param>
-        /// <returns></returns>
+        /// <param name="web">The Current site</param>
+        /// <returns>Returns Realm in Guid</returns>
         public static Guid GetAuthenticationRealm(this Web web)
         {
             web.EnsureProperty(w => w.Url);
@@ -1380,7 +1380,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The current web object to be processed.</param>
         /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit. When setting to 0, the process will stop at list / document library level.</param>
-        /// <returns></returns>
+        /// <returns>Returns all role assignments</returns>
         public static IEnumerable<RoleAssignmentEntity> GetAllUniqueRoleAssignments(this Web web, int leafBreadthLimit = int.MaxValue)
         {
             var result = new List<RoleAssignmentEntity>();

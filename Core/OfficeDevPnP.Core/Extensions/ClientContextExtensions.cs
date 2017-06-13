@@ -11,6 +11,9 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class that deals with cloning client context object, getting access token and validates server version
+    /// </summary>
     public static partial class ClientContextExtensions
     {
 #if ONPREMISES
@@ -35,9 +38,9 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// 
+        /// Executes the current set of data retrieval queries and method invocations and retries it if needed.
         /// </summary>
-        /// <param name="clientContext"></param>
+        /// <param name="clientContext">clientContext to operate on</param>
         /// <param name="retryCount">Number of times to retry the request</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
@@ -237,14 +240,20 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Checks the server library version of the context for a minimally required version
         /// </summary>
-        /// <param name="clientContext"></param>
-        /// <param name="minimallyRequiredVersion"></param>
-        /// <returns></returns>
+        /// <param name="clientContext">clientContext to operate on</param>
+        /// <param name="minimallyRequiredVersion">provide version to validate</param>
+        /// <returns>True if it has minimal required version, false otherwise</returns>
         public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, string minimallyRequiredVersion)
         {
             return HasMinimalServerLibraryVersion(clientContext, new Version(minimallyRequiredVersion));
         }
 
+        /// <summary>
+        /// Checks the server library version of the context for a minimally required version
+        /// </summary>
+        /// <param name="clientContext">clientContext to operate on</param>
+        /// <param name="minimallyRequiredVersion">provide version to validate</param>
+        /// <returns>True if it has minimal required version, false otherwise</returns>
         public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, Version minimallyRequiredVersion)
         {
             bool hasMinimalVersion = false;

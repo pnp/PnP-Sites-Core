@@ -35,8 +35,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the navigation settings for the selected web
         /// </summary>
-        /// <param name="web"></param>
-        /// <returns></returns>
+        /// <param name="web">Web to process</param>
+        /// <returns>Returns AreaNavigationEntity settings</returns>
         public static AreaNavigationEntity GetNavigationSettings(this Web web)
         {
             var nav = new AreaNavigationEntity();
@@ -161,8 +161,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Updates navigation settings for the current web
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="navigationSettings"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="navigationSettings">Navigation settings to update</param>
         public static void UpdateNavigationSettings(this Web web, AreaNavigationEntity navigationSettings)
         {
             //Read all the properties of the web
@@ -792,7 +792,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>Returns all custom actions</returns>
         public static IEnumerable<UserCustomAction> GetCustomActions(this Web web, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)web.Context;
@@ -821,7 +821,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>Returns all custom actions</returns>
         public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
@@ -899,7 +899,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Utility method to check particular custom action already exists on the web
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">Web to process</param>
         /// <param name="name">Name of the custom action</param>
         /// <returns></returns>        
         public static bool CustomActionExists(this Web web, string name)
@@ -926,7 +926,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Utility method to check particular custom action already exists on the web
         /// </summary>
-        /// <param name="site"></param>
+        /// <param name="site">Site to process</param>
         /// <param name="name">Name of the custom action</param>
         /// <returns></returns>        
         public static bool CustomActionExists(this Site site, string name)
