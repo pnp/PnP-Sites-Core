@@ -48,15 +48,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region constructors
+        /// <summary>
+        /// Constructor for DataRow class
+        /// </summary>
         public DataRow()
         {
             this.Security = new ObjectSecurity();
         }
 
+        /// <summary>
+        /// Constructor for DataRow class
+        /// </summary>
+        /// <param name="values">DataRow Values</param>
         public DataRow(Dictionary<string, string> values) : this(values, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for DataRow class
+        /// </summary>
+        /// <param name="values">DataRow Values</param>
+        /// <param name="security">ObjectSecurity object</param>
         public DataRow(Dictionary<string, string> values, ObjectSecurity security) :
             this()
         {
@@ -74,7 +86,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
@@ -83,6 +98,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with DataRow
+        /// </summary>
+        /// <param name="obj">Object that represents DataRow</param>
+        /// <returns>true if the current object is equal to the DataRow</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is DataRow))
@@ -92,6 +112,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((DataRow)obj));
         }
 
+        /// <summary>
+        /// Compares DataRow object based on values and Security properties.
+        /// </summary>
+        /// <param name="other">DataRow object</param>
+        /// <returns>true if the DataRow object is equal to the current object; otherwise, false.</returns>
         public bool Equals(DataRow other)
         {
             if (other == null)

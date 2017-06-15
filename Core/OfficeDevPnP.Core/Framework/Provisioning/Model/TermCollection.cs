@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class TermCollection : ProvisioningTemplateCollection<Term>
     {
+        /// <summary>
+        /// Constructor for TermCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public TermCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

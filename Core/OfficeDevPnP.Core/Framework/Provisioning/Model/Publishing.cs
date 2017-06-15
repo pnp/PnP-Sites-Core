@@ -21,13 +21,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for Publishing class
+        /// </summary>
         public Publishing()
         {
             this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for Publishing class
+        /// </summary>
+        /// <param name="autoCheckRequirements">AutoCheckRequirementsOption object</param>
+        /// <param name="designPackage">Design Package for publishing</param>
+        /// <param name="availableWebTemplates">Available WebTemplates for publishing</param>
+        /// <param name="pageLayouts">PageLayouts for publishing</param>
         public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null) 
             : this()
         {
@@ -91,7 +100,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
@@ -102,6 +114,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Publishing
+        /// </summary>
+        /// <param name="obj">Object that represents Publishing</param>
+        /// <returns>true if the current object is equal to the Publishing</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Publishing))
@@ -111,6 +128,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Publishing)obj));
         }
 
+        /// <summary>
+        /// Compares Publishing object based on AutoCheckRequirements, AvailableWebTemplates, DesignPackage and PageLayout properties.
+        /// </summary>
+        /// <param name="other">Publishing object</param>
+        /// <returns>true if the Publishing object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Publishing other)
         {
             if (other == null)

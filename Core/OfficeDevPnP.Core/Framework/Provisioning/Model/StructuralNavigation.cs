@@ -27,7 +27,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for StructuralNavigation class
+        /// </summary>
         public StructuralNavigation()
         {
             this.NavigationNodes = new NavigationNodeCollection(this.ParentTemplate);
@@ -36,7 +38,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -45,6 +50,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with StructuralNavigation
+        /// </summary>
+        /// <param name="obj">Object that represents StructuralNavigation</param>
+        /// <returns>true if the current object is equal to the StructuralNavigation</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is StructuralNavigation))
@@ -54,6 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((StructuralNavigation)obj));
         }
 
+        /// <summary>
+        /// Compares StructuralNavigation object based on NavigationNodes and RemoveExistingNodes properties.
+        /// </summary>
+        /// <param name="other">StructuralNavigation object</param>
+        /// <returns>true if the StructuralNavigation object is equal to the current object; otherwise, false.</returns>
         public bool Equals(StructuralNavigation other)
         {
             if (other == null)

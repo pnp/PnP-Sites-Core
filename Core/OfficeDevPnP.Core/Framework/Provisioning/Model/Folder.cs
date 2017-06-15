@@ -58,13 +58,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for the Folder class
+        /// </summary>
         public Folder()
         {
             this.Security = new ObjectSecurity();
             this._folders = new FolderCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for the Folder class
+        /// </summary>
+        /// <param name="name">Name of the folder</param>
+        /// <param name="folders">List of the folders</param>
+        /// <param name="security">ObjectSecurity for the folder</param>
         public Folder(String name, List<Folder> folders = null, ObjectSecurity security = null) :
             this()
         {
@@ -79,7 +87,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -89,6 +100,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Folder
+        /// </summary>
+        /// <param name="obj">Object that represents Folder</param>
+        /// <returns>true if the current object is equal to the Folder</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Folder))
@@ -98,6 +114,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Folder)obj));
         }
 
+        /// <summary>
+        /// Compares Folder object based on Name, Folders and Security properties.
+        /// </summary>
+        /// <param name="other">Folder object</param>
+        /// <returns>true if the Folder object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Folder other)
         {
             if (other == null)

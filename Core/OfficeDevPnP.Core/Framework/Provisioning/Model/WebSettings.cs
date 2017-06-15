@@ -61,14 +61,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public WebSettings() { }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="noCrawl">Based on boolean values sets crawl to the site or subsite</param>
+        /// <param name="requestAccessEmail">E-mail address for request access</param>
+        /// <param name="welcomePage">Welcome page for site or subsite</param>
         public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage):
             this(noCrawl, requestAccessEmail, welcomePage, null, null, null, null)
         {
         }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="noCrawl">Based on boolean values sets crawl to the site or subsite</param>
+        /// <param name="requestAccessEmail">E-mail address for request access</param>
+        /// <param name="welcomePage">Welcome page for site or subsite</param>
+        /// <param name="title">Title of site or subsite</param>
+        /// <param name="description">Description of site or subsite</param>
+        /// <param name="siteLogo">Logo of site or subsite</param>
+        /// <param name="alternateCSS">Alternate css file location of site or subsite</param>
         public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage, 
             String title, String description, String siteLogo, String alternateCSS)
         {
@@ -84,7 +100,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets hash code
+        /// </summary>
+        /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}",
@@ -98,6 +117,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares web settings with other web settings
+        /// </summary>
+        /// <param name="obj">WebSettings object</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is WebSettings))
@@ -107,6 +131,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((WebSettings)obj));
         }
 
+        /// <summary>
+        /// Compares web settings with other web settings
+        /// </summary>
+        /// <param name="other">WebSettings object</param>
+        /// <returns>true if the WebSettings object is equal to the current object; otherwise, false.</returns>
         public bool Equals(WebSettings other)
         {
             if (other == null)

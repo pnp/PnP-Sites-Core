@@ -23,11 +23,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for DocumentSetTemplate class
+        /// </summary>
         public DocumentSetTemplate()
         {
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for DocumentSetTemplate class
+        /// </summary>
+        /// <param name="welcomePage">Welcome Page of the DocumentSet</param>
+        /// <param name="allowedContentTypes">Content Types allowed for the DocumentSet</param>
+        /// <param name="defaultDocuments">Default documents for the DocumentSet</param>
+        /// <param name="sharedFields">Shared Fields for the DocumentSet</param>
+        /// <param name="welcomePageFields">Welcome Page Fields for the DocumentSet</param>
         public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
             this()
         {
@@ -99,6 +110,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
@@ -109,6 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with DocumentSetTemplate
+        /// </summary>
+        /// <param name="obj">Object that represents DocumentSetTemplate</param>
+        /// <returns>true if the current object is equal to the DocumentSetTemplate</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is DocumentSetTemplate))
@@ -118,6 +138,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((DocumentSetTemplate)obj));
         }
 
+        /// <summary>
+        /// Compares DocumentSetTemplate object based on AllowedContentTypes, DefaultDocuments, SharedFields and WelcomePageFields properties.
+        /// </summary>
+        /// <param name="other">DocumentSetTemplate object</param>
+        /// <returns>true if the DocumentSetTemplate object is equal to the current object; otherwise, false.</returns>
         public bool Equals(DocumentSetTemplate other)
         {
             if (other == null)

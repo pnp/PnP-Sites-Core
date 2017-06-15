@@ -48,7 +48,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for ProvisioningTemplate class
+        /// </summary>
         public ProvisioningTemplate()
         {
             this.connector = new FileSystemConnector(".", "");
@@ -80,6 +82,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._addins = new AddInCollection(this);
         }
 
+        /// <summary>
+        /// Constructor for ProvisioningTemplate class
+        /// </summary>
+        /// <param name="connector">FileConnectorBase object</param>
         public ProvisioningTemplate(FileConnectorBase connector) :
             this()
         {
@@ -99,6 +105,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _parameters = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Localizations
+        /// </summary>
         public LocalizationCollection Localizations
         {
             get { return this._localizations; }
@@ -268,6 +277,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Extensibility Handlers
+        /// </summary>
         public ExtensibilityHandlerCollection ExtensibilityHandlers
         {
             get { return this._extensibilityHandlers; }
@@ -457,6 +469,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String BaseSiteTemplate { get; set; }
 
+        /// <summary>
+        /// Gets or sets the File Connector
+        /// </summary>
         public FileConnectorBase Connector
         {
             get
@@ -472,7 +487,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
@@ -510,6 +528,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ProvisioningTemplate
+        /// </summary>
+        /// <param name="obj">Object that represents ProvisioningTemplate</param>
+        /// <returns>true if the current object is equal to the ProvisioningTemplate</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ProvisioningTemplate))
@@ -519,6 +542,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ProvisioningTemplate)obj));
         }
 
+        /// <summary>
+        /// Compares ProvisioningTemplate object based on ComposedLook, ContentTypes, CustomActions, SiteFeature, WebFeatures, Files, Id, Lists,
+        /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations and WebSettings properties.
+        /// </summary>
+        /// <param name="other">ProvisioningTemplate object</param>
+        /// <returns>true if the ProvisioningTemplate object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ProvisioningTemplate other)
         {
             if (other == null)
@@ -566,8 +595,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Serializes a template to XML
         /// </summary>
-        /// <param name="formatter"></param>
-        /// <returns></returns>
+        /// <param name="formatter">ITemplateFormatter object</param>
+        /// <returns>Returns XML string for the given stream</returns>
         public string ToXML(ITemplateFormatter formatter = null)
         {
             formatter = formatter ?? new XMLPnPSchemaFormatter();

@@ -11,7 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class RegionalSettings : BaseModel, IEquatable<RegionalSettings>
     {
-
+        /// <summary>
+        /// Constructor for RegionalSettings class
+        /// </summary>
         public RegionalSettings()
         {
             AdjustHijriDays = 0;
@@ -97,7 +99,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|",
@@ -117,6 +122,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with RegionalSettings
+        /// </summary>
+        /// <param name="obj">Object that represents RegionalSettings</param>
+        /// <returns>true if the current object is equal to the RegionalSettings</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is RegionalSettings))
@@ -126,6 +136,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((RegionalSettings)obj));
         }
 
+        /// <summary>
+        /// Compares RegionalSettings object object based on AdjustHijriDays, AlternateCalendarType, CalendarType, Collation, FirstDayOfWeek, FirstWeekOfYear, LocaleId,
+        /// ShowWeeks, Time24, TimeZone, WorkDayEndHour, WorkDays and WorkDayStartHour properties.
+        /// </summary>
+        /// <param name="other">RegionalSettings object</param>
+        /// <returns>true if the RegionalSettings object is equal to the current object; otherwise, false.</returns>
         public bool Equals(RegionalSettings other)
         {
             if (other == null)
@@ -157,29 +173,101 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public enum WorkHour
     {
+        /// <summary>
+        /// 00:00 am
+        /// </summary>
         AM1200 = 0,
+        /// <summary>
+        /// 01:00 am
+        /// </summary>
         AM0100 = 60,
+        /// <summary>
+        /// 02:00 am
+        /// </summary>
         AM0200 = 120,
+        /// <summary>
+        /// 03:00 am
+        /// </summary>
         AM0300 = 180,
+        /// <summary>
+        /// 04:00 am
+        /// </summary>
         AM0400 = 240,
+        /// <summary>
+        /// 05:00 am
+        /// </summary>
         AM0500 = 300,
+        /// <summary>
+        /// 06:00 am
+        /// </summary>
         AM0600 = 360,
+        /// <summary>
+        /// 07:00 am
+        /// </summary>
         AM0700 = 420,
+        /// <summary>
+        /// 08:00 am
+        /// </summary>
         AM0800 = 480,
+        /// <summary>
+        /// 09:00 am
+        /// </summary>
         AM0900 = 540,
+        /// <summary>
+        /// 10:00 am
+        /// </summary>
         AM1000 = 600,
+        /// <summary>
+        /// 11:00 am
+        /// </summary>
         AM1100 = 660,
+        /// <summary>
+        /// 12:00 pm
+        /// </summary>
         PM1200 = 720,
+        /// <summary>
+        /// 01:00 pm
+        /// </summary>
         PM0100 = 780,
+        /// <summary>
+        /// 02:00 pm
+        /// </summary>
         PM0200 = 840,
+        /// <summary>
+        /// 03:00 pm
+        /// </summary>
         PM0300 = 900,
+        /// <summary>
+        /// 04:00 pm
+        /// </summary>
         PM0400 = 960,
+        /// <summary>
+        /// 05:00 pm
+        /// </summary>
         PM0500 = 1020,
+        /// <summary>
+        /// 06:00 pm
+        /// </summary>
         PM0600 = 1080,
+        /// <summary>
+        /// 07:00 pm
+        /// </summary>
         PM0700 = 1140,
+        /// <summary>
+        /// 08:00 pm
+        /// </summary>
         PM0800 = 1200,
+        /// <summary>
+        /// 09:00 pm
+        /// </summary>
         PM0900 = 1260,
+        /// <summary>
+        /// 10:00 pm
+        /// </summary>
         PM1000 = 1320,
+        /// <summary>
+        /// 11:00 pm
+        /// </summary>
         PM1100 = 1380,
     }
 }
