@@ -1380,6 +1380,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating field {0} received a timeout when pushing changes to lists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding webpart &apos;{0}&apos; to page.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page {

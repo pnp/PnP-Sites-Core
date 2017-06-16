@@ -378,6 +378,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\WebhookNotification.cs" />
+    <Compile Include="Entities\WebhookSubscription.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
     <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
@@ -830,6 +832,8 @@
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
+    <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
     <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
     <Compile Include="Utilities\WebParts\Processors\PassThroughProcessor.cs" />
     <Compile Include="Utilities\WebParts\Schema\WebPart.v3.cs" />
@@ -895,6 +899,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Pages\ClientSidePages.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -7,19 +7,43 @@ using System.Web;
 #if !ONPREMISES
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Defines the options for Sharing Document
+    /// </summary>
     public enum ExternalSharingDocumentOption
     {
+        /// <summary>
+        /// Provides the option to edit the document
+        /// </summary>
         Edit,
+        /// <summary>
+        /// Provides the option to view the document
+        /// </summary>
         View
     }
 
+    /// <summary>
+    /// Defines the options for Sharing Site
+    /// </summary>
     public enum ExternalSharingSiteOption
     {
+        /// <summary>
+        /// Provides sharing to AssociatedOwnerGroup 
+        /// </summary>
         Owner,
+        /// <summary>
+        /// Provides sharing to AssociatedMemberGroup 
+        /// </summary>
         Edit,
+        /// <summary>
+        /// Provides sharing to AssociatedVisitorGroup 
+        /// </summary>
         View
     }
 
+    /// <summary>
+    /// This class holds the methods for sharing and unsharing of the document and the site. 
+    /// </summary>
     public static partial class ExternalSharingExtensions
     {
         /// <summary>
@@ -205,9 +229,9 @@ namespace Microsoft.SharePoint.Client
         /// Get current sharing settings for document and load list of users it has been shared automatically.
         /// </summary>
         /// <param name="web">Web for the context</param>
-        /// <param name="urlToDocument"></param>
-        /// <param name="useSimplifiedPolicies"></param>
-        /// <returns></returns>
+        /// <param name="urlToDocument">Full URL to the file which is shared</param>
+        /// <param name="useSimplifiedPolicies">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View).</param>
+        /// <returns>A ObjectSharingSettings object</returns>
         public static ObjectSharingSettings GetObjectSharingSettingsForDocument(this Web web, string urlToDocument, bool useSimplifiedPolicies = true)
         {
             // Group value for this query is always 0.
@@ -225,7 +249,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web for the context</param>
         /// <param name="useSimplifiedPolicies"></param>
-        /// <returns></returns>
+        /// <returns>A ObjectSharingSettings object</returns>
         public static ObjectSharingSettings GetObjectSharingSettingsForSite(this Web web, bool useSimplifiedPolicies = true)
         {
             // Ensure that URL exists
@@ -251,7 +275,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="email">The email address of the external user</param>
         /// <param name="sendEmail">Should we send an email to the given address</param>
         /// <param name="emailBody">Text to be added to the email</param>
-        /// <returns></returns>
+        /// <returns>A SharingResult object</returns>
         public static SharingResult InviteExternalUser(this Group group, string email, bool sendEmail = true,
             string emailBody = "Site shared with you.")
         {
@@ -284,7 +308,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
         /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
-        /// <returns></returns>
+        /// <returns>A SharingResult object</returns>
         public static SharingResult ShareSite(this Web web, string email,
                                                 ExternalSharingSiteOption shareOption, bool sendEmail = true,
                                                 string emailBody = "Site shared for you.", bool useSimplifiedRoles = true)
@@ -305,7 +329,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
         /// <param name="useSimplifiedRoles">Boolean value indicating whether to use the SharePoint simplified roles (Edit, View)</param>
-        /// <returns></returns>
+        /// <returns>A SharingResult object</returns>
         public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput,
                                                                     ExternalSharingSiteOption shareOption,
                                                                     bool sendEmail = true, string emailBody = "Site shared for you.",
@@ -338,7 +362,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="group">The group to invite the user to</param>
         /// <param name="sendEmail">Should we send email for the given address.</param>
         /// <param name="emailBody">Text to be added on share email sent to receiver.</param>
-        /// <returns></returns>
+        /// <returns>A SharingResult object</returns>
         public static SharingResult ShareSiteWithPeoplePickerValue(this Web web, string peoplePickerInput,
                                                                     Group group,
                                                                     bool sendEmail = true, string emailBody = "Site shared for you.")
@@ -362,7 +386,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be shared externally</param>
         /// <param name="shareOption">Permissions to be given for the external user</param>
-        /// <returns></returns>
+        /// <returns>group ID</returns>
         private static int SolveGroupIdToShare(Web web, ExternalSharingSiteOption shareOption)
         {
             Group group = null;

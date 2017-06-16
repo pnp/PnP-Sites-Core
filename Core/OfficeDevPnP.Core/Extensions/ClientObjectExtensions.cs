@@ -4,6 +4,9 @@ using System.Reflection;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for client object extension methods
+    /// </summary>
     public static class ClientObjectExtensions
     {
         /// <summary>

@@ -444,6 +444,7 @@
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
+    <Compile Include="Pages\ClientSidePagesTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />
     <Compile Include="Utilities\EncryptionUtilityTests.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
@@ -681,6 +682,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

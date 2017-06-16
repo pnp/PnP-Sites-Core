@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add parameters
             foreach (var parameter in template.Parameters)
             {
-                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value));
+                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
             }
 
             // Add TermSetIds

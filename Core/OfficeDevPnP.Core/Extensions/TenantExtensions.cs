@@ -15,6 +15,9 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for tenant extension methods
+    /// </summary>
     public static partial class TenantExtensions
     {
         const string SITE_STATUS_RECYCLED = "Recycled";
@@ -109,7 +112,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="removeFromRecycleBin">If true, any existing site with the same URL will be removed from the recycle bin</param>
         /// <param name="wait">Wait for the site to be created before continuing processing</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
-        /// <returns></returns>
+        /// <returns>Guid of the created site collection and Guid.Empty is the wait parameter is specified as false. Returns Guid.Empty if the wait is cancelled.</returns>
         public static Guid CreateSiteCollection(this Tenant tenant, string siteFullUrl, string title, string siteOwnerLogin,
                                                         string template, int storageMaximumLevel, int storageWarningLevel,
                                                         int timeZoneId, int userCodeMaximumLevel, int userCodeWarningLevel,
@@ -413,9 +416,9 @@ namespace Microsoft.SharePoint.Client
         /// Returns available webtemplates/site definitions
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="lcid"></param>
+        /// <param name="lcid">Locale identifier (LCID) for the language</param>
         /// <param name="compatibilityLevel">14 for SharePoint 2010, 15 for SharePoint 2013/SharePoint Online</param>
-        /// <returns></returns>
+        /// <returns>Returns collection of SPTenantWebTemplate</returns>
         public static SPOTenantWebTemplateCollection GetWebTemplates(this Tenant tenant, uint lcid, int compatibilityLevel)
         {
 
@@ -432,15 +435,15 @@ namespace Microsoft.SharePoint.Client
         /// Sets tenant site Properties
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl"></param>
-        /// <param name="title"></param>
-        /// <param name="allowSelfServiceUpgrade"></param>
-        /// <param name="sharingCapability"></param>
-        /// <param name="storageMaximumLevel"></param>
-        /// <param name="storageWarningLevel"></param>
-        /// <param name="userCodeMaximumLevel"></param>
-        /// <param name="userCodeWarningLevel"></param>
-        /// <param name="noScriptSite"></param>
+        /// <param name="siteFullUrl">full url of site</param>
+        /// <param name="title">site title</param>
+        /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
+        /// <param name="sharingCapability">SharingCapabilities enumeration value (i.e. Disabled/ExternalUserSharingOnly/ExternalUserAndGuestSharing/ExistingExternalUserSharingOnly)</param>
+        /// <param name="storageMaximumLevel">A limit on all disk space used by the site collection</param>
+        /// <param name="storageWarningLevel">A storage warning level for when administrators of the site collection receive advance notice before available storage is expended.</param>
+        /// <param name="userCodeMaximumLevel">A value that represents the maximum allowed resource usage for the site/</param>
+        /// <param name="userCodeWarningLevel">A value that determines the level of resource usage at which a warning e-mail message is sent</param>
+        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
             bool? allowSelfServiceUpgrade = null,
@@ -624,7 +627,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Get OneDrive site collections by iterating through all user profiles.
         /// </summary>
-        /// <param name="tenant"></param>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site </param>
         /// <returns>List of <see cref="SiteEntity"/> objects containing site collection info.</returns>
         public static IList<SiteEntity> GetOneDriveSiteCollections(this Tenant tenant)
         {
@@ -662,7 +665,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
-        /// <param name="tenant"></param>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site </param>
         /// <returns>UserProfileService web service client</returns>
         public static UserProfileService GetUserProfileServiceClient(this Tenant tenant)
         {

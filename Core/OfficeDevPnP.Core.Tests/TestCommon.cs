@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Tests
         {
             // Read configuration data
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
-            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];            
 
 #if !ONPREMISES
             if (string.IsNullOrEmpty(TenantUrl))
@@ -29,6 +29,8 @@ namespace OfficeDevPnP.Core.Tests
             {
                 throw new ConfigurationErrorsException("Dev site url in App.config are not set up.");
             }
+
+
 
             // Trim trailing slashes
             TenantUrl = TenantUrl.TrimEnd(new[] { '/' });
@@ -146,6 +148,14 @@ namespace OfficeDevPnP.Core.Tests
         /// </summary>
         public static string HighTrustCertificateStoreThumbprint { get; set; }
 
+        public static string TestWebhookUrl
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["WebHookTestUrl"];
+            }
+        }
+
         public static String AzureStorageKey
         {
             get
@@ -188,9 +198,9 @@ namespace OfficeDevPnP.Core.Tests
                 return ConfigurationManager.AppSettings["ScriptSite"];
             }
         }
-#endregion
+        #endregion
 
-#region Methods
+        #region Methods
         public static ClientContext CreateClientContext()
         {
             return CreateContext(DevSiteUrl, Credentials);
@@ -291,7 +301,7 @@ namespace OfficeDevPnP.Core.Tests
 
                 if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
-                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix: "login");
                 }
                 else
                 {
@@ -319,6 +329,6 @@ namespace OfficeDevPnP.Core.Tests
 
             return secureString;
         }
-#endregion
+        #endregion
     }
 }

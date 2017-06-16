@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Pages
 #if !ONPREMISES
     #region Client Side control classes
     /// <summary>
-    /// Base control
+    /// Base class for a canvas control 
     /// </summary>
     public abstract class CanvasControl
     {
@@ -32,6 +32,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region construction
+        /// <summary>
+        /// Constructs the canvas control
+        /// </summary>
         public CanvasControl()
         {
             this.dataVersion = "1.0";
@@ -42,6 +45,9 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// The <see cref="CanvasZone"/> hosting this control
+        /// </summary>
         public CanvasZone Zone
         {
             get
@@ -50,6 +56,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The <see cref="CanvasSection"/> hosting this control
+        /// </summary>
         public CanvasSection Section
         {
             get
@@ -58,6 +67,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// The internal storage version used for this control
+        /// </summary>
         public string DataVersion
         {
             get
@@ -66,6 +78,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the control's "data-sp-canvascontrol" attribute
+        /// </summary>
         public string CanvasControlData
         {
             get
@@ -74,6 +89,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type of the control: 3 is a text part, 4 is a client side web part
+        /// </summary>
         public int ControlType
         {
             get
@@ -82,6 +100,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Value of the control's "data-sp-controldata" attribute
+        /// </summary>
         public string JsonControlData
         {
             get
@@ -90,6 +111,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Instance ID of the control
+        /// </summary>
         public Guid InstanceId
         {
             get
@@ -98,6 +122,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Order of the control in the control collection
+        /// </summary>
         public int Order
         {
             get
@@ -110,6 +137,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type if the control (<see cref="ClientSideText"/> or <see cref="ClientSideWebPart"/>)
+        /// </summary>
         public abstract Type Type { get; }
         #endregion
 
@@ -117,8 +147,9 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Converts a control object to it's html representation
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of a control</returns>
-        public abstract string ToHtml();
+        public abstract string ToHtml(int controlIndex);
 
         /// <summary>
         /// Removes the control from the page
@@ -129,7 +160,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Receives data-sp-controldata content and detects the type of the control
+        /// Receives "data-sp-controldata" content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
         /// <returns>Type of the control represented by the json string</returns>
@@ -144,8 +175,10 @@ namespace OfficeDevPnP.Core.Pages
             var decoded = WebUtility.HtmlDecode(controlDataJson);
 
             // Deserialize the json string
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
             var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(decoded, jsonSerializerSettings);
 
             if (controlData.ControlType == 3)
@@ -156,6 +189,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 return typeof(ClientSideText);
             }
+            else if (controlData.ControlType == 0)
+            {
+                return typeof(CanvasSection);
+            }
 
             return null;
         }
@@ -165,8 +202,11 @@ namespace OfficeDevPnP.Core.Pages
         internal virtual void FromHtml(IElement element)
         {
             // deserialize control data
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+
             var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
 
             // populate base object
@@ -175,6 +215,7 @@ namespace OfficeDevPnP.Core.Pages
             this.controlType = controlData.ControlType;
             this.instanceId = new Guid(controlData.Id);
         }
+
         #endregion
     }
 
@@ -187,9 +228,13 @@ namespace OfficeDevPnP.Core.Pages
         public const string TextRteAttribute = "data-sp-rte";
 
         private string rte;
+        private ClientSideTextControlData spControlData;
         #endregion
 
         #region construction
+        /// <summary>
+        /// Creates a <see cref="ClientSideText"/> instance
+        /// </summary>
         public ClientSideText() : base()
         {
             this.controlType = 4;
@@ -198,8 +243,14 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Text value of the client side text control
+        /// </summary>
         public string Text { get; set; }
 
+        /// <summary>
+        /// Value of the "data-sp-rte" attribute
+        /// </summary>
         public string Rte
         {
             get
@@ -208,11 +259,25 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// Type of the control (= <see cref="ClientSideText"/>)
+        /// </summary>
         public override Type Type
         {
             get
             {
                 return typeof(ClientSideText);
+            }
+        }
+
+        /// <summary>
+        /// Deserialized value of the "data-sp-controldata" attribute
+        /// </summary>
+        public ClientSideTextControlData SpControlData
+        {
+            get
+            {
+                return this.spControlData;
             }
         }
         #endregion
@@ -221,11 +286,28 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Converts this <see cref="ClientSideText"/> control to it's html representation
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of this <see cref="ClientSideText"/> control</returns>
-        public override string ToHtml()
+        public override string ToHtml(int controlIndex)
         {
+            // Can this control be hosted in this zone type?
+            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            {
+                throw new Exception("You cannot host text controls inside a one column full width zone, only an image web part or hero web part are allowed");
+            }
+
             // Obtain the json data
-            ClientSideTextControlData controlData = new ClientSideTextControlData() { ControlType = this.ControlType, Id = this.InstanceId.ToString("D"), EditorType = "CKEditor" };
+            ClientSideTextControlData controlData = new ClientSideTextControlData() {
+                ControlType = this.ControlType,
+                Id = this.InstanceId.ToString("D"),
+                Position = new ClientSideCanvasControlPosition()
+                {
+                    ZoneIndex = this.Zone.Order,
+                    SectionIndex = this.Section.Order,
+                    SectionFactor = this.Section.SectionFactor,
+                    ControlIndex = controlIndex,
+                },
+                EditorType = "CKEditor" };
             jsonControlData = JsonConvert.SerializeObject(controlData);
 
             StringBuilder html = new StringBuilder(100);
@@ -261,6 +343,14 @@ namespace OfficeDevPnP.Core.Pages
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
             this.rte = div.GetAttribute(TextRteAttribute);
             this.Text = div.InnerHtml;
+
+            // load data from the data-sp-controldata attribute
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            this.spControlData = JsonConvert.DeserializeObject<ClientSideTextControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
+            this.controlType = this.spControlData.ControlType;
         }
         #endregion
     }
@@ -288,6 +378,7 @@ namespace OfficeDevPnP.Core.Pages
         private string title;
         private string description;
         private string propertiesJson;
+        private ClientSideWebPartControlData spControlData;
         private JObject properties;
         #endregion
 
@@ -322,7 +413,7 @@ namespace OfficeDevPnP.Core.Pages
 
         #region Properties
         /// <summary>
-        /// Json serialized web part properties
+        /// Value of the "data-sp-webpartdata" attribute
         /// </summary>
         public string JsonWebPartData
         {
@@ -333,7 +424,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Html properties data
+        /// Value of the "data-sp-htmlproperties" element
         /// </summary>
         public string HtmlPropertiesData
         {
@@ -344,7 +435,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Value of the data-sp-htmlproperties attribute
+        /// Value of the "data-sp-htmlproperties" attribute
         /// </summary>
         public string HtmlProperties
         {
@@ -367,7 +458,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Value of the data-sp-webpart attribute
+        /// Value of the "data-sp-webpart" attribute
         /// </summary>
         public string WebPartData
         {
@@ -444,6 +535,18 @@ namespace OfficeDevPnP.Core.Pages
                 return typeof(ClientSideWebPart);
             }
         }
+
+
+        /// <summary>
+        /// Value of the "data-sp-controldata" attribute
+        /// </summary>
+        public ClientSideWebPartControlData SpControlData
+        {
+            get
+            {
+                return this.spControlData;
+            }
+        }
         #endregion
 
         #region public methods
@@ -473,16 +576,39 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Returns a HTML representation of the client side web part
         /// </summary>
+        /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>HTML representation of the client side web part</returns>
-        public override string ToHtml()
+        public override string ToHtml(int controlIndex)
         {
+            // Can this control be hosted in this zone type?
+            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            {
+                if (!this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
+                    !this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new Exception("You cannot host this web part inside a one column full width zone, only an image web part or hero web part are allowed");
+                }
+            }
+
             // Obtain the json data
-            ClientSideWebPartControlData controlData = new ClientSideWebPartControlData() { ControlType = this.ControlType, Id = this.InstanceId.ToString("D"), WebPartId = this.WebPartId };
+            ClientSideWebPartControlData controlData = new ClientSideWebPartControlData()
+            {
+                ControlType = this.ControlType,
+                Id = this.InstanceId.ToString("D"),
+                WebPartId = this.WebPartId,
+                Position = new ClientSideCanvasControlPosition()
+                {
+                    ZoneIndex = this.Zone.Order,
+                    SectionIndex = this.Section.Order,
+                    SectionFactor = this.Section.SectionFactor,
+                    ControlIndex = controlIndex,
+                },
+            };
             ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
 
-            jsonControlData = JsonConvert.SerializeObject(controlData);
-            jsonWebPartData = JsonConvert.SerializeObject(webpartData);
-            jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+            this.jsonControlData = JsonConvert.SerializeObject(controlData);
+            this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
+            this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
 
             StringBuilder html = new StringBuilder(100);
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
@@ -521,14 +647,23 @@ namespace OfficeDevPnP.Core.Pages
         {
             base.FromHtml(element);
 
+            // load data from the data-sp-controldata attribute
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            this.spControlData = JsonConvert.DeserializeObject<ClientSideWebPartControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
+            this.controlType = this.spControlData.ControlType;
+
+
             var wpDiv = element.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartDataAttribute)).FirstOrDefault();
             this.webPartData = wpDiv.GetAttribute(ClientSideWebPart.WebPartAttribute);
 
             // Decode the html encoded string
             var decoded = WebUtility.HtmlDecode(wpDiv.GetAttribute(ClientSideWebPart.WebPartDataAttribute));
             JObject wpJObject = JObject.Parse(decoded);
-            this.title = wpJObject["title"].Value<string>();
-            this.description = wpJObject["description"].Value<string>();
+            this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
+            this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             this.propertiesJson = wpJObject["properties"].ToString(Formatting.None);
             this.webPartId = wpJObject["id"].Value<string>();
 

@@ -61,7 +61,7 @@
     <add key="AzureStorageKey" value="" />
     <!-- Support for storing file change tracking information into a database-->
     <add key="TestAutomationDatabaseConnectionString" value="" />
-    
+
     <!-- Support for High Trust certificate testing -->
     <!-- Full path to the PFX to be used for the high trust certificate testing -->
     <add key="HighTrustCertificatePath" value="" />
@@ -76,6 +76,9 @@
     <!-- The thumbprint / hash of the High Trust certificate in the Windows certificate store -->
     <add key="HighTrustCertificateStoreThumbprint" value="bef80ea8c46391873e00a0ea588bd8feadd01d22" />
 
+
+    <!--Testing for Webhook test endpoint-->
+    <add key="WebHookTestUrl" value="https://[test-functions].azurewebsites.net" />
   </appSettings>
   <system.diagnostics>
     <sharedListeners>

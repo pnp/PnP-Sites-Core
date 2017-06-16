@@ -139,7 +139,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingField.SchemaXml = parser.ParseString(existingFieldElement.ToString(), "~sitecollection", "~site");
                         existingField.UpdateAndPushChanges(true);
                         web.Context.Load(existingField, f => f.TypeAsString, f => f.DefaultValue);
-                        web.Context.ExecuteQueryRetry();
+                        try
+                        {
+                            web.Context.ExecuteQueryRetry();
+                        }
+                        catch (ServerException se)
+                        {
+                            if (se.ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                            {
+                                string fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
+                                WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout, fieldName), ProvisioningMessageType.Warning);
+                                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout, fieldName);
+
+                                web.Context.Load(existingField, f => f.TypeAsString, f => f.DefaultValue);
+                                web.Context.ExecuteQueryRetry();
+                            }
+                            else
+                                throw;
+                        }
 
                         bool isDirty = false;
 #if !SP2013
