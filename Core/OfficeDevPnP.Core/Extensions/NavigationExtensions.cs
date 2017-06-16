@@ -88,6 +88,28 @@ namespace Microsoft.SharePoint.Client
                         nav.GlobalNavigation.ManagedNavigation = managedNavigation;
                     }
                 }
+                // Get settings related to page creation
+                XElement pageNode = navigationSettings.XPathSelectElement("./NewPageSettings");
+                if (pageNode != null)
+                {
+                    if (pageNode.Attribute("AddNewPagesToNavigation") != null)
+                    {
+                        bool addNewPagesToNavigation;
+                        if (bool.TryParse(pageNode.Attribute("AddNewPagesToNavigation").Value, out addNewPagesToNavigation))
+                        {
+                            nav.AddNewPagesToNavigation = addNewPagesToNavigation;
+                        }
+                    }
+
+                    if (pageNode.Attribute("CreateFriendlyUrlsForNewPages") != null)
+                    {
+                        bool createFriendlyUrlsForNewPages;
+                        if (bool.TryParse(pageNode.Attribute("CreateFriendlyUrlsForNewPages").Value, out createFriendlyUrlsForNewPages))
+                        {
+                            nav.CreateFriendlyUrlsForNewPages = createFriendlyUrlsForNewPages;
+                        }
+                    }
+                }
             }
 
             // Only read the other values that make sense when not using managed navigation
@@ -196,6 +218,14 @@ namespace Microsoft.SharePoint.Client
             {
                 webNav.CurrentNavigation.Source = StandardNavigationSource.TaxonomyProvider;
             }
+
+            // If managed metadata navigation is used, set settings related to page creation
+            if (navigationSettings.GlobalNavigation.ManagedNavigation || navigationSettings.CurrentNavigation.ManagedNavigation)
+            {
+                webNav.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
+                webNav.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
+            }
+
             webNav.Update(taxonomySession);
             web.Context.ExecuteQueryRetry();
 
