@@ -1,5 +1,8 @@
 ﻿namespace OfficeDevPnP.Core.Entities
 {
+    /// <summary>
+    /// Holds definition for Web Template
+    /// </summary>
     public class WebTemplateEntity
     {
 
