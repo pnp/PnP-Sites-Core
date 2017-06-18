@@ -70,6 +70,9 @@ namespace OfficeDevPnP.Core.Entities
             set;
         }
 
+        /// <summary>
+        /// Site lock status
+        /// </summary>
         public SiteLockState LockState
         {
             get;
