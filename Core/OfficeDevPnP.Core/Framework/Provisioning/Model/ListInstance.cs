@@ -11,7 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public partial class ListInstance : BaseModel, IEquatable<ListInstance>
     {
         #region Constructors
-
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
         public ListInstance()
         {
             this._ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
@@ -23,24 +25,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentType Bindings of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
                 this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentType Bindings of the list</param>
+        /// <param name="views">View of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security) :
                 this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentTypeBindings  of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
+        /// <param name="folders">List Folders</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) :
                 this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, folders, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for the ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentTypeBindings of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
+        /// <param name="folders">List Folders</param>
+        /// <param name="userCustomActions">UserCustomActions of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) : 
             this()
@@ -192,7 +235,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Gets or sets the content types to associate to the list
+        /// Gets or sets the views associated to the list
         /// </summary>
         public ViewCollection Views
         {
@@ -200,20 +243,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._views = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Fields associated to the list
+        /// </summary>
         public FieldCollection Fields
         {
             get { return this._fields; }
             private set { this._fields = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the FieldRefs associated to the list
+        /// </summary>
         public FieldRefCollection FieldRefs
         {
             get { return this._fieldRefs; }
             private set { this._fieldRefs = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Guid for TemplateFeature
+        /// </summary>
         public Guid TemplateFeatureID { get; set; }
 
+        /// <summary>
+        /// Gets or sets the DataRows associated to the list
+        /// </summary>
         public DataRowCollection DataRows
         {
             get { return this._dataRows; }
@@ -273,6 +328,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}",
@@ -306,6 +365,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ListInstance
+        /// </summary>
+        /// <param name="obj">Object that represents ListInstance</param>
+        /// <returns>true if the current object is equal to the ListInstance</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ListInstance))
@@ -315,6 +379,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ListInstance)obj));
         }
 
+        /// <summary>
+        /// Compares ListInstance object based on ContentTypesEnabled, Description, DocumentTemplate, EnableVersioning, EnableMinorVersions, EnableModeration, Hidden, 
+        /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
+        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders and UserCustomActions properties.
+        /// </summary>
+        /// <param name="other">ListInstance object</param>
+        /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ListInstance other)
         {
             if (other == null)

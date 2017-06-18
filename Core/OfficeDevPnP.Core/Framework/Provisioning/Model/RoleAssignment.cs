@@ -26,7 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
@@ -35,6 +38,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with RoleAssignment
+        /// </summary>
+        /// <param name="obj">Object that represents RoleAssignment</param>
+        /// <returns>true if the current object is equal to the RoleAssignment</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is RoleAssignment))
@@ -44,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((RoleAssignment)obj));
         }
 
+        /// <summary>
+        /// Compares RoleAssignment object based on Principal and RoleDefinition
+        /// </summary>
+        /// <param name="other">RoleAssignment object</param>
+        /// <returns>true if the RoleAssignment object is equal to the current object; otherwise, false.</returns>
         public bool Equals(RoleAssignment other)
         {
             if (other == null)

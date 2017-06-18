@@ -10,11 +10,21 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    /// <summary>
+    /// Class that deals with Unified group CRUD operations.
+    /// </summary>
     public static class UnifiedGroupsUtility
     {
         private const int defaultRetryCount = 10;
         private const int defaultDelay = 500;
 
+        /// <summary>
+        ///  Creates a new GraphServiceClient instance using a custom PnPHttpProvider
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to configure the HTTP bearer Authorization Header</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request.</param>
+        /// <returns></returns>
         private static GraphServiceClient CreateGraphClient(String accessToken, int retryCount = defaultRetryCount, int delay = defaultDelay)
         {
             // Creates a new GraphServiceClient instance using a custom PnPHttpProvider

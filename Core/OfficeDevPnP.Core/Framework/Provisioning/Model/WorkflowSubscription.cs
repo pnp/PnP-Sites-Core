@@ -20,9 +20,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public WorkflowSubscription() { }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="propertyDefinitions">Dictionary Key-Value pair of property definitions </param>
         public WorkflowSubscription(Dictionary<String, String> propertyDefinitions)
         {
             if (propertyDefinitions != null)
@@ -104,6 +110,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets hash code of workflow subscription
+        /// </summary>
+        /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
@@ -120,6 +130,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Comapres given workflow subscription object which is to be provisioned
+        /// </summary>
+        /// <param name="obj">WorkflowSubscription Object</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is WorkflowSubscription))
@@ -129,6 +144,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((WorkflowSubscription)obj));
         }
 
+        /// <summary>
+        /// Comapres given workflow subscription object which is to be provisioned
+        /// </summary>
+        /// <param name="other">WorkflowSubscription Object</param>
+        /// <returns>true if the WorkflowSubscription object is equal to the current object; otherwise, false.</returns>
         public bool Equals(WorkflowSubscription other)
         {
             if (other == null)

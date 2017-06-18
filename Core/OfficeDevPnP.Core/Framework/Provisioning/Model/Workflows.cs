@@ -20,12 +20,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Constructors
 
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public Workflows()
         {
             this._workflowDefinitions = new Model.WorkflowDefinitionCollection(this.ParentTemplate);
             this._workflowSubscriptions = new Model.WorkflowSubscriptionCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="workflowDefinitions">Collection of workflow definitions</param>
+        /// <param name="workflowSubscriptions">Collection of workflow subscriptions</param>
         public Workflows(IEnumerable<WorkflowDefinition> workflowDefinitions = null, IEnumerable<WorkflowSubscription> workflowSubscriptions = null) : 
             this()
         {

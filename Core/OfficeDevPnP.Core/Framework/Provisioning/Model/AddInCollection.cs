@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class AddInCollection : ProvisioningTemplateCollection<AddIn>
     {
+        /// <summary>
+        /// Constructor for AddInCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public AddInCollection(ProvisioningTemplate parentTemplate) :
             base(parentTemplate)
         {

@@ -5,6 +5,10 @@
     /// </summary>
     public partial class FileCollection : ProvisioningTemplateCollection<File>
     {
+        /// <summary>
+        /// Constructor for FileCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public FileCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 
