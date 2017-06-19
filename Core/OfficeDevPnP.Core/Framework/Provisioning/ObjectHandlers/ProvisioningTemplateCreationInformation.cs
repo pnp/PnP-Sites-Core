@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool skipVersionCheck = false;
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
+        private bool includeContentTypesFromSyndication = false;
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
@@ -234,6 +235,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return skipVersionCheck; }
             set { skipVersionCheck = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to include content types from syndication or not.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if the export should contains content types issued from syndication
+        /// </value>
+        public bool IncludeContentTypesFromSyndication
+        {
+            get { return includeContentTypesFromSyndication; }
+            set { includeContentTypesFromSyndication = value; }
         }
     }
 }
