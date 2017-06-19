@@ -7,13 +7,16 @@ using System.Text;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Holds yammer operation methods
+    /// </summary>
     public static class YammerUtility
     {
         /// <summary>
         /// Returns Yammer Group if group exists. If the group does not exist, returns null.
         /// </summary>
         /// <param name="groupName">Group name to search for</param>
-        /// <param name="accessToken"></param>
+        /// <param name="accessToken">accessToken will have all the required permissions to update or retrieve data to Yammer on behalf of the user</param>
         /// <returns>Returns Yammer Group is group exists. If group does not exists, returns null.</returns>
         public static YammerGroup GetYammerGroupByName(string groupName, string accessToken)
         {
@@ -34,7 +37,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// Returns Yammer Group if group exists. If the group does not exist, returns null.
         /// </summary>
         /// <param name="groupId">Group Id to search for</param>
-        /// <param name="accessToken"></param>
+        /// <param name="accessToken">accessToken will have all the required permissions to update or retrieve data to Yammer on behalf of the user</param>
         /// <returns>Returns Yammer Group is group exists. If group does not exists, returns null.</returns>
         public static YammerGroup GetYammerGroupById(int groupId, string accessToken)
         {
@@ -54,7 +57,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Returns Yammer groups based on the access token. All groups are returned for registered apps.
         /// </summary>
-        /// <param name="accessToken">Access token to the Yammer network</param>
+        /// <param name="accessToken">accessToken will have all the required permissions to update or retrieve data to Yammer on behalf of the user</param>
         /// <returns>All groups in the network</returns>
         public static List<YammerGroup> GetYammerGroups(string accessToken)
         {
@@ -75,6 +78,11 @@ namespace OfficeDevPnP.Core.Utilities
             return groups;
         }
 
+        /// <summary>
+        /// Returns yammer user if user exists. If the user doesn't exist, returns null
+        /// </summary>
+        /// <param name="accessToken">accessToken will have all the required permissions to update or retrieve data to Yammer on behalf of the user</param>
+        /// <returns></returns>
         public static YammerUser GetYammerUser(string accessToken)
         {
             //get service account token
@@ -85,10 +93,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Can be used to create Yammer group to the Yammer network
         /// </summary>
-        /// <param name="groupName"></param>
-        /// <param name="isPrivate"></param>
-        /// <param name="accessToken"></param>
-        /// <returns></returns>
+        /// <param name="groupName">Creates yammer group with given name</param>
+        /// <param name="isPrivate">Sets yammer groups as private if the value is true. Otherwise sets as public group</param>
+        /// <param name="accessToken">accessToken will have all the required permissions to update or retrieve data to Yammer on behalf of the user</param>
+        /// <returns>Returns YammerGroup created</returns>
         public static YammerGroup CreateYammerGroup(string groupName, bool isPrivate, string accessToken)
         {
             //Get reference existing group if exists
@@ -106,11 +114,11 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Creates web part entity with the Yammer group structure on it
         /// </summary>
-        /// <param name="yammerNetworkName"></param>
-        /// <param name="yammerGroupId"></param>
-        /// <param name="showHeader"></param>
-        /// <param name="showFooter"></param>
-        /// <returns></returns>
+        /// <param name="yammerNetworkName">Yammer group network name</param>
+        /// <param name="yammerGroupId">Yammer group id</param>
+        /// <param name="showHeader">Shows header of webpart based on the value</param>
+        /// <param name="showFooter">Shows footer of webpart based on value</param>
+        /// <returns>Returns created WebPartEntity</returns>
         public static WebPartEntity GetYammerGroupDiscussionPart(string yammerNetworkName, int yammerGroupId, bool showHeader, bool showFooter)
         {
             WebPartEntity wpYammer = new WebPartEntity();
@@ -123,14 +131,14 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Creates web part entity with the Yammer OpenGraph structure on it for specific URL
         /// </summary>
-        /// <param name="yammerNetworkName"></param>
-        /// <param name="url"></param>
-        /// <param name="showHeader"></param>
-        /// <param name="showFooter"></param>
-        /// <param name="postTitle"></param>
-        /// <param name="postImageUrl"></param>
-        /// <param name="defaultGroupId"></param>
-        /// <returns></returns>
+        /// <param name="yammerNetworkName">Yammer network name</param>
+        /// <param name="url">yammer url</param>
+        /// <param name="showHeader">Shows header based on value</param>
+        /// <param name="showFooter">Shows footer based on value</param>
+        /// <param name="postTitle">creates webpart with given post title</param>
+        /// <param name="postImageUrl">creates webpart with given post title</param>
+        /// <param name="defaultGroupId">creates webpart with givne group id</param>
+        /// <returns>Returns created WebPartEntity</returns>
         public static WebPartEntity GetYammerOpenGraphDiscussionPart(string yammerNetworkName, string url, bool showHeader, bool showFooter, string postTitle = "", string postImageUrl = "", string defaultGroupId = "")
         {
             WebPartEntity wpYammer = new WebPartEntity();
@@ -143,11 +151,11 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Constructs the webpart XML for yammer group needed to inject as Yammer web part to SharePoint page
         /// </summary>
-        /// <param name="yammerNetworkName">Name of the network</param>
+        /// <param name="yammerNetworkName">Yammer network name</param>
         /// <param name="yammerGroupId">Group ID</param>
-        /// <param name="showHeader"></param>
-        /// <param name="showFooter"></param>
-        /// <param name="useSSO"></param>
+        /// <param name="showHeader">Shows header based on value</param>
+        /// <param name="showFooter">Shows footer based on value</param>
+        /// <param name="useSSO">uses given Single Sign-on information to create webpart</param>
         /// <returns>The constructed web part XML</returns>
         public static string CreateYammerDiscussionPartXml(string yammerNetworkName, int yammerGroupId, bool showHeader, bool showFooter, bool useSSO = true)
         {
@@ -157,11 +165,11 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Constructs the webpart XML for yammer group needed to inject as Yammer web part to SharePoint page
         /// </summary>
-        /// <param name="yammerNetworkName">Name of the network</param>
+        /// <param name="yammerNetworkName">Yammer network name</param>
         /// <param name="yammerGroupId">Group ID</param>
-        /// <param name="showHeader"></param>
-        /// <param name="showFooter"></param>
-        /// <param name="useSSO"></param>
+        /// <param name="showHeader">Shows header based on value</param>
+        /// <param name="showFooter">Shows footer based on value</param>
+        /// <param name="useSSO">uses given Single Sign-on information to create webpart</param>
         /// <returns>The constructed web part XML</returns>
         public static string CreateYammerGroupDiscussionPartXml(string yammerNetworkName, int yammerGroupId, bool showHeader, bool showFooter, bool useSSO = true)
         {
@@ -205,15 +213,15 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Constructs web part definition for Open Graph discussion web part definition
         /// </summary>
-        /// <param name="yammerNetworkName"></param>
-        /// <param name="url"></param>
-        /// <param name="showHeader"></param>
-        /// <param name="showFooter"></param>
-        /// <param name="postImageUrl"></param>
-        /// <param name="useSso"></param>
-        /// <param name="postTitle"></param>
-        /// <param name="groupId"></param>
-        /// <returns></returns>
+        /// <param name="yammerNetworkName">Yammer network name</param>
+        /// <param name="url">Yammer url</param>
+        /// <param name="showHeader">Shows header based on value</param>
+        /// <param name="showFooter">Shows footer based on value</param>
+        /// <param name="postImageUrl">creates webpart with given post title</param>
+        /// <param name="useSso">uses given Single Sign-on information to create webpart</param>
+        /// <param name="postTitle">creates webpart with given post title</param>
+        /// <param name="groupId">yammer group id</param>
+        /// <returns>The constructed Open Graph Discussion Part XML</returns>
         public static string CreateYammerOpenGraphDiscussionPartXml(string yammerNetworkName, string url, bool showHeader, 
                                                                     bool showFooter, string postTitle="", string postImageUrl="", 
                                                                     bool useSso = true, string groupId = "")

@@ -20,9 +20,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Combines a path and a relative path.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="relativePaths"></param>
-        /// <returns></returns>
+        /// <param name="path">A SharePoint url</param>
+        /// <param name="relativePaths">SharePoint relative urls</param>
+        /// <returns>Returns comibed path with a relative paths</returns>
         public static string Combine(string path, params string[] relativePaths) {
             string pathBuilder = path ?? string.Empty;
 
@@ -37,9 +37,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Combines a path and a relative path.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="relative"></param>
-        /// <returns></returns>
+        /// <param name="path">A SharePoint url</param>
+        /// <param name="relative">SharePoint relative url</param>
+        /// <returns>Returns comibed path with a relative path</returns>
         public static string Combine(string path, string relative) 
         {
             if(relative == null)
@@ -68,9 +68,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Adds query string parameters to the end of a querystring and guarantees the proper concatenation with <b>?</b> and <b>&amp;.</b>
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="queryString"></param>
-        /// <returns></returns>
+        /// <param name="path">A SharePoint url</param>
+        /// <param name="queryString">Query string value that need to append to the url</param>
+        /// <returns>Returns url along with appended query string</returns>
         public static string AppendQueryString(string path, string queryString)
         {
             string url = path;
@@ -85,7 +85,11 @@ namespace OfficeDevPnP.Core.Utilities
         #endregion
 
         #region [ RelativeUrl ]
-
+        /// <summary>
+        /// Returns realtive url of given url
+        /// </summary>
+        /// <param name="urlToProcess">SharePoint url to process</param>
+        /// <returns>Returns realtive url of given url</returns>
         public static string MakeRelativeUrl(string urlToProcess) {
             Uri uri = new Uri(urlToProcess);
             return uri.AbsolutePath;
@@ -107,18 +111,41 @@ namespace OfficeDevPnP.Core.Utilities
         }
         #endregion
 
+        /// <summary>
+        /// Checks url contians invalid characters or not
+        /// </summary>
+        /// <param name="content">url value</param>
+        /// <returns>Returns true if url contains invalid characters. Otherwise returns false.</returns>
         public static bool ContainsInvalidUrlChars(this string content)
         {
 	    return Regex.IsMatch(content, INVALID_CHARS_REGEX);
         }
+
+        /// <summary>
+        /// Removes invalid characters
+        /// </summary>
+        /// <param name="content">url value</param>
+        /// <returns>Returns url without invalid characters</returns>
         public static string StripInvalidUrlChars(this string content)
         {
             return ReplaceInvalidUrlChars(content, "");
         }
+        /// <summary>
+        /// Replaces invalid charcters with other characters
+        /// </summary>
+        /// <param name="content">Url value</param>
+        /// <param name="replacer">string need to replace with invalid characters</param>
+        /// <returns>Returns replaced invalid charcters from url</returns>
         public static string ReplaceInvalidUrlChars(this string content, string replacer)
         {
 	    return new Regex(INVALID_CHARS_REGEX).Replace(content, replacer);
         }
+
+        /// <summary>
+        /// Tells url is virtual directory or not
+        /// </summary>
+        /// <param name="url">SharePoint url</param>
+        /// <returns>Returns true if url is virtual directory. Otherwise returns false.</returns>
         public static bool IsIisVirtualDirectory(string url)
         {
             return Regex.IsMatch(url, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);
