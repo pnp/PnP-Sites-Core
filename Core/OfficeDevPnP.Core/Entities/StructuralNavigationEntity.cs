@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Entities
             ShowPages = false;
         }
 
+        public bool InheritFromParentWeb { get; set; }
         public bool ManagedNavigation { get; set; }
         public bool ShowSubsites { get; set; }
         public bool ShowPages { get; set; }
