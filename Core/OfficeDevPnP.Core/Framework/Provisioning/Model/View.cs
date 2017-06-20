@@ -23,13 +23,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             XElement element = PrepareViewForCompare(this.SchemaXml);
             return (element != null ? element.ToString().GetHashCode() : 0);
         }
 
+        /// <summary>
+        /// Compares object with View
+        /// </summary>
+        /// <param name="obj">Object that represents View</param>
+        /// <returns>true if the current object is equal to the View</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is View))
@@ -39,6 +47,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((View)obj));
         }
 
+        /// <summary>
+        /// Compares View object based on currentXml and otherXml
+        /// </summary>
+        /// <param name="other">View object</param>
+        /// <returns>true if the View object is equal to the current object; otherwise, false.</returns>
         public bool Equals(View other)
         {
             if (other == null)

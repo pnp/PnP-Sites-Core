@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class SiteGroupCollection : ProvisioningTemplateCollection<SiteGroup>
     {
+        /// <summary>
+        /// Constructor for SiteGroupCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public SiteGroupCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

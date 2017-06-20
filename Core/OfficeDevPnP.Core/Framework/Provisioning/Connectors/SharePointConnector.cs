@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <summary>
         /// SharePointConnector constructor. Allows to directly set root folder and sub folder
         /// </summary>
-        /// <param name="clientContext"></param>
+        /// <param name="clientContext">Client context for SharePoint connection</param>
         /// <param name="connectionString">Site collection URL (e.g. https://yourtenant.sharepoint.com/sites/dev) </param>
         /// <param name="container">Library + folder that holds the files (mydocs/myfolder)</param>
         public SharePointConnector(ClientRuntimeContext clientContext, string connectionString, string container)
@@ -366,6 +366,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Returns a filename without a path</returns>
         public override string GetFilenamePart(string fileName)
         {
             fileName = fileName.Replace('\\', '/');

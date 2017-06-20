@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class RoleDefinitionCollection : ProvisioningTemplateCollection<RoleDefinition>
     {
+        /// <summary>
+        /// Constructor for RoleDefibitionCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public RoleDefinitionCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

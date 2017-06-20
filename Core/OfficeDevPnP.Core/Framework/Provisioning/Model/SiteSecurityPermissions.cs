@@ -19,7 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructor
-
+        /// <summary>
+        /// Constructor for SiteSecurityPermissions class
+        /// </summary>
         public SiteSecurityPermissions()
         {
             this._roleDefinitions = new RoleDefinitionCollection(this.ParentTemplate);
