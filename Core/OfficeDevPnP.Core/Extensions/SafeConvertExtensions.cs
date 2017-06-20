@@ -119,18 +119,36 @@ namespace System {
         #endregion
 
         #region [ ToEnum ]
+        /// <summary>
+        /// Converts integer input to Enum
+        /// </summary>
+        /// <typeparam name="T">Generic Type</typeparam>
+        /// <param name="enumValue">integer input</param>
+        /// <returns>Return Generic Type of Enum</returns>
         public static T ToEnum<T>(this int enumValue) {
             if (false == typeof(T).IsEnum)
                 throw new NotSupportedException(typeof(T).Name + " must be an Enum");
 
             return (T)Enum.ToObject(typeof(T), enumValue);
         }
+        /// <summary>
+        /// Converts byte input to Enum
+        /// </summary>
+        /// <typeparam name="T">Generic Type</typeparam>
+        /// <param name="enumValue">byte input</param>
+        /// <returns>Return Generic Type of Enum</returns>
         public static T ToEnum<T>(this byte enumValue) {
             if (false == typeof(T).IsEnum)
                 throw new NotSupportedException(typeof(T).Name + " must be an Enum");
 
             return (T)Enum.ToObject(typeof(T), enumValue);
         }
+        /// <summary>
+        /// Converts input string to Enum
+        /// </summary>
+        /// <typeparam name="T">Generic Type</typeparam>
+        /// <param name="name">string input</param>
+        /// <returns>Return Generic Type of Enum</returns>
         public static T ToEnum<T>(this string name) {
             if (false == typeof(T).IsEnum)
                 throw new NotSupportedException(typeof(T).Name + " must be an Enum");

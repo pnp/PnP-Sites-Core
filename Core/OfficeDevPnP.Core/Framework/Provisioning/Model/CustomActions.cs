@@ -13,6 +13,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Constructor for CustomActions class
+        /// </summary>
         public CustomActions()
         {
             _siteCustomActions = new CustomActionCollection(this.ParentTemplate);

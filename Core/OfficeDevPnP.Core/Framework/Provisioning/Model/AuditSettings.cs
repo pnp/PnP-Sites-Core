@@ -32,6 +32,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code.
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -41,6 +45,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with AuditSettings
+        /// </summary>
+        /// <param name="obj">Object that represents AuditSettings</param>
+        /// <returns>true if the current object is equal to the AuditSettings</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is AuditSettings))
@@ -50,6 +59,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((AuditSettings)obj));
         }
 
+        /// <summary>
+        /// Compares AuditSetting object based on AuditFlags, AuditLogTrimmingRetention and TrimAuditLog properties.
+        /// </summary>
+        /// <param name="other">AuditSettings object</param>
+        /// <returns>true if the AuditSettings object is equal to the current object; otherwise, false.</returns>
         public bool Equals(AuditSettings other)
         {
             if (other == null)

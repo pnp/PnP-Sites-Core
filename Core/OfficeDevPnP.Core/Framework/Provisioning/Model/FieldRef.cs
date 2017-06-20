@@ -46,11 +46,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for FieldRef class
+        /// </summary>
         public FieldRef()
         {
         }
 
+        /// <summary>
+        /// Constructor for FieldRef class
+        /// </summary>
+        /// <param name="fieldRefName">Name of the Field Reference</param>
         public FieldRef(string fieldRefName)
         {
             this.Name = fieldRefName;
@@ -59,7 +65,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -69,6 +78,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with FieldRef
+        /// </summary>
+        /// <param name="obj">Object that represents FieldRef</param>
+        /// <returns>true if the current object is equal to the FieldRef</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is FieldRef))
@@ -78,6 +92,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((FieldRef)obj));
         }
 
+        /// <summary>
+        /// Compares FieldRef object based on Id, Required and Hidden properties.
+        /// </summary>
+        /// <param name="other">FieldRef object</param>
+        /// <returns>true if the FieldRef object is equal to the current object; otherwise, false.</returns>
         public bool Equals(FieldRef other)
         {
             if (other == null)

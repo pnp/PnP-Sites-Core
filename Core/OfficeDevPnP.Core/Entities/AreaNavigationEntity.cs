@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Entities
     {
 
         /// <summary>
-        /// ctor
+        /// Default Constructor
         /// </summary>
         public AreaNavigationEntity()
         {

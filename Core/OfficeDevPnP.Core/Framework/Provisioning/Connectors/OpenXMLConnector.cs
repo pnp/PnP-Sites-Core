@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <summary>
         /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
         /// </summary>
-        /// <param name="packageStream"></param>
+        /// <param name="packageStream">The package stream</param>
         public OpenXMLConnector(Stream packageStream): base()
         {
             if (packageStream == null)
@@ -172,6 +172,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return GetFile(fileName, GetContainer());
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file to get</param>
+        /// <returns>Returns a filename without a path</returns>
         public override string GetFilenamePart(string fileName)
         {
             fileName = fileName.Replace(@"/", @"\");
@@ -427,6 +432,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
         #region Commit capability
 
+        /// <summary>
+        /// Commits the file
+        /// </summary>
         public void Commit()
         {
             MemoryStream stream = pnpInfo.PackTemplateAsStream();

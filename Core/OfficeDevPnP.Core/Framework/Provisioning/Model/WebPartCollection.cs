@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class WebPartCollection : ProvisioningTemplateCollection<WebPart>
     {
+        /// <summary>
+        /// Constructor for WebPartCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public WebPartCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

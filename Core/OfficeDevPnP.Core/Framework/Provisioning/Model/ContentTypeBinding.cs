@@ -33,6 +33,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}",
@@ -42,6 +46,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ContentTypeBinding
+        /// </summary>
+        /// <param name="obj">Object that represents ContentTypeBinding</param>
+        /// <returns>true if the current object is equal to the ContentTypeBinding</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ContentTypeBinding))
@@ -51,6 +60,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ContentTypeBinding)obj));
         }
 
+        /// <summary>
+        /// Compares ContentTypeBinding object based on ContentTypeId, Default and Remove properties.
+        /// </summary>
+        /// <param name="other">ContentTypeBinding object</param>
+        /// <returns>true if the ContentTypeBinding object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ContentTypeBinding other)
         {
             if (other == null)

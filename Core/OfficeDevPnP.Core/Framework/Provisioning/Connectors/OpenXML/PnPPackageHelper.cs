@@ -12,7 +12,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public static class PnPPackageExtensions
     {
-
+        /// <summary>
+        /// Packs template as a memory stream
+        /// </summary>
+        /// <param name="pnpInfo">PnPInfo object</param>
+        /// <returns>Returns MemoryStream</returns>
         public static MemoryStream PackTemplateAsStream(this PnPInfo pnpInfo)
         {
             MemoryStream stream = new MemoryStream();
@@ -24,6 +28,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return stream;
         }
 
+        /// <summary>
+        /// Packs template as a stream array
+        /// </summary>
+        /// <param name="pnpInfo">PnPInfo object</param>
+        /// <returns>Returns stream as an array</returns>
         public static Byte[] PackTemplate(this PnPInfo pnpInfo)
         {
             using (MemoryStream stream = PackTemplateAsStream(pnpInfo))
@@ -32,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
         }
 
+        /// <summary>
+        /// Unpacks template into PnP OpenXML package info object based on memory stream
+        /// </summary>
+        /// <param name="stream">MemoryStream</param>
+        /// <returns>Returns site template</returns>
         public static PnPInfo UnpackTemplate(this MemoryStream stream)
         {
             PnPInfo siteTemplate;
@@ -43,6 +57,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return siteTemplate;
         }
 
+        /// <summary>
+        /// Unpacks template into PnP OpenXML package info object
+        /// </summary>
+        /// <param name="packageBytes">Package Byte</param>
+        /// <returns>Returns site template</returns>
         public static PnPInfo UnpackTemplate(this Byte[] packageBytes)
         {
             using (MemoryStream stream = new MemoryStream(packageBytes))
@@ -51,6 +70,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
         }
 
+        /// <summary>
+        /// Return filename as Internal filename
+        /// </summary>
+        /// <param name="filename">Name of the file</param>
+        /// <returns>Returns filename as Internal filename</returns>
         public static string AsInternalFilename(this string filename)
         {
             return Guid.NewGuid() + Path.GetExtension(filename);
