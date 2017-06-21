@@ -11,10 +11,19 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideCanvasPosition
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "zoneIndex"
+        /// </summary>
         [JsonProperty(PropertyName = "zoneIndex")]
         public float ZoneIndex { get; set; }
+        /// <summary>
+        /// Gets or sets JsonProperty "sectionIndex"
+        /// </summary>
         [JsonProperty(PropertyName = "sectionIndex")]
         public int SectionIndex { get; set; }
+        /// <summary>
+        /// Gets or sets JsonProperty "sectionFactor"
+        /// </summary>
         [JsonProperty(PropertyName = "sectionFactor")]
         public int SectionFactor { get; set; }
     }
@@ -24,6 +33,9 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideCanvasControlPosition: ClientSideCanvasPosition
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "controlIndex"
+        /// </summary>
         [JsonProperty(PropertyName = "controlIndex")]
         public int ControlIndex { get; set; }
     }
@@ -33,6 +45,9 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideCanvasData
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "position"
+        /// </summary>
         [JsonProperty(PropertyName = "position")]
         public ClientSideCanvasPosition Position { get; set; }
     }
@@ -42,12 +57,19 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideCanvasControlData
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "controlType"
+        /// </summary>
         [JsonProperty(PropertyName = "controlType")]
         public int ControlType { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "id"
+        /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "position"
+        /// </summary>
         [JsonProperty(PropertyName = "position")]
         public ClientSideCanvasControlPosition Position { get; set; }
     }
@@ -57,6 +79,9 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideTextControlData : ClientSideCanvasControlData
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "editorType"
+        /// </summary>
         [JsonProperty(PropertyName = "editorType")]
         public string EditorType { get; set; }
     }
@@ -66,6 +91,9 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideWebPartControlData : ClientSideCanvasControlData
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "webPartId"
+        /// </summary>
         [JsonProperty(PropertyName = "webPartId")]
         public string WebPartId { get; set; }
     }
@@ -77,21 +105,34 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideWebPartData
     {
+        /// <summary>
+        /// Gets or sets JsonProperty "id"
+        /// </summary>
         [JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "instanceId"
+        /// </summary>
         [JsonProperty(PropertyName = "instanceId")]
         public string InstanceId { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "title"
+        /// </summary>
         [JsonProperty(PropertyName = "title")]
         public string Title { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "description"
+        /// </summary>
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "dataVersion"
+        /// </summary>
         [JsonProperty(PropertyName = "dataVersion")]
         public string DataVersion { get; set; }
-
+        /// <summary>
+        /// Gets or sets JsonProperty "properties"
+        /// </summary>
         [JsonProperty(PropertyName = "properties")]
         public string Properties { get; set; }
     }
