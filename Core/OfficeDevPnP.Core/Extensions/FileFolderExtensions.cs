@@ -1274,7 +1274,7 @@ namespace Microsoft.SharePoint.Client
             {
                 var context = file.Context;
 
-                bool normalFile = true;
+                bool normalFile = !file.ListItemAllFields.ServerObjectIsNull ?? false; //normal files have listItemAllFields;
                 var checkOutRequired = false;
                 if (normalFile)
                 {
