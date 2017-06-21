@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool skipVersionCheck = false;
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
-        private bool includeContentTypesFromSyndication = false;
+        private bool includeContentTypesFromSyndication = true;
 
         /// <summary>
         /// Provisioning Progress Delegate
@@ -285,10 +285,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to include content types from syndication or not.
+        /// Gets or sets a value indicating whether to include content types from syndication (= content type hub) or not.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if the export should contains content types issued from syndication
+        ///   <c>true</c> if the export should contains content types issued from syndication (= content type hub)
         /// </value>
         public bool IncludeContentTypesFromSyndication
         {
