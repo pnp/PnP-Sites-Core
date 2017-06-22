@@ -28,11 +28,22 @@ namespace OfficeDevPnP.Core.Utilities
     /// </summary>
     internal static class WebhookUtility
     {
-
         private const string SubscriptionsUrlPart = "subscriptions";
         private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
         public const int MaximumValidityInMonths = 6;
-        public const int ValidityDeltaHours = -72;
+        public const int ExpirationDateTimeMaxDays = 180;
+        public const int ExpirationDateTimeGraceMinutes = 90;
+
+        /// <summary>
+        /// The effective maximum expiration datetime
+        /// </summary>
+        public static DateTime MaxExpirationDateTime
+        {
+            get
+            {
+                return DateTime.UtcNow.AddDays(ExpirationDateTimeMaxDays).AddMinutes(ExpirationDateTimeGraceMinutes);
+            }
+        }
 
         /// <summary>
         /// Add a Webhook subscription to a SharePoint resource
@@ -108,17 +119,16 @@ namespace OfficeDevPnP.Core.Utilities
         internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl,
             string clientState = null, int validityInMonths = MaximumValidityInMonths)
         {
-            var expirationDate = DateTime.Now.AddMonths(validityInMonths).ToUniversalTime();
-            if (validityInMonths == MaximumValidityInMonths)
-            {
-                expirationDate = expirationDate.AddHours(ValidityDeltaHours);
-            }
-
+            // If validity in months is the Maximum, use the effective max allowed DateTime instead
+            DateTime expirationDateTime = validityInMonths == MaximumValidityInMonths
+                ? MaxExpirationDateTime
+                : DateTime.UtcNow.AddMonths(validityInMonths);
+         
             var subscription = new WebhookSubscription()
             {
                 Resource = resourceId,
                 NotificationUrl = notificationUrl,
-                ExpirationDateTime = expirationDate,
+                ExpirationDateTime = expirationDateTime,
                 ClientState = clientState
             };
 
@@ -309,13 +319,18 @@ namespace OfficeDevPnP.Core.Utilities
             }
         }
 
+        /// <summary>
+        /// Checks whether the specified expiration datetime is within a valid period
+        /// </summary>
+        /// <param name="expirationDateTime">The datetime value to validate</param>
+        /// <returns><c>true</c> if valid, <c>false</c> otherwise</returns>
         private static bool ValidateExpirationDateTime(DateTime expirationDateTime)
         {
-            var utcExpiration = expirationDateTime.ToUniversalTime();
-            var utcNow = DateTime.Now.ToUniversalTime();
-
-            return utcExpiration > utcNow
-                && utcExpiration <= utcNow.AddMonths(MaximumValidityInMonths).AddHours(ValidityDeltaHours);
+            DateTime utcDateToValidate = expirationDateTime.ToUniversalTime();
+            DateTime utcNow = DateTime.UtcNow;
+        
+            return utcDateToValidate > utcNow
+                && utcDateToValidate <= MaxExpirationDateTime;
         }
     }
 }
