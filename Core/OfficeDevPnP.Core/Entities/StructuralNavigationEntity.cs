@@ -20,7 +20,10 @@ namespace OfficeDevPnP.Core.Entities
             ShowSubsites = true;
             ShowPages = false;
         }
-
+        /// <summary>
+        /// Site navigation is inherited from parent web
+        /// </summary>
+        public bool InheritFromParentWeb { get; set; }
         /// <summary>
         /// Site navigation powered by the SharePoint managed metadata service (taxonomy). Use it to build site navigation derived from a managed metadata taxonomy. Managed navigation often works best with the product catalog
         /// </summary>
