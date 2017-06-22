@@ -42,6 +42,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">Access token to authenticate against SharePoint</param>
         /// <param name="context">ClientContext instance to use for authentication</param>
         /// <param name="subscription">The Webhook subscription to add</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>The added subscription object</returns>
         internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, WebhookSubscription subscription)
         {
@@ -102,6 +103,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="notificationUrl">The Webhook endpoint URL</param>
         /// <param name="clientState">The client state to use in the Webhook subscription</param>
         /// <param name="validityInMonths">The validity of the subscriptions in months</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>The added subscription object</returns>
         internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl,
             string clientState = null, int validityInMonths = MaximumValidityInMonths)
@@ -134,6 +136,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="expirationDateTime">New web hook expiration date</param>
         /// <param name="accessToken">Access token to authenticate against SharePoint</param>
         /// <param name="context">ClientContext instance to use for authentication</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>true if succesful, exception in case something went wrong</returns>
         internal static async Task<bool> UpdateWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId,
             string webHookEndPoint, DateTime expirationDateTime, string accessToken, ClientContext context)
