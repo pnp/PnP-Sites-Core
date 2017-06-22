@@ -31,6 +31,8 @@ namespace OfficeDevPnP.Core.Utilities
 
         private const string SubscriptionsUrlPart = "subscriptions";
         private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
+        public const int MaximumValidityInMonths = 6;
+        public const int ValidityDeltaHours = -72;
 
         /// <summary>
         /// Add a Webhook subscription to a SharePoint resource
@@ -43,6 +45,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <returns>The added subscription object</returns>
         internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, WebhookSubscription subscription)
         {
+            if (!ValidateExpirationDateTime(subscription.ExpirationDateTime))
+                throw new ArgumentOutOfRangeException(nameof(subscription.ExpirationDateTime), "The specified expiration date is invalid. Should be greater than today and within 6 months");
+
             string responseString = null;
             using (var handler = new HttpClientHandler())
             {
@@ -98,14 +103,20 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="clientState">The client state to use in the Webhook subscription</param>
         /// <param name="validityInMonths">The validity of the subscriptions in months</param>
         /// <returns>The added subscription object</returns>
-        internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl, 
-            string clientState = null, int validityInMonths = 3)
+        internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl,
+            string clientState = null, int validityInMonths = MaximumValidityInMonths)
         {
+            var expirationDate = DateTime.Now.AddMonths(validityInMonths).ToUniversalTime();
+            if (validityInMonths == MaximumValidityInMonths)
+            {
+                expirationDate = expirationDate.AddHours(ValidityDeltaHours);
+            }
+
             var subscription = new WebhookSubscription()
             {
                 Resource = resourceId,
                 NotificationUrl = notificationUrl,
-                ExpirationDateTime = DateTime.Now.AddMonths(validityInMonths).ToUniversalTime(),
+                ExpirationDateTime = expirationDate,
                 ClientState = clientState
             };
 
@@ -124,8 +135,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">Access token to authenticate against SharePoint</param>
         /// <param name="context">ClientContext instance to use for authentication</param>
         /// <returns>true if succesful, exception in case something went wrong</returns>
-        internal static async Task<bool> UpdateWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken, ClientContext context)
+        internal static async Task<bool> UpdateWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId,
+            string webHookEndPoint, DateTime expirationDateTime, string accessToken, ClientContext context)
         {
+            if (!ValidateExpirationDateTime(expirationDateTime))
+                throw new ArgumentOutOfRangeException(nameof(expirationDateTime), "The specified expiration date is invalid. Should be greater than today and within 6 months");
+
             using (var handler = new HttpClientHandler())
             {
                 if (String.IsNullOrEmpty(accessToken))
@@ -148,14 +163,14 @@ namespace OfficeDevPnP.Core.Utilities
                     HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
+                    
                     request.Content = new StringContent(JsonConvert.SerializeObject(
-                       new WebhookSubscription()
-                       {
-                           NotificationUrl = webHookEndPoint,
-                           ExpirationDateTime = expirationDateTime.ToUniversalTime(),
-                       }),
-                       Encoding.UTF8, "application/json");
+                        new WebhookSubscription()
+                        {
+                            NotificationUrl = webHookEndPoint,
+                            ExpirationDateTime = expirationDateTime
+                        }),
+                        Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 
@@ -289,6 +304,15 @@ namespace OfficeDevPnP.Core.Utilities
                 default:
                     return null;
             }
+        }
+
+        private static bool ValidateExpirationDateTime(DateTime expirationDateTime)
+        {
+            var utcExpiration = expirationDateTime.ToUniversalTime();
+            var utcNow = DateTime.Now.ToUniversalTime();
+
+            return utcExpiration > utcNow
+                && utcExpiration <= utcNow.AddMonths(MaximumValidityInMonths).AddHours(ValidityDeltaHours);
         }
     }
 }

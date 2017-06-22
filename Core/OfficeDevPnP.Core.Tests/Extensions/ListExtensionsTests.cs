@@ -351,6 +351,20 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void AddWebhookWithInvalidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+                
+                testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 12);
+            }
+        }
+
+        [TestMethod]
         public void UpdateWebhookTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
