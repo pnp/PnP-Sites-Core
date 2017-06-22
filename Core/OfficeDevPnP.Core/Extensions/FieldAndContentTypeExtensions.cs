@@ -283,6 +283,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed</param>
         /// <param name="internalName">If true, search parent sites and root site</param>
+        /// <param name="searchInSiteHierarchy">If true, search across all the available fields in the site hierarchy</param>
         /// <returns>Field</returns>
         public static Field GetFieldByInternalName(this Web web, string internalName, bool searchInSiteHierarchy = false)
         {
