@@ -685,7 +685,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (_willProvision == true)
                 {
                     // if not subweb and site inheritance is not broken
-                    if (web.IsSubSite() && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
+                    if (web.IsSubSite() && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == true) 
                     {
                         _willProvision = false;
                     }
