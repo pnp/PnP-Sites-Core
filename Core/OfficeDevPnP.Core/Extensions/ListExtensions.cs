@@ -32,7 +32,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         private static readonly char[] UrlDelimiters = { '\\', '/' };
 
-#region Event Receivers
+        #region Event Receivers
 
         /// <summary>
         /// Registers a remote event receiver
@@ -141,9 +141,9 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
-#endregion
+        #endregion
 
-#region Webhooks
+        #region Webhooks
 #if !ONPREMISES
         /// <summary>
         /// Add the a Webhook subscription to a list
@@ -158,16 +158,27 @@ namespace Microsoft.SharePoint.Client
         public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, DateTime expirationDate, string clientState = null, string accessToken = null)
         {
             // Get the access from the client context if not specified.
-            accessToken = accessToken ??  list.Context.GetAccessToken();
+            accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
-                WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
-                {
-                    Resource = list.Id.ToString(),
-                    ExpirationDateTime = expirationDate,
-                    NotificationUrl = notificationUrl,
-                    ClientState = clientState
-                }).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                               WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
+                               {
+                                   Resource = listId.ToString(),
+                                   ExpirationDateTime = expirationDate,
+                                   NotificationUrl = notificationUrl,
+                                   ClientState = clientState
+                               }).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -180,12 +191,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="clientState">The client state to use in the Webhook subscription</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
         /// <returns>The added subscription object</returns>
-        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 3, string clientState = null, string accessToken = null)
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 6, string clientState = null, string accessToken = null)
         {
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, list.Id.ToString(), notificationUrl, clientState, validityInMonths).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, listId.ToString(), notificationUrl, clientState, validityInMonths).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -203,7 +225,18 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -247,7 +280,18 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -288,12 +332,23 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 #endif
-#endregion
+        #endregion
 
-#region List Properties
+        #region List Properties
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -419,7 +474,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Removes a content type from a list/library by name
@@ -1005,7 +1060,7 @@ namespace Microsoft.SharePoint.Client
             return listWebRelativeUrl.Trim(UrlDelimiters);
         }
 
-#region List Permissions
+        #region List Permissions
 
         /// <summary>
         /// Set custom permission to the list
@@ -1065,9 +1120,9 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-#endregion
+        #endregion
 
-#region List view
+        #region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1305,7 +1360,7 @@ namespace Microsoft.SharePoint.Client
 
         }
 
-#endregion
+        #endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
