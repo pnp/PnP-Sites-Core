@@ -32,7 +32,6 @@ namespace OfficeDevPnP.Core.Utilities
         private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
         public const int MaximumValidityInMonths = 6;
         public const int ExpirationDateTimeMaxDays = 180;
-        public const int ExpirationDateTimeGraceMinutes = 90;
 
         /// <summary>
         /// The effective maximum expiration datetime
@@ -41,7 +40,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             get
             {
-                return DateTime.UtcNow.AddDays(ExpirationDateTimeMaxDays).AddMinutes(ExpirationDateTimeGraceMinutes);
+                return DateTime.UtcNow.AddDays(ExpirationDateTimeMaxDays);
             }
         }
 

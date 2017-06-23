@@ -373,7 +373,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
                 
-                DateTime veryLastValidExpiration = DateTime.UtcNow.AddDays(180).AddMinutes(90);
+                DateTime veryLastValidExpiration = DateTime.UtcNow.AddDays(180);
 
                 WebhookSubscription expectedSubscription = new WebhookSubscription()
                 {
@@ -401,7 +401,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 clientContext.Load(testList);
                 clientContext.ExecuteQueryRetry();
 
-                DateTime barelyInvalidExpiration = DateTime.UtcNow.AddDays(180).AddMinutes(95);
+                DateTime barelyInvalidExpiration = DateTime.UtcNow.AddDays(180).AddMinutes(1);
 
                 testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, barelyInvalidExpiration);
             }
