@@ -1,4 +1,5 @@
 ﻿using Microsoft.SharePoint.Client;
+using System;
 
 namespace OfficeDevPnP.Core.Entities
 {
@@ -124,5 +125,18 @@ namespace OfficeDevPnP.Core.Entities
         /// Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
         /// </summary>
         public string ScriptSrc { get; set; }
+
+#if !SP2013
+        /// <summary>
+        /// Gets or sets the client side component id. Only applies to custom actions which are added to SharePoint Online
+        /// </summary>
+        public Guid ClientSideComponentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the client side component properties. Only applies to custom actions which are added to SharePoint Online
+        /// </summary>
+        public string ClientSideComponentProperties { get; set; }
+#endif
     }
+
 }

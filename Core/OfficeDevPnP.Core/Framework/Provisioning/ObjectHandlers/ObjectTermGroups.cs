@@ -29,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     termStore = taxSession.GetDefaultKeywordsTermStore();
                     web.Context.Load(termStore,
+                        ts => ts.Languages,
                         ts => ts.DefaultLanguage,
                         ts => ts.Groups.Include(
                             tg => tg.Name,
@@ -64,9 +65,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         g => g.Id == modelTermGroup.Id || g.Name == normalizedGroupName.Value);
                     if (group == null)
                     {
+                        var parsedGroupName = parser.ParseString(modelTermGroup.Name);
+                        var parsedDescription = parser.ParseString(modelTermGroup.Description);
+
                         if (modelTermGroup.Name == "Site Collection" ||
-                            parser.ParseString(modelTermGroup.Name) ==
-                            siteCollectionTermGroupNameToken.GetReplaceValue() ||
+                            parsedGroupName == siteCollectionTermGroupNameToken.GetReplaceValue() ||
                             modelTermGroup.SiteCollectionTermGroup)
                         {
                             var site = (web.Context as ClientContext).Site;
@@ -78,7 +81,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            var parsedGroupName = parser.ParseString(modelTermGroup.Name);
                             var parsedNormalizedGroupName = TaxonomyItem.NormalizeName(web.Context, parsedGroupName);
                             web.Context.ExecuteQueryRetry();
 
@@ -92,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
 
-                                group.Description = modelTermGroup.Description;
+                                group.Description = parsedDescription;
 
 #if !ONPREMISES
 
@@ -161,7 +163,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                             newTermSet = true;
-                            set.Description = modelTermSet.Description;
+                            set.Description = parser.ParseString(modelTermSet.Description);
                             set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
                             set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
                             foreach (var property in modelTermSet.Properties)
@@ -301,7 +303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (!string.IsNullOrEmpty(modelTerm.Description))
             {
-                term.SetDescription(modelTerm.Description, modelTerm.Language ?? termStore.DefaultLanguage);
+                term.SetDescription(parser.ParseString(modelTerm.Description), modelTerm.Language ?? termStore.DefaultLanguage);
             }
             if (!string.IsNullOrEmpty(modelTerm.Owner))
             {
@@ -369,7 +371,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var label in modelTerm.Labels)
             {
-                if ((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false)
+                if (((label.IsDefaultForLanguage && label.Language != termStore.DefaultLanguage) || label.IsDefaultForLanguage == false) && termStore.Languages.Contains(label.Language))
                 {
                     term.CreateLabel(parser.ParseString(label.Value), label.Language, label.IsDefaultForLanguage);
                 }

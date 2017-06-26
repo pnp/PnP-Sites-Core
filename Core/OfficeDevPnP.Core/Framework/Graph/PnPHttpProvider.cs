@@ -1,11 +1,8 @@
 ﻿using Microsoft.Graph;
 using OfficeDevPnP.Core.Diagnostics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static Microsoft.SharePoint.Client.ClientContextExtensions;
@@ -40,8 +37,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <remarks>See here for further details: https://graph.microsoft.io/en-us/docs/overview/errors</remarks>
         Task<HttpResponseMessage> IHttpProvider.SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken)
         {
-            Task<HttpResponseMessage> result = null;
-
             // Retry logic variables
             int retryAttempts = 0;
             int backoffInterval = this._delay;
@@ -52,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 try
                 {
                     // Make the request
-                    result = base.SendAsync(request, completionOption, cancellationToken);
+                    Task<HttpResponseMessage> result = base.SendAsync(request, completionOption, cancellationToken);
 
                     // And return the response in case of success
                     return (result);
@@ -61,31 +56,31 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 catch (ServiceException ex)
                 {
                     // Check if the is an InnerException
-                    if (ex.InnerException != null)
+                    // And if it is a WebException
+                    var wex = ex.InnerException as WebException;
+                    if (wex != null)
                     {
-                        // And if it is a WebException
-                        var wex = ex.InnerException as WebException;
-                        if (wex != null)
+                        var response = wex.Response as HttpWebResponse;
+                        // Check if request was throttled - http status code 429
+                        // Check is request failed due to server unavailable - http status code 503
+                        if (response != null &&
+                            (response.StatusCode == (HttpStatusCode) 429 || response.StatusCode == (HttpStatusCode) 503))
                         {
-                            var response = wex.Response as HttpWebResponse;
-                            // Check if request was throttled - http status code 429
-                            // Check is request failed due to server unavailable - http status code 503
-                            if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry, backoffInterval);
+                            Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry,
+                                backoffInterval);
 
-                                //Add delay for retry
-                                Thread.Sleep(backoffInterval);
+                            //Add delay for retry
+                            Task.Delay(backoffInterval).Wait();
 
-                                //Add to retry count and increase delay.
-                                retryAttempts++;
-                                backoffInterval = backoffInterval * 2;
-                            }
-                            else
-                            {
-                                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetryException, wex.ToString());
-                                throw;
-                            }
+                            //Add to retry count and increase delay.
+                            retryAttempts++;
+                            backoffInterval = backoffInterval * 2;
+                        }
+                        else
+                        {
+                            Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetryException,
+                                wex.ToString());
+                            throw;
                         }
                     }
                     throw;

@@ -1,15 +1,12 @@
 ﻿using Microsoft.SharePoint.Client;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Data.SqlClient;
 using System.Data;
 using System.Threading;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OfficeDevPnP.Core.Tests
 {
@@ -20,12 +17,20 @@ namespace OfficeDevPnP.Core.Tests
         {
             // Read configuration data
             TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
-            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];            
 
-            if (string.IsNullOrEmpty(TenantUrl) || string.IsNullOrEmpty(DevSiteUrl))
+#if !ONPREMISES
+            if (string.IsNullOrEmpty(TenantUrl))
             {
-                throw new ConfigurationErrorsException("Tenant site Url or Dev site url in App.config are not set up.");
+                throw new ConfigurationErrorsException("Tenant site Url in App.config are not set up.");
             }
+#endif
+            if (string.IsNullOrEmpty(DevSiteUrl))
+            {
+                throw new ConfigurationErrorsException("Dev site url in App.config are not set up.");
+            }
+
+
 
             // Trim trailing slashes
             TenantUrl = TenantUrl.TrimEnd(new[] { '/' });
@@ -44,7 +49,7 @@ namespace OfficeDevPnP.Core.Tests
                 else
                 {
                     Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
-                }                                
+                }
             }
             else
             {
@@ -70,6 +75,32 @@ namespace OfficeDevPnP.Core.Tests
                     AppId = ConfigurationManager.AppSettings["AppId"];
                     AppSecret = ConfigurationManager.AppSettings["AppSecret"];
                 }
+                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
+                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustIssuerId"]))
+                {
+                    AppId = ConfigurationManager.AppSettings["AppId"];
+                    HighTrustCertificatePassword = ConfigurationManager.AppSettings["HighTrustCertificatePassword"];
+                    HighTrustCertificatePath = ConfigurationManager.AppSettings["HighTrustCertificatePath"];
+                    HighTrustIssuerId = ConfigurationManager.AppSettings["HighTrustIssuerId"];
+
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"]))
+                    {
+                        StoreName result;
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"], out result))
+                        {
+                            HighTrustCertificateStoreName = result;
+                        }
+                    }
+                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"]))
+                    {
+                        StoreLocation result;
+                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"], out result))
+                        {
+                            HighTrustCertificateStoreLocation = result;
+                        }
+                    }
+                    HighTrustCertificateStoreThumbprint = ConfigurationManager.AppSettings["HighTrustCertificateStoreThumbprint"].Replace(" ", string.Empty);
+                }
                 else
                 {
                     throw new ConfigurationErrorsException("Tenant credentials in App.config are not set up.");
@@ -84,8 +115,46 @@ namespace OfficeDevPnP.Core.Tests
         static string UserName { get; set; }
         static SecureString Password { get; set; }
         public static ICredentials Credentials { get; set; }
-        static string AppId { get; set; }
+        public static string AppId { get; set; }
         static string AppSecret { get; set; }
+
+        /// <summary>
+        /// The path to the PFX file for the High Trust
+        /// </summary>
+        public static String HighTrustCertificatePath { get; set; }
+
+        /// <summary>
+        /// The password of the PFX file for the High Trust
+        /// </summary>
+        public static String HighTrustCertificatePassword { get; set; }
+
+        /// <summary>
+        /// The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer
+        /// </summary>
+        public static String HighTrustIssuerId { get; set; }
+
+        /// <summary>
+        /// The name of the store in the Windows certificate store where the High Trust certificate is stored
+        /// </summary>
+        public static StoreName? HighTrustCertificateStoreName { get; set; }
+
+        /// <summary>
+        /// The location of the High Trust certificate in the Windows certificate store
+        /// </summary>
+        public static StoreLocation? HighTrustCertificateStoreLocation { get; set; }
+
+        /// <summary>
+        /// The thumbprint / hash of the High Trust certificate in the Windows certificate store
+        /// </summary>
+        public static string HighTrustCertificateStoreThumbprint { get; set; }
+
+        public static string TestWebhookUrl
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["WebHookTestUrl"];
+            }
+        }
 
         public static String AzureStorageKey
         {
@@ -232,7 +301,7 @@ namespace OfficeDevPnP.Core.Tests
 
                 if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
-                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix:"login");
+                    context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix: "login");
                 }
                 else
                 {

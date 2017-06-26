@@ -270,6 +270,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
@@ -330,9 +334,8 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.0.0, Culture=neutral, PublicKeyToken=3751622786b357c2, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.0\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.2.0, Culture=neutral, PublicKeyToken=3751622786b357c2, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.2\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -375,52 +378,102 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
-    <Compile Include="AppModelExtensions\ClientObjectExtensions.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\BrandingExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ClientContextExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FeatureExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FileFolderExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ListExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\NavigationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\PageExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SearchExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SecurityExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TenantExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\VariationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WebExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WorkflowExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\ExternalSharingExtensions.cs" />
-    <Compile Include="AppModelExtensions\FieldAndContentTypeExtensions.cs" />
-    <Compile Include="AppModelExtensions\FileFolderExtensions.cs" />
-    <Compile Include="AppModelExtensions\InformationManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListRatingExtensions.cs" />
-    <Compile Include="AppModelExtensions\ProvisioningExtensions.cs" />
-    <Compile Include="AppModelExtensions\PublishingExtensions.cs" />
-    <Compile Include="AppModelExtensions\RecordsManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\SearchExtensions.cs" />
-    <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
-    <Compile Include="AppModelExtensions\TenantExtensions.cs" />
+    <Compile Include="Entities\WebhookNotification.cs" />
+    <Compile Include="Entities\WebhookSubscription.cs" />
+    <Compile Include="Extensions\ClientContextExtensions.cs" />
+    <Compile Include="Extensions\ClientObjectExtensions.cs" />
+    <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ClientContextExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FeatureExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FileFolderExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ListExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\NavigationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\PageExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SearchExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SecurityExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TenantExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\VariationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WebExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WorkflowExtensions.deprecated.cs" />
+    <Compile Include="Extensions\ExternalSharingExtensions.cs" />
+    <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
+    <Compile Include="Extensions\FileFolderExtensions.cs" />
+    <Compile Include="Extensions\InformationManagementExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\ListRatingExtensions.cs" />
+    <Compile Include="Extensions\ProvisioningExtensions.cs" />
+    <Compile Include="Extensions\PublishingExtensions.cs" />
+    <Compile Include="Extensions\RecordsManagementExtensions.cs" />
+    <Compile Include="Extensions\SearchExtensions.cs" />
+    <Compile Include="Extensions\TaxonomyExtensions.cs" />
+    <Compile Include="Extensions\TenantExtensions.cs" />
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CalendarTypeFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToAuditFlagsResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromBasePermissionsToStringValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromNullableToSpecifiedValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PropertyObjectTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToBasePermissionsValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToEnumValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentSetTemplateFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ExtensibilityHandlersSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AddInsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PublishingSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ComposedLookSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\NavigationSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FeaturesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedUILanguagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TermGroupsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FilesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\CustomActionsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Pages\ClientSidePageCanvas.cs" />
+    <Compile Include="Pages\ClientSidePageControls.cs" />
+    <Compile Include="Pages\ClientSidePagesControlData.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
     <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
-    <Compile Include="AppModelExtensions\VariationExtensions.cs" />
-    <Compile Include="AppModelExtensions\WorkflowExtensions.cs" />
+    <Compile Include="Extensions\VariationExtensions.cs" />
+    <Compile Include="Extensions\WorkflowExtensions.cs" />
     <Compile Include="AuthenticationManager.cs" />
-    <Compile Include="AppModelExtensions\BrandingExtensions.cs" />
+    <Compile Include="Extensions\BrandingExtensions.cs" />
     <Compile Include="BuiltInContentTypeId.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Diagnostics\Log.cs" />
@@ -685,8 +738,15 @@
     <Compile Include="Framework\Provisioning\Providers\Json\JsonSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\TemplateProviderBase.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IPnPSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ITypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPBaseSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPObjectsMapper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPSerializationScope.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.cs">
       <DependentUpon>ProvisioningSchema-2015-03.xsd</DependentUpon>
     </Compile>
@@ -704,14 +764,37 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.cs">
       <DependentUpon>ProvisioningSchema-2016-05.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RemoveExistingViewsFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToDictionaryValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToGuidValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDecimalToDoubleValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDictionaryToArrayValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDoubleToDecimalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ResolversExtensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ContentTypesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\LocalizationsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\TemplateSchemaSerializerAttribute.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PropertyBagPropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateParametersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLFileSystemTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLOpenXMLTemplateProvider.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XmlPnPSchemaBaseSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Formatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
@@ -722,7 +805,7 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
-    <Compile Include="AppModelExtensions\PnPClientContext.cs" />
+    <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
@@ -749,6 +832,8 @@
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
+    <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
     <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
     <Compile Include="Utilities\WebParts\Processors\PassThroughProcessor.cs" />
     <Compile Include="Utilities\WebParts\Schema\WebPart.v3.cs" />
@@ -770,13 +855,13 @@
     <Compile Include="Utilities\UrlUtility.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AppModelExtensions\FeatureExtensions.cs" />
-    <Compile Include="AppModelExtensions\JavaScriptExtensions.cs" />
-    <Compile Include="AppModelExtensions\NavigationExtensions.cs" />
-    <Compile Include="AppModelExtensions\PageExtensions.cs" />
+    <Compile Include="Extensions\FeatureExtensions.cs" />
+    <Compile Include="Extensions\JavaScriptExtensions.cs" />
+    <Compile Include="Extensions\NavigationExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AppModelExtensions\SecurityExtensions.cs" />
-    <Compile Include="AppModelExtensions\WebExtensions.cs" />
+    <Compile Include="Extensions\SecurityExtensions.cs" />
+    <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Utilities\EncryptionUtility.cs" />
     <Compile Include="Utilities\JsonUtility.cs" />
     <Compile Include="Utilities\MailUtility.cs" />
@@ -814,6 +899,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Pages\ClientSidePages.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -944,6 +1030,7 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
+    <Content Include="Sites\Dummy.txt" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />

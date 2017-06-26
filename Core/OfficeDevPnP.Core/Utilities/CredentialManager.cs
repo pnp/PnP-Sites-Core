@@ -18,11 +18,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <returns>Microsoft.SharePoint.Client.SharePointOnlineCredentials</returns>
         public static SharePointOnlineCredentials GetSharePointOnlineCredential(string name)
         {
-            var networkCredential = GetCredential(name);
-
-            var credential = new SharePointOnlineCredentials(networkCredential.UserName,networkCredential.SecurePassword);
-
-            return credential;
+            var networkCredential = CredentialManager.GetCredential(name);
+            if (networkCredential == null)
+            {
+                return null;
+            }
+            return new SharePointOnlineCredentials(networkCredential.UserName, networkCredential.SecurePassword);
         }
 
         /// <summary>

@@ -7,8 +7,6 @@ namespace OfficeDevPnP.Core.Utilities
 {
     public static partial class Utility
     {
-      
-       
 
         /// <summary>
         /// Returns the healthscore for a SharePoint Server
