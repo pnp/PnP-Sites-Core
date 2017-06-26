@@ -60,7 +60,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var formulaString = formula.Value;
                 if (formulaString != null)
                 {
-                    var fieldRefs = schemaElement.Descendants("FieldRef");
+                    //It could be possible that a formula is referring to one field for mutliple times and thus generating kind of duplicated field reference, the duplication should be removed
+                    //For example, formula =IF(NOT(ISBLANK(Region)),Title&" - "&[Project No.]&" ("&Region&")","") will creates 2 reference to Region field and leads to an incorrect formula
+                    var fieldRefs = schemaElement.Descendants("FieldRef").GroupBy(f => new { f.Attribute("Name").Value }).Select(g => g.First()).ToList();
+                    
                     foreach (var fieldRef in fieldRefs)
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
