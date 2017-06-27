@@ -288,7 +288,7 @@ namespace Microsoft.SharePoint.Client
                         string version = reader.ReadToEnd().Split('|')[2].Trim();
 
                         // Only compare the first three digits
-                        var compareToVersion = new Version(minimallyRequiredVersion.Major, minimallyRequiredVersion.MajorRevision, minimallyRequiredVersion.Minor, 0);
+                        var compareToVersion = new Version(minimallyRequiredVersion.Major, minimallyRequiredVersion.Minor, minimallyRequiredVersion.Build, 0);
                         hasMinimalVersion = new Version(version.Split('.')[0].ToInt32(), 0, version.Split('.')[3].ToInt32(), 0).CompareTo(compareToVersion) >= 0;
                     }
                 }
