@@ -244,10 +244,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // OOTB Roledefs
-            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind));
+            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind,r => r.Name,r => r.Id));
             foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None))
             {
                 _tokens.Add(new RoleDefinitionToken(web, roleDef));
+            }
+            foreach(var roleDef in web.RoleDefinitions)
+            {
+                _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
             }
 
             // Groups
@@ -272,6 +276,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
             }
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
