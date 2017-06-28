@@ -355,69 +355,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Returns parsed string</returns>
         public string ParseString(string input, params string[] tokensToSkip)
         {
-            var origInput = input;
-            if (!string.IsNullOrEmpty(input))
-            {
-                foreach (var token in _tokens)
-                {
-                    if (tokensToSkip != null)
-                    {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
-                        {
-                            foreach (var filteredToken in filteredTokens)
-                            {
-                                var regex = token.GetRegexForToken(filteredToken);
-                                if (regex.IsMatch(input))
-                                {
-                                    input = regex.Replace(input, token.GetReplaceValue());
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var matchingTokens = token.GetRegex().Where(regex => regex.IsMatch(input));
-                        foreach (var regex in matchingTokens)
-                        {
-                            input = regex.Replace(input, token.GetReplaceValue());
-                        }
-                    }
-                }
-            }
+            if (string.IsNullOrEmpty(input) || input.IndexOfAny(new []{'{','~'}) == -1) return input;
 
-            while (origInput != input)
+            var tokensToSkipList = tokensToSkip?.ToList() ?? new List<string>();
+
+            foreach (var token in _tokens)
             {
-                foreach (var token in _tokens)
+                foreach (var filteredToken in token.GetTokens().Except(tokensToSkipList, StringComparer.InvariantCultureIgnoreCase))
                 {
-                    origInput = input;
-                    if (tokensToSkip != null)
+                    var regex = token.GetRegexForToken(filteredToken);
+                    if (regex.IsMatch(input))
                     {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
-                        {
-                            foreach (var filteredToken in filteredTokens)
-                            {
-                                var regex = token.GetRegexForToken(filteredToken);
-                                if (regex.IsMatch(input))
-                                {
-                                    input = regex.Replace(input, token.GetReplaceValue());
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
-                        {
-                            origInput = input;
-                            input = regex.Replace(input, token.GetReplaceValue());
-                        }
+                        input = regex.Replace(input, ParseString(token.GetReplaceValue(), tokensToSkipList.Concat(new[] { filteredToken }).ToArray()));
                     }
                 }
             }
 
             return input;
+        }
+
+        public string ParseXmlString(string inputXml, params string[] tokensToSkip)
+        {
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(inputXml);
+
+            // Swap out tokens in the attributes of all nodes.
+            var nodes = xmlDoc.SelectNodes("//*");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
+                {
+                    foreach (var attribute in node.Attributes.OfType<System.Xml.XmlAttribute>().Where(a => !a.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(a.Value)))
+                    {
+                        attribute.Value = ParseString(attribute.Value, tokensToSkip);
+                    }
+                }
+            }
+
+            // Swap out tokens in the values of any elements with a text value.
+            nodes = xmlDoc.SelectNodes("//*[text()]");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>())
+                {
+                    if (!string.IsNullOrEmpty(node.InnerText))
+                    {
+                        node.InnerText = ParseString(node.InnerText, tokensToSkip);
+                    }
+                }
+            }
+
+            return xmlDoc.OuterXml;
         }
     }
 }

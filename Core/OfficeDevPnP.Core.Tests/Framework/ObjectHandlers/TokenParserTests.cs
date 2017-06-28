@@ -165,5 +165,42 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             }
         }
+
+        [TestMethod]
+        public void NestedTokenTests()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                ctx.Load(ctx.Web, w => w.Id, w => w.ServerRelativeUrl, w => w.Title, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
+                ctx.Load(ctx.Site, s => s.ServerRelativeUrl);
+                ctx.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                template.Parameters.Add("test3", "reallynestedvalue:{parameter:test2}");
+                template.Parameters.Add("test1", "testValue");
+                template.Parameters.Add("test2", "value:{parameter:test1}");
+
+                // Test parameters that infinitely loop
+                template.Parameters.Add("chain1", "{parameter:chain3}");
+                template.Parameters.Add("chain2", "{parameter:chain1}");
+                template.Parameters.Add("chain3", "{parameter:chain2}");
+
+                var parser = new TokenParser(ctx.Web, template);
+               
+                var parameterTest1 = parser.ParseString("parameterTest:{parameter:test1}");
+                var parameterTest2 = parser.ParseString("parameterTest:{parameter:test2}");
+                var parameterTest3 = parser.ParseString("parameterTest:{parameter:test3}");
+                Assert.IsTrue(parameterTest1 == "parameterTest:testValue");
+                Assert.IsTrue(parameterTest2 == "parameterTest:value:testValue");
+                Assert.IsTrue(parameterTest3 == "parameterTest:reallynestedvalue:value:testValue");
+
+                var chainTest1 = parser.ParseString("parameterTest:{parameter:chain1}");
+
+                // Parser should stop processing parent tokens when processing nested tokens,
+                // so we should end up with the value of the last param (chain2) in our param chain, 
+                // which will not get detokenized.
+                Assert.IsTrue(chainTest1 == "parameterTest:{parameter:chain1}");
+            }
+        }
     }
 }
