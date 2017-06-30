@@ -691,6 +691,44 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region ClientSide Package Deployment
+
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <returns>The Uri holding the app catalog site url</returns>
+        public static Uri GetAppCatalog(this Tenant tenant)
+        {
+            // Assume there's only one appcatalog site
+            var results = ((tenant.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
+        {
+            var appCatalogSite = tenant.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalog(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, overwrite);
+        }
+
         /// <summary>
         /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
         /// </summary>
@@ -701,7 +739,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
         /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
         /// <returns>The ListItem of the added package row</returns>
-        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy=true, bool overwrite=true)
+        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
         {
             if (String.IsNullOrEmpty(appCatalogSiteUrl))
             {
@@ -746,6 +784,7 @@ namespace Microsoft.SharePoint.Client
                     // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
                     // an event receiver that will process the sppkg file and update the client side componenent manifest list
                     sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = true;
+                    //sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = todo
                     sppkgFile.ListItemAllFields.Update();
                 }
 
@@ -853,6 +892,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 #else
+        #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
@@ -886,8 +926,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+        #endregion
 
-
+        #region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -898,7 +939,7 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-
+        #endregion
 #endif
     }
 }
