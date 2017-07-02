@@ -1803,7 +1803,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (field.InternalName == "Editor" ||
                             field.InternalName == "Author" ||
-                            field.InternalName == "Title" ||
+                            AddFieldCheck_Title(field) ||
                             field.InternalName == "ID" ||
                             field.InternalName == "Created" ||
                             field.InternalName == "Modified" ||
@@ -2006,6 +2006,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             schemaXml = Regex.Replace(schemaXml, web.Id.ToString("B"), "{{siteid}}", RegexOptions.IgnoreCase);
             schemaXml = Regex.Replace(schemaXml, web.Id.ToString("D"), "{siteid}", RegexOptions.IgnoreCase);
             return schemaXml;
+        }
+
+        private bool AddFieldCheck_Title(Field field)
+        {
+            return field.InternalName == "Title" && field.Title.Equals("Title",StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template)
