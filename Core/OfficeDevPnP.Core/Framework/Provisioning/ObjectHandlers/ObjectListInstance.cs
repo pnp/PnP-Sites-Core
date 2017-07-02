@@ -1803,7 +1803,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (field.InternalName == "Editor" ||
                             field.InternalName == "Author" ||
-                            AddFieldCheck_Title(field) ||
+                            SkipAddField_CheckTitle(field) ||
                             field.InternalName == "ID" ||
                             field.InternalName == "Created" ||
                             field.InternalName == "Modified" ||
@@ -2008,7 +2008,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        private bool AddFieldCheck_Title(Field field)
+        private bool SkipAddField_CheckTitle(Field field)
         {
             return field.InternalName == "Title" && field.Title.Equals("Title",StringComparison.OrdinalIgnoreCase);
         }
