@@ -26,7 +26,7 @@ using X509SigningCredentials = Microsoft.IdentityModel.SecurityTokenService.X509
 
 namespace OfficeDevPnP.Core.Utilities
 {
-    internal static class TokenHelper
+    public static class TokenHelper
     {
         #region public fields
 
