@@ -197,8 +197,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var checkedOut = false;
             try
             {
-                web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
-                web.Context.ExecuteQueryRetry();
+                web.Context.Load(targetFile, f => f.CheckOutType, f => f.CheckedOutByUser, f => f.ListItemAllFields.ParentList.ForceCheckout);
+                web.Context.ExecuteQueryRetry();                
+
                 if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
                     && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
                     && targetFile.ListItemAllFields.ParentList.ForceCheckout)
@@ -432,11 +433,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
             }
-            catch (Exception)
+            catch (ServerException ex)
             {
-                //The file name might contain encoded characters that prevent upload. Decode it and try again.
-                fileName = WebUtility.UrlDecode(fileName);
-                targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+                if (ex.ServerErrorCode != -2130575306) //Error code: -2130575306 = The file is already checked out.
+                {
+                    //The file name might contain encoded characters that prevent upload. Decode it and try again.
+                    fileName = WebUtility.UrlDecode(fileName);
+                    try
+                    {
+                        targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+                    }
+                    catch(Exception)
+                    {
+                        //unable to Upload file, just ignore
+                    }                    
+                }             
             }
             return targetFile;
         }
