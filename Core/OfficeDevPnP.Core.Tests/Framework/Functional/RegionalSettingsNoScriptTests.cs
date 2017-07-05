@@ -24,7 +24,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         #region Construction
         public RegionalSettingsNoScriptTests()
         {
-            isNoScriptSite = true;
             //debugMode = true;
             //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_23939b71-a69c-4d57-a818-5448a1cdaf28";
             //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_23939b71-a69c-4d57-a818-5448a1cdaf28/sub";
@@ -35,7 +34,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
-            ClassInitBase(context);
+            ClassInitBase(context, true);
         }
 
         [ClassCleanup()]

@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Add parameters
             foreach (var parameter in template.Parameters)
             {
-                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value));
+                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
             }
 
             // Add TermSetIds
@@ -303,7 +303,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public IEnumerable<string> GetLeftOverTokens(string input)
         {
             List<string> values = new List<string>();
-            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})|(?<token>\\{.+?\\})").OfType<Match>().Select(m => m.Value);
+            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})").OfType<Match>().Select(m => m.Value);
             foreach (var match in matches)
             {
                 Guid gout;
@@ -324,9 +324,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (tokensToSkip != null)
                     {
-                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
+                        if (filteredTokens.Any())
                         {
-                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            foreach (var filteredToken in filteredTokens)
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))
@@ -354,9 +355,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     origInput = input;
                     if (tokensToSkip != null)
                     {
-                        if (token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase).Any())
+                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
+                        if (filteredTokens.Any())
                         {
-                            foreach (var filteredToken in token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase))
+                            foreach (var filteredToken in filteredTokens)
                             {
                                 var regex = token.GetRegexForToken(filteredToken);
                                 if (regex.IsMatch(input))
