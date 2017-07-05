@@ -255,7 +255,13 @@ namespace Microsoft.SharePoint.Client
             ClientContext context = null;
             if (parentFolder != null)
             {
-                context = parentFolder.Context as ClientContext;
+
+                var absoluteUrl = new Uri(parentFolder.Context.Url).GetLeftPart(UriPartial.Authority) + parentFolder.ServerRelativeUrl;
+                Uri folderAbsoluteUri = new Uri(absoluteUrl);
+                Uri webUrl = Web.WebUrlFromPageUrlDirect(parentFolder.Context as ClientContext, folderAbsoluteUri);
+
+                context = new ClientContext(webUrl.ToString());
+                context.Credentials = parentFolder.Context.Credentials;
             }
 
             List parentList = null;
@@ -266,7 +272,8 @@ namespace Microsoft.SharePoint.Client
                 if (parentFolder.Properties.FieldValues.ContainsKey("vti_listname"))
                 {
                     if (context != null)
-                    {
+                    {                        
+                        
                         Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
                         parentList = context.Web.Lists.GetById(parentListId);
                         context.Load(parentList, l => l.BaseType, l => l.Title);
@@ -304,7 +311,9 @@ namespace Microsoft.SharePoint.Client
                 context.ExecuteQueryRetry();
 
                 // Get the newly created folder
-                var newFolder = parentFolder.Folders.GetByUrl(folderName);
+                //var newFolder = parentFolder.Folders.GetByUrl(folderName);
+
+                var newFolder = newFolderItem.Folder;
                 // Ensure all properties are loaded (to be compatible with the previous implementation)
                 if (expressions != null && expressions.Any())
                 {

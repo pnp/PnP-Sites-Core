@@ -136,6 +136,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
+                                navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
+                                navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                                web.Context.ExecuteQueryRetry();
+
                                 ProvisionGlobalStructuralNavigation(web,
                                     template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                                 break;
@@ -168,15 +172,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
+                                web.SetPropertyBagValue(NavigationShowSiblings, "true");
                                 if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
                                 break;
                         }
                         navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
