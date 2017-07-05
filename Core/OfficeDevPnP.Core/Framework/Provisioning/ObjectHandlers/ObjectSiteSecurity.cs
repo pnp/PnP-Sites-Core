@@ -177,7 +177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // With the change from october, manage permission levels on subsites as well
-                if (siteSecurity.SiteSecurityPermissions != null) 
+                if (siteSecurity.SiteSecurityPermissions != null)
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -434,7 +434,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             gr => gr.OnlyAllowMembersViewMembership,
                             gr => gr.Owner.LoginName,
                             gr => gr.RequestToJoinLeaveEmailSetting
-                            ));
+                        ));
 
                     web.Context.ExecuteQueryRetry();
 
@@ -480,7 +480,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.HasUniqueRoleAssignments)
                 {
-                    
+
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
                     if (!web.IsSubSite())
                     {
@@ -558,7 +558,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 template.Security = siteSecurity;
-               
+
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
@@ -684,8 +684,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                   template.Security.SiteSecurityPermissions.RoleDefinitions.Any());
                 if (_willProvision == true)
                 {
-                    // if subweb and site inheritance is not broken
-                    if (web.IsSubSite() && template.Security.BreakRoleInheritance == false && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
+                    // if not subweb and site inheritance is not broken
+                    if (web.IsSubSite() &&
+                        (web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false ||
+                         !template.Security.BreakRoleInheritance))
                     {
                         _willProvision = false;
                     }
