@@ -373,16 +373,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <returns>Returns a filename without a path</returns>
         public override string GetFilenamePart(string fileName)
         {
-            fileName = fileName.Replace('\\', '/');
-            if (fileName.IndexOf(@"/") != -1)
-            {
-                var parts = fileName.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
-                return parts.LastOrDefault();
-            }
-            else
-            {
-                return fileName;
-            }
+            return Path.GetFileName(fileName);
         }
 
         #endregion
