@@ -527,7 +527,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -560,7 +560,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Localizations.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.WebSettings.GetHashCode(),
                 this.SiteWebhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.TemplateCultureInfo?.GetHashCode() ?? 0,
+                this.Scope.GetHashCode()
             ).GetHashCode());
         }
 
@@ -625,7 +627,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Localizations.DeepEquals(other.Localizations) &&
                 this.WebSettings.Equals(other.WebSettings) &&
                 this.SiteWebhooks.DeepEquals(other.SiteWebhooks) &&
-                this.ClientSidePages.DeepEquals(other.ClientSidePages)
+                this.ClientSidePages.DeepEquals(other.ClientSidePages) &&
+                this.TemplateCultureInfo == other.TemplateCultureInfo &&
+                this.Scope == other.Scope
             );
         }
 
