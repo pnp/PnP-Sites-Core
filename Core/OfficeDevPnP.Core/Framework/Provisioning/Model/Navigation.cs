@@ -60,6 +60,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Declares whether the tree view has to be enabled at the site level or not, optional attribute.
+        /// </summary>
+        public Boolean EnableTreeView { get; set; }
+
         #endregion
 
         #region Constructors
@@ -91,9 +96,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}",
+            return (String.Format("{0}|{1}|{2}|",
                 (this.GlobalNavigation != null ? this.GlobalNavigation.GetHashCode() : 0),
-                (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0)
+                (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0),
+                this.EnableTreeView.GetHashCode()
             ).GetHashCode());
         }
 
@@ -124,7 +130,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             return (this.GlobalNavigation == other.GlobalNavigation &&
-                this.CurrentNavigation == other.CurrentNavigation
+                this.CurrentNavigation == other.CurrentNavigation &&
+                this.EnableTreeView == other.EnableTreeView
                 );
         }
 
