@@ -494,6 +494,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String BaseSiteTemplate { get; set; }
 
         /// <summary>
+        /// The default CultureInfo of the Provisioning Template, used to format all input values, optional attribute.
+        /// </summary>
+        public String TemplateCultureInfo { get; set; }
+
+        /// <summary>
+        /// Declares the target scope of the current Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateScope Scope { get; set; }
+
+        /// <summary>
         /// Gets or sets the File Connector
         /// </summary>
         public FileConnectorBase Connector
@@ -634,5 +644,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return XElement.Load(stream).ToString();
             }
         }
+    }
+
+    /// <summary>
+    /// Declares the target scope of the current Provisioning Template
+    /// </summary>
+    public enum ProvisioningTemplateScope
+    {
+        /// <summary>
+        /// The scope is a Root web of a Site Collection
+        /// </summary>
+        RootSite,
+        /// <summary>
+        /// The scope is a child Web of a Site Collection
+        /// </summary>
+        Web,
     }
 }
