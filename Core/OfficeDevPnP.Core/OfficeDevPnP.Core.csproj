@@ -424,9 +424,11 @@
     <Compile Include="Framework\Provisioning\Model\CanvasZoneCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>

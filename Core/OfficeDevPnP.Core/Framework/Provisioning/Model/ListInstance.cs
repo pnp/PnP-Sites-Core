@@ -121,6 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private bool _enableAttachments = true;
         private CustomActionCollection _userCustomActions;
         private WebhookCollection _webhooks;
+        private IRMSettings _IRMSettings;
         #endregion
 
         #region Properties
@@ -332,6 +333,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._webhooks = value; }
         }
 
+        public IRMSettings IRMSettings
+        {
+            get { return this._IRMSettings; }
+            set
+            {
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = null;
+                }
+                this._IRMSettings = value;
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
         #endregion
 
         #region Comparison code
@@ -342,7 +360,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -370,7 +388,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.Webhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Webhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.IRMSettings != null ? this.IRMSettings.GetHashCode() : 0)
             ).GetHashCode());
         }
 
@@ -391,7 +410,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Compares ListInstance object based on ContentTypesEnabled, Description, DocumentTemplate, EnableVersioning, EnableMinorVersions, EnableModeration, Hidden, 
         /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
-        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders and UserCustomActions properties.
+        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders, UserCustomActions, 
+        /// Webhooks, and IRMSettings properties.
         /// </summary>
         /// <param name="other">ListInstance object</param>
         /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
@@ -429,8 +449,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders) &&
                 this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
-                this.Webhooks.DeepEquals(other.Webhooks)
-                );
+                this.Webhooks.DeepEquals(other.Webhooks) &&
+                (this.IRMSettings != null ? this.IRMSettings.Equals(other.IRMSettings) : true)
+            );
         }
 
         #endregion
