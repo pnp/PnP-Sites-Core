@@ -583,7 +583,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
