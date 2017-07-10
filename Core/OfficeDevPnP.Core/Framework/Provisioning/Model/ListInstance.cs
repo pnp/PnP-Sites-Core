@@ -23,6 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._dataRows = new DataRowCollection(this.ParentTemplate);
             this._folders = new FolderCollection(this.ParentTemplate);
             this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
+            this._webhooks = new WebhookCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="folders">List Folders</param>
         /// <param name="userCustomActions">UserCustomActions of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) : 
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) :
             this()
         {
             this.ContentTypeBindings.AddRange(contentTypeBindings);
@@ -119,6 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         private CustomActionCollection _userCustomActions;
+        private WebhookCollection _webhooks;
         #endregion
 
         #region Properties
@@ -324,6 +326,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._userCustomActions = value; }
         }
 
+        public WebhookCollection Webhooks
+        {
+            get { return this._webhooks; }
+            private set { this._webhooks = value; }
+        }
+
         #endregion
 
         #region Comparison code
@@ -334,7 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -361,7 +369,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Webhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -419,7 +428,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders) &&
-                this.UserCustomActions.DeepEquals(other.UserCustomActions)
+                this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
+                this.Webhooks.DeepEquals(other.Webhooks)
                 );
         }
 
