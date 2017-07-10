@@ -23,6 +23,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String RoleDefinition { get; set; }
 
+        /// <summary>
+        /// Allows to remove a role assignment, instead of adding it. It is an optional attribute, and by default it assumes a value of false.
+        /// </summary>
+        public Boolean Remove { get; set; }
+
         #endregion
 
         #region Comparison code
