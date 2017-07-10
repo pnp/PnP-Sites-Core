@@ -260,8 +260,8 @@ namespace Microsoft.SharePoint.Client
                 Uri folderAbsoluteUri = new Uri(absoluteUrl);
                 Uri webUrl = Web.WebUrlFromPageUrlDirect(parentFolder.Context as ClientContext, folderAbsoluteUri);
 
-                context = new ClientContext(webUrl.ToString());
-                context.Credentials = parentFolder.Context.Credentials;
+                context = parentFolder.Context.Clone(webUrl);
+
             }
 
             List parentList = null;
