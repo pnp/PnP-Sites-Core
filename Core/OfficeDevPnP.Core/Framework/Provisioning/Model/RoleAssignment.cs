@@ -37,9 +37,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}|",
                 (this.Principal != null ? this.Principal.GetHashCode() : 0),
-                (this.RoleDefinition != null ? this.RoleDefinition.GetHashCode() : 0)
+                (this.RoleDefinition != null ? this.RoleDefinition.GetHashCode() : 0),
+                this.Remove.GetHashCode()
             ).GetHashCode());
         }
 
@@ -70,7 +71,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             return (this.Principal == other.Principal &&
-                this.RoleDefinition == other.RoleDefinition);
+                this.RoleDefinition == other.RoleDefinition &&
+                this.Remove == other.Remove);
         }
 
         #endregion
