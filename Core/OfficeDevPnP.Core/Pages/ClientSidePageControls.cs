@@ -342,7 +342,16 @@ namespace OfficeDevPnP.Core.Pages
 
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
             this.rte = div.GetAttribute(TextRteAttribute);
-            this.Text = div.InnerHtml;
+
+            // By default text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits
+            if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase))
+            {
+                this.Text = (div.FirstChild as IElement).InnerHtml;
+            }
+            else
+            {
+                this.Text = div.InnerHtml;
+            }
 
             // load data from the data-sp-controldata attribute
             var jsonSerializerSettings = new JsonSerializerSettings()
@@ -664,7 +673,8 @@ namespace OfficeDevPnP.Core.Pages
             JObject wpJObject = JObject.Parse(decoded);
             this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
-            this.propertiesJson = wpJObject["properties"].ToString(Formatting.None);
+            // Set property to trigger correct loading of properties 
+            this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
             this.webPartId = wpJObject["id"].Value<string>();
 
             var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();
