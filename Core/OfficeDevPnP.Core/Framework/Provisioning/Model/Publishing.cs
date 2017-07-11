@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private DesignPackage _designPackage = null;
         private AvailableWebTemplateCollection _availableWebTemplates;
         private PageLayoutCollection _pageLayouts;
+        private ImageRenditionCollection _imageRenditions;
 
         #endregion
 
@@ -28,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
+            this._imageRenditions = new ImageRenditionCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -97,6 +99,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public AutoCheckRequirementsOptions AutoCheckRequirements { get; set; }
 
+        public ImageRenditionCollection ImageRenditions
+        {
+            get { return this._imageRenditions; }
+            private set { this._imageRenditions = value; }
+        }
+
         #endregion
 
         #region Comparison code
@@ -106,11 +114,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.AutoCheckRequirements.GetHashCode(),
                 this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.DesignPackage != null ? this.DesignPackage.GetHashCode() : 0),
-                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.ImageRenditions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -144,7 +153,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AutoCheckRequirements == other.AutoCheckRequirements &&
                 this.AvailableWebTemplates.DeepEquals(other.AvailableWebTemplates) &&
                 this.DesignPackage == other.DesignPackage &&
-                this.PageLayouts.DeepEquals(other.PageLayouts)
+                this.PageLayouts.DeepEquals(other.PageLayouts) &&
+                this.ImageRenditions.DeepEquals(other.ImageRenditions)
                 );
         }
 
