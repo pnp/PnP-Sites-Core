@@ -457,17 +457,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.IRMSettings != null ? this.IRMSettings.GetHashCode() : 0),
                 this.NoCrawl.GetHashCode(),
                 this.ListExperience.GetHashCode(),
-                this.DefaultDisplayFormUrl?.GetHashCode(),
-                this.DefaultEditFormUrl?.GetHashCode(),
-                this.DefaultNewFormUrl?.GetHashCode(),
+                this.DefaultDisplayFormUrl?.GetHashCode() ?? 0,
+                this.DefaultEditFormUrl?.GetHashCode() ?? 0,
+                this.DefaultNewFormUrl?.GetHashCode() ?? 0,
                 this.Direction.GetHashCode(),
-                this.ImageUrl?.GetHashCode(),
+                this.ImageUrl?.GetHashCode() ?? 0,
                 this.IrmExpire.GetHashCode(),
                 this.IrmReject.GetHashCode(),
                 this.IsApplicationList.GetHashCode(),
                 this.ReadSecurity.GetHashCode(),
-                this.ValidationFormula?.GetHashCode(),
-                this.ValidationMessage?.GetHashCode()
+                this.ValidationFormula?.GetHashCode() ?? 0,
+                this.ValidationMessage?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 

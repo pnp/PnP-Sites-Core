@@ -109,10 +109,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.EnableDocumentBrowserPublishingView.GetHashCode(),
                     this.EnableGroupProtection.GetHashCode(),
                     this.EnableLicenseCacheExpire.GetHashCode(),
-                    this.GroupName?.GetHashCode(),
+                    this.GroupName?.GetHashCode() ?? 0,
                     this.LicenseCacheExpireDays.GetHashCode(),
-                    this.PolicyDescription?.GetHashCode(),
-                    this.PolicyTitle?.GetHashCode()
+                    this.PolicyDescription?.GetHashCode() ?? 0,
+                    this.PolicyTitle?.GetHashCode() ?? 0
                 ).GetHashCode());
         }
 
