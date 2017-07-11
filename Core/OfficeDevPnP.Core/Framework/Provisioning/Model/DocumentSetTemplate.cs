@@ -106,6 +106,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String WelcomePage { get; set; }
 
+        /// <summary>
+        /// The RemoveExistingContentTypes flag for the Allowed Content Types of the current Document Set, optional attribute.
+        /// </summary>
+        public Boolean RemoveExistingContentTypes { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -116,11 +121,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.AllowedContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.DefaultDocuments.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.SharedFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.WelcomePageFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.WelcomePageFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.RemoveExistingContentTypes.GetHashCode()
             ).GetHashCode());
         }
 
@@ -139,7 +145,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares DocumentSetTemplate object based on AllowedContentTypes, DefaultDocuments, SharedFields and WelcomePageFields properties.
+        /// Compares DocumentSetTemplate object based on AllowedContentTypes, DefaultDocuments, SharedFields, WelcomePageFields, and RemoveExistingContentTypes properties.
         /// </summary>
         /// <param name="other">DocumentSetTemplate object</param>
         /// <returns>true if the DocumentSetTemplate object is equal to the current object; otherwise, false.</returns>
@@ -153,7 +159,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.AllowedContentTypes.DeepEquals(other.AllowedContentTypes) &&
                     this.DefaultDocuments.DeepEquals(other.DefaultDocuments) &&
                     this.SharedFields.DeepEquals(other.SharedFields) &&
-                    this.WelcomePageFields.DeepEquals(other.WelcomePageFields)
+                    this.WelcomePageFields.DeepEquals(other.WelcomePageFields) &&
+                    this.RemoveExistingContentTypes == other.RemoveExistingContentTypes
                 );
         }
 
