@@ -65,6 +65,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _termSets = value; }
         }
 
+        /// <summary>
+        /// If the TermGroup already exists on target, this attribute defines whether 
+        /// the TermGroup will be overwritten or skipped.
+        /// </summary>
+        public TermGroupUpdateBehavior UpdateBehavior { get; set; }
+
         #endregion
 
         #region Constructors
@@ -150,5 +156,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+    }
+    
+    public enum TermGroupUpdateBehavior
+    {
+        /// <summary>
+        /// Any existing TermGroup will be overwritten
+        /// </summary>
+        Overwrite,
+        /// <summary>
+        /// Any existing TermGroup will be skipped
+        /// </summary>
+        Skip,
     }
 }
