@@ -401,6 +401,19 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsNotNull(tenant.GetAppCatalog());
             }
         }
+
+
+        [TestMethod()]
+        public void DeploySharePointFrameworkSolutionTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+                var app = tenant.DeployApplicationPackageToAppCatalog("hello-world.sppkg", "../../Resources", true, true, true);
+            }
+        }
+
+
         #endregion
 
         #region Private helper methods
