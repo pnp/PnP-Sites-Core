@@ -418,6 +418,22 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasZone.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasZoneCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
+    <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
+      <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
@@ -463,6 +479,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
     <Compile Include="Pages\ClientSidePageCanvas.cs" />
     <Compile Include="Pages\ClientSidePageControls.cs" />
     <Compile Include="Pages\ClientSidePagesControlData.cs" />
@@ -893,6 +910,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

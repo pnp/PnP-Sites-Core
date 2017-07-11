@@ -23,6 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._dataRows = new DataRowCollection(this.ParentTemplate);
             this._folders = new FolderCollection(this.ParentTemplate);
             this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
+            this._webhooks = new WebhookCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="folders">List Folders</param>
         /// <param name="userCustomActions">UserCustomActions of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) : 
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) :
             this()
         {
             this.ContentTypeBindings.AddRange(contentTypeBindings);
@@ -119,6 +120,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
         private CustomActionCollection _userCustomActions;
+        private WebhookCollection _webhooks;
+        private IRMSettings _IRMSettings;
         #endregion
 
         #region Properties
@@ -324,6 +327,94 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._userCustomActions = value; }
         }
 
+        public WebhookCollection Webhooks
+        {
+            get { return this._webhooks; }
+            private set { this._webhooks = value; }
+        }
+
+        public IRMSettings IRMSettings
+        {
+            get { return this._IRMSettings; }
+            set
+            {
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = null;
+                }
+                this._IRMSettings = value;
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Defines if the current list or library has to be included in crawling, optional attribute.
+        /// </summary>
+        public Boolean NoCrawl { get; set; }
+
+        /// <summary>
+        /// Defines the current list UI/UX experience (valid for SPO only).
+        /// </summary>
+        public ListExperience ListExperience { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the location of the default display form for the list.
+        /// </summary>
+        public String DefaultDisplayFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the URL of the edit form to use for list items in the list.
+        /// </summary>
+        public String DefaultEditFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the location of the default new form for the list.
+        /// </summary>
+        public String DefaultNewFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the reading order of the list.
+        /// </summary>
+        public ListReadingDirection Direction { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the URI for the icon of the list, optional attribute.
+        /// </summary>
+        public String ImageUrl { get; set; }
+
+        /// <summary>
+        /// Defines if IRM Expire property, optional attribute.
+        /// </summary>
+        public Boolean IrmExpire { get; set; }
+
+        /// <summary>
+        /// Defines the IRM Reject property, optional attribute.
+        /// </summary>
+        public Boolean IrmReject { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies a flag that a client application can use to determine whether to display the list, optional attribute.
+        /// </summary>
+        public Boolean IsApplicationList { get; set; }
+
+        /// <summary>
+        /// Defines the Read Security property, optional attribute.
+        /// </summary>
+        public Int32 ReadSecurity { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the data validation criteria for a list item, optional attribute.
+        /// </summary>
+        public String ValidationFormula { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the error message returned when data validation fails for a list item, optional attribute.
+        /// </summary>
+        public String ValidationMessage { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -334,7 +425,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -361,7 +452,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Webhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.IRMSettings != null ? this.IRMSettings.GetHashCode() : 0),
+                this.NoCrawl.GetHashCode(),
+                this.ListExperience.GetHashCode(),
+                this.DefaultDisplayFormUrl?.GetHashCode() ?? 0,
+                this.DefaultEditFormUrl?.GetHashCode() ?? 0,
+                this.DefaultNewFormUrl?.GetHashCode() ?? 0,
+                this.Direction.GetHashCode(),
+                this.ImageUrl?.GetHashCode() ?? 0,
+                this.IrmExpire.GetHashCode(),
+                this.IrmReject.GetHashCode(),
+                this.IsApplicationList.GetHashCode(),
+                this.ReadSecurity.GetHashCode(),
+                this.ValidationFormula?.GetHashCode() ?? 0,
+                this.ValidationMessage?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -382,7 +488,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Compares ListInstance object based on ContentTypesEnabled, Description, DocumentTemplate, EnableVersioning, EnableMinorVersions, EnableModeration, Hidden, 
         /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
-        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders and UserCustomActions properties.
+        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders, UserCustomActions, 
+        /// Webhooks, IRMSettings, DefaultDisplayFormUrl, DefaultEditFormUrl, DefaultNewFormUrl, Direction, ImageUrl, IrmExpire, IrmReject, IsApplicationList,
+        /// ReadSecurity, ValidationFormula, and ValidationMessage properties.
         /// </summary>
         /// <param name="other">ListInstance object</param>
         /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
@@ -419,10 +527,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders) &&
-                this.UserCustomActions.DeepEquals(other.UserCustomActions)
-                );
+                this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
+                this.Webhooks.DeepEquals(other.Webhooks) &&
+                (this.IRMSettings != null ? this.IRMSettings.Equals(other.IRMSettings) : true) &&
+                this.NoCrawl == other.NoCrawl &&
+                this.ListExperience == other.ListExperience &&
+                this.DefaultDisplayFormUrl == other.DefaultDisplayFormUrl &&
+                this.DefaultEditFormUrl == other.DefaultEditFormUrl &&
+                this.DefaultNewFormUrl == other.DefaultNewFormUrl &&
+                this.Direction == other.Direction &&
+                this.ImageUrl == other.ImageUrl &&
+                this.IrmExpire == other.IrmExpire &&
+                this.IrmReject == other.IrmReject &&
+                this.IsApplicationList == other.IsApplicationList &&
+                this.ReadSecurity == other.ReadSecurity &&
+                this.ValidationFormula == other.ValidationFormula &&
+                this.ValidationMessage == other.ValidationMessage
+            );
         }
 
         #endregion
+    }
+
+    public enum ListExperience
+    {
+        /// <summary>
+        /// The Classic experience will be forced for the current list.
+        /// </summary>
+        ClassicExperience,
+        /// <summary>
+        /// The Modern experience will be forced for the current list.
+        /// </summary>
+        NewExperience,
+    }
+
+    public enum ListReadingDirection
+    {
+        /// <summary>
+        /// None
+        /// </summary>
+        None,
+        /// <summary>
+        /// Left to Right
+        /// </summary>
+        LTR,
+        /// <summary>
+        /// Right to Left
+        /// </summary>
+        RTL,
     }
 }

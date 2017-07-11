@@ -45,6 +45,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private Publishing _publishing = null;
         private Dictionary<String, String> _properties = new Dictionary<string, string>();
 
+        private SiteWebhookCollection _siteWebhooks;
+        private ClientSidePageCollection _clientSidePages;
+
         #endregion
 
         #region Constructors
@@ -80,6 +83,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             this._supportedUILanguages = new SupportedUILanguageCollection(this);
             this._addins = new AddInCollection(this);
+
+            this._siteWebhooks = new SiteWebhookCollection(this);
+            this._clientSidePages = new ClientSidePageCollection(this);
         }
 
         /// <summary>
@@ -441,6 +447,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Gets a collection of SiteWebhooks to configure for the site
+        /// </summary>
+        public SiteWebhookCollection SiteWebhooks
+        {
+            get { return this._siteWebhooks; }
+            private set { this._siteWebhooks = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of ClientSidePage to configure for the site
+        /// </summary>
+        public ClientSidePageCollection ClientSidePages
+        {
+            get { return this._clientSidePages; }
+            private set { this._clientSidePages = value; }
+        }
+
+        /// <summary>
         /// A set of custom Properties for the Provisioning Template
         /// </summary>
         public Dictionary<String, String> Properties
@@ -470,6 +494,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String BaseSiteTemplate { get; set; }
 
         /// <summary>
+        /// The default CultureInfo of the Provisioning Template, used to format all input values, optional attribute.
+        /// </summary>
+        public String TemplateCultureInfo { get; set; }
+
+        /// <summary>
+        /// Declares the target scope of the current Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateScope Scope { get; set; }
+
+        /// <summary>
         /// Gets or sets the File Connector
         /// </summary>
         public FileConnectorBase Connector
@@ -493,7 +527,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -524,7 +558,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AddIns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.Publishing != null ? this.Publishing.GetHashCode() : 0),
                 this.Localizations.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.WebSettings.GetHashCode()
+                this.WebSettings.GetHashCode(),
+                this.SiteWebhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.TemplateCultureInfo?.GetHashCode() ?? 0,
+                this.Scope.GetHashCode()
             ).GetHashCode());
         }
 
@@ -544,7 +582,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         /// <summary>
         /// Compares ProvisioningTemplate object based on ComposedLook, ContentTypes, CustomActions, SiteFeature, WebFeatures, Files, Id, Lists,
-        /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations and WebSettings properties.
+        /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations,
+        /// WebSettings, SiteWebhooks, and ClientSidePages properties.
         /// </summary>
         /// <param name="other">ProvisioningTemplate object</param>
         /// <returns>true if the ProvisioningTemplate object is equal to the current object; otherwise, false.</returns>
@@ -586,7 +625,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing &&
                 this.Localizations.DeepEquals(other.Localizations) &&
-                this.WebSettings.Equals(other.WebSettings)
+                this.WebSettings.Equals(other.WebSettings) &&
+                this.SiteWebhooks.DeepEquals(other.SiteWebhooks) &&
+                this.ClientSidePages.DeepEquals(other.ClientSidePages) &&
+                this.TemplateCultureInfo == other.TemplateCultureInfo &&
+                this.Scope == other.Scope
             );
         }
 
@@ -605,5 +648,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return XElement.Load(stream).ToString();
             }
         }
+    }
+
+    /// <summary>
+    /// Declares the target scope of the current Provisioning Template
+    /// </summary>
+    public enum ProvisioningTemplateScope
+    {
+        /// <summary>
+        /// The scope is a Root web of a Site Collection
+        /// </summary>
+        RootSite,
+        /// <summary>
+        /// The scope is a child Web of a Site Collection
+        /// </summary>
+        Web,
     }
 }
