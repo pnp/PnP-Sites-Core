@@ -425,6 +425,7 @@
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
+    <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
