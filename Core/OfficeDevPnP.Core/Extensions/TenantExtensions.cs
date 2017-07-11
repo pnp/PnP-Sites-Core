@@ -726,7 +726,28 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
             }
 
-            return DeployApplicationPackageToAppCatalog(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, overwrite);
+            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, false, overwrite);
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
+        {
+            var appCatalogSite = tenant.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, skipFeatureDeployment, overwrite);
         }
 
         /// <summary>
@@ -739,7 +760,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
         /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
         /// <returns>The ListItem of the added package row</returns>
+        [Obsolete("Please use the DeployApplicationPackageToAppCatalog overloads that don't require you to specify the appCatalogSiteUrl parameter. This method will be removed in the October 2017 release.")]
         public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
+        {
+            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSiteUrl, spPkgName, spPkgPath, autoDeploy, false, overwrite);
+        }
+
+        private static ListItem DeployApplicationPackageToAppCatalogImplementation(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy, bool skipFeatureDeployment, bool overwrite)
         {
             if (String.IsNullOrEmpty(appCatalogSiteUrl))
             {
@@ -779,12 +806,17 @@ namespace Microsoft.SharePoint.Client
                     throw new Exception($"Upload of {spPkgName} failed");
                 }
 
-                if (autoDeploy && System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                if ((autoDeploy || skipFeatureDeployment) && 
+                    System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
                 {
                     // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
                     // an event receiver that will process the sppkg file and update the client side componenent manifest list
-                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = true;
-                    //sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = todo
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
+                    // deal with "upgrading" solutions
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionCurrentVersionDeployed"] = autoDeploy;
+                    // Allow for a central deployment of the solution, no need to install the solution in the individual site collections.
+                    // Only works when the solution is not using feature framework to "configure" the site upon solution installation
+                    sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = skipFeatureDeployment;
                     sppkgFile.ListItemAllFields.Update();
                 }
 
@@ -794,6 +826,7 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
+
         #endregion
 
         #region Private helper methods

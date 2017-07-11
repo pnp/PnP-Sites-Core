@@ -526,6 +526,7 @@
     <None Include="Resources\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\hello-world.sppkg" />
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
