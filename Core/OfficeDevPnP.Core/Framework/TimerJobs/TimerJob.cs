@@ -87,6 +87,11 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
         }
 
+        /// <summary>
+        /// Simpliefied constructor for timer job, sets given version to timer job
+        /// </summary>
+        /// <param name="name">Name of the timer job</param>
+        /// <param name="version">Version of the timer job</param>
         public TimerJob(string name, string version)
             : this(name, version, "")
         {
@@ -97,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// </summary>
         /// <param name="name">Name of the timer job</param>
         /// <param name="version">Version of the timer job</param>
-        /// <param name="configurationData"></param>
+        /// <param name="configurationData">Timer job configuration data</param>
         public TimerJob(string name, string version, string configurationData)
         {
             this.name = name;
@@ -621,7 +626,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// Prepares the timerjob to operate against Office 365 with user and password credentials. Sets AuthenticationType 
         /// to AuthenticationType.Office365
         /// </summary>
-        /// <param name="userUPN"></param>
+        /// <param name="userUPN">user name</param>
         /// <param name="password">Password of the user that will be used to operate the timer job work</param>
         public void UseOffice365Authentication(string userUPN, string password)
         {
@@ -637,7 +642,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// Prepares the timerjob to operate against Office 365 with user and password credentials. Sets AuthenticationType 
         /// to AuthenticationType.Office365
         /// </summary>
-        /// <param name="userUPN"></param>
+        /// <param name="userUPN">user name</param>
         /// <param name="password">Password of the user that will be used to operate the timer job work</param>
         public void UseOffice365Authentication(string userUPN, SecureString password)
         {
@@ -898,7 +903,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// Takes over the settings from the passed timer job. Is useful when you run multiple jobs in a row or chain 
         /// job execution. Settings that are taken over are all the authentication, enumeration settings and SharePointVersion
         /// </summary>
-        /// <param name="job"></param>
+        /// <param name="job">TimerJob</param>
         public void Clone(TimerJob job)
         {
             this.username = job.username;
@@ -1026,7 +1031,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <summary>
         /// Provides the timer job with the enumeration credentials. For Office 365 username and password is sufficient
         /// </summary>
-        /// <param name="userUPN"></param>
+        /// <param name="userUPN">user name</param>
         /// <param name="password">Password of the enumeration user</param>
         public void SetEnumerationCredentials(string userUPN, string password)
         {
@@ -1041,7 +1046,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <summary>
         /// Provides the timer job with the enumeration credentials. For Office 365 username and password is sufficient
         /// </summary>
-        /// <param name="userUPN"></param>
+        /// <param name="userUPN">user name</param>
         /// <param name="password">Password of the enumeration user</param>
         public void SetEnumerationCredentials(string userUPN, SecureString password)
         {
@@ -1524,7 +1529,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <summary>
         /// Gets the current SharePoint version based on the loaded assembly
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns SharePoint version</returns>
         private int GetSharePointVersion()
         {
             Assembly asm = Assembly.GetAssembly(typeof(Site));
@@ -1552,8 +1557,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <summary>
         /// Gets the top level site for the given url
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">A SharePoint site url</param>
+        /// <returns>Returns top levl string given url string</returns>
         private string GetTopLevelSite(string site)
         {
             Uri uri = new Uri(site.TrimEnd(new[] { '/' }));

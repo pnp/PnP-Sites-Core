@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ContentTypeBindingCollection : ProvisioningTemplateCollection<ContentTypeBinding>
     {
+        /// <summary>
+        /// Constructor for ContentTypeBindingCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ContentTypeBindingCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

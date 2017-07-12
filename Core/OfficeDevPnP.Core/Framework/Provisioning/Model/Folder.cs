@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private ObjectSecurity _objectSecurity;
         private FolderCollection _folders;
+        private PropertyBagEntryCollection _propertyBags;
 
         #endregion
 
@@ -55,16 +56,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _folders = value; }
         }
 
+        public PropertyBagEntryCollection PropertyBagEntries
+        {
+            get { return this._propertyBags; }
+            private set { this._propertyBags = value; }
+        }
+
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for the Folder class
+        /// </summary>
         public Folder()
         {
             this.Security = new ObjectSecurity();
             this._folders = new FolderCollection(this.ParentTemplate);
+            this._propertyBags = new PropertyBagEntryCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for the Folder class
+        /// </summary>
+        /// <param name="name">Name of the folder</param>
+        /// <param name="folders">List of the folders</param>
+        /// <param name="security">ObjectSecurity for the folder</param>
         public Folder(String name, List<Folder> folders = null, ObjectSecurity security = null) :
             this()
         {
@@ -79,16 +95,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 (this.Name.GetHashCode()),
                 (this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))),
-                (this.Security != null ? this.Security.GetHashCode() : 0)
+                (this.Security != null ? this.Security.GetHashCode() : 0),
+                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Folder
+        /// </summary>
+        /// <param name="obj">Object that represents Folder</param>
+        /// <returns>true if the current object is equal to the Folder</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Folder))
@@ -98,6 +123,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Folder)obj));
         }
 
+        /// <summary>
+        /// Compares Folder object based on Name, Folders and Security properties.
+        /// </summary>
+        /// <param name="other">Folder object</param>
+        /// <returns>true if the Folder object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Folder other)
         {
             if (other == null)
@@ -107,8 +137,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Name == other.Name &&
                     this.Folders.DeepEquals(other.Folders) &&
-                    (this.Security != null ? this.Security.Equals(other.Security) : true)
-                );
+                    (this.Security != null ? this.Security.Equals(other.Security) : true) &&
+                    this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries)
+               );
         }
 
         #endregion

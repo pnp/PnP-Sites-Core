@@ -11,6 +11,10 @@
         /// <summary>
         /// Includes an enumerated type and returns the new value
         /// </summary>
+        /// <typeparam name="T">Generic type</typeparam>
+        /// <param name="value">Enum value</param>
+        /// <param name="append">Generic type parameter</param>
+        /// <returns>Returns new value</returns>
         public static T Include<T>(this Enum value, T append)
         {
             Type type = value.GetType();
@@ -34,6 +38,10 @@
         /// <summary>
         /// Removes an enumerated type and returns the new value
         /// </summary>
+        /// <typeparam name="T">Generic type</typeparam>
+        /// <param name="value">Enum value</param>
+        /// <param name="remove">Generic type parameter</param>
+        /// <returns>Returns new value</returns>
         public static T Remove<T>(this Enum value, T remove)
         {
             Type type = value.GetType();
@@ -57,6 +65,10 @@
         /// <summary>
         /// Checks if an enumerated type contains a value
         /// </summary>
+        /// <typeparam name="T">Generic type</typeparam>
+        /// <param name="value">Enum value</param>
+        /// <param name="check">Generic type parameter</param>
+        /// <returns>Returns true if condition matches and enumerated type contains value</returns>
         public static bool Has<T>(this Enum value, T check)
         {
             Type type = value.GetType();
@@ -81,6 +93,10 @@
         /// <summary>
         /// Checks if an enumerated type is missing a value
         /// </summary>
+        /// <typeparam name="T">Generic type</typeparam>
+        /// <param name="obj">Enum object</param>
+        /// <param name="value">Generic type parameter</param>
+        /// <returns>Returns true if enumerated type is missing a value</returns>
         public static bool Missing<T>(this Enum obj, T value)
         {
             return !Has<T>(obj, value);

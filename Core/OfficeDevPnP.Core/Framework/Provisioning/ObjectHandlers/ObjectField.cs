@@ -182,10 +182,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingField.Update();
                             web.Context.ExecuteQueryRetry();
                         }
-                        if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(existingField.DefaultValue))
+                        if ((existingField.TypeAsString == "TaxonomyFieldType" || existingField.TypeAsString == "TaxonomyFieldTypeMulti"))
                         {
                             var taxField = web.Context.CastTo<TaxonomyField>(existingField);
-                            ValidateTaxonomyFieldDefaultValue(taxField);
+                            if (!string.IsNullOrEmpty(existingField.DefaultValue))
+                            {
+                                ValidateTaxonomyFieldDefaultValue(taxField);
+                            }
+                            SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
                         }
                     }
                     else
@@ -269,7 +273,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var list in lists)
             {
-                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
+                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
             }
 
             return schemaXml;
@@ -321,10 +325,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQueryRetry();
                 }
 
-                if ((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti") && !string.IsNullOrEmpty(field.DefaultValue))
+                if ((field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti"))
                 {
                     var taxField = web.Context.CastTo<TaxonomyField>(field);
-                    ValidateTaxonomyFieldDefaultValue(taxField);
+                    if (!string.IsNullOrEmpty(field.DefaultValue))
+                    {
+                        ValidateTaxonomyFieldDefaultValue(taxField);
+                    }
+                    SetTaxonomyFieldOpenValue(taxField, originalFieldXml);
                 }
 
             }
@@ -337,7 +345,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-
+        private static void SetTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
+        {
+            bool openValue;
+            var taxonomyFieldElement = XElement.Parse(taxonomyFieldXml);
+            var openAttributeValue = taxonomyFieldElement.Attribute("Open") != null ? taxonomyFieldElement.Attribute("Open").Value : "";
+            if (bool.TryParse(openAttributeValue, out openValue))
+            {
+                field.Open = openValue;
+                field.UpdateAndPushChanges(true);
+                field.Context.ExecuteQueryRetry();
+            }
+        }
 
         private static void ValidateTaxonomyFieldDefaultValue(TaxonomyField field)
         {

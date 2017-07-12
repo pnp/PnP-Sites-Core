@@ -61,7 +61,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="fieldAsXml">The XML declaration of SiteColumn definition</param>
-        /// <param name="executeQuery"></param>
+        /// <param name="executeQuery">Executes query if true</param>
         /// <returns>The newly created field or existing field.</returns>
         public static Field CreateField(this Web web, string fieldAsXml, bool executeQuery = true)
         {
@@ -103,8 +103,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Removes a field by specifying its internal name
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="internalName"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="internalName">Internal name of the field</param>
         public static void RemoveFieldByInternalName(this Web web, string internalName)
         {
             var fields = web.Context.LoadQuery(web.Fields.Where(f => f.InternalName == internalName));
@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Removes a field by specifying its ID
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">Web to process</param>
         /// <param name="fieldId">The id of the field to remove</param>
         public static void RemoveFieldById(this Web web, string fieldId)
         {
@@ -283,7 +283,8 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed</param>
         /// <param name="internalName">If true, search parent sites and root site</param>
-        /// <returns></returns>
+        /// <param name="searchInSiteHierarchy">If true, search across all the available fields in the site hierarchy</param>
+        /// <returns>Field</returns>
         public static Field GetFieldByInternalName(this Web web, string internalName, bool searchInSiteHierarchy = false)
         {
             IEnumerable<Field> fields = null;
@@ -479,7 +480,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to process</param>
         /// <param name="fieldCreationInformation">Creation information for the field</param>
-        /// <param name="executeQuery"></param>
+        /// <param name="executeQuery">Optionally skip the executeQuery action</param>
         /// <returns>The newly created field or existing field.</returns>
         public static Field CreateField(this List list, FieldCreationInformation fieldCreationInformation, bool executeQuery = true)
         {
@@ -548,7 +549,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Formats a fieldcreationinformation object into Field CAML xml.
         /// </summary>
-        /// <param name="fieldCreationInformation"></param>
+        /// <param name="fieldCreationInformation">Field Cration Information object</param>
         /// <returns></returns>
         public static string FormatFieldXml(FieldCreationInformation fieldCreationInformation)
         {
@@ -1364,7 +1365,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="name">Name of the content type</param>
         /// <param name="id">Complete ID for the content type</param>
         /// <param name="group">Group for the content type</param>
-        /// <returns></returns>
+        /// <returns>Returns newly created content type</returns>
         public static ContentType CreateContentType(this Web web, string name, string id, string group)
         {
             // Load the current collection of content types

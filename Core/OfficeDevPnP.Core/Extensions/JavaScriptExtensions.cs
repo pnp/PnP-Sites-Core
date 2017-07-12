@@ -22,7 +22,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptLinks">semi colon delimited list of links to javascript files</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsLink(this Web web, string key, string scriptLinks, int sequence = 0)
         {
@@ -35,7 +35,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">Site to be processed</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptLinks">semi colon delimited list of links to javascript files</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsLink(this Site site, string key, string scriptLinks, int sequence = 0)
         {
@@ -49,7 +49,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptLinks">IEnumerable list of links to javascript files</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsLink(this Web web, string key, IEnumerable<string> scriptLinks, int sequence = 0)
         {
@@ -62,7 +62,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">Site to be processed</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptLinks">IEnumerable list of links to javascript files</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsLink(this Site site, string key, IEnumerable<string> scriptLinks, int sequence = 0)
         {
@@ -247,7 +247,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptBlock">Javascript to be injected</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsBlock(this Web web, string key, string scriptBlock, int sequence = 0)
         {
@@ -261,7 +261,7 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
         /// <param name="site">Site to be processed</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
         /// <param name="scriptBlock">Javascript to be injected</param>
-        /// <param name="sequence"></param>
+        /// <param name="sequence">Specifies the ordering priority for actions. A value is 0 indicates that the button will appear at the first position on the ribbon.</param>
         /// <returns>True if action was ok</returns>
         public static bool AddJsBlock(this Site site, string key, string scriptBlock, int sequence = 0)
         {
@@ -312,12 +312,18 @@ if (scriptsSrc.indexOf('{1}') === -1)  {
         /// </summary>
         /// <param name="site">Site to be processed</param>
         /// <param name="key">Identifier (key) for the custom action that will be created</param>
-        /// <returns></returns>
+        /// <returns>True if custom JsLink exists, false otherwise</returns>
         public static Boolean ExistsJsLink(this Site site, String key)
         {
             return (ExistsJsLinkImplementation(site, key));
         }
 
+        /// <summary>
+        /// Checks if the given clientObject already has a custom JsLink with a specified key
+        /// </summary>
+        /// <param name="clientObject">clientObject to operate on</param>
+        /// <param name="key">Identifier (key) for the custom action that will be created</param>
+        /// <returns>True if custom JsLink exists, false otherwise</returns>
         public static Boolean ExistsJsLinkImplementation(ClientObject clientObject, String key)
         {
             UserCustomActionCollection existingActions;

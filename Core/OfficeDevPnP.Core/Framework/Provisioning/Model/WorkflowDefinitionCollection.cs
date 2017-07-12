@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class WorkflowDefinitionCollection : ProvisioningTemplateCollection<WorkflowDefinition>
     {
+        /// <summary>
+        /// Constructor for WorkflowDefinitionCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public WorkflowDefinitionCollection(ProvisioningTemplate parentTemplate):
             base(parentTemplate)
         {

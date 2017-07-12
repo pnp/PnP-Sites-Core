@@ -37,11 +37,11 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Returns the HTML contents of a wiki page
+        /// Gets the HTML contents of a wiki page
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="serverRelativePageUrl">Server relative url of the page, e.g. /sites/demo/SitePages/Test.aspx</param>
-        /// <returns></returns>
+        /// <returns>Returns the HTML contents of a wiki page</returns>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
         public static string GetWikiPageContent(this Web web, string serverRelativePageUrl)
@@ -83,7 +83,7 @@ namespace Microsoft.SharePoint.Client
 
             IEnumerable<WebPartDefinition> query;
 
-#if SP2016
+#if ONPREMISES
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
             query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
 #else
@@ -365,6 +365,13 @@ namespace Microsoft.SharePoint.Client
             return wpdNew;
         }
 
+        /// <summary>
+        /// Gets XML string of a Webpart
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="webPartId">The id of the webpart</param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to add the xml to</param>
+        /// <returns>Returns XML string of a Webpart</returns>
         public static string GetWebPartXml(this Web web, Guid webPartId, string serverRelativePageUrl)
         {
             string webPartXml = null;
@@ -467,7 +474,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="layout">Wiki page layout to be applied</param>
-        /// <param name="serverRelativePageUrl"></param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to add the layout to</param>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl is null</exception>
         public static void AddLayoutToWikiPage(this Web web, WikiPageLayout layout, string serverRelativePageUrl)
@@ -621,7 +628,7 @@ namespace Microsoft.SharePoint.Client
         /// Add HTML to a wiki page
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="serverRelativePageUrl"></param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to add html to</param>
         /// <param name="html"></param>
         /// <exception cref="System.ArgumentException">Thrown when serverRelativePageUrl or html is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when serverRelativePageUrl or html is null</exception>
@@ -1018,7 +1025,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="key">The key to update</param>
         /// <param name="value">The value to set</param>
         /// <param name="id">The id of the webpart</param>
-        /// <param name="serverRelativePageUrl"></param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to set web part property</param>
         /// <exception cref="System.ArgumentException">Thrown when key or serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when key or serverRelativePageUrl is null</exception>
         public static void SetWebPartProperty(this Web web, string key, string value, Guid id, string serverRelativePageUrl)
@@ -1033,7 +1040,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="key">The key to update</param>
         /// <param name="value">The value to set</param>
         /// <param name="id">The id of the webpart</param>
-        /// <param name="serverRelativePageUrl"></param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to set web part property</param>
         /// <exception cref="System.ArgumentException">Thrown when key or serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when key or serverRelativePageUrl is null</exception>
         public static void SetWebPartProperty(this Web web, string key, int value, Guid id, string serverRelativePageUrl)
@@ -1048,7 +1055,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="key">The key to update</param>
         /// <param name="value">The value to set</param>
         /// <param name="id">The id of the webpart</param>
-        /// <param name="serverRelativePageUrl"></param>
+        /// <param name="serverRelativePageUrl">Server relative url of the page to set web part property</param>
         /// <exception cref="System.ArgumentException">Thrown when key or serverRelativePageUrl is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when key or serverRelativePageUrl is null</exception>
         public static void SetWebPartProperty(this Web web, string key, bool value, Guid id, string serverRelativePageUrl)

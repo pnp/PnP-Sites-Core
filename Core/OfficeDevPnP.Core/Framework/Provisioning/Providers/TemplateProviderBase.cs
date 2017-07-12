@@ -7,6 +7,9 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
 {
+    /// <summary>
+    /// Handles methods for Template Provider
+    /// </summary>
     public abstract class TemplateProviderBase
     {
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
@@ -16,12 +19,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         private string _uri = "";
 
         #region Constructors
-        
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public TemplateProviderBase()
         {
 
         }
-
+        
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="connector"></param>
         public TemplateProviderBase(FileConnectorBase connector)
         {
             this._connector = connector;
@@ -30,7 +39,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         #endregion
 
         #region Public Properties
-
+        /// <summary>
+        /// Template parameters
+        /// </summary>
         public Dictionary<string, string> Parameters
         {
             get
@@ -39,6 +50,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
             }
         }
 
+        /// <summary>
+        /// Supports template save
+        /// </summary>
         public virtual bool SupportsSave
         {
             get
@@ -47,6 +61,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
             }
         }
 
+        /// <summary>
+        /// Supports template delete
+        /// </summary>
         public virtual bool SupportsDelete
         {
             get
@@ -55,6 +72,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
             }
         }
 
+        /// <summary>
+        /// File Connector
+        /// </summary>
         public virtual FileConnectorBase Connector
         {
             get
@@ -67,6 +87,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
             }
         }
 
+        /// <summary>
+        /// Uri of site
+        /// </summary>
         public String Uri
         {
             get
@@ -82,39 +105,133 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         #endregion
 
         #region Abstract Methods
-
+        /// <summary>
+        /// Gets list of ProvisioningTemplates
+        /// </summary>
+        /// <returns>Returns collection of ProvisioningTemplate</returns>
         public abstract List<ProvisioningTemplate> GetTemplates();
 
+        /// <summary>
+        /// Gets list of ProvisioningTemplates
+        /// </summary>
+        /// <param name="formatter">Provisioning Template formatter</param>
+        /// <returns>Returns collection of ProvisioningTemplate</returns>
         public abstract List<ProvisioningTemplate> GetTemplates(ITemplateFormatter formatter);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri, ITemplateProviderExtension[] extensions);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <param name="identifier">ProvisioningTemplate identifier</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri, string identifier);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <param name="formatter">Provisioning Template formatter</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri, ITemplateFormatter formatter);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <param name="identifier">ProvisioningTemplate identifier</param>
+        /// <param name="formatter">Provisioning Template formatter</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter);
 
+        /// <summary>
+        /// Gets ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint uri</param>
+        /// <param name="identifier">ProvisioningTemplate identifier</param>
+        /// <param name="formatter">Provisioning Template formatter</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
+        /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions);
-        
+
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
         public abstract void Save(ProvisioningTemplate template);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
         public abstract void Save(ProvisioningTemplate template, ITemplateProviderExtension[] extensions);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="formatter">Provisioning Template Formatter</param>
         public abstract void Save(ProvisioningTemplate template, ITemplateFormatter formatter);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="formatter">Provisioning Template Formatter</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
         public abstract void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="uri">A SharePoint site uri</param>
         public abstract void SaveAs(ProvisioningTemplate template, string uri);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="uri">A SharePoint site uri</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
         public abstract void SaveAs(ProvisioningTemplate template, string uri, ITemplateProviderExtension[] extensions);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="uri">A SharePoint site uri</param>
+        /// <param name="formatter">Provisioning Template Formatter</param>
         public abstract void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter);
 
+        /// <summary>
+        /// Saves ProvisioningTemplate
+        /// </summary>
+        /// <param name="template">Provisioning Template</param>
+        /// <param name="uri">A SharePoint site uri</param>
+        /// <param name="formatter">Provisioning Template Formatter</param>
+        /// <param name="extensions">Collection of provisioning template extensions</param>
         public abstract void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions);
 
+        /// <summary>
+        /// Deletes ProvisioningTemplate
+        /// </summary>
+        /// <param name="uri">A SharePoint site uri</param>
         public abstract void Delete(string uri);
 
         #endregion

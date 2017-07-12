@@ -9,11 +9,18 @@ using static Microsoft.SharePoint.Client.ClientContextExtensions;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    ///<summary>
+    /// Class that deals with PnPHttpProvider methods
+    ///</summary>  
     public class PnPHttpProvider : HttpProvider, IHttpProvider
     {
         private int _retryCount;
         private int _delay;
-
+        /// <summary>
+        /// Constructor for the PnPHttpProvider class
+        /// </summary>
+        /// <param name="retryCount">Maximum retry Count</param>
+        /// <param name="delay">Delay Time</param>
         public PnPHttpProvider(int retryCount = 10, int delay = 500) :
             base()
         {

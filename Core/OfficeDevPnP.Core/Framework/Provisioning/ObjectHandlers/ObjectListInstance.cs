@@ -1512,8 +1512,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (folder.Security != null && folder.Security.RoleAssignments.Count != 0)
                 {
                     var currentFolderItem = currentFolder.ListItemAllFields;
-                    parentFolder.Context.Load(currentFolderItem);
-                    parentFolder.Context.ExecuteQueryRetry();
+                    currentFolderItem.Context.Load(currentFolderItem);
+                    currentFolderItem.Context.ExecuteQueryRetry();
                     currentFolderItem.SetSecurity(parser, folder.Security);
                 }
             }
@@ -2001,7 +2001,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var list in lists)
             {
-                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
+                schemaXml = Regex.Replace(schemaXml, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
             }
             schemaXml = Regex.Replace(schemaXml, web.Id.ToString("B"), "{{siteid}}", RegexOptions.IgnoreCase);
             schemaXml = Regex.Replace(schemaXml, web.Id.ToString("D"), "{siteid}", RegexOptions.IgnoreCase);

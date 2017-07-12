@@ -19,12 +19,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for SiteGroup class
+        /// </summary>
         public SiteGroup()
         {
             this._members = new UserCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for SiteGroup class
+        /// </summary>
+        /// <param name="members">SiteGroup members</param>
         public SiteGroup(IEnumerable<User> members):
             this()
         {
@@ -87,7 +93,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
@@ -103,6 +112,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with SiteGroup
+        /// </summary>
+        /// <param name="obj">Object that represents SiteGroup</param>
+        /// <returns>true if the current object is equal to the SiteGroup</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is SiteGroup))
@@ -112,6 +126,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((SiteGroup)obj));
         }
 
+        /// <summary>
+        /// Compares SiteGroup object based on AllowMembersEditMembership, AllowRequestToJoinLeave, AutoAcceptRequestToJoinLeave, Description, Members, 
+        /// OnlyAllowMembersViewMembership, Owner, RequestToJoinLeaveEmailSetting and Title properties.
+        /// </summary>
+        /// <param name="other">SiteGroup object</param>
+        /// <returns>true if the SiteGroup object is equal to the current object; otherwise, false.</returns>
         public bool Equals(SiteGroup other)
         {
             if (other == null)

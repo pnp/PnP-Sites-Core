@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
         /// <param name="serialNumber">Serial Number of the Current User > My Certificate to use to authenticate </param>
         /// <param name="certificateMixed">Uri to the ADFS certificatemixed endpoint</param>
         /// <param name="relyingPartyIdentifier">Identifier of the ADFS relying party that we're hitting</param>
-        /// <param name="logonTokenCacheExpirationWindow"></param>
+        /// <param name="logonTokenCacheExpirationWindow">Logon TokenCache expiration window integer value</param>
         /// <returns>A cookiecontainer holding the FedAuth cookie</returns>
         public CookieContainer GetFedAuthCookie(string siteUrl, string serialNumber, Uri certificateMixed, string relyingPartyIdentifier, int logonTokenCacheExpirationWindow)
         {

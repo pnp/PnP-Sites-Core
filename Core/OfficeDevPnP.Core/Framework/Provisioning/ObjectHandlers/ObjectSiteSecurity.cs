@@ -684,8 +684,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                   template.Security.SiteSecurityPermissions.RoleDefinitions.Any());
                 if (_willProvision == true)
                 {
-                    // if not subweb and site inheritance is not broken
-                    if (web.IsSubSite() && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
+                    // if subweb and site inheritance is not broken
+                    if (web.IsSubSite() && template.Security.BreakRoleInheritance == false && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
                     {
                         _willProvision = false;
                     }

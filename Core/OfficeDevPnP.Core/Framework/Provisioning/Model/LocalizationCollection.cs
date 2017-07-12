@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class LocalizationCollection: ProvisioningTemplateCollection<Localization>
     {
+        /// <summary>
+        /// Constructor for LocalizationCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public LocalizationCollection(ProvisioningTemplate parentTemplate): 
             base(parentTemplate)
         {

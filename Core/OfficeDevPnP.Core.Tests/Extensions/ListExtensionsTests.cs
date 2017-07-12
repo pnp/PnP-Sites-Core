@@ -351,6 +351,63 @@ namespace Microsoft.SharePoint.Client.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void AddWebhookWithInvalidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+                
+                testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 12);
+            }
+        }
+
+        [TestMethod]
+        public void AddWebhookWithVeryLastValidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+                
+                DateTime veryLastValidExpiration = DateTime.UtcNow.AddDays(180);
+
+                WebhookSubscription expectedSubscription = new WebhookSubscription()
+                {
+                    ExpirationDateTime = veryLastValidExpiration,
+                    NotificationUrl = TestCommon.TestWebhookUrl,
+                    Resource = TestCommon.DevSiteUrl + string.Format("/_api/lists('{0}')", webHookListId)
+                };
+                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, veryLastValidExpiration);
+
+                // Compare properties of expected and actual
+                Assert.IsTrue(Equals(expectedSubscription.ClientState, actualSubscription.ClientState)
+                    && Equals(expectedSubscription.ExpirationDateTime.Date, actualSubscription.ExpirationDateTime.Date)
+                    && Equals(expectedSubscription.NotificationUrl, actualSubscription.NotificationUrl)
+                    && expectedSubscription.Resource.Contains(actualSubscription.Resource));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void AddWebhookWithBarelyInvalidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                DateTime barelyInvalidExpiration = DateTime.UtcNow.AddDays(180).AddMinutes(1);
+
+                testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, barelyInvalidExpiration);
+            }
+        }
+
+        [TestMethod]
         public void UpdateWebhookTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())

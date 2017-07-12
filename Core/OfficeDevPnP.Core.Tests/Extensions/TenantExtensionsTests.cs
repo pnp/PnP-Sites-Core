@@ -391,6 +391,31 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
         #endregion
 
+        #region ClientSide Package Deployment tests
+        [TestMethod()]
+        public void GetAppCatalogTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+                Assert.IsNotNull(tenant.GetAppCatalog());
+            }
+        }
+
+
+        [TestMethod()]
+        public void DeploySharePointFrameworkSolutionTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+                var app = tenant.DeployApplicationPackageToAppCatalog("hello-world.sppkg", "../../Resources", true, true, true);
+            }
+        }
+
+
+        #endregion
+
         #region Private helper methods
         private static string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {

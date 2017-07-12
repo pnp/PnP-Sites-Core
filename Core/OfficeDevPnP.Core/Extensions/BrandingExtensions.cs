@@ -509,9 +509,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="sourceFilePath">The path to the source file</param>
         /// <param name="title">The title of the masterpage</param>
         /// <param name="description">The description of the masterpage</param>
-        /// <param name="uiVersion"></param>
-        /// <param name="defaultCSSFile"></param>
-        /// <param name="folderPath"></param>
+        /// <param name="uiVersion">UIVersion of the masterpage</param>
+        /// <param name="defaultCSSFile">DefaultCSSFile of the masterpage</param>
+        /// <param name="folderPath">FolderPath of the masterpage</param>
         public static File DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
@@ -582,9 +582,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Can be used to set master page and custom master page in single command
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="masterPageName"></param>
-        /// <param name="customMasterPageName"></param>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageName">Name of the master page</param>
+        /// <param name="customMasterPageName">Name of the custom master page</param>
         /// <exception cref="System.ArgumentException">Thrown when masterPageName or customMasterPageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
         public static void SetMasterPagesByName(this Web web, string masterPageName, string customMasterPageName)
@@ -610,9 +610,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Can be used to set master page and custom master page in single command
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="masterPageUrl"></param>
-        /// <param name="customMasterPageUrl"></param>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageUrl">Url of the master page</param>
+        /// <param name="customMasterPageUrl">Url of the custom master page</param>
         /// <exception cref="System.ArgumentException">Thrown when masterPageName or customMasterPageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
         public static void SetMasterPagesByUrl(this Web web, string masterPageUrl, string customMasterPageUrl)
@@ -683,7 +683,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the relative URL for a masterpage
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">Web to process</param>
         /// <param name="masterPageName">The name of the masterpage, e.g. 'default' or 'seattle'</param>
         /// <returns></returns>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase",
@@ -1021,7 +1021,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageUrl">Master page URL</param>
         /// <param name="themeUrl">Theme URL</param>
         /// <param name="fontUrl">Font URL</param>
-        /// <returns></returns>
+        /// <returns>Returns true if matches</returns>
         private static bool IsMatchingTheme(ThemeEntity theme, string masterPageUrl, string themeUrl, string fontUrl)
         {
             var themeUrlHasValue = false;
@@ -1287,9 +1287,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Sets specific page layout the default page layout for the particular site
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="rootWeb"></param>
-        /// <param name="pageLayoutName"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="rootWeb">The rootWeb</param>
+        /// <param name="pageLayoutName">Name of the page layout</param>
         public static void SetDefaultPageLayoutForSite(this Web web, Web rootWeb, string pageLayoutName)
         {
             if (rootWeb == null)
@@ -1440,7 +1440,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Can be used to remote filters from the available web template
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">Web to process</param>
         public static void ClearAvailableWebTemplates(this Web web)
         {
             web.SetPropertyBagValue(AvailableWebTemplates, "");

@@ -8,6 +8,9 @@ using System.ServiceModel.Security.Tokens;
 
 namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
 {
+    /// <summary>
+    /// Class holds methos to enable applications to construct trusted message exchanges
+    /// </summary>
     public abstract class WSTrustBinding : Binding
     {
         private bool _enableRsaProofKeys;
@@ -66,6 +69,10 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             return securityBindingElement;
         }
 
+        /// <summary>
+        /// Creates binding elements required for trust message exchange
+        /// </summary>
+        /// <returns>Returns Binding elements created</returns>
         public override BindingElementCollection CreateBindingElements()
         {
             BindingElementCollection elements = new BindingElementCollection();
@@ -128,6 +135,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Based on this values enables RSA key to encrypt the message
+        /// </summary>
         public bool EnableRsaProofKeys
         {
             get
@@ -140,6 +150,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets the encryption scheme
+        /// </summary>
         public override string Scheme
         {
             get
@@ -155,6 +168,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets or sets Security mode
+        /// </summary>
         public SecurityMode SecurityMode
         {
             get
@@ -168,6 +184,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets or sets the version
+        /// </summary>
         public TrustVersion TrustVersion
         {
             get

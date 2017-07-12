@@ -415,7 +415,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
                             if (list != null)
                             {
-                                result.Add(p.Key, $"{{listid:{list.Title}}}");
+                                result.Add(p.Key, $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}");
                             }
                         }
                         break;
@@ -437,7 +437,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(listId));
             if (list != null)
             {
-                returnValue = $"{{listid:{list.Title}}}";
+                returnValue = $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}";
             }
 
             return returnValue;
@@ -457,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var list = lists.FirstOrDefault(l => l.Id == Guid.Parse(p.Value));
                             if (list != null)
                             {
-                                result.Add(p.Key, $"{{listid:{list.Title}}}");
+                                result.Add(p.Key, $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}");
                             }
                         }
                         break;

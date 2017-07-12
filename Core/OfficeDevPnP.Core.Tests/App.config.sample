@@ -78,6 +78,12 @@
 
 
     <!--Testing for Webhook test endpoint-->
+    <!--
+    CAUTION: 
+    If the Webhook endpoint is an Azure Function.
+    Sometimes (probably according to configuration), an Azure function gone idle can take more than 5 seconds to respond.
+    This could lead to unit test fail... 
+    -->
     <add key="WebHookTestUrl" value="https://[test-functions].azurewebsites.net" />
   </appSettings>
   <system.diagnostics>
