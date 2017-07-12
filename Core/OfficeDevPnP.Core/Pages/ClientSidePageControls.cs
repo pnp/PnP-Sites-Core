@@ -160,6 +160,48 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Moves the control to another zone and section
+        /// </summary>
+        /// <param name="newZone">New zone that will host the control</param>
+        public void Move(CanvasZone newZone)
+        {
+            this.zone = newZone;
+            this.section = newZone.DefaultSection;
+        }
+
+        /// <summary>
+        /// Moves the control to another zone and section
+        /// </summary>
+        /// <param name="newZone">New zone that will host the control</param>
+        /// <param name="order">New order for the control in the new zone</param>
+        public void Move(CanvasZone newZone, int order)
+        {
+            Move(newZone);
+            this.order = order;
+        }
+
+        /// <summary>
+        /// Moves the control to another zone and section
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        public void Move(CanvasSection newSection)
+        {
+            this.zone = newSection.Zone;
+            this.section = newSection;
+        }
+
+        /// <summary>
+        /// Moves the control to another zone and section
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        /// <param name="order">New order for the control in the new zone</param>
+        public void Move(CanvasSection newSection, int order)
+        {
+            Move(newSection);
+            this.order = order;
+        }
+
+        /// <summary>
         /// Receives "data-sp-controldata" content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
