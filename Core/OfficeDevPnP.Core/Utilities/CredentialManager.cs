@@ -8,27 +8,31 @@ using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Class for getting and managing Credentials for SharePoint Online and SharePoint Onpremise
+    /// </summary>
     public static class CredentialManager
     {
 
         /// <summary>
         /// Returns a SharePoint Online Credential given a certain name. Add the credential in the Windows Credential Manager and create a new Windows Credential. Then add a new GENERIC Credential. The name parameter in the method maps to the Internet or network address field.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">Name maps to internet or network address fields</param>
         /// <returns>Microsoft.SharePoint.Client.SharePointOnlineCredentials</returns>
         public static SharePointOnlineCredentials GetSharePointOnlineCredential(string name)
         {
-            var networkCredential = GetCredential(name);
-
-            var credential = new SharePointOnlineCredentials(networkCredential.UserName,networkCredential.SecurePassword);
-
-            return credential;
+            var networkCredential = CredentialManager.GetCredential(name);
+            if (networkCredential == null)
+            {
+                return null;
+            }
+            return new SharePointOnlineCredentials(networkCredential.UserName, networkCredential.SecurePassword);
         }
 
         /// <summary>
         /// Returns a NetworkCredential given a certain name. Add the credential in the Windows Credential Manager and create a new Windows Credential. Then add a new GENERIC Credential. The name parameter in the method maps to the Internet or network address field.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="name">Name maps to internet or network address fields</param>
         /// <returns>System.Net.NetworkCredential</returns>
         public static NetworkCredential GetCredential(string name)
         {

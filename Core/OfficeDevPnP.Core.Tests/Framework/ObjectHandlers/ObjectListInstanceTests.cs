@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     [TestClass]
     public class ObjectListInstanceTests
     {
-        private const string ElementSchema = @"<Field xmlns=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""DemoField"" DisplayName=""Test Field"" Type=""Text"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" Group=""PnP"" Required=""true""/>";
+        private const string ElementSchema = @"<Field xmlns=""http://schemas.microsoft.com/sharepoint/v3"" Name=""DemoField"" StaticName=""DemoField"" DisplayName=""Test Field"" Type=""Text"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" Group=""PnP"" Required=""true""/>";
         private Guid fieldId = Guid.Parse("{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}");
 
         private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""DemoField""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
@@ -140,6 +140,43 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var list = ctx.Web.GetListByUrl(listName);
                 var contentTypes = list.EnsureProperty(l => l.ContentTypes);
                 Assert.IsTrue(contentTypes.Any(ct => ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00")), "Folder content type should not be removed from a document library.");
+            }
+
+        }
+
+        [TestMethod]
+        public void DefaultContentTypeShouldBeRemovedFromProvisionedAssetLibraries()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Arrange
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+                listInstance.Url = $"lists/{listName}";
+                listInstance.Title = listName;
+                // An asset must be created by using the 
+                // template type AND the template feature id
+                listInstance.TemplateType = 851;
+                listInstance.TemplateFeatureID = new Guid("4bcccd62-dcaf-46dc-a7d4-e38277ef33f4");
+                // Also attachements are not allowed on an asset list
+                listInstance.EnableAttachments = false;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.RemoveExistingContentTypes = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding
+                {
+                    ContentTypeId = BuiltInContentTypeId.DublinCoreName,
+                    Default = true
+                });
+                var template = new ProvisioningTemplate();
+                template.Lists.Add(listInstance);
+
+                // Act
+                ctx.Web.ApplyProvisioningTemplate(template);
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                var contentTypes = list.EnsureProperty(l => l.ContentTypes);
+                // Assert
+                // Asset list should only have the custom content type we defined
+                // and the folder content type
+                Assert.AreEqual(contentTypes.Count, 2);
             }
 
         }
@@ -319,7 +356,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception), "The field was found invalid:  {fieldtitle:DemoField}")]
         public void CanProvisionCalculatedFieldLocallyInListInstance()
         {
             //This test will fail as tokens does not support this scenario.

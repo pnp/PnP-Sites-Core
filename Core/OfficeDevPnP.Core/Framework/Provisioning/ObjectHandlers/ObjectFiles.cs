@@ -389,7 +389,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var list in lists)
             {
-                xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
             }
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             if (web.ServerRelativeUrl != "/")
@@ -460,7 +460,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
                 {
-                    container = $@"{template.Connector.GetContainer()}\{container}";
+                    if (container.StartsWith("/"))
+                    {
+                        container = container.TrimStart("/".ToCharArray());
+                    }
+
+                    if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
+                    {
+                        if (template.Connector.GetContainer().EndsWith("/"))
+                        {
+                            container = $@"{template.Connector.GetContainer()}{container}";
+                        }
+                        else
+                        {
+                            container = $@"{template.Connector.GetContainer()}/{container}";
+                        }
+                    }
+                    else
+                    {
+                        container = $@"{template.Connector.GetContainer()}\{container}";
+                    }
                 }
             }
             else

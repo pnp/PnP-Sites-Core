@@ -15,6 +15,11 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static class BaseTemplateManager
     {
+        /// <summary>
+        /// Gets the base template.
+        /// </summary>
+        /// <param name="web">the target web to get template</param>
+        /// <returns>Returns a ProvisioningTemplate object</returns>
         public static ProvisioningTemplate GetBaseTemplate(this Web web)
         {
             web.Context.Load(web, p => p.WebTemplate, p => p.Configuration);
@@ -30,6 +35,13 @@ namespace Microsoft.SharePoint.Client
             //}
         }
 
+        /// <summary>
+        /// Gets the provisioning template of provided webtemplate and configuration.
+        /// </summary>
+        /// <param name="web">the target web</param>
+        /// <param name="webTemplate">the name of the webtemplate</param>
+        /// <param name="configuration">configuration of template</param>
+        /// <returns>Returns a ProvisioningTemplate object</returns>
         public static ProvisioningTemplate GetBaseTemplate(this Web web, string webTemplate, short configuration)
         {
 

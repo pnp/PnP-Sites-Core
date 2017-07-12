@@ -124,6 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return GetFile(fileName, GetContainer());
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Returns filename without path</returns>
         public override string GetFilenamePart(string fileName)
         {
             if (fileName.IndexOf(@"\") != -1)

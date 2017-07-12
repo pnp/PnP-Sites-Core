@@ -589,7 +589,7 @@ namespace OfficeDevPnP.Core.Utilities
 		/// <returns>String representation of the realm GUID</returns>
 		public static string GetRealmFromTargetUrl(Uri targetApplicationUri)
         {
-            WebRequest request = WebRequest.Create(targetApplicationUri + "/_vti_bin/client.svc");
+            WebRequest request = WebRequest.Create(targetApplicationUri.ToString().TrimEnd(new[] { '/' }) + "/_vti_bin/client.svc");
             request.Headers.Add("Authorization: Bearer ");
 
             try
@@ -935,8 +935,14 @@ namespace OfficeDevPnP.Core.Utilities
 
 		private static readonly string ClientSigningCertificatePath = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePath");
         private static readonly string ClientSigningCertificatePassword = WebConfigurationManager.AppSettings.Get("ClientSigningCertificatePassword");
-        private static readonly X509Certificate2 ClientCertificate = (string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword);
-        private static readonly X509SigningCredentials SigningCredentials = (ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
+        public static X509Certificate2 ClientCertificate = (string.IsNullOrEmpty(ClientSigningCertificatePath) || string.IsNullOrEmpty(ClientSigningCertificatePassword)) ? null : new X509Certificate2(ClientSigningCertificatePath, ClientSigningCertificatePassword);
+        private static X509SigningCredentials SigningCredentials
+        {
+            get
+            {
+                return (ClientCertificate == null) ? null : new X509SigningCredentials(ClientCertificate, SecurityAlgorithms.RsaSha256Signature, SecurityAlgorithms.Sha256Digest);
+            }
+        }
 
         #endregion
 
@@ -1235,26 +1241,61 @@ namespace OfficeDevPnP.Core.Utilities
     /// </summary>
     public class SharePointContextToken : JsonWebSecurityToken
     {
+        /// <summary>
+        /// Creates SharePoint ContextToken
+        /// </summary>
+        /// <param name="contextToken">JsonWebSecurityToken object</param>
+        /// <returns>Returns SharePoint ContextToken object</returns>
         public static SharePointContextToken Create(JsonWebSecurityToken contextToken)
         {
             return new SharePointContextToken(contextToken.Issuer, contextToken.Audience, contextToken.ValidFrom, contextToken.ValidTo, contextToken.Claims);
         }
 
+        /// <summary>
+        /// Constructor for SharePointContextToken class
+        /// </summary>
+        /// <param name="issuer">Token Issuer</param>
+        /// <param name="audience">Token Audience</param>
+        /// <param name="validFrom">Validity start date for token</param>
+        /// <param name="validTo">Validity end date for token</param>
+        /// <param name="claims">IEnumerable of JsonWebTokenClaim object</param>
         public SharePointContextToken(string issuer, string audience, DateTime validFrom, DateTime validTo, IEnumerable<JsonWebTokenClaim> claims)
             : base(issuer, audience, validFrom, validTo, claims)
         {
         }
 
+        /// <summary>
+        /// Constructor for SharePointContextToken class
+        /// </summary>
+        /// <param name="issuer">Token Issuer</param>
+        /// <param name="audience">Token Audience</param>
+        /// <param name="validFrom">Validity start date for token</param>
+        /// <param name="validTo">Validity end date for token</param>
+        /// <param name="claims">IEnumerable of JsonWebTokenClaim object</param>
+        /// <param name="issuerToken">SecurityToken object</param>
+        /// <param name="actorToken">JsonWebSecurityToken object</param>
         public SharePointContextToken(string issuer, string audience, DateTime validFrom, DateTime validTo, IEnumerable<JsonWebTokenClaim> claims, SecurityToken issuerToken, JsonWebSecurityToken actorToken)
             : base(issuer, audience, validFrom, validTo, claims, issuerToken, actorToken)
         {
         }
 
+        /// <summary>
+        /// Constructor for SharePointContextToken class
+        /// </summary>
+        /// <param name="issuer">Token Issuer</param>
+        /// <param name="audience">Token Audience</param>
+        /// <param name="validFrom">Validity start date for token</param>
+        /// <param name="validTo">Validity end date for token</param>
+        /// <param name="claims">IEnumerable of JsonWebTokenClaim object</param>
+        /// <param name="signingCredentials">SigningCredentials object</param>
         public SharePointContextToken(string issuer, string audience, DateTime validFrom, DateTime validTo, IEnumerable<JsonWebTokenClaim> claims, SigningCredentials signingCredentials)
             : base(issuer, audience, validFrom, validTo, claims, signingCredentials)
         {
         }
 
+        /// <summary>
+        /// The context token's "nameid" claim
+        /// </summary>
         public string NameId
         {
             get

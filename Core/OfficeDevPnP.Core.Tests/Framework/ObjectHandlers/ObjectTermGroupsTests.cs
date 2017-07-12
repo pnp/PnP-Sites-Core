@@ -53,10 +53,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                         termSet1.DeleteObject();
                         termSet2.DeleteObject();
 
+                        store.CommitAll();
+                        ctx.ExecuteQueryRetry();
+
                         if (_termGroupGuid != Guid.Empty)
                         {
                             var termGroup = store.GetGroup(_termGroupGuid);
-                            termGroup.DeleteObject(); 
+                            termGroup.DeleteObject();
                         }
                         store.CommitAll();
                         ctx.ExecuteQueryRetry();

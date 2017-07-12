@@ -65,10 +65,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _termSets = value; }
         }
 
+        /// <summary>
+        /// If the TermGroup already exists on target, this attribute defines whether 
+        /// the TermGroup will be overwritten or skipped.
+        /// </summary>
+        public TermGroupUpdateBehavior UpdateBehavior { get; set; }
+
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for TermGroup class
+        /// </summary>
         public TermGroup()
         {
             this._termSets = new TermSetCollection(this.ParentTemplate);
@@ -76,6 +84,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._managers = new UserCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for TermGroup class
+        /// </summary>
+        /// <param name="id">Id of the term group</param>
+        /// <param name="name">Name of the term group</param>
+        /// <param name="termSets">Termsets related to term group</param>
+        /// <param name="siteCollectionTermGroup">Specify whether it is site collection term group or not</param>
+        /// <param name="contributors">TermGroup Contributors</param>
+        /// <param name="managers">TermGroup Managers</param>
         public TermGroup(Guid id, string name, List<TermSet> termSets,
             bool siteCollectionTermGroup = false,
             IEnumerable<User> contributors = null, 
@@ -92,7 +109,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}",
@@ -103,6 +123,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with TermGroup
+        /// </summary>
+        /// <param name="obj">Object that represents TermGroup</param>
+        /// <returns>true if the current object is equal to the TermGroup</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is TermGroup))
@@ -112,6 +137,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((TermGroup)obj));
         }
 
+        /// <summary>
+        /// Compares TermGroup object based on Id, Name, Description and TermSets. 
+        /// </summary>
+        /// <param name="other">TermGroup object</param>
+        /// <returns>true if the TermGroup object is equal to the current object; otherwise, false.</returns>
         public bool Equals(TermGroup other)
         {
             if (other == null)
@@ -126,5 +156,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+    }
+    
+    public enum TermGroupUpdateBehavior
+    {
+        /// <summary>
+        /// Any existing TermGroup will be overwritten
+        /// </summary>
+        Overwrite,
+        /// <summary>
+        /// Any existing TermGroup will be skipped
+        /// </summary>
+        Skip,
     }
 }

@@ -9,11 +9,18 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Class deals with Token Caching of file
+    /// </summary>
     public class FileTokenCache : TokenCache
     {
         public string CacheFilePath;
         private static readonly object FileLock = new object();
-      
+
+        /// <summary>
+        /// Constructor for FileTokenCache class
+        /// </summary>
+        /// <param name="filePath">Path of the file</param>
         public FileTokenCache(string filePath = @".\TokenCache.dat")
         {
             CacheFilePath = filePath;
@@ -29,6 +36,9 @@ namespace OfficeDevPnP.Core.Utilities
             }
         }
 
+        /// <summary>
+        /// Clears the Cached file path
+        /// </summary>
         public override void Clear()
         {
             base.Clear();

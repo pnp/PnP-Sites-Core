@@ -12,31 +12,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public class ExtensibilityHandler : BaseModel, IEquatable<ExtensibilityHandler>
     {
         #region Properties
-
+        /// <summary>
+        /// Gets or sets Enabled property for Extensibility handling.
+        /// </summary>
         public bool Enabled
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets or sets Assembly property for Extensibility handling.
+        /// </summary>
         public string Assembly
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets or sets Type property for Extensibility handling.
+        /// </summary>
         public string Type
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets or sets Configuration property for Extensibility handling.
+        /// </summary>
         public string Configuration { get; set; }
 
         #endregion
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
@@ -47,6 +62,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ExtensibilityHandler
+        /// </summary>
+        /// <param name="obj">Object that represents ExtensibilityHandler</param>
+        /// <returns>true if the current object is equal to the ExtensibilityHandler</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ExtensibilityHandler))
@@ -56,6 +76,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ExtensibilityHandler)obj));
         }
 
+        /// <summary>
+        /// Compares ExtensibilityHandler object based on Assembly, Configuration, Enabled and Type properties.
+        /// </summary>
+        /// <param name="other">ExtensibilityHandler object</param>
+        /// <returns>true if the ExtensibilityHandler object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ExtensibilityHandler other)
         {
             if (other == null)

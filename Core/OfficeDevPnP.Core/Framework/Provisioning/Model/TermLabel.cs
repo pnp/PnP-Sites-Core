@@ -11,8 +11,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
 
         #region Public Members
+        /// <summary>
+        /// Gets or sets the Language for the term label
+        /// </summary>
         public int Language { get; set; }
+        /// <summary>
+        /// Gets or sets the IsDefaultForLangauage flag for the term label
+        /// </summary>
         public bool IsDefaultForLanguage { get; set; }
+        /// <summary>
+        /// Gets or sets the Value for the term label
+        /// </summary>
         public string Value { get; set; }
 
         #endregion
@@ -21,7 +30,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -30,6 +42,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with TermLabel
+        /// </summary>
+        /// <param name="obj">Object that represents TermLabel</param>
+        /// <returns>true if the current object is equal to the TermLabel</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is TermLabel))
@@ -39,6 +56,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((TermLabel)obj));
         }
 
+        /// <summary>
+        /// Compares TermLabel object based on Language and Value. 
+        /// </summary>
+        /// <param name="other">TermLabel object</param>
+        /// <returns>true if the TermLabel object is equal to the current object; otherwise, false.</returns>
         public bool Equals(TermLabel other)
         {
             if (other == null)

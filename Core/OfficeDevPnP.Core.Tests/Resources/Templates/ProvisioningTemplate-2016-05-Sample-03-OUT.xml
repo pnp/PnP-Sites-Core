@@ -1,0 +1,439 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.14.1704.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="Parameter1">ValueParameter1</pnp:Parameter>
+      <pnp:Parameter Key="Parameter2">ValueParameter2</pnp:Parameter>
+      <pnp:Parameter Key="Parameter3">ValueParameter3</pnp:Parameter>
+      <pnp:Parameter Key="Parameter4">ValueParameter4</pnp:Parameter>
+      <pnp:Parameter Key="Parameter5">ValueParameter5</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
+  <pnp:Localizations>
+    <pnp:Localization LCID="1033" Name="en-US" ResourceFile="template.en-US.resx" />
+    <pnp:Localization LCID="1040" Name="it-IT" ResourceFile="template.it-It.resx" />
+  </pnp:Localizations>
+  <pnp:Templates ID="CONTAINER-SPECIALTEAM-01">
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM-01" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://camo.githubusercontent.com/a732087ed949b0f2f84f5f02b8c79f1a9dd96f65/687474703a2f2f692e696d6775722e636f6d2f6c3031686876452e706e67" DisplayName="Sample Template #01" Description="Sample Template #01 Description">
+      <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:WebSettings NoCrawl="false" SiteLogo="Resources/Themes/Contoso/contosologo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="seattle.master" />
+      <pnp:RegionalSettings AdjustHijriDays="2" AlternateCalendarType="Gregorian Arabic Calendar" CalendarType="Gregorian" Collation="1" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="0" WorkDayEndHour="6:00PM" WorkDays="5" WorkDayStartHour="9:00AM" />
+      <pnp:SupportedUILanguages>
+        <pnp:SupportedUILanguage LCID="1040" />
+        <pnp:SupportedUILanguage LCID="1033" />
+      </pnp:SupportedUILanguages>
+      <pnp:AuditSettings AuditLogTrimmingRetention="10" TrimAuditLog="true">
+        <pnp:Audit AuditFlag="CheckOut" />
+        <pnp:Audit AuditFlag="CheckIn" />
+        <pnp:Audit AuditFlag="Search" />
+      </pnp:AuditSettings>
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" />
+      </pnp:PropertyBagEntries>
+      <pnp:Security>
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+      </pnp:Security>
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermStoreId="c1175ad1-c710-4131-a6c9-aa854a5cc4c4" TermSetId="415185a1-ee1c-4ce9-9e38-cea3f854e802" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode Title="Node 1" Url="/Node1.aspx">
+              <pnp:NavigationNode Title="Node 1.1" Url="http://aka.ms/SharePointPnP" IsExternal="true">
+                <pnp:NavigationNode Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" IsExternal="true" />
+              </pnp:NavigationNode>
+              <pnp:NavigationNode Title="Node 1.2" Url="/Node1-2.aspx" IsExternal="true" />
+            </pnp:NavigationNode>
+            <pnp:NavigationNode Title="Node 2" Url="/Node1.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
+      <pnp:SiteFields>
+        <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" Required="TRUE" />
+        <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="My Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="My Columns " MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types" Hidden="true" Sealed="true" ReadOnly="true" Overwrite="true" NewFormUrl="/Forms/NewForm.aspx" EditFormUrl="/Forms/EditForm.aspx" DisplayFormUrl="/Forms/DisplayForm.aspx">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" Name="TestField" Required="true" Hidden="true" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+          </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="DocumentTemplate.dotx" />
+          <pnp:DocumentSetTemplate WelcomePage="home.aspx">
+            <pnp:AllowedContentTypes>
+              <pnp:AllowedContentType ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E002" />
+            </pnp:AllowedContentTypes>
+            <pnp:DefaultDocuments>
+              <pnp:DefaultDocument Name="DefaultDocument" ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E001" FileSourcePath="document.dotx" />
+            </pnp:DefaultDocuments>
+            <pnp:SharedFields>
+              <pnp:SharedField ID="f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3" />
+              <pnp:SharedField ID="a8df65ec-0d06-4df1-8edf-55d48b3936dc" />
+            </pnp:SharedFields>
+            <pnp:WelcomePageFields>
+              <pnp:WelcomePageField ID="c69d2ffc-0c86-474a-9cc7-dcd7774da531" />
+              <pnp:WelcomePageField ID="b9132b30-2b9e-47d4-b0fc-1ac34a61506f" />
+            </pnp:WelcomePageFields>
+          </pnp:DocumentSetTemplate>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" RemoveExistingContentTypes="true" TemplateFeatureID="00000000-0000-0000-0000-000000000000">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0102" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views RemoveExistingViews="true">
+            <View DisplayName="View One">
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Title" />
+                <FieldRef Name="ProjectID" />
+                <FieldRef Name="ProjectName" />
+                <FieldRef Name="ProjectManager" />
+                <FieldRef Name="DocumentDescription" />
+              </ViewFields>
+              <Query>
+                <Where>
+                  <Eq>
+                    <FieldRef Name="ProjectManager" />
+                    <Value Type="Text">[Me]</Value>
+                  </Eq>
+                </Where>
+              </Query>
+            </View>
+            <View DisplayName="View Two">
+              <ViewFields>
+                <FieldRef Name="ID" />
+                <FieldRef Name="Title" />
+                <FieldRef Name="ProjectID" />
+                <FieldRef Name="ProjectName" />
+              </ViewFields>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" Name="ProjectID" Required="true" DisplayName="Project ID" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" Name="ProjectName" Hidden="true" DisplayName="Project Name" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" Name="ProjectManager" Required="true" DisplayName="Project Manager" />
+          </pnp:FieldRefs>
+          <pnp:DataRows>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value01-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value01-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value01-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value01-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value02-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value02-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value02-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value02-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
+                  <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                  <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                  <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                </pnp:BreakRoleInheritance>
+              </pnp:Security>
+            </pnp:DataRow>
+            <pnp:DataRow>
+              <pnp:DataValue FieldName="Field01">Value03-01</pnp:DataValue>
+              <pnp:DataValue FieldName="Field02">Value03-02</pnp:DataValue>
+              <pnp:DataValue FieldName="Field03">Value03-03</pnp:DataValue>
+              <pnp:DataValue FieldName="Field04">Value03-04</pnp:DataValue>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:DataRow>
+          </pnp:DataRows>
+          <pnp:Folders>
+            <pnp:Folder Name="Folder01">
+              <pnp:Folder Name="Folder01.01">
+                <pnp:Security>
+                  <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+                    <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+                    <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+                    <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+                  </pnp:BreakRoleInheritance>
+                </pnp:Security>
+              </pnp:Folder>
+              <pnp:Folder Name="Folder01.02">
+                <pnp:Security>
+                  <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+                </pnp:Security>
+              </pnp:Folder>
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:Folder>
+            <pnp:Folder Name="Folder02">
+              <pnp:Security>
+                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
+              </pnp:Security>
+            </pnp:Folder>
+          </pnp:Folders>
+          <pnp:FieldDefaults>
+            <pnp:FieldDefault FieldName="Field01">DefaultValue01</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field02">DefaultValue02</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field03">DefaultValue03</pnp:FieldDefault>
+            <pnp:FieldDefault FieldName="Field04">DefaultValue04</pnp:FieldDefault>
+          </pnp:FieldDefaults>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="Principal01" RoleDefinition="Read" />
+              <pnp:RoleAssignment Principal="Principal02" RoleDefinition="Contribute" />
+              <pnp:RoleAssignment Principal="Principal03" RoleDefinition="FullControl" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+          <pnp:UserCustomActions>
+            <pnp:CustomAction Name="SampleCustomAction" Description="Just a sample custom action" Group="Samples" Location="Any" Title="Sample Action" Url="http://somewhere.com/" ScriptBlock="scriptblock" ImageUrl="OneImage.png" ScriptSrc="script.js" RegistrationId="0x0101">
+              <pnp:CommandUIExtension>
+                <customElement>
+                  <!-- Whatever you like here -->
+                </customElement>
+              </pnp:CommandUIExtension>
+            </pnp:CustomAction>
+          </pnp:UserCustomActions>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:CustomActions>
+        <pnp:SiteCustomActions>
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" ScriptBlock="alert('boo')" ImageUrl="http://sharepoint.com" RegistrationId="101" RegistrationType="None">
+            <pnp:CommandUIExtension>
+              <CommandUIDefinitions>
+                <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                  <Button Sequence="15" TemplateAlias="o1" ToolTipDescription="Download all files separately" ToolTipTitle="Download All" Description="Download all files separately" LabelText="Download All" Image32by32="~sitecollection/SiteAssets/DownloadAll32x32.png" Image16by16="~sitecollection/SiteAssets/DownloadAll16x16.png" Command="OfficeDevPnP.Cmd.DownloadAll" Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll" />
+                </CommandUIDefinition>
+                <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
+                  <Button Sequence="20" TemplateAlias="o1" ToolTipDescription="Download all files as single Zip archive" ToolTipTitle="Download All as Zip" Description="Download all files as single Zip" LabelText="Download All as Zip" Image32by32="~sitecollection/SiteAssets/DownloadAllAsZip32x32.png" Image16by16="~sitecollection/SiteAssets/DownloadAllAsZip16x16.png" Command="OfficeDevPnP.Cmd.DownloadAllAsZip" Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip" />
+                </CommandUIDefinition>
+              </CommandUIDefinitions>
+              <CommandUIHandlers>
+                <CommandUIHandler Command="OfficeDevPnP.Cmd.DownloadAll" EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAll');" CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAll');" />
+                <CommandUIHandler Command="OfficeDevPnP.Cmd.DownloadAllAsZip" EnabledScript="javascript:OfficeDevPnP.Core.RibbonManager.isListViewButtonEnabled('DownloadAllAsZip');" CommandAction="javascript:OfficeDevPnP.Core.RibbonManager.invokeCommand('DownloadAllAsZip');" />
+              </CommandUIHandlers>
+            </pnp:CommandUIExtension>
+          </pnp:CustomAction>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Location="ScriptLink" Title="SubSiteOveride" Sequence="100" Rights="" ScriptSrc="~site/PnP_Provisioning_JS/PnP_EmbeddedJS.js" RegistrationType="ContentType" />
+        </pnp:SiteCustomActions>
+        <pnp:WebCustomActions>
+          <pnp:CustomAction Name="CA_WEB_DOCLIB_MENU_SAMPLE" Description="Document Library Custom Menu" Group="ActionsMenu" Location="Microsoft.SharePoint.StandardMenu" Title="DocLib Custom Menu" Sequence="100" Rights="" Url="/_layouts/CustomActionsHello.aspx?ActionsMenu" RegistrationType="None" />
+        </pnp:WebCustomActions>
+      </pnp:CustomActions>
+      <pnp:Files>
+        <pnp:File Src="/SitePages/home.aspx" Folder="SitePages" Overwrite="true" Level="Published">
+          <pnp:Properties>
+            <pnp:Property Key="MyProperty1" Value="Value1" />
+            <pnp:Property Key="MyProperty2" Value="Value2" />
+          </pnp:Properties>
+          <pnp:WebParts>
+            <pnp:WebPart Title="My Content" Zone="Main" Order="1">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+            <pnp:WebPart Title="My Editor" Zone="Left" Order="10">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="Owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="Contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:File>
+        <pnp:File Src="/Resources/Files/SAMPLE.js" Folder="SAMPLE" Level="Draft" />
+        <pnp:Directory Src="SiteAssets" Folder="MyFolder" Overwrite="true" Level="Published" Recursive="true" IncludedExtensions=".docx" ExcludedExtensions=".aspx" MetadataMappingFile="metafile">
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Directory>
+        <pnp:Directory Src="Documents" Folder="MyFolder2" Level="Checkout" IncludedExtensions=".txt" ExcludedExtensions=".xslx" MetadataMappingFile="metafile2" />
+      </pnp:Files>
+      <pnp:Pages>
+        <pnp:Page Url="home.aspx" Overwrite="true" Layout="ThreeColumnsHeaderFooter">
+          <pnp:WebParts>
+            <pnp:WebPart Title="My Content" Row="1" Column="2">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+            <pnp:WebPart Title="My Editor" Row="2" Column="1">
+              <pnp:Contents>
+                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+          <pnp:Fields>
+            <pnp:Field FieldName="TestField">Value1</pnp:Field>
+            <pnp:Field FieldName="TestField2">Value2</pnp:Field>
+            <pnp:Field FieldName="TestField3">Value3</pnp:Field>
+            <pnp:Field FieldName="TestField4">Value4</pnp:Field>
+          </pnp:Fields>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="admin@sharepoint.com" RoleDefinition="owner" />
+              <pnp:RoleAssignment Principal="dev@sharepoint.com" RoleDefinition="contributor" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+        </pnp:Page>
+        <pnp:Page Url="help.aspx" Layout="OneColumnSidebar" />
+      </pnp:Pages>
+      <pnp:TermGroups>
+        <pnp:TermGroup Name="TestTermGroup" ID="21d7d506-1783-4aed-abdf-160f37bd0ca9" Description="Test Term Group" SiteCollectionTermGroup="true">
+          <pnp:TermSets>
+            <pnp:TermSet Name="TestTermset1TestTermGroup" ID="ce70be1b-1772-49e9-a08f-47192d88dd64" Owner="termset1owner@termgroup1" Description="Test Termset 1 Test Term Group" Language="1049" IsOpenForTermCreation="true">
+              <pnp:CustomProperties>
+                <pnp:Property Key="Property1" Value="Value1" />
+                <pnp:Property Key="Property2" Value="Value2" />
+              </pnp:CustomProperties>
+              <pnp:Terms>
+                <pnp:Term Name="Term1Set1Group1" ID="2194b058-c6e0-4805-b875-78cd7d7dfd39" Owner="term1owner@termgroup1" Description="Term1 Set1 Group1" Language="1055" CustomSortOrder="101" IsReused="true" IsDeprecated="true" SourceTermId="bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d">
+                  <pnp:Terms>
+                    <pnp:Term Name="Subterm1Term1Set1Group1" ID="48fd66cb-f7ca-4160-be46-b78876626c09" Language="0">
+                      <pnp:Terms>
+                        <pnp:Term Name="Subsubterm1Term1Set1Group1" ID="7f43fe4a-7030-4d7e-ab62-5fdaac65ac9b" Language="0">
+                          <pnp:Terms />
+                        </pnp:Term>
+                      </pnp:Terms>
+                    </pnp:Term>
+                    <pnp:Term Name="Subterm2Term1Set1Group1" ID="b0d92a3a-cbdf-4c6c-8807-54e23da108ee" Language="0">
+                      <pnp:Terms />
+                    </pnp:Term>
+                  </pnp:Terms>
+                  <pnp:Labels>
+                    <pnp:Label Language="1033" Value="Term1Label1033" IsDefaultForLanguage="true" />
+                    <pnp:Label Language="1023" Value="Term1Label1023" IsDefaultForLanguage="true" />
+                    <pnp:Label Language="1053" Value="Term1Label1023" />
+                  </pnp:Labels>
+                  <pnp:CustomProperties>
+                    <pnp:Property Key="Term1Property1" Value="Value1" />
+                    <pnp:Property Key="Term1Property2" Value="Value2" />
+                  </pnp:CustomProperties>
+                  <pnp:LocalCustomProperties>
+                    <pnp:Property Key="Term1LocalProperty1" Value="Value1" />
+                    <pnp:Property Key="Term1LocalProperty2" Value="Value2" />
+                  </pnp:LocalCustomProperties>
+                </pnp:Term>
+                <pnp:Term Name="Term2Set1Group1" ID="382d3cb1-89f5-4809-b607-1634698e027e" Owner="term1owner@term2owner" Description="Term2 Set1 Group1" IsAvailableForTagging="false" Language="0" CustomSortOrder="102" IsSourceTerm="false">
+                  <pnp:Terms />
+                </pnp:Term>
+              </pnp:Terms>
+            </pnp:TermSet>
+            <pnp:TermSet Name="TestTermset2TestTermGroup" ID="d0610999-539c-4949-ba60-0375deea3023" Description="Test Termset 2 Test Term Group" IsAvailableForTagging="false" Language="0" />
+          </pnp:TermSets>
+          <pnp:Contributors>
+            <pnp:User Name="contributor1@termgroup1" />
+            <pnp:User Name="contributor2@termgroup1" />
+          </pnp:Contributors>
+          <pnp:Managers>
+            <pnp:User Name="manager1@termgroup1" />
+            <pnp:User Name="manager2@termgroup1" />
+          </pnp:Managers>
+        </pnp:TermGroup>
+        <pnp:TermGroup Name="TestTermGroup2" ID="7d4caedf-4ed3-4e2d-ba93-a166b4f173f6" Description="Test Term Group 2" />
+      </pnp:TermGroups>
+      <pnp:ComposedLook Name="Contoso" ColorFile="Resources/Themes/Contoso/contoso.spcolor" FontFile="Resources/Themes/Contoso/contoso.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="2" />
+      <pnp:Workflows>
+        <pnp:WorkflowDefinitions>
+          <pnp:WorkflowDefinition Id="8fd9de8b-d786-43bf-9b33-d7266eb241b0" AssociationUrl="/workflow1/associate.aspx" Description="Test Workflow Definition" DisplayName="My Workflow 1" DraftVersion="1.0" InitiationUrl="/workflow1/initiate.aspx" Published="true" RequiresAssociationForm="true" RequiresInitiationForm="true" RestrictToScope="List" RestrictToType="Universal" XamlPath="workflow1.xaml">
+            <pnp:Properties>
+              <pnp:Property Key="MyWorkflowProperty1" Value="Value1" />
+              <pnp:Property Key="MyWorkflowProperty2" Value="Value2" />
+            </pnp:Properties>
+            <pnp:FormField>
+              <Field>
+              </Field>
+            </pnp:FormField>
+          </pnp:WorkflowDefinition>
+          <pnp:WorkflowDefinition Id="13d4bae2-2292-4297-84c5-d56881c529a9" DisplayName="My Workflow 2" RestrictToType="Universal" XamlPath="workflow2.xaml" />
+        </pnp:WorkflowDefinitions>
+        <pnp:WorkflowSubscriptions>
+          <pnp:WorkflowSubscription DefinitionId="c421e3cb-e7b0-489c-b7cc-e0d35d1179e0" ListId="94413de1-850d-4fbf-a8bb-371feefa2ecf" Enabled="true" EventSourceId="aa0e4ccf-6f34-4b83-94a4-7b1f28dcf7b7" WorkflowStartEvent="true" ItemAddedEvent="true" ItemUpdatedEvent="true" ManualStartBypassesActivationLimit="true" Name="MyWorkflowSubscription1" ParentContentTypeId="0x01" StatusFieldName="MyWorkflow1Status" />
+          <pnp:WorkflowSubscription DefinitionId="34ae3873-3f8e-41b0-aaab-802fc6199897" Enabled="false" WorkflowStartEvent="false" ItemAddedEvent="false" ItemUpdatedEvent="false" Name="MyWorkflowSubscription2" StatusFieldName="MyWorkflow2Status" />
+        </pnp:WorkflowSubscriptions>
+      </pnp:Workflows>
+      <pnp:SearchSettings>
+        <pnp:SiteSearchSettings>
+          <SiteSearchSettings>
+          </SiteSearchSettings>
+        </pnp:SiteSearchSettings>
+        <pnp:WebSearchSettings>
+          <WebSearchSettings>
+          </WebSearchSettings>
+        </pnp:WebSearchSettings>
+      </pnp:SearchSettings>
+      <pnp:Publishing AutoCheckRequirements="SkipIfNotCompliant">
+        <pnp:DesignPackage DesignPackagePath="mypackage" MajorVersion="2" MinorVersion="3" PackageGuid="306ab10d-981d-471d-a8f9-16e1260ad4eb" PackageName="MyTestPackage" />
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="Template1033" />
+          <pnp:WebTemplate LanguageCode="1049" TemplateName="Template1049" />
+        </pnp:AvailableWebTemplates>
+        <pnp:PageLayouts Default="mypagelayout1.aspx">
+          <pnp:PageLayout Path="mypagelayout1.aspx" />
+          <pnp:PageLayout Path="mypagelayout2.aspx" />
+        </pnp:PageLayouts>
+      </pnp:Publishing>
+      <pnp:AddIns>
+        <pnp:Addin PackagePath="myaddin1.app" Source="DeveloperSite" />
+        <pnp:Addin PackagePath="myaddin2.app" Source="Marketplace" />
+      </pnp:AddIns>
+      <pnp:Providers>
+        <pnp:Provider Enabled="true" HandlerType="System.Guid, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+          <pnp:Configuration>
+            <TestConfiguration xmlns="MyHandler">Value</TestConfiguration>
+          </pnp:Configuration>
+        </pnp:Provider>
+        <pnp:Provider HandlerType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+      </pnp:Providers>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
