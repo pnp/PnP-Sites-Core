@@ -574,7 +574,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="keywordQueryValue">Keyword query</param>
-        /// <param name="trimDuplicates">Indicates if dublicates should be trimmed or not</param>
+        /// <param name="trimDuplicates">Indicates if duplicates should be trimmed or not</param>
         /// <returns>All found site collections</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDuplicates = false)
