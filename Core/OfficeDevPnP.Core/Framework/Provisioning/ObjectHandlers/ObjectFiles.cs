@@ -389,7 +389,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var list in lists)
             {
-                xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{list.Title}}}", RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
             }
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             if (web.ServerRelativeUrl != "/")

@@ -19,14 +19,14 @@ namespace OfficeDevPnP.Core.Tools.DocsGenerator
 
         static void GenerateMDFromPnPSchema()
         {
-            XDocument xsd = XDocument.Load(@"..\..\..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd");
+            XDocument xsd = XDocument.Load(@"..\..\..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd");
             XslCompiledTransform xslt = new XslCompiledTransform();
             xslt.Load(@"..\..\XSD2MD.xslt");
 
             XsltArgumentList xsltArgs = new XsltArgumentList();
             xsltArgs.AddParam("now", String.Empty, DateTime.Now.ToShortDateString());
 
-            using (FileStream fs = new FileStream(@"..\..\..\..\..\ProvisioningSchema-2016-05.md", FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+            using (FileStream fs = new FileStream(@"..\..\..\..\..\ProvisioningSchema-2017-05.md", FileMode.Create, FileAccess.ReadWrite, FileShare.None))
             {
                 xslt.Transform(xsd.CreateNavigator(), xsltArgs, fs);
             }

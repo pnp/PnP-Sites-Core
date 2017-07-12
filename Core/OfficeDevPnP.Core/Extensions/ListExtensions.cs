@@ -32,7 +32,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         private static readonly char[] UrlDelimiters = { '\\', '/' };
 
-#region Event Receivers
+        #region Event Receivers
 
         /// <summary>
         /// Registers a remote event receiver
@@ -98,8 +98,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns an event receiver definition
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="id"></param>
+        /// <param name="list">The target list</param>
+        /// <param name="id">Id of the event receiver</param>
         /// <returns></returns>
         public static EventReceiverDefinition GetEventReceiverById(this List list, Guid id)
         {
@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client
         /// Returns an event receiver definition
         /// </summary>
         /// <param name="list">The list to process</param>
-        /// <param name="name"></param>
+        /// <param name="name">Name of the event receiver</param>
         /// <returns></returns>
         public static EventReceiverDefinition GetEventReceiverByName(this List list, string name)
         {
@@ -141,9 +141,9 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
-#endregion
+        #endregion
 
-#region Webhooks
+        #region Webhooks
 #if !ONPREMISES
         /// <summary>
         /// Add the a Webhook subscription to a list
@@ -158,16 +158,27 @@ namespace Microsoft.SharePoint.Client
         public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, DateTime expirationDate, string clientState = null, string accessToken = null)
         {
             // Get the access from the client context if not specified.
-            accessToken = accessToken ??  list.Context.GetAccessToken();
+            accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
-                WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
-                {
-                    Resource = list.Id.ToString(),
-                    ExpirationDateTime = expirationDate,
-                    NotificationUrl = notificationUrl,
-                    ClientState = clientState
-                }).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                               WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
+                               {
+                                   Resource = listId.ToString(),
+                                   ExpirationDateTime = expirationDate,
+                                   NotificationUrl = notificationUrl,
+                                   ClientState = clientState
+                               }).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -180,12 +191,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="clientState">The client state to use in the Webhook subscription</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
         /// <returns>The added subscription object</returns>
-        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 3, string clientState = null, string accessToken = null)
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 6, string clientState = null, string accessToken = null)
         {
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, list.Id.ToString(), notificationUrl, clientState, validityInMonths).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, listId.ToString(), notificationUrl, clientState, validityInMonths).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -203,7 +225,18 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -247,7 +280,18 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 
         /// <summary>
@@ -288,12 +332,23 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
         }
 #endif
-#endregion
+        #endregion
 
-#region List Properties
+        #region List Properties
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -342,7 +397,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to read the property bag value from</param>
         /// <param name="key">Key of the property bag entry to return</param>
-        /// <param name="defaultValue"></param>
+        /// <param name="defaultValue">Default value of the property bag</param>
         /// <returns>Value of the property bag entry as integer</returns>
         public static int? GetPropertyBagValueInt(this List list, string key, int defaultValue)
         {
@@ -362,7 +417,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to read the property bag value from</param>
         /// <param name="key">Key of the property bag entry to return</param>
-        /// <param name="defaultValue"></param>
+        /// <param name="defaultValue">Default value of the property bag</param>
         /// <returns>Value of the property bag entry as string</returns>
         public static string GetPropertyBagValueString(this List list, string key, string defaultValue)
         {
@@ -419,7 +474,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Removes a content type from a list/library by name
@@ -458,7 +513,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="listName">Name of the library</param>
         /// <param name="enableVersioning">Enable versioning on the list</param>
-        /// <param name="urlPath"></param>
+        /// <param name="urlPath">Path of the url</param>
         /// <exception cref="System.ArgumentException">Thrown when listName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">listName is null</exception>
         public static List CreateDocumentLibrary(this Web web, string listName, bool enableVersioning = false, string urlPath = "")
@@ -903,7 +958,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web (site) to be processed</param>
         /// <param name="webRelativeUrl">Url of list relative to the web (site), e.g. lists/testlist</param>
         /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
-        /// <returns></returns>
+        /// <returns>Returns list if found, null if no list is found.</returns>
         public static List GetListByUrl(this Web web, string webRelativeUrl, params Expression<Func<List, object>>[] expressions)
         {
             var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
@@ -1005,7 +1060,7 @@ namespace Microsoft.SharePoint.Client
             return listWebRelativeUrl.Trim(UrlDelimiters);
         }
 
-#region List Permissions
+        #region List Permissions
 
         /// <summary>
         /// Set custom permission to the list
@@ -1065,16 +1120,16 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-#endregion
+        #endregion
 
-#region List view
+        #region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="filePath"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="filePath">Path of the file</param>
         public static void CreateViewsFromXMLFile(this Web web, string listUrl, string filePath)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -1091,9 +1146,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Creates views based on specific xml structure from string
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="xmlString"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="xmlString">Path of the file</param>
         public static void CreateViewsFromXMLString(this Web web, string listUrl, string xmlString)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -1110,9 +1165,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on xml structure loaded to memory
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="xmlDoc"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="xmlDoc">XmlDocument object</param>
         public static void CreateViewsFromXML(this Web web, string listUrl, XmlDocument xmlDoc)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -1133,8 +1188,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on specific xml structure in external file
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="filePath"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="filePath">Path of the file</param>
         public static void CreateViewsFromXMLFile(this List list, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -1151,8 +1206,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on specific xml structure in string 
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="xmlString"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="xmlString">XML string to create view</param>
         public static void CreateViewsFromXMLString(this List list, string xmlString)
         {
             if (string.IsNullOrEmpty(xmlString))
@@ -1166,8 +1221,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Actual implementation of the view creation logic based on given xml
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="xmlDoc"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="xmlDoc">XmlDocument object</param>
         public static void CreateViewsFromXML(this List list, XmlDocument xmlDoc)
         {
             if (xmlDoc == null)
@@ -1195,15 +1250,15 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create view to existing list
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="viewName"></param>
-        /// <param name="viewType"></param>
-        /// <param name="viewFields"></param>
-        /// <param name="rowLimit"></param>
-        /// <param name="setAsDefault"></param>
-        /// <param name="query"></param>        
-        /// <param name="personal"></param>
-        /// <param name="paged"></param>        
+        /// <param name="list">List to process</param>
+        /// <param name="viewName">Name of the view</param>
+        /// <param name="viewType">Type of the view</param>
+        /// <param name="viewFields">Fields of the view</param>
+        /// <param name="rowLimit">Row limit of the view</param>
+        /// <param name="setAsDefault">Set as default view</param>
+        /// <param name="query">Query for view creation</param>        
+        /// <param name="personal">Personal View</param>
+        /// <param name="paged">Paged view</param>        
         public static View CreateView(this List list,
             string viewName,
             ViewType viewType,
@@ -1242,8 +1297,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Gets a view by Id
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="id"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="id">Id to the view to extract</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
         public static View GetViewById(this List list, Guid id, params Expression<Func<View, object>>[] expressions)
@@ -1275,8 +1330,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Gets a view by Name
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="name"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="name">Name of the view</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
         public static View GetViewByName(this List list, string name, params Expression<Func<View, object>>[] expressions)
@@ -1305,7 +1360,7 @@ namespace Microsoft.SharePoint.Client
 
         }
 
-#endregion
+        #endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
@@ -1445,8 +1500,8 @@ namespace Microsoft.SharePoint.Client
         /// <para></para>
         /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="columnValues"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="columnValues">Column Values</param>
         public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
 
@@ -1565,7 +1620,7 @@ namespace Microsoft.SharePoint.Client
         /// <para>Field: Internal name of the field which has a default value</para>
         /// <para>Value: The default value for the field</para>
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">List to process</param>
         public static List<Dictionary<string, string>> GetDefaultColumnValues(this List list)
         {
             using (var clientContext = (ClientContext)list.Context)
@@ -1651,7 +1706,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Queues a list for a full crawl the next incremental crawl
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">List to process</param>
         public static void ReIndexList(this List list)
         {
             list.EnsureProperties(l => l.NoCrawl);

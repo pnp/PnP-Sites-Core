@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class DirectoryCollection : ProvisioningTemplateCollection<Directory>
     {
+        /// <summary>
+        /// Constructor for DirectoryCollection class.
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public DirectoryCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

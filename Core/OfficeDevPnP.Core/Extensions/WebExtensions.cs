@@ -299,6 +299,11 @@ namespace Microsoft.SharePoint.Client
             return false;
         }
 
+        /// <summary>
+        /// Checks if the current web is a publishing site or not
+        /// </summary>
+        /// <param name="web">Web to check</param>
+        /// <returns>True is publishing site, false otherwise</returns>
         public static bool IsPublishingWeb(this Web web)
         {
             var featureActivated = GetPropertyBagValueInternal(web, "__PublishingFeatureActivated");
@@ -393,7 +398,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>all app instances</returns>
         public static ClientObjectList<AppInstance> GetAppInstances(this Web web, params Expression<Func<AppInstance, object>>[] expressions)
         {
             var instances = AppCatalog.GetAppInstances(web.Context, web);
@@ -916,7 +921,7 @@ namespace Microsoft.SharePoint.Client
         /// Returns all keys in the property bag that have been marked for indexing
         /// </summary>
         /// <param name="web">The site to process</param>
-        /// <returns></returns>
+        /// <returns>all indexed property bag keys</returns>
         public static IEnumerable<string> GetIndexedPropertyBagKeys(this Web web)
         {
             var keys = new List<string>();
@@ -1035,9 +1040,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The web to process</param>
         /// <param name="name">The name of the event receiver (needs to be unique among the event receivers registered on this list)</param>
         /// <param name="url">The URL of the remote WCF service that handles the event</param>
-        /// <param name="eventReceiverType"></param>
-        /// <param name="synchronization"></param>
-        /// <param name="sequenceNumber"></param>
+        /// <param name="eventReceiverType">The type of event for the event receiver.</param>
+        /// <param name="synchronization">An enumeration that specifies the synchronization state for the event receiver.</param>
+        /// <param name="sequenceNumber">An integer that represents the relative sequence of the event.</param>
         /// <param name="force">If True any event already registered with the same name will be removed first.</param>
         /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition AddRemoteEventReceiver(this Web web, string name, string url, EventReceiverType eventReceiverType, EventReceiverSynchronization synchronization, int sequenceNumber, bool force)
@@ -1078,8 +1083,8 @@ namespace Microsoft.SharePoint.Client
         /// Returns an event receiver definition
         /// </summary>
         /// <param name="web">Web to process</param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The id of event receiver</param>
+        /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition GetEventReceiverById(this Web web, Guid id)
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
@@ -1103,9 +1108,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns an event receiver definition
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="web">Web to process</param>
+        /// <param name="name">The name of the receiver</param>
+        /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition GetEventReceiverByName(this Web web, string name)
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
@@ -1159,7 +1164,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">web to apply remote template</param>
         /// <param name="template">ProvisioningTemplate with the settings to be applied</param>
         /// <param name="applyingInformation">Specified additional settings and or properties</param>
         public static void ApplyProvisioningTemplate(this Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation = null)

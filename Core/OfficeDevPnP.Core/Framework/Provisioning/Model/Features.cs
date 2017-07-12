@@ -11,6 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private FeatureCollection _webFeatures;
 
         #region Constructors
+        /// <summary>
+        /// Constructor for Features class
+        /// </summary>
         public Features()
         {
             this._siteFeatures = new FeatureCollection(this.ParentTemplate);

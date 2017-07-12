@@ -40,8 +40,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the current search configuration as as string
         /// </summary>
-        /// <param name="web"></param>
-        /// <returns></returns>
+        /// <param name="web">A SharePoint site/subsiste</param>
+        /// <returns>Returns search configuration</returns>
         public static string GetSearchConfiguration(this Web web)
         {
             return GetSearchConfigurationImplementation(web.Context, SearchObjectLevel.SPWeb);
@@ -50,8 +50,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the current search configuration as as string
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">A SharePoint site</param>
+        /// <returns>Returns search configuration</returns>
         public static string GetSearchConfiguration(this Site site)
         {
             return GetSearchConfigurationImplementation(site.Context, SearchObjectLevel.SPSite);
@@ -60,9 +60,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the current search configuration for the specified object level
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="searchSettingsObjectLevel"></param>
-        /// <returns></returns>
+        /// <param name="context">ClinetRuntimeContext for SharePoint objects and operations</param>
+        /// <param name="searchSettingsObjectLevel">A site server level value. i.e, SPWeb/SPSite/SPSiteSubscription/Ssa</param>
+        /// <returns>Returns search configuration</returns>
         private static string GetSearchConfigurationImplementation(ClientRuntimeContext context, SearchObjectLevel searchSettingsObjectLevel)
         {
             SearchConfigurationPortability sconfig = new SearchConfigurationPortability(context);
@@ -96,8 +96,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Sets the search configuration
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="searchConfiguration"></param>
+        /// <param name="web">A SharePoint site/subsite</param>
+        /// <param name="searchConfiguration">search configuration</param>
         public static void SetSearchConfiguration(this Web web, string searchConfiguration)
         {
             SetSearchConfigurationImplementation(web.Context, SearchObjectLevel.SPWeb, searchConfiguration);
@@ -106,8 +106,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Sets the search configuration
         /// </summary>
-        /// <param name="site"></param>
-        /// <param name="searchConfiguration"></param>
+        /// <param name="site">A SharePoint site</param>
+        /// <param name="searchConfiguration">search configuration</param>
         public static void SetSearchConfiguration(this Site site, string searchConfiguration)
         {
             SetSearchConfigurationImplementation(site.Context, SearchObjectLevel.SPSite, searchConfiguration);

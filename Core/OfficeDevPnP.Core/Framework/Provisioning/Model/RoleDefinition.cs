@@ -16,9 +16,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for RoleDefinition class
+        /// </summary>
         public RoleDefinition() { }
 
+        /// <summary>
+        /// Constructor for RoleDefinition class
+        /// </summary>
+        /// <param name="permissions">RoleDefinition permissions</param>
         public RoleDefinition(IEnumerable<Microsoft.SharePoint.Client.PermissionKind> permissions)
         {
             this.Permissions.AddRange(permissions);
@@ -50,7 +56,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -60,6 +69,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with RoleDefinition
+        /// </summary>
+        /// <param name="obj">Object that represents RoleDefinition</param>
+        /// <returns>true if the current object is equal to the RoleDefinition</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is RoleDefinition))
@@ -69,6 +83,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((RoleDefinition)obj));
         }
 
+        /// <summary>
+        /// Compares RoleDefinition object based on Name, Description and Permisssions
+        /// </summary>
+        /// <param name="other">RoleDefinition object</param>
+        /// <returns>true if the RoleDefinition object is equal to the current object; otherwise, false.</returns>
         public bool Equals(RoleDefinition other)
         {
             if (other == null)

@@ -16,13 +16,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Properties
-
+        /// <summary>
+        /// Gets or sets the page Url
+        /// </summary>
         public string Url { get; set; }
 
+        /// <summary>
+        /// Gets or sets the WikiPage layout
+        /// </summary>
         public WikiPageLayout Layout { get; set; }
 
+        /// <summary>
+        /// Gets or sets the overwrite flag for the page
+        /// </summary>
         public bool Overwrite { get; set; }
 
+        /// <summary>
+        /// Gets or sets the webparts of the page
+        /// </summary>
         public WebPartCollection WebParts
         {
             get { return _webParts; }
@@ -61,11 +72,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor for Page class
+        /// </summary>
         public Page()
         {
             this._webParts = new WebPartCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for Page class
+        /// </summary>
+        /// <param name="url">Url of the page</param>
+        /// <param name="overwrite">Overwrite flag for the page</param>
+        /// <param name="layout">Page Layout</param>
+        /// <param name="webParts">Webparts of the page</param>
+        /// <param name="security">Security Rules for the page</param>
+        /// <param name="fields">Fields used in the page</param>
         public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null) :
             this()
         {
@@ -89,7 +112,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
@@ -105,6 +131,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Page
+        /// </summary>
+        /// <param name="obj">Object that represents Page</param>
+        /// <returns>true if the current object is equal to the Page</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Page))
@@ -114,6 +145,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Page)obj));
         }
 
+        /// <summary>
+        /// Compares Page object based on Url, Overwrite, Layout, WelcomePage, Webparts, Security and Fields properties.
+        /// </summary>
+        /// <param name="other">Page object</param>
+        /// <returns>true if the Page object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Page other)
         {
             if (other == null)

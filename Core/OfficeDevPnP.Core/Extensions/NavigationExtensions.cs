@@ -35,8 +35,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the navigation settings for the selected web
         /// </summary>
-        /// <param name="web"></param>
-        /// <returns></returns>
+        /// <param name="web">Web to process</param>
+        /// <returns>Returns AreaNavigationEntity settings</returns>
         public static AreaNavigationEntity GetNavigationSettings(this Web web)
         {
             var nav = new AreaNavigationEntity();
@@ -86,6 +86,53 @@ namespace Microsoft.SharePoint.Client
                             }
                         }
                         nav.GlobalNavigation.ManagedNavigation = managedNavigation;
+                    }
+                }
+
+                // Get settings related to page creation
+                XElement pageNode = navigationSettings.XPathSelectElement("./NewPageSettings");
+                if (pageNode != null)
+                {
+                    if (pageNode.Attribute("AddNewPagesToNavigation") != null)
+                    {
+                        bool addNewPagesToNavigation;
+                        if (bool.TryParse(pageNode.Attribute("AddNewPagesToNavigation").Value, out addNewPagesToNavigation))
+                        {
+                            nav.AddNewPagesToNavigation = addNewPagesToNavigation;
+                        }
+                    }
+
+                    if (pageNode.Attribute("CreateFriendlyUrlsForNewPages") != null)
+                    {
+                        bool createFriendlyUrlsForNewPages;
+                        if (bool.TryParse(pageNode.Attribute("CreateFriendlyUrlsForNewPages").Value, out createFriendlyUrlsForNewPages))
+                        {
+                            nav.CreateFriendlyUrlsForNewPages = createFriendlyUrlsForNewPages;
+                        }
+                    }
+                }
+
+                // Get navigation inheritance
+                IEnumerable<XElement> switchableNavNodes = navigationSettings.XPathSelectElements("./SiteMapProviderSettings/SwitchableSiteMapProviderSettings");
+                foreach (var node in switchableNavNodes)
+                {
+                    if (node.Attribute("Name").Value.Equals("CurrentNavigationSwitchableProvider", StringComparison.InvariantCulture))
+                    {
+                        bool inherit = false;
+                        if (node.Attribute("UseParentSiteMap") != null)
+                        {
+                            bool.TryParse(node.Attribute("UseParentSiteMap").Value, out inherit);
+                        }
+                        nav.CurrentNavigation.InheritFromParentWeb = inherit;
+                    }
+                    else if (node.Attribute("Name").Value.Equals("GlobalNavigationSwitchableProvider", StringComparison.InvariantCulture))
+                    {
+                        bool inherit = false;
+                        if (node.Attribute("UseParentSiteMap") != null)
+                        {
+                            bool.TryParse(node.Attribute("UseParentSiteMap").Value, out inherit);
+                        }
+                        nav.GlobalNavigation.InheritFromParentWeb = inherit;
                     }
                 }
             }
@@ -161,8 +208,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Updates navigation settings for the current web
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="navigationSettings"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="navigationSettings">Navigation settings to update</param>
         public static void UpdateNavigationSettings(this Web web, AreaNavigationEntity navigationSettings)
         {
             //Read all the properties of the web
@@ -179,7 +226,18 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(taxonomySession);
             web.Context.ExecuteQueryRetry();
             var webNav = new WebNavigationSettings(web.Context, web);
-            if (!navigationSettings.GlobalNavigation.ManagedNavigation)
+            if (navigationSettings.GlobalNavigation.InheritFromParentWeb)
+            {
+                if (web.IsSubSite())
+                {
+                    webNav.GlobalNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot inherit global navigation on root site.");
+                }
+            }
+            else if (!navigationSettings.GlobalNavigation.ManagedNavigation)
             {
                 webNav.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
             }
@@ -188,7 +246,18 @@ namespace Microsoft.SharePoint.Client
                 webNav.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
             }
 
-            if (!navigationSettings.CurrentNavigation.ManagedNavigation)
+            if (navigationSettings.CurrentNavigation.InheritFromParentWeb)
+            {
+                if (web.IsSubSite())
+                {
+                    webNav.CurrentNavigation.Source = StandardNavigationSource.InheritFromParentWeb;
+                }
+                else
+                {
+                    throw new ArgumentException("Cannot inherit current navigation on root site.");
+                }
+            }
+            else if (!navigationSettings.CurrentNavigation.ManagedNavigation)
             {
                 webNav.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
             }
@@ -196,6 +265,14 @@ namespace Microsoft.SharePoint.Client
             {
                 webNav.CurrentNavigation.Source = StandardNavigationSource.TaxonomyProvider;
             }
+
+            // If managed metadata navigation is used, set settings related to page creation
+            if (navigationSettings.GlobalNavigation.ManagedNavigation || navigationSettings.CurrentNavigation.ManagedNavigation)
+            {
+                webNav.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
+                webNav.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
+            }
+
             webNav.Update(taxonomySession);
             web.Context.ExecuteQueryRetry();
 
@@ -792,7 +869,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>Returns all custom actions</returns>
         public static IEnumerable<UserCustomAction> GetCustomActions(this Web web, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)web.Context;
@@ -821,7 +898,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>Returns all custom actions</returns>
         public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
@@ -899,7 +976,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Utility method to check particular custom action already exists on the web
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">Web to process</param>
         /// <param name="name">Name of the custom action</param>
         /// <returns></returns>        
         public static bool CustomActionExists(this Web web, string name)
@@ -926,7 +1003,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Utility method to check particular custom action already exists on the web
         /// </summary>
-        /// <param name="site"></param>
+        /// <param name="site">Site to process</param>
         /// <param name="name">Name of the custom action</param>
         /// <returns></returns>        
         public static bool CustomActionExists(this Site site, string name)

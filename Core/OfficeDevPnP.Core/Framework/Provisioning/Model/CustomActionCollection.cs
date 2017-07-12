@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class CustomActionCollection : ProvisioningTemplateCollection<CustomAction>
     {
+        /// <summary>
+        /// Constructor for CustomActionCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public CustomActionCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

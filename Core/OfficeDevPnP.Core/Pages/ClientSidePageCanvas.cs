@@ -18,26 +18,89 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public enum DefaultClientSideWebParts
     {
+        /// <summary>
+        /// Content Rollup webpart
+        /// </summary>
         ContentRollup,
+        /// <summary>
+        /// Bing Map webpart
+        /// </summary>
         BingMap,
+        /// <summary>
+        /// Content Embed webpart
+        /// </summary>
         ContentEmbed,
+        /// <summary>
+        /// Document Embed webpart
+        /// </summary>
         DocumentEmbed,
+        /// <summary>
+        /// Image webpart
+        /// </summary>
         Image,
+        /// <summary>
+        /// Image Gallery webpart
+        /// </summary>
         ImageGallery,
+        /// <summary>
+        /// Link Preview webpart
+        /// </summary>
         LinkPreview,
+        /// <summary>
+        /// News Feed webpart
+        /// </summary>
         NewsFeed,
+        /// <summary>
+        /// News Reel webpart
+        /// </summary>
         NewsReel,
+        /// <summary>
+        /// PowerBI Report Embed webpart
+        /// </summary>
         PowerBIReportEmbed,
+        /// <summary>
+        /// Quick Chart webpart
+        /// </summary>
         QuickChart,
+        /// <summary>
+        /// Site Activity webpart
+        /// </summary>
         SiteActivity,
+        /// <summary>
+        /// Video Embed webpart 
+        /// </summary>
         VideoEmbed,
+        /// <summary>
+        /// Yammer Embed webpart
+        /// </summary>
         YammerEmbed,
+        /// <summary>
+        /// Events webpart
+        /// </summary>
         Events,
+        /// <summary>
+        /// Group Calendar webpart
+        /// </summary>
         GroupCalendar,
+        /// <summary>
+        /// Hero webpart
+        /// </summary>
         Hero,
+        /// <summary>
+        /// List webpart
+        /// </summary>
         List,
+        /// <summary>
+        /// Page Title webpart
+        /// </summary>
         PageTitle,
+        /// <summary>
+        /// People webpart
+        /// </summary>
         People,
+        /// <summary>
+        /// Quick Links webpart
+        /// </summary>
         QuickLinks
     }
 
@@ -586,7 +649,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
         /// </summary>
-        /// <param name="pageName"></param>
+        /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
         public void Save(string pageName = null)
         {
             string serverRelativePageName;
@@ -1510,11 +1573,29 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideComponent
     {
+        /// <summary>
+        /// Component type for client side webpart object
+        /// </summary>
         public int ComponentType { get; set; }
+        /// <summary>
+        /// Id for client side webpart object
+        /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// Manifest for client side webpart object
+        /// </summary>
         public string Manifest { get; set; }
+        /// <summary>
+        /// Manifest type for client side webpart object
+        /// </summary>
         public int ManifestType { get; set; }
+        /// <summary>
+        /// Name for client side webpart object
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Status for client side webpart object
+        /// </summary>
         public int Status { get; set; }
     }
     #endregion

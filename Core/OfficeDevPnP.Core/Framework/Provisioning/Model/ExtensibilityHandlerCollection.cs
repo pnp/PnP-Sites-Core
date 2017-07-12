@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ExtensibilityHandlerCollection : ProvisioningTemplateCollection<ExtensibilityHandler>
     {
+        /// <summary>
+        /// Constructor for ExtensibilityHandlerCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ExtensibilityHandlerCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

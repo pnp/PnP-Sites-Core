@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Custom constructor to manage the ParentTemplate for the collection 
         /// and all the children of the collection
         /// </summary>
-        /// <param name="parentTemplate"></param>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ProvisioningTemplateDictionary(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;

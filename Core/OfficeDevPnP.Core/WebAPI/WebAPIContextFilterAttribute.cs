@@ -6,8 +6,15 @@ using System.Web.Http.Filters;
 
 namespace OfficeDevPnP.Core.WebAPI
 {
+    /// <summary>
+    /// Class deals with WebAPI context filter attribute and excutes action based on HttpActionContext
+    /// </summary>
     public class WebAPIContextFilterAttribute : ActionFilterAttribute
     {
+        /// <summary>
+        /// Method executes on HTTP action
+        /// </summary>
+        /// <param name="actionContext">HttpActionContext object</param>
         public override void OnActionExecuting(HttpActionContext actionContext)
         {
             if (actionContext == null)

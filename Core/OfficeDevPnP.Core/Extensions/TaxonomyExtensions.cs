@@ -13,6 +13,9 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for taxonomy extension methods
+    /// </summary>
     [Guid("8A8AEA7A-7C25-4138-9C83-2584028868C5")]
     public static partial class TaxonomyExtensions
     {
@@ -178,8 +181,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="lcid">(Optional) Default language of the term set; if not provided the default of the associate term store is used</param>
         /// <param name="description">(Optional) Description of the term set; if null or not provided the parameter is ignored, otherwise the term set is updated as necessary to match the description; passing an empty string will clear the description</param>
         /// <param name="isOpen">(Optional) Whether the term store is open for new term creation or not</param>
-        /// <param name="termSetContact"></param>
-        /// <param name="termSetOwner"></param>
+        /// <param name="termSetContact">(Optional) E-mail address for term suggestions and feedback</param>
+        /// <param name="termSetOwner">Owner of termset</param>
         /// <returns>The required term set</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static TermSet EnsureTermSet(this TermGroup parentGroup, string termSetName, Guid termSetId = default(Guid), int? lcid = null, string description = null, bool? isOpen = null, string termSetContact = null, string termSetOwner = null)
@@ -296,7 +299,7 @@ namespace Microsoft.SharePoint.Client
         /// Private method used for resolving taxonomy term set for taxonomy field
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <returns></returns>
+        /// <returns>Returns TermStore object</returns>
         private static TermStore GetDefaultTermStore(Web web)
         {
             TermStore termStore = null;
@@ -321,8 +324,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a new taxonomy session for the current site
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TaxonomySession object</returns>
         public static TaxonomySession GetTaxonomySession(this Site site)
         {
             TaxonomySession tSession = TaxonomySession.GetTaxonomySession(site.Context);
@@ -334,8 +337,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the default keywords termstore for the current site
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TermStore object</returns>
         public static TermStore GetDefaultKeywordsTermStore(this Site site)
         {
             TaxonomySession session = TaxonomySession.GetTaxonomySession(site.Context);
@@ -349,8 +352,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the default site collection termstore
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TermStore object</returns>
         public static TermStore GetDefaultSiteCollectionTermStore(this Site site)
         {
             TaxonomySession session = TaxonomySession.GetTaxonomySession(site.Context);
@@ -368,7 +371,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="name">The name of the termset</param>
         /// <param name="lcid">The locale ID for the termset to return, defaults to 1033</param>
-        /// <returns></returns>
+        /// <returns>Returns collection of TermSet</returns>
         public static TermSetCollection GetTermSetsByName(this Site site, string name, int lcid = 1033)
         {
             if (string.IsNullOrEmpty(name))
@@ -388,7 +391,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="name">The name of the termgroup</param>
-        /// <returns></returns>
+        /// <returns>Returns TermGroup object</returns>
         public static TermGroup GetTermGroupByName(this Site site, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -427,7 +430,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="termGroupId">The ID of the termgroup</param>
-        /// <returns></returns>
+        /// <returns>Returns TermGroup object</returns>
         public static TermGroup GetTermGroupById(this Site site, Guid termGroupId)
         {
             if (termGroupId == null || termGroupId.Equals(Guid.Empty))
@@ -446,9 +449,9 @@ namespace Microsoft.SharePoint.Client
         /// Gets a Taxonomy Term by Name
         /// </summary>
         /// <param name="site">The site to process</param>
-        /// <param name="termSetId"></param>
-        /// <param name="term"></param>
-        /// <returns></returns>
+        /// <param name="termSetId">Guid of a TermSet</param>
+        /// <param name="term">Term name</param>
+        /// <returns>Returns Term object</returns>
         public static Term GetTermByName(this Site site, Guid termSetId, string term)
         {
             if (string.IsNullOrEmpty(term))
@@ -492,7 +495,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="termSetId">The ID of the termset</param>
         /// <param name="term">The label of the new term to create</param>
-        /// <returns></returns>
+        /// <returns>Returns Term object</returns>
         public static Term AddTermToTermset(this Site site, Guid termSetId, string term)
         {
             return AddTermToTermset(site, termSetId, term, Guid.NewGuid());
@@ -505,7 +508,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="termSetId">The ID of the termset</param>
         /// <param name="term">The label of the new term to create</param>
         /// <param name="termId">The ID of the term to create</param>
-        /// <returns></returns>
+        /// <returns>Returns Term object</returns>
         public static Term AddTermToTermset(this Site site, Guid termSetId, string term, Guid termId)
         {
             if (string.IsNullOrEmpty(term))
@@ -534,10 +537,10 @@ namespace Microsoft.SharePoint.Client
         ///  E.g. "Locations|Nordics|Sweden"
         ///  
         /// </summary>
-        /// <param name="site"></param>
-        /// <param name="termLines"></param>
-        /// <param name="lcid"></param>
-        /// <param name="delimiter"></param>
+        /// <param name="site">The current site</param>
+        /// <param name="termLines">Array of TermLines</param>
+        /// <param name="lcid">Locale identifier (LCID) for the language</param>
+        /// <param name="delimiter">delimeter which seperates terms</param>
         /// <param name="synchronizeDeletions">Remove tags that are not present in the import</param>
         public static void ImportTerms(this Site site, string[] termLines, int lcid, string delimiter = "|", bool synchronizeDeletions = false)
         {
@@ -558,11 +561,11 @@ namespace Microsoft.SharePoint.Client
         ///  E.g. "Locations|Nordics|Sweden"
         ///  
         /// </summary>
-        /// <param name="site"></param>
-        /// <param name="termLines"></param>
-        /// <param name="lcid"></param>
+        /// <param name="site">The current site</param>
+        /// <param name="termLines">Array of TermLines</param>
+        /// <param name="lcid">Locale identifier (LCID) for the language</param>
         /// <param name="termStore">The termstore to import the terms into</param>
-        /// <param name="delimiter"></param>
+        /// <param name="delimiter">delimeter which seperates terms</param>
         /// <param name="synchronizeDeletions">Remove tags that are not present in the import</param>
         public static void ImportTerms(this Site site, string[] termLines, int lcid, TermStore termStore, string delimiter = "|", bool synchronizeDeletions = false)
         {
@@ -1284,7 +1287,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="termSetId">The ID of the termset to export</param>
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Termset strings</returns>
         public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, string delimiter = "|")
         {
             var termStore = site.GetDefaultSiteCollectionTermStore();
@@ -1300,7 +1303,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="termStore">The term store to export the termset from</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Termset strings</returns>
         public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, TermStore termStore, string delimiter = "|")
         {
             var clientContext = site.Context;
@@ -1349,7 +1352,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The site to process</param>
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Term strings</returns>
         public static List<string> ExportAllTerms(this Site site, bool includeId, string delimiter = "|")
         {
             var clientContext = site.Context;
@@ -1452,7 +1455,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="path">The path of the item to return</param>
         /// <param name="delimiter">The delimeter separating groups, sets and term in the path. Defaults to |</param>
-        /// <returns></returns>
+        /// <returns>Returns TaxonomyItem object</returns>
         public static TaxonomyItem GetTaxonomyItemByPath(this Site site, string path, string delimiter = "|")
         {
             var context = site.Context;
@@ -1683,7 +1686,6 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="fieldCreationInformation">Creation Information of the field</param>
         /// <returns>New taxonomy field</returns>
-
         public static Field CreateTaxonomyField(this Web web, TaxonomyFieldCreationInformation fieldCreationInformation)
         {
             fieldCreationInformation.InternalName.ValidateNotNullOrEmpty("internalName");
