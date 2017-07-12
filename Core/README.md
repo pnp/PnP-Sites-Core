@@ -1,4 +1,4 @@
-Office 365 Developer PnP Core Component
+Office 365 Developer PnP Core Component.
 =======================================
 
 ### Summary ###

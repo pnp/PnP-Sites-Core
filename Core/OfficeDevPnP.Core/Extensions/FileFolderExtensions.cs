@@ -261,7 +261,6 @@ namespace Microsoft.SharePoint.Client
                 Uri webUrl = Web.WebUrlFromPageUrlDirect(parentFolder.Context as ClientContext, folderAbsoluteUri);
 
                 context = parentFolder.Context.Clone(webUrl);
-
             }
 
             List parentList = null;
