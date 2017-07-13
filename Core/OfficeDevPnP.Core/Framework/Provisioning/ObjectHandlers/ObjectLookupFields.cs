@@ -137,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!Guid.TryParse(listIdentifier, out listGuid))
             {
-                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier);
+                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, (listIdentifier == Constants.FIELD_XML_USER_LISTIDENTIFIER ? Constants.FIELD_XML_USER_LISTRELATIVEURL : listIdentifier));
                 return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
             }
             else
