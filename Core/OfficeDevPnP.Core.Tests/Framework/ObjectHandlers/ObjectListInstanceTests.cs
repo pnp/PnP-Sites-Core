@@ -21,11 +21,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
 
         private string listName;
-
+        private string datarowListName;
         [TestInitialize]
         public void Initialize()
         {
             listName = string.Format("Test_{0}", DateTime.Now.Ticks);
+            datarowListName = $"DataRowTest_{DateTime.Now.Ticks}";
 
         }
         [TestCleanup]
@@ -43,7 +44,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     list.DeleteObject();
                     isDirty = true;
                 }
-
+                var datarowList = ctx.Web.GetListByTitle(datarowListName);
+                if (datarowList == null)
+                {
+                    datarowList.DeleteObject();
+                    isDirty = true;
+                }
                 var field = ctx.Web.GetFieldById<FieldText>(fieldId); // Guid matches ID in field caml.
                 var calculatedField = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId); // Guid matches ID in field caml.
 
@@ -486,6 +492,56 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var formula = fieldElement.Descendants("Formula").FirstOrDefault();
 
                 Assert.AreEqual(@"=[{fieldtitle:DemoField}]&""DemoField""", formula.Value, true, "Calculated field formula is not extracted properly");
+            }
+        }
+
+        [TestMethod]
+        public void DataRowsAreBeingSkippedIfAlreadyInplace()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var template = new ProvisioningTemplate();
+                var listinstance = new ListInstance()
+                {
+                    Title = datarowListName,
+                    Url = $"lists/{datarowListName}",
+                    TemplateType = 100,
+                };
+                listinstance.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = $@"<Field Type=""Text"" DisplayName=""Key"" Required=""FALSE"" EnforceUniqueValues=""FALSE"" Indexed=""FALSE"" MaxLength=""255"" ID=""{(Guid.NewGuid().ToString("B"))}"" StaticName=""Key"" Name=""Key"" />" });
+
+                var datarows = new List<DataRow>()
+                {
+                    new DataRow(new Dictionary<string, string>{ { "Title", "Test -1-"}, { "Key", "1" } }, "1" ),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -2-"}, { "Key", "2" } }, "2"),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", "3" } }, "3")
+                };
+                listinstance.DataRows.AddRange(datarows);
+                template.Lists.Add(listinstance);
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+
+                var rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
+                Assert.IsTrue(rowCount == 3, "Row count not equals 3");
+
+                listinstance.DataRows.KeyColumn = "Key";
+                listinstance.DataRows.UpdateBehavior = UpdateBehavior.Skip;
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
+                Assert.IsTrue(rowCount == 3, "Row count not equals 3");
+
+                listinstance.DataRows.UpdateBehavior = UpdateBehavior.Overwrite;
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
+                Assert.IsTrue(rowCount == 3, "Row count not equals 3");
+
+                listinstance.DataRows.Add(new DataRow(new Dictionary<string, string> { { "Title", "Test -4-" }, { "Key", "4" } }, "4"));
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
+                Assert.IsTrue(rowCount == 4, "Row count not equals 4");
+
             }
         }
     }
