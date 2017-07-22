@@ -11,6 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private members
         private Dictionary<string, string> _values = new Dictionary<string, string>();
+        private string _keyValue;
         private ObjectSecurity _objectSecurity;
         #endregion
 
@@ -25,6 +26,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _values = value; }
         }
 
+        public string Key
+        {
+            get { return _keyValue; }
+            set { _keyValue = value; }
+        }
         /// <summary>
         /// Defines the security rules for the row that will be added to the List Instance
         /// </summary>
@@ -60,16 +66,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Constructor for DataRow class
         /// </summary>
         /// <param name="values">DataRow Values</param>
-        public DataRow(Dictionary<string, string> values) : this(values, null)
-        {
-        }
+        public DataRow(Dictionary<string, string> values) : this(values, null, null)
+        { }
+
+        /// <summary>
+        /// Constructor for DataRow class
+        /// </summary>
+        /// <param name="values">DataRow Values</param>
+        /// <param name="key">Key column value in case of KeyColumn it set on collection</param>
+        public DataRow(Dictionary<string, string> values, string keyValue) : this(values, null, keyValue)
+        { }
 
         /// <summary>
         /// Constructor for DataRow class
         /// </summary>
         /// <param name="values">DataRow Values</param>
         /// <param name="security">ObjectSecurity object</param>
-        public DataRow(Dictionary<string, string> values, ObjectSecurity security) :
+        public DataRow(Dictionary<string, string> values, ObjectSecurity security) : this(values, security, null)
+        { }
+
+        /// <summary>
+        /// Constructor for DataRow class
+        /// </summary>
+        /// <param name="values">DataRow Values</param>
+        /// <param name="security">ObjectSecurity object</param>
+        /// <param name="keyValue">Key column value in case of KeyColumn it set on collection</param>
+        public DataRow(Dictionary<string, string> values, ObjectSecurity security, string keyValue) :
             this()
         {
             if (values != null)
@@ -81,6 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             this.Security = security;
+            this.Key = keyValue;
         }
 
         #endregion
@@ -92,9 +115,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}",
                 this.Values.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                (this.Security != null ? this.Security.GetHashCode() : 0)
+                (this.Security != null ? this.Security.GetHashCode() : 0),
+                (this.Key != null ? this.Key.GetHashCode() : 0)
             ).GetHashCode());
         }
 
@@ -125,7 +149,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             return (this.Values.DeepEquals(other.Values) &&
-                    (this.Security != null ? this.Security.Equals(other.Security) : true)
+                    (this.Security != null ? this.Security.Equals(other.Security) : true) &&
+                    (this.Key != null ? this.Key.Equals(other.Key) : true)
                 );
         }
 

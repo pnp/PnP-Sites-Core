@@ -4903,6 +4903,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         private ObjectSecurity securityField;
         
+        private string keyField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("DataValue")]
         public DataValue[] DataValue {
@@ -4923,6 +4925,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.securityField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Key {
+            get {
+                return this.keyField;
+            }
+            set {
+                this.keyField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -4930,7 +4943,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class DataValue : BaseFieldValue {
     }
     
@@ -4941,7 +4953,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class BaseFieldValue {
         
         private string fieldNameField;
@@ -4976,7 +4987,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class FieldDefault : BaseFieldValue {
     }
     
@@ -6108,7 +6118,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class WebPartPageWebPart {
         
         private System.Xml.XmlElement contentsField;
@@ -6426,7 +6435,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    // [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class WikiPageWebPart {
         
         private System.Xml.XmlElement contentsField;
