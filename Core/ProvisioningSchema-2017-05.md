@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 6/15/2017*
+* Topic automatically generated on 7/24/2017*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
