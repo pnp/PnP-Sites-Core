@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class SecurityFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         public object Resolve(object source, Dictionary<string, IResolver> resolvers = null, bool recursive = false)
         {

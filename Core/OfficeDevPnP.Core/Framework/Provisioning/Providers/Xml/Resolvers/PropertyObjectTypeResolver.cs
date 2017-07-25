@@ -35,10 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class PropertyObjectTypeResolver : ITypeResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
+        public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         private Type targetItemType;
         private string propertyName;

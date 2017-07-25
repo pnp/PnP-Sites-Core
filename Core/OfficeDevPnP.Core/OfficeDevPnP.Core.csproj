@@ -440,6 +440,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CalendarTypeFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\RemoveExistingContentTypesFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
@@ -472,6 +474,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SecuritySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FeaturesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />

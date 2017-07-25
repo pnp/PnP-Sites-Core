@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2017
     internal class DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         public DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver()
         {

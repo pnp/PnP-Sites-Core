@@ -15,6 +15,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     {
         public string Name => this.GetType().Name;
 
+        public bool CustomCollectionResolver => false;
+
+
         private Type _targetItemType;
 
         public TermSetFromModelToSchemaTypeResolver()

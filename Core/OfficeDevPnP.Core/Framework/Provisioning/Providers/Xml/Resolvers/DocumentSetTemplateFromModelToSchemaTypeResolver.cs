@@ -12,6 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class DocumentSetTemplateFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+    
+        public bool CustomCollectionResolver => false;
 
         public DocumentSetTemplateFromModelToSchemaTypeResolver()
         {

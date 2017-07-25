@@ -11,6 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class FoldersFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {

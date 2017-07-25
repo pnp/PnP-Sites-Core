@@ -12,6 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     {
         public string Name => this.GetType().Name;
 
+        public bool CustomCollectionResolver => false;
+
         public DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver()
         {
         }

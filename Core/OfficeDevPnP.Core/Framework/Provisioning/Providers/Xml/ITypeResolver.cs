@@ -18,5 +18,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <param name="resolvers"></param>
         /// <param name="recursive">Defines whether to apply the mapping recursively, optional and by default false</param>
         Object Resolve(Object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false);
+
+        /// <summary>
+        /// Declares whether the Type Resolver handles a collection in a custom way
+        /// </summary>
+        Boolean CustomCollectionResolver { get; }
     }
 }

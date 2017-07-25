@@ -260,7 +260,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" Remove="true"/>
           </pnp:ContentTypeBindings>
           <pnp:DataRows KeyColumn="ProjectID" UpdateBehavior="Overwrite">
-            <pnp:DataRow>
+            <pnp:DataRow Key="PRJ01">
               <pnp:DataValue FieldName="ProjectID">PRJ01</pnp:DataValue>
               <pnp:DataValue FieldName="ProjectName">Sample Project 01</pnp:DataValue>
               <pnp:DataValue FieldName="ProjectManager">Me</pnp:DataValue>
@@ -273,7 +273,7 @@
                 </pnp:BreakRoleInheritance>
               </pnp:Security>
             </pnp:DataRow>
-            <pnp:DataRow>
+            <pnp:DataRow Key="PRJ021">
               <pnp:DataValue FieldName="ProjectID">PRJ021</pnp:DataValue>
               <pnp:DataValue FieldName="ProjectName">Sample Project 02</pnp:DataValue>
               <pnp:DataValue FieldName="ProjectManager">You</pnp:DataValue>
