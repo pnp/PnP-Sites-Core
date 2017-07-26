@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
         SerializationSequence = 2200, DeserializationSequence = 2200,
         Default = true)]
-    internal class SiteWebhooksSerializer : PnPBaseSchemaSerializer<SupportedUILanguage>
+    internal class SiteWebhooksSerializer : PnPBaseSchemaSerializer<SiteWebhook>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
