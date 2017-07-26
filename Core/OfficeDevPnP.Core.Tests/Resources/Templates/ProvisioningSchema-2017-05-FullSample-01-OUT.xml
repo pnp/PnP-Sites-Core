@@ -18,7 +18,7 @@
     <pnp:Localization LCID="1031" Name="intranet" ResourceFile="resources-intranet.de-de.resx" />
   </pnp:Localizations>
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
-    <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040">
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
         <pnp:Property Key="SomethingElse" Value="Another property ... Who knows ..." />
