@@ -42,7 +42,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     persistence,
                     PnPObjectsMapper.MapObjects(template.SiteWebhooks,
                         new CollectionFromModelToSchemaTypeResolver(siteWebhookType),
-                        expressions, false));
+                        expressions,
+                        recursive: true));
         }
     }
 }
