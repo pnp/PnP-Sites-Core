@@ -26,11 +26,6 @@
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
       <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" />
       <pnp:RegionalSettings AdjustHijriDays="1" AlternateCalendarType="Chinese Lunar" CalendarType="Hebrew" Collation="5" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="9:00AM" />
-      <pnp:SupportedUILanguages>
-        <pnp:SupportedUILanguage LCID="1033" />
-        <pnp:SupportedUILanguage LCID="1040" />
-        <pnp:SupportedUILanguage LCID="1031" />
-      </pnp:SupportedUILanguages>
       <pnp:AuditSettings AuditLogTrimmingRetention="50" TrimAuditLog="true">
         <pnp:Audit AuditFlag="CheckOut" />
         <pnp:Audit AuditFlag="CheckIn" />
@@ -455,6 +450,10 @@
       <pnp:AddIns>
         <pnp:Addin PackagePath="CustomSharePointAddin.app" Source="ObjectModel" />
       </pnp:AddIns>
+      <pnp:SiteWebhooks>
+        <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebCreated" />
+        <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
+      </pnp:SiteWebhooks>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
 </pnp:Provisioning>

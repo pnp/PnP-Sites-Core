@@ -467,6 +467,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModelToSchemalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\SiteWebhooksSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ContentTypesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ExtensibilityHandlersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AddInsSerializer.cs" />
