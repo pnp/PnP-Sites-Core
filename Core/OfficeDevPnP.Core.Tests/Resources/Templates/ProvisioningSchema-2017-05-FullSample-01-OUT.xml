@@ -115,7 +115,6 @@
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
             <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
           </pnp:FieldRefs>
-          <pnp:DocumentTemplate />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023" Name="ProjectDocumentSet" Description="Document Set for a Project" Group="Document Sets Samples">
           <pnp:FieldRefs>
@@ -123,7 +122,6 @@
             <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
           </pnp:FieldRefs>
-          <pnp:DocumentTemplate />
           <pnp:DocumentSetTemplate WelcomePage="{sitecollection}/_cts/ProjectDocumentSet/ProjectHomePage.aspx">
             <pnp:AllowedContentTypes RemoveExistingContentTypes="true">
               <pnp:AllowedContentType ContentTypeID="0x0101" />
@@ -154,21 +152,14 @@
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" Remove="true" />
           </pnp:ContentTypeBindings>
-          <pnp:Views />
           <pnp:Folders>
             <pnp:Folder Name="SubFolder-01">
               <pnp:Folder Name="SubFolder-01-01">
                 <pnp:Folder Name="SubFolder-01-01-01">
-                  <pnp:Security>
-                    <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-                  </pnp:Security>
                   <pnp:PropertyBagEntries>
                     <pnp:PropertyBagEntry Key="Key1" Value="Value1" />
                   </pnp:PropertyBagEntries>
                 </pnp:Folder>
-                <pnp:Security>
-                  <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-                </pnp:Security>
               </pnp:Folder>
               <pnp:Security>
                 <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
@@ -189,19 +180,9 @@
                     </pnp:BreakRoleInheritance>
                   </pnp:Security>
                 </pnp:Folder>
-                <pnp:Security>
-                  <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-                </pnp:Security>
               </pnp:Folder>
-              <pnp:Security>
-                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-              </pnp:Security>
             </pnp:Folder>
-            <pnp:Folder Name="SubFolder-03">
-              <pnp:Security>
-                <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-              </pnp:Security>
-            </pnp:Folder>
+            <pnp:Folder Name="SubFolder-03" />
           </pnp:Folders>
           <pnp:FieldDefaults>
             <pnp:FieldDefault FieldName="ProjectName">Default Project Name</pnp:FieldDefault>
@@ -225,11 +206,6 @@
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
-          <pnp:Views />
-          <pnp:Folders />
-          <pnp:Security>
-            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false" />
-          </pnp:Security>
         </pnp:ListInstance>
       </pnp:Lists>
       <pnp:Features>

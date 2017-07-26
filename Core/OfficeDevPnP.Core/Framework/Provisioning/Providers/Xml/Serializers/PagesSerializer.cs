@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{pageType}.LayoutSpecified", new ExpressionValueResolver((s, v) => true));
 
                 expressions.Add($"{pageType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
-                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 expressions.Add($"{baseNamespace}.WikiPageWebPart.Row", new ExpressionValueResolver<uint>((v) => (int)v));
                 expressions.Add($"{baseNamespace}.WikiPageWebPart.Column", new ExpressionValueResolver<uint>((v) => (int)v));

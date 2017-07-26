@@ -434,6 +434,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
@@ -455,16 +456,15 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromSchemaToModelTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssignmentsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PropertyObjectTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToBasePermissionsValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToEnumValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentSetTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModeToSchemalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModelToSchemalValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ContentTypesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ExtensibilityHandlersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AddInsSerializer.cs" />

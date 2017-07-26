@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add($"{customActionType}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
             expressions.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver(() => true));
             expressions.Add($"{customActionType}.SequenceSpecified", new ExpressionValueResolver(() => true));
-            expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
+            expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModelToSchemalValueResolver(commandUIExtensionType));
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
 

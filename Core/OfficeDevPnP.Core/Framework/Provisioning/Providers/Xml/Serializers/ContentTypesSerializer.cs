@@ -61,8 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
             expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
             //document template
-            expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new ExpressionTypeResolver<ContentType>(documentTemplateType, 
-                (s, r) => { r.SetPublicInstancePropertyValue("TargetName", s.DocumentTemplate); }));
+            expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
 
             persistence.GetPublicInstanceProperty("ContentTypes")
                 .SetValue(

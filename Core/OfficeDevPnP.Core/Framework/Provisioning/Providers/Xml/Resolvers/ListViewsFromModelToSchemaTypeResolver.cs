@@ -23,6 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             Object result = null;
 
             var list = source as Model.ListInstance;
+            Boolean anyView = false;
 
             if (null != list)
             {
@@ -39,11 +40,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     xmlElements.Add(viewXml.ToXmlElement());
                 }
 
-                var anyElements = result.GetPublicInstanceProperty("Any");
-                anyElements.SetValue(result, xmlElements.ToArray());
+                if (xmlElements.Count > 0)
+                {
+                    var anyElements = result.GetPublicInstanceProperty("Any");
+                    anyElements.SetValue(result, xmlElements.ToArray());
+                    anyView = true;
+                }
             }
 
-            return (result);
+            return (anyView ? result : null);
         }
     }
 }
