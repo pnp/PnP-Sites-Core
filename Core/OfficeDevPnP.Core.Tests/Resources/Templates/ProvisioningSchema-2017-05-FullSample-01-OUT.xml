@@ -227,7 +227,7 @@
             <pnp:CustomAction Name="CA_LIST_ECB_ITEM" Description="Custom Action for ECB in List" Location="EditControlBlock" Title="Sample Custom Action" Sequence="1000" Rights="AddListItems,EditListItems,DeleteListItems" Url="https://spmanaged.azurewebsites.net/customAction/?ItemUrl={ItemUrl}&amp;ItemId={ItemId}&amp;ListId={ListId}&amp;SiteUrl={SiteUrl}" RegistrationId="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" RegistrationType="ContentType" />
           </pnp:UserCustomActions>
           <pnp:Webhooks>
-            <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="0" />
+            <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" />
           </pnp:Webhooks>
         </pnp:ListInstance>
         <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" TemplateFeatureID="00000000-0000-0000-0000-000000000000">
@@ -447,8 +447,8 @@
           <pnp:PageLayout Path="Product.aspx" />
         </pnp:PageLayouts>
         <pnp:ImageRenditions>
-          <pnp:ImageRendition Name="SmallSquare" Width="0" Height="0" />
-          <pnp:ImageRendition Name="SmallRectangle" Width="0" Height="0" />
+          <pnp:ImageRendition Name="SmallSquare" Width="100" Height="100" />
+          <pnp:ImageRendition Name="SmallRectangle" Width="500" Height="200" />
         </pnp:ImageRenditions>
       </pnp:Publishing>
       <pnp:AddIns>
