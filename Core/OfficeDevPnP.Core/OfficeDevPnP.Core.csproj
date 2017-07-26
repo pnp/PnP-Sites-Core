@@ -441,6 +441,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CalendarTypeFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\IRMSettingsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\IRMSettingsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\RemoveExistingContentTypesFromSchemaToModelValueResolver.cs" />

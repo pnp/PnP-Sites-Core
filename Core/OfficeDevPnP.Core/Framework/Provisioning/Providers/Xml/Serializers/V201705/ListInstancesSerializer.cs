@@ -82,6 +82,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 return fields;
             }));
 
+            // IRM Settings
+            expressions.Add(l => l.IRMSettings, new IRMSettingsFromSchemaToModelTypeResolver());
+
             template.Lists.AddRange(
                 PnPObjectsMapper.MapObjects<ListInstance>(lists,
                         new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)), 
@@ -159,6 +162,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
             resolvers.Add($"{listInstanceType}.DraftVersionVisibilitySpecified", new ExpressionValueResolver(() => true));
             resolvers.Add($"{listInstanceType}.MaxVersionLimitSpecified", new ExpressionValueResolver(() => true));
             resolvers.Add($"{listInstanceType}.MinorVersionLimitSpecified", new ExpressionValueResolver(() => true));
+
+            // IRM Settings
+            resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());
 
             persistence.GetPublicInstanceProperty("Lists")
                 .SetValue(

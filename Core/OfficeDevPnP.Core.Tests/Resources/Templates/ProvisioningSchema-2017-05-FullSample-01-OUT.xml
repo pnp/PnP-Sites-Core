@@ -229,6 +229,7 @@
           <pnp:Webhooks>
             <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" />
           </pnp:Webhooks>
+          <pnp:IRMSettings Enabled="true" AllowWriteCopy="false" DocumentAccessExpireDays="30" DocumentLibraryProtectionExpiresInDays="90" EnableDocumentAccessExpire="true" EnableGroupProtection="false" GroupName="Custom IRM Group" LicenseCacheExpireDays="60" PolicyDescription="Sample IRM Policy" PolicyTitle="Sample IRM Policy" />
         </pnp:ListInstance>
         <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" TemplateFeatureID="00000000-0000-0000-0000-000000000000">
           <pnp:ContentTypeBindings>
