@@ -97,21 +97,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
             var resolvers = new Dictionary<String, IResolver>();
 
-            // Define custom resolvers for DataRows Values and Security            
-            //var listInstanceDataRowsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstanceDataRows, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //var listInstanceDataRowsType = Type.GetType(listInstanceDataRowsTypeName, true);
-            //var listInstanceDataRowTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ListInstanceDataRowsDataRow, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //var listInstanceDataRowType = Type.GetType(listInstanceDataRowTypeName, true);
-            //var listInstanceDataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //var listInstanceDataRowValueType = Type.GetType(listInstanceDataRowValueTypeName, true);
-
-            //var dataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //var dataRowValueType = Type.GetType(dataRowValueTypeName, true);
-            //var dataRowValueKeySelector = CreateSelectorLambda(dataRowValueType, "FieldName");
-            //var dataRowValueValueSelector = CreateSelectorLambda(dataRowValueType, "Value");
-
-            //resolvers.Add($"{listInstanceDataRowType}.DataValue", new FromDictionaryToArrayValueResolver<string, string>(dataRowValueType, dataRowValueKeySelector, dataRowValueValueSelector, "Values"));
-            //resolvers.Add($"{listInstanceDataRowType}.Security", new SecurityFromModelToSchemaTypeResolver());
+            // Define custom resolvers for DataRows Values and Security    
+            resolvers.Add($"{listInstanceType}.DataRows", new ListInstanceDataRowsFromModelToSchemaTypeResolver());
 
             // Define custom resolver for Fields Defaults
             var fieldDefaultTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FieldDefault, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
