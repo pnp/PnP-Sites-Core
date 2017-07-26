@@ -29,19 +29,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var siteWebhooksTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var siteWebhooksType = Type.GetType(siteWebhooksTypeName, true);
+            var siteWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var siteWebhookType = Type.GetType(siteWebhookTypeName, true);
 
             var expressions = new Dictionary<string, IResolver>();
 
             // Manage SiteWebhookTypeSpecified property
-            expressions.Add($"{siteWebhooksType}.SiteWebhookTypeSpecified", new ExpressionValueResolver((s, p) => true));
+            expressions.Add($"{siteWebhookType}.SiteWebhookTypeSpecified", new ExpressionValueResolver((s, p) => true));
 
             persistence.GetPublicInstanceProperty("SiteWebhooks")
                 .SetValue(
                     persistence,
                     PnPObjectsMapper.MapObjects(template.SiteWebhooks,
-                        new CollectionFromModelToSchemaTypeResolver(siteWebhooksType),
+                        new CollectionFromModelToSchemaTypeResolver(siteWebhookType),
                         expressions, false));
         }
     }
