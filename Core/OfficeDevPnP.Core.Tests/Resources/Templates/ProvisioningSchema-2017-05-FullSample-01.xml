@@ -690,13 +690,14 @@
               <pnp:Controls>
                 <pnp:CanvasControl 
                   WebPartType="Image"
-                  CustomWebPartName="..."
+                  CustomWebPartName="CustomWebPartName"
                   JsonControlData="{}"
                   ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e"
                   Order="1"
-                  Section="0">
+                  Section="2">
                     <pnp:CanvasControlProperties>
-                      <pnp:CanvasControlProperty Key="" Value="{token}" />
+                      <pnp:CanvasControlProperty Key="SampleKey1" Value="{token1}" />
+                      <pnp:CanvasControlProperty Key="SampleKey2" Value="{token2}" />
                     </pnp:CanvasControlProperties>
                   </pnp:CanvasControl>
               </pnp:Controls>

@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
             if (modelSource != null)
             {
-                Model.FolderCollection sourceFolders= modelSource.GetPublicInstancePropertyValue("Folders") as Model.FolderCollection;
+                Model.FolderCollection sourceFolders = modelSource.GetPublicInstancePropertyValue("Folders") as Model.FolderCollection;
                 if (sourceFolders != null)
                 {
                     var folderTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Folder, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
