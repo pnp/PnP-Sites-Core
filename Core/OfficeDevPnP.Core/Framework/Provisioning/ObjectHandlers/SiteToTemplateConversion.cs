@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
-                
+
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -167,6 +167,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     provisioningInfo.HandlersToProcess = Handlers.All;
                 }
 
+                // Check if scope is present and if so, matches the current site
+
+                if (template.Scope == ProvisioningTemplateScope.RootSite)
+                {
+                    if (web.IsSubSite())
+                    {
+                        scope.LogError(CoreResources.SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget);
+                        throw new Exception(CoreResources.SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget);
+                    }
+                }
+                if (!string.IsNullOrEmpty(template.TemplateCultureInfo))
+                {
+                    int cultureInfoValue = System.Threading.Thread.CurrentThread.CurrentCulture.LCID;
+                    if (int.TryParse(template.TemplateCultureInfo, out cultureInfoValue))
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(cultureInfoValue);
+                    }
+                    else
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(template.TemplateCultureInfo);
+                    }
+                }
+
                 // Check if the target site shares the same base template with the template's source site
                 var targetSiteTemplateId = web.GetBaseTemplateId();
                 if (!String.IsNullOrEmpty(targetSiteTemplateId) && !String.IsNullOrEmpty(template.BaseSiteTemplate))
@@ -175,7 +198,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var templatesNotMatchingWarning = String.Format(CoreResources.Provisioning_Asymmetric_Base_Templates, template.BaseSiteTemplate, targetSiteTemplateId);
                         scope.LogWarning(templatesNotMatchingWarning);
-                        if (provisioningInfo.MessagesDelegate!= null)
+                        if (provisioningInfo.MessagesDelegate != null)
                         {
                             provisioningInfo.MessagesDelegate(templatesNotMatchingWarning, ProvisioningMessageType.Warning);
                         }

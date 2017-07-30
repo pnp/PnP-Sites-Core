@@ -2139,6 +2139,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scope of template does not match target.
+        /// </summary>
+        internal static string SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget {
+            get {
+                return ResourceManager.GetString("SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /**
         /// * PnP SharePoint - Responsiveness
         /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}

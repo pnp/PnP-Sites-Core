@@ -501,6 +501,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var template = new ProvisioningTemplate();
+                template.TemplateCultureInfo = "1033";
                 var listinstance = new ListInstance()
                 {
                     Title = datarowListName,
