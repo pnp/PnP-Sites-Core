@@ -864,9 +864,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="pageName">Name (e.g. demo.aspx) of the page to be added</param>
         /// <param name="alreadyPersist">Already persist the created, empty, page before returning the instantiated <see cref="ClientSidePage"/> instance</param>
         /// <returns>A <see cref="ClientSidePage"/> instance</returns>
-        public static ClientSidePage AddClientSidePage(this Web web, string pageName, bool alreadyPersist = false)
+        public static ClientSidePage AddClientSidePage(this Web web, string pageName = "", bool alreadyPersist = false)
         {
             var page = new ClientSidePage(web.Context as ClientContext);
+
             if (alreadyPersist)
             {
                 page.Save(pageName);

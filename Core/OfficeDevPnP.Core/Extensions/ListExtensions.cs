@@ -14,6 +14,11 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+#if !ONPREMISES
+using OfficeDevPnP.Core.Utilities.Webhooks;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -27,7 +32,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         private static readonly char[] UrlDelimiters = { '\\', '/' };
 
-        #region Event Receivers
+#region Event Receivers
 
         /// <summary>
         /// Registers a remote event receiver
@@ -136,9 +141,159 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
-        #endregion
+#endregion
 
-        #region List Properties
+#region Webhooks
+#if !ONPREMISES
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="expirationDate">The expiration date of the subscription</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, DateTime expirationDate, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ??  list.Context.GetAccessToken();
+
+            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
+                {
+                    Resource = list.Id.ToString(),
+                    ExpirationDateTime = expirationDate,
+                    NotificationUrl = notificationUrl,
+                    ClientState = clientState
+                }).Result;
+        }
+
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="validityInMonths">The validity of the subscriptions in months</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 3, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, list.Id.ToString(), notificationUrl, clientState, validityInMonths).Result;
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, string subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscriptionId.ToString(), webHookEndPoint, expirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscription">The subscription to update</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscription.Id, subscription.NotificationUrl, subscription.ExpirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, string subscriptionId, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, Guid subscriptionId, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscriptionId.ToString(), accessToken);
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscription">The subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscription.Id, accessToken);
+        }
+
+        /// <summary>
+        /// Get all the existing Webhooks subscriptions of the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to get the subscriptions of</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The collection of Webhooks subscriptions of the list</returns>
+        public static IList<WebhookSubscription> GetWebhookSubscriptions(this List list, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, list.Id.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+        }
+#endif
+#endregion
+
+#region List Properties
 
         /// <summary>
         /// Sets a key/value pair in the web property bag
@@ -264,7 +419,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        #endregion
+#endregion
 
         /// <summary>
         /// Removes a content type from a list/library by name
@@ -615,7 +770,7 @@ namespace Microsoft.SharePoint.Client
                 var wp = wpd.WebPart;
 
                 if (wp.Properties.FieldValues.Keys.Contains("JSLink"))
-                { 
+                {
                     wp.Properties["JSLink"] = jslink;
                     wpd.SaveWebPartChanges();
 
@@ -850,7 +1005,7 @@ namespace Microsoft.SharePoint.Client
             return listWebRelativeUrl.Trim(UrlDelimiters);
         }
 
-        #region List Permissions
+#region List Permissions
 
         /// <summary>
         /// Set custom permission to the list
@@ -903,16 +1058,16 @@ namespace Microsoft.SharePoint.Client
 
             // Get role type
             var roleDefinition = web.RoleDefinitions.GetByType(roleType);
-            var rdbColl = new RoleDefinitionBindingCollection(web.Context) {roleDefinition};
+            var rdbColl = new RoleDefinitionBindingCollection(web.Context) { roleDefinition };
 
             // Set custom permission to the list
             list.RoleAssignments.Add(principal, rdbColl);
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+#endregion
 
-        #region List view
+#region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1150,7 +1305,7 @@ namespace Microsoft.SharePoint.Client
 
         }
 
-        #endregion
+#endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {

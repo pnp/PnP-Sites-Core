@@ -296,7 +296,7 @@ namespace Microsoft.SharePoint.Client
             {
                 fields = web.Context.LoadQuery(web.Fields.Where(f => f.InternalName == internalName));
             }
-           
+
             web.Context.ExecuteQueryRetry();
             return fields.FirstOrDefault();
         }
@@ -371,7 +371,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldName">String for the field internal name to be used as query criteria</param>
         /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
         /// <returns>True or false depending on the field existence</returns>
-        public static bool FieldExistsByName(this Web web, string fieldName,bool searchInSiteHierarchy= false)
+        public static bool FieldExistsByName(this Web web, string fieldName, bool searchInSiteHierarchy = false)
         {
             if (string.IsNullOrEmpty(fieldName))
             {
@@ -400,7 +400,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId">String representation of the field ID (=guid)</param>
         /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
         /// <returns>True if exists, false otherwise</returns>
-        public static bool FieldExistsById(this Web web, string fieldId, bool searchInSiteHierarchy=false)
+        public static bool FieldExistsById(this Web web, string fieldId, bool searchInSiteHierarchy = false)
         {
             if (string.IsNullOrEmpty(fieldId))
             {
@@ -435,7 +435,7 @@ namespace Microsoft.SharePoint.Client
             ct.Context.ExecuteQueryRetry();
             return results.FirstOrDefault() != null;
         }
-        
+
         /// <summary>
         /// Checks if a field exists in a content type by id
         /// </summary>
@@ -561,6 +561,23 @@ namespace Microsoft.SharePoint.Client
                     additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, keyvaluepair.Key, keyvaluepair.Value));
                 }
             }
+
+#if !ONPREMISES
+            if (!additionalAttributesList.Contains("ClientSideComponentId"))
+            {
+                if (fieldCreationInformation.ClientSideComponentId != Guid.Empty)
+                {
+                    additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentId", fieldCreationInformation.ClientSideComponentId.ToString("D")));
+                }
+            }
+            if(!additionalAttributesList.Contains("ClientSideComponentProperties"))
+            {
+                if(fieldCreationInformation.ClientSideComponentProperties != null)
+                {
+                    additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentProperties", fieldCreationInformation.ClientSideComponentProperties));
+                }
+            }
+#endif
 
             string newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
                 fieldCreationInformation.FieldType,
@@ -1329,7 +1346,7 @@ namespace Microsoft.SharePoint.Client
                                 template.Update(true);
                             }
                         }
-                        
+
                         web.Context.ExecuteQueryRetry();
                     }
 
@@ -1378,7 +1395,7 @@ namespace Microsoft.SharePoint.Client
                 Group = @group,
                 ParentContentType = parentContentType
             };
-            
+
             var myContentType = contentTypes.Add(newCt);
             web.Context.ExecuteQueryRetry();
 
@@ -1561,7 +1578,7 @@ namespace Microsoft.SharePoint.Client
             // Get list instances
             var list = web.GetListByTitle(listTitle);
             // Get content type instance
-            var contentType = GetContentTypeByName(web, contentTypeName,true);
+            var contentType = GetContentTypeByName(web, contentTypeName, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
 
@@ -1578,7 +1595,7 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(contentTypeName))
                 throw new ArgumentNullException(nameof(contentTypeName));
             // Get content type instance
-            var contentType = GetContentTypeByName(web, contentTypeName,true);
+            var contentType = GetContentTypeByName(web, contentTypeName, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
 
@@ -1594,7 +1611,7 @@ namespace Microsoft.SharePoint.Client
         {
             // Get list instances
             var list = web.GetListByTitle(listTitle);
-            var contentType = GetContentTypeById(web, contentTypeId,true);
+            var contentType = GetContentTypeById(web, contentTypeId, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }
@@ -1609,7 +1626,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (string.IsNullOrEmpty(contentTypeId))
                 throw new ArgumentNullException(nameof(contentTypeId));
-            var contentType = GetContentTypeById(web, contentTypeId,true);
+            var contentType = GetContentTypeById(web, contentTypeId, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
         }

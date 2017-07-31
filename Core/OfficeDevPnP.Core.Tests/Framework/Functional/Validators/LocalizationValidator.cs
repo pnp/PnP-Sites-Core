@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #endregion
 
             #region Navigation
-            if (CanUseAcceptLanguageHeaderForLocalization(web))
+            if (!isNoScriptSite && CanUseAcceptLanguageHeaderForLocalization(web))
             {
                 isValid = ValidateStructuralNavigation(ptSource, sParser);
                 if (!isValid) return false;

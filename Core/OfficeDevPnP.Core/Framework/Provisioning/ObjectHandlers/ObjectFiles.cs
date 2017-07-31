@@ -460,7 +460,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
                 {
-                    container = $@"{template.Connector.GetContainer()}\{container}";
+                    if (container.StartsWith("/"))
+                    {
+                        container = container.TrimStart("/".ToCharArray());
+                    }
+
+                    if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
+                    {
+                        if (template.Connector.GetContainer().EndsWith("/"))
+                        {
+                            container = $@"{template.Connector.GetContainer()}{container}";
+                        }
+                        else
+                        {
+                            container = $@"{template.Connector.GetContainer()}/{container}";
+                        }
+                    }
+                    else
+                    {
+                        container = $@"{template.Connector.GetContainer()}\{container}";
+                    }
                 }
             }
             else

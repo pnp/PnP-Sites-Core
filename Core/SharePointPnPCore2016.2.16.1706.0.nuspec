@@ -1,28 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
-        <id>SharePointPnPCoreOnline</id>
-        <version>2.15.1705.0</version>
-        <title>SharePoint PnP Core library for SharePoint Online</title>
+        <id>SharePointPnPCore2016</id>
+        <version>2.16.1706.0</version>
+        <title>SharePoint PnP Core library for SharePoint 2016</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>
         <licenseUrl>https://github.com/OfficeDev/PnP-Sites-Core/blob/dev/LICENSE</licenseUrl>
         <projectUrl>http://aka.ms/OfficeDevPnP</projectUrl>
         <iconUrl>http://i.imgur.com/6MWZgWW.png</iconUrl>
         <requireLicenseAcceptance>true</requireLicenseAcceptance>
-        <description>Core CSOM extension methods for SharePoint Online add-in model development. This will increase productivity of the developers by abstracting complex operations.</description>
-        <summary>Core CSOM extension methods for SharePoint add-in model development against SharePoint Online</summary>
+        <description>Core CSOM extension methods for SharePoint 2016 add-in model development. This will increase productivity of the developers by abstracting complex operations.</description>
+        <summary>Core CSOM extension methods for SharePoint add-in model development against SharePoint 2016</summary>
         <copyright>Copyright 2017</copyright>
-        <tags>SharePoint Office AddInModel AppModel FTCtoCAM Office365 SharePointOnline</tags>
+        <tags>SharePoint Office AddInModel AppModel FTCtoCAM SharePoint2016</tags>
         <dependencies>
             <dependency id="Microsoft.AspNet.WebApi.Client" version="5.2.3" />
             <dependency id="Microsoft.AspNet.WebApi.Core" version="5.2.3" />
-            <dependency id="WindowsAzure.Storage" version="7.0.0" />
-            <dependency id="Microsoft.Azure.ActiveDirectory.GraphClient" version="2.1.0" />
             <dependency id="Newtonsoft.Json" version="9.0.1" />
             <dependency id="SharePointPnP.IdentityModel.Extensions" version="1.2.2" />
             <dependency id="AngleSharp" version="0.9.9" />
-            <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6420.1200" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
@@ -40,9 +37,21 @@
             <frameworkAssembly assemblyName="System.Xml" targetFramework="" />
             <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework="" />
             <frameworkAssembly assemblyName="Microsoft.IdentityModel" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.Office.Client.Policy, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.Search, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0" targetFramework="" />
+            <frameworkAssembly assemblyName="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0" targetFramework="" />
         </frameworkAssemblies>
     </metadata>
     <files>
-        <file src="OfficeDevPnP.Core\bin\Release\OfficeDevPnP.Core.dll" target="lib\net45\OfficeDevPnP.Core.dll" />
+        <file src="lib\net45\Microsoft.Online.SharePoint.Client.Tenant.dll" target="lib\net45\Microsoft.Online.SharePoint.Client.Tenant.dll" />
+        <file src="OfficeDevPnP.Core\bin\Release16\OfficeDevPnP.Core.dll" target="lib\net45\OfficeDevPnP.Core.dll" />
     </files>
 </package>

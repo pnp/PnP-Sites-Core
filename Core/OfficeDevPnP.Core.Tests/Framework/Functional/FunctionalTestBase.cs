@@ -12,17 +12,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
     public abstract class FunctionalTestBase
     {
         private static string sitecollectionNamePrefix = "TestPnPSC_12345_";
+
         internal static string centralSiteCollectionUrl = "";
         internal static string centralSubSiteUrl = "";
         internal const string centralSubSiteName = "sub";
         internal static bool debugMode = false;
-        internal static bool isNoScriptSite = false;
-
         internal string sitecollectionName = "";
 
         #region Test preparation
-        public static void ClassInitBase(TestContext context)
-        {
+        public static void ClassInitBase(TestContext context, bool noScriptSite = false)
+        {            
             // Drop all previously created site collections to keep the environment clean
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
@@ -32,14 +31,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
                     // Each class inheriting from this base class gets a central test site collection, so let's create that one
                     var tenant = new Tenant(tenantContext);
-                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString(), isNoScriptSite: isNoScriptSite);
+                    centralSiteCollectionUrl = CreateTestSiteCollection(tenant, sitecollectionNamePrefix + Guid.NewGuid().ToString());
 
                     // Add a default sub site
                     centralSubSiteUrl = CreateTestSubSite(tenant, centralSiteCollectionUrl, centralSubSiteName);
 
 #if !ONPREMISES                    
                     // Apply noscript setting
-                    if (isNoScriptSite)
+                    if (noScriptSite)
                     {
                         Console.WriteLine("Setting site {0} as NoScript", centralSiteCollectionUrl);
                         tenant.SetSiteProperties(centralSiteCollectionUrl, noScriptSite: true);
@@ -83,7 +82,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
 #region Helper methods
 #if !ONPREMISES
-        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
+        internal static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
         {
             try
             {
@@ -113,11 +112,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
                 };
 
                 tenant.CreateSiteCollection(siteToCreate, false, true);
-
-                //if (isNoScriptSite)
-                //{
-                //    tenant.SetSiteProperties(siteToCreateUrl, noScriptSite: true);
-                //}
 
                 return siteToCreateUrl;
             }

@@ -1443,7 +1443,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var ct in contentTypesToRemove)
                 {
                     var shouldDelete = true;
-                    shouldDelete &= (createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
+                    shouldDelete &= ((createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary
+                        && createdList.BaseTemplate != 851)
+                        || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
 
                     if (shouldDelete)
                     {
@@ -1774,10 +1776,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var fieldsToProcess = siteList.Fields.AsEnumerable().Where(field => !field.Hidden || SpecialFields.Contains(field.InternalName)).ToArray();
 
-
             foreach (var field in fieldsToProcess)
             {
-
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
                 if (siteColumn != null)
                 {
@@ -1793,8 +1793,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (siteColumn.DefaultValue != field.DefaultValue)
                     {
                         list.FieldDefaults.Add(field.InternalName, field.DefaultValue);
+                        addField = true;
                     }
-
 
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
@@ -1836,9 +1836,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             addField = false;
                         }
                     }
+
                     if (addField)
                     {
-
                         list.FieldRefs.Add(new FieldRef(field.InternalName)
                         {
                             Id = field.Id,
