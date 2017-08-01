@@ -212,7 +212,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.Context.Load(workflowDefinition);
                                 web.Context.ExecuteQueryRetry();
 
-                                if (workflowDefinition != null) break; // Defintion already exists then exist loop
+                                if (workflowDefinition.ServerObjectIsNull.HasValue && !workflowDefinition.ServerObjectIsNull.Value) break; // Defintion already exists then exist loop
 
                                 // Create the WorkflowDefinition instance
                                 workflowDefinition = new Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition(web.Context)
