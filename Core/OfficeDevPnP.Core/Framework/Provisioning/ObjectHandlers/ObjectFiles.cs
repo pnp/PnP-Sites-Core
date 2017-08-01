@@ -52,8 +52,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var currentFileIndex = 0;
                 foreach (var file in filesToProcess)
                 {
+                    var targetFileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : file.Src;
+
                     currentFileIndex++;
-                    WriteMessage($"File|{file.Src}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
+                    WriteMessage($"File|{targetFileName}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
@@ -61,10 +63,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         folderName = folderName.Substring(web.ServerRelativeUrl.Length);
                     }
 
-                    if (SkipFile(isNoScriptSite, file.Src, folderName))
+                    if (SkipFile(isNoScriptSite, targetFileName, folderName))
                     {
                         // add log message
-                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Files_SkipFileUpload, file.Src, folderName);
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Files_SkipFileUpload, targetFileName, folderName);
                         continue;
                     }
 
@@ -72,13 +74,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var checkedOut = false;
 
-                    var targetFile = folder.GetFile(template.Connector.GetFilenamePart(file.Src));
+                    var targetFile = folder.GetFile(template.Connector.GetFilenamePart(targetFileName));
 
                     if (targetFile != null)
                     {
                         if (file.Overwrite)
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_, file.Src);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_and_overwriting_existing_file__0_, targetFileName);
                             checkedOut = CheckOutIfNeeded(web, targetFile);
 
                             using (var stream = GetFileStream(template, file))
@@ -95,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         using (var stream = GetFileStream(template, file))
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, file.Src);
+                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, targetFileName);
                             targetFile = UploadFile(template, file, folder, stream);
                         }
 
@@ -188,7 +190,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
-            WriteMessage("Done processing files",ProvisioningMessageType.Completed);
+            WriteMessage("Done processing files", ProvisioningMessageType.Completed);
             return parser;
         }
 
