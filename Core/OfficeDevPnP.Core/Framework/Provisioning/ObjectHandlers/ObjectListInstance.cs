@@ -305,8 +305,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #region Views
 
-
-
                     foreach (var listInfo in processedLists)
                     {
 
@@ -357,6 +355,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 CreateFolderInList(rootFolder, folder, parser, scope);
                             }
+                        }
+                    }
+
+                    #endregion
+
+                    #region IRM Settings
+
+                    // Configure IRM Settings
+                    foreach (var list in processedLists)
+                    {
+                        if (list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
+                        {
+                            list.SiteList.IrmEnabled = true;
+                            list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
+                            list.SiteList.IrmReject = list.TemplateList.IrmReject;
+
+                            list.SiteList.InformationRightsManagementSettings.AllowPrint = list.TemplateList.IRMSettings.AllowPrint;
+                            list.SiteList.InformationRightsManagementSettings.AllowScript = list.TemplateList.IRMSettings.AllowScript;
+                            list.SiteList.InformationRightsManagementSettings.AllowWriteCopy = list.TemplateList.IRMSettings.AllowWriteCopy;
+                            list.SiteList.InformationRightsManagementSettings.DisableDocumentBrowserView = list.TemplateList.IRMSettings.DisableDocumentBrowserView;
+                            list.SiteList.InformationRightsManagementSettings.DocumentAccessExpireDays = list.TemplateList.IRMSettings.DocumentAccessExpireDays;
+                            if (list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays > 0)
+                            {
+                                list.SiteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate = DateTime.Now.AddDays(list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays);
+                            }
+                            list.SiteList.InformationRightsManagementSettings.EnableDocumentAccessExpire = list.TemplateList.IRMSettings.EnableDocumentAccessExpire;
+                            list.SiteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView = list.TemplateList.IRMSettings.EnableDocumentBrowserPublishingView;
+                            list.SiteList.InformationRightsManagementSettings.EnableGroupProtection = list.TemplateList.IRMSettings.EnableGroupProtection;
+                            list.SiteList.InformationRightsManagementSettings.EnableLicenseCacheExpire = list.TemplateList.IRMSettings.EnableLicenseCacheExpire;
+                            list.SiteList.InformationRightsManagementSettings.GroupName = list.TemplateList.IRMSettings.GroupName;
+                            list.SiteList.InformationRightsManagementSettings.LicenseCacheExpireDays = list.TemplateList.IRMSettings.LicenseCacheExpireDays;
+                            list.SiteList.InformationRightsManagementSettings.PolicyDescription = list.TemplateList.IRMSettings.PolicyDescription;
+                            list.SiteList.InformationRightsManagementSettings.PolicyTitle = list.TemplateList.IRMSettings.PolicyTitle;
+
+                            list.SiteList.Update();
+                            web.Context.ExecuteQueryRetry();
                         }
                     }
 
@@ -1516,6 +1550,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parentFolder.Context.ExecuteQueryRetry();
                     currentFolderItem.SetSecurity(parser, folder.Security);
                 }
+
+                // Handle current folder property bags
+                if (folder.PropertyBagEntries != null && folder.PropertyBagEntries.Count > 0)
+                {
+                    foreach (var p in folder.PropertyBagEntries)
+                    {
+                        currentFolder.Properties[p.Key] = parser.ParseString(p.Value);
+                    }
+                    currentFolder.Update();
+                }
             }
         }
 
@@ -1551,6 +1595,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.MajorWithMinorVersionsLimit,
                         l => l.DraftVersionVisibility,
                         l => l.DocumentTemplateUrl,
+                        l => l.InformationRightsManagementSettings,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1662,6 +1707,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
                     list.Security = siteList.GetSecurity();
+
+                    list = ExtractInformationRightsManagement(web, siteList, list, creationInfo, template);
 
                     if (baseTemplateList != null)
                     {
@@ -1942,7 +1989,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return list;
         }
+        private static ListInstance ExtractInformationRightsManagement(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
+        {
+            if (siteList.IrmEnabled)
+            {
+                list.IRMSettings.Enabled = siteList.IrmEnabled;
+                list.IrmExpire = siteList.IrmExpire;
+                list.IrmReject = siteList.IrmReject;
 
+                list.IRMSettings = new IRMSettings();
+                list.IRMSettings.AllowPrint = siteList.InformationRightsManagementSettings.AllowPrint;
+                list.IRMSettings.AllowScript = siteList.InformationRightsManagementSettings.AllowScript;
+                list.IRMSettings.AllowWriteCopy = siteList.InformationRightsManagementSettings.AllowWriteCopy;
+                list.IRMSettings.DisableDocumentBrowserView = siteList.InformationRightsManagementSettings.DisableDocumentBrowserView;
+                list.IRMSettings.DocumentAccessExpireDays = siteList.InformationRightsManagementSettings.DocumentAccessExpireDays;
+                list.IRMSettings.DocumentLibraryProtectionExpiresInDays = (Int32)siteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate.Subtract(DateTime.Now).TotalDays;
+                list.IRMSettings.EnableDocumentAccessExpire = siteList.InformationRightsManagementSettings.EnableDocumentAccessExpire;
+                list.IRMSettings.EnableDocumentBrowserPublishingView = siteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView;
+                list.IRMSettings.EnableGroupProtection = siteList.InformationRightsManagementSettings.EnableGroupProtection;
+                list.IRMSettings.EnableLicenseCacheExpire = siteList.InformationRightsManagementSettings.EnableLicenseCacheExpire;
+                list.IRMSettings.GroupName = siteList.InformationRightsManagementSettings.GroupName;
+                list.IRMSettings.LicenseCacheExpireDays = siteList.InformationRightsManagementSettings.LicenseCacheExpireDays;
+                list.IRMSettings.PolicyDescription = siteList.InformationRightsManagementSettings.PolicyDescription;
+                list.IRMSettings.PolicyTitle = siteList.InformationRightsManagementSettings.PolicyTitle;
+            }
+
+            return (list);
+        }
+            
         private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             foreach (var userCustomAction in siteList.UserCustomActions.AsEnumerable())
