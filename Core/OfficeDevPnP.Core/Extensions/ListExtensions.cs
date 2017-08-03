@@ -958,7 +958,7 @@ namespace Microsoft.SharePoint.Client
             var context = web.Context;
             int language = (int)web.EnsureProperty(w => w.Language);
 
-            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
+            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "osrvcore", language);
             context.ExecuteQueryRetry();
             string pagesLibraryName = new Regex(@"['´`]").Replace(result.Value, "");
 
