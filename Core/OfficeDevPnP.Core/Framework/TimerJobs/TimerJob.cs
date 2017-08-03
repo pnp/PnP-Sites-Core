@@ -717,7 +717,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         {
             if (String.IsNullOrEmpty(samAccountName))
             {
-                throw new ArgumentNullException("userName");
+                throw new ArgumentNullException(nameof(samAccountName));
             }
 
             if (password == null || password.Length == 0)
