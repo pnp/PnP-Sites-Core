@@ -178,6 +178,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         throw new Exception(CoreResources.SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget);
                     }
                 }
+                var currentCultureInfoValue = System.Threading.Thread.CurrentThread.CurrentCulture.LCID;
                 if (!string.IsNullOrEmpty(template.TemplateCultureInfo))
                 {
                     int cultureInfoValue = System.Threading.Thread.CurrentThread.CurrentCulture.LCID;
@@ -273,6 +274,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
                     }
                 }
+
+                System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
+
             }
         }
     }
