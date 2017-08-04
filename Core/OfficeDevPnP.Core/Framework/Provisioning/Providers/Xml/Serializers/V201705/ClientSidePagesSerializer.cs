@@ -22,33 +22,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var clientSidePages = persistence.GetPublicInstancePropertyValue("ClientSidePages");
 
-            var expressions = new Dictionary<Expression<Func<ClientSidePage, Object>>, IResolver>();
+            if (clientSidePages != null)
+            {
+                var expressions = new Dictionary<Expression<Func<ClientSidePage, Object>>, IResolver>();
 
-            // Manage CanvasControlProperties for CanvasControl
-            var stringDictionaryTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var stringDictionaryType = Type.GetType(stringDictionaryTypeName, true);
-            var stringDictionaryKeySelector = CreateSelectorLambda(stringDictionaryType, "Key");
-            var stringDictionaryValueSelector = CreateSelectorLambda(stringDictionaryType, "Value");
-            expressions.Add(cp => cp.Zones[0].Controls[0].ControlProperties,
-                new FromArrayToDictionaryValueResolver<String, String>(
-                    stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+                // Manage CanvasControlProperties for CanvasControl
+                var stringDictionaryTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var stringDictionaryType = Type.GetType(stringDictionaryTypeName, true);
+                var stringDictionaryKeySelector = CreateSelectorLambda(stringDictionaryType, "Key");
+                var stringDictionaryValueSelector = CreateSelectorLambda(stringDictionaryType, "Value");
+                expressions.Add(cp => cp.Zones[0].Controls[0].ControlProperties,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
-            // Manage WebPartType for CanvasControl
-            expressions.Add(cp => cp.Zones[0].Controls[0].Type,
-                new ExpressionValueResolver(
-                    (s, p) => (Model.WebPartType)Enum.Parse(typeof(Model.WebPartType), s.GetPublicInstancePropertyValue("WebPartType").ToString())
-                    ));
+                // Manage WebPartType for CanvasControl
+                expressions.Add(cp => cp.Zones[0].Controls[0].Type,
+                    new ExpressionValueResolver(
+                        (s, p) => (Model.WebPartType)Enum.Parse(typeof(Model.WebPartType), s.GetPublicInstancePropertyValue("WebPartType").ToString())
+                        ));
 
-            // Manage ControlId for CanvasControl
-            expressions.Add(cp => cp.Zones[0].Controls[0].ControlId,
-                new FromStringToGuidValueResolver());
+                // Manage ControlId for CanvasControl
+                expressions.Add(cp => cp.Zones[0].Controls[0].ControlId,
+                    new FromStringToGuidValueResolver());
 
-            template.ClientSidePages.AddRange(
-                PnPObjectsMapper.MapObjects(clientSidePages,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(ClientSidePage)),
-                        expressions,
-                        recursive: true)
-                    as IEnumerable<ClientSidePage>);
+                template.ClientSidePages.AddRange(
+                    PnPObjectsMapper.MapObjects(clientSidePages,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(ClientSidePage)),
+                            expressions,
+                            recursive: true)
+                        as IEnumerable<ClientSidePage>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

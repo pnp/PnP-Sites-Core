@@ -20,30 +20,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var groups = persistence.GetPublicInstancePropertyValue("TermGroups");
 
-            var expressions = new Dictionary<Expression<Func<TermGroup, Object>>, IResolver>();
-            expressions.Add(g => g.Id, new FromStringToGuidValueResolver());
-            expressions.Add(g => g.TermSets[0].Id, new FromStringToGuidValueResolver());
-            expressions.Add(g => g.TermSets[0].Terms[0].Id, new FromStringToGuidValueResolver());
-            expressions.Add(g => g.TermSets[0].Terms[0].SourceTermId, new FromStringToGuidValueResolver());
+            if (groups != null)
+            {
+                var expressions = new Dictionary<Expression<Func<TermGroup, Object>>, IResolver>();
+                expressions.Add(g => g.Id, new FromStringToGuidValueResolver());
+                expressions.Add(g => g.TermSets[0].Id, new FromStringToGuidValueResolver());
+                expressions.Add(g => g.TermSets[0].Terms[0].Id, new FromStringToGuidValueResolver());
+                expressions.Add(g => g.TermSets[0].Terms[0].SourceTermId, new FromStringToGuidValueResolver());
 
-            var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
-            var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
-            var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
-            expressions.Add(g => g.TermSets[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
-            expressions.Add(g => g.TermSets[0].Terms[0].LocalProperties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "LocalCustomProperties"));
-            expressions.Add(g => g.TermSets[0].Terms[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "CustomProperties"));
-            expressions.Add(g => g.TermSets[0].Terms[0].Terms, 
-                new PropertyObjectTypeResolver<Term>(t => t.Terms, 
-                v => v.GetPublicInstancePropertyValue("Terms")?.GetPublicInstancePropertyValue("Items"),
-                new CollectionFromSchemaToModelTypeResolver(typeof(Term))));
+                var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
+                var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
+                var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
+                expressions.Add(g => g.TermSets[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+                expressions.Add(g => g.TermSets[0].Terms[0].LocalProperties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "LocalCustomProperties"));
+                expressions.Add(g => g.TermSets[0].Terms[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "CustomProperties"));
+                expressions.Add(g => g.TermSets[0].Terms[0].Terms,
+                    new PropertyObjectTypeResolver<Term>(t => t.Terms,
+                    v => v.GetPublicInstancePropertyValue("Terms")?.GetPublicInstancePropertyValue("Items"),
+                    new CollectionFromSchemaToModelTypeResolver(typeof(Term))));
 
-            template.TermGroups.AddRange(
-                PnPObjectsMapper.MapObjects<TermGroup>(groups,
-                    new CollectionFromSchemaToModelTypeResolver(typeof(TermGroup)),
-                    expressions,
-                    recursive: true)
-                    as IEnumerable<TermGroup>);
+                template.TermGroups.AddRange(
+                    PnPObjectsMapper.MapObjects<TermGroup>(groups,
+                        new CollectionFromSchemaToModelTypeResolver(typeof(TermGroup)),
+                        expressions,
+                        recursive: true)
+                        as IEnumerable<TermGroup>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

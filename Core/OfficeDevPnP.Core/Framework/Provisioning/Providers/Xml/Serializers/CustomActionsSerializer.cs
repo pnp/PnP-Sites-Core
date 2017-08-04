@@ -18,13 +18,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var customActions = persistence.GetPublicInstancePropertyValue("CustomActions");
-            var expressions = new Dictionary<Expression<Func<CustomActions, Object>>, IResolver>();
 
-            expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
-            expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
-            expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+            if (customActions != null)
+            {
+                var expressions = new Dictionary<Expression<Func<CustomActions, Object>>, IResolver>();
 
-            PnPObjectsMapper.MapProperties(customActions, template.CustomActions, expressions, true);
+                expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+                expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
+                expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+
+                PnPObjectsMapper.MapProperties(customActions, template.CustomActions, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

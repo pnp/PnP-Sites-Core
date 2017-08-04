@@ -19,10 +19,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var features = persistence.GetPublicInstancePropertyValue("Features");
 
-            var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
-            expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
+            if (features != null)
+            {
+                var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
+                expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
 
-            PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+                PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

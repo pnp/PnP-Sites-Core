@@ -18,7 +18,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var composedLook = persistence.GetPublicInstancePropertyValue("ComposedLook");
-            PnPObjectsMapper.MapProperties(composedLook, template.ComposedLook, null, true);
+            if (composedLook != null)
+            {
+                PnPObjectsMapper.MapProperties(composedLook, template.ComposedLook, null, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

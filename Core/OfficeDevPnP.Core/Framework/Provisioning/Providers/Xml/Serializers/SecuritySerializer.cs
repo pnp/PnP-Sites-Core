@@ -18,6 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var security = persistence.GetPublicInstancePropertyValue("Security");
+
             if (security != null)
             {
                 var expressions = new Dictionary<Expression<Func<SiteSecurity, Object>>, IResolver>();
