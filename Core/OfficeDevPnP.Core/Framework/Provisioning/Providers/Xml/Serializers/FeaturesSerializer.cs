@@ -36,7 +36,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             PnPObjectsMapper.MapProperties(template.Features, target, null, recursive: true);
 
-            persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+            if (target != null &&
+                ((target.GetPublicInstancePropertyValue("SiteFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("SiteFeatures")).Length > 0) ||
+                (target.GetPublicInstancePropertyValue("WebFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("WebFeatures")).Length > 0)))
+            {
+                persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+            }
         }
     }
 }

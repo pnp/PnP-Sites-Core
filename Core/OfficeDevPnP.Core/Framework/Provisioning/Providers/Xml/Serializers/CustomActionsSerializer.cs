@@ -53,7 +53,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
 
-            persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
+            if (target != null &&
+                ((target.GetPublicInstancePropertyValue("SiteCustomActions") != null && ((Array)target.GetPublicInstancePropertyValue("SiteCustomActions")).Length > 0) ||
+                (target.GetPublicInstancePropertyValue("WebCustomActions") != null && ((Array)target.GetPublicInstancePropertyValue("WebCustomActions")).Length > 0)))
+            {
+                persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
+            }
         }
     }
 }

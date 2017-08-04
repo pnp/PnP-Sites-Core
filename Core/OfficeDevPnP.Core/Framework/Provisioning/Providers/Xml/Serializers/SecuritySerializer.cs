@@ -54,7 +54,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{siteGroupType}.OnlyAllowMembersViewMembershipSpecified", new ExpressionValueResolver(() => true));
                 PnPObjectsMapper.MapProperties(template.Security, target, expressions, recursive: true);
 
-                persistence.GetPublicInstanceProperty("Security").SetValue(persistence, target);
+                if (target != null && target.GetPublicInstancePropertyValue("Permissions") != null &&
+                    (
+                        target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleDefinitions") != null && (((Array)target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleDefinitions")).Length > 0) ||
+                        target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleAssignments") != null && (((Array)target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleAssignments")).Length > 0)
+                    ))
+                {
+                    persistence.GetPublicInstanceProperty("Security").SetValue(persistence, target);
+                }
             }
         }
     }
