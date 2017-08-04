@@ -1993,11 +1993,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (siteList.IrmEnabled)
             {
+                list.IRMSettings = new IRMSettings();
                 list.IRMSettings.Enabled = siteList.IrmEnabled;
                 list.IrmExpire = siteList.IrmExpire;
                 list.IrmReject = siteList.IrmReject;
 
-                list.IRMSettings = new IRMSettings();
                 list.IRMSettings.AllowPrint = siteList.InformationRightsManagementSettings.AllowPrint;
                 list.IRMSettings.AllowScript = siteList.InformationRightsManagementSettings.AllowScript;
                 list.IRMSettings.AllowWriteCopy = siteList.InformationRightsManagementSettings.AllowWriteCopy;
