@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var workflows = persistence.GetPublicInstancePropertyValue("Workflows");
+
             if (workflows != null)
             {
                 template.Workflows = new Workflows();

@@ -64,6 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     template.Publishing.ImageRenditions.Count > 0)
                 {
                     var renditions = SiteImageRenditions.GetRenditions(context);
+                    context.ExecuteQueryRetry();
 
                     foreach (var r in template.Publishing.ImageRenditions)
                     {
@@ -96,19 +97,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // This Object Handler will be invoked after the Publishing handler
                     // Thus, we should have the Publishing property assigned in the template
-                    if (template.Publishing != null)
+                    if (template.Publishing == null)
                     {
-                        var renditions = SiteImageRenditions.GetRenditions(context);
+                        // And if not, we create it
+                        template.Publishing = new Publishing();
+                    }
 
-                        foreach (var r in renditions)
+                    var renditions = SiteImageRenditions.GetRenditions(context);
+                    context.ExecuteQueryRetry();
+
+                    foreach (var r in renditions)
+                    {
+                        template.Publishing.ImageRenditions.Add(new Model.ImageRendition
                         {
-                            template.Publishing.ImageRenditions.Add(new Model.ImageRendition
-                            {
-                                Name = r.Name,
-                                Height = r.Height,
-                                Width = r.Width,
-                            });
-                        }
+                            Name = r.Name,
+                            Height = r.Height,
+                            Width = r.Width,
+                        });
                     }
                 }
             }

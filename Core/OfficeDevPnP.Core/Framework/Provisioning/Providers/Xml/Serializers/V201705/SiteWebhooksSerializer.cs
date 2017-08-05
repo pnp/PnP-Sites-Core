@@ -21,10 +21,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var siteWebhooks = persistence.GetPublicInstancePropertyValue("SiteWebhooks");
 
-            template.SiteWebhooks.AddRange(
-                PnPObjectsMapper.MapObjects(siteWebhooks,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(SiteWebhook)))
-                        as IEnumerable<SiteWebhook>);
+            if (siteWebhooks != null)
+            {
+                template.SiteWebhooks.AddRange(
+                    PnPObjectsMapper.MapObjects(siteWebhooks,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(SiteWebhook)))
+                            as IEnumerable<SiteWebhook>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

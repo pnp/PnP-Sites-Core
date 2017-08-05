@@ -19,10 +19,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var features = persistence.GetPublicInstancePropertyValue("Features");
 
-            var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
-            expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
+            if (features != null)
+            {
+                var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
+                expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
 
-            PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+                PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
@@ -33,7 +36,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             PnPObjectsMapper.MapProperties(template.Features, target, null, recursive: true);
 
-            persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+            if (target != null &&
+                ((target.GetPublicInstancePropertyValue("SiteFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("SiteFeatures")).Length > 0) ||
+                (target.GetPublicInstancePropertyValue("WebFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("WebFeatures")).Length > 0)))
+            {
+                persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+            }
         }
     }
 }

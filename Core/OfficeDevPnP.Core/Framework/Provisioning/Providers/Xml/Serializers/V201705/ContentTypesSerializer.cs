@@ -20,33 +20,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
         {
             var contentTypes = persistence.GetPublicInstancePropertyValue("ContentTypes");
 
-            var expressions = new Dictionary<Expression<Func<ContentType, Object>>, IResolver>();
+            if (contentTypes != null)
+            {
+                var expressions = new Dictionary<Expression<Func<ContentType, Object>>, IResolver>();
 
-            // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
-            expressions.Add(c => c.FieldRefs[0].Id, new FromStringToGuidValueResolver());
-            //document template
-            expressions.Add(c => c.DocumentTemplate, new ExpressionValueResolver((s, v) => v.GetPublicInstancePropertyValue("TargetName")));
-            //document set template
-            expressions.Add(c => c.DocumentSetTemplate, new PropertyObjectTypeResolver<ContentType>(ct => ct.DocumentSetTemplate));
+                // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
+                expressions.Add(c => c.FieldRefs[0].Id, new FromStringToGuidValueResolver());
+                //document template
+                expressions.Add(c => c.DocumentTemplate, new ExpressionValueResolver((s, v) => v.GetPublicInstancePropertyValue("TargetName")));
+                //document set template
+                expressions.Add(c => c.DocumentSetTemplate, new PropertyObjectTypeResolver<ContentType>(ct => ct.DocumentSetTemplate));
 
-            //document set template - allowed content types
-            expressions.Add(c => c.DocumentSetTemplate.AllowedContentTypes,
-                new DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver());
-            //document set template - remove existing content types
-            expressions.Add(c => c.DocumentSetTemplate.RemoveExistingContentTypes,
-                new RemoveExistingContentTypesFromSchemaToModelValueResolver());
+                //document set template - allowed content types
+                expressions.Add(c => c.DocumentSetTemplate.AllowedContentTypes,
+                    new DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver());
+                //document set template - remove existing content types
+                expressions.Add(c => c.DocumentSetTemplate.RemoveExistingContentTypes,
+                    new RemoveExistingContentTypesFromSchemaToModelValueResolver());
 
-            //document set template - shared fields
-            expressions.Add(c => c.DocumentSetTemplate.SharedFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
-            //document set template - welcome page fields
-            expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
+                //document set template - shared fields
+                expressions.Add(c => c.DocumentSetTemplate.SharedFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
+                //document set template - welcome page fields
+                expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
 
-            template.ContentTypes.AddRange(
-                PnPObjectsMapper.MapObjects<ContentType>(contentTypes,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(ContentType)),
-                        expressions,
-                        recursive: true)
-                        as IEnumerable<ContentType>);
+                template.ContentTypes.AddRange(
+                    PnPObjectsMapper.MapObjects<ContentType>(contentTypes,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(ContentType)),
+                            expressions,
+                            recursive: true)
+                            as IEnumerable<ContentType>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

@@ -20,10 +20,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var properties = persistence.GetPublicInstancePropertyValue("PropertyBagEntries");
 
-            template.PropertyBagEntries.AddRange(
-                PnPObjectsMapper.MapObjects(properties,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(PropertyBagEntry)))
-                        as IEnumerable<PropertyBagEntry>);
+            if (properties != null)
+            {
+                template.PropertyBagEntries.AddRange(
+                    PnPObjectsMapper.MapObjects(properties,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(PropertyBagEntry)))
+                            as IEnumerable<PropertyBagEntry>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

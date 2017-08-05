@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+
             if (filesCollection != null)
             {
                 var files = filesCollection.GetPublicInstancePropertyValue("File");
