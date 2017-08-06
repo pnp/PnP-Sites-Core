@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 var roleAssignements = resolver.Resolve(security.RoleAssignments, null, true);
                 breakRoleInheritance.SetPublicInstancePropertyValue("RoleAssignment", roleAssignements);
 
-                anySecurity = ((security.ClearSubscopes || security.CopyRoleAssignments) && 
+                anySecurity = (security.ClearSubscopes || security.CopyRoleAssignments || 
                     security.RoleAssignments != null && security.RoleAssignments.Count > 0);
 
                 result.SetPublicInstancePropertyValue("BreakRoleInheritance", breakRoleInheritance);
