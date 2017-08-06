@@ -176,6 +176,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     // Default conversion to Boolean
                                     sourceValue = Boolean.Parse(sourceValue.ToString());
                                 }
+                                else if (sourceValue == null && 
+                                    dp.ReflectedType.Namespace == typeof(ProvisioningTemplate).Namespace && 
+                                    dp.GetValue(destination) != null)
+                                {
+                                    // If the destination property is an in memory Domain Model property
+                                    // and it has a value, while the source property is null, we keep the
+                                    // existing value
+                                    sourceValue = dp.GetValue(destination);
+                                }
                                 // We simply need to do 1:1 value mapping
                                 dp.SetValue(destination, sourceValue);
                             }
