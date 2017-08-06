@@ -77,7 +77,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 PnPObjectsMapper.MapProperties(template.Workflows, target, expressions, recursive: true);
 
-                persistence.GetPublicInstanceProperty("Workflows").SetValue(persistence, target);
+                if (target.GetPublicInstancePropertyValue("WorkflowDefinitions") != null ||
+                    target.GetPublicInstancePropertyValue("WorkflowSubscriptions") != null)
+                {
+                    persistence.GetPublicInstanceProperty("Workflows").SetValue(persistence, target);
+                }
             }
         }
     }
