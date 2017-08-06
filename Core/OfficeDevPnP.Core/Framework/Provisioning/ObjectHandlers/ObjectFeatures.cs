@@ -222,7 +222,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Features.SiteFeatures.Any() || template.Features.WebFeatures.Any();
+                _willProvision = template.Features != null && (template.Features.SiteFeatures.Any() || template.Features.WebFeatures.Any());
             }
             return _willProvision.Value;
         }
