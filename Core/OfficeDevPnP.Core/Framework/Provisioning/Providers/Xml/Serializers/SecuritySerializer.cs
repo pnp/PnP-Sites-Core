@@ -54,11 +54,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{siteGroupType}.OnlyAllowMembersViewMembershipSpecified", new ExpressionValueResolver(() => true));
                 PnPObjectsMapper.MapProperties(template.Security, target, expressions, recursive: true);
 
-                if (target != null && target.GetPublicInstancePropertyValue("Permissions") != null &&
+                if (target != null &&
+                    (target.GetPublicInstancePropertyValue("AdditionalAdministrators") != null ||
+                    target.GetPublicInstancePropertyValue("AdditionalMembers") != null ||
+                    target.GetPublicInstancePropertyValue("AdditionalOwners") != null ||
+                    target.GetPublicInstancePropertyValue("AdditionalVisitors") != null ||
+                    target.GetPublicInstancePropertyValue("SiteGroups") != null ||
+                    (target.GetPublicInstancePropertyValue("Permissions") != null &&
                     (
                         target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleDefinitions") != null && (((Array)target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleDefinitions")).Length > 0) ||
                         target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleAssignments") != null && (((Array)target.GetPublicInstancePropertyValue("Permissions").GetPublicInstancePropertyValue("RoleAssignments")).Length > 0)
-                    ))
+                    ))))
                 {
                     persistence.GetPublicInstanceProperty("Security").SetValue(persistence, target);
                 }
