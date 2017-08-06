@@ -1063,9 +1063,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.IsApplicationList = templateList.IsApplicationList;
                     isDirty = true;
                 }
-                if (existingList.ReadSecurity != templateList.ReadSecurity)
+                if (existingList.ReadSecurity != (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity))
                 {
-                    existingList.ReadSecurity = templateList.ReadSecurity;
+                    existingList.ReadSecurity = (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity);
                     isDirty = true;
                 }
                 if (existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
