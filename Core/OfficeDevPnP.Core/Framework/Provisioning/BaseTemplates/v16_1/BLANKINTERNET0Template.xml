@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.16.1706.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.17.1707.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BLANKINTERNET0template">
     <pnp:ProvisioningTemplate ID="BLANKINTERNET0template" Version="1" BaseSiteTemplate="BLANKINTERNET#0">
       <pnp:WebSettings RequestAccessEmail="someone@example.com" NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -10,54 +10,55 @@
       </pnp:SupportedUILanguages>
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_RouterJobLastRun" Value="6/08/2017 22:35:36" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__WebTemplates" Value="&lt;webtemplates&gt;&lt;lcid id=&quot;all&quot;&gt;&lt;webtemplate name=&quot;CMSPUBLISHING#0&quot; /&gt;&lt;webtemplate name=&quot;BLANKINTERNET#2&quot; /&gt;&lt;webtemplate name=&quot;ENTERWIKI#0&quot; /&gt;&lt;webtemplate name=&quot;SRCHCEN#0&quot; /&gt;&lt;/lcid&gt;&lt;/webtemplates&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="9f9020e7-9de5-496f-ace6-486ec613889e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="00db7608-8bbf-4f85-b4d3-de94f47023ef" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="bf6f3a83-2ce8-4da0-b333-69e6f0f11cdd" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="dae6d610-ca59-4bea-9d33-5b3e230479c8" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="6e253073-2d88-4981-97b7-ad68904612a3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="bf1c17aa-69ea-446b-8777-d23742c54d8c" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="ae106035-4cad-4c59-a961-407ea8fbc5c4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="b5f8af3d-0c76-417e-af2b-d4f954eb8723" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="290c95f1-5059-4577-b32a-01332968b990" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3;6;7;8;9;10;11" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="da49df26-1934-4092-bd2f-de82849b83ef" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__NoMobileMapping88b7132c67664008b2321144c389236c" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="7a7c2b5a-6d08-4d63-a1ea-70bc6cbfeec6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="00359691-0c1f-4fb5-850f-24f38dbf65fa" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__PagesListId" Value="2e84499b-2114-4b36-933b-dc2eb088585d" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="34ddc108-e3dc-477d-bf02-e07b0ebbeb28;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="cfb60bc7-f65d-4094-a2b5-3a954481eace" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="2b9410bf-34a9-4a71-a859-fe5a440e8d30" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="2ef15d36-f096-43cb-9b70-c8b3591a63ef" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="9d07a09e-2233-4c4b-86ae-91cdbd7b1aff" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="0b6ca528-253a-43fe-b039-edd5de9878b5;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="b45d0562-4284-49f0-a81f-08c53ae05113" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="27dec6b2-15da-4523-9e4b-8d661942c451" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;a16d9a3c-5071-4b40-bcd1-ace49c5dc008&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;a16d9a3c-5071-4b40-bcd1-ace49c5dc008&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;40675ead-24ab-44ab-8686-cd781c36b5e1&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;40675ead-24ab-44ab-8686-cd781c36b5e1&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="showurlstructure" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowrevertfromtemplate" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="8/06/2017 23:26:04" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="7/08/2017 2:37:15" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowdesigner" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="430c24c5-a3b6-4c8c-95a5-6c6f3ecbde18" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="7317309e-18d3-4b19-808e-1a36adb8efbe" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6525" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="427bcd78-bac3-489d-a8c0-1dbce20bee61" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="fe037b4c-a9f0-49d2-bff4-09be9233eee1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6726" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;2487d6c9-772b-4cd7-b79c-847f46e02d0a&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="0b069362-5627-41cd-8eae-b5482097c075" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;710e1cfa-8049-4d98-8bc9-aa78a2d5c9e4&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="4590c110-6a83-4caf-929a-78184ca7848c" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="27e137ab-5fcc-42b7-b849-62b833d29927" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="3cf2b101-1523-4371-b515-3395fdbbe3ec" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignsandrelatedfiles" Value="694d88ab-42b4-4a78-b819-6a7d1ede9517" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamedesigntemplates" Value="dcda79a3-fe52-4ec5-8efe-14c452cec2a1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1031;1036;2108;1057;1044;1049;2052;1028;1081;1086;1060;1030;1069;1035;1043;1051;1068;1026;1110;1055;1106;1050;1038;1042;1063;1071;1033;1025;1041;1062;1164;1046;2070;9242;1054;5146;1029;3082;1037;1045;10266;2074;1058;1032;1061;1040;1087;1053;1066;1027;1048" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="34ddc108-e3dc-477d-bf02-e07b0ebbeb28;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="86139561-c8f1-436a-95bd-a2b25a73d571" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="64825f0d-0cfd-4571-8d12-06d04e27a4b2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="0b6ca528-253a-43fe-b039-edd5de9878b5;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="e8fe01f5-f704-4a11-88c4-c68a0c0ce956" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="4b16b38b-38a8-4669-91a4-e1ab20c26dbe" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
@@ -65,9 +66,9 @@
         <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="72a09c34-bf0b-4ccf-be40-4c84a41ba515" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="6111ebe3-603a-47fe-a64e-1f950aec288f" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__ImagesListId" Value="c5450a37-1eaa-4ac3-9959-fefae1bff7da" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="22c217d3-02dc-46ac-a0ae-af9915ba1194" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="a9b87b93-5964-4460-942e-91fa2bb34c6e" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NoMobileMapping4aad50f48a454dac9fa34925ebd07d4e" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
@@ -165,10 +166,10 @@
         </pnp:CurrentNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="Wiki Categories_0" StaticName="e1a5b98cdd71426dacb6e478c7a5882f" Name="e1a5b98cdd71426dacb6e478c7a5882f" ID="{f863c21f-5fdb-4a91-bb0c-5ae889190dd7}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" />
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" />
+        <Field Type="Note" DisplayName="Wiki Categories_0" StaticName="e1a5b98cdd71426dacb6e478c7a5882f" Name="e1a5b98cdd71426dacb6e478c7a5882f" ID="{f863c21f-5fdb-4a91-bb0c-5ae889190dd7}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" />
         <Field ID="{1F30D200-0D4E-4C8A-A7EB-2E49815BF2BE}" DisplayName="Instance Id" Name="WF4InstanceId" Type="Text" Group="_Hidden" Hidden="TRUE" Sealed="TRUE" Indexed="TRUE" />
-        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="88b7132c-6766-4008-b232-1144c389236c" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
+        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="4aad50f4-8a45-4dac-9fa3-4925ebd07d4e" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
           <Customization>
             <ArrayOfProperty>
               <Property>
@@ -349,6 +350,7 @@
         <Field ID="{4D64B067-08C3-43DC-A87B-8B8E01673313}" Name="RatedBy" StaticName="RatedBy" DisplayName="Rated By" Description="Users rated the item." Group="_Hidden" Type="UserMulti" List="UserInfo" Mult="TRUE" Hidden="TRUE" ForcePromoteDemote="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{D8225D68-5DDB-4e66-8069-2694E8F628FB}" DisplayName="WSEventSource" Name="WSEventSource" Type="Text" Sealed="TRUE" Group="_Hidden" />
         <Field ID="{45AE2169-585C-440B-AA4C-1D5E981FBBE5}" Name="SeoKeywords" StaticName="SeoKeywords" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Meta Keywords" DisplayName="Meta Keywords" Type="Text" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" />
+        <Field ID="{3A6B296C-3F50-445C-A13F-9C679EA9DDA3}" Name="ComplianceAssetId" SourceID="http://schemas.microsoft.com/sharepoint/v3" Required="FALSE" ShowInFileDlg="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ReadOnly="TRUE" StaticName="ComplianceAssetId" Type="Text" DisplayName="Compliance Asset Id" Sortable="TRUE" />
         <Field ID="{188ce56c-61e0-4d2a-9d3e-7561390668f7}" Name="PublishingPreviewImage" StaticName="PublishingPreviewImage" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Preview Image" Type="URL" Required="FALSE" Sealed="TRUE" />
         <Field ID="{E5BEF06D-165E-40fb-8D47-923D0F94FAB7}" Name="HtmlDesignFromMaster" StaticName="HtmlDesignFromMaster" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="From Master" Type="URL" Required="FALSE" Hidden="TRUE" Sealed="TRUE" />
         <Field ID="{AC57186E-E90B-4711-A038-B6C6A62A57DC}" Name="RedirectURL" StaticName="RedirectURL" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Page Layout Columns" DisplayName="Redirect URL" Description="Redirect URL is a site column created by the Publishing feature. It is used on the Redirect Page Content Type as the web address that the page will redirect to." Type="URL" Required="FALSE" ForcePromoteDemote="TRUE" />
@@ -358,6 +360,7 @@
           <Default>1</Default>
         </Field>
         <Field ID="{d5e67c73-de1d-484e-8463-61a1f35d56f2}" Name="TranslationStateJobId" StaticName="TranslationStateJobId" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Batch Id" Type="Guid" Required="TRUE" Sealed="TRUE" Hidden="FALSE" Indexed="TRUE" />
+        <Field ID="{4E148F74-0C77-4D35-B8F9-F1067081FB37}" Name="_ThemePreviewJson" StaticName="_ThemePreviewJson" DisplaceOnUpgrade="TRUE" DisplayName="Theme Preview JSON" Type="Note" RichText="FALSE" Group="_Hidden" Hidden="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" AllowDeletion="FALSE" DelayActivateTemplateBinding="SPSPERS,GROUP" />
         <Field ReadOnly="TRUE" Type="Computed" ID="{1A03FA74-8C63-40CC-BD06-73B580BD8743}" Name="LinkTemplateName" DisplayName="Form Name" Group="_Hidden" DisplayNameSrcField="FormName" Filterable="FALSE" AuthoringInfo="(linked to form template name)">
           <FieldRefs>
             <FieldRef Name="FormName" />
@@ -410,7 +413,7 @@
         <Field ID="{BAF14289-0687-448c-B13C-C98DC4183E06}" Name="RoutingContentTypeInternal" StaticName="RoutingContentTypeInternal" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Submission Content Type (Internal)" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Hidden="TRUE" Sealed="TRUE" MaxLength="255" />
         <Field ID="{74E6AE8A-0E3E-4DCB-BBFF-B5A016D74D64}" Name="_dlc_ExpireDateSaved" StaticName="_dlc_ExpireDateSaved" DisplayName="Original Expiration Date" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" Type="DateTime" Indexed="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="FALSE" Required="FALSE" Sealed="TRUE" ReadOnly="TRUE" OverwriteInChildScopes="TRUE" />
         <Field ID="{cca3f38b-47d8-484f-8467-5d810006bff5}" Name="TranslationStateTermInformation" StaticName="TranslationStateTermInformation" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Terms" Type="Note" Required="FALSE" Sealed="TRUE" Hidden="FALSE" />
-        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Wiki Categories" StaticName="Wiki_x0020_Page_x0020_Categories" Name="Wiki_x0020_Page_x0020_Categories" ID="{e1a5b98c-dd71-426d-acb6-e478c7a5882f}" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" List="{{listid:TaxonomyHiddenList}}" WebId="88b7132c-6766-4008-b232-1144c389236c" ShowField="Term1033" ShowInEditForm="TRUE" Mult="TRUE" Sortable="FALSE">
+        <Field Type="TaxonomyFieldTypeMulti" DisplayName="Wiki Categories" StaticName="Wiki_x0020_Page_x0020_Categories" Name="Wiki_x0020_Page_x0020_Categories" ID="{e1a5b98c-dd71-426d-acb6-e478c7a5882f}" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" List="{{listid:TaxonomyHiddenList}}" WebId="4aad50f4-8a45-4dac-9fa3-4925ebd07d4e" ShowField="Term1033" ShowInEditForm="TRUE" Mult="TRUE" Sortable="FALSE">
           <Customization>
             <ArrayOfProperty>
               <Property>
@@ -514,6 +517,7 @@
         <Field ID="{9227689d-eb22-4289-8b41-95989fc01114}" Name="TranslationStateExportRequestingUser" StaticName="TranslationStateExportRequestingUser" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Exporting User" Type="User" List="UserInfo" Required="FALSE" Sealed="TRUE" Hidden="FALSE" Indexed="FALSE" />
         <Field ID="{96C27C9D-33F5-4f8e-893E-684014BC7090}" DisplayName="Form Locale" Type="Text" Required="FALSE" Name="FormLocale" RowOrdinal="0" Group="_Hidden" />
         <Field ID="{16582F9F-BA8C-42F7-8A63-9994650BB6C8}" Name="DescendantLikesCount" SourceID="http://schemas.microsoft.com/sharepoint/v3" DisplaceOnUpgrade="TRUE" Group="_Hidden" Type="Integer" DisplayName="Aggregated Like Count" ReadOnly="TRUE" Hidden="FALSE" AllowDeletion="FALSE" Sealed="TRUE" />
+        <Field ID="{9dc5bba2-9c3e-4f46-a845-e25330b5eaf6}" Name="OtherMail" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="OtherMail" Group="_Hidden" DisplayName="OtherMail" ReadOnly="FALSE" Type="Text" FromBaseType="TRUE" DelayActivateTemplateBinding="GROUP,SPSPERS,SITEPAGEPUBLISHING" />
         <Field ID="{40270DA4-0A34-4c14-8C30-59E065A28A4D}" DisplayName="WSPublishState" Name="WSPublishState" Type="Integer" Sealed="TRUE" />
         <Field ID="{633c23a4-1c00-4934-8850-04394ec25420}" Name="TranslationStateErrors" StaticName="TranslationStateErrors" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Errors" Type="Note" Required="FALSE" Sealed="TRUE" Hidden="FALSE" />
         <Field ID="{CBB92DA4-FD46-4C7D-AF6C-3128C2A5576E}" Indexed="FALSE" Name="DocumentSetDescription" StaticName="DocumentSetDescription" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Description" Description="A description of the Document Set" Type="Note" NumLines="5" UnlimitedLengthInDocumentLibrary="TRUE" Hidden="FALSE" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE" />
@@ -582,7 +586,7 @@
         <Field ID="{2B67BCD7-14D4-4c13-85DD-605EB8109B5E}" Name="HtmlDesignAssociated" StaticName="HtmlDesignAssociated" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Associated File" Description="Describes whether a file has a SharePoint master page (.master) or page layout (.aspx) file associated with it. Setting this value to true will re-associate to a previously associated file or create a new file for association." Type="Boolean" Required="FALSE" Sealed="TRUE">
           <Default>TRUE</Default>
         </Field>
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="88b7132c-6766-4008-b232-1144c389236c" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="4aad50f4-8a45-4dac-9fa3-4925ebd07d4e" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{EA7208D9-8D79-4553-9572-6E83377F523A}" Type="Geolocation" Group="_Hidden" Name="Geolocation" DisplayName="Geolocation" Sealed="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3/fields" StaticName="Geolocation" />
         <Field ID="{325C00DD-FD91-468B-81CF-5BB9951ABBA1}" Name="RobotsNoIndex" StaticName="SeoRobotsNoIndex" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" Description="Hide from Internet Search Engines is a site column created by the Publishing feature. It is used to indicate to search engine crawlers that a particular page should not be indexed." DisplayName="Hide from Internet Search Engines" Type="Boolean" DisplaceOnUpgrade="TRUE" Required="FALSE" ShowInNewForm="FALSE" ShowInFileDlg="FALSE" ShowInEditForm="FALSE" Sealed="TRUE" />
         <Field ID="{aea1a4dd-0f19-417d-8721-95a1d28762ab}" Name="PublishingContact" StaticName="PublishingContact" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Contact" Description="Contact is a site column created by the Publishing feature. It is used on the Page Content Type as the person or group who is the contact person for the page." Type="User" Required="FALSE" Sealed="TRUE" List="UserInfo" />
@@ -609,7 +613,7 @@
         <Field ID="{898232F1-83C0-41DF-9F1A-64B08A03F62D}" Name="Popularity" SourceID="http://schemas.microsoft.com/sharepoint/v3" DisplaceOnUpgrade="TRUE" Group="_Hidden" Type="Number" DisplayName="Popularity" ReadOnly="TRUE" Hidden="FALSE" Indexed="TRUE" AllowDeletion="FALSE" Sealed="TRUE" />
         <Field ID="{186175F6-E318-4e9a-B5F7-4F7C751585A0}" Name="RoutingAliases" StaticName="RoutingAliases" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Aliases" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Sealed="TRUE" MaxLength="255" />
         <Field ID="{10A4D7F7-AB3A-426f-B5CC-AB1EB03A94F4}" Name="RoutingTargetPath" StaticName="RoutingTargetPath" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Target Path" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Sealed="TRUE" MaxLength="255" />
-        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="88b7132c-6766-4008-b232-1144c389236c" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{88b7132c-6766-4008-b232-1144c389236c}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
+        <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column" StaticName="TaxCatchAll" Name="TaxCatchAll" ID="{f3b0adf9-c1a2-4b02-920d-943fba4b3611}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="4aad50f4-8a45-4dac-9fa3-4925ebd07d4e" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllData" SourceID="{4aad50f4-8a45-4dac-9fa3-4925ebd07d4e}" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{434F51FB-FFD2-4A0E-A03B-CA3131AC67BA}" Name="Ratings" StaticName="Ratings" DisplayName="User ratings" Description="User ratings for the item" Group="_Hidden" Type="Note" Hidden="TRUE" ForcePromoteDemote="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{88fd7ffb-523d-4758-b624-02eaceee1a5d}" Name="TranslationPackageGroupId" StaticName="TranslationPackageGroupId" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Translation Package Group ID" Type="Guid" Required="TRUE" Sealed="TRUE" Hidden="TRUE" Indexed="TRUE" />
         <Field ID="{65c899fb-85d9-4b80-922e-eae197f942fa}" Name="TranslationStateItemInformation" StaticName="TranslationStateItemInformation" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Translation Columns" DisplayName="Translated Items" Type="Note" Required="FALSE" Sealed="TRUE" Hidden="FALSE" />
@@ -2566,7 +2570,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{5041661C-47AA-4327-A85A-A50BE70CAD88}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateBLANKINTERNETCONTAINER0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{8EF5A3DF-7491-46D5-9418-DA7751CC10BD}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateBLANKINTERNETCONTAINER0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -2599,7 +2603,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{ECB24FE7-5FDC-43A0-B30F-86808BC2E6B7}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{CFBBBB95-2624-4DE7-B44B-DE3AD96F11F3}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2617,6 +2621,7 @@
             </View>
           </pnp:Views>
           <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
             <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
             <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
             <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
@@ -2629,7 +2634,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{547D206F-F04F-433B-A970-31EE769E3652}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{859505B3-F3B4-4F67-AA7A-D4442D688515}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2644,7 +2649,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{28357416-6363-44E6-A269-9A6DAB9B70C8}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateBLANKINTERNETCONTAINER0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{8359D5F5-740A-48C9-9358-8436E83AA0EE}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateBLANKINTERNETCONTAINER0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -2670,6 +2675,7 @@
             </View>
           </pnp:Views>
           <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
             <pnp:FieldRef ID="66b691cf-07a3-4ca6-ac6d-27fa969c8569" Name="FormName" DisplayName="Form Name" />
             <pnp:FieldRef ID="65572d4d-445a-43f1-9c77-3358222a2c93" Name="FormCategory" DisplayName="Form Category" />
             <pnp:FieldRef ID="94ad6f7c-09a1-42ca-974f-d24e080160c2" Name="FormVersion" DisplayName="Form Version" />
@@ -2695,7 +2701,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{CDCA451E-B969-459A-AC1E-9DC78A8CB367}" Type="HTML" DisplayName="All Assets" Url="/sites/templateBLANKINTERNETCONTAINER0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{43AA7C0F-D609-4127-BF00-6A3651094668}" Type="HTML" DisplayName="All Assets" Url="/sites/templateBLANKINTERNETCONTAINER0/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -2728,7 +2734,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{495B2026-EFB8-4CB8-9155-3FBD6D517F19}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateBLANKINTERNETCONTAINER0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{DF80ECCA-6263-418F-AC5B-C9F593EDF0A8}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateBLANKINTERNETCONTAINER0/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -2801,7 +2807,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900796F542FC5E446758C697981E370458C" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{4D4E1BC4-C399-4B09-9375-7A2D0121CEF4}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{508676F4-87FA-43A9-8592-6632D15BB75F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2850,7 +2856,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{56C3E76A-A21B-46CB-8A28-CCA9960A168F}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{DCF632EC-18A6-4DEB-BE9F-243DC05249FC}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -2870,7 +2876,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{4179C292-47BE-4D93-A650-4472ABE12733}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{11D33023-12C2-46B4-B589-C93E6841CF7E}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -2891,7 +2897,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{65176E68-F01F-4A09-BF04-61AC0AEA41F2}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{2DB4CE3C-D6C8-46FD-B1A0-3D4E576A6E10}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -2918,7 +2924,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{1BEE25CF-10C2-477A-AC59-EB3CD6284836}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{81B55640-8E63-4B87-87A5-805BA62D9068}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templateBLANKINTERNETCONTAINER0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -2961,7 +2967,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{CB6BC0AB-C25E-4A5D-A8EB-A2DC77C36DCB}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{2C8C5493-8483-4587-A66E-4DA527A39F69}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2979,6 +2985,7 @@
             </View>
           </pnp:Views>
           <pnp:FieldRefs>
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
             <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Label setting" />
             <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labels" />
             <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
@@ -2996,7 +3003,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{8E34AB7A-5D1D-4323-AB3F-392D5CFDC9CF}" Type="HTML" DisplayName="All Assets" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{6711B34A-BE2A-4462-BCF7-FFFE3D2B079F}" Type="HTML" DisplayName="All Assets" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -3029,7 +3036,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{9520B436-9DF2-4A8F-A9C4-49DA512D5F46}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{4D7E812A-AB3D-4F1F-84E1-B6F6CBFC49E8}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templateBLANKINTERNETCONTAINER0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -3111,7 +3118,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{3C7C0BC0-F828-4E84-8942-EBDDC22D0659}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{0DA5C90C-1FF2-4450-BCED-91F70D5751ED}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateBLANKINTERNETCONTAINER0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -3134,6 +3141,7 @@
             <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Label Applied" />
             <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Label applied by" />
             <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
+            <pnp:FieldRef ID="3a6b296c-3f50-445c-a13f-9c679ea9dda3" Name="ComplianceAssetId" DisplayName="Compliance Asset Id" />
           </pnp:FieldRefs>
           <pnp:Security>
             <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="false">
@@ -3155,7 +3163,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x012004" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{17B3F3A5-594E-415D-B369-7EBC38D10FF1}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{F45087D6-7714-4714-B17D-E1C381D42444}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -3174,7 +3182,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{81D42A67-3A91-4F2B-85E4-EAE461A608C8}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{1F41EB98-DB31-4CA5-9070-47595CD53032}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -3199,7 +3207,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{652AA20E-CF35-4478-89DF-6ECF06927763}" Type="HTML" DisplayName="Due Today" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{60D6C064-7367-44B9-A3FE-35069717BCC5}" Type="HTML" DisplayName="Due Today" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Eq>
@@ -3224,7 +3232,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{2CAF487F-F360-402B-A38A-DAA849680AA2}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{77C8DBF6-BD2E-4051-AA61-1849ED7F6B53}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Neq>
@@ -3248,7 +3256,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{6438BB7B-DE9E-41CC-99BF-C320BEC98130}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{B7E7684E-6DF4-4D04-9272-09335CED8CAD}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="AssignedTo" />
@@ -3267,7 +3275,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{68AC002C-2E4A-4416-9F0B-35DA5EE5C284}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{497BC3B5-CE46-45F6-A924-87FBA2404A4F}" Type="HTML" DisplayName="By My Groups" Url="/sites/templateBLANKINTERNETCONTAINER0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
               <Query>
                 <Where>
                   <Membership Type="CurrentUserGroups">
