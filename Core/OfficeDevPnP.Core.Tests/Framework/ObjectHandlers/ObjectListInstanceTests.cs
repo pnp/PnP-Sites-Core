@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     isDirty = true;
                 }
                 var datarowList = ctx.Web.GetListByTitle(datarowListName);
-                if (datarowList == null)
+                if (datarowList != null)
                 {
                     datarowList.DeleteObject();
                     isDirty = true;
