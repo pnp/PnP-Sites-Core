@@ -165,18 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 11);
-            Assert.IsTrue(result[0].Files.Count == 5);
-            Assert.IsTrue(result[1].Files.Count == 5);
-            Assert.IsTrue(result[2].Files.Count == 6);
-            Assert.IsTrue(result[3].Files.Count == 5);
-            Assert.IsTrue(result[4].Files.Count == 1);
-            Assert.IsTrue(result[5].Files.Count == 5);
-            Assert.IsTrue(result[6].Files.Count == 1);
-            Assert.IsTrue(result[7].Files.Count == 1);
-            Assert.IsTrue(result[8].Files.Count == 1);
-            Assert.IsTrue(result[9].Files.Count == 5);
-            Assert.IsTrue(result[10].Files.Count == 2);
+            Assert.IsTrue(result.Count == 13);
         }
 
         [TestMethod]
