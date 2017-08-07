@@ -956,7 +956,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.IrmExpire,
                 l => l.IrmReject,
                 l => l.IrmEnabled,
-                l => l.ReadSecurity,
                 l => l.ValidationFormula,
                 l => l.ValidationMessage,
                 l => l.InformationRightsManagementSettings,
@@ -972,6 +971,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 #if !ONPREMISES
 , l => l.ListExperienceOptions
+, l => l.ReadSecurity
 #endif
 );
             web.Context.ExecuteQueryRetry();
@@ -1063,11 +1063,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.IsApplicationList = templateList.IsApplicationList;
                     isDirty = true;
                 }
+#if !ONPREMISES
                 if (existingList.ReadSecurity != (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity))
                 {
                     existingList.ReadSecurity = (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity);
                     isDirty = true;
                 }
+#endif
                 if (existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
                 {
                     existingList.ValidationFormula = parser.ParseString(templateList.ValidationFormula);
@@ -1287,7 +1289,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-                #region UserCustomActions
+#region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1342,7 +1344,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-                #endregion
+#endregion
 
                 if (existingList.ContentTypesEnabled)
                 {
@@ -1534,10 +1536,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdList.IrmExpire = list.IrmExpire;
             createdList.IrmReject = list.IrmReject;
             createdList.IsApplicationList = list.IsApplicationList;
+#if !ONPREMISES
             if (list.ReadSecurity != default(int))
             {
                 createdList.ReadSecurity = list.ReadSecurity;
             }
+#endif
             if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
             {
                 createdList.ValidationFormula = parser.ParseString(list.ValidationFormula);
@@ -1830,13 +1834,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.IrmReject,
                         l => l.IrmEnabled,
                         l => l.IsApplicationList,
-                        l => l.ReadSecurity,
                         l => l.ValidationFormula,
                         l => l.ValidationMessage,
                         l => l.DocumentTemplateUrl,
                         l => l.InformationRightsManagementSettings,
 #if !ONPREMISES
                         l => l.ListExperienceOptions,
+                        l => l.ReadSecurity,
 #endif
                         l => l.InformationRightsManagementSettings,
                         l => l.Fields.IncludeWithDefaultProperties(
@@ -1921,12 +1925,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         IrmExpire = siteList.IrmExpire,
                         IrmReject = siteList.IrmReject,
                         IsApplicationList = siteList.IsApplicationList,
-                        ReadSecurity = siteList.ReadSecurity,
                         ValidationFormula = siteList.ValidationFormula,
                         ValidationMessage = siteList.ValidationMessage,
                         EnableModeration = siteList.EnableModeration,
 #if !ONPREMISES
                         ListExperience = (Model.ListExperience)Enum.Parse(typeof(Model.ListExperience), siteList.ListExperienceOptions.ToString()),
+                        ReadSecurity = siteList.ReadSecurity,
 #endif
                         MaxVersionLimit =
                             siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
