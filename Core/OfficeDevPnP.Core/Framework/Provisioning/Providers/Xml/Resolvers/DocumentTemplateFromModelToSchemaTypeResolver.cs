@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             if (null != contentType && !String.IsNullOrEmpty(contentType.DocumentTemplate))
             {
                 result = Activator.CreateInstance(this._targetType);
-                result.SetPublicInstancePropertyValue("result", contentType.DocumentTemplate);
+                result.SetPublicInstancePropertyValue("TargetName", contentType.DocumentTemplate);
             }
 
             return (result);
