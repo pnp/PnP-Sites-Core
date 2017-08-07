@@ -1012,17 +1012,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.OnQuickLaunch = templateList.OnQuickLaunch;
                     isDirty = true;
                 }
-                if (parser.ParseString(templateList.DefaultDisplayFormUrl) != existingList.DefaultDisplayFormUrl)
+                if (templateList.DefaultDisplayFormUrl != null && parser.ParseString(templateList.DefaultDisplayFormUrl) != existingList.DefaultDisplayFormUrl)
                 {
                     existingList.DefaultDisplayFormUrl = parser.ParseString(templateList.DefaultDisplayFormUrl);
                     isDirty = true;
                 }
-                if (parser.ParseString(templateList.DefaultEditFormUrl) != existingList.DefaultEditFormUrl)
+                if (templateList.DefaultEditFormUrl != null && parser.ParseString(templateList.DefaultEditFormUrl) != existingList.DefaultEditFormUrl)
                 {
                     existingList.DefaultEditFormUrl = parser.ParseString(templateList.DefaultEditFormUrl);
                     isDirty = true;
                 }
-                if (parser.ParseString(templateList.DefaultNewFormUrl) != existingList.DefaultNewFormUrl)
+                if (templateList.DefaultNewFormUrl != null && parser.ParseString(templateList.DefaultNewFormUrl) != existingList.DefaultNewFormUrl)
                 {
                     existingList.DefaultNewFormUrl = parser.ParseString(templateList.DefaultNewFormUrl);
                     isDirty = true;
@@ -1042,7 +1042,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.Direction = templateList.Direction == ListReadingDirection.None ? "none" : templateList.Direction == ListReadingDirection.RTL ? "rtl" : "ltr";
                     isDirty = true;
                 }
-                if (existingList.ImageUrl != parser.ParseString(templateList.ImageUrl))
+                if (templateList.ImageUrl != null && existingList.ImageUrl != parser.ParseString(templateList.ImageUrl))
                 {
                     existingList.ImageUrl = parser.ParseString(templateList.ImageUrl);
                     isDirty = true;
@@ -1059,12 +1059,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 #endif
-                if (existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
+                if (templateList.ValidationFormula != null && existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
                 {
                     existingList.ValidationFormula = parser.ParseString(templateList.ValidationFormula);
                     isDirty = true;
                 }
-                if (existingList.ValidationMessage != parser.ParseString(templateList.ValidationMessage))
+                if (templateList.ValidationMessage != null && existingList.ValidationMessage != parser.ParseString(templateList.ValidationMessage))
                 {
                     existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
                     isDirty = true;
