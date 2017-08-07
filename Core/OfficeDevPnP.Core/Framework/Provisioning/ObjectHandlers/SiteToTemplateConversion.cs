@@ -168,8 +168,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     provisioningInfo.HandlersToProcess = Handlers.All;
                 }
 
-                // Check if scope is present and if so, matches the current site
-
+                // Check if scope is present and if so, matches the current site. When scope was not set the returned value will be ProvisioningTemplateScope.Undefined
                 if (template.Scope == ProvisioningTemplateScope.RootSite)
                 {
                     if (web.IsSubSite())

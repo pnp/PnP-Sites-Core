@@ -656,6 +656,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public enum ProvisioningTemplateScope
     {
         /// <summary>
+        /// Value for when scope was not set in the template
+        /// </summary>
+        Undefined,
+        /// <summary>
         /// The scope is a Root web of a Site Collection
         /// </summary>
         RootSite,
