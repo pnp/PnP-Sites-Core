@@ -365,7 +365,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Configure IRM Settings
                     foreach (var list in processedLists)
                     {
-                        if (list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
+                        if (list.SiteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
                         {
                             list.SiteList.IrmEnabled = true;
                             list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
@@ -958,7 +958,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.IrmEnabled,
                 l => l.ValidationFormula,
                 l => l.ValidationMessage,
-                l => l.InformationRightsManagementSettings,
                 l => l.DraftVersionVisibility,
                 l => l.Views,
                 l => l.DocumentTemplateUrl,
@@ -1048,16 +1047,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ImageUrl = parser.ParseString(templateList.ImageUrl);
                     isDirty = true;
                 }
-                if (existingList.IrmExpire != templateList.IrmExpire)
-                {
-                    existingList.IrmExpire = templateList.IrmExpire;
-                    isDirty = true;
-                }
-                if (existingList.IrmReject != templateList.IrmReject)
-                {
-                    existingList.IrmReject = templateList.IrmReject;
-                    isDirty = true;
-                }
                 if (existingList.IsApplicationList != templateList.IsApplicationList)
                 {
                     existingList.IsApplicationList = templateList.IsApplicationList;
@@ -1080,13 +1069,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
                     isDirty = true;
                 }
-                if (templateList.IRMSettings != null)
+
+                if (existingList.IrmExpire != templateList.IrmExpire)
+                {
+                    existingList.IrmExpire = templateList.IrmExpire;
+                    isDirty = true;
+                }
+                if (existingList.IrmReject != templateList.IrmReject)
+                {
+                    existingList.IrmReject = templateList.IrmReject;
+                    isDirty = true;
+                }
+
+                if (existingList.BaseTemplate != (int)ListTemplateType.PictureLibrary && templateList.IRMSettings != null)
                 {
                     if (existingList.IrmEnabled != templateList.IRMSettings.Enabled)
                     {
                         existingList.IrmEnabled = templateList.IRMSettings.Enabled;
                         isDirty = true;
                     }
+
+                    existingList.EnsureProperties(l => l.InformationRightsManagementSettings);
+
                     if (existingList.InformationRightsManagementSettings.AllowPrint != templateList.IRMSettings.AllowPrint)
                     {
                         existingList.InformationRightsManagementSettings.AllowPrint = templateList.IRMSettings.AllowPrint;
@@ -1550,7 +1554,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdList.ValidationMessage = parser.ParseString(list.ValidationMessage);
             }
-            if (list.IRMSettings != null)
+            if (createdList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.IRMSettings != null)
             {
                 createdList.IrmEnabled = list.IRMSettings.Enabled;
                 createdList.InformationRightsManagementSettings.AllowPrint = list.IRMSettings.AllowPrint;
@@ -1837,12 +1841,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.ValidationFormula,
                         l => l.ValidationMessage,
                         l => l.DocumentTemplateUrl,
-                        l => l.InformationRightsManagementSettings,
 #if !ONPREMISES
                         l => l.ListExperienceOptions,
                         l => l.ReadSecurity,
 #endif
-                        l => l.InformationRightsManagementSettings,
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
                             f => f.Title,
@@ -1943,30 +1945,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             siteList.ForceCheckout : false,
                         DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
-                    if (siteList.IrmEnabled)
-                    {
-                        var irmSettings = new IRMSettings();
-                        irmSettings.AllowPrint = siteList.InformationRightsManagementSettings.AllowPrint;
-                        irmSettings.AllowScript = siteList.InformationRightsManagementSettings.AllowScript;
-                        irmSettings.AllowWriteCopy = siteList.InformationRightsManagementSettings.AllowWriteCopy;
-                        irmSettings.DisableDocumentBrowserView = siteList.InformationRightsManagementSettings.DisableDocumentBrowserView;
-                        irmSettings.DocumentAccessExpireDays = siteList.InformationRightsManagementSettings.DocumentAccessExpireDays;
-                        if (siteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate != null && siteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate > DateTime.Now)
-                        {
-                            irmSettings.DocumentLibraryProtectionExpiresInDays = (siteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate - DateTime.Now).Days;
-                        }
-                        irmSettings.Enabled = siteList.IrmEnabled;
-                        irmSettings.EnableDocumentAccessExpire = siteList.InformationRightsManagementSettings.EnableDocumentAccessExpire;
-                        irmSettings.EnableDocumentBrowserPublishingView = siteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView;
-                        irmSettings.EnableGroupProtection = siteList.InformationRightsManagementSettings.EnableGroupProtection;
-                        irmSettings.EnableLicenseCacheExpire = siteList.InformationRightsManagementSettings.EnableLicenseCacheExpire;
-                        irmSettings.GroupName = siteList.InformationRightsManagementSettings.GroupName;
-                        irmSettings.LicenseCacheExpireDays = siteList.InformationRightsManagementSettings.LicenseCacheExpireDays;
-                        irmSettings.PolicyDescription = siteList.InformationRightsManagementSettings.PolicyDescription;
-                        irmSettings.PolicyTitle = siteList.InformationRightsManagementSettings.PolicyTitle;
 
-                        list.IRMSettings = irmSettings;
+                    if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
+                    {
+                        siteList.EnsureProperties(l => l.InformationRightsManagementSettings);
                     }
+
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
@@ -2275,7 +2259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
         private static ListInstance ExtractInformationRightsManagement(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
-            if (siteList.IrmEnabled)
+            if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && siteList.IrmEnabled)
             {
                 list.IRMSettings = new IRMSettings();
                 list.IRMSettings.Enabled = siteList.IrmEnabled;
