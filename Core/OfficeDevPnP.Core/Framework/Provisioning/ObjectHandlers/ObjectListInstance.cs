@@ -1826,8 +1826,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.UserCustomActions,
+#if !SP2013
                         l => l.MajorVersionLimit,
                         l => l.MajorWithMinorVersionsLimit,
+#endif
                         l => l.DraftVersionVisibility,
                         l => l.DefaultDisplayFormUrl,
                         l => l.DefaultEditFormUrl,
