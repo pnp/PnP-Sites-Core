@@ -6562,6 +6562,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
     {
 
         /// <remarks/>
+        Undefined,
+
+        /// <remarks/>
         RootSite,
 
         /// <remarks/>

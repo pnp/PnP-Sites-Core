@@ -7912,7 +7912,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public enum ProvisioningTemplateScope {
-        
+
+        /// <remarks/>
+        Undefined,
+
         /// <remarks/>
         RootSite,
         

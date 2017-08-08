@@ -573,6 +573,13 @@
       </xsd:annotation>
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Undefined">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Scope was not defined
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="RootSite">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
