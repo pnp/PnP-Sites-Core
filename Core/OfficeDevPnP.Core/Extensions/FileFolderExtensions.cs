@@ -255,7 +255,11 @@ namespace Microsoft.SharePoint.Client
             ClientContext context = null;
             if (parentFolder != null)
             {
-                context = parentFolder.Context as ClientContext;
+                var absoluteUrl = new Uri(parentFolder.Context.Url).GetLeftPart(UriPartial.Authority) + parentFolder.ServerRelativeUrl;
+                Uri folderAbsoluteUri = new Uri(absoluteUrl);
+                Uri webUrl = Web.WebUrlFromPageUrlDirect(parentFolder.Context as ClientContext, folderAbsoluteUri);
+
+                context = parentFolder.Context.Clone(webUrl);
             }
 
             List parentList = null;
