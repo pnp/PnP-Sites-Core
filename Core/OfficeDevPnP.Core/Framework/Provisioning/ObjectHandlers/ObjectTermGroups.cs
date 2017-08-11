@@ -148,10 +148,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         if (set == null)
                         {
+                            if (modelTermGroup.SiteCollectionTermGroup)
+                            {
+                                modelTermSet.Id = Guid.NewGuid();
+                            }
+
                             if (modelTermSet.Id == Guid.Empty)
                             {
                                 modelTermSet.Id = Guid.NewGuid();
                             }
+
                             set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id,
                                 modelTermSet.Language ?? termStore.DefaultLanguage);
                             parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
@@ -285,6 +291,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
                 return null;
             }
+            else // if the term isn't reused, give it a new Guid 
+                modelTerm.Id = Guid.NewGuid();
 
             // Create new term
             Term term;
