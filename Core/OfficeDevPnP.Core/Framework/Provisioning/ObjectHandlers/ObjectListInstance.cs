@@ -1770,6 +1770,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
+#if !ONPREMISES
         private void AddOrUpdateListWebHook(List list, Webhook webhook, bool isListUpdate = false)
         {
             // for a new list immediately add the webhook
@@ -1798,6 +1799,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
         }
+#endif
 
         private void CreateFolderInList(Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
         {
@@ -2054,6 +2056,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
+#if !ONPREMISES
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {
             var addedWebhooks = siteList.GetWebhookSubscriptions();
@@ -2072,6 +2075,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             return list;
         }
+#endif
 
         private static ListInstance ExtractViews(List siteList, ListInstance list)
         {
