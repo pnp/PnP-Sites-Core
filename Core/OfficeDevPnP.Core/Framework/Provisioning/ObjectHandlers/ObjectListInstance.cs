@@ -1293,7 +1293,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-#region UserCustomActions
+#if !ONPREMISES
+                // Process list webhooks
+                if (templateList.Webhooks.Any())
+                {
+                    foreach (var webhook in templateList.Webhooks)
+                    {
+                        AddOrUpdateListWebHook(existingList, webhook, true);
+                    }
+                }
+#endif
+
+                #region UserCustomActions
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1742,11 +1753,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+#if !ONPREMISES
+            // Process list webhooks
+            if (list.Webhooks.Any())
+            {
+                foreach(var webhook in list.Webhooks)
+                {
+                    AddOrUpdateListWebHook(createdList, webhook);
+                }
+            }
+#endif
             if (list.Security != null)
             {
                 createdList.SetSecurity(parser, list.Security);
             }
             return Tuple.Create(createdList, parser);
+        }
+
+        private void AddOrUpdateListWebHook(List list, Webhook webhook, bool isListUpdate = false)
+        {
+            // for a new list immediately add the webhook
+            if (!isListUpdate)
+            {
+                var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+            }
+            // for existing lists add a new webhook or update existing webhook
+            else
+            {
+                // get the webhooks defined on the list
+                var addedWebhooks = list.GetWebhookSubscriptions();
+
+                var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                if (existingWebhook != null)
+                {
+                    // refresh the expiration date of the existing webhook
+                    existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
+                    // update the existing webhook
+                    list.UpdateWebhookSubscription(existingWebhook);
+                }
+                else
+                {
+                    // add as new webhook
+                    var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                }
+            }
         }
 
         private void CreateFolderInList(Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
@@ -1976,6 +2026,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
+#if !ONPREMISES
+                    list = ExtractWebhooks(siteList, list);
+#endif
+
                     list.Security = siteList.GetSecurity();
 
                     list = ExtractInformationRightsManagement(web, siteList, list, creationInfo, template);
@@ -1998,6 +2052,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
             return template;
+        }
+
+        private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
+        {
+            var addedWebhooks = siteList.GetWebhookSubscriptions();
+
+            if (addedWebhooks.Any())
+            {
+                foreach(var webhook in addedWebhooks)
+                {
+                    list.Webhooks.Add(new Webhook()
+                    {
+                        ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
+                        ServerNotificationUrl = webhook.NotificationUrl,
+                    });
+                }
+            }
+
+            return list;
         }
 
         private static ListInstance ExtractViews(List siteList, ListInstance list)

@@ -16,8 +16,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public ListTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_811105dc-86c9-4b27-bf8d-6f275f2176e8";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_811105dc-86c9-4b27-bf8d-6f275f2176e8/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_2f75da63-39c4-456f-af8c-14adf41074f6";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_2f75da63-39c4-456f-af8c-14adf41074f6/sub";
         }
         #endregion
 
@@ -49,6 +49,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             new ListImplementation().SiteCollection1605ListAdding(centralSiteCollectionUrl);
         }
+
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void SiteCollection1705ListAddingTest()
+        {
+            new ListImplementation().SiteCollection1705ListAdding(centralSiteCollectionUrl);
+        }
         #endregion
 
         #region Web test cases
@@ -64,6 +71,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public void Web1605ListAddingTest()
         {
             new ListImplementation().Web1605ListAdding(centralSubSiteUrl);
+        }
+
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void Web1705ListAddingTest()
+        {
+            new ListImplementation().Web1705ListAdding(centralSubSiteUrl);
         }
         #endregion
 

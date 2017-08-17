@@ -507,6 +507,12 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
+    <Content Include="Framework\Functional\Templates\list_delta_1705_1.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\list_add_1705.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
