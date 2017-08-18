@@ -392,6 +392,7 @@
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
     <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ClientSidePagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
@@ -520,6 +521,7 @@
     <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
+    <Content Include="Framework\Functional\Templates\clientsidepages_add_1705.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">

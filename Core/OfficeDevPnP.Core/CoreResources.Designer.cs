@@ -1020,6 +1020,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page with name {0} did already exist and the overwrite flag was not set, so nothing happended.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading asset: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_ {

@@ -1084,4 +1084,10 @@
   <data name="SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget" xml:space="preserve">
     <value>Scope of template does not match target</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound" xml:space="preserve">
+    <value>Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite" xml:space="preserve">
+    <value>Page with name {0} did already exist and the overwrite flag was not set, so nothing happended</value>
+  </data>
 </root>

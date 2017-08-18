@@ -374,6 +374,22 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region public methods
+        /// <summary>
+        /// Clears all control and zones from this page
+        /// </summary>
+        public void ClearPage()
+        {
+            foreach(var zone in this.zones)
+            {
+                foreach(var control in zone.Controls)
+                {
+                    control.Delete();
+                }                
+            }
+
+            this.zones.Clear();
+
+        }
 
         /// <summary>
         /// Adds a new zone to your client side page

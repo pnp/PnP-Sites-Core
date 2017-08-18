@@ -3226,11 +3226,11 @@
 
     </xsd:sequence>
 
-    <xsd:attribute name="PagesLibrary" type="xsd:string" use="required">
+    <xsd:attribute name="PageName" type="xsd:string" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines the target Pages Library for a single ClientSidePage.
+          Defines the page name for a single ClientSidePage.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -3240,6 +3240,15 @@
         <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Declares to promote the page as a news article.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Can the page be overwritten if it exists.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -3348,7 +3357,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="CanvasControlProperties">
+      <xsd:element name="CanvasControlProperties" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Custom properties for the client-side web part control.
@@ -3379,6 +3388,7 @@
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Custom" />
+          <xsd:enumeration value="Text" />
           <xsd:enumeration value="ContentRollup" />
           <xsd:enumeration value="BingMap" />
           <xsd:enumeration value="ContentEmbed" />

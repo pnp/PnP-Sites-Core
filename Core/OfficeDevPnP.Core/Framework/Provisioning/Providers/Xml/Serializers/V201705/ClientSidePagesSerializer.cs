@@ -69,7 +69,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
             expressions.Add($"{clientSidePageType}.PromoteAsNewsArticleSpecified", new ExpressionValueResolver((s, p) => true));
-            
+
+            // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
+            expressions.Add($"{clientSidePageType}.OverwriteSpecified", new ExpressionValueResolver((s, p) => true));
+
             // Manage OrderSpecified property for CanvasZone
             expressions.Add($"{canvasZoneType}.OrderSpecified", new ExpressionValueResolver((s, p) => true));
 

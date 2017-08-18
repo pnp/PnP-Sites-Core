@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="clientsidepages_add_1705" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
+  <pnp:ClientSidePages>
+    <pnp:ClientSidePage PageName="simple.aspx" Overwrite="true">
+      <pnp:Zones>
+        <pnp:Zone Type="OneColumn">
+          <pnp:Controls>
+            <pnp:CanvasControl WebPartType="Text">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="Text" Value="Hello world"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls>
+        </pnp:Zone>
+      </pnp:Zones>
+    </pnp:ClientSidePage>
+    <pnp:ClientSidePage PageName="sitepages/demo.asdpx" PromoteAsNewsArticle="false" Overwrite="true">
+      <pnp:Zones>
+        <pnp:Zone Type="TwoColumn" Order="10">
+          <pnp:Controls>
+            <pnp:CanvasControl Order="10" Section="0" WebPartType="Custom" CustomWebPartName="HelloWorld">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="description" Value="Hello world from control 1!!"/>
+                <pnp:CanvasControlProperty Key="test3" Value="false"/>
+                <pnp:CanvasControlProperty Key="test2" Value="1"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+            <pnp:CanvasControl Order="10" Section="1" WebPartType="Custom" CustomWebPartName="HelloWorld">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="description" Value="Hello world from control 2!!"/>
+                <pnp:CanvasControlProperty Key="test3" Value="true"/>
+                <pnp:CanvasControlProperty Key="test2" Value="2"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls> 
+        </pnp:Zone>
+        <pnp:Zone Type="ThreeColumn" Order="20">
+          <pnp:Controls>
+            <pnp:CanvasControl WebPartType="Custom" 
+                               ControlId="157b22d0-8006-4ec7-bf4b-ed62383fea76" 
+                               Order="10"
+                               Section="1"
+                               JsonControlData="{&quot;description&quot;:&quot;HelloWorld from JSON props&quot;,&quot;test&quot;:&quot;Multi-line text field&quot;,&quot;test1&quot;:false,&quot;test2&quot;:&quot;3&quot;,&quot;test3&quot;:false}" />              
+          </pnp:Controls>
+        </pnp:Zone>
+        <pnp:Zone Type="TwoColumn">
+          <pnp:Controls>
+            <pnp:CanvasControl WebPartType="Text" Section="1">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="Text" Value="&lt;strong&gt;bold&lt;/strong&gt; and &lt;em&gt;italic&lt;/em&gt;"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+            <pnp:CanvasControl WebPartType="Image" JsonControlData="{&quot;imageSourceType&quot;:2,&quot;altText&quot;:&quot;&quot;,&quot;fileName&quot;:&quot;PnP Sites Core MSDN API documentation.png&quot;,&quot;siteId&quot;:&quot;c953eccf-3dad-4dda-93ee-83d877dfa7b5&quot;,&quot;webId&quot;:&quot;8987acf9-cfee-4ddc-a4c2-125347ef8cd3&quot;,&quot;listId&quot;:&quot;48fe3228-7483-494c-b464-a3d2b4266605&quot;,&quot;uniqueId&quot;:&quot;5c71fba8-8c28-4207-a5cb-ed6c3f7cac95&quot;,&quot;imgWidth&quot;:1306,&quot;imgHeight&quot;:734}">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="imgWidth" Value="300"/>
+                <pnp:CanvasControlProperty Key="imgHeight" Value="200"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls>
+        </pnp:Zone>
+      </pnp:Zones> 
+    </pnp:ClientSidePage>
+  </pnp:ClientSidePages>
+</pnp:ProvisioningTemplate>
+
+

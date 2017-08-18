@@ -112,6 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public enum WebPartType
     {
         Custom,
+        Text,
         ContentRollup,
         BingMap,
         ContentEmbed,

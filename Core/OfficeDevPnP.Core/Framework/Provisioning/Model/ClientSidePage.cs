@@ -30,15 +30,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Defines the Pages Library of the Client Side Page, required attribute.
+        /// Defines the Page Name of the Client Side Page, required attribute.
         /// </summary>
-        public String PagesLibrary { get; set; }
+        public String PageName { get; set; }
 
         /// <summary>
         /// Defines whether to promote the page as a news article, optional attribute
         /// </summary>
         public Boolean PromoteAsNewsArticle { get; set; }
 
+        /// <summary>
+        /// Defines whether the page can be overwritten if it exists
+        /// </summary>
+        public Boolean Overwrite { get; set; }
         #endregion
 
         #region Constructors
@@ -63,8 +67,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|",
                 this.Zones.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                PagesLibrary?.GetHashCode() ?? 0,
-                PromoteAsNewsArticle.GetHashCode()
+                PageName?.GetHashCode() ?? 0,
+                PromoteAsNewsArticle.GetHashCode(),
+                Overwrite.GetHashCode()
             ).GetHashCode());
         }
 
@@ -95,8 +100,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             return (this.Zones.DeepEquals(other.Zones)  &&
-                this.PagesLibrary == other.PagesLibrary &&
-                this.PromoteAsNewsArticle == other.PromoteAsNewsArticle
+                this.PageName == other.PageName &&
+                this.PromoteAsNewsArticle == other.PromoteAsNewsArticle &&
+                this.Overwrite == other.Overwrite
                 );
         }
 

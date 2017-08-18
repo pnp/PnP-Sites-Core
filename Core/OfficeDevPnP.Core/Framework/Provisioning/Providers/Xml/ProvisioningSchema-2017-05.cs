@@ -7576,13 +7576,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     public partial class ClientSidePage {
         
         private CanvasZone[] zonesField;
-        
-        private string pagesLibraryField;
-        
+
+        private string pageNameField;
+
         private bool promoteAsNewsArticleField;
         
         private bool promoteAsNewsArticleFieldSpecified;
-        
+
+        private bool overwriteField;
+
+        private bool overwriteFieldSpecified;
+
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Zone", IsNullable=false)]
         public CanvasZone[] Zones {
@@ -7593,15 +7597,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.zonesField = value;
             }
         }
-        
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string PagesLibrary {
+        public string PageName
+        {
             get {
-                return this.pagesLibraryField;
+                return this.pageNameField;
             }
             set {
-                this.pagesLibraryField = value;
+                this.pageNameField = value;
             }
         }
         
@@ -7626,8 +7631,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.promoteAsNewsArticleFieldSpecified = value;
             }
         }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool Overwrite
+        {
+            get {
+                return this.overwriteField;
+            }
+            set {
+                this.overwriteField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool OverwriteSpecified
+        {
+            get {
+                return this.overwriteFieldSpecified;
+            }
+            set {
+                this.overwriteFieldSpecified = value;
+            }
+        }
+
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
@@ -7817,7 +7847,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         /// <remarks/>
         Custom,
-        
+
+        /// <remarks/>
+        Text,
+
         /// <remarks/>
         ContentRollup,
         
