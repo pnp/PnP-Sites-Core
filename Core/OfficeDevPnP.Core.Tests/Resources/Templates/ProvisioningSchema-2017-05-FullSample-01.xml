@@ -684,7 +684,7 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PagesLibrary="Pages" PromoteAsNewsArticle="true">
+        <pnp:ClientSidePage PageName="test.aspx" PromoteAsNewsArticle="true" Overwrite="true">
           <pnp:Zones>
             <pnp:Zone Type="OneColumn" Order="1">
               <pnp:Controls>
