@@ -396,7 +396,14 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
-                request.Credentials = web.Context.Credentials;
+                if (web.Context.Credentials != null)
+                {
+                    request.Credentials = web.Context.Credentials;
+                }
+                else
+                {
+                    request.UseDefaultCredentials = true;
+                }
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
