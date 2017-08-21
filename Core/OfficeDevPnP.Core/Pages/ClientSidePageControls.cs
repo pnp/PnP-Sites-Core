@@ -634,8 +634,8 @@ namespace OfficeDevPnP.Core.Pages
             // Can this control be hosted in this zone type?
             if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
             {
-                if (!this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
-                    !this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase))
+                if (!(this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
+                      this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase)))
                 {
                     throw new Exception("You cannot host this web part inside a one column full width zone, only an image web part or hero web part are allowed");
                 }
