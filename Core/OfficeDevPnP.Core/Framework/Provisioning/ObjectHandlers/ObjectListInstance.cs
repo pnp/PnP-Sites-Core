@@ -997,9 +997,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
-                if (!string.IsNullOrEmpty(templateList.Description) && templateList.Description != existingList.Description)
+                if (!string.IsNullOrEmpty(templateList.Description) && parser.ParseString(templateList.Description) != existingList.Description)
                 {
-                    existingList.Description = templateList.Description;
+                    existingList.Description = parser.ParseString(templateList.Description);
                     isDirty = true;
                 }
                 if (templateList.Hidden != existingList.Hidden)
@@ -1500,10 +1500,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 var listCreate = new ListCreationInformation();
-                listCreate.Description = list.Description;
+                listCreate.Description = parser.ParseString(list.Description);
                 listCreate.TemplateType = list.TemplateType;
                 listCreate.Title = parser.ParseString(list.Title);
-
+                
                 // the line of code below doesn't add the list to QuickLaunch
                 // the OnQuickLaunch property is re-set on the Created List object
                 listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
