@@ -1503,7 +1503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listCreate.Description = parser.ParseString(list.Description);
                 listCreate.TemplateType = list.TemplateType;
                 listCreate.Title = parser.ParseString(list.Title);
-                
+
                 // the line of code below doesn't add the list to QuickLaunch
                 // the OnQuickLaunch property is re-set on the Created List object
                 listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
