@@ -1661,6 +1661,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
+                    list = ExtractFolders(web, siteList, list);
+
                     list.Security = siteList.GetSecurity();
 
                     if (baseTemplateList != null)
@@ -1940,6 +1942,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+            return list;
+        }
+
+        private static Model.Folder ExtractFolder(Web web, Microsoft.SharePoint.Client.Folder siteFolder)
+        {
+            web.Context.Load(siteFolder);
+            web.Context.Load(siteFolder, f => f.Folders);
+            web.Context.ExecuteQueryRetry();
+            Model.Folder extractedFolder = new Model.Folder { Name = siteFolder.Name };
+            foreach(Microsoft.SharePoint.Client.Folder siteSubFolder in siteFolder.Folders)
+            {
+                extractedFolder.Folders.Add(ExtractFolder(web,siteSubFolder));
+            }
+            return extractedFolder;
+        }
+
+        private static ListInstance ExtractFolders(Web web, List siteList, ListInstance list)
+        {
+            web.Context.Load(siteList, l => l.RootFolder.Folders, l => l.BaseType, l => l.IsSystemList);
+            web.Context.ExecuteQueryRetry();
+
+            if (siteList.BaseType != BaseType.DocumentLibrary || siteList.IsSystemList)
+            {
+                return list;
+            }
+
+            foreach (Microsoft.SharePoint.Client.Folder siteFolder in siteList.RootFolder.Folders)
+            {
+                if (siteFolder.Name.ToLower() != "forms")
+                {
+                    list.Folders.Add(ExtractFolder(web, siteFolder));
+                }
+            }
+
             return list;
         }
 
