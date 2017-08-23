@@ -1205,6 +1205,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
+
+                if (templateList.Description.ContainsResourceToken())
+                {
+                    if (existingList.DescriptionResource.SetUserResourceValue(templateList.Description, parser))
+                    {
+                        isDirty = true;
+                    }
+                }
 #endif
                 if (existingList.EnableModeration != templateList.EnableModeration)
                 {
