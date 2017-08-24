@@ -1291,6 +1291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             result.DisplayName = source.DisplayName;
             result.Description = source.Description;
             result.BaseSiteTemplate = source.BaseSiteTemplate;
+            result.Scope = Model.ProvisioningTemplateScope.Undefined;
 
             if (source.Properties != null && source.Properties.Length > 0)
             {

@@ -6555,23 +6555,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201605 {
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true, Namespace = "http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
-    public enum ProvisioningTemplateScope
-    {
-
-        /// <remarks/>
-        Undefined,
-
-        /// <remarks/>
-        RootSite,
-
-        /// <remarks/>
-        Web,
-    }
-
-    /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.81.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
