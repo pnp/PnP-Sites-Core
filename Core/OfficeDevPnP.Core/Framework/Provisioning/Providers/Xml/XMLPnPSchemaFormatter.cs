@@ -29,8 +29,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                // return (new XMLPnPSchemaV201705Serializer());
-                return (new XMLPnPSchemaV201605Formatter());
+                return (new XMLPnPSchemaV201705Serializer());
+                // return (new XMLPnPSchemaV201605Formatter());
             }
         }
 
@@ -55,11 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201508Formatter());
                 case XMLPnPSchemaVersion.V201512:
                     return (new XMLPnPSchemaV201512Formatter());
-                case XMLPnPSchemaVersion.V201705:
-                    return (new XMLPnPSchemaV201705Serializer());
                 case XMLPnPSchemaVersion.V201605:
-                default:
                     return (new XMLPnPSchemaV201605Formatter());
+                case XMLPnPSchemaVersion.V201705:
+                default:
+                    return (new XMLPnPSchemaV201705Serializer());
             }
         }
 
@@ -82,11 +82,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 #pragma warning restore CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12:
                     return (new XMLPnPSchemaV201512Formatter());
-                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05:
-                    return (new XMLPnPSchemaV201705Serializer());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05:
-                default:
                     return (new XMLPnPSchemaV201605Formatter());
+                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05:
+                default:
+                    return (new XMLPnPSchemaV201705Serializer());
             }
         }
 
