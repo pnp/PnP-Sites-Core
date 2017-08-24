@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Defines a CanvasZone
+    /// Defines a CanvasSection
     /// </summary>
-    public partial class CanvasZone : BaseModel, IEquatable<CanvasZone>
+    public partial class CanvasSection : BaseModel, IEquatable<CanvasSection>
     {
         #region Private Members
 
@@ -30,23 +30,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Defines the order of the Canvas Zone for a Client-side Page.
+        /// Defines the order of the Canvas section for a Client-side Page.
         /// </summary>
         public Int32 Order { get; set; }
 
         /// <summary>
-        /// Defines the type of the Canvas Zone for a Client-side Page.
+        /// Defines the type of the Canvas section for a Client-side Page.
         /// </summary>
-        public CanvasZoneType Type { get; set; }
+        public CanvasSectionType Type { get; set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Constructor for CanvasZone class
+        /// Constructor for CanvasSection class
         /// </summary>
-        public CanvasZone()
+        public CanvasSection()
         {
             this._controls = new CanvasControlCollection(this.ParentTemplate);
         }
@@ -69,25 +69,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares object with CanvasZone class
+        /// Compares object with CanvasSection class
         /// </summary>
-        /// <param name="obj">Object that represents CanvasZone</param>
-        /// <returns>Checks whether object is CanvasZone class</returns>
+        /// <param name="obj">Object that represents CanvasSection</param>
+        /// <returns>Checks whether object is CanvasSection class</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is CanvasZone))
+            if (!(obj is CanvasSection))
             {
                 return (false);
             }
-            return (Equals((CanvasZone)obj));
+            return (Equals((CanvasSection)obj));
         }
 
         /// <summary>
-        /// Compares CanvasZone object based on Controls, Order, and Type
+        /// Compares CanvasSection object based on Controls, Order, and Type
         /// </summary>
-        /// <param name="other">CanvasZone Class object</param>
-        /// <returns>true if the CanvasZone object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CanvasZone other)
+        /// <param name="other">CanvasSection Class object</param>
+        /// <returns>true if the CanvasSection object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(CanvasSection other)
         {
             if (other == null)
             {
@@ -104,9 +104,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     }
 
     /// <summary>
-    /// The type of the Canvas Zone for a Client-side Page.
+    /// The type of the Canvas section for a Client-side Page.
     /// </summary>
-    public enum CanvasZoneType
+    public enum CanvasSectionType
     {
         /// <summary>
         /// One column

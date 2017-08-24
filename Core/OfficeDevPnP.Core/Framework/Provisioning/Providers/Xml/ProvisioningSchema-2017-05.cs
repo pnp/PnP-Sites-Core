@@ -4943,6 +4943,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class DataValue : BaseFieldValue {
     }
     
@@ -4953,6 +4954,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class BaseFieldValue {
         
         private string fieldNameField;
@@ -4987,6 +4989,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class FieldDefault : BaseFieldValue {
     }
     
@@ -6118,6 +6121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class WebPartPageWebPart {
         
         private System.Xml.XmlElement contentsField;
@@ -6435,6 +6439,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class WikiPageWebPart {
         
         private System.Xml.XmlElement contentsField;
@@ -7575,33 +7580,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public partial class ClientSidePage {
         
-        private CanvasZone[] zonesField;
-
+        private CanvasSection[] sectionsField;
+        
         private string pageNameField;
-
+        
         private bool promoteAsNewsArticleField;
         
         private bool promoteAsNewsArticleFieldSpecified;
-
+        
         private bool overwriteField;
-
+        
         private bool overwriteFieldSpecified;
-
+        
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Zone", IsNullable=false)]
-        public CanvasZone[] Zones {
+        [System.Xml.Serialization.XmlArrayItemAttribute("Section", IsNullable=false)]
+        public CanvasSection[] Sections {
             get {
-                return this.zonesField;
+                return this.sectionsField;
             }
             set {
-                this.zonesField = value;
+                this.sectionsField = value;
             }
         }
-
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string PageName
-        {
+        public string PageName {
             get {
                 return this.pageNameField;
             }
@@ -7631,11 +7635,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.promoteAsNewsArticleFieldSpecified = value;
             }
         }
-
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool Overwrite
-        {
+        public bool Overwrite {
             get {
                 return this.overwriteField;
             }
@@ -7643,11 +7646,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.overwriteField = value;
             }
         }
-
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool OverwriteSpecified
-        {
+        public bool OverwriteSpecified {
             get {
                 return this.overwriteFieldSpecified;
             }
@@ -7655,16 +7657,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.overwriteFieldSpecified = value;
             }
         }
-
     }
-
+    
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
-    public partial class CanvasZone {
+    public partial class CanvasSection {
         
         private CanvasControl[] controlsField;
         
@@ -7672,7 +7673,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         private bool orderFieldSpecified;
         
-        private CanvasZoneType typeField;
+        private CanvasSectionType typeField;
         
         private bool typeFieldSpecified;
         
@@ -7711,7 +7712,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public CanvasZoneType Type {
+        public CanvasSectionType Type {
             get {
                 return this.typeField;
             }
@@ -7752,11 +7753,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         private int orderField;
         
-        private int sectionField;
+        private int columnField;
         
         public CanvasControl() {
             this.orderField = 0;
-            this.sectionField = 0;
+            this.columnField = 0;
         }
         
         /// <remarks/>
@@ -7829,12 +7830,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         [System.ComponentModel.DefaultValueAttribute(0)]
-        public int Section {
+        public int Column {
             get {
-                return this.sectionField;
+                return this.columnField;
             }
             set {
-                this.sectionField = value;
+                this.columnField = value;
             }
         }
     }
@@ -7847,10 +7848,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         
         /// <remarks/>
         Custom,
-
+        
         /// <remarks/>
         Text,
-
+        
         /// <remarks/>
         ContentRollup,
         
@@ -7919,7 +7920,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
-    public enum CanvasZoneType {
+    public enum CanvasSectionType {
         
         /// <remarks/>
         OneColumn,
@@ -7945,10 +7946,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema")]
     public enum ProvisioningTemplateScope {
-
+        
         /// <remarks/>
         Undefined,
-
+        
         /// <remarks/>
         RootSite,
         

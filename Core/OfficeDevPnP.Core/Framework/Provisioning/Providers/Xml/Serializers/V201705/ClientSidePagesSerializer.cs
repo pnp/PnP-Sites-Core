@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the Site Webhooks
+    /// Class to serialize/deserialize the client side pages
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
@@ -31,18 +31,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var stringDictionaryType = Type.GetType(stringDictionaryTypeName, true);
                 var stringDictionaryKeySelector = CreateSelectorLambda(stringDictionaryType, "Key");
                 var stringDictionaryValueSelector = CreateSelectorLambda(stringDictionaryType, "Value");
-                expressions.Add(cp => cp.Zones[0].Controls[0].ControlProperties,
+                expressions.Add(cp => cp.Sections[0].Controls[0].ControlProperties,
                     new FromArrayToDictionaryValueResolver<String, String>(
                         stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
                 // Manage WebPartType for CanvasControl
-                expressions.Add(cp => cp.Zones[0].Controls[0].Type,
+                expressions.Add(cp => cp.Sections[0].Controls[0].Type,
                     new ExpressionValueResolver(
                         (s, p) => (Model.WebPartType)Enum.Parse(typeof(Model.WebPartType), s.GetPublicInstancePropertyValue("WebPartType").ToString())
                         ));
 
                 // Manage ControlId for CanvasControl
-                expressions.Add(cp => cp.Zones[0].Controls[0].ControlId,
+                expressions.Add(cp => cp.Sections[0].Controls[0].ControlId,
                     new FromStringToGuidValueResolver());
 
                 template.ClientSidePages.AddRange(
@@ -58,8 +58,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var clientSidePageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var clientSidePageType = Type.GetType(clientSidePageTypeName, true);
-            var canvasZoneTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasZone, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var canvasZoneType = Type.GetType(canvasZoneTypeName, true);
+            var canvasSectionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasSection, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var canvasSectionType = Type.GetType(canvasSectionTypeName, true);
             var canvasControlTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControl, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var canvasControlType = Type.GetType(canvasControlTypeName, true);
             var canvasControlWebPartTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControlWebPartType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -74,10 +74,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add($"{clientSidePageType}.OverwriteSpecified", new ExpressionValueResolver((s, p) => true));
 
             // Manage OrderSpecified property for CanvasZone
-            expressions.Add($"{canvasZoneType}.OrderSpecified", new ExpressionValueResolver((s, p) => true));
+            expressions.Add($"{canvasSectionType}.OrderSpecified", new ExpressionValueResolver((s, p) => true));
 
             // Manage TypeSpecified property for CanvasZone
-            expressions.Add($"{canvasZoneType}.TypeSpecified", new ExpressionValueResolver((s, p) => true));
+            expressions.Add($"{canvasSectionType}.TypeSpecified", new ExpressionValueResolver((s, p) => true));
 
             // Manage WebPartType for CanvasControl
             expressions.Add($"{canvasControlType}.WebPartType",

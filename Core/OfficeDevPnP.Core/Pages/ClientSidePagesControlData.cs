@@ -11,11 +11,12 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideCanvasPosition
     {
+
         /// <summary>
         /// Gets or sets JsonProperty "zoneIndex"
         /// </summary>
         [JsonProperty(PropertyName = "zoneIndex")]
-        public float ZoneIndex { get; set; }
+        public int ZoneIndex { get; set; }
         /// <summary>
         /// Gets or sets JsonProperty "sectionIndex"
         /// </summary>
@@ -24,8 +25,8 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Gets or sets JsonProperty "sectionFactor"
         /// </summary>
-        [JsonProperty(PropertyName = "sectionFactor")]
-        public int SectionFactor { get; set; }
+        [JsonProperty(PropertyName = "sectionFactor", NullValueHandling = NullValueHandling.Ignore)]
+        public int? SectionFactor { get; set; }
     }
 
     /// <summary>

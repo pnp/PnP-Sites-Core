@@ -2,8 +2,8 @@
 <pnp:ProvisioningTemplate ID="clientsidepages_add_1705" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
   <pnp:ClientSidePages>
     <pnp:ClientSidePage PageName="simple.aspx" Overwrite="true">
-      <pnp:Zones>
-        <pnp:Zone Type="OneColumn">
+      <pnp:Sections>
+        <pnp:Section Type="OneColumn">
           <pnp:Controls>
             <pnp:CanvasControl WebPartType="Text">
               <pnp:CanvasControlProperties>
@@ -11,41 +11,41 @@
               </pnp:CanvasControlProperties>
             </pnp:CanvasControl>
           </pnp:Controls>
-        </pnp:Zone>
-      </pnp:Zones>
+        </pnp:Section>
+      </pnp:Sections>
     </pnp:ClientSidePage>
     <pnp:ClientSidePage PageName="sitepages/demo.asdpx" PromoteAsNewsArticle="false" Overwrite="true">
-      <pnp:Zones>
-        <pnp:Zone Type="TwoColumn" Order="10">
+      <pnp:Sections>
+        <pnp:Section Type="TwoColumn" Order="10">
           <pnp:Controls>
-            <pnp:CanvasControl Order="10" Section="0" WebPartType="Custom" CustomWebPartName="HelloWorld">
+            <pnp:CanvasControl Order="10" Column="0" WebPartType="Custom" CustomWebPartName="HelloWorld">
               <pnp:CanvasControlProperties>
                 <pnp:CanvasControlProperty Key="description" Value="Hello world from control 1!!"/>
                 <pnp:CanvasControlProperty Key="test3" Value="false"/>
                 <pnp:CanvasControlProperty Key="test2" Value="1"/>
               </pnp:CanvasControlProperties>
             </pnp:CanvasControl>
-            <pnp:CanvasControl Order="10" Section="1" WebPartType="Custom" CustomWebPartName="HelloWorld">
+            <pnp:CanvasControl Order="10" Column="1" WebPartType="Custom" CustomWebPartName="HelloWorld">
               <pnp:CanvasControlProperties>
                 <pnp:CanvasControlProperty Key="description" Value="Hello world from control 2!!"/>
                 <pnp:CanvasControlProperty Key="test3" Value="true"/>
                 <pnp:CanvasControlProperty Key="test2" Value="2"/>
               </pnp:CanvasControlProperties>
             </pnp:CanvasControl>
-          </pnp:Controls> 
-        </pnp:Zone>
-        <pnp:Zone Type="ThreeColumn" Order="20">
-          <pnp:Controls>
-            <pnp:CanvasControl WebPartType="Custom" 
-                               ControlId="157b22d0-8006-4ec7-bf4b-ed62383fea76" 
-                               Order="10"
-                               Section="1"
-                               JsonControlData="{&quot;description&quot;:&quot;HelloWorld from JSON props&quot;,&quot;test&quot;:&quot;Multi-line text field&quot;,&quot;test1&quot;:false,&quot;test2&quot;:&quot;3&quot;,&quot;test3&quot;:false}" />              
           </pnp:Controls>
-        </pnp:Zone>
-        <pnp:Zone Type="TwoColumn">
+        </pnp:Section>
+        <pnp:Section Type="ThreeColumn" Order="20">
           <pnp:Controls>
-            <pnp:CanvasControl WebPartType="Text" Section="1">
+            <pnp:CanvasControl WebPartType="Custom"
+                               ControlId="157b22d0-8006-4ec7-bf4b-ed62383fea76"
+                               Order="10"
+                               Column="1"
+                               JsonControlData="{&quot;description&quot;:&quot;HelloWorld from JSON props&quot;,&quot;test&quot;:&quot;Multi-line text field&quot;,&quot;test1&quot;:false,&quot;test2&quot;:&quot;3&quot;,&quot;test3&quot;:false}" />
+          </pnp:Controls>
+        </pnp:Section>
+        <pnp:Section Type="TwoColumn">
+          <pnp:Controls>
+            <pnp:CanvasControl WebPartType="Text" Column="1">
               <pnp:CanvasControlProperties>
                 <pnp:CanvasControlProperty Key="Text" Value="&lt;strong&gt;bold&lt;/strong&gt; and &lt;em&gt;italic&lt;/em&gt;"/>
               </pnp:CanvasControlProperties>
@@ -57,8 +57,8 @@
               </pnp:CanvasControlProperties>
             </pnp:CanvasControl>
           </pnp:Controls>
-        </pnp:Zone>
-      </pnp:Zones> 
+        </pnp:Section>
+      </pnp:Sections> 
     </pnp:ClientSidePage>
   </pnp:ClientSidePages>
 </pnp:ProvisioningTemplate>

@@ -420,8 +420,8 @@
     </Compile>
     <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\CanvasZone.cs" />
-    <Compile Include="Framework\Provisioning\Model\CanvasZoneCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />

@@ -80,46 +80,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Load existing available controls
                     var componentsToAdd = page.AvailableClientSideComponents();
 
-                    // if no zone specified then add a default single column zone
-                    if (!clientSidePage.Zones.Any())
+                    // if no section specified then add a default single column section
+                    if (!clientSidePage.Sections.Any())
                     {
-                        clientSidePage.Zones.Add(new CanvasZone() { Type = CanvasZoneType.OneColumn, Order = 10 });
+                        clientSidePage.Sections.Add(new CanvasSection() { Type = CanvasSectionType.OneColumn, Order = 10 });
                     }
 
-                    int zoneCount = -1;
+                    int sectionCount = -1;
                     // Apply the "layout" and content
-                    foreach(var zone in clientSidePage.Zones)
+                    foreach(var section in clientSidePage.Sections)
                     {
-                        zoneCount++;
-                        switch (zone.Type)
+                        sectionCount++;
+                        switch (section.Type)
                         {
-                            case CanvasZoneType.OneColumn:
-                                page.AddZone(Pages.CanvasZoneTemplate.OneColumn, zone.Order);
+                            case CanvasSectionType.OneColumn:
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
                                 break;
-                            case CanvasZoneType.OneColumnFullWidth:
-                                page.AddZone(Pages.CanvasZoneTemplate.OneColumnFullWidth, zone.Order);
+                            case CanvasSectionType.OneColumnFullWidth:
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order);
                                 break;
-                            case CanvasZoneType.TwoColumn:
-                                page.AddZone(Pages.CanvasZoneTemplate.TwoColumn, zone.Order);
+                            case CanvasSectionType.TwoColumn:
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order);
                                 break;
-                            case CanvasZoneType.ThreeColumn:
-                                page.AddZone(Pages.CanvasZoneTemplate.ThreeColumn, zone.Order);
+                            case CanvasSectionType.ThreeColumn:
+                                page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order);
                                 break;
-                            case CanvasZoneType.TwoColumnLeft:
-                                page.AddZone(Pages.CanvasZoneTemplate.TwoColumnLeft, zone.Order);
+                            case CanvasSectionType.TwoColumnLeft:
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order);
                                 break;
-                            case CanvasZoneType.TwoColumnRight:
-                                page.AddZone(Pages.CanvasZoneTemplate.TwoColumnRight, zone.Order);
+                            case CanvasSectionType.TwoColumnRight:
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order);
                                 break;
                             default:
-                                page.AddZone(Pages.CanvasZoneTemplate.OneColumn, zone.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
                                 break;
                         }
                         
-                        // Add controls to the zone
-                        if (zone.Controls.Any())
+                        // Add controls to the section
+                        if (section.Controls.Any())
                         {
-                            foreach(var control in zone.Controls)
+                            foreach(var control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
 
@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = textProperty.Value;
-                                        page.AddControl(textControl, page.Zones[zoneCount].Sections[control.Section], control.Order);
+                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column], control.Order);
                                     }
                                 }
                                 // It is a web part
@@ -232,7 +232,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Order = control.Order
                                         };
 
-                                        page.AddControl(myWebPart, page.Zones[zoneCount].Sections[control.Section], control.Order);
+                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column], control.Order);
 
                                         // set properties using json string
                                         if (!String.IsNullOrEmpty(control.JsonControlData))
