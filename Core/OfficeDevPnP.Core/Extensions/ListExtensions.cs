@@ -947,7 +947,7 @@ namespace Microsoft.SharePoint.Client
                     : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
             var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
-            var lists = web.Context.LoadQuery(query).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
+            var lists = web.Context.LoadQuery(query.Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase)));
             web.Context.ExecuteQueryRetry();
             return lists.FirstOrDefault();
         }
