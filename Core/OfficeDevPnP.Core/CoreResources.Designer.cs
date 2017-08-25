@@ -1020,6 +1020,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This page is an uncustomized, default home page, so no need to extract it..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound {

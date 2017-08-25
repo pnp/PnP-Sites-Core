@@ -37,174 +37,182 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var homePage = web.LoadClientSidePage(homepageName);
 
-                    // Create the page
-                    var homePageInstance = new ClientSidePage()
+                    if (homePage.Sections.Count == 0 && homePage.Controls.Count == 0)
                     {
-                        PageName = homepageName,
-                        PromoteAsNewsArticle = false,
-                        Overwrite = false,
-                    };                    
-
-                    // Add the sections
-                    foreach(var section in homePage.Sections)
+                        // This is default home page which was not customized...and as such there's no page definition stored in the list item. We don't need to extact this page.
+                        scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage);
+                    }
+                    else
                     {
-                        // Set order
-                        var sectionInstance = new CanvasSection()
+                        // Create the page
+                        var homePageInstance = new ClientSidePage()
                         {
-                            Order = section.Order,
+                            PageName = homepageName,
+                            PromoteAsNewsArticle = false,
+                            Overwrite = false,
                         };
 
-                        // Set section type
-                        switch (section.Type)
+                        // Add the sections
+                        foreach (var section in homePage.Sections)
                         {
-                            case Pages.CanvasSectionTemplate.OneColumn:
-                                sectionInstance.Type = CanvasSectionType.OneColumn;
-                                break;
-                            case Pages.CanvasSectionTemplate.TwoColumn:
-                                sectionInstance.Type = CanvasSectionType.TwoColumn;
-                                break;
-                            case Pages.CanvasSectionTemplate.TwoColumnLeft:
-                                sectionInstance.Type = CanvasSectionType.TwoColumnLeft;
-                                break;
-                            case Pages.CanvasSectionTemplate.TwoColumnRight:
-                                sectionInstance.Type = CanvasSectionType.TwoColumnRight;
-                                break;
-                            case Pages.CanvasSectionTemplate.ThreeColumn:
-                                sectionInstance.Type = CanvasSectionType.ThreeColumn;
-                                break;
-                            case Pages.CanvasSectionTemplate.OneColumnFullWidth:
-                                sectionInstance.Type = CanvasSectionType.OneColumnFullWidth;
-                                break;
-                            default:
-                                sectionInstance.Type = CanvasSectionType.OneColumn;
-                                break;
-                        }
-
-                        // Add controls to section
-                        foreach(var column in section.Columns)
-                        {
-                            foreach(var control in column.Controls)
+                            // Set order
+                            var sectionInstance = new CanvasSection()
                             {
-                                // Create control 
-                                CanvasControl controlInstance = new CanvasControl()
-                                {
-                                    Column = column.Order,
-                                    ControlId = control.InstanceId,
-                                    Order = control.Order,
-                                };
+                                Order = section.Order,
+                            };
 
-                                // Set control type
-                                if (control.Type == typeof(Pages.ClientSideText))
-                                {
-                                    controlInstance.Type = WebPartType.Text;
+                            // Set section type
+                            switch (section.Type)
+                            {
+                                case Pages.CanvasSectionTemplate.OneColumn:
+                                    sectionInstance.Type = CanvasSectionType.OneColumn;
+                                    break;
+                                case Pages.CanvasSectionTemplate.TwoColumn:
+                                    sectionInstance.Type = CanvasSectionType.TwoColumn;
+                                    break;
+                                case Pages.CanvasSectionTemplate.TwoColumnLeft:
+                                    sectionInstance.Type = CanvasSectionType.TwoColumnLeft;
+                                    break;
+                                case Pages.CanvasSectionTemplate.TwoColumnRight:
+                                    sectionInstance.Type = CanvasSectionType.TwoColumnRight;
+                                    break;
+                                case Pages.CanvasSectionTemplate.ThreeColumn:
+                                    sectionInstance.Type = CanvasSectionType.ThreeColumn;
+                                    break;
+                                case Pages.CanvasSectionTemplate.OneColumnFullWidth:
+                                    sectionInstance.Type = CanvasSectionType.OneColumnFullWidth;
+                                    break;
+                                default:
+                                    sectionInstance.Type = CanvasSectionType.OneColumn;
+                                    break;
+                            }
 
-                                    // Set text content
-                                    controlInstance.ControlProperties = new System.Collections.Generic.Dictionary<string, string>(1)
+                            // Add controls to section
+                            foreach (var column in section.Columns)
+                            {
+                                foreach (var control in column.Controls)
+                                {
+                                    // Create control 
+                                    CanvasControl controlInstance = new CanvasControl()
+                                    {
+                                        Column = column.Order,
+                                        ControlId = control.InstanceId,
+                                        Order = control.Order,
+                                    };
+
+                                    // Set control type
+                                    if (control.Type == typeof(Pages.ClientSideText))
+                                    {
+                                        controlInstance.Type = WebPartType.Text;
+
+                                        // Set text content
+                                        controlInstance.ControlProperties = new System.Collections.Generic.Dictionary<string, string>(1)
                                     {
                                         { "Text", (control as Pages.ClientSideText).Text }
                                     };
-                                }
-                                else
-                                {
-                                    var webPartType = Pages.ClientSidePage.NameToClientSideWebPartEnum((control as Pages.ClientSideWebPart).WebPartId);
-                                    switch (webPartType)
+                                    }
+                                    else
                                     {
-                                        case Pages.DefaultClientSideWebParts.ContentRollup:
-                                            controlInstance.Type = WebPartType.ContentRollup;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.BingMap:
-                                            controlInstance.Type = WebPartType.BingMap;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.ContentEmbed:
-                                            controlInstance.Type = WebPartType.ContentEmbed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.DocumentEmbed:
-                                            controlInstance.Type = WebPartType.DocumentEmbed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.Image:
-                                            controlInstance.Type = WebPartType.Image;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.ImageGallery:
-                                            controlInstance.Type = WebPartType.ImageGallery;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.LinkPreview:
-                                            controlInstance.Type = WebPartType.LinkPreview;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.NewsFeed:
-                                            controlInstance.Type = WebPartType.NewsFeed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.NewsReel:
-                                            controlInstance.Type = WebPartType.NewsReel;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.PowerBIReportEmbed:
-                                            controlInstance.Type = WebPartType.PowerBIReportEmbed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.QuickChart:
-                                            controlInstance.Type = WebPartType.QuickChart;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.SiteActivity:
-                                            controlInstance.Type = WebPartType.SiteActivity;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.VideoEmbed:
-                                            controlInstance.Type = WebPartType.VideoEmbed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.YammerEmbed:
-                                            controlInstance.Type = WebPartType.YammerEmbed;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.Events:
-                                            controlInstance.Type = WebPartType.Events;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.GroupCalendar:
-                                            controlInstance.Type = WebPartType.GroupCalendar;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.Hero:
-                                            controlInstance.Type = WebPartType.Hero;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.List:
-                                            controlInstance.Type = WebPartType.List;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.PageTitle:
-                                            controlInstance.Type = WebPartType.PageTitle;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.People:
-                                            controlInstance.Type = WebPartType.People;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.QuickLinks:
-                                            controlInstance.Type = WebPartType.QuickLinks;
-                                            break;
-                                        case Pages.DefaultClientSideWebParts.ThirdParty:
-                                            controlInstance.Type = WebPartType.Custom;
-                                            break;
-                                        default:
-                                            controlInstance.Type = WebPartType.Custom;
-                                            break;
+                                        var webPartType = Pages.ClientSidePage.NameToClientSideWebPartEnum((control as Pages.ClientSideWebPart).WebPartId);
+                                        switch (webPartType)
+                                        {
+                                            case Pages.DefaultClientSideWebParts.ContentRollup:
+                                                controlInstance.Type = WebPartType.ContentRollup;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.BingMap:
+                                                controlInstance.Type = WebPartType.BingMap;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.ContentEmbed:
+                                                controlInstance.Type = WebPartType.ContentEmbed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.DocumentEmbed:
+                                                controlInstance.Type = WebPartType.DocumentEmbed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.Image:
+                                                controlInstance.Type = WebPartType.Image;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.ImageGallery:
+                                                controlInstance.Type = WebPartType.ImageGallery;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.LinkPreview:
+                                                controlInstance.Type = WebPartType.LinkPreview;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.NewsFeed:
+                                                controlInstance.Type = WebPartType.NewsFeed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.NewsReel:
+                                                controlInstance.Type = WebPartType.NewsReel;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.PowerBIReportEmbed:
+                                                controlInstance.Type = WebPartType.PowerBIReportEmbed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.QuickChart:
+                                                controlInstance.Type = WebPartType.QuickChart;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.SiteActivity:
+                                                controlInstance.Type = WebPartType.SiteActivity;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.VideoEmbed:
+                                                controlInstance.Type = WebPartType.VideoEmbed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.YammerEmbed:
+                                                controlInstance.Type = WebPartType.YammerEmbed;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.Events:
+                                                controlInstance.Type = WebPartType.Events;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.GroupCalendar:
+                                                controlInstance.Type = WebPartType.GroupCalendar;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.Hero:
+                                                controlInstance.Type = WebPartType.Hero;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.List:
+                                                controlInstance.Type = WebPartType.List;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.PageTitle:
+                                                controlInstance.Type = WebPartType.PageTitle;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.People:
+                                                controlInstance.Type = WebPartType.People;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.QuickLinks:
+                                                controlInstance.Type = WebPartType.QuickLinks;
+                                                break;
+                                            case Pages.DefaultClientSideWebParts.ThirdParty:
+                                                controlInstance.Type = WebPartType.Custom;
+                                                break;
+                                            default:
+                                                controlInstance.Type = WebPartType.Custom;
+                                                break;
+                                        }
+
+                                        // set the control properties
+                                        controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
                                     }
 
-                                    // set the control properties
-                                    controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+                                    // add control to section
+                                    sectionInstance.Controls.Add(controlInstance);
                                 }
-
-                                // add control to section
-                                sectionInstance.Controls.Add(controlInstance);
                             }
+
+                            homePageInstance.Sections.Add(sectionInstance);
                         }
 
-                        homePageInstance.Sections.Add(sectionInstance);
-                    }
+                        // Add the page to the template
+                        template.ClientSidePages.Add(homePageInstance);
 
-                    // Add the page to the template
-                    template.ClientSidePages.Add(homePageInstance);
-
-                    // Set the homepage
-                    if (template.WebSettings == null)
-                    {
-                        template.WebSettings = new WebSettings();
+                        // Set the homepage
+                        if (template.WebSettings == null)
+                        {
+                            template.WebSettings = new WebSettings();
+                        }
+                        template.WebSettings.WelcomePage = homePageUrl;
                     }
-                    template.WebSettings.WelcomePage = homePageUrl;
                 }
                 catch (ArgumentException ex)
                 {
-                    // TODO: log warning: page does not exist or it's not a client side page
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage, ex.Message);
                 }
 
                 // If a base template is specified then use that one to "cleanup" the generated template model

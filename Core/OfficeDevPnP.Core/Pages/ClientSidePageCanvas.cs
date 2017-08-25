@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -345,13 +346,27 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                // Add a default section if there wasn't one yet created
-                if (this.sections.Count == 0)
+                if (!Debugger.IsAttached)
                 {
-                    this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
-                }
+                    // Add a default section if there wasn't one yet created
+                    if (this.sections.Count == 0)
+                    {
+                        this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                    }
 
-                return sections.First();
+                    return sections.First();
+                }
+                else
+                {
+                    if (this.sections.Count > 0)
+                    {
+                        return sections.First();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
             }
         }
 
