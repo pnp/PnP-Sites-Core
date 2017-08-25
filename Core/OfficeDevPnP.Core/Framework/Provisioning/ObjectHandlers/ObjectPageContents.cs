@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 
                         }
-                        else if (string.IsNullOrEmpty(listItem.FieldValues[Pages.ClientSidePage.CanvasField].ToString()))
+                        else if (string.IsNullOrEmpty(listItem.FieldValues["CanvasContent1"].ToString()))
                         {
                             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
