@@ -19,6 +19,10 @@ namespace OfficeDevPnP.Core.Pages
     public enum DefaultClientSideWebParts
     {
         /// <summary>
+        /// Third party webpart
+        /// </summary>
+        ThirdParty,
+        /// <summary>
         /// Content Rollup webpart
         /// </summary>
         ContentRollup,
@@ -395,7 +399,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
-        public void AddSection(CanvasSectionTemplate template, int order)
+        public void AddSection(CanvasSectionTemplate template, float order)
         {
             var section = new CanvasSection(this, template, order);
             AddSection(section);
@@ -419,7 +423,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="section"><see cref="CanvasSection"/> object describing the section to add</param>
         /// <param name="order">Controls the order of the new section</param>
-        public void AddSection(CanvasSection section, int order)
+        public void AddSection(CanvasSection section, float order)
         {
             if (section == null)
             {
@@ -772,6 +776,40 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.People: return "7f718435-ee4d-431c-bdbf-9c4ff326f46e";
                 case DefaultClientSideWebParts.QuickLinks: return "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd";
                 default: return "";
+            }
+        }
+
+        /// <summary>
+        /// Return the type for a given first party name (=guid)
+        /// </summary>
+        /// <param name="name">Name (= guid) of the first party web part</param>
+        /// <returns>First party web part</returns>
+        public static DefaultClientSideWebParts NameToClientSideWebPartEnum(string name)
+        {
+            switch (name.ToLower())
+            {
+                case "daf0b71c-6de8-4ef7-b511-faae7c388708": return DefaultClientSideWebParts.ContentRollup;
+                case "e377ea37-9047-43b9-8cdb-a761be2f8e09": return DefaultClientSideWebParts.BingMap;
+                case "490d7c76-1824-45b2-9de3-676421c997fa": return DefaultClientSideWebParts.ContentEmbed;
+                case "b7dd04e1-19ce-4b24-9132-b60a1c2b910d": return DefaultClientSideWebParts.DocumentEmbed;
+                case "d1d91016-032f-456d-98a4-721247c305e8": return DefaultClientSideWebParts.Image;
+                case "af8be689-990e-492a-81f7-ba3e4cd3ed9c": return DefaultClientSideWebParts.ImageGallery;
+                case "6410b3b6-d440-4663-8744-378976dc041e": return DefaultClientSideWebParts.LinkPreview;
+                case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
+                case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
+                case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
+                case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
+                case "eb95c819-ab8f-4689-bd03-0c2d65d47b1f": return DefaultClientSideWebParts.SiteActivity;
+                case "275c0095-a77e-4f6d-a2a0-6a7626911518": return DefaultClientSideWebParts.VideoEmbed;
+                case "31e9537e-f9dc-40a4-8834-0e3b7df418bc": return DefaultClientSideWebParts.YammerEmbed;
+                case "20745d7d-8581-4a6c-bf26-68279bc123fc": return DefaultClientSideWebParts.Events;
+                case "6676088b-e28e-4a90-b9cb-d0d0303cd2eb": return DefaultClientSideWebParts.GroupCalendar;
+                case "c4bd7b2f-7b6e-4599-8485-16504575f590": return DefaultClientSideWebParts.Hero;
+                case "f92bf067-bc19-489e-a556-7fe95f508720": return DefaultClientSideWebParts.List;
+                case "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788": return DefaultClientSideWebParts.PageTitle;
+                case "7f718435-ee4d-431c-bdbf-9c4ff326f46e": return DefaultClientSideWebParts.People;
+                case "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd": return DefaultClientSideWebParts.QuickLinks;
+                default: return DefaultClientSideWebParts.ThirdParty;
             }
         }
 
@@ -1303,7 +1341,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="page"><see cref="ClientSidePage"/> instance that holds this section</param>
         /// <param name="canvasSectionTemplate">Type of section to create</param>
         /// <param name="order">Order of this section in the collection of sections on the page</param>
-        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, int order)
+        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, float order)
         {
             if (page == null)
             {
@@ -1354,7 +1392,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Order in which this section is presented on the page
         /// </summary>
-        public int Order { get; set; }
+        public float Order { get; set; }
 
         /// <summary>
         /// <see cref="CanvasColumn"/> instances that are part of this section

@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Pages
         /// Gets or sets JsonProperty "zoneIndex"
         /// </summary>
         [JsonProperty(PropertyName = "zoneIndex")]
-        public int ZoneIndex { get; set; }
+        public float ZoneIndex { get; set; }
         /// <summary>
         /// Gets or sets JsonProperty "sectionIndex"
         /// </summary>

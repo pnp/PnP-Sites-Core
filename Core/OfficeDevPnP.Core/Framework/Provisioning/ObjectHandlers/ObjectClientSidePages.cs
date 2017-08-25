@@ -241,36 +241,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
 
                                         // set using property collection
-                                        // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
-                                        var controlManifest = JObject.Parse(baseControl.Manifest);
-                                        JToken controlProperties = null;
-                                        if (controlManifest != null)
+                                        if (control.ControlProperties.Any())
                                         {
-                                            controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
-                                        }
-
-                                        foreach (var property in control.ControlProperties)
-                                        {
-                                            Type propertyType = typeof(string);
-
-                                            if (controlProperties != null)
+                                            // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
+                                            var controlManifest = JObject.Parse(baseControl.Manifest);
+                                            JToken controlProperties = null;
+                                            if (controlManifest != null)
                                             {
-                                                var defaultProperty = controlProperties.SelectToken(property.Key, false);
-                                                if (defaultProperty != null)
-                                                {
-                                                    propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+                                                controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
+                                            }
 
-                                                    if (propertyType == null)
+                                            foreach (var property in control.ControlProperties)
+                                            {
+                                                Type propertyType = typeof(string);
+
+                                                if (controlProperties != null)
+                                                {
+                                                    var defaultProperty = controlProperties.SelectToken(property.Key, false);
+                                                    if (defaultProperty != null)
                                                     {
-                                                        if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                        propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+
+                                                        if (propertyType == null)
                                                         {
-                                                            propertyType = typeof(int);
+                                                            if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                            {
+                                                                propertyType = typeof(int);
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
 
-                                            myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                                myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                            }
                                         }
                                     }
                                     else
