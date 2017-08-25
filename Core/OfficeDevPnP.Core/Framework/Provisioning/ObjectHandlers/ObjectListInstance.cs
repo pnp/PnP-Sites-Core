@@ -436,6 +436,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
                 viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
                 var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
+                
+                // Fix the calendar recurrence
+                if (viewType == ViewType.Calendar)
+                {
+                    viewType = ViewType.Calendar | ViewType.Recurrence;
+                }
 
                 // Fields
                 string[] viewFields = null;
