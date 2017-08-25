@@ -3376,7 +3376,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node1);
             result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Add(node2);
 
-            var serializer = new XMLPnPSchemaV201605Serializer();
+            var serializer = new XMLPnPSchemaV201605Formatter();
             provider.SaveAs(result, "ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml", serializer);
 
             var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml";
