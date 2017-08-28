@@ -203,8 +203,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 roleDefinitionCI.BasePermissions = basePermissions;
 
-                                web.RoleDefinitions.Add(roleDefinitionCI);
+                                var newRoleDefinition = web.RoleDefinitions.Add(roleDefinitionCI);
+                                web.Context.Load(newRoleDefinition, nrd => nrd.Name, nrd => nrd.Id);
                                 web.Context.ExecuteQueryRetry();
+                                parser.AddToken(new RoleDefinitionIdToken(web,newRoleDefinition.Name,newRoleDefinition.Id));
                             }
                             else
                             {

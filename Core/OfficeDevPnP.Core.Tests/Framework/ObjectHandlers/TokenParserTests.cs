@@ -34,6 +34,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var themesCatalog = ctx.Web.GetCatalog((int)ListTemplateType.ThemeCatalog);
                 ctx.Load(themesCatalog, t => t.RootFolder.ServerRelativeUrl);
 
+                var expectedRoleDefinitionId = 1073741826;
+                var roleDefinition = ctx.Web.RoleDefinitions.GetById(expectedRoleDefinitionId);
+                ctx.Load(roleDefinition);
+
                 ctx.ExecuteQueryRetry();
 
                 var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
@@ -70,6 +74,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var associatedVisitorGroupId = parser.ParseString("{groupid:associatedvisitorgroup}");
                 var groupId = parser.ParseString($"{{groupid:{ownerGroupName}}}");
                 var siteOwner = parser.ParseString("{siteowner}");
+                var roleDefinitionId = parser.ParseString($"{{roledefinitionid:{roleDefinition.Name}}}");
 
                 Assert.IsTrue(site1 == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(site2 == $"{ctx.Web.ServerRelativeUrl}/test");
@@ -96,7 +101,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(int.Parse(associatedVisitorGroupId) == ctx.Web.AssociatedVisitorGroup.Id);
                 Assert.IsTrue(associatedOwnerGroupId == groupId);
                 Assert.IsTrue(siteOwner == ctx.Site.Owner.LoginName);
-
+                
+                Assert.IsTrue(roleDefinitionId == expectedRoleDefinitionId.ToString(), $"Role Definition Id was not parsed correctly (expected:{expectedRoleDefinitionId};returned:{roleDefinitionId})");
             }
         }
 
