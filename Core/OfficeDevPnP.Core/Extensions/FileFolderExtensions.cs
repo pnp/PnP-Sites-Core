@@ -1275,8 +1275,7 @@ namespace Microsoft.SharePoint.Client
                 var context = file.Context;
 
                 // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
-                context.Load(file, f => f.ListItemAllFields);
-                context.ExecuteQueryRetry();
+                file.EnsureProperty(f => f.ListItemAllFields);
 
                 bool normalFile = !file.ListItemAllFields.ServerObjectIsNull ?? false; //normal files have listItemAllFields;
                 var checkOutRequired = false;
