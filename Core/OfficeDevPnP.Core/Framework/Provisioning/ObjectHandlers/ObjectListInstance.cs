@@ -1286,6 +1286,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                if(templateList.NoCrawl != existingList.NoCrawl)
+                {
+                    existingList.NoCrawl = existingList.NoCrawl;
+                    isDirty = true;
+                }
+
                 if (isDirty)
                 {
                     existingList.Update();
@@ -1477,7 +1483,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList = web.Lists.EnsureSiteAssetsLibrary();
                 //Check that Title and Description have the correct values
                 web.Context.Load(createdList, l => l.Title,
-                                              l => l.Description);
+                                              l => l.Description,
+                                              l => l.NoCrawl);
                 web.Context.ExecuteQueryRetry();
                 var isDirty = false;
                 if (!string.Equals(createdList.Description, list.Description))
@@ -1509,7 +1516,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
 
                 listCreate.Url = parser.ParseString(list.Url);
-                listCreate.TemplateFeatureId = list.TemplateFeatureID;
+                listCreate.TemplateFeatureId = list.TemplateFeatureID;                
 
                 createdList = web.Lists.Add(listCreate);
                 createdList.Update();
@@ -1662,6 +1669,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdList.ContentTypesEnabled = list.ContentTypesEnabled;
             }
+
+            createdList.NoCrawl = list.NoCrawl;
 
             createdList.Update();
 
@@ -1895,6 +1904,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.ValidationFormula,
                         l => l.ValidationMessage,
                         l => l.DocumentTemplateUrl,
+                        l => l.NoCrawl,
 #if !ONPREMISES
                         l => l.ListExperienceOptions,
                         l => l.ReadSecurity,
@@ -1984,6 +1994,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ValidationFormula = siteList.ValidationFormula,
                         ValidationMessage = siteList.ValidationMessage,
                         EnableModeration = siteList.EnableModeration,
+                        NoCrawl = siteList.NoCrawl,
 #if !ONPREMISES
                         ListExperience = (Model.ListExperience)Enum.Parse(typeof(Model.ListExperience), siteList.ListExperienceOptions.ToString()),
                         ReadSecurity = siteList.ReadSecurity,
