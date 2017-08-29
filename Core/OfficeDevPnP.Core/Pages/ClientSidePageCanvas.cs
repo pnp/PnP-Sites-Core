@@ -673,7 +673,6 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var item = file.ListItemAllFields;
-            page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
             if (!(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
             {
                 var html = item[ClientSidePage.CanvasField].ToString();
@@ -683,9 +682,18 @@ namespace OfficeDevPnP.Core.Pages
                     throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
                 }
 
+                page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
                 page.pageListItem = item;
                 page.LoadFromHtml(html);
             }
+            else
+            {
+                if (item[ClientSideApplicationId] == null || !item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+                }
+            }
+
             return page;
         }
 
