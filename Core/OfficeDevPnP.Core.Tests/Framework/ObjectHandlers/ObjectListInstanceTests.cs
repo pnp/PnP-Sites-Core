@@ -44,12 +44,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     list.DeleteObject();
                     isDirty = true;
                 }
-                var datarowList = ctx.Web.GetListByTitle(datarowListName);
-                if (datarowList != null)
-                {
-                    datarowList.DeleteObject();
-                    isDirty = true;
-                }
+
+                // Clean all data row test list instances, also after a previous test case failed.
+                DeleteDataRowLists(ctx);
+
                 var field = ctx.Web.GetFieldById<FieldText>(fieldId); // Guid matches ID in field caml.
                 var calculatedField = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId); // Guid matches ID in field caml.
 
@@ -69,6 +67,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     ctx.ExecuteQueryRetry();
                 }
             }
+        }
+
+        private void DeleteDataRowLists(ClientContext cc)
+        {
+            cc.Load(cc.Web.Lists, f => f.Include(t => t.Title));
+            cc.ExecuteQueryRetry();
+
+            foreach (var list in cc.Web.Lists.ToList())
+            {
+                if (list.Title.StartsWith("DataRowTest_"))
+                {
+                    list.DeleteObject();
+                }
+            }
+            cc.ExecuteQueryRetry();
         }
 
         [TestMethod]
