@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 13);
+            Assert.IsTrue(result.Count == 13 || result.Count == 14);
         }
 
         [TestMethod]
@@ -344,10 +344,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var _source1 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-01.xml");
-            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
 
             var _source2 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-02.xml");
-            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
         }
 
         [TestMethod]
