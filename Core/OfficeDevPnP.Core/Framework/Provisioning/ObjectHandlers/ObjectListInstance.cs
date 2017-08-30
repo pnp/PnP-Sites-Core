@@ -1288,7 +1288,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if(templateList.NoCrawl != existingList.NoCrawl)
                 {
-                    existingList.NoCrawl = existingList.NoCrawl;
+                    existingList.NoCrawl = templateList.NoCrawl;
                     isDirty = true;
                 }
 
