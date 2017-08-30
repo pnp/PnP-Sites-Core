@@ -129,6 +129,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 {
                     targetListElementXML.Remove();
                 }
+
+#if ONPREMISES
+                // Drop webhooks element from on-premises validation flow
+                if (listElement.Equals("Webhooks", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (sourceListElementXML.Any())
+                    {
+                        sourceListElementXML.Remove();
+                    }
+                }
+#endif
             }
 
             // Drop TemplateFeatureID from both
