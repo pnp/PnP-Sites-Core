@@ -718,6 +718,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
         /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
         /// <returns>The ListItem of the added package row</returns>
+        [Obsolete("Please use the DeployApplicationPackageToAppCatalog extension method on the Web class. This method will be removed in the October 2017 release.")]
         public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
         {
             var appCatalogSite = tenant.GetAppCatalog();
@@ -739,6 +740,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
         /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
         /// <returns>The ListItem of the added package row</returns>
+        [Obsolete("Please use the DeployApplicationPackageToAppCatalog extension method on the Web class. This method will be removed in the October 2017 release.")]
         public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
         {
             var appCatalogSite = tenant.GetAppCatalog();
@@ -760,7 +762,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
         /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
         /// <returns>The ListItem of the added package row</returns>
-        [Obsolete("Please use the DeployApplicationPackageToAppCatalog overloads that don't require you to specify the appCatalogSiteUrl parameter. This method will be removed in the October 2017 release.")]
+        [Obsolete("Please use the DeployApplicationPackageToAppCatalog overloads on the Web class that don't require you to specify the appCatalogSiteUrl parameter. This method will be removed in the October 2017 release.")]
         public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
         {
             return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSiteUrl, spPkgName, spPkgPath, autoDeploy, false, overwrite);
