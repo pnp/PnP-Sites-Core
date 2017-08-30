@@ -711,6 +711,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region ClientSide Package Deployment tests
+#if !ONPREMISES
         [TestMethod()]
         public void DeploySharePointFrameworkSolutionTest()
         {
@@ -719,6 +720,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 var app = ctx.Web.DeployApplicationPackageToAppCatalog("hello-world.sppkg", "../../Resources", true, true, true);
             }
         }
+#endif
         #endregion
 
         #region Helper methods

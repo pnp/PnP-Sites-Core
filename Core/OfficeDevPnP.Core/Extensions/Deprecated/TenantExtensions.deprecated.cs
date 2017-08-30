@@ -12,6 +12,7 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class TenantExtensions
     {
+#if !ONPREMISES
         /// <summary>
         /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
         /// </summary>
@@ -131,6 +132,6 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-
+#endif
     }
 }

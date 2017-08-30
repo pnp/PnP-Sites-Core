@@ -1330,6 +1330,7 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
         /// </summary>
@@ -1432,8 +1433,8 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-
-        #endregion
+#endif
+    #endregion
 
     }
 }
