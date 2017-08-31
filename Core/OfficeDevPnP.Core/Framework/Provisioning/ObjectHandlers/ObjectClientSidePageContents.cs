@@ -199,6 +199,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             homePageInstance.Sections.Add(sectionInstance);
                         }
 
+                        // Renumber the sections...when editing modern homepages you can end up with section with order 0.5 or 0.75...let's ensure we render section as of 1
+                        int sectionOrder = 1;
+                        foreach(var sectionInstance in homePageInstance.Sections)
+                        {
+                            sectionInstance.Order = sectionOrder;
+                            sectionOrder++;
+                        }
+
                         // Add the page to the template
                         template.ClientSidePages.Add(homePageInstance);
 

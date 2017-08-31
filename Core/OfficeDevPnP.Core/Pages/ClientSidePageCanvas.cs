@@ -673,25 +673,32 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var item = file.ListItemAllFields;
-            if (!(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
-            {
-                var html = item[ClientSidePage.CanvasField].ToString();
 
-                if (string.IsNullOrEmpty(html))
+            // Check if this is a client side page
+            if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                page.pageListItem = item;
+
+                // set layout type
+                if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
-                    throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+                    page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+                }
+                else
+                {
+                    throw new Exception($"Page layout type could not be determined for page {pageName}");                    
                 }
 
-                page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
-                page.pageListItem = item;
-                page.LoadFromHtml(html);
+                // If the canvasfield1 field is present and filled then let's parse it
+                if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
+                {
+                    var html = item[ClientSidePage.CanvasField].ToString();
+                    page.LoadFromHtml(html);
+                }
             }
             else
             {
-                if (item[ClientSideApplicationId] == null || !item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
-                }
+                throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
             }
 
             return page;
