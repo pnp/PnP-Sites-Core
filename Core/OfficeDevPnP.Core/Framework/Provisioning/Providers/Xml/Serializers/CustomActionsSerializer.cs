@@ -26,6 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
                 expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
                 expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+                expressions.Add(c => c.SiteCustomActions[0].ClientSideComponentId, new FromStringToGuidValueResolver());
 
                 PnPObjectsMapper.MapProperties(customActions, template.CustomActions, expressions, true);
             }
@@ -50,6 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver(() => true));
             expressions.Add($"{customActionType}.SequenceSpecified", new ExpressionValueResolver(() => true));
             expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModelToSchemalValueResolver(commandUIExtensionType));
+            expressions.Add($"{customActionType}.ClientSideComponentId", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
 
