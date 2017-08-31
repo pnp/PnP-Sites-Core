@@ -169,6 +169,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
             // IRM Settings
             resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());
 
+            // Manage empty TemplateFeatureID
+            resolvers.Add($"{listInstanceType}.TemplateFeatureID", new ExpressionValueResolver((s, v) => {
+                var value = (Guid)s.GetPublicInstancePropertyValue("TemplateFeatureID");
+                if (value == Guid.Empty)
+                {
+                    return (null);
+                }
+                else
+                {
+                    return (value.ToString());
+                }
+            }));
+
             persistence.GetPublicInstanceProperty("Lists")
                 .SetValue(
                     persistence,
