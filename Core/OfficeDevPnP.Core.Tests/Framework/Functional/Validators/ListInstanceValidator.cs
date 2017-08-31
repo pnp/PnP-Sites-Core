@@ -101,7 +101,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
         {
             XNamespace ns = SchemaVersion;
 
-#region Property handling
+            #region Property handling
             // Base property handling
             // Drop list properties if they're not provided in the source XML
             string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID",
@@ -142,9 +142,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 #endif
             }
 
-            // Drop TemplateFeatureID from both
-            DropAttribute(targetObject, "TemplateFeatureID");
-            DropAttribute(sourceObject, "TemplateFeatureID");
+            // Drop TemplateFeatureID from both -  this was a temp measure, should not be needed anymore with fixed serializer
+            //DropAttribute(targetObject, "TemplateFeatureID");
+            //DropAttribute(sourceObject, "TemplateFeatureID");
 
 #if ONPREMISES
             // MaxVersionLimit cannot be set in on-premises, so remove it before comparing before and after
@@ -199,9 +199,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
-#endregion
+            #endregion
 
-#region FieldRef handling
+            #region FieldRef handling
             var fieldRefs = sourceObject.Descendants(ns + "FieldRef");
             if (fieldRefs != null && fieldRefs.Any())
             {
@@ -246,9 +246,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
-#endregion
+            #endregion
 
-#region Field handling
+            #region Field handling
             var targetFields = targetObject.Descendants("Field");
             var sourceFields = sourceObject.Descendants("Field");
 
@@ -279,15 +279,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (sourceFields != null && sourceFields.Any())
                     {
                         if (!sourceFields.Where(p => p.Attribute("ID").Value.Equals(targetField.Attribute("ID").Value)).Any())
-                        { 
+                        {
                             targetField.Remove();
                         }
-                    }                    
+                    }
                 }
             }
-#endregion
+            #endregion
 
-#region View handling
+            #region View handling
             var sourceViews = sourceObject.Descendants("View");
             var targetViews = targetObject.Descendants("View");
 
@@ -326,15 +326,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
-#endregion
+            #endregion
 
-#region FieldDefaults handling
+            #region FieldDefaults handling
             var sourceFieldDefaults = sourceObject.Descendants(ns + "FieldDefault");
             if (sourceFieldDefaults != null && sourceFieldDefaults.Any())
             {
                 bool validFieldDefaults = true;
 
-                foreach(var sourceFieldDefault in sourceFieldDefaults)
+                foreach (var sourceFieldDefault in sourceFieldDefaults)
                 {
                     string fieldDefaultValue = sourceFieldDefault.Value;
                     string fieldDefaultName = sourceFieldDefault.Attribute("FieldName").Value;
@@ -376,9 +376,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetField.Descendants("Default").First().Remove();
                 }
             }
-#endregion
+            #endregion
 
-#region Folder handling
+            #region Folder handling
             // Folders are not extracted, so manual validation needed
             var sourceFolders = sourceObject.Descendants(ns + "Folders");
             if (sourceFolders != null && sourceFolders.Any())
@@ -391,7 +391,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (list != null)
                     {
                         list.EnsureProperty(w => w.RootFolder);
-                        foreach(var folder in sourceFolders.Descendants(ns + "Folder"))
+                        foreach (var folder in sourceFolders.Descendants(ns + "Folder"))
                         {
                             // only verify first level folders
                             if (folder.Parent.Equals(sourceFolders.First()))
@@ -414,8 +414,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                     foreach (var sourceRoleAssignment in sourceRoleAssignments)
                                     {
                                         sourceFolderSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
-                                            { Principal = sourceRoleAssignment.Attribute("Principal").Value,
-                                              RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
+                                        {
+                                            Principal = sourceRoleAssignment.Attribute("Principal").Value,
+                                            RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
                                         });
                                     }
 
@@ -440,9 +441,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     }
                 }
             }
-#endregion
+            #endregion
 
-#region DataRows handling
+            #region DataRows handling
             var sourceDataRows = sourceObject.Descendants(ns + "DataRow");
             if (sourceDataRows != null && sourceDataRows.Any())
             {
@@ -513,9 +514,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     sourceObject.Descendants(ns + "DataRows").First().Remove();
                 }
             }
-#endregion
+            #endregion
 
-#region Security handling
+            #region Security handling
             var sourceSecurity = sourceObject.Descendants(ns + "Security");
             if (sourceSecurity != null && sourceSecurity.Any())
             {
@@ -526,9 +527,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetSecurity.Remove();
                 }
             }
-#endregion
+            #endregion
 
-#region CustomAction handling
+            #region CustomAction handling
             var sourceCustomActions = sourceObject.Descendants(ns + "UserCustomActions");
             if (sourceCustomActions != null && sourceCustomActions.Any())
             {
@@ -541,7 +542,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetCustomActions.Remove();
                 }
             }
-#endregion
+            #endregion
         }
 
 #endregion
