@@ -45,7 +45,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     i++;
                 }
 
-                result.SetPublicInstancePropertyValue("AllowedContentType", allowedContentTypesArray);
+                if (allowedContentTypesArray.Length > 0)
+                {
+                    result.SetPublicInstancePropertyValue("AllowedContentType", allowedContentTypesArray);
+                }
+                else
+                {
+                    result = null;
+                }
             }
 
             return (result);
