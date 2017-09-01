@@ -430,7 +430,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static File UploadFile(ProvisioningTemplate template, Model.File file, Microsoft.SharePoint.Client.Folder folder, Stream stream)
         {
             File targetFile = null;
-            var fileName = template.Connector.GetFilenamePart(file.Src);
+            var fileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : template.Connector.GetFilenamePart(file.Src);
             try
             {
                 targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
