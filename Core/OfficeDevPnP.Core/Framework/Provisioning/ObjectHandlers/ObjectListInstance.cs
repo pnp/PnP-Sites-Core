@@ -491,7 +491,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var createdView = createdList.Views.Add(viewCI);
-                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView);
+                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView, v => v.ViewData);
                 web.Context.ExecuteQueryRetry();
 
                 if (urlHasValue)
@@ -597,6 +597,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                // View Data
+                var viewDataElement = viewElement.Descendants("ViewData").FirstOrDefault();
+                if (viewDataElement != null)
+                {
+                    if (viewDataElement.HasElements)
+                    {
+                        var fieldRefString = "";
+                        var fieldRefs = viewDataElement.Descendants("FieldRef");
+                        foreach (var fieldRef in fieldRefs)
+                        {
+                            fieldRefString += fieldRef.ToString();
+                        }
+                        if (createdView.ViewData != fieldRefString)
+                        {
+                            createdView.ViewData = fieldRefString;
+                            createdView.Update();
+                        }
+                    }
+                }
 
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
