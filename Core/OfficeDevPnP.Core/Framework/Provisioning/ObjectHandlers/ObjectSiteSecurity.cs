@@ -177,7 +177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // With the change from october, manage permission levels on subsites as well
-                if (siteSecurity.SiteSecurityPermissions != null) 
+                if (siteSecurity.SiteSecurityPermissions != null)
                 {
                     var existingRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions.Include(wr => wr.Name, wr => wr.BasePermissions, wr => wr.Description));
                     web.Context.ExecuteQueryRetry();
@@ -203,8 +203,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 roleDefinitionCI.BasePermissions = basePermissions;
 
-                                web.RoleDefinitions.Add(roleDefinitionCI);
+                                var newRoleDefinition = web.RoleDefinitions.Add(roleDefinitionCI);
+                                web.Context.Load(newRoleDefinition, nrd => nrd.Name, nrd => nrd.Id);
                                 web.Context.ExecuteQueryRetry();
+                                parser.AddToken(new RoleDefinitionIdToken(web,newRoleDefinition.Name,newRoleDefinition.Id));
                             }
                             else
                             {
@@ -235,6 +237,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
+                    var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments);
                     var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
                     web.Context.ExecuteQueryRetry();
 
@@ -242,54 +245,79 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                         {
-                            var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
-                            if (roleDefinition != null)
+                            if (!roleAssignment.Remove)
                             {
-                                Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
-
-                                if (principal == null)
+                                var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
+                                if (roleDefinition != null)
                                 {
-                                    var parsedUser = parser.ParseString(roleAssignment.Principal);
-                                    if (parsedUser.Contains("#ext#"))
-                                    {
-                                        principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
+                                    Principal principal = GetPrincipal(web, parser, scope, groups, roleAssignment);
 
-                                        if (principal == null)
-                                        {
-                                            scope.LogInfo($"Skipping external user {parsedUser}");
-                                        }
-                                    }
-                                    else
+                                    if (principal != null)
                                     {
-                                        try
-                                        {
-                                            principal = web.EnsureUser(parsedUser);
-                                            web.Context.ExecuteQueryRetry();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
-                                        }
+                                        var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
+                                        roleDefinitionBindingCollection.Add(roleDefinition);
+                                        web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                                        web.Context.ExecuteQueryRetry();
                                     }
                                 }
-
-                                if (principal != null)
+                                else
                                 {
-                                    var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(web.Context);
-                                    roleDefinitionBindingCollection.Add(roleDefinition);
-                                    web.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
-                                    web.Context.ExecuteQueryRetry();
+                                    scope.LogWarning("Role assignment {0} not found in web", roleAssignment.RoleDefinition);
                                 }
                             }
                             else
                             {
-                                scope.LogWarning("Role assignment {0} not found in web", roleAssignment.RoleDefinition);
+                                var principal = GetPrincipal(web, parser, scope, groups, roleAssignment);
+                                var assignmentsForPrincipal = webRoleAssignments.Where(t => t.PrincipalId == principal.Id);
+                                foreach (var assignmentForPrincipal in assignmentsForPrincipal)
+                                {
+                                    var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignment.RoleDefinition);
+                                    if (binding != null)
+                                    {
+                                        assignmentForPrincipal.DeleteObject();
+                                        web.Context.ExecuteQueryRetry();
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
             return parser;
+        }
+
+        private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)
+        {
+            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+
+            if (principal == null)
+            {
+                var parsedUser = parser.ParseString(roleAssignment.Principal);
+                if (parsedUser.Contains("#ext#"))
+                {
+                    principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
+
+                    if (principal == null)
+                    {
+                        scope.LogInfo($"Skipping external user {parsedUser}");
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        principal = web.EnsureUser(parsedUser);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
+                    }
+                }
+            }
+            principal.EnsureProperty(p => p.Id);
+            return principal;
         }
 
         private static void AddUserToGroup(Web web, Group group, IEnumerable<User> members, PnPMonitoredScope scope, TokenParser parser)
@@ -480,7 +508,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.HasUniqueRoleAssignments)
                 {
-                    
+
                     var permissionKeys = Enum.GetNames(typeof(PermissionKind));
                     if (!web.IsSubSite())
                     {
@@ -498,7 +526,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     scope.LogDebug("Processing custom permissionKey definition {0}", permissionKey);
                                     var permissionKind =
-                                        (PermissionKind) Enum.Parse(typeof(PermissionKind), permissionKey);
+                                        (PermissionKind)Enum.Parse(typeof(PermissionKind), permissionKey);
                                     if (webRoleDefinition.BasePermissions.Has(permissionKind))
                                     {
                                         modelRoleDefinitions.Permissions.Add(permissionKind);
@@ -558,7 +586,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 template.Security = siteSecurity;
-               
+
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
@@ -675,7 +703,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = (template.Security.AdditionalAdministrators.Any() ||
+                _willProvision = template.Security != null && (template.Security.AdditionalAdministrators.Any() ||
                                   template.Security.AdditionalMembers.Any() ||
                                   template.Security.AdditionalOwners.Any() ||
                                   template.Security.AdditionalVisitors.Any() ||
@@ -685,7 +713,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (_willProvision == true)
                 {
                     // if subweb and site inheritance is not broken
-                    if (web.IsSubSite() && template.Security.BreakRoleInheritance == false && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false) 
+                    if (web.IsSubSite() && template.Security.BreakRoleInheritance == false && web.EnsureProperty(w => w.HasUniqueRoleAssignments) == false)
                     {
                         _willProvision = false;
                     }

@@ -391,7 +391,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
         #endregion
 
-        #region ClientSide Package Deployment tests
+        #region AppCatalog tests
         [TestMethod()]
         public void GetAppCatalogTest()
         {

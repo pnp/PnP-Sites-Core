@@ -20,28 +20,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var pages = persistence.GetPublicInstancePropertyValue("Pages");
 
-            var expressions = new Dictionary<Expression<Func<Page, Object>>, IResolver>();
-            expressions.Add(p => p.Layout, new FromStringToEnumValueResolver(typeof(WikiPageLayout)));
+            if (pages != null)
+            {
+                var expressions = new Dictionary<Expression<Func<Page, Object>>, IResolver>();
+                expressions.Add(p => p.Layout, new FromStringToEnumValueResolver(typeof(WikiPageLayout)));
 
-            var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.BaseFieldValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
-            var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "FieldName");
-            var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
-            expressions.Add(f => f.Fields, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+                var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.BaseFieldValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
+                var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "FieldName");
+                var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
+                expressions.Add(f => f.Fields, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
-            expressions.Add(f => f.Security, new PropertyObjectTypeResolver<File>(fl => fl.Security,
-                fl => fl.GetPublicInstancePropertyValue("Security")?.GetPublicInstancePropertyValue("BreakRoleInheritance")));
-            expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
-            expressions.Add(f => f.WebParts[0].Row, new ExpressionValueResolver((s, v) => (uint)(int)v));
-            expressions.Add(f => f.WebParts[0].Column, new ExpressionValueResolver((s, v) => (uint)(int)v));
-            expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
+                expressions.Add(f => f.Security, new PropertyObjectTypeResolver<File>(fl => fl.Security,
+                    fl => fl.GetPublicInstancePropertyValue("Security")?.GetPublicInstancePropertyValue("BreakRoleInheritance")));
+                expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
+                expressions.Add(f => f.WebParts[0].Row, new ExpressionValueResolver((s, v) => (uint)(int)v));
+                expressions.Add(f => f.WebParts[0].Column, new ExpressionValueResolver((s, v) => (uint)(int)v));
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
 
-            template.Pages.AddRange(
-                PnPObjectsMapper.MapObjects<Page>(pages,
-                    new CollectionFromSchemaToModelTypeResolver(typeof(Page)),
-                    expressions,
-                    recursive: true)
-                    as IEnumerable<Page>);
+                template.Pages.AddRange(
+                    PnPObjectsMapper.MapObjects<Page>(pages,
+                        new CollectionFromSchemaToModelTypeResolver(typeof(Page)),
+                        expressions,
+                        recursive: true)
+                        as IEnumerable<Page>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
@@ -68,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{pageType}.LayoutSpecified", new ExpressionValueResolver((s, v) => true));
 
                 expressions.Add($"{pageType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
-                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 expressions.Add($"{baseNamespace}.WikiPageWebPart.Row", new ExpressionValueResolver<uint>((v) => (int)v));
                 expressions.Add($"{baseNamespace}.WikiPageWebPart.Column", new ExpressionValueResolver<uint>((v) => (int)v));

@@ -78,7 +78,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    if (!string.IsNullOrEmpty(web.SiteLogoUrl))
+                    // Extract site logo if property has been set and it's not dynamic image from _api URL
+                    if (!string.IsNullOrEmpty(web.SiteLogoUrl) && (!web.SiteLogoUrl.ToLowerInvariant().Contains("_api/")))
                     {
                         if (PersistFile(web, creationInfo, scope, web.SiteLogoUrl))
                         {

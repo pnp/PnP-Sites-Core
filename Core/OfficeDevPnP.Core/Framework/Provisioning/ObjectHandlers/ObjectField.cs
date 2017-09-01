@@ -45,7 +45,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     currentFieldIndex++;
 
-                    XElement templateFieldElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
+                    XElement templateFieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
                     var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
                     WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
@@ -101,7 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         templateFieldElement.Attribute("List").Remove();
                     }
 
-                    if (IsFieldXmlValid(parser.ParseString(originalFieldXml), parser, web.Context))
+                    if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, web.Context))
                     {
                         foreach (var attribute in templateFieldElement.Attributes())
                         {
@@ -136,7 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             existingFieldElement.Attributes("Version").Remove();
                         }
-                        existingField.SchemaXml = parser.ParseString(existingFieldElement.ToString(), "~sitecollection", "~site");
+                        existingField.SchemaXml = parser.ParseXmlString(existingFieldElement.ToString(), "~sitecollection", "~site");
                         existingField.UpdateAndPushChanges(true);
                         web.Context.Load(existingField, f => f.TypeAsString, f => f.DefaultValue);
                         try
@@ -289,7 +289,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 templateFieldElement.Attribute("List").Remove();
             }
 
-            var fieldXml = parser.ParseString(templateFieldElement.ToString(), "~sitecollection", "~site");
+            var fieldXml = parser.ParseXmlString(templateFieldElement.ToString(), "~sitecollection", "~site");
 
             if (IsFieldXmlValid(fieldXml, parser, web.Context))
             {

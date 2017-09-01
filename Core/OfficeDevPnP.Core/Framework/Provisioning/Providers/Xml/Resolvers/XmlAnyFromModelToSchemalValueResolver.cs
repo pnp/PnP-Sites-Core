@@ -11,13 +11,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <summary>
     /// Resolves a Dictionary into an Array of objects
     /// </summary>
-    internal class XmlAnyFromModeToSchemalValueResolver : IValueResolver
+    internal class XmlAnyFromModelToSchemalValueResolver : IValueResolver
     {
         public string Name => this.GetType().Name;
 
         private Type elementType;
 
-        public XmlAnyFromModeToSchemalValueResolver(Type elementType)
+        public XmlAnyFromModelToSchemalValueResolver(Type elementType)
         {
             this.elementType = elementType;
         }

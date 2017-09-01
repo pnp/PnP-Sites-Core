@@ -27,8 +27,8 @@ namespace OfficeDevPnP.Core.Pages
         internal string dataVersion;
         internal string canvasControlData;
         internal Guid instanceId;
-        internal CanvasZone zone;
         internal CanvasSection section;
+        internal CanvasColumn column;
         #endregion
 
         #region construction
@@ -46,17 +46,6 @@ namespace OfficeDevPnP.Core.Pages
 
         #region Properties
         /// <summary>
-        /// The <see cref="CanvasZone"/> hosting this control
-        /// </summary>
-        public CanvasZone Zone
-        {
-            get
-            {
-                return this.zone;
-            }
-        }
-
-        /// <summary>
         /// The <see cref="CanvasSection"/> hosting this control
         /// </summary>
         public CanvasSection Section
@@ -64,6 +53,17 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.section;
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="CanvasColumn"/> hosting this control
+        /// </summary>
+        public CanvasColumn Column
+        {
+            get
+            {
+                return this.column;
             }
         }
 
@@ -156,7 +156,49 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void Delete()
         {
-            this.Section.Zone.Page.Controls.Remove(this);
+            this.Column.Section.Page.Controls.Remove(this);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        public void Move(CanvasSection newSection)
+        {
+            this.section = newSection;
+            this.column = newSection.DefaultColumn;
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        /// <param name="order">New order for the control in the new section</param>
+        public void Move(CanvasSection newSection, int order)
+        {
+            Move(newSection);
+            this.order = order;
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        public void Move(CanvasColumn newColumn)
+        {
+            this.section = newColumn.Section;
+            this.column = newColumn;
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        /// <param name="order">New order for the control in the new column</param>
+        public void Move(CanvasColumn newColumn, int order)
+        {
+            Move(newColumn);
+            this.order = order;
         }
 
         /// <summary>
@@ -191,7 +233,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             else if (controlData.ControlType == 0)
             {
-                return typeof(CanvasSection);
+                return typeof(CanvasColumn);
             }
 
             return null;
@@ -290,10 +332,10 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>Html representation of this <see cref="ClientSideText"/> control</returns>
         public override string ToHtml(int controlIndex)
         {
-            // Can this control be hosted in this zone type?
-            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            // Can this control be hosted in this section type?
+            if (this.Section.Type == CanvasSectionTemplate.OneColumnFullWidth)
             {
-                throw new Exception("You cannot host text controls inside a one column full width zone, only an image web part or hero web part are allowed");
+                throw new Exception("You cannot host text controls inside a one column full width section, only an image web part or hero web part are allowed");
             }
 
             // Obtain the json data
@@ -302,9 +344,9 @@ namespace OfficeDevPnP.Core.Pages
                 Id = this.InstanceId.ToString("D"),
                 Position = new ClientSideCanvasControlPosition()
                 {
-                    ZoneIndex = this.Zone.Order,
-                    SectionIndex = this.Section.Order,
-                    SectionFactor = this.Section.SectionFactor,
+                    ZoneIndex = this.Section.Order,
+                    SectionIndex = this.Column.Order,
+                    SectionFactor = this.Column.ColumnFactor,
                     ControlIndex = controlIndex,
                 },
                 EditorType = "CKEditor" };
@@ -342,7 +384,16 @@ namespace OfficeDevPnP.Core.Pages
 
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
             this.rte = div.GetAttribute(TextRteAttribute);
-            this.Text = div.InnerHtml;
+
+            // By default text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits
+            if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase))
+            {
+                this.Text = (div.FirstChild as IElement).InnerHtml;
+            }
+            else
+            {
+                this.Text = div.InnerHtml;
+            }
 
             // load data from the data-sp-controldata attribute
             var jsonSerializerSettings = new JsonSerializerSettings()
@@ -580,13 +631,13 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>HTML representation of the client side web part</returns>
         public override string ToHtml(int controlIndex)
         {
-            // Can this control be hosted in this zone type?
-            if (this.Zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+            // Can this control be hosted in this section type?
+            if (this.Section.Type == CanvasSectionTemplate.OneColumnFullWidth)
             {
-                if (!this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
-                    !this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase))
+                if (!(this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
+                      this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase)))
                 {
-                    throw new Exception("You cannot host this web part inside a one column full width zone, only an image web part or hero web part are allowed");
+                    throw new Exception("You cannot host this web part inside a one column full width section, only an image web part or hero web part are allowed");
                 }
             }
 
@@ -598,9 +649,9 @@ namespace OfficeDevPnP.Core.Pages
                 WebPartId = this.WebPartId,
                 Position = new ClientSideCanvasControlPosition()
                 {
-                    ZoneIndex = this.Zone.Order,
-                    SectionIndex = this.Section.Order,
-                    SectionFactor = this.Section.SectionFactor,
+                    ZoneIndex = this.Section.Order,
+                    SectionIndex = this.Column.Order,
+                    SectionFactor = this.Column.ColumnFactor,
                     ControlIndex = controlIndex,
                 },
             };
@@ -664,7 +715,8 @@ namespace OfficeDevPnP.Core.Pages
             JObject wpJObject = JObject.Parse(decoded);
             this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
-            this.propertiesJson = wpJObject["properties"].ToString(Formatting.None);
+            // Set property to trigger correct loading of properties 
+            this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
             this.webPartId = wpJObject["id"].Value<string>();
 
             var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();

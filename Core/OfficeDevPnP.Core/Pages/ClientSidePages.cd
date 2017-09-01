@@ -3,21 +3,21 @@
   <Class Name="OfficeDevPnP.Core.Pages.ClientSidePage">
     <Position X="13" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AhECgIBAQgANQECGRloICQAiISkkCCEJAgEiUAAQEXA=</HashCode>
-      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="OfficeDevPnP.Core.Pages.CanvasZone">
-    <Position X="18.25" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AAEAAAAAAAAQAAAAEAAAAAAAAAAAQAAQAUAgAAAAAAA=</HashCode>
+      <HashCode>AhECgMBAQgANQEwGRkIIiQAgISkkSCMZAEEgUAAQEWA=</HashCode>
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OfficeDevPnP.Core.Pages.CanvasSection">
+    <Position X="18.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAASAAAAEAAAAAAAAAAAAAAACQAgACgAAAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.CanvasColumn">
     <Position X="16" Y="0.5" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>AAMAAAAAAAEAAAAAADAAAAAQAAAQQAAAEAAgAAAAAAA=</HashCode>
+      <HashCode>gAMAAAAABAEAAAAAACAAAAAABAAAQAAAAAAgAIAAAAA=</HashCode>
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -38,7 +38,7 @@
   <Class Name="OfficeDevPnP.Core.Pages.CanvasControl">
     <Position X="4.5" Y="0.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>gAMBAQQBAQEEAAAAADAAAAAQAAkAQAEIAQBAQIAAQAA=</HashCode>
+      <HashCode>gAMBAQQBAYEEAAAAACBAAAAAQAkAQAEIAQBAQIAAQAA=</HashCode>
       <FileName>Pages\ClientSidePageControls.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -91,7 +91,7 @@
       <FileName>Pages\ClientSidePageCanvas.cs</FileName>
     </TypeIdentifier>
   </Enum>
-  <Enum Name="OfficeDevPnP.Core.Pages.CanvasZoneTemplate">
+  <Enum Name="OfficeDevPnP.Core.Pages.CanvasSectionTemplate">
     <Position X="18.5" Y="5.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAGAAQAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>

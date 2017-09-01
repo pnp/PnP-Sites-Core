@@ -12,11 +12,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <summary>
     /// Resolves a collection type from Domain Model to Schema
     /// </summary>
-    internal class RoleAssigmentsFromModelToSchemaTypeResolver : ITypeResolver
+    internal class RoleAssignmentsFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
-        public RoleAssigmentsFromModelToSchemaTypeResolver()
+        public RoleAssignmentsFromModelToSchemaTypeResolver()
         {
         }
 

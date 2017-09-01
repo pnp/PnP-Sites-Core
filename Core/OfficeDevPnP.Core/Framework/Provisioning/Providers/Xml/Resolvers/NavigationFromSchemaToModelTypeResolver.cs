@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class NavigationFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
+
 
         private String _navigationType;
 
@@ -66,7 +68,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     var structuralNavigation = navigation.GetPublicInstancePropertyValue("StructuralNavigation");
                     var structuralNavigationNodes = structuralNavigation.GetPublicInstancePropertyValue("NavigationNode");
 
-                    resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                    if (!resolvers.ContainsKey($"{targetNavigation.GetType().FullName}.NavigationNodes"))
+                    {
+                        resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                    }
 
                     PnPObjectsMapper.MapProperties(structuralNavigation, targetNavigation, resolvers, true);
 

@@ -51,14 +51,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public void CanProvisionObjects()
         {
             var template = new ProvisioningTemplate();
-
+            var roleDefinitionName = "UT_RoleDefinition";
 
             foreach (var user in admins)
             {
                 template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName });
             }
-
-
+            template.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition()
+            {
+                Name = roleDefinitionName
+            });
 
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -66,7 +68,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var memberGroup = ctx.Web.AssociatedMemberGroup;
+                var roleDefinitions = ctx.Web.RoleDefinitions;
                 ctx.Load(memberGroup, g => g.Users);
+                ctx.Load(roleDefinitions);
                 ctx.ExecuteQueryRetry();
                 foreach (var user in admins)
                 {
@@ -75,6 +79,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     ctx.ExecuteQueryRetry();
                     Assert.IsNotNull(existingUser);
                 }
+                Assert.IsTrue(roleDefinitions.Any(rd => rd.Name == roleDefinitionName),"New role definition wasn't found after provisioning");
             }
         }
 

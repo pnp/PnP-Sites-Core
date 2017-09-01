@@ -47,11 +47,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 sourceValue as IEnumerable<KeyValuePair<TKey, TValue>>:
                 source as IEnumerable<KeyValuePair<TKey, TValue>>;
 
-            if (null == sourceDictionary)
+            if (null == sourceDictionary && null != sourceValue)
             {
                 throw new ArgumentException("Invalid source object. Expected type implementing IEnumerable<KeyValuePair<TKey, TValue>>", "source");
             }
-            else if(sourceDictionary.Count() > 0)
+            else if (null != sourceDictionary && sourceDictionary.Count() > 0)
             {
                 var listType = typeof(List<>);
                 var resultType = this._targetArrayItemType.MakeArrayType();

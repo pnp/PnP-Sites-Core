@@ -1274,6 +1274,16 @@ namespace Microsoft.SharePoint.Client
             {
                 var context = file.Context;
 
+                // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
+                try
+                {
+                    file.EnsureProperty(f => f.ListItemAllFields);
+                }
+                catch
+                {
+                    // Catch all errors...there's a valid scenario for this failing when this is not a file associated to a listitem
+                }
+
                 bool normalFile = !file.ListItemAllFields.ServerObjectIsNull ?? false; //normal files have listItemAllFields;
                 var checkOutRequired = false;
                 if (normalFile)

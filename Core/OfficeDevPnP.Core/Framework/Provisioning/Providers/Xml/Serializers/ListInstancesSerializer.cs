@@ -23,70 +23,73 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var lists = persistence.GetPublicInstancePropertyValue("Lists");
 
-            var expressions = new Dictionary<Expression<Func<ListInstance, Object>>, IResolver>();
+            if (lists != null)
+            {
+                var expressions = new Dictionary<Expression<Func<ListInstance, Object>>, IResolver>();
 
-            // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
-            expressions.Add(l => l.FieldRefs[0].Id, new FromStringToGuidValueResolver());
-            expressions.Add(l => l.TemplateFeatureID, new FromStringToGuidValueResolver());
+                // Define custom resolver for FieldRef.ID because needs conversion from String to GUID
+                expressions.Add(l => l.FieldRefs[0].Id, new FromStringToGuidValueResolver());
+                expressions.Add(l => l.TemplateFeatureID, new FromStringToGuidValueResolver());
 
-            // Define custom resolvers for DataRows Values and Security
-            var dataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var dataRowValueType = Type.GetType(dataRowValueTypeName, true);
-            var dataRowValueKeySelector = CreateSelectorLambda(dataRowValueType, "FieldName");
-            var dataRowValueValueSelector = CreateSelectorLambda(dataRowValueType, "Value");
-            expressions.Add(l => l.DataRows[0].Values,
-                new FromArrayToDictionaryValueResolver<String, String>(
-                    dataRowValueType, dataRowValueKeySelector, dataRowValueValueSelector));
+                // Define custom resolvers for DataRows Values and Security
+                var dataRowValueTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DataValue, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dataRowValueType = Type.GetType(dataRowValueTypeName, true);
+                var dataRowValueKeySelector = CreateSelectorLambda(dataRowValueType, "FieldName");
+                var dataRowValueValueSelector = CreateSelectorLambda(dataRowValueType, "Value");
+                expressions.Add(l => l.DataRows[0].Values,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        dataRowValueType, dataRowValueKeySelector, dataRowValueValueSelector));
 
-            expressions.Add(l => l.DataRows[0].Security, new SecurityFromSchemaToModelTypeResolver());
+                expressions.Add(l => l.DataRows[0].Security, new SecurityFromSchemaToModelTypeResolver());
 
-            // Define custom resolver for Fields Defaults
-            var fieldDefaultTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FieldDefault, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var fieldDefaultType = Type.GetType(fieldDefaultTypeName, true);
-            var fieldDefaultKeySelector = CreateSelectorLambda(fieldDefaultType, "FieldName");
-            var fieldDefaultValueSelector = CreateSelectorLambda(fieldDefaultType, "Value");
-            expressions.Add(l => l.FieldDefaults,
-                new FromArrayToDictionaryValueResolver<String, String>(
-                    fieldDefaultType, fieldDefaultKeySelector, fieldDefaultValueSelector));
+                // Define custom resolver for Fields Defaults
+                var fieldDefaultTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FieldDefault, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var fieldDefaultType = Type.GetType(fieldDefaultTypeName, true);
+                var fieldDefaultKeySelector = CreateSelectorLambda(fieldDefaultType, "FieldName");
+                var fieldDefaultValueSelector = CreateSelectorLambda(fieldDefaultType, "Value");
+                expressions.Add(l => l.FieldDefaults,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        fieldDefaultType, fieldDefaultKeySelector, fieldDefaultValueSelector));
 
-            // Define custom resolver for Security
-            expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
+                // Define custom resolver for Security
+                expressions.Add(l => l.Security, new SecurityFromSchemaToModelTypeResolver());
 
-            // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
-            expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
-            expressions.Add(l => l.UserCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
-            expressions.Add(l => l.UserCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+                // Define custom resolver for UserCustomActions > CommandUIExtension (XML Any)
+                expressions.Add(l => l.UserCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+                expressions.Add(l => l.UserCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
+                expressions.Add(l => l.UserCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
 
-            // Define custom resolver for Views (XML Any + RemoveExistingViews)
-            expressions.Add(l => l.Views,
-                new ListViewsFromSchemaToModelTypeResolver());
-            expressions.Add(l => l.RemoveExistingViews,
-                new RemoveExistingViewsFromSchemaToModelValueResolver());
+                // Define custom resolver for Views (XML Any + RemoveExistingViews)
+                expressions.Add(l => l.Views,
+                    new ListViewsFromSchemaToModelTypeResolver());
+                expressions.Add(l => l.RemoveExistingViews,
+                    new RemoveExistingViewsFromSchemaToModelValueResolver());
 
-            // Define custom resolver for recursive Folders
-            expressions.Add(l => l.Folders,
-               new FoldersFromSchemaToModelTypeResolver());
+                // Define custom resolver for recursive Folders
+                expressions.Add(l => l.Folders,
+                   new FoldersFromSchemaToModelTypeResolver());
 
-            // Fields
-            expressions.Add(l => l.Fields, new ExpressionValueResolver((s, v) => {
-                var fields = new Model.FieldCollection(template);
-                var sourceFields = s.GetPublicInstancePropertyValue("Fields")?.GetPublicInstancePropertyValue("Any") as System.Xml.XmlElement[];
-                if (sourceFields != null)
-                {
-                    foreach (var f in sourceFields)
+                // Fields
+                expressions.Add(l => l.Fields, new ExpressionValueResolver((s, v) => {
+                    var fields = new Model.FieldCollection(template);
+                    var sourceFields = s.GetPublicInstancePropertyValue("Fields")?.GetPublicInstancePropertyValue("Any") as System.Xml.XmlElement[];
+                    if (sourceFields != null)
                     {
-                        fields.Add(new Model.Field { SchemaXml = f.OuterXml });
+                        foreach (var f in sourceFields)
+                        {
+                            fields.Add(new Model.Field { SchemaXml = f.OuterXml });
+                        }
                     }
-                }
-                return fields;
-            }));
+                    return fields;
+                }));
 
-            template.Lists.AddRange(
-                PnPObjectsMapper.MapObjects<ListInstance>(lists,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)), 
-                        expressions, 
-                        recursive: true)
-                        as IEnumerable<ListInstance>);
+                template.Lists.AddRange(
+                    PnPObjectsMapper.MapObjects<ListInstance>(lists,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)),
+                            expressions,
+                            recursive: true)
+                            as IEnumerable<ListInstance>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
@@ -128,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             var commandUIExtensionType = Type.GetType(commandUIExtensionTypeName, true);
             var registrationTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RegistrationType";
             var registrationTypeType = Type.GetType(registrationTypeTypeName, true);
-            resolvers.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
+            resolvers.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModelToSchemalValueResolver(commandUIExtensionType));
             resolvers.Add($"{customActionType}.Rights", new FromBasePermissionsToStringValueResolver());
             resolvers.Add($"{customActionType}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
             resolvers.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver(() => true));

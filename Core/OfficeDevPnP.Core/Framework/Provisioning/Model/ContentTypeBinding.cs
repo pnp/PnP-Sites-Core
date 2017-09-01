@@ -29,6 +29,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; } = false;
 
+        /// <summary>
+        /// Declares if the Content Type should be Hidden from New button of the list or library, optional attribute.
+        /// </summary>
+        public bool Hidden { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -39,10 +44,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 (this.ContentTypeId != null ? this.ContentTypeId.GetHashCode() : 0),
                 this.Default.GetHashCode(),
-                this.Remove.GetHashCode()
+                this.Remove.GetHashCode(),
+                this.Hidden.GetHashCode()
             ).GetHashCode());
         }
 
@@ -74,7 +80,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.ContentTypeId == other.ContentTypeId &&
                 this.Default == other.Default &&
-                this.Remove == other.Remove
+                this.Remove == other.Remove &&
+                this.Hidden == other.Hidden
                 );
         }
 

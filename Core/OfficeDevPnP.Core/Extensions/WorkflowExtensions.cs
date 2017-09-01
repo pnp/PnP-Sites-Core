@@ -130,11 +130,13 @@ namespace Microsoft.SharePoint.Client
             if (historyList == null)
             {
                 historyList = list.ParentWeb.CreateList(ListTemplateType.WorkflowHistory, historyListName, false);
+                historyList.EnsureProperty(l => l.Id);
             }
             var taskList = list.ParentWeb.GetListByTitle(taskListName);
             if (taskList == null)
             {
                 taskList = list.ParentWeb.CreateList(ListTemplateType.Tasks, taskListName, false);
+                taskList.EnsureProperty(l => l.Id);
             }
 
 

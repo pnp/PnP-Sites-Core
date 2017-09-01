@@ -53,6 +53,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         preferences,
                         PnPObjectsMapper.MapObjects(template.Parameters,
                             new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
+
+                var parameters = preferences.GetPublicInstancePropertyValue("Parameters");
+                if (parameters != null && ((Array)parameters).Length == 0)
+                {
+                    preferences.GetPublicInstanceProperty("Parameters").SetValue(preferences, null);
+                }
             }
         }
     }

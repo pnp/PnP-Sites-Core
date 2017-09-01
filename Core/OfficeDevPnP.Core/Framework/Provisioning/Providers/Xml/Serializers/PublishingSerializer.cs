@@ -18,6 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var publishing = persistence.GetPublicInstancePropertyValue("Publishing");
+
             if (publishing != null)
             {
                 template.Publishing = new Publishing();

@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var addIns = persistence.GetPublicInstancePropertyValue("AddIns");
+
             if (addIns != null)
             {
                 template.AddIns.AddRange(

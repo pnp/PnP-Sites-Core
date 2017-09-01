@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+
             if (filesCollection != null)
             {
                 var files = filesCollection.GetPublicInstancePropertyValue("File");
@@ -72,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{fileType}.LevelSpecified", new ExpressionValueResolver(() => true));
 
                 expressions.Add($"{fileType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
-                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 expressions.Add($"{baseNamespace}.WebPartPageWebPart.Order", new ExpressionValueResolver<uint>((v) => (int)v));
                 //convert webpart content to xml element

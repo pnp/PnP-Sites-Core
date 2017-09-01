@@ -78,6 +78,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// The Target file name for the File, optional attribute. If missing, the original file name will be used.
+        /// </summary>
+        public String TargetFileName { get; set; }
+
         #endregion
 
         #region Constructors
@@ -130,13 +135,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 (this.Folder != null ? this.Folder.GetHashCode() : 0),
                 this.Overwrite.GetHashCode(),
                 (this.Src != null ? this.Src.GetHashCode() : 0),
                 this.WebParts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                (this.Security != null ? this.Security.GetHashCode() : 0)
+                (this.Security != null ? this.Security.GetHashCode() : 0),
+                this.TargetFileName?.GetHashCode()
             ).GetHashCode());
         }
 
@@ -155,7 +161,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares File object based on Folder, Overwrite, Src, WebParts, Properties and Security.
+        /// Compares File object based on Folder, Overwrite, Src, WebParts, Properties, Security, and TargetFileName.
         /// </summary>
         /// <param name="other">File object</param>
         /// <returns>true if the File object is equal to the current object; otherwise, false.</returns>
@@ -171,7 +177,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Src == other.Src &&
                 this.WebParts.DeepEquals(other.WebParts) &&
                 this.Properties.DeepEquals(other.Properties) &&
-                (this.Security != null ? this.Security.Equals(other.Security) : true)
+                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
+                this.TargetFileName == other.TargetFileName
             );
         }
 

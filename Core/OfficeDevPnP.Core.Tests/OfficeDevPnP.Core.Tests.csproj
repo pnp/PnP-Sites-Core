@@ -392,6 +392,7 @@
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
     <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ClientSidePagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
@@ -507,6 +508,12 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
+    <Content Include="Framework\Functional\Templates\list_delta_1705_1.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\list_add_1705.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
@@ -514,6 +521,7 @@
     <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
+    <Content Include="Framework\Functional\Templates\clientsidepages_add_1705.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
@@ -526,6 +534,7 @@
     <None Include="Resources\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\hello-world.sppkg" />
     <None Include="Resources\HelloWorldApp.app" />
     <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
     <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
@@ -637,6 +646,8 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

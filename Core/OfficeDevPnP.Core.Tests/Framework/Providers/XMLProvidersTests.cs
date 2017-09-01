@@ -165,18 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 11);
-            Assert.IsTrue(result[0].Files.Count == 5);
-            Assert.IsTrue(result[1].Files.Count == 5);
-            Assert.IsTrue(result[2].Files.Count == 6);
-            Assert.IsTrue(result[3].Files.Count == 5);
-            Assert.IsTrue(result[4].Files.Count == 1);
-            Assert.IsTrue(result[5].Files.Count == 5);
-            Assert.IsTrue(result[6].Files.Count == 1);
-            Assert.IsTrue(result[7].Files.Count == 1);
-            Assert.IsTrue(result[8].Files.Count == 1);
-            Assert.IsTrue(result[9].Files.Count == 5);
-            Assert.IsTrue(result[10].Files.Count == 2);
+            Assert.IsTrue(result.Count == 13 || result.Count == 14);
         }
 
         [TestMethod]
@@ -355,10 +344,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var _source1 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-01.xml");
-            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
 
             var _source2 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-02.xml");
-            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
         }
 
         [TestMethod]
@@ -577,6 +566,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
 
             var template2 = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201705()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201705Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2017-05-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            provider.SaveAs(template1, "ProvisioningSchema-2017-05-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2017-05-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2017-05-FullSample-01-OUT.xml", serializer);
             Assert.IsNotNull(template2);
         }
 

@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         RequiresInitiationForm = templateDefinition.RequiresInitiationForm,
                                         RestrictToScope = parser.ParseString(templateDefinition.RestrictToScope),
                                         RestrictToType = templateDefinition.RestrictToType != "Universal" ? templateDefinition.RestrictToType : null,
-                                        Xaml = parser.ParseString(xaml.ToString()),
+                                        Xaml = parser.ParseXmlString(xaml.ToString()),
                                     };
 
                                 //foreach (var p in definition.Properties)

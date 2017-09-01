@@ -43,7 +43,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
             fields.SetPublicInstancePropertyValue("Any", xmlFields.ToArray());
 
-            persistence.SetPublicInstancePropertyValue("SiteFields", fields);
+            if (fields != null && ((Array)fields.GetPublicInstancePropertyValue("Any")).Length > 0)
+            {
+                persistence.SetPublicInstancePropertyValue("SiteFields", fields);
+            }
         }
     }
 }

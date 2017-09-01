@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
@@ -85,6 +86,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
                     {
+#if !ONPREMISES
+                        ClientSideComponentId = customAction.ClientSideComponentId,
+                        ClientSideComponentProperties = customAction.ClientSideComponentProperties,
+#endif 
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
                         Description = parser.ParseString(customAction.Description),
                         Group = customAction.Group,
@@ -188,6 +193,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
             }
+
+#if !ONPREMISES
+            if (customAction.ClientSideComponentId != null && customAction.ClientSideComponentId != Guid.Empty)
+            {
+                if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
+                {
+                    existingCustomAction.ClientSideComponentId = customAction.ClientSideComponentId;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(customAction.ClientSideComponentProperties))
+            {
+                if (existingCustomAction.ClientSideComponentProperties != parser.ParseString(customAction.ClientSideComponentProperties))
+                {
+                    existingCustomAction.ClientSideComponentProperties = parser.ParseString(customAction.ClientSideComponentProperties);
+                }
+            }
+#endif
 
             if (existingCustomAction.Description != customAction.Description)
             {

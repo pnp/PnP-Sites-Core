@@ -1081,4 +1081,19 @@
   <data name="Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout" xml:space="preserve">
     <value>Updating field {0} received a timeout when pushing changes to lists</value>
   </data>
+  <data name="SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget" xml:space="preserve">
+    <value>Scope of template does not match target</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound" xml:space="preserve">
+    <value>Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite" xml:space="preserve">
+    <value>Page with name {0} did already exist and the overwrite flag was not set, so nothing happended</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage" xml:space="preserve">
+    <value>This page is an uncustomized, default home page, so no need to extract it.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage" xml:space="preserve">
+    <value>This page is not a valid client side page and can't be extracted. Underlying error = {0}.</value>
+  </data>
 </root>

@@ -396,7 +396,14 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
 
-                request.Credentials = web.Context.Credentials;
+                if (web.Context.Credentials != null)
+                {
+                    request.Credentials = web.Context.Credentials;
+                }
+                else
+                {
+                    request.UseDefaultCredentials = true;
+                }
 
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
@@ -1008,7 +1015,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderName = serverRelativePageUrl.Substring(0, serverRelativePageUrl.LastIndexOf("/", StringComparison.Ordinal));
-            var folder = web.GetFolderByServerRelativeUrl(folderName);
+            
+            //ensure that folderName does not contain the web's ServerRelativeUrl -> otherwise it will fail on SubSites
+            if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
+            {
+                folderName = folderName.Substring(web.ServerRelativeUrl.Length);
+            }
+            var folder = web.EnsureFolderPath(folderName);
+
             folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
 
             web.Context.ExecuteQueryRetry();

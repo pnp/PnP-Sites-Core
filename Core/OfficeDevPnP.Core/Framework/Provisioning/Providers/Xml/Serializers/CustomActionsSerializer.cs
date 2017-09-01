@@ -18,13 +18,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var customActions = persistence.GetPublicInstancePropertyValue("CustomActions");
-            var expressions = new Dictionary<Expression<Func<CustomActions, Object>>, IResolver>();
 
-            expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
-            expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
-            expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+            if (customActions != null)
+            {
+                var expressions = new Dictionary<Expression<Func<CustomActions, Object>>, IResolver>();
 
-            PnPObjectsMapper.MapProperties(customActions, template.CustomActions, expressions, true);
+                expressions.Add(c => c.SiteCustomActions[0].CommandUIExtension, new XmlAnyFromSchemaToModelValueResolver("CommandUIExtension"));
+                expressions.Add(c => c.SiteCustomActions[0].RegistrationType, new FromStringToEnumValueResolver(typeof(UserCustomActionRegistrationType)));
+                expressions.Add(c => c.SiteCustomActions[0].Rights, new FromStringToBasePermissionsValueResolver());
+                expressions.Add(c => c.SiteCustomActions[0].ClientSideComponentId, new FromStringToGuidValueResolver());
+
+                PnPObjectsMapper.MapProperties(customActions, template.CustomActions, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
@@ -45,11 +50,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add($"{customActionType}.RegistrationType", new FromStringToEnumValueResolver(registrationTypeType));
             expressions.Add($"{customActionType}.RegistrationTypeSpecified", new ExpressionValueResolver(() => true));
             expressions.Add($"{customActionType}.SequenceSpecified", new ExpressionValueResolver(() => true));
-            expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModeToSchemalValueResolver(commandUIExtensionType));
+            expressions.Add($"{customActionType}.CommandUIExtension", new XmlAnyFromModelToSchemalValueResolver(commandUIExtensionType));
+            expressions.Add($"{customActionType}.ClientSideComponentId", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
 
             PnPObjectsMapper.MapProperties(template.CustomActions, target, expressions, recursive: true);
 
-            persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
+            if (target != null &&
+                ((target.GetPublicInstancePropertyValue("SiteCustomActions") != null && ((Array)target.GetPublicInstancePropertyValue("SiteCustomActions")).Length > 0) ||
+                (target.GetPublicInstancePropertyValue("WebCustomActions") != null && ((Array)target.GetPublicInstancePropertyValue("WebCustomActions")).Length > 0)))
+            {
+                persistence.GetPublicInstanceProperty("CustomActions").SetValue(persistence, target);
+            }
         }
     }
 }

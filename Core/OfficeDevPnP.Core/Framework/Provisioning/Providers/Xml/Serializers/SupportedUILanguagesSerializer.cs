@@ -21,10 +21,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var supportedUILanguages = persistence.GetPublicInstancePropertyValue("SupportedUILanguages");
 
-            template.SupportedUILanguages.AddRange(
-                PnPObjectsMapper.MapObjects(supportedUILanguages,
-                        new CollectionFromSchemaToModelTypeResolver(typeof(SupportedUILanguage)))
-                        as IEnumerable<SupportedUILanguage>);
+            if (supportedUILanguages != null)
+            {
+                template.SupportedUILanguages.AddRange(
+                    PnPObjectsMapper.MapObjects(supportedUILanguages,
+                            new CollectionFromSchemaToModelTypeResolver(typeof(SupportedUILanguage)))
+                            as IEnumerable<SupportedUILanguage>);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
