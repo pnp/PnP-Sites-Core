@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
                 expressions.Add(f => f.WebParts[0].Row, new ExpressionValueResolver((s, v) => (uint)(int)v));
                 expressions.Add(f => f.WebParts[0].Column, new ExpressionValueResolver((s, v) => (uint)(int)v));
-                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).OuterXml : null));
 
                 template.Pages.AddRange(
                     PnPObjectsMapper.MapObjects<Page>(pages,

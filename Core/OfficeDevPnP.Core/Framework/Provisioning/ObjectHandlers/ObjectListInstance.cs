@@ -436,6 +436,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
                 viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
                 var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
+                
+                // Fix the calendar recurrence
+                if (viewType == ViewType.Calendar)
+                {
+                    viewType = ViewType.Calendar | ViewType.Recurrence;
+                }
 
                 // Fields
                 string[] viewFields = null;
@@ -1016,9 +1022,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
                 }
-                if (!string.IsNullOrEmpty(templateList.Description) && templateList.Description != existingList.Description)
+                if (!string.IsNullOrEmpty(templateList.Description) && parser.ParseString(templateList.Description) != existingList.Description)
                 {
-                    existingList.Description = templateList.Description;
+                    existingList.Description = parser.ParseString(templateList.Description);
                     isDirty = true;
                 }
                 if (templateList.Hidden != existingList.Hidden)
@@ -1220,6 +1226,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (templateList.Title.ContainsResourceToken())
                 {
                     if (existingList.TitleResource.SetUserResourceValue(templateList.Title, parser))
+                    {
+                        isDirty = true;
+                    }
+                }
+
+                if (templateList.Description.ContainsResourceToken())
+                {
+                    if (existingList.DescriptionResource.SetUserResourceValue(templateList.Description, parser))
                     {
                         isDirty = true;
                     }
@@ -1526,7 +1540,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 var listCreate = new ListCreationInformation();
-                listCreate.Description = list.Description;
+                listCreate.Description = parser.ParseString(list.Description);
                 listCreate.TemplateType = list.TemplateType;
                 listCreate.Title = parser.ParseString(list.Title);
 

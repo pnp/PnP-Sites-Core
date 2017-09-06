@@ -455,6 +455,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 documentSetTemplate.Update(true);
                 web.Context.ExecuteQueryRetry();
             }
+            else if (templateContentType.Id.StartsWith(BuiltInContentTypeId.Workflow2013Task + "00"))
+            {
+                // If the Workflow Task (SP2013) contains more than one outcomeChoice, the Form UI will not show
+                // the buttons associated each to choices, but fallback to classic Save and Cancel buttons.
+                // +"00" is used to target only inherited content types and not alter OOB
+                var outcomeFields = web.Context.LoadQuery(
+                    createdCT.Fields.Where(f => f.TypeAsString == "OutcomeChoice"));
+                web.Context.ExecuteQueryRetry();
+
+                if (outcomeFields.Count() > 1)
+                {
+                    // 2 OutcomeChoice specified means the user has certainly push its own.
+                    // Let's remove the default outcome field
+                    var field = outcomeFields.FirstOrDefault(f => f.StaticName == "TaskOutcome");
+                    if (field != null)
+                    {
+                        var fl = createdCT.FieldLinks.GetById(field.Id);
+                        fl.DeleteObject();
+                        createdCT.Update(true);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+            }
 
             web.Context.Load(createdCT);
             web.Context.ExecuteQueryRetry();

@@ -132,7 +132,7 @@ PnPResponsiveApp.Main = (function () {
                 // let sharepoint do its thing
                 originalResizeFunction();
                 // fix the body container width
-                document.getElementById('s4-bodyContainer').style.width = document.getElementById('s4-workspace').offsetWidth;
+                document.getElementById('s4-bodyContainer').style.width = document.getElementById('s4-workspace').clientWidth + "px";   
             };
         },
         /**
