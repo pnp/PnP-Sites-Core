@@ -460,9 +460,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // If the Workflow Task (SP2013) contains more than one outcomeChoice, the Form UI will not show
                 // the buttons associated each to choices, but fallback to classic Save and Cancel buttons.
                 // +"00" is used to target only inherited content types and not alter OOB
-                var outcomeFields = createdCT.Context.LoadQuery(
+                var outcomeFields = web.Context.LoadQuery(
                     createdCT.Fields.Where(f => f.TypeAsString == "OutcomeChoice"));
-                createdCT.Context.ExecuteQueryRetry();
+                web.Context.ExecuteQueryRetry();
 
                 if (outcomeFields.Count() > 1)
                 {
@@ -474,7 +474,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var fl = createdCT.FieldLinks.GetById(field.Id);
                         fl.DeleteObject();
                         createdCT.Update(true);
-                        createdCT.Context.ExecuteQueryRetry();
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
             }
