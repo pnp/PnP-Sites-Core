@@ -140,6 +140,59 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
+        public void CanTokensBeUsedInListInstance()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                // Create list instance
+                var template = new ProvisioningTemplate();
+
+                var listUrl = string.Format("lists/{0}", listName);
+                var listTitle = listName + "_Title";
+                var listDesc = listName + "_Description";
+                template.Parameters.Add("listTitle", listTitle);
+                template.Parameters.Add("listDesc", listDesc);
+
+                template.Lists.Add(new Core.Framework.Provisioning.Model.ListInstance
+                {
+                    Url = listUrl,
+                    Title = "{parameter:listTitle}",
+                    Description = "{parameter:listDesc}",
+                    TemplateType = (int)ListTemplateType.GenericList
+                });
+
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listUrl, l => l.Title, l => l.Description);
+                Assert.IsNotNull(list);
+                Assert.AreEqual(listTitle, list.Title);
+                Assert.AreEqual(listDesc, list.Description);
+
+                // Update list instance
+                var updatedTemplate = new ProvisioningTemplate();
+
+                var updatedTitle = listName + "_UpdatedTitle";
+                var updatedDesc = listName + "_UpdatedDescription";
+                updatedTemplate.Parameters.Add("listTitle", updatedTitle);
+                updatedTemplate.Parameters.Add("listDesc", updatedDesc);
+
+                updatedTemplate.Lists.Add(new Core.Framework.Provisioning.Model.ListInstance
+                {
+                    Url = listUrl,
+                    Title = "{parameter:listTitle}",
+                    Description = "{parameter:listDesc}",
+                    TemplateType = (int)ListTemplateType.GenericList
+                });
+
+                ctx.Web.ApplyProvisioningTemplate(updatedTemplate);
+
+                var updatedList = ctx.Web.GetListByUrl(listUrl, l => l.Title, l => l.Description);
+                Assert.AreEqual(updatedTitle, updatedList.Title);
+                Assert.AreEqual(updatedDesc, updatedList.Description);
+            }
+        }
+
+        [TestMethod]
         public void FolderContentTypeShouldNotBeRemovedFromProvisionedDocumentLibraries()
         {
             using (var ctx = TestCommon.CreateClientContext())
