@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     XElement templateFieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
-                    var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
+                    var fieldInternalName = templateFieldElement.Attribute("Name") != null ? templateFieldElement.Attribute("Name").Value : "";
                     WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
