@@ -295,15 +295,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (parent is Term)
             {
-                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value :  termStore.DefaultLanguage, modelTerm.Id);
             }
             else
             {
-                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value : termStore.DefaultLanguage, modelTerm.Id);
             }
             if (!string.IsNullOrEmpty(modelTerm.Description))
             {
-                term.SetDescription(parser.ParseString(modelTerm.Description), modelTerm.Language ?? termStore.DefaultLanguage);
+                term.SetDescription(parser.ParseString(modelTerm.Description), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value : termStore.DefaultLanguage);
             }
             if (!string.IsNullOrEmpty(modelTerm.Owner))
             {
