@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //[TestMethod]
         //public void PageTest()
         //{
-        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/pnptest"))
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))
         //    {
         //        ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(clientContext.Web)
         //        {
@@ -65,6 +65,28 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //    }
         //}
 
+        //[TestMethod]
+        //public void Page2Test()
+        //{
+        //    using (var clientContext = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))
+        //    {
+        //        ProvisioningTemplateApplyingInformation ptai = new ProvisioningTemplateApplyingInformation()
+        //        {
+        //            HandlersToProcess = Handlers.PageContents,
+        //            ProgressDelegate = delegate (String message, Int32 progress, Int32 total)
+        //            {
+        //                    // Only to output progress for console UI
+        //                    Console.WriteLine("{0:00}/{1:00} - {2}", progress, total, message);
+        //            }
+        //        };
+
+        //        XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(@"c:\temp", "");
+        //        ProvisioningTemplate sourceTemplate = provider.GetTemplate("PnPProvisioningDemo201705_load.xml");
+
+        //        // Execute actual extraction of the tepmplate
+        //        clientContext.Web.ApplyProvisioningTemplate(sourceTemplate);
+        //    }
+        //}
         #region Helper methods
         #endregion
     }

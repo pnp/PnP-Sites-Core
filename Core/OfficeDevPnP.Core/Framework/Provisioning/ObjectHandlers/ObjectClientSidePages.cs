@@ -119,6 +119,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Add controls to the section
                         if (section.Controls.Any())
                         {
+                            // Safety measure: reset column order to 1 for columns marked with 0 or lower
+                            foreach(var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            {
+                                control.Column = 1;
+                            }
+
                             foreach(var control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
