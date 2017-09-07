@@ -162,6 +162,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                                 }
                             }
+
+                            // Remove any existing WebPartIdToken tokens in the parser that were added by other pages. They won't apply to this page,
+                            // and they'll cause issues if this page contains web parts with the same name as web parts on other pages.
+                            parser.Tokens.RemoveAll(t => t is WebPartIdToken);
+
                             var allWebParts = web.GetWebParts(url);
                             foreach (var webpart in allWebParts)
                             {
