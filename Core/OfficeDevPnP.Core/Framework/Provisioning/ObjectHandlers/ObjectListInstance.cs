@@ -215,6 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (listInfo.TemplateList.Fields.Any())
                         {
+                            var internalNamesToUpdate = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase);
                             var currentFieldIndex = 0;
                             total = listInfo.TemplateList.Fields.Count;
                             foreach (var field in listInfo.TemplateList.Fields)
@@ -270,6 +271,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 parser.AddToken(new FieldTitleToken(web, updatedField.InternalName,
                                                     updatedField.Title));
                                             }
+
+                                            if (!string.IsNullOrEmpty(internalName) && !string.Equals(internalName, fieldFromList.InternalName, StringComparison.OrdinalIgnoreCase))
+                                            {
+                                                internalNamesToUpdate[internalName] = fieldFromList.InternalName;
+                                            }
                                         }
                                         catch (Exception ex)
                                         {
@@ -282,6 +288,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
+
+                            // Ensure that the internal names in view fieldrefs match the actual internal names of the fields.
+                            foreach (var view in listInfo.TemplateList.Views)
+                            {
+                                var xmlDoc = new System.Xml.XmlDocument();
+                                xmlDoc.LoadXml(view.SchemaXml);
+
+                                // Swap out field ref internal names.
+                                var nodes = xmlDoc.SelectNodes("//FieldRef");
+                                if (nodes != null)
+                                {
+                                    foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
+                                    {
+                                        var attribute = node.Attributes.GetNamedItem("Name");
+                                        if (attribute != null && internalNamesToUpdate.ContainsKey(attribute.Value))
+                                        {
+                                            attribute.Value = internalNamesToUpdate[attribute.Value];
+                                        }
+                                    }
+                                }
+
+                                view.SchemaXml = xmlDoc.OuterXml;
+                            }
                         }
                     }
 
