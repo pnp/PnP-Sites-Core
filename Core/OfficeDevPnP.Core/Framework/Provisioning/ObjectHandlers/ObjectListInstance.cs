@@ -289,27 +289,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             listInfo.SiteList.Update();
                             web.Context.ExecuteQueryRetry();
 
-                            // Ensure that the internal names in view fieldrefs match the actual internal names of the fields.
-                            foreach (var view in listInfo.TemplateList.Views)
+                            if (internalNamesToUpdate.Count > 0)
                             {
-                                var xmlDoc = new System.Xml.XmlDocument();
-                                xmlDoc.LoadXml(view.SchemaXml);
-
-                                // Swap out field ref internal names.
-                                var nodes = xmlDoc.SelectNodes("//FieldRef");
-                                if (nodes != null)
+                                // Ensure that the internal names in view fieldrefs match the actual internal names of the fields.
+                                foreach (var view in listInfo.TemplateList.Views)
                                 {
-                                    foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
+                                    var xmlDoc = new System.Xml.XmlDocument();
+                                    xmlDoc.LoadXml(view.SchemaXml);
+
+                                    // Swap out field ref internal names.
+                                    var nodes = xmlDoc.SelectNodes("//FieldRef");
+                                    if (nodes != null)
                                     {
-                                        var attribute = node.Attributes.GetNamedItem("Name");
-                                        if (attribute != null && internalNamesToUpdate.ContainsKey(attribute.Value))
+                                        foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
                                         {
-                                            attribute.Value = internalNamesToUpdate[attribute.Value];
+                                            var attribute = node.Attributes.GetNamedItem("Name");
+                                            if (attribute != null && internalNamesToUpdate.ContainsKey(attribute.Value))
+                                            {
+                                                attribute.Value = internalNamesToUpdate[attribute.Value];
+                                            }
                                         }
                                     }
-                                }
 
-                                view.SchemaXml = xmlDoc.OuterXml;
+                                    view.SchemaXml = xmlDoc.OuterXml;
+                                }
                             }
                         }
                     }
