@@ -115,10 +115,6 @@ PnPResponsiveApp.Main = (function () {
                 loadCSS(currentScriptBaseUrl + 'sp-responsive-ui.css');
             }
 
-            var cBody = document.getElementsByTagName('body');
-            /* This is a Modal Dialog, so no navigation */
-            if (cBody[0] && hasClass(cBody[0], 'ms-dialogBody')){ return; }
-
             PnPResponsiveApp.Main.setUpToggling();
             PnPResponsiveApp.Main.responsivizeSettings();
             PnPResponsiveApp.Main.setUpSuiteBarToogling();
@@ -196,6 +192,10 @@ PnPResponsiveApp.Main = (function () {
 
             /* Set up sidenav toggling */
             var topNav = document.getElementById('DeltaTopNavigation');
+
+            /* No Top Nav */
+            if (topNav == undefined) { return; }
+
             var topNavClone = topNav.cloneNode(true);
             topNavClone.className = topNavClone.className + ' mobile-only';
             topNavClone = cloneSPIdNodes(topNavClone);
