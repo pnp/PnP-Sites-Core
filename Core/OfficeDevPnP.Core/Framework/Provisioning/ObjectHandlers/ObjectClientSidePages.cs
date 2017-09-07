@@ -131,7 +131,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = textProperty.Value;
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        // Reduce column number by 1 due 0 start indexing
+                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
                                     }
                                 }
                                 // It is a web part
@@ -232,7 +233,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Order = control.Order
                                         };
 
-                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        // Reduce column number by 1 due 0 start indexing
+                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
                                         // set properties using json string
                                         if (!String.IsNullOrEmpty(control.JsonControlData))

@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var customAction in customActions)
             {
 
-                if (isNoScriptSite)
+                if (isNoScriptSite && Guid.Empty == customAction.ClientSideComponentId)
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
                     continue;
