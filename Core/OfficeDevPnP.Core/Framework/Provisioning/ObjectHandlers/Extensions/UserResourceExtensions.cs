@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
         {
             var tempFolder = System.IO.Path.GetTempPath();
 
-            var languages = ResourceTokens.Select(t => t.Item2).Distinct();
+            var languages = new List<int>(ResourceTokens.Select(t => t.Item2).Distinct());
             foreach (int language in languages)
             {
                 var culture = new CultureInfo(language);

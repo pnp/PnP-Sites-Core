@@ -17,7 +17,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Pages"; }
         }
 
-
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -61,10 +60,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Pages_Overwriting_existing_page__0_, url);
 
-#pragma warning disable 618
-                                if (page.WelcomePage && url.Contains(web.RootFolder.WelcomePage))
-#pragma warning restore 618
+                                // determine url of current home page
+                                string welcomePageUrl = web.RootFolder.WelcomePage;
+                                string welcomePageServerRelativeUrl = welcomePageUrl != null
+                                    ? UrlUtility.Combine(web.ServerRelativeUrl, web.RootFolder.WelcomePage)
+                                    : null;
+
+                                bool overwriteWelcomePage = string.Equals(url, welcomePageServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase);
+
+                                // temporarily reset home page so we can delete it
+                                if (overwriteWelcomePage)
+                                {
                                     web.SetHomePage(string.Empty);
+                                }
 
                                 file.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
@@ -76,6 +84,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 else
                                 {
                                     web.AddLayoutToWikiPage(page.Layout, url);
+                                }
+
+                                if (overwriteWelcomePage)
+                                {
+                                    // restore welcome page to previous value
+                                    web.SetHomePage(welcomePageUrl);
                                 }
                             }
                             catch (Exception ex)
