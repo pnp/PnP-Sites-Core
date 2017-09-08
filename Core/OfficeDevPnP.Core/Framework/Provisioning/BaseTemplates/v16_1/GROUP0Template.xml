@@ -61,7 +61,7 @@
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_RouterJobLastRun" Value="29/08/2017 19:55:07" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_RouterJobLastRun" Value="7/09/2017 19:57:50" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_indexedpropertykeys" Value="" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" Overwrite="false" />
@@ -70,7 +70,7 @@
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="489d0b3c-ebd2-4c61-a78c-6c856aa9ec8d" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="af973b13-a73f-4e98-ae27-9215944be3d2" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="26/08/2017 2:03:41" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="1/09/2017 23:39:39" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="GroupDocumentsUrl" Value="Shared Documents" Overwrite="false" />
@@ -80,7 +80,7 @@
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="26/08/2017 3:00:21" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="1/09/2017 22:32:35" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="GroupId" Value="ad5422ac-fdc5-4926-b253-18a315cb1b96" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
@@ -598,8 +598,7 @@
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D520A8" Name="System Media Collection" Description="System type for a collection of rich media assets." Group="_Hidden" Sealed="true" NewFormUrl="_layouts/15/NewDocSet.aspx" EditFormUrl="" DisplayFormUrl="">
-          <pnp:DocumentSetTemplate>
-          </pnp:DocumentSetTemplate>
+          <pnp:DocumentSetTemplate />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D520A808" Name="Video" Description="Upload or link to a video." Group="Digital Asset Content Types" NewFormUrl="_layouts/15/NewVideoSet.aspx" EditFormUrl="_layouts/15/EditVideoSet.aspx" DisplayFormUrl="">
           <pnp:FieldRefs>
