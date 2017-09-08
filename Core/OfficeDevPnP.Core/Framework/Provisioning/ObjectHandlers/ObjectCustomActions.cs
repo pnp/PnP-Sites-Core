@@ -418,6 +418,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.Url = userCustomAction.Url;
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
+
+#if !ONPREMISES
+            customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+#endif 
+
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
