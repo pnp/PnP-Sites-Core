@@ -55,6 +55,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
                                     var listitemCI = new ListItemCreationInformation();
                                     var listitem = list.AddItem(listitemCI);
+                                    string FieldAssignedTo = "AssignedTo";
+                                    Boolean assignedTo = false;
 
                                     foreach (var dataValue in dataRow.Values)
                                     {
@@ -128,7 +130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                                 case FieldType.User:
                                                     // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
-                                                    if (fieldValue.Contains(","))
+                                                    if (fieldValue.Contains(",") && dataValue.Key != FieldAssignedTo)
                                                     {
                                                         var userValues = new List<FieldUserValue>();
                                                         fieldValue.Split(',').All(value =>
@@ -147,7 +149,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         });
                                                         listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
                                                     }
-                                                    else
+                                                    else if(dataValue.Key != FieldAssignedTo)
                                                     {
                                                         var user = web.EnsureUser(fieldValue);
                                                         web.Context.Load(user);
@@ -165,6 +167,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         }
                                                     }
+                                                    else { assignedTo = true; }
                                                     break;
                                                 case FieldType.DateTime:
                                                     var dateTime = DateTime.MinValue;
@@ -181,6 +184,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     listitem.Update();
                                     web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+
+                                    //AssignedTo
+                                    if (assignedTo) {
+                                        String fieldValue = parser.ParseString(dataRow.Values[FieldAssignedTo]);
+                                        if (fieldValue.Contains(","))
+                                        {
+                                            var userValues = new List<FieldUserValue>();
+                                            fieldValue.Split(',').All(value =>
+                                            {
+                                                var user = web.EnsureUser(value);
+                                                web.Context.Load(user);
+                                                web.Context.ExecuteQueryRetry();
+                                                if (user != null)
+                                                {
+                                                    userValues.Add(new FieldUserValue
+                                                    {
+                                                        LookupId = user.Id,
+                                                    }); ;
+                                                }
+                                                return true;
+                                            });
+                                            listitem[parser.ParseString(FieldAssignedTo)] = userValues.ToArray();
+                                        }
+                                        else
+                                        {
+                                            var user = web.EnsureUser(fieldValue);
+                                            web.Context.Load(user);
+                                            web.Context.ExecuteQueryRetry();
+                                            if (user != null)
+                                            {
+                                                var userValue = new FieldUserValue
+                                                {
+                                                    LookupId = user.Id,
+                                                };
+                                                listitem[parser.ParseString(FieldAssignedTo)] = userValue;
+                                            }
+                                        }
+                                        listitem.Update();
+                                        web.Context.ExecuteQueryRetry();
+                                    }
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
                                     {
