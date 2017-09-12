@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.CanvasControl;
+using OfficeDevPnP.Core.Utilities.WebParts;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -125,9 +127,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 control.Column = 1;
                             }
 
-                            foreach(var control in section.Controls)
+                            foreach(CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
+                                control.JsonControlData = parser.ParseString(control.JsonControlData);
+                                var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
+                                webPartPostProcessor.Process(control, page);
+
 
                                 // Is it a text control?
                                 if (control.Type == WebPartType.Text)

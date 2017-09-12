@@ -840,6 +840,10 @@
     <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="Utilities\CanvasControl\CanvasControlPostProcessorFactory.cs" />
+    <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
+    <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
+    <Compile Include="Utilities\CanvasControl\Processors\ListControlPostProcessor.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
@@ -1011,7 +1015,9 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BDR0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BICENTERSITE0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\DEV0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\EHS1Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\ENTERWIKI0Template.xml" />
