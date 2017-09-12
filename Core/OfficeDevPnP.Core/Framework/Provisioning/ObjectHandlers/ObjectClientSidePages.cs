@@ -4,7 +4,6 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,13 +24,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
-
                 web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 // Check if this is not a noscript site as we're not allowed to update some properties
-                bool isNoScriptSite = web.IsNoScriptSite();
-
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     // determine pages library
@@ -43,10 +38,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
                     var exists = true;
-                    Microsoft.SharePoint.Client.File file = null;
                     try
                     {
-                        file = web.GetFileByServerRelativeUrl(url);
+                        var file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file);
                         web.Context.ExecuteQueryRetry();
                     }
@@ -71,6 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite, pageName);
+                            continue;
                         }
                     }
                     else
@@ -80,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Load existing available controls
-                    var componentsToAdd = page.AvailableClientSideComponents();
+                    var componentsToAdd = page.AvailableClientSideComponents().ToList();
 
                     // if no section specified then add a default single column section
                     if (!clientSidePage.Sections.Any())
@@ -155,11 +150,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         if (!string.IsNullOrEmpty(control.CustomWebPartName))
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase));
                                         }
                                         else if (control.ControlId != Guid.Empty)
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)
@@ -231,11 +226,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.YammerEmbed:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
                                                 break;
-                                            default:
-                                                break;
                                         }
 
-                                        baseControl = componentsToAdd.Where(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                        baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
                                     }
 
                                     if (baseControl != null)
@@ -315,7 +308,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(this.Name))
+            using (new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 
