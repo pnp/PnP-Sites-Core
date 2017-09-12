@@ -5,10 +5,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
-using OfficeDevPnP.Core.Utilities.WebParts;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
