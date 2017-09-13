@@ -549,9 +549,7 @@
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerationExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\SafeConvertExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Extensions\SafeConvertExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\ValidationExtensions.cs" />
     <Compile Include="Framework\Provisioning\BaseTemplates\BaseTemplateManager.cs" />
@@ -715,9 +713,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectFeatures.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectListInstance.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSecurity.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSecurity.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWorkflows.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningMessageType.cs" />
@@ -888,9 +884,7 @@
     <Compile Include="WebAPI\WebAPIHelper.cs" />
     <Compile Include="Utilities\Caml.cs" />
     <Compile Include="Utilities\Deprecated\LoggingUtility.deprecated.cs" />
-    <Compile Include="Utilities\UrlUtility.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Utilities\UrlUtility.cs" />
     <Compile Include="Extensions\FeatureExtensions.cs" />
     <Compile Include="Extensions\JavaScriptExtensions.cs" />
     <Compile Include="Extensions\NavigationExtensions.cs" />
@@ -1015,9 +1009,7 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BDR0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BICENTERSITE0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\DEV0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\EHS1Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\ENTERWIKI0Template.xml" />

@@ -121,10 +121,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach(CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
-                                control.JsonControlData = parser.ParseString(control.JsonControlData);
-                                var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
-                                webPartPostProcessor.Process(control, page);
-
 
                                 // Is it a text control?
                                 if (control.Type == WebPartType.Text)
@@ -141,6 +137,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // It is a web part
                                 else
                                 {
+                                    // apply token parsing on the web part properties
+                                    control.JsonControlData = parser.ParseString(control.JsonControlData);
+                                    
+                                    // perform processing of web part properties (e.g. include listid property based list title property)
+                                    var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
+                                    webPartPostProcessor.Process(control, page);
+
                                     // Is a custom developed client side web part (3rd party)
                                     if (control.Type == WebPartType.Custom)
                                     {

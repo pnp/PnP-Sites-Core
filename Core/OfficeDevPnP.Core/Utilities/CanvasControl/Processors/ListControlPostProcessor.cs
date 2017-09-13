@@ -6,14 +6,14 @@ using OfficeDevPnP.Core.Pages;
 namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
     /// <summary>
-    ///     Updates list id for List web part, to allow provision based on url in a dynamic provisioning scenario
+    /// Updates list id for List web part, to allow provision based on url in a dynamic provisioning scenario
     /// </summary>
     public class ListControlPostProcessor : ICanvasControlPostProcessor
     {
         private readonly IDictionary<string, object> _properties;
 
         /// <summary>
-        ///     Constructor for ListControlPostProcessor class
+        /// Constructor for ListControlPostProcessor class
         /// </summary>
         /// <param name="control">Client control</param>
         public ListControlPostProcessor(Framework.Provisioning.Model.CanvasControl control)
@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 
 
         /// <summary>
-        ///     Method for processing canvas control
+        /// Method for processing canvas control
         /// </summary>
         /// <param name="canvasControl">Canvas control object</param>
         /// <param name="clientSidePage">ClientSidePage object</param>
@@ -32,7 +32,10 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             var web = GetWeb(clientSidePage);
             var list = GetList(web);
 
-            if (list == null) return;
+            if (list == null)
+            {
+                return;
+            }
 
             list.EnsureProperties(l => l.Id, l => l.RootFolder, l => l.RootFolder.Name);
 
@@ -44,16 +47,27 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 
         private List GetList(Web web)
         {
+            // grab list based on url
             var listUrlProperty = GetProperty("selectedListUrl") as string;
             if (!string.IsNullOrWhiteSpace(listUrlProperty))
+            {
                 return web.GetList(listUrlProperty);
+            }
 
+            // grab list based on list id
             var listIdProperty = GetProperty("selectedListId") as string;
             Guid listId;
-            if (TryParseGuidProperty(listIdProperty, out listId)) return web.Lists.GetById(listId);
+            if (TryParseGuidProperty(listIdProperty, out listId))
+            {
+                return web.Lists.GetById(listId);
+            }
 
+            // grab list based on list title
             var listDisplayName = GetProperty("listTitle") as string;
-            if (!string.IsNullOrWhiteSpace(listDisplayName)) return web.GetListByTitle(listDisplayName);
+            if (!string.IsNullOrWhiteSpace(listDisplayName))
+            {
+                return web.GetListByTitle(listDisplayName);
+            }
 
             return null;
         }
@@ -65,7 +79,11 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 
         private bool TryParseGuidProperty(string guid, out Guid id)
         {
-            if (!string.IsNullOrWhiteSpace(guid) && Guid.TryParse(guid, out id) && !id.Equals(Guid.Empty)) return true;
+            if (!string.IsNullOrWhiteSpace(guid) && Guid.TryParse(guid, out id) && !id.Equals(Guid.Empty))
+            {
+                return true;
+            }
+
             id = Guid.Empty;
             return false;
         }

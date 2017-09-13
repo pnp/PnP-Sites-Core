@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
     public class CanvasControlPassThroughProcessor : ICanvasControlPostProcessor
     {
         /// <summary>
-        ///     Method for processing canvas control
+        ///  Method for processing canvas control
         /// </summary>
         /// <param name="canvasControl">Canvas control object</param>
         /// <param name="clientSidePage">ClientSidePage object</param>
