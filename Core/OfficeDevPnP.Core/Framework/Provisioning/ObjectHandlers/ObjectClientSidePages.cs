@@ -22,7 +22,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 web.EnsureProperties(w => w.ServerRelativeUrl);
 
-                // Check if this is not a noscript site as we're not allowed to update some properties
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     // determine pages library
