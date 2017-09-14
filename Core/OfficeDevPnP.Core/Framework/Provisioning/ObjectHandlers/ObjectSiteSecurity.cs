@@ -71,6 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
                     string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
+                    bool descriptionHasHtml = HttpUtility.HtmlEncode(parsedGroupDescription) != parsedGroupDescription;
 
                     if (!web.GroupExists(parsedGroupTitle))
                     {
@@ -97,11 +98,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
                         parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
+
+                        if (descriptionHasHtml)
+                        {
+                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                            groupItem["Notes"] = parsedGroupDescription;
+                            groupItem.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                     else
                     {
                         group = web.SiteGroups.GetByName(parsedGroupTitle);
                         web.Context.Load(group,
+                            g => g.Id,
                             g => g.Title,
                             g => g.Description,
                             g => g.AllowMembersEditMembership,
@@ -109,11 +119,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.AutoAcceptRequestToJoinLeave,
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
+
                         var isDirty = false;
-                        if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+                        if (descriptionHasHtml)
                         {
-                            group.Description = parsedGroupDescription;
-                            isDirty = true;
+                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                            web.Context.Load(groupItem, g => g["Notes"]);
+                            web.Context.ExecuteQueryRetry();
+                            var description = groupItem["Notes"]?.ToString();
+
+                            if (description != parsedGroupDescription)
+                            {
+                                groupItem["Notes"] = parsedGroupDescription;
+                                groupItem.Update();
+                                isDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+                            {
+                                group.Description = parsedGroupDescription;
+                                isDirty = true;
+                            }
                         }
                         if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
                         {
@@ -206,7 +234,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var newRoleDefinition = web.RoleDefinitions.Add(roleDefinitionCI);
                                 web.Context.Load(newRoleDefinition, nrd => nrd.Name, nrd => nrd.Id);
                                 web.Context.ExecuteQueryRetry();
-                                parser.AddToken(new RoleDefinitionIdToken(web,newRoleDefinition.Name,newRoleDefinition.Id));
+                                parser.AddToken(new RoleDefinitionIdToken(web, newRoleDefinition.Name, newRoleDefinition.Id));
                             }
                             else
                             {
