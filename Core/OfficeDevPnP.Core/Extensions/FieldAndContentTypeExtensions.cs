@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -1473,7 +1474,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="contentTypeId">Complete ID for the content type</param>
         /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
         /// <returns>Content type object or null if was not found</returns>
-        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false, params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
@@ -1482,7 +1483,7 @@ namespace Microsoft.SharePoint.Client
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
 
-            web.Context.Load(ctCol);
+            web.Context.Load(ctCol, retrievals);
             web.Context.ExecuteQueryRetry();
             foreach (var item in ctCol)
             {
