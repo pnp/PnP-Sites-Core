@@ -1473,6 +1473,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to be processed</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>
         /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
+        /// <param name="retrievals">Optional list of retrievals</param>
         /// <returns>Content type object or null if was not found</returns>
         public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false, params Expression<Func<ContentTypeCollection, object>>[] retrievals)
         {

@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
-                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f=>f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
@@ -1422,7 +1422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             cts => cts.Include(
                                 ct => ct.Id,
                                 ct => ct.Name,
-                                ct => ct.FieldLinks.Include(fl => fl.Id)
+                                ct => ct.FieldLinks.Include(fl => fl.Id, fl=>fl.Hidden)
                             ));
                         if (tempCT != null)
                         {
@@ -1432,7 +1432,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // If the CT does not exist in the target list, and we don't have to remove it
                             if (!existingList.ContentTypeExistsByName(name) && !ctb.Remove)
                             {
-                                AddContentTypeFieldsToList(tempCT, existingList);
+                                AddContentTypeHiddenFieldsToList(tempCT, existingList);
                                 existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                             }
                             // Else if the CT exists in the target list, and we have to remove it
@@ -1734,7 +1734,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         true, cts => cts.Include(
                             ct => ct.Id,
                             ct => ct.Name,
-                            ct => ct.FieldLinks.Include(fl => fl.Id)
+                            ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
                             ));
                     if (tempCT != null)
                     {
@@ -1744,7 +1744,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // If the CT does not exist in the target list, and we don't have to remove it
                         if (!createdList.ContentTypeExistsByName(name) && !ctBinding.Remove)
                         {
-                            AddContentTypeFieldsToList(tempCT, createdList);
+                            AddContentTypeHiddenFieldsToList(tempCT, createdList);
                             // Then add it to the target list
                             createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                         }
@@ -1822,16 +1822,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
-        private void AddContentTypeFieldsToList(ContentType tempCT, List createdList)
+        private void AddContentTypeHiddenFieldsToList(ContentType tempCT, List createdList)
         {
             var ctx = (ClientContext)createdList.Context;
             var web = ctx.Web;
             foreach (var fieldLink in tempCT.FieldLinks)
             {
-                if (!createdList.FieldExistsById(fieldLink.Id))
+                if (fieldLink.Hidden && !createdList.FieldExistsById(fieldLink.Id))
                 {
-                    var siteField = web.AvailableFields.GetById(fieldLink.Id);
-                    createdList.Fields.Add(siteField);
+                    var siteField = web.AvailableFields.First(f=>f.Id == fieldLink.Id);
+                    createdList.Fields.AddFieldAsXml(siteField.SchemaXmlWithResourceTokens, false, AddFieldOptions.AddToNoContentType);
                 }
             }
             ctx.ExecuteQuery();
