@@ -327,7 +327,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">The list to get the subscriptions of</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
         /// <returns>The collection of Webhooks subscriptions of the list</returns>
-        public static IList<WebhookSubscription> GetWebhookSubscriptions(this List list, string accessToken = null)
+        public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptions(this List list, string accessToken = null)
         {
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
@@ -337,7 +337,8 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext);
+                return webHookSubscriptionResponse.Value;
             }
             catch (AggregateException ex)
             {
