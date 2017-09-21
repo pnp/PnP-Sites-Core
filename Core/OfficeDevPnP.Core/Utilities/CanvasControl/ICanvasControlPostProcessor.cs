@@ -2,6 +2,7 @@
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl
 {
+#if !ONPREMISES
     /// <summary>
     ///     Interface for WebPart Post Processing
     /// </summary>
@@ -14,4 +15,5 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl
         /// <param name="clientSidePage">ClientSidePage object</param>
         void Process(Framework.Provisioning.Model.CanvasControl canvasControl, ClientSidePage clientSidePage);
     }
+#endif
 }

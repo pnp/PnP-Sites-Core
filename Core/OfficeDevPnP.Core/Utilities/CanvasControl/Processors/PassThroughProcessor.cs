@@ -2,6 +2,7 @@
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
+#if !ONPREMISES
     /// <summary>
     ///     Default processor when others are not resolved
     /// </summary>
@@ -16,4 +17,5 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
         {
         }
     }
+#endif    
 }
