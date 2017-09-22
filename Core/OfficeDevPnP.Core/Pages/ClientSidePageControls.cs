@@ -383,7 +383,17 @@ namespace OfficeDevPnP.Core.Pages
             base.FromHtml(element);
 
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
-            this.rte = div.GetAttribute(TextRteAttribute);
+
+            if (div != null)
+            {
+                this.rte = div.GetAttribute(TextRteAttribute);
+            }
+            else
+            {
+                // supporting updated rendering of Text controls, no nested DIV tag with the data-sp-rte attribute...so HTML content is embedded at the root
+                this.rte = "";
+                div = element;
+            }
 
             // By default text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits
             if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase))
