@@ -82,6 +82,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
                         group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                        group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
+                        group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
 
                         if (parsedGroupTitle != parsedGroupOwner)
                         {
@@ -107,6 +109,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.AllowMembersEditMembership,
                             g => g.AllowRequestToJoinLeave,
                             g => g.AutoAcceptRequestToJoinLeave,
+                            g => g.OnlyAllowMembersViewMembership,
+                            g => g.RequestToJoinLeaveEmailSetting,                            
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
                         var isDirty = false;
@@ -128,6 +132,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (group.AutoAcceptRequestToJoinLeave != siteGroup.AutoAcceptRequestToJoinLeave)
                         {
                             group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                            isDirty = true;
+                        }
+                        if(group.OnlyAllowMembersViewMembership != siteGroup.OnlyAllowMembersViewMembership)
+                        {
+                            group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
+                            isDirty = true;
+                        }
+                        if(!String.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting) && group.RequestToJoinLeaveEmailSetting != siteGroup.RequestToJoinLeaveEmailSetting)
+                        { 
+                            group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
                             isDirty = true;
                         }
                         if (group.Owner.LoginName != parsedGroupOwner)
