@@ -177,6 +177,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private string bannerUrl;
         #endregion
 
         #region construction
@@ -263,7 +264,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 this.layoutType = value;
             }
-        }
+        }        
 
         /// <summary>
         /// When a page of type Home is created you can opt to only keep the default client side web parts by setting this to true. This also is a way to reset your home page back the the stock one.
@@ -638,7 +639,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Loads an existint SharePoint client side page
+        /// Loads an existing SharePoint client side page
         /// </summary>
         /// <param name="cc">ClientContext object used to load the page</param>
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to load</param>
@@ -678,7 +679,8 @@ namespace OfficeDevPnP.Core.Pages
             if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
             {
                 page.pageListItem = item;
-
+                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
+                
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
@@ -751,6 +753,16 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 item[ClientSidePage.CanvasField] = this.ToHtml();
+            }
+
+            if (!string.IsNullOrEmpty(this.PageTitle))
+            {
+                item[ClientSidePage.Title] = this.PageTitle;
+            }
+            
+            if(Convert.ToString(this.layoutType) != Convert.ToString(item[ClientSidePage.PageLayoutType]))
+            {
+                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
             }
             item.Update();
             this.Context.ExecuteQueryRetry();
