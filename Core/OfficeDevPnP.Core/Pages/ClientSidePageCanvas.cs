@@ -176,8 +176,7 @@ namespace OfficeDevPnP.Core.Pages
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
-        private string pageTitle;
-        private string bannerUrl;
+        private string pageTitle;        
         #endregion
 
         #region construction
