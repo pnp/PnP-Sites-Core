@@ -264,7 +264,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 this.layoutType = value;
             }
-        }        
+        }
 
         /// <summary>
         /// When a page of type Home is created you can opt to only keep the default client side web parts by setting this to true. This also is a way to reset your home page back the the stock one.
