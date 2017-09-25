@@ -337,7 +337,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext);
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
                 return webHookSubscriptionResponse.Value;
             }
             catch (AggregateException ex)
