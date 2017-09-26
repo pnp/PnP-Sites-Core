@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
-                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f=>f.SchemaXmlWithResourceTokens));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f => f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
@@ -1422,7 +1422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             cts => cts.Include(
                                 ct => ct.Id,
                                 ct => ct.Name,
-                                ct => ct.FieldLinks.Include(fl => fl.Id, fl=>fl.Hidden)
+                                ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
                             ));
                         if (tempCT != null)
                         {
@@ -1830,11 +1830,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (fieldLink.Hidden && !createdList.FieldExistsById(fieldLink.Id))
                 {
-                    var siteField = web.AvailableFields.First(f=>f.Id == fieldLink.Id);
-                    createdList.Fields.AddFieldAsXml(siteField.SchemaXmlWithResourceTokens, false, AddFieldOptions.AddToNoContentType);
+                    var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
+
+                    var fieldSchema = XElement.Parse(siteField.SchemaXmlWithResourceTokens);
+                    var displayNameBackup = (string)fieldSchema.Attribute("DisplayName") ?? (string)fieldSchema.Attribute("Name");
+
+                    fieldSchema.SetAttributeValue("DisplayName", (string)fieldSchema.Attribute("Name"));
+
+                    var createdField = createdList.Fields.AddFieldAsXml(fieldSchema.ToString(), false, AddFieldOptions.AddToNoContentType);
+                    ctx.ExecuteQuery();
+                    var createdFieldSchema = XElement.Parse(createdField.EnsureProperty(f=>f.SchemaXml));
+                    createdFieldSchema.SetAttributeValue("DisplayName", displayNameBackup);
+                    createdField.SchemaXml = createdFieldSchema.ToString();
+                    ctx.ExecuteQuery();
                 }
             }
-            ctx.ExecuteQuery();
         }
 
 #if !ONPREMISES
