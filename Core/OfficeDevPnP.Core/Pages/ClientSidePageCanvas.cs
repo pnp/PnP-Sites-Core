@@ -661,6 +661,14 @@ namespace OfficeDevPnP.Core.Pages
             };
 
             var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
+            
+            // Not all sites do have a pages library, throw a nice exception in that case
+            if (pagesLibrary == null)
+            {
+                cc.Web.EnsureProperty(w => w.Url);
+                throw new ArgumentException($"Site {cc.Web.Url} does not have a sitepages library and therefore this page can't be a client side page.");
+            }
+
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
             var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
