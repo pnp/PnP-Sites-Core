@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.WebAPI
                 WebAPIContexCacheItem cacheItem = WebAPIContextCache.Instance.Get(cacheKey);
 
                 //request a new access token from ACS whenever our current access token will expire in less than 1 hour
-                if (cacheItem.AccessToken.ExpiresOn < (DateTime.Now.AddHours(-1)))
+                if (cacheItem.AccessToken.ExpiresOn.ToUniversalTime() < (DateTime.Now.ToUniversalTime().AddHours(1)))
                 {
                     Uri targetUri = new Uri(cacheItem.SharePointServiceContext.HostWebUrl);
                     OAuth2AccessTokenResponse accessToken = TokenHelper.GetAccessToken(cacheItem.RefreshToken, TokenHelper.SharePointPrincipal, targetUri.Authority, TokenHelper.GetRealmFromTargetUrl(targetUri));
