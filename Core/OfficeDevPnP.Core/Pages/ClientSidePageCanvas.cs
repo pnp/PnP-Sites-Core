@@ -686,6 +686,7 @@ namespace OfficeDevPnP.Core.Pages
             if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
             {
                 page.pageListItem = item;
+                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
@@ -734,7 +735,7 @@ namespace OfficeDevPnP.Core.Pages
                 item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
-                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
+                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
                 item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
                 if (this.layoutType == ClientSidePageLayoutType.Article)
@@ -749,6 +750,10 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 item = pageFile.ListItemAllFields;
+                if (!string.IsNullOrWhiteSpace(this.pageTitle))
+                {
+                    item[ClientSidePage.Title] = this.pageTitle;
+                }
             }
 
             // Persist to page field
