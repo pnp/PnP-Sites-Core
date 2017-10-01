@@ -1,0 +1,227 @@
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.19.1710.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ListInstances-Default-cy-gb">
+    <pnp:ProvisioningTemplate ID="ListInstances-Default-cy-gb" Version="0" Scope="Undefined">
+      <pnp:Lists>
+        <pnp:ListInstance Title="CustomList" Description="" DocumentTemplate="" TemplateType="100" Url="Lists/CustomList" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/CustomList/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/CustomList/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/CustomList/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{F35A52E2-C94A-4B55-AA94-360499BA7F1F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Pob Eitem" Url="/sites/PnP-676/pnp-locale-1106/Lists/CustomList/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field ID="{3a6b296c-3f50-445c-a13f-9c679ea9dda3}" Hidden="FALSE" ReadOnly="TRUE" Required="FALSE" Type="Text" Name="ComplianceAssetId" ShowInFileDlg="FALSE" DisplayName="Id Ased Cydymffurfio" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ComplianceAssetId" FromBaseType="TRUE" ColName="nvarchar3" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" DisplayName="Teitl" />
+            <pnp:FieldRef ID="bc91a437-52e7-49e1-8c4e-4698904b2b6d" Name="LinkTitleNoMenu" DisplayName="Teitl" />
+            <pnp:FieldRef ID="82642ec8-ef9b-478f-acf9-31f7d45fbc31" Name="LinkTitle" DisplayName="Teitl" />
+            <pnp:FieldRef ID="1d22ea11-1e32-424e-89ab-9fedbadb6ce1" Name="ID" DisplayName="ID" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" DisplayName="Math o Gynnwys" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" DisplayName="Addaswyd" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" DisplayName="Crëwyd" />
+            <pnp:FieldRef ID="1df5e554-ec7e-46a6-901d-d85a3881cb18" Name="Author" DisplayName="Crëwyd Gan" />
+            <pnp:FieldRef ID="d31655d1-1d5b-4511-95a1-7a09e9b75bf2" Name="Editor" DisplayName="Addaswyd Gan" />
+            <pnp:FieldRef ID="dce8262a-3ae9-45aa-aab4-83bd75fb738a" Name="_UIVersionString" DisplayName="Fersiwn" />
+            <pnp:FieldRef ID="67df98f4-9dec-48ff-a553-29bece9c5bf4" Name="Attachments" DisplayName="Atodiadau" />
+            <pnp:FieldRef ID="503f1caa-358e-4918-9094-4a2cdc4bc034" Name="Edit" DisplayName="Golygu" />
+            <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" DisplayName="Math" />
+            <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" DisplayName="Cyfrif Eitem Plentyn" />
+            <pnp:FieldRef ID="960ff01f-2b6d-4f1b-9c3f-e19ad8927341" Name="FolderChildCount" DisplayName="Nifer Eitemau'r Ffolder" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Gosodiad y label" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labeli" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Wedi Defnyddio’r Label" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Defnyddiwyd y label gan" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Mae’r eitem yn Gofnod" />
+            <pnp:FieldRef ID="6bfaba20-36bf-44b5-a1b2-eb6346d49716" Name="AppAuthor" DisplayName="Crëwyd yr ap gan" />
+            <pnp:FieldRef ID="e08400f3-c779-4ed2-a18c-ab7f34caa318" Name="AppEditor" DisplayName="Addaswyd yr ap gan" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="CustomLib" Description="" DocumentTemplate="{site}/CustomLib/Forms/template.dotx" TemplateType="101" Url="CustomLib" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/CustomLib/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/CustomLib/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/CustomLib/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{35BB2023-6CF1-41BE-930F-4A2ECCD02A2A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Pob Dogfen" Url="/sites/PnP-676/pnp-locale-1106/CustomLib/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field ID="{3a6b296c-3f50-445c-a13f-9c679ea9dda3}" Hidden="FALSE" ReadOnly="TRUE" Required="FALSE" Type="Text" Name="ComplianceAssetId" ShowInFileDlg="FALSE" DisplayName="Id Ased Cydymffurfio" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ComplianceAssetId" FromBaseType="TRUE" ColName="nvarchar7" />
+            <Field ID="{d307dff3-340f-44a2-9f4b-fbfe1ba07459}" Name="_CommentCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Nifer o sylwadau" List="Docs" FieldRef="ID" ShowField="CommentCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.139.0" RecreateIfMissing="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_CommentCount" FromBaseType="TRUE" />
+            <Field ID="{db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c}" Name="_LikeCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Nifer sydd wedi hoffi" List="Docs" FieldRef="ID" ShowField="LikeCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.139.0" RecreateIfMissing="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_LikeCount" FromBaseType="TRUE" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" DisplayName="Enw" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" DisplayName="Teitl" />
+            <pnp:FieldRef ID="1d22ea11-1e32-424e-89ab-9fedbadb6ce1" Name="ID" DisplayName="ID" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" DisplayName="Math o Gynnwys" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" DisplayName="Crëwyd" />
+            <pnp:FieldRef ID="1df5e554-ec7e-46a6-901d-d85a3881cb18" Name="Author" DisplayName="Crëwyd Gan" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" DisplayName="Addaswyd" />
+            <pnp:FieldRef ID="d31655d1-1d5b-4511-95a1-7a09e9b75bf2" Name="Editor" DisplayName="Addaswyd Gan" />
+            <pnp:FieldRef ID="6b4e226d-3d88-4a36-808d-a129bf52bccf" Name="_CopySource" DisplayName="Ffynhonnell Copi" />
+            <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Ar Fenthyg Gan" />
+            <pnp:FieldRef ID="58014f77-5463-437b-ab67-eec79532da67" Name="_CheckinComment" DisplayName="Sylw Bancio" />
+            <pnp:FieldRef ID="9d30f126-ba48-446b-b8f9-83745f322ebe" Name="LinkFilenameNoMenu" DisplayName="Enw" />
+            <pnp:FieldRef ID="5cc6dc79-3710-4374-b433-61cb4a686c12" Name="LinkFilename" DisplayName="Enw" />
+            <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" DisplayName="Math" />
+            <pnp:FieldRef ID="78a07ba4-bda8-4357-9e0f-580d64487583" Name="FileSizeDisplay" DisplayName="Maint y Ffeil" />
+            <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" DisplayName="Cyfrif Eitem Plentyn" />
+            <pnp:FieldRef ID="960ff01f-2b6d-4f1b-9c3f-e19ad8927341" Name="FolderChildCount" DisplayName="Nifer Eitemau'r Ffolder" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Gosodiad y label" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labeli" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Wedi Defnyddio’r Label" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Defnyddiwyd y label gan" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Mae’r eitem yn Gofnod" />
+            <pnp:FieldRef ID="6bfaba20-36bf-44b5-a1b2-eb6346d49716" Name="AppAuthor" DisplayName="Crëwyd yr ap gan" />
+            <pnp:FieldRef ID="e08400f3-c779-4ed2-a18c-ab7f34caa318" Name="AppEditor" DisplayName="Addaswyd yr ap gan" />
+            <pnp:FieldRef ID="503f1caa-358e-4918-9094-4a2cdc4bc034" Name="Edit" DisplayName="Golygu" />
+            <pnp:FieldRef ID="dce8262a-3ae9-45aa-aab4-83bd75fb738a" Name="_UIVersionString" DisplayName="Fersiwn" />
+            <pnp:FieldRef ID="bc1a8efb-0f4c-49f8-a38f-7fe22af3d3e0" Name="ParentVersionString" DisplayName="Fersiwn Ffynhonnell (Dogfen wedi'i Throsi)" />
+            <pnp:FieldRef ID="774eab3a-855f-4a34-99da-69dc21043bec" Name="ParentLeafName" DisplayName="Enw Ffynhonnell (Dogfen wedi'i Throsi)" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="CustomImages" Description="Rhannwch lun â'r tîm drwy ei ychwanegu at y llyfrgell lluniau hon." DocumentTemplate="" TemplateType="109" Url="CustomImages" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-52d4-45b3-b544-b1c71b620109" EnableAttachments="false" DefaultDisplayFormUrl="{site}/CustomImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/CustomImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/CustomImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itil.png?rev=44" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x010102" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{A8C416B3-F094-472D-B450-BFA83C380AE1}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Bob Llun" Url="/sites/PnP-676/pnp-locale-1106/CustomImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/plicon.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="ImageSize" />
+                <FieldRef Name="FileSizeDisplay" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="RequiredField" Explicit="TRUE" />
+                <FieldRef Name="PreviewOnForm" Explicit="TRUE" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">40</RowLimit>
+              <JSLink>clienttemplates.js|callout.js</JSLink>
+            </View>
+            <View Name="{5451AA8F-2A23-4FB5-AFEF-FDB39178ECF3}" DefaultView="TRUE" Type="HTML" DisplayName="Mân-luniau" Url="/sites/PnP-676/pnp-locale-1106/CustomImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="6" ContentTypeID="0x" ImageUrl="/_layouts/15/images/plicon.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilenameNoMenu" />
+                <FieldRef Name="ImageSize" />
+                <FieldRef Name="FileSizeDisplay" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Created_x0020_Date" Explicit="TRUE" />
+                <FieldRef Name="Author" Explicit="TRUE" />
+                <FieldRef Name="Editor" Explicit="TRUE" />
+                <FieldRef Name="RequiredField" Explicit="TRUE" />
+                <FieldRef Name="ImageWidth" Explicit="TRUE" />
+                <FieldRef Name="ImageHeight" Explicit="TRUE" />
+                <FieldRef Name="NameOrTitle" Explicit="TRUE" />
+                <FieldRef Name="PreviewOnForm" Explicit="TRUE" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>SP.UI.TileView.js|callout.js</JSLink>
+            </View>
+            <View Name="{0849E431-20E5-4FD5-9F35-8476ED059D54}" Type="HTML" TabularView="FALSE" DisplayName="Sleidiau" Url="/sites/PnP-676/pnp-locale-1106/CustomImages/Forms/SinglePict.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/plicon.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkFilenameNoMenu" />
+                <FieldRef Name="FileSizeDisplay" />
+                <FieldRef Name="ImageSize" />
+                <FieldRef Name="NameOrTitle" Explicit="TRUE" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">1</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:Fields>
+            <Field ID="{3a6b296c-3f50-445c-a13f-9c679ea9dda3}" Hidden="FALSE" ReadOnly="TRUE" Required="FALSE" Type="Text" Name="ComplianceAssetId" ShowInFileDlg="FALSE" DisplayName="Id Ased Cydymffurfio" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="ComplianceAssetId" FromBaseType="TRUE" ColName="nvarchar7" />
+            <Field ID="{d307dff3-340f-44a2-9f4b-fbfe1ba07459}" Name="_CommentCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Nifer o sylwadau" List="Docs" FieldRef="ID" ShowField="CommentCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.139.0" RecreateIfMissing="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_CommentCount" FromBaseType="TRUE" />
+            <Field ID="{db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c}" Name="_LikeCount" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" ShowInFileDlg="FALSE" Type="Lookup" DisplayName="Nifer sydd wedi hoffi" List="Docs" FieldRef="ID" ShowField="LikeCount" JoinColName="DoclibRowId" JoinRowOrdinal="0" JoinType="INNER" SchemaVersion="16.0.139.0" RecreateIfMissing="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_LikeCount" FromBaseType="TRUE" />
+          </pnp:Fields>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" DisplayName="Enw" />
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" DisplayName="Rhagolwg" />
+            <pnp:FieldRef ID="c53a03f3-f930-4ef2-b166-e0f2210c13c0" Name="FileType" DisplayName="Math o Ffeil" />
+            <pnp:FieldRef ID="922551b8-c7e0-46a6-b7e3-3cf02917f68a" Name="ImageSize" DisplayName="Maint y Llun" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" DisplayName="Teitl" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" DisplayName="Lled y Llun" />
+            <pnp:FieldRef ID="1944c034-d61b-42af-aa84-647f2e74ca70" Name="ImageHeight" DisplayName="Uchder y Llun" />
+            <pnp:FieldRef ID="a5d2f824-bc53-422e-87fd-765939d863a5" Name="ImageCreateDate" DisplayName="Dyddiad Tynnu'r Llun" />
+            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Description" DisplayName="Disgrifiad" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" DisplayName="Allweddeiriau" />
+            <pnp:FieldRef ID="1d22ea11-1e32-424e-89ab-9fedbadb6ce1" Name="ID" DisplayName="ID" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" DisplayName="Math o Gynnwys" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" DisplayName="Crëwyd" />
+            <pnp:FieldRef ID="1df5e554-ec7e-46a6-901d-d85a3881cb18" Name="Author" DisplayName="Crëwyd Gan" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" DisplayName="Addaswyd" />
+            <pnp:FieldRef ID="d31655d1-1d5b-4511-95a1-7a09e9b75bf2" Name="Editor" DisplayName="Addaswyd Gan" />
+            <pnp:FieldRef ID="6b4e226d-3d88-4a36-808d-a129bf52bccf" Name="_CopySource" DisplayName="Ffynhonnell Copi" />
+            <pnp:FieldRef ID="3881510a-4e4a-4ee8-b102-8ee8e2d0dd4b" Name="CheckoutUser" DisplayName="Ar Fenthyg Gan" />
+            <pnp:FieldRef ID="58014f77-5463-437b-ab67-eec79532da67" Name="_CheckinComment" DisplayName="Sylw Bancio" />
+            <pnp:FieldRef ID="9d30f126-ba48-446b-b8f9-83745f322ebe" Name="LinkFilenameNoMenu" DisplayName="Enw" />
+            <pnp:FieldRef ID="5cc6dc79-3710-4374-b433-61cb4a686c12" Name="LinkFilename" DisplayName="Enw" />
+            <pnp:FieldRef ID="081c6e4c-5c14-4f20-b23e-1a71ceb6a67c" Name="DocIcon" DisplayName="Math" />
+            <pnp:FieldRef ID="78a07ba4-bda8-4357-9e0f-580d64487583" Name="FileSizeDisplay" DisplayName="Maint y Ffeil" />
+            <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" DisplayName="Cyfrif Eitem Plentyn" />
+            <pnp:FieldRef ID="960ff01f-2b6d-4f1b-9c3f-e19ad8927341" Name="FolderChildCount" DisplayName="Nifer Eitemau'r Ffolder" />
+            <pnp:FieldRef ID="ccc1037f-f65e-434a-868e-8c98af31fe29" Name="_ComplianceFlags" DisplayName="Gosodiad y label" />
+            <pnp:FieldRef ID="d4b6480a-4bed-4094-9a52-30181ea38f1d" Name="_ComplianceTag" DisplayName="Labeli" />
+            <pnp:FieldRef ID="92be610e-ddbb-49f4-b3b1-5c2bc768df8f" Name="_ComplianceTagWrittenTime" DisplayName="Wedi Defnyddio’r Label" />
+            <pnp:FieldRef ID="418d7676-2d6f-42cf-a16a-e43d2971252a" Name="_ComplianceTagUserId" DisplayName="Defnyddiwyd y label gan" />
+            <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Mae’r eitem yn Gofnod" />
+            <pnp:FieldRef ID="6bfaba20-36bf-44b5-a1b2-eb6346d49716" Name="AppAuthor" DisplayName="Crëwyd yr ap gan" />
+            <pnp:FieldRef ID="e08400f3-c779-4ed2-a18c-ab7f34caa318" Name="AppEditor" DisplayName="Addaswyd yr ap gan" />
+            <pnp:FieldRef ID="503f1caa-358e-4918-9094-4a2cdc4bc034" Name="Edit" DisplayName="Golygu" />
+            <pnp:FieldRef ID="dce8262a-3ae9-45aa-aab4-83bd75fb738a" Name="_UIVersionString" DisplayName="Fersiwn" />
+            <pnp:FieldRef ID="bc1a8efb-0f4c-49f8-a38f-7fe22af3d3e0" Name="ParentVersionString" DisplayName="Fersiwn Ffynhonnell (Dogfen wedi'i Throsi)" />
+            <pnp:FieldRef ID="774eab3a-855f-4a34-99da-69dc21043bec" Name="ParentLeafName" DisplayName="Enw Ffynhonnell (Dogfen wedi'i Throsi)" />
+            <pnp:FieldRef ID="7ebf72ca-a307-4c18-9e5b-9d89e1dae74f" Name="SelectedFlag" DisplayName="Blwch Ticio Dewis" />
+            <pnp:FieldRef ID="76d1cc87-56de-432c-8a2a-16e5ba5331b3" Name="NameOrTitle" DisplayName="Enw" />
+            <pnp:FieldRef ID="de1baa4b-2117-473b-aa0c-4d824034142d" Name="RequiredField" DisplayName="Maes Angenrheidiol" />
+            <pnp:FieldRef ID="ac7bb138-02dc-40eb-b07a-84c15575b6e9" Name="Thumbnail" DisplayName="Mân-lun" />
+            <pnp:FieldRef ID="bd716b26-546d-43f2-b229-62699581fa9f" Name="Preview" DisplayName="Rhagolwg Gwe" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+      </pnp:Lists>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
