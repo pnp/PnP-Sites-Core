@@ -64,16 +64,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : string.Empty;
                     var webId = string.Empty;
 
-                    var field = rootWeb.Fields.GetById(fieldId);
-                    rootWeb.Context.Load(field, f => f.SchemaXmlWithResourceTokens);
-                    rootWeb.Context.ExecuteQueryRetry();
+                    var field = web.AvailableFields.GetById(fieldId);
+                    web.Context.Load(field, f => f.SchemaXmlWithResourceTokens);
+                    web.Context.ExecuteQueryRetry();
 
                     List sourceList = FindSourceList(listIdentifier, web, rootWeb);
 
                     if (sourceList != null)
                     {
-                        rootWeb.Context.Load(sourceList.ParentWeb);
-                        rootWeb.Context.ExecuteQueryRetry();
+                        web.Context.Load(sourceList.ParentWeb);
+                        web.Context.ExecuteQueryRetry();
 
                         webId = sourceList.ParentWeb.Id.ToString();
 
