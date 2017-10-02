@@ -998,9 +998,12 @@ namespace Microsoft.SharePoint.Client
             var flink = contentType.FieldLinks.FirstOrDefault(fld => fld.Id == field.Id);
             if (flink == null)
             {
-                XElement fieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
-                fieldElement.SetAttributeValue("AllowDeletion", "TRUE"); // Default behavior when adding a field to a CT from the UI.
-                field.SchemaXml = fieldElement.ToString();
+                if (!web.IsSubSite())
+                {
+                    XElement fieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
+                    fieldElement.SetAttributeValue("AllowDeletion", "TRUE"); // Default behavior when adding a field to a CT from the UI.
+                    field.SchemaXml = fieldElement.ToString();
+                }
                 var fldInfo = new FieldLinkCreationInformation();
                 fldInfo.Field = field;
                 contentType.FieldLinks.Add(fldInfo);
