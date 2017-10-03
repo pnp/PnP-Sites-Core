@@ -110,7 +110,7 @@ namespace Microsoft.SharePoint.Client
                             userAgent = userAgentFromConfig;
                         }
 
-                        e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"NONISV:SharePointPnP:{PnPCoreUtilities.PnPCoreVersionTag}" : userAgent;
+                        e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
                     };
 
                     clientContext.ExecutingWebRequest += appDecorationHandler;
