@@ -365,7 +365,12 @@ namespace OfficeDevPnP.Core.Pages
                     }
                     else
                     {
-                        return null;
+                        if (this.sections.Count == 0)
+                        {
+                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        }
+
+                        return sections.First();
                     }
                 }
             }
