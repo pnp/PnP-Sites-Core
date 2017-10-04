@@ -836,6 +836,8 @@
     <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="Sites\SiteCollection.cs" />
+    <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
     <Compile Include="Utilities\CanvasControl\CanvasControlPostProcessorFactory.cs" />
     <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
@@ -1064,7 +1066,6 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <Content Include="Sites\Dummy.txt" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
