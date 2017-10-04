@@ -8,6 +8,7 @@ using System.Web;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Configuration;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -16,6 +17,17 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class ClientContextExtensions
     {
+        private static string userAgentFromConfig = null;
+
+        /// <summary>
+        /// Static constructor, only executed once per class load
+        /// </summary>
+        static ClientContextExtensions()
+        {
+            ClientContextExtensions.userAgentFromConfig = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
+        }
+
+
 #if ONPREMISES
         private const string MicrosoftSharePointTeamServicesHeader = "MicrosoftSharePointTeamServices";
 #endif
@@ -43,12 +55,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="clientContext">clientContext to operate on</param>
         /// <param name="retryCount">Number of times to retry the request</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
+        /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
+        public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-            ExecuteQueryImplementation(clientContext, retryCount, delay);
+            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
         }
 
-        private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
+        private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
             var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
@@ -88,9 +101,26 @@ namespace Microsoft.SharePoint.Client
                     clientContext.DisableReturnValueCache = true;
 #elif SP2016
                     clientContext.DisableReturnValueCache = true;
-#endif                
+#endif
+                    // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
+                    EventHandler<WebRequestEventArgs> appDecorationHandler = (s, e) => 
+                    {
+                        if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                        {
+                            userAgent = userAgentFromConfig;
+                        }
+
+                        e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
+                    };
+
+                    clientContext.ExecutingWebRequest += appDecorationHandler;
+
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
                     clientContext.ExecuteQuery();
+
+                    // Remove the app decoration event handler after the executequery
+                    clientContext.ExecutingWebRequest -= appDecorationHandler;
+
                     return;
                 }
                 catch (WebException wex)

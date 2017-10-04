@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Pages;
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
+#if !ONPREMISES
     /// <summary>
     /// Updates list id for List web part, to allow provision based on url in a dynamic provisioning scenario
     /// </summary>
@@ -99,4 +100,5 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             _properties[name] = value;
         }
     }
+#endif
 }

@@ -3,6 +3,7 @@ using OfficeDevPnP.Core.Utilities.CanvasControl.Processors;
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl
 {
+#if !ONPREMISES
     public class CanvasControlPostProcessorFactory
     {
         /// <summary>
@@ -20,4 +21,5 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl
             return new CanvasControlPassThroughProcessor();
         }
     }
+#endif
 }

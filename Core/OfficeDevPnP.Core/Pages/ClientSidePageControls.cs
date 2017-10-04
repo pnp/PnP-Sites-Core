@@ -149,7 +149,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of a control</returns>
-        public abstract string ToHtml(int controlIndex);
+        public abstract string ToHtml(float controlIndex);
 
         /// <summary>
         /// Removes the control from the page
@@ -330,7 +330,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>Html representation of this <see cref="ClientSideText"/> control</returns>
-        public override string ToHtml(int controlIndex)
+        public override string ToHtml(float controlIndex)
         {
             // Can this control be hosted in this section type?
             if (this.Section.Type == CanvasSectionTemplate.OneColumnFullWidth)
@@ -383,7 +383,17 @@ namespace OfficeDevPnP.Core.Pages
             base.FromHtml(element);
 
             var div = element.GetElementsByTagName("div").Where(a => a.HasAttribute(TextRteAttribute)).FirstOrDefault();
-            this.rte = div.GetAttribute(TextRteAttribute);
+
+            if (div != null)
+            {
+                this.rte = div.GetAttribute(TextRteAttribute);
+            }
+            else
+            {
+                // supporting updated rendering of Text controls, no nested DIV tag with the data-sp-rte attribute...so HTML content is embedded at the root
+                this.rte = "";
+                div = element;
+            }
 
             // By default text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits
             if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase))
@@ -629,7 +639,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="controlIndex">The sequence of the control inside the section</param>
         /// <returns>HTML representation of the client side web part</returns>
-        public override string ToHtml(int controlIndex)
+        public override string ToHtml(float controlIndex)
         {
             // Can this control be hosted in this section type?
             if (this.Section.Type == CanvasSectionTemplate.OneColumnFullWidth)
