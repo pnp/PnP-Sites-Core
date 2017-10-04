@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
@@ -31,7 +32,7 @@ namespace OfficeDevPnP.Core
     /// <summary>
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
-    /// 
+    ///
     public class AuthenticationManager
     {
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
@@ -49,7 +50,7 @@ namespace OfficeDevPnP.Core
 
         #region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
-        /// Returns a SharePointOnline ClientContext object 
+        /// Returns a SharePointOnline ClientContext object
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="tenantUser">User to be used to instantiate the ClientContext object</param>
@@ -62,7 +63,7 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
-        /// Returns a SharePointOnline ClientContext object 
+        /// Returns a SharePointOnline ClientContext object
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="tenantUser">User to be used to instantiate the ClientContext object</param>
@@ -281,7 +282,7 @@ namespace OfficeDevPnP.Core
         /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null)
         {
-            var cookies = new CookieContainer();
+            var authCookiesContainer = new CookieContainer();
             var siteUri = new Uri(siteUrl);
 
             var thread = new Thread(() =>
@@ -297,7 +298,6 @@ namespace OfficeDevPnP.Core
                     Dock = DockStyle.Fill
                 };
 
-
                 form.SuspendLayout();
                 form.Width = 900;
                 form.Height = 500;
@@ -312,10 +312,20 @@ namespace OfficeDevPnP.Core
                     if (siteUri.Host.Equals(args.Url.Host))
                     {
                         var cookieString = CookieReader.GetCookie(siteUrl).Replace("; ", ",").Replace(";", ",");
+
+                        // Get FedAuth and rtFa cookies issued by ADFS when accessing claims aware applications.
+                        // - or get the EdgeAccessCookie issued by the Web Application Proxy (WAP) when accessing non-claims aware applications (Kerberos).
+                        IEnumerable<string> authCookies = null;
                         if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase))
                         {
-                            var _cookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
-                            cookies.SetCookies(siteUri, string.Join(",", _cookies));
+                            authCookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
+                        } else if (Regex.IsMatch(cookieString, "EdgeAccessCookie", RegexOptions.IgnoreCase))
+                        {
+                            authCookies = cookieString.Split(',').Where(c => c.StartsWith("EdgeAccessCookie", StringComparison.InvariantCultureIgnoreCase));
+                        }
+                        if (authCookies != null)
+                        {
+                            authCookiesContainer.SetCookies(siteUri, string.Join(",", authCookies));
                             form.Close();
                         }
                     }
@@ -330,12 +340,11 @@ namespace OfficeDevPnP.Core
             thread.Start();
             thread.Join();
 
-            if (cookies.Count > 0)
+            if (authCookiesContainer.Count > 0)
             {
                 var ctx = new ClientContext(siteUrl);
-                ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = cookies;
+                ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = authCookiesContainer;
                 return ctx;
-
             }
 
             return null;
@@ -764,7 +773,7 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
-        /// Refreshes the SharePoint FedAuth cookie 
+        /// Refreshes the SharePoint FedAuth cookie
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
         /// <param name="user">Name of the user (e.g. administrator) </param>
@@ -817,7 +826,7 @@ namespace OfficeDevPnP.Core
         }
 
         /// <summary>
-        /// Refreshes the SharePoint FedAuth cookie 
+        /// Refreshes the SharePoint FedAuth cookie
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
         /// <param name="serialNumber">Represents the serial number of the certificate as displayed by the certificate dialog box, but without the spaces, or as returned by the System.Security.Cryptography.X509Certificates.X509Certificate.GetSerialNumberString method</param>
