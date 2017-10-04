@@ -481,6 +481,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.Context.Load(web.SiteGroups,
                         o => o.IncludeWithDefaultProperties(
+                            gr => gr.Id,
                             gr => gr.Title,
                             gr => gr.AllowMembersEditMembership,
                             gr => gr.AutoAcceptRequestToJoinLeave,
@@ -514,6 +515,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
                                 RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
                             };
+
+                            if (String.IsNullOrEmpty(siteGroup.Description))
+                            {
+                                var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                                web.Context.Load(groupItem);
+                                web.Context.ExecuteQueryRetry();
+
+                                var groupNotes = (String)groupItem["Notes"];
+                                if (!String.IsNullOrEmpty(groupNotes))
+                                {
+                                    siteGroup.Description = groupNotes;
+                                }
+                            }
 
                             foreach (var member in group.Users)
                             {
