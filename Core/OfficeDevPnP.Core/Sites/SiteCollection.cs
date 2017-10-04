@@ -13,9 +13,6 @@ namespace OfficeDevPnP.Core.Sites
 {
     public static class SiteCollection
     {
-        private static string accessToken;
-
-        /// <summary>
         /// BETA: Creates a new Communication Site Collection
         /// </summary>
         /// <param name="clientContext"></param>
@@ -25,7 +22,7 @@ namespace OfficeDevPnP.Core.Sites
         {
             ClientContext responseContext = null;
 
-            InitializeSecurity(clientContext);
+            var accessToken = clientContext.GetAccessToken();
 
             using (var handler = new HttpClientHandler())
             {
@@ -103,9 +100,9 @@ namespace OfficeDevPnP.Core.Sites
         {
             ClientContext responseContext = null;
 
-            InitializeSecurity(clientContext);
+            var accessToken = clientContext.GetAccessToken();
 
-            if(!string.IsNullOrEmpty(accessToken))
+            if (!string.IsNullOrEmpty(accessToken))
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -173,24 +170,6 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
-
-        private static void InitializeSecurity(ClientContext clientContext)
-        {
-            // Let's try to grab an access token, will work when we're in app-only or user+app model
-            clientContext.ExecutingWebRequest += Context_ExecutingWebRequest;
-            clientContext.Load(clientContext.Web, w => w.Url);
-            clientContext.ExecuteQueryRetry();
-            clientContext.ExecutingWebRequest -= Context_ExecutingWebRequest;
-        }
-
-        private static void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)
-        {
-            if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
-            {
-                accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
-            }
-        }
-
         private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             if (siteCollectionCreationInformation.SiteDesignId != Guid.Empty)
@@ -224,11 +203,16 @@ namespace OfficeDevPnP.Core.Sites
         {
             string responseString = null;
 
+            var accessToken = context.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
-                // Set credentials and cookies for the call
-                handler.Credentials = context.Credentials;
-                handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    context.Web.EnsureProperty(w => w.Url);
+                    handler.Credentials = context.Credentials;
+                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                }
 
                 using (var httpClient = new HttpClient(handler))
                 {

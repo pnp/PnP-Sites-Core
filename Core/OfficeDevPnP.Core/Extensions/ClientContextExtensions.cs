@@ -242,8 +242,7 @@ namespace Microsoft.SharePoint.Client
         public static string GetAccessToken(this ClientRuntimeContext clientContext)
         {
             string accessToken = null;
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += (s, e) =>
+            EventHandler<WebRequestEventArgs> handler = (s, e) =>
             {
                 string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
                 if (!string.IsNullOrEmpty(authorization))
@@ -251,7 +250,11 @@ namespace Microsoft.SharePoint.Client
                     accessToken = authorization.Replace("Bearer ", string.Empty);
                 }
             };
+            // Issue a dummy request to get it from the Authorization header
+            clientContext.ExecutingWebRequest += handler;
             clientContext.ExecuteQueryRetry();
+            clientContext.ExecutingWebRequest -= handler;
+
             return accessToken;
         }
 
@@ -374,11 +377,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static async Task<string> GetRequestDigest(this ClientContext context)
         {
-            InitializeSecurity(context);
+            //InitializeSecurity(context);
 
             using (var handler = new HttpClientHandler())
             {
                 string responseString = string.Empty;
+                var accessToken = context.GetAccessToken();
 
                 if (String.IsNullOrEmpty(accessToken))
                 {
@@ -409,15 +413,6 @@ namespace Microsoft.SharePoint.Client
                 string formDigestValue = contextInformation.d.GetContextWebInformation.FormDigestValue;
                 return await Task.Run(() => formDigestValue);
             }
-        }
-
-        private static void InitializeSecurity(ClientContext clientContext)
-        {
-            // Let's try to grab an access token, will work when we're in app-only or user+app model
-            clientContext.ExecutingWebRequest += Context_ExecutingWebRequest;
-            clientContext.Load(clientContext.Web, w => w.Url);
-            clientContext.ExecuteQueryRetry();
-            clientContext.ExecutingWebRequest -= Context_ExecutingWebRequest;
         }
 
         private static void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)
