@@ -783,7 +783,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
-                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
+                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
