@@ -36,6 +36,8 @@ namespace OfficeDevPnP.Core.Tests.Sites
                 var tenant = new Tenant(clientContext);
                 tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
                 tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
+
+                //TODO: Cleanup group
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
@@ -61,6 +62,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     // Build Http request
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
@@ -69,7 +71,7 @@ namespace OfficeDevPnP.Core.Sites
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
                     // Perform actual post operation
-                    HttpResponseMessage response = await httpClient.PostAsync(requestUrl, requestBody);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -77,7 +79,19 @@ namespace OfficeDevPnP.Core.Sites
                         var responseString = await response.Content.ReadAsStringAsync();
                         if (responseString != null)
                         {
-                            responseContext = clientContext.Clone(siteCollectionCreationInformation.Url);
+                            try
+                            {
+                                var responseJson = JObject.Parse(responseString);
+                                if (Convert.ToInt32(responseJson["d"]["Create"]["SiteStatus"]) == 2)
+                                {
+                                    responseContext = clientContext.Clone(responseJson["d"]["Create"]["SiteUrl"].ToString());
+                                }
+                                else
+                                {
+                                    throw new Exception(responseString);
+                                }
+                            }
+                            catch { }
                         }
                     }
                     else
@@ -139,6 +153,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     // Build Http request
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
@@ -147,17 +162,19 @@ namespace OfficeDevPnP.Core.Sites
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
                     // Perform actual post operation
-                    HttpResponseMessage response = await httpClient.PostAsync(requestUrl, requestBody);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
-                        if (responseString != null)
+                        var responseJson = JObject.Parse(responseString);
+                        if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
                         {
-                            var uri = new Uri(clientContext.Url);
-                            var url = $"{uri.Scheme}://{uri.Host}:{uri.Port}/sites/{siteCollectionCreationInformation.Alias}";
-                            responseContext = clientContext.Clone(url);
+                            responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
+                        } else
+                        {
+                            throw new Exception(responseString);
                         }
                     }
                     else
