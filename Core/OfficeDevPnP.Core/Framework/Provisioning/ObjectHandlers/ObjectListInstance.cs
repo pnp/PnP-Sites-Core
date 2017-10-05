@@ -16,6 +16,7 @@ using Microsoft.SharePoint.Client.Taxonomy;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.WebParts;
+using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -1824,7 +1825,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 // get the webhooks defined on the list
-                var addedWebhooks = list.GetWebhookSubscriptions();
+                var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptions()).Result;
 
                 var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                 if (existingWebhook != null)
@@ -2103,7 +2104,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {
-            var addedWebhooks = siteList.GetWebhookSubscriptions();
+            var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptions()).Result;
 
             if (addedWebhooks.Any())
             {
