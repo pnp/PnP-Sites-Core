@@ -912,9 +912,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.WhenAny(
-                GetClientSideWebPartsAsync(this.accessToken, this.Context)
-                ).Result;
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -1307,7 +1305,7 @@ namespace OfficeDevPnP.Core.Pages
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseString);
+                return responseString;
             }
         }
 
