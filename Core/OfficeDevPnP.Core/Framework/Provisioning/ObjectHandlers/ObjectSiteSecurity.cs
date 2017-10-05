@@ -62,6 +62,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
 
+                //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
+                for (int i = siteSecurity.SiteGroups.Count - 1; i >= 0; i--)
+                {
+                    var currentGroup = siteSecurity.SiteGroups[i];
+                    string currentGroupOwner = parser.ParseString(currentGroup.Owner);
+                    string currentGroupTitle = parser.ParseString(currentGroup.Title);
+
+                    if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
+                    {
+                        for (int j = 0; j < i; j++)
+                        {
+                            if (parser.ParseString(siteSecurity.SiteGroups[j].Owner) == currentGroupTitle)
+                            {
+                                siteSecurity.SiteGroups.RemoveAt(i);
+                                siteSecurity.SiteGroups.Insert(j, currentGroup);
+                                i++;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 foreach (var siteGroup in siteSecurity.SiteGroups)
                 {
                     Group group;
