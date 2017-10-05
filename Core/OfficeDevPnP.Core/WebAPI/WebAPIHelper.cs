@@ -142,7 +142,7 @@ namespace OfficeDevPnP.Core.WebAPI
         {
             if (page == null)
                 throw new ArgumentNullException("page");
-
+            
             if (string.IsNullOrEmpty(apiRequest))
                 throw new ArgumentNullException("apiRequest");
 
@@ -221,6 +221,84 @@ namespace OfficeDevPnP.Core.WebAPI
 
                     }
                 }
+            }
+        }
+
+
+        public static void RegisterWebAPIService(HttpContextBase context, string apiRequest, Uri serviceEndPoint = null)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            if (string.IsNullOrEmpty(apiRequest))
+                throw new ArgumentNullException("apiRequest");
+
+            HttpRequestBase request = context.Request;
+
+            try
+            {
+                if (request.QueryString.AsString(SERVICES_TOKEN, string.Empty).Equals(string.Empty))
+                {
+                    // Construct a JsonWebSecurityToken so we can fetch the cachekey...implementation is copied from tokenhelper approach
+                    string cacheKey = string.Empty;
+                    string contextToken = TokenHelper.GetContextTokenFromRequest(request);
+                    JsonWebSecurityTokenHandler tokenHandler = TokenHelper.CreateJsonWebSecurityTokenHandler();
+                    SecurityToken securityToken = tokenHandler.ReadToken(contextToken);
+                    JsonWebSecurityToken jsonToken = securityToken as JsonWebSecurityToken;
+
+                    string appctx = GetClaimValue(jsonToken, "appctx");
+                    if (appctx != null)
+                    {
+                        ClientContext ctx = new ClientContext("http://tempuri.org");
+                        Dictionary<string, object> dict = (Dictionary<string, object>)ctx.ParseObjectFromJsonString(appctx);
+                        cacheKey = (string)dict["CacheKey"];
+                    }
+
+                    // Remove special chars (=, +, /, {}) from cachekey as there's a flaw in CookieHeaderValue when the 
+                    // cookie is read. This flaw replaces special chars with a space.
+                    cacheKey = RemoveSpecialCharacters(cacheKey);
+
+                    bool httpOnly = true;
+                    if (serviceEndPoint != null)
+                    {
+                        if (!serviceEndPoint.Host.Equals(context.Request.Url.Host, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            httpOnly = false;
+                        }
+                    }
+                    else
+                    {
+                        serviceEndPoint = new Uri(String.Format("{0}://{1}:{2}", context.Request.Url.Scheme, context.Request.Url.Host, context.Request.Url.Port));
+                    }
+
+                    // Write the cachekey in a cookie
+                    HttpCookie cookie = new HttpCookie(SERVICES_TOKEN)
+                    {
+                        Value = cacheKey,
+                        Secure = true,
+                        HttpOnly = httpOnly,
+                    };
+
+                    context.Response.AppendCookie(cookie);
+
+                    //Register the ClientContext
+                    WebAPIContext sharePointServiceContext = new WebAPIContext()
+                    {
+                        CacheKey = cacheKey,
+                        ClientId = TokenHelper.ClientId,
+                        ClientSecret = TokenHelper.ClientSecret,
+                        Token = contextToken,
+                        HostWebUrl = context.Request.QueryString.AsString("SPHostUrl", null),
+                        AppWebUrl = context.Request.QueryString.AsString("SPAppWebUrl", null),
+                        HostedAppHostName = String.Format("{0}:{1}", context.Request.Url.Host, context.Request.Url.Port),
+                    };
+
+                    WebAPIHelper.AddToCache(sharePointServiceContext);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UnauthorizedAccessException("The context token cannot be validated.", ex);
             }
         }
 
