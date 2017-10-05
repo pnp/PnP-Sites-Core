@@ -224,7 +224,16 @@ namespace OfficeDevPnP.Core.WebAPI
             }
         }
 
-
+        /// <summary>
+        /// This method needs to be called from a code behind of the SharePoint app startup page (default.aspx). It registers the calling
+        /// SharePoint app by calling a specific "Register" api in your WebAPI service.
+        /// 
+        /// Note:
+        /// Given that method is async you'll need to add the  Async="true" page directive to the page that uses this method.
+        /// </summary>
+        /// <param name="context">The HttpContextBase object, needed to insert the services token cookie and read the querystring</param>
+        /// <param name="apiRequest">Route to the "Register" API</param>
+        /// <param name="serviceEndPoint">Optional Uri to the WebAPI service endpoint. If null then the assumption is taken that the WebAPI is hosted together with the page making this call</param>
         public static void RegisterWebAPIService(HttpContextBase context, string apiRequest, Uri serviceEndPoint = null)
         {
             if (context == null)
