@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -36,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
                 expressions.Add(f => f.WebParts[0].Row, new ExpressionValueResolver((s, v) => (uint)(int)v));
                 expressions.Add(f => f.WebParts[0].Column, new ExpressionValueResolver((s, v) => (uint)(int)v));
-                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).OuterXml : null));
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? XElement.Parse(((XmlElement)v).InnerXml)?.Element("webPart")?.ToString() : null));
 
                 template.Pages.AddRange(
                     PnPObjectsMapper.MapObjects<Page>(pages,
