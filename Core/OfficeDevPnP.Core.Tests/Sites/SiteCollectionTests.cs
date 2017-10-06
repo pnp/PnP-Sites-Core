@@ -36,8 +36,8 @@ namespace OfficeDevPnP.Core.Tests.Sites
             {
                 var tenant = new Tenant(clientContext);
                 tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
-                tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
-
+                // Commented this, first group cleanup needs to be implemented in this test case
+                //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
                 //TODO: Cleanup group
             }
         }
@@ -61,20 +61,20 @@ namespace OfficeDevPnP.Core.Tests.Sites
             }
         }
 
-        [TestMethod]
-        public async Task CreateTeamSiteTestAsync()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                var teamResults = await clientContext.CreateSiteAsync(new Core.Sites.TeamSiteCollectionCreationInformation()
-                {
-                    Alias = $"site{teamSiteGuid}",
-                    DisplayName = "Team Site Test",
-                });
-                Assert.IsNotNull(teamResults);
-            }
+        //[TestMethod]
+        //public async Task CreateTeamSiteTestAsync()
+        //{
+        //    using (var clientContext = TestCommon.CreateClientContext())
+        //    {
+        //        var teamResults = await clientContext.CreateSiteAsync(new Core.Sites.TeamSiteCollectionCreationInformation()
+        //        {
+        //            Alias = $"site{teamSiteGuid}",
+        //            DisplayName = "Team Site Test",
+        //        });
+        //        Assert.IsNotNull(teamResults);
+        //    }
 
-        }
+        //}
     }
 #endif
 }
