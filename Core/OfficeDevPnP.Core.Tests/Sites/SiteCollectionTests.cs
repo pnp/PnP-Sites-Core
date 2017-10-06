@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Sites
 {
+#if !ONPREMISES
     [TestClass]
     public class SiteCollectionTests
     {
@@ -75,4 +76,5 @@ namespace OfficeDevPnP.Core.Tests.Sites
 
         }
     }
+#endif
 }
