@@ -12,13 +12,18 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Sites
 {
+
+    /// <summary>
+    /// This class can be used to create modern site collections
+    /// </summary>
     public static class SiteCollection
     {
+        /// <summary>
         /// BETA: Creates a new Communication Site Collection
         /// </summary>
-        /// <param name="clientContext"></param>
-        /// <param name="siteCollectionCreationInformation"></param>
-        /// <returns></returns>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             ClientContext responseContext = null;
@@ -107,9 +112,9 @@ namespace OfficeDevPnP.Core.Sites
         /// <summary>
         /// BETA: Creates a new Modern Team Site Collection
         /// </summary>
-        /// <param name="clientContext"></param>
-        /// <param name="siteCollectionCreationInformation"></param>
-        /// <returns></returns>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             ClientContext responseContext = null;
