@@ -95,6 +95,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             isExistingField = true;
                         }
                     }
+                    else
+                    {
+                        isExistingField = true;
+                    }
 
                     if (!isExistingField)
                     {
