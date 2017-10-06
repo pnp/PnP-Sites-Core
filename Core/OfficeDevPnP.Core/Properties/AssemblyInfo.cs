@@ -40,10 +40,10 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // Convention:
 // Major version = current version 2
-// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar, 3=Apr, 4=May, 5=Jun, 6=Aug, 7=Sept,...11=Jan 2017...15=May 2017
+// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar...11=Jan 2017...15=May 2017...20=Nov
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.19.1710.0")]
-[assembly: AssemblyFileVersion("2.19.1710.0")]
+[assembly: AssemblyVersion("2.20.1711.0")]
+[assembly: AssemblyFileVersion("2.20.1711.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]
