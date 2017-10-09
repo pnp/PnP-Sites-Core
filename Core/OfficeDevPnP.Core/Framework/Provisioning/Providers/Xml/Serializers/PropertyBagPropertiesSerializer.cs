@@ -31,19 +31,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var propertyBagTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PropertyBagEntry, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var propertyBagType = Type.GetType(propertyBagTypeName, true);
+            if (template.PropertyBagEntries != null && template.PropertyBagEntries.Count > 0)
+            {
+                var propertyBagTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PropertyBagEntry, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var propertyBagType = Type.GetType(propertyBagTypeName, true);
 
 
-            var expressions = new Dictionary<string, IResolver>();
-            expressions.Add($"{propertyBagType}.OverwriteSpecified", new ExpressionValueResolver(() => true));
+                var expressions = new Dictionary<string, IResolver>();
+                expressions.Add($"{propertyBagType}.OverwriteSpecified", new ExpressionValueResolver(() => true));
 
-            persistence.GetPublicInstanceProperty("PropertyBagEntries")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.PropertyBagEntries,
-                    new CollectionFromModelToSchemaTypeResolver(propertyBagType),
-                    expressions));
+                persistence.GetPublicInstanceProperty("PropertyBagEntries")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.PropertyBagEntries,
+                        new CollectionFromModelToSchemaTypeResolver(propertyBagType),
+                        expressions));
+            }
         }
     }
 }
