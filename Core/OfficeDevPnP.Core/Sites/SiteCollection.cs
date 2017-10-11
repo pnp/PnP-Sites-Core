@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !ONPREMISES
+using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
@@ -263,3 +264,4 @@ namespace OfficeDevPnP.Core.Sites
         }
     }
 }
+#endif
