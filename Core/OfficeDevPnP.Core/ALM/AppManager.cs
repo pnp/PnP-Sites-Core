@@ -1,14 +1,13 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !ONPREMISES
+using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
@@ -29,8 +28,32 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="file">A byte array containing the file</param>
         /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
+        /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <returns></returns>
-        public async Task<bool> Add(byte[] file, string filename)
+        public AppMetadata Add(byte[] file, string filename, bool overwrite = false)
+        {
+            return AddAsync(file, filename, overwrite).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Uploads an app file to the Tenant App Catalog
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <returns></returns>
+        public AppMetadata Add(string path, bool overwrite = false)
+        {
+            return AddAsync(path, overwrite).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Uploads a file to the Tenant App Catalog
+        /// </summary>
+        /// <param name="file">A byte array containing the file</param>
+        /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
+        /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <returns></returns>
+        public async Task<AppMetadata> AddAsync(byte[] file, string filename, bool overwrite = false)
         {
             if (file == null && file.Length == 0)
             {
@@ -40,15 +63,16 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(filename));
             }
-            return await BaseAddRequest(file, filename, true);
+            return await BaseAddRequest(file, filename, overwrite, true);
         }
 
         /// <summary>
         /// Uploads an app file to the Tenant App Catalog
         /// </summary>
         /// <param name="path"></param>
+        /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <returns></returns>
-        public async Task<bool> Add(string path)
+        public async Task<AppMetadata> AddAsync(string path, bool overwrite = false)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -62,10 +86,18 @@ namespace OfficeDevPnP.Core.ALM
 
             var bytes = System.IO.File.ReadAllBytes(path);
             var fileInfo = new FileInfo(path);
-            return await BaseAddRequest(bytes, fileInfo.Name, true);
+            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, true);
         }
 
-
+        /// <summary>
+        /// Installs an available app from the app catalog in a site.
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to install</param>
+        /// <returns></returns>
+        public bool Install(AppMetadata appMetadata)
+        {
+            return InstallAsync(appMetadata).GetAwaiter().GetResult();
+        }
 
         /// <summary>
         /// Installs an available app from the app catalog in a site.
@@ -90,6 +122,16 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        public bool Install(Guid id)
+        {
+            return InstallAsync(id).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Installs an available app from the app catalog in a site.
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
         public async Task<bool> InstallAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -97,6 +139,16 @@ namespace OfficeDevPnP.Core.ALM
                 throw new ArgumentException(nameof(id));
             }
             return await BaseRequest(id, "Install");
+        }
+
+        /// <summary>
+        /// Uninstalls an app from a site.
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to uninstall.</param>
+        /// <returns></returns>
+        public bool Uninstall(AppMetadata appMetadata)
+        {
+            return UninstallAsync(appMetadata).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -122,6 +174,16 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        public bool Uninstall(Guid id)
+        {
+            return UninstallAsync(id).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Uninstalls an app from a site.
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
         public async Task<bool> UninstallAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -129,6 +191,16 @@ namespace OfficeDevPnP.Core.ALM
                 throw new ArgumentException(nameof(id));
             }
             return await BaseRequest(id, "Uninstall");
+        }
+
+        /// <summary>
+        /// Upgrades an app in a site
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to upgrade.</param>
+        /// <returns></returns>
+        public bool Upgrade(AppMetadata appMetadata)
+        {
+            return UpgradeAsync(appMetadata).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -154,6 +226,16 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        public bool Upgrade(Guid id)
+        {
+            return UpgradeAsync(id).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Upgrades an app in a site
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
         public async Task<bool> UpgradeAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -161,6 +243,17 @@ namespace OfficeDevPnP.Core.ALM
                 throw new ArgumentException(nameof(id));
             }
             return await BaseRequest(id, "Upgrade");
+        }
+
+        /// <summary>
+        /// Deploys/trusts an app in the app catalog
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to deploy.</param>
+        /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <returns></returns>
+        public bool Deploy(AppMetadata appMetadata, bool skipFeatureDeployment = true)
+        {
+            return DeployAsync(appMetadata, skipFeatureDeployment).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -192,6 +285,17 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
         /// <returns></returns>
+        public bool Deploy(Guid id, bool skipFeatureDeployment = true)
+        {
+            return DeployAsync(id, skipFeatureDeployment).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Deploys/trusts an app in the app catalog
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <returns></returns>
         public async Task<bool> DeployAsync(Guid id, bool skipFeatureDeployment = true)
         {
             if (id == Guid.Empty)
@@ -203,6 +307,16 @@ namespace OfficeDevPnP.Core.ALM
                 { "skipFeatureDeployment", skipFeatureDeployment }
             };
             return await BaseRequest(id, "Deploy", true, postObj);
+        }
+
+        /// <summary>
+        /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to retract.</param>
+        /// <returns></returns>
+        public bool Retract(AppMetadata appMetadata)
+        {
+            return RetractAsync(appMetadata).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -228,6 +342,16 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        public bool Retract(Guid id)
+        {
+            return RetractAsync(id).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
         public async Task<bool> RetractAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -235,6 +359,16 @@ namespace OfficeDevPnP.Core.ALM
                 throw new ArgumentException(nameof(id));
             }
             return await BaseRequest(id, "Retract", true);
+        }
+
+        /// <summary>
+        /// Removes an app from the app catalog
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to remove.</param>
+        /// <returns></returns>
+        public bool Remove(AppMetadata appMetadata)
+        {
+            return RemoveAsync(appMetadata).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -260,6 +394,16 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        public bool Remove(Guid id)
+        {
+            return RemoveAsync(id).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Removes an app from the app catalog
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
         public async Task<bool> RemoveAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -269,9 +413,47 @@ namespace OfficeDevPnP.Core.ALM
             return await BaseRequest(id, "Remove", true);
         }
 
-        public async Task<List<AppMetadata>> GetAvailableAddinsAsync()
+        /// <summary>
+        /// Returns all available apps.
+        /// </summary>
+        /// <returns></returns>
+        public List<AppMetadata> GetAvailable()
         {
-            List<AppMetadata> addins = new List<AppMetadata>();
+            return BaseGetAvailableAsync(Guid.Empty).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Returns all available apps.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<AppMetadata>> GetAvailableAsync()
+        {
+            return await BaseGetAvailableAsync(Guid.Empty);
+        }
+
+        /// <summary>
+        /// Returns an available app
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
+        public AppMetadata GetAvailable(Guid id)
+        {
+            return BaseGetAvailableAsync(id).GetAwaiter().GetResult();
+        }
+
+        public async Task<AppMetadata> GetAvailableAsync(Guid id)
+        {
+            return await BaseGetAvailableAsync(id);
+        }
+
+        /// <summary>
+        /// Returns an available app
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <returns></returns>
+        private async Task<dynamic> BaseGetAvailableAsync(Guid id)
+        {
+            dynamic addins = null;
 
             var accessToken = _context.GetAccessToken();
 
@@ -287,7 +469,11 @@ namespace OfficeDevPnP.Core.ALM
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/web/tenantappcatalog/AvailableApps", _context.Web.Url);
+                    string requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps";
+                    if (Guid.Empty != id)
+                    {
+                        requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
+                    }
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
@@ -307,10 +493,19 @@ namespace OfficeDevPnP.Core.ALM
                         {
                             try
                             {
-                                var responseJson = JObject.Parse(responseString);
-                                var returnedAddins = responseJson["d"]["results"] as JArray;
+                                if (Guid.Empty == id)
+                                {
+                                    var responseJson = JObject.Parse(responseString);
+                                    var returnedAddins = responseJson["d"]["results"] as JArray;
 
-                                addins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
+                                    addins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
+                                }
+                                else
+                                {
+                                    var responseJson = JObject.Parse(responseString);
+                                    var returnedAddins = responseJson["d"];
+                                    addins = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
+                                }
 
                             }
                             catch { }
@@ -393,8 +588,10 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => returnValue);
         }
 
-        private async Task<bool> BaseAddRequest(byte[] file, string filename, bool overwrite = false, bool appCatalog = true)
+        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite = false, bool appCatalog = true)
         {
+            AppMetadata returnValue = null;
+
             var context = _context;
             if (appCatalog == true)
             {
@@ -402,7 +599,7 @@ namespace OfficeDevPnP.Core.ALM
                 var appcatalogUri = _context.Web.GetAppCatalog();
                 context = context.Clone(appcatalogUri);
             }
-            var returnValue = false;
+
             var accessToken = context.GetAccessToken();
 
             using (var handler = new HttpClientHandler())
@@ -419,11 +616,12 @@ namespace OfficeDevPnP.Core.ALM
                 {
                     string requestUrl = $"{context.Web.Url}/_api/web/tenantappcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
 
+                    var requestDigest = await context.GetRequestDigest();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-                    MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    //MediaTypeHeaderValue sharePointJsonMediaType = null;
+                    //MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
                     request.Content = new ByteArrayContent(file);
 
@@ -436,12 +634,35 @@ namespace OfficeDevPnP.Core.ALM
                         var responseString = await response.Content.ReadAsStringAsync();
                         if (responseString != null)
                         {
-                            try
+                            var responseJson = JObject.Parse(responseString);
+                            var id = responseJson["d"]["UniqueId"].ToString();
+
+                            var metadataRequestUrl = $"{context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
+
+                            HttpRequestMessage metadataRequest = new HttpRequestMessage(HttpMethod.Post, metadataRequestUrl);
+                            metadataRequest.Headers.Add("accept", "application/json;odata=verbose");
+
+                            metadataRequest.Headers.Add("X-RequestDigest", requestDigest);
+
+                            // Perform actual post operation
+                            HttpResponseMessage metadataResponse = await httpClient.SendAsync(metadataRequest, new System.Threading.CancellationToken());
+
+                            if (metadataResponse.IsSuccessStatusCode)
                             {
-                                var responseJson = JObject.Parse(responseString);
-                                returnValue = true;
+                                // If value empty, URL is taken
+                                var metadataResponseString = await metadataResponse.Content.ReadAsStringAsync();
+                                if (metadataResponseString != null)
+                                {
+                                    var metadataResponseJson = JObject.Parse(metadataResponseString);
+                                    var returnedAddins = metadataResponseJson["d"];
+                                    returnValue = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
+                                }
                             }
-                            catch { }
+                            else
+                            {
+                                // Something went wrong...
+                                throw new Exception(await metadataResponse.Content.ReadAsStringAsync());
+                            }
                         }
                     }
                     else
@@ -456,3 +677,4 @@ namespace OfficeDevPnP.Core.ALM
         #endregion
     }
 }
+#endif

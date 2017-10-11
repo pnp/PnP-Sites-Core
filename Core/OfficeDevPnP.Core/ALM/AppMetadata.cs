@@ -1,9 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿#if !ONPREMISES
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
 {
@@ -25,6 +22,5 @@ namespace OfficeDevPnP.Core.ALM
         [JsonProperty()]
         public string Title { get; internal set; }
     }
-
-
 }
+#endif
