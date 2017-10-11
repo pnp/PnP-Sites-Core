@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             var listUrlProperty = GetProperty("selectedListUrl") as string;
             if (!string.IsNullOrWhiteSpace(listUrlProperty))
             {
-                return web.GetList(listUrlProperty);
+                return web.GetListByUrl(listUrlProperty);
             }
 
             // grab list based on list id
@@ -60,7 +60,10 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             Guid listId;
             if (TryParseGuidProperty(listIdProperty, out listId))
             {
-                return web.Lists.GetById(listId);
+                var list = web.Lists.GetById(listId);
+                web.Context.Load(list);
+                web.Context.ExecuteQueryRetry();
+                return list;
             }
 
             // grab list based on list title
