@@ -423,6 +423,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+#if !ONPREMISES
         /// <summary>
         /// BETA: Creates a Communication Site Collection
         /// </summary>
@@ -444,5 +445,6 @@ namespace Microsoft.SharePoint.Client
         {
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
+#endif
     }
 }
