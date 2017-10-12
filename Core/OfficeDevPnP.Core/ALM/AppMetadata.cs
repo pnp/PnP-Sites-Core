@@ -9,6 +9,9 @@ namespace OfficeDevPnP.Core.ALM
     /// </summary>
     public class AppMetadata
     {
+        /// <summary>
+        /// Unique ID of the library list item of the app/solution.
+        /// </summary>
         [JsonProperty()]
         public Guid Id { get; internal set; }
         /// <summary>
