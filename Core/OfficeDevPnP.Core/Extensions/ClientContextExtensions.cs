@@ -396,7 +396,10 @@ namespace Microsoft.SharePoint.Client
                     string requestUrl = String.Format("{0}/_api/contextinfo", context.Web.Url);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-
+                    if(!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)

@@ -459,10 +459,11 @@ namespace OfficeDevPnP.Core.ALM
 
             using (var handler = new HttpClientHandler())
             {
+                _context.Web.EnsureProperty(w => w.Url);
+
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    _context.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = _context.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(_context.Web.Url), (_context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(_context.Web.Url)));
                 }
@@ -474,12 +475,12 @@ namespace OfficeDevPnP.Core.ALM
                     {
                         requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
                     }
-
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-                    MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
-
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                     request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
 
                     // Perform actual post operation
@@ -536,10 +537,11 @@ namespace OfficeDevPnP.Core.ALM
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
+
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = context.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
@@ -550,6 +552,10 @@ namespace OfficeDevPnP.Core.ALM
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=nometadata");
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
 
                     if (postObject != null)
@@ -604,10 +610,11 @@ namespace OfficeDevPnP.Core.ALM
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
+
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = context.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
@@ -619,8 +626,10 @@ namespace OfficeDevPnP.Core.ALM
                     var requestDigest = await context.GetRequestDigest();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-                    //MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    //MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                     request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
                     request.Content = new ByteArrayContent(file);
@@ -641,7 +650,10 @@ namespace OfficeDevPnP.Core.ALM
 
                             HttpRequestMessage metadataRequest = new HttpRequestMessage(HttpMethod.Post, metadataRequestUrl);
                             metadataRequest.Headers.Add("accept", "application/json;odata=verbose");
-
+                            if (!string.IsNullOrEmpty(accessToken))
+                            {
+                                metadataRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                            }
                             metadataRequest.Headers.Add("X-RequestDigest", requestDigest);
 
                             // Perform actual post operation
