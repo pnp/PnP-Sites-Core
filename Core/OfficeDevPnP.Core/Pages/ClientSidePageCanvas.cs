@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -364,7 +365,12 @@ namespace OfficeDevPnP.Core.Pages
                     }
                     else
                     {
-                        return null;
+                        if (this.sections.Count == 0)
+                        {
+                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        }
+
+                        return sections.First();
                     }
                 }
             }
@@ -906,9 +912,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.WhenAny(
-                GetClientSideWebPartsAsync(this.accessToken, this.Context)
-                ).Result;
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -1274,7 +1278,7 @@ namespace OfficeDevPnP.Core.Pages
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     //GET https://bertonline.sharepoint.com/sites/130023/_api/web/GetClientSideWebParts HTTP/1.1
 
@@ -1289,7 +1293,7 @@ namespace OfficeDevPnP.Core.Pages
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -1301,7 +1305,7 @@ namespace OfficeDevPnP.Core.Pages
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseString);
+                return responseString;
             }
         }
 

@@ -455,7 +455,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
 
-                IList<WebhookSubscription> actualSubscriptions = testList.GetWebhookSubscriptions();
+                IList<WebhookSubscription> actualSubscriptions = Task.Run(()=> testList.GetWebhookSubscriptionsAsync()).Result;
 
                 Assert.IsTrue(actualSubscriptions.Count > 0);
             }

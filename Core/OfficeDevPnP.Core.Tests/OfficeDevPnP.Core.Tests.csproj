@@ -446,6 +446,7 @@
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
+    <Compile Include="Sites\SiteCollectionTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />
     <Compile Include="Utilities\EncryptionUtilityTests.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />

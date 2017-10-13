@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Utilities
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string identifierUrl = GetResourceIdentifier(resourceType, webUrl, subscription.Resource);
                     if (string.IsNullOrEmpty(identifierUrl))
@@ -86,7 +86,7 @@ namespace OfficeDevPnP.Core.Utilities
                     request.Content = new StringContent(JsonConvert.SerializeObject(subscription),
                         Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -162,7 +162,7 @@ namespace OfficeDevPnP.Core.Utilities
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string identifierUrl = GetResourceIdentifier(resourceType, webUrl, resourceId);
                     if (string.IsNullOrEmpty(identifierUrl))
@@ -184,7 +184,7 @@ namespace OfficeDevPnP.Core.Utilities
                         }),
                         Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
                     {
@@ -220,7 +220,7 @@ namespace OfficeDevPnP.Core.Utilities
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string identifierUrl = GetResourceIdentifier(resourceType, webUrl, resourceId);
                     if (string.IsNullOrEmpty(identifierUrl))
@@ -234,7 +234,7 @@ namespace OfficeDevPnP.Core.Utilities
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.StatusCode != System.Net.HttpStatusCode.NoContent)
                     {
@@ -270,7 +270,7 @@ namespace OfficeDevPnP.Core.Utilities
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string identifierUrl = GetResourceIdentifier(resourceType, webUrl, resourceId);
                     if (string.IsNullOrEmpty(identifierUrl))
@@ -284,7 +284,7 @@ namespace OfficeDevPnP.Core.Utilities
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {

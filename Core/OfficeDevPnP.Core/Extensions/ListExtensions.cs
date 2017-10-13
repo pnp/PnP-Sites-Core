@@ -345,6 +345,33 @@ namespace Microsoft.SharePoint.Client
                 throw ex.InnerException ?? ex;
             }
         }
+
+        /// <summary>
+        /// Async get all the existing Webhooks subscriptions of the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to get the subscriptions of</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The collection of Webhooks subscriptions of the list</returns>
+        public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptionsAsync(this List list, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
+                return webHookSubscriptionResponse.Value;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
 #endif
         #endregion
 

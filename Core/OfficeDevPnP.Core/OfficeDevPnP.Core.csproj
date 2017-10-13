@@ -314,13 +314,11 @@
       <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.22.302111727\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.22.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.22.302111727\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -836,6 +834,8 @@
     <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="Sites\SiteCollection.cs" />
+    <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
     <Compile Include="Utilities\CanvasControl\CanvasControlPostProcessorFactory.cs" />
     <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
@@ -864,6 +864,7 @@
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\PnPHttpProvider.cs" />
     <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
     <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
     <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
@@ -1113,7 +1114,6 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <Content Include="Sites\Dummy.txt" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />

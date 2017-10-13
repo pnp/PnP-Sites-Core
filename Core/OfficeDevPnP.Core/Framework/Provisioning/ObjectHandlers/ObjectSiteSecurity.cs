@@ -62,6 +62,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
 
+                //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
+                for (int i = siteSecurity.SiteGroups.Count - 1; i >= 0; i--)
+                {
+                    var currentGroup = siteSecurity.SiteGroups[i];
+                    string currentGroupOwner = parser.ParseString(currentGroup.Owner);
+                    string currentGroupTitle = parser.ParseString(currentGroup.Title);
+
+                    if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
+                    {
+                        for (int j = 0; j < i; j++)
+                        {
+                            if (parser.ParseString(siteSecurity.SiteGroups[j].Owner) == currentGroupTitle)
+                            {
+                                siteSecurity.SiteGroups.RemoveAt(i);
+                                siteSecurity.SiteGroups.Insert(j, currentGroup);
+                                i++;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 foreach (var siteGroup in siteSecurity.SiteGroups)
                 {
                     Group group;
@@ -71,6 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
                     string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
+                    bool descriptionHasHtml = HttpUtility.HtmlEncode(parsedGroupDescription) != parsedGroupDescription;
 
                     if (!web.GroupExists(parsedGroupTitle))
                     {
@@ -97,11 +120,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
                         parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
+
+                        if (descriptionHasHtml)
+                        {
+                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                            groupItem["Notes"] = parsedGroupDescription;
+                            groupItem.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                     else
                     {
                         group = web.SiteGroups.GetByName(parsedGroupTitle);
                         web.Context.Load(group,
+                            g => g.Id,
                             g => g.Title,
                             g => g.Description,
                             g => g.AllowMembersEditMembership,
@@ -109,11 +141,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.AutoAcceptRequestToJoinLeave,
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
+
                         var isDirty = false;
-                        if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+                        if (descriptionHasHtml)
                         {
-                            group.Description = parsedGroupDescription;
-                            isDirty = true;
+                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                            web.Context.Load(groupItem, g => g["Notes"]);
+                            web.Context.ExecuteQueryRetry();
+                            var description = groupItem["Notes"]?.ToString();
+
+                            if (description != parsedGroupDescription)
+                            {
+                                groupItem["Notes"] = parsedGroupDescription;
+                                groupItem.Update();
+                                isDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+                            {
+                                group.Description = parsedGroupDescription;
+                                isDirty = true;
+                            }
                         }
                         if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
                         {
@@ -206,7 +256,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var newRoleDefinition = web.RoleDefinitions.Add(roleDefinitionCI);
                                 web.Context.Load(newRoleDefinition, nrd => nrd.Name, nrd => nrd.Id);
                                 web.Context.ExecuteQueryRetry();
-                                parser.AddToken(new RoleDefinitionIdToken(web,newRoleDefinition.Name,newRoleDefinition.Id));
+                                parser.AddToken(new RoleDefinitionIdToken(web, newRoleDefinition.Name, newRoleDefinition.Id));
                             }
                             else
                             {
@@ -453,6 +503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.Context.Load(web.SiteGroups,
                         o => o.IncludeWithDefaultProperties(
+                            gr => gr.Id,
                             gr => gr.Title,
                             gr => gr.AllowMembersEditMembership,
                             gr => gr.AutoAcceptRequestToJoinLeave,
@@ -486,6 +537,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Owner = ReplaceGroupTokens(web, group.Owner.LoginName),
                                 RequestToJoinLeaveEmailSetting = group.RequestToJoinLeaveEmailSetting
                             };
+
+                            if (String.IsNullOrEmpty(siteGroup.Description))
+                            {
+                                var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                                web.Context.Load(groupItem);
+                                web.Context.ExecuteQueryRetry();
+
+                                var groupNotes = (String)groupItem["Notes"];
+                                if (!String.IsNullOrEmpty(groupNotes))
+                                {
+                                    siteGroup.Description = groupNotes;
+                                }
+                            }
 
                             foreach (var member in group.Users)
                             {

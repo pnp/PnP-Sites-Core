@@ -32,21 +32,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var siteWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var siteWebhookType = Type.GetType(siteWebhookTypeName, true);
+            if (template.SiteWebhooks != null && template.SiteWebhooks.Count > 0)
+            {
+                var siteWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var siteWebhookType = Type.GetType(siteWebhookTypeName, true);
 
-            var expressions = new Dictionary<string, IResolver>();
+                var expressions = new Dictionary<string, IResolver>();
 
-            // Manage SiteWebhookTypeSpecified property
-            expressions.Add($"{siteWebhookType}.SiteWebhookTypeSpecified", new ExpressionValueResolver((s, p) => true));
+                // Manage SiteWebhookTypeSpecified property
+                expressions.Add($"{siteWebhookType}.SiteWebhookTypeSpecified", new ExpressionValueResolver((s, p) => true));
 
-            persistence.GetPublicInstanceProperty("SiteWebhooks")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.SiteWebhooks,
-                        new CollectionFromModelToSchemaTypeResolver(siteWebhookType),
-                        expressions,
-                        recursive: true));
+                persistence.GetPublicInstanceProperty("SiteWebhooks")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.SiteWebhooks,
+                            new CollectionFromModelToSchemaTypeResolver(siteWebhookType),
+                            expressions,
+                            recursive: true));
+            }
         }
     }
 }
