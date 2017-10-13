@@ -52,6 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                             }
                         }
 
+                        //when referenced associated group is not found, let's try to create them and then one more attempt to get them again
                         if (string.IsNullOrEmpty(CacheValue) && context.Web.HasUniqueRoleAssignments && i==0)
                         {
                             var web = context.Web;
