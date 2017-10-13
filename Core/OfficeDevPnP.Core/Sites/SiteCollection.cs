@@ -33,10 +33,10 @@ namespace OfficeDevPnP.Core.Sites
 
             using (var handler = new HttpClientHandler())
             {
+                clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    clientContext.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = clientContext.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
                 }
@@ -73,6 +73,11 @@ namespace OfficeDevPnP.Core.Sites
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
@@ -128,10 +133,10 @@ namespace OfficeDevPnP.Core.Sites
             }
             using (var handler = new HttpClientHandler())
             {
+                clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    clientContext.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = clientContext.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
                 }
@@ -165,6 +170,11 @@ namespace OfficeDevPnP.Core.Sites
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
                     // Perform actual post operation
@@ -178,7 +188,8 @@ namespace OfficeDevPnP.Core.Sites
                         if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
                         {
                             responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
-                        } else
+                        }
+                        else
                         {
                             throw new Exception(responseString);
                         }
@@ -230,9 +241,10 @@ namespace OfficeDevPnP.Core.Sites
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
+
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
                     handler.Credentials = context.Credentials;
                     handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
                 }
@@ -244,6 +256,11 @@ namespace OfficeDevPnP.Core.Sites
                     request.Headers.Add("accept", "application/json;odata.metadata=minimal");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     // Perform actual GET request
                     HttpResponseMessage response = await httpClient.SendAsync(request);
