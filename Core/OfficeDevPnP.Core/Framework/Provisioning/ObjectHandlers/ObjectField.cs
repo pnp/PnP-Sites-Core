@@ -35,9 +35,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingFields = web.Fields;
 
-                web.Context.Load(existingFields, fs => fs.Include(f => f.Id));
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.InternalName));
                 web.Context.ExecuteQueryRetry();
-                var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
+                // Get list of all fields with Ids & Internal names to be able to match using Id or InternalName
+                var existingFieldIdsAndNames = existingFields.AsEnumerable<SPField>().ToDictionary(t => t.Id, t => t.InternalName);
                 var fields = template.SiteFields;
 
                 var currentFieldIndex = 0;
@@ -47,9 +48,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     XElement templateFieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = templateFieldElement.Attribute("ID").Value;
-                    var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
-                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
-                    if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
+                
+                    WriteMessage($"Field|{fieldId}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
+
+                    bool isExistingField = false;
+                    if (!existingFieldIdsAndNames.ContainsKey(Guid.Parse(fieldId)))
+                    {
+                        // Try to get the internal name
+                        var fieldInternalName = templateFieldElement.Attribute("InternalName") != null ? templateFieldElement.Attribute("InternalName").Value : "";
+                        if (string.IsNullOrEmpty(fieldInternalName)) fieldInternalName = templateFieldElement.Attribute("StaticName") != null ? templateFieldElement.Attribute("StaticName").Value : "";
+                        if (string.IsNullOrEmpty(fieldInternalName)) fieldInternalName = templateFieldElement.Attribute("Name") != null ? templateFieldElement.Attribute("Name").Value : "";
+
+                        if (existingFieldIdsAndNames.ContainsValue(fieldInternalName))
+                        {
+                            Guid currentFieldId = existingFieldIdsAndNames.FirstOrDefault(e => e.Value == fieldInternalName).Key;
+
+                            // Switch field id to the real one
+                            Guid oldFieldId = new Guid(fieldId);
+                            fieldId = currentFieldId.ToString();
+                            templateFieldElement.Attribute("ID").Value = fieldId;
+
+                            // We need also to update related content types & lists
+                            if (template.ContentTypes != null)
+                            {
+                                foreach (var ct in template.ContentTypes)
+                                {
+                                    var ctFieldLink = ct.FieldRefs.FirstOrDefault(f => f.Id == oldFieldId);
+                                    if (ctFieldLink != null)
+                                    {
+                                        ctFieldLink.Id = currentFieldId;
+                                    }
+                                }
+                            }
+                            if (template.Lists != null)
+                            {
+                                foreach (var l in template.Lists)
+                                {
+                                    var lFieldLink = l.FieldRefs.FirstOrDefault(f => f.Id == oldFieldId);
+                                    if (lFieldLink != null)
+                                    {
+                                        lFieldLink.Id = currentFieldId;
+                                    }
+                                }
+                            }
+
+                            isExistingField = true;
+                        }
+                    }
+                    else
+                    {
+                        isExistingField = true;
+                    }
+
+                    if (!isExistingField)
                     {
                         try
                         {
@@ -616,7 +667,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
-        }        
+        }
     }
 
     internal static class XElementStringExtensions

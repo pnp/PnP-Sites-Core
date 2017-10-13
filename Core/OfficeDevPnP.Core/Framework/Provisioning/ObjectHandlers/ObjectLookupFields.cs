@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Field = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -51,7 +52,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var rootWeb = (web.Context as ClientContext).Site.RootWeb;
             rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
+            rootWeb.Context.Load(rootWeb.Fields, ff => ff.Include(f => f.Id, f => f.InternalName));
             rootWeb.Context.ExecuteQueryRetry();
+
+            Dictionary<Guid, string> fieldRefs = rootWeb.Fields.ToDictionary(f => f.Id, f => f.InternalName);
 
             foreach (var siteField in template.SiteFields)
             {
@@ -59,10 +63,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (fieldElement.Attribute("List") != null)
                 {
-                    var fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
+                    Guid fieldId = Guid.Parse(fieldElement.Attribute("ID").Value);
                     var listIdentifier = parser.ParseString(fieldElement.Attribute("List").Value);
                     var relationshipDeleteBehavior = fieldElement.Attribute("RelationshipDeleteBehavior") != null ? fieldElement.Attribute("RelationshipDeleteBehavior").Value : string.Empty;
                     var webId = string.Empty;
+
+                    // If template field is not defined with the real field, use the internal name to match
+                    if (!fieldRefs.ContainsKey(fieldId))
+                    {
+                        string fieldInternalName = fieldElement.Attribute("InternalName") != null ? fieldElement.Attribute("InternalName").Value : null;
+                        // Fallback to staticname
+                        if (string.IsNullOrEmpty(fieldInternalName)) fieldInternalName = fieldElement.Attribute("StaticName") != null ? fieldElement.Attribute("StaticName").Value : null;
+                        // Fallback to name
+                        if (string.IsNullOrEmpty(fieldInternalName)) fieldInternalName = fieldElement.Attribute("Name") != null ? fieldElement.Attribute("Name").Value : null;
+
+                        if (!string.IsNullOrEmpty(fieldInternalName) && fieldRefs.ContainsValue(fieldInternalName))
+                        {
+                            fieldId = fieldRefs.FirstOrDefault(f => f.Value == fieldInternalName).Key;
+                        }
+                    }
 
                     var field = rootWeb.Fields.GetById(fieldId);
                     rootWeb.Context.Load(field, f => f.SchemaXmlWithResourceTokens);
@@ -81,7 +100,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-
             web.Context.Load(web.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
             web.Context.ExecuteQueryRetry();
 
@@ -144,12 +162,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 List retVal = rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
 
-                if(retVal == null)
+                if (retVal == null)
                 {
                     retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
                 }
 
-                if(retVal == null)
+                if (retVal == null)
                 {
                     Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
                 }
