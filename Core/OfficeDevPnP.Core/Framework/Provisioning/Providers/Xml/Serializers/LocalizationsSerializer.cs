@@ -32,14 +32,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var localizationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.LocalizationsLocalization, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var localizationType = Type.GetType(localizationTypeName, true);
+            if (template.Localizations != null && template.Localizations.Count > 0)
+            {
+                var localizationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.LocalizationsLocalization, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var localizationType = Type.GetType(localizationTypeName, true);
 
-            persistence.GetPublicInstanceProperty("Localizations")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.Localizations,
-                        new CollectionFromModelToSchemaTypeResolver(localizationType)));
+                persistence.GetPublicInstanceProperty("Localizations")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.Localizations,
+                            new CollectionFromModelToSchemaTypeResolver(localizationType)));
+            }
         }
     }
 }
