@@ -12,7 +12,10 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+
+#if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {

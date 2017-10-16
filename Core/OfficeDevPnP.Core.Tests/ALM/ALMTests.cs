@@ -1,4 +1,5 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.ALM;
@@ -11,7 +12,6 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Tests.Sites
 {
-#if !ONPREMISES
     [TestClass]
     public class ALMTests
     {
@@ -184,5 +184,5 @@ namespace OfficeDevPnP.Core.Tests.Sites
             }
         }
     }
-#endif
 }
+#endif
