@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Sites
     public static class SiteCollection
     {
         /// <summary>
-        /// BETA: Creates a new Communication Site Collection
+        /// Creates a new Communication Site Collection
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
@@ -43,12 +43,12 @@ namespace OfficeDevPnP.Core.Sites
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/sitepages/publishingsite/create", clientContext.Web.Url);
+                    string requestUrl = String.Format("{0}/_api/sitepages/communicationsite/create", clientContext.Web.Url);
 
                     var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
-                    payload.Add("__metadata", new { type = "SP.Publishing.PublishingSiteCreationRequest" });
+                    payload.Add("__metadata", new { type = "SP.Publishing.CommunicationSiteCreationRequest" });
                     payload.Add("Title", siteCollectionCreationInformation.Title);
                     payload.Add("Url", siteCollectionCreationInformation.Url);
                     payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
@@ -116,7 +116,7 @@ namespace OfficeDevPnP.Core.Sites
         }
 
         /// <summary>
-        /// BETA: Creates a new Modern Team Site Collection
+        /// Creates a new Modern Team Site Collection
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
