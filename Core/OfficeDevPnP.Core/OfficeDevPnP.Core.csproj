@@ -376,6 +376,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ALM\AppManager.cs" />
+    <Compile Include="ALM\AppMetadata.cs" />
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
