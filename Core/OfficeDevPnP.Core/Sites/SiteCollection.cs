@@ -102,7 +102,10 @@ namespace OfficeDevPnP.Core.Sites
                                     throw new Exception(responseString);
                                 }
                             }
-                            catch { }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                         }
                     }
                     else
