@@ -1271,11 +1271,11 @@ namespace OfficeDevPnP.Core.Pages
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
