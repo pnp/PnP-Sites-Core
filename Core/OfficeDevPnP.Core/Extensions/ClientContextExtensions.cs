@@ -387,11 +387,11 @@ namespace Microsoft.SharePoint.Client
                 string responseString = string.Empty;
                 var accessToken = context.GetAccessToken();
 
+                context.Web.EnsureProperty(w => w.Url);
+
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))

@@ -464,8 +464,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = _context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(_context.Web.Url), (_context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(_context.Web.Url)));
+                    handler.SetAuthenticationCookies(_context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -542,8 +541,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -615,8 +613,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
