@@ -37,8 +37,7 @@ namespace OfficeDevPnP.Core.Sites
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = clientContext.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
+                    handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -137,8 +136,7 @@ namespace OfficeDevPnP.Core.Sites
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = clientContext.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
+                    handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -245,8 +243,7 @@ namespace OfficeDevPnP.Core.Sites
 
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new HttpClient(handler))
