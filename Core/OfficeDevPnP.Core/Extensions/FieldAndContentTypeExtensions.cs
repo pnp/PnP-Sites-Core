@@ -1,11 +1,12 @@
 ﻿using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client.DocumentSet;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -100,6 +101,7 @@ namespace Microsoft.SharePoint.Client
 
             return field;
         }
+
         /// <summary>
         /// Removes a field by specifying its internal name
         /// </summary>
@@ -198,7 +200,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">Guid for the field ID</param>
-        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
         /// <returns>True or false depending on the field existence</returns>
         public static bool FieldExistsById(this Web web, Guid fieldId, bool searchInSiteHierarchy = false)
         {
@@ -212,7 +214,7 @@ namespace Microsoft.SharePoint.Client
         /// <typeparam name="TField">The selected field type to return.</typeparam>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">Guid for the field ID</param>
-        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
         /// <returns>Field of type TField</returns>
         public static TField GetFieldById<TField>(this Web web, Guid fieldId, bool searchInSiteHierarchy = false) where TField : Field
         {
@@ -232,7 +234,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">Guid for the field ID</param>
-        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>         
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
         /// <returns>Field of type TField</returns>
         public static Field GetFieldById(this Web web, Guid fieldId, bool searchInSiteHierarchy = false)
         {
@@ -370,7 +372,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldName">String for the field internal name to be used as query criteria</param>
-        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
         /// <returns>True or false depending on the field existence</returns>
         public static bool FieldExistsByName(this Web web, string fieldName, bool searchInSiteHierarchy = false)
         {
@@ -399,7 +401,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site. Site columns should be created to root site.</param>
         /// <param name="fieldId">String representation of the field ID (=guid)</param>
-        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param> 
+        /// <param name="searchInSiteHierarchy">If true, search parent sites and root site</param>
         /// <returns>True if exists, false otherwise</returns>
         public static bool FieldExistsById(this Web web, string fieldId, bool searchInSiteHierarchy = false)
         {
@@ -470,8 +472,23 @@ namespace Microsoft.SharePoint.Client
             field.Context.ExecuteQueryRetry();
         }
 
+        public static FieldStage GetFieldStage(this Field siteField, TokenParser parser)
+        {
+            if (siteField.FieldTypeKind != FieldType.Lookup) return FieldStage.Default;
 
-        #endregion
+            var schemaXml = XElement.Parse(parser.ParseString(siteField.SchemaXml));
+
+            if ((string)schemaXml.Attribute("FieldRef") != null)
+            {
+                return FieldStage.DependentLookupFields;
+            }
+            else
+            {
+                return FieldStage.LookupFields;
+            }
+        }
+
+        #endregion Site Columns
 
         #region List Fields
 
@@ -523,7 +540,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldCreationInformation">The information about the field to be created</param>
         /// <param name="executeQuery">Optionally skip the executeQuery action</param>
         /// <returns></returns>
-        static TField CreateFieldBase<TField>(FieldCollection fields, FieldCreationInformation fieldCreationInformation, bool executeQuery = true) where TField : Field
+        private static TField CreateFieldBase<TField>(FieldCollection fields, FieldCreationInformation fieldCreationInformation, bool executeQuery = true) where TField : Field
         {
             Field field = fields.FirstOrDefault(f => f.Id == fieldCreationInformation.Id || f.InternalName == fieldCreationInformation.InternalName) as TField;
 
@@ -730,7 +747,7 @@ namespace Microsoft.SharePoint.Client
             field.SetJsLinkCustomizations(jsLink);
         }
 
-        #endregion
+        #endregion List Fields
 
         #region Helper methods
 
@@ -760,7 +777,7 @@ namespace Microsoft.SharePoint.Client
             return attributes;
         }
 
-        #endregion
+        #endregion Helper methods
 
         #region Content Types
 
@@ -879,8 +896,6 @@ namespace Microsoft.SharePoint.Client
             }
             return true;
         }
-
-
 
         /// <summary>
         /// Associates field to content type
@@ -1024,16 +1039,16 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Searches the list content types and returns the content type identifier (ID) that is the 
+        /// Searches the list content types and returns the content type identifier (ID) that is the
         /// nearest match to the specified content type ID.
         /// </summary>
         /// <param name="list">The list to check for content types</param>
         /// <param name="baseContentTypeId">A string with the base content type ID to match.</param>
-        /// <returns>The value of the Id property for the content type with the closest match to the value 
+        /// <returns>The value of the Id property for the content type with the closest match to the value
         /// of the specified content type ID. </returns>
         /// <remarks>
         /// <para>
-        /// If the search finds multiple matches, the shorter ID is returned. For example, if 0x0101 is the 
+        /// If the search finds multiple matches, the shorter ID is returned. For example, if 0x0101 is the
         /// argument, and the collection contains both 0x010109 and 0x01010901, the method returns 0x010109.
         /// </para>
         /// </remarks>
@@ -1287,7 +1302,7 @@ namespace Microsoft.SharePoint.Client
                     // Create CT
                     var newct = web.CreateContentType(name, description, ctid, group);
 
-                    // Add fields to content type 
+                    // Add fields to content type
                     var fieldRefs = from fr in ct.Descendants(ns + "FieldRefs").Elements(ns + "FieldRef") select fr;
                     foreach (var fieldRef in fieldRefs)
                     {
@@ -1302,7 +1317,7 @@ namespace Microsoft.SharePoint.Client
                     if (ctid.StartsWith(BuiltInContentTypeId.DocumentSet)) //DocumentSetTemplate.DocumentSetTemplate.IsChildOfDocumentSetContentType() appears not to be working
                     {
                         // Load Docset Template
-                        var template = DocumentSetTemplate.GetDocumentSetTemplate(web.Context, newct);
+                        var template = DocumentSet.DocumentSetTemplate.GetDocumentSetTemplate(web.Context, newct);
                         web.Context.Load(template, t => t.AllowedContentTypes, t => t.SharedFields, t => t.WelcomePageFields);
                         web.Context.ExecuteQueryRetry();
 
@@ -1544,8 +1559,8 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Searches for the content type with the closest match to the value of the specified content type ID. 
-        /// If the search finds two matches, the shorter ID is returned. 
+        /// Searches for the content type with the closest match to the value of the specified content type ID.
+        /// If the search finds two matches, the shorter ID is returned.
         /// </summary>
         /// <param name="contentTypes">Content type collection to search</param>
         /// <param name="contentTypeId">Complete ID for the content type to search</param>
@@ -1575,14 +1590,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="contentTypeName">The name of the content type</param>
         public static void RemoveContentTypeFromListByName(this Web web, string listTitle, string contentTypeName)
         {
-
             // Get list instances
             var list = web.GetListByTitle(listTitle);
             // Get content type instance
             var contentType = GetContentTypeByName(web, contentTypeName, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
-
         }
 
         /// <summary>
@@ -1599,7 +1612,6 @@ namespace Microsoft.SharePoint.Client
             var contentType = GetContentTypeByName(web, contentTypeName, true);
             // Remove content type from list
             RemoveContentTypeFromList(web, list, contentType);
-
         }
 
         /// <summary>
@@ -1689,7 +1701,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Set's default content type list. 
+        /// Set's default content type list.
         /// </summary>
         /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
@@ -1701,7 +1713,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Set's default content type list. 
+        /// Set's default content type list.
         /// </summary>
         /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
         /// <param name="list">List to update</param>
@@ -1769,7 +1781,7 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+        #endregion Content Types
 
 #if !ONPREMISES
 
@@ -1949,7 +1961,7 @@ namespace Microsoft.SharePoint.Client
             field.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+        #endregion Localization
 
 #endif
     }

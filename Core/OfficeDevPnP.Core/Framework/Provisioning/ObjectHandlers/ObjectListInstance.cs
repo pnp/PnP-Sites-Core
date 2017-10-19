@@ -21,11 +21,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstance : ObjectHandlerBase
     {
+        private readonly FieldStage stage;
+
 
         public override string Name
         {
-            get { return "List instances"; }
+            get { return $"List instances ({stage} stage)"; }
         }
+
+        public ObjectListInstance(FieldStage stage)
+        {
+            this.stage = stage;
+        }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -153,6 +161,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
 
                                     // move onto next field reference
+                                    continue;
+                                }
+
+
+                                var siteFieldStage = field.GetFieldStage(parser);
+
+                                // Handle field only if field is to be handled by the current stage
+                                if (siteFieldStage != this.stage) {
                                     continue;
                                 }
 
@@ -409,6 +425,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return parser;
         }
+
 
         private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
         {

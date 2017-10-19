@@ -412,6 +412,7 @@
     <Compile Include="Extensions\RecordsManagementExtensions.cs" />
     <Compile Include="Extensions\SearchExtensions.cs" />
     <Compile Include="Extensions\TaxonomyExtensions.cs" />
+    <Compile Include="Extensions\TemplateFieldExtension.cs" />
     <Compile Include="Extensions\TenantExtensions.cs" />
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -424,6 +425,7 @@
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FieldStage.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
@@ -434,6 +436,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\DependentFieldLookupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
