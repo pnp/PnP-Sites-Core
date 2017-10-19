@@ -52,6 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var currentFileIndex = 0;
                 foreach (var file in filesToProcess)
                 {
+                    file.Src = parser.ParseString(file.Src);
                     var targetFileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : file.Src;
 
                     currentFileIndex++;
