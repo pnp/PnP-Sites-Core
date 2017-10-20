@@ -310,7 +310,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // Dependent lookup fields cannot be provision through standard XML Schema.
                     var primaryLookupField = web.GetFieldById<FieldLookup>((Guid)templateFieldElement.Attribute("FieldRef"), true);
-                    var toField = web.GetFieldByInternalName((string)templateFieldElement.Attribute("ShowField"));
+                    var toField = web.GetFieldByInternalName((string)templateFieldElement.Attribute("ShowField"),true);
                     field = web.Fields.AddDependentLookup(
                         (string)templateFieldElement.Attribute("DisplayName") ?? (string)templateFieldElement.Attribute("Name"),
                         primaryLookupField,

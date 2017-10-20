@@ -747,6 +747,20 @@ namespace Microsoft.SharePoint.Client
             field.SetJsLinkCustomizations(jsLink);
         }
 
+        /// <summary>
+        /// Returns the field if it exists. Null if does not exist.
+        /// </summary>
+        /// <param name="list">List to be processed</param>
+        /// <param name="internalName">If true, search parent sites and root site</param>
+        /// <returns>Field</returns>
+        public static Field GetFieldByInternalName(this List list, string internalName)
+        {
+            IEnumerable<Field> fields  = list.Context.LoadQuery(list.Fields.Where(f => f.InternalName == internalName));
+
+            list.Context.ExecuteQueryRetry();
+            return fields.FirstOrDefault();
+        }
+
         #endregion List Fields
 
         #region Helper methods
