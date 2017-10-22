@@ -63,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
-                for (int i = siteSecurity.SiteGroups.Count - 1; i >= 0; i--)
+                for (int i = 0; i < siteSecurity.SiteGroups.Count; i++)
                 {
                     var currentGroup = siteSecurity.SiteGroups[i];
                     string currentGroupOwner = currentGroup.Owner;
@@ -71,13 +71,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
                     {
-                        for (int j = 0; j < i; j++)
+                        for (int j = i + 1; j < siteSecurity.SiteGroups.Count; j++)
                         {
-                            if (siteSecurity.SiteGroups[j].Owner == currentGroupTitle)
+                            if (siteSecurity.SiteGroups[j].Title == currentGroupOwner)
                             {
-                                siteSecurity.SiteGroups.RemoveAt(i);
-                                siteSecurity.SiteGroups.Insert(j, currentGroup);
-                                i++;
+                                siteSecurity.SiteGroups.Insert(i, siteSecurity.SiteGroups[j]);
+                                siteSecurity.SiteGroups.RemoveAt(j);
+                                i--;
                                 break;
                             }
                         }
