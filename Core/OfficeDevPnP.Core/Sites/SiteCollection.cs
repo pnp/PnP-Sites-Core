@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Sites
     public static class SiteCollection
     {
         /// <summary>
-        /// BETA: Creates a new Communication Site Collection
+        /// Creates a new Communication Site Collection
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
@@ -33,22 +33,21 @@ namespace OfficeDevPnP.Core.Sites
 
             using (var handler = new HttpClientHandler())
             {
+                clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    clientContext.Web.EnsureProperty(w => w.Url);
-                    handler.Credentials = clientContext.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
+                    handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/sitepages/publishingsite/create", clientContext.Web.Url);
+                    string requestUrl = String.Format("{0}/_api/sitepages/communicationsite/create", clientContext.Web.Url);
 
                     var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
-                    payload.Add("__metadata", new { type = "SP.Publishing.PublishingSiteCreationRequest" });
+                    payload.Add("__metadata", new { type = "SP.Publishing.CommunicationSiteCreationRequest" });
                     payload.Add("Title", siteCollectionCreationInformation.Title);
                     payload.Add("Url", siteCollectionCreationInformation.Url);
                     payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
@@ -74,6 +73,11 @@ namespace OfficeDevPnP.Core.Sites
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
                     // Perform actual post operation
@@ -97,7 +101,10 @@ namespace OfficeDevPnP.Core.Sites
                                     throw new Exception(responseString);
                                 }
                             }
-                            catch { }
+                            catch (Exception)
+                            {
+                                throw;
+                            }
                         }
                     }
                     else
@@ -111,7 +118,7 @@ namespace OfficeDevPnP.Core.Sites
         }
 
         /// <summary>
-        /// BETA: Creates a new Modern Team Site Collection
+        /// Creates a new Modern Team Site Collection
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
@@ -128,12 +135,11 @@ namespace OfficeDevPnP.Core.Sites
             }
             using (var handler = new HttpClientHandler())
             {
+                clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    clientContext.Web.EnsureProperty(w => w.Url);
-                    handler.Credentials = clientContext.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(clientContext.Web.Url), (clientContext.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(clientContext.Web.Url)));
+                    handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -165,6 +171,11 @@ namespace OfficeDevPnP.Core.Sites
                     MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
                     requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
 
                     // Perform actual post operation
@@ -178,7 +189,8 @@ namespace OfficeDevPnP.Core.Sites
                         if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
                         {
                             responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
-                        } else
+                        }
+                        else
                         {
                             throw new Exception(responseString);
                         }
@@ -230,11 +242,11 @@ namespace OfficeDevPnP.Core.Sites
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
+
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new HttpClient(handler))
@@ -244,6 +256,11 @@ namespace OfficeDevPnP.Core.Sites
                     request.Headers.Add("accept", "application/json;odata.metadata=minimal");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     // Perform actual GET request
                     HttpResponseMessage response = await httpClient.SendAsync(request);

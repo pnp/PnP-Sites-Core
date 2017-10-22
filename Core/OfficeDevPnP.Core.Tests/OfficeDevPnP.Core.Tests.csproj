@@ -309,6 +309,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ALM\ALMTests.cs" />
     <Compile Include="Authentication\HighTrustAuthenticationTests.cs" />
     <Compile Include="Extensions\BrandingExtensionsTests.cs" />
     <Compile Include="Extensions\ClientObjectExtensionsTests.cs" />
@@ -529,6 +530,8 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Resources\alm.sppkg" />
+    <None Include="Resources\almskip.sppkg" />
     <None Include="Resources\custom.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

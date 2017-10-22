@@ -12,7 +12,10 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+
+#if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -384,11 +387,11 @@ namespace Microsoft.SharePoint.Client
                 string responseString = string.Empty;
                 var accessToken = context.GetAccessToken();
 
+                context.Web.EnsureProperty(w => w.Url);
+
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(w => w.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -396,7 +399,10 @@ namespace Microsoft.SharePoint.Client
                     string requestUrl = String.Format("{0}/_api/contextinfo", context.Web.Url);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-
+                    if(!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)

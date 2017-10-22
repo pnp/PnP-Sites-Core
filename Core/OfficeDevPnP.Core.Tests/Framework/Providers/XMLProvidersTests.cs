@@ -987,7 +987,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)1, webpart.Order);
             Assert.AreEqual("Main", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents.Trim());
 
             Assert.IsNotNull(file.WebParts);
             webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -995,7 +995,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)10, webpart.Order);
             Assert.AreEqual("Left", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents.Trim());
 
             file = result.Files.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
             Assert.IsNotNull(file);
@@ -1315,7 +1315,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)1, webpart.Row);
             Assert.AreEqual((uint)2, webpart.Column);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents);
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents);
 
             Assert.IsNotNull(page.WebParts);
             webpart = page.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -1323,7 +1323,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)2, webpart.Row);
             Assert.AreEqual((uint)1, webpart.Column);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents);
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents);
 
             Assert.IsNotNull(page.Fields);
             Assert.AreEqual(4, page.Fields.Count() );
@@ -1549,7 +1549,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Term2Set1Group1", tm.Name);
             Assert.AreEqual("Term2 Set1 Group1", tm.Description);
             Assert.AreEqual(102, tm.CustomSortOrder);
-            Assert.AreEqual(0, tm.Language);
+            Assert.IsNull(tm.Language);
             Assert.AreEqual("term1owner@term2owner", tm.Owner);
             Assert.AreEqual(Guid.Empty, tm.SourceTermId);
             Assert.IsFalse(tm.IsAvailableForTagging);

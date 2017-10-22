@@ -4,9 +4,12 @@ using Newtonsoft.Json;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities.Webhooks;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
@@ -62,11 +65,10 @@ namespace OfficeDevPnP.Core.Utilities
             string responseString = null;
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(p => p.Url);
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(p => p.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -81,7 +83,10 @@ namespace OfficeDevPnP.Core.Utilities
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     request.Content = new StringContent(JsonConvert.SerializeObject(subscription),
                         Encoding.UTF8, "application/json");
@@ -122,7 +127,7 @@ namespace OfficeDevPnP.Core.Utilities
             DateTime expirationDateTime = validityInMonths == MaximumValidityInMonths
                 ? MaxExpirationDateTime
                 : DateTime.UtcNow.AddMonths(validityInMonths);
-         
+
             var subscription = new WebhookSubscription()
             {
                 Resource = resourceId,
@@ -155,11 +160,10 @@ namespace OfficeDevPnP.Core.Utilities
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(p => p.Url);
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(p => p.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -174,8 +178,11 @@ namespace OfficeDevPnP.Core.Utilities
 
                     HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                    
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
                     request.Content = new StringContent(JsonConvert.SerializeObject(
                         new WebhookSubscription()
                         {
@@ -213,11 +220,10 @@ namespace OfficeDevPnP.Core.Utilities
         {
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(p => p.Url);
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(p => p.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -232,7 +238,10 @@ namespace OfficeDevPnP.Core.Utilities
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Delete, requestUrl);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
@@ -263,11 +272,10 @@ namespace OfficeDevPnP.Core.Utilities
             string responseString = null;
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(p => p.Url);
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    context.Web.EnsureProperty(p => p.Url);
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -282,7 +290,10 @@ namespace OfficeDevPnP.Core.Utilities
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    if (accessToken != null)
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
@@ -327,7 +338,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             DateTime utcDateToValidate = expirationDateTime.ToUniversalTime();
             DateTime utcNow = DateTime.UtcNow;
-        
+
             return utcDateToValidate > utcNow
                 && utcDateToValidate <= MaxExpirationDateTime;
         }
