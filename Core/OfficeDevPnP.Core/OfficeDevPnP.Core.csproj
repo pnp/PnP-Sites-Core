@@ -418,6 +418,10 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CoreResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
+    <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
+    <Compile Include="Framework\Graph\GraphHttpClient.cs" />
+    <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
