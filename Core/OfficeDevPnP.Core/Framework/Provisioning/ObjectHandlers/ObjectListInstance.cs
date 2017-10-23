@@ -53,6 +53,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var currentListIndex = 0;
                     foreach (var templateList in template.Lists)
                     {
+                        // Skip "Style Library" in modern sites
+                        if (isNoScriptSite && templateList.Url == "Style Library")
+                        {
+                            WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip, templateList.Title), ProvisioningMessageType.Warning);
+                            continue;
+                        }
+
                         currentListIndex++;
                         WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
                         // Check for the presence of the references content types and throw an exception if not present or in template
@@ -1902,6 +1909,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
@@ -2043,6 +2053,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             siteList.ForceCheckout : false,
                         DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
+
+                    // Skip "Style Library" in modern sites
+                    if (isNoScriptSite && list.Url == "Style Library")
+                    {
+                        WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip, list.Title), ProvisioningMessageType.Warning);
+                        continue;
+                    }
 
                     if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
                     {
