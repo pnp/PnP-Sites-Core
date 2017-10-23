@@ -20,7 +20,15 @@ namespace OfficeDevPnP.Core.ALM
         private ClientContext _context;
         public AppManager(ClientContext context)
         {
-            _context = context ?? throw new ArgumentException(nameof(context));
+            //_context = context ?? throw new ArgumentException(nameof(context));
+            if (context == null)
+            {
+                throw new ArgumentException(nameof(context));
+            } 
+            else
+            {
+                _context = context;
+            }
         }
 
         /// <summary>
@@ -560,7 +568,8 @@ namespace OfficeDevPnP.Core.ALM
                     {
                         var jsonBody = JsonConvert.SerializeObject(postObject);
                         var requestBody = new StringContent(jsonBody);
-                        MediaTypeHeaderValue.TryParse("application/json;odata=nometadata;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType);
+                        MediaTypeHeaderValue sharePointJsonMediaType;
+                        MediaTypeHeaderValue.TryParse("application/json;odata=nometadata;charset=utf-8", out sharePointJsonMediaType);
                         requestBody.Headers.ContentType = sharePointJsonMediaType;
                         request.Content = requestBody;
                     }
