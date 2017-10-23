@@ -878,6 +878,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <returns>The list of Site Classification values</returns>
         public static IEnumerable<String> GetSiteClassificationList(this Tenant tenant, String accessToken)
         {
             // GET https://graph.microsoft.com/beta/directorySettingTemplates
@@ -945,7 +946,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
 
-                // POST https://graph.microsoft.com/beta/settings
+                // PATCH https://graph.microsoft.com/beta/settings
                 string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings/{unifiedGroupSetting.Id}";
                 var updateDirectorySettingResult = GraphHttpClient.MakePatchRequestForString(
                     updateDirectorySettingUrl,
