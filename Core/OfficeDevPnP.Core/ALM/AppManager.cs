@@ -20,7 +20,15 @@ namespace OfficeDevPnP.Core.ALM
         private ClientContext _context;
         public AppManager(ClientContext context)
         {
-            _context = context ?? throw new ArgumentException(nameof(context));
+            //_context = context ?? throw new ArgumentException(nameof(context));
+            if (context == null)
+            {
+                throw new ArgumentException(nameof(context));
+            } 
+            else
+            {
+                _context = context;
+            }
         }
 
         /// <summary>
@@ -464,8 +472,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = _context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(_context.Web.Url), (_context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(_context.Web.Url)));
+                    handler.SetAuthenticationCookies(_context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -542,8 +549,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
@@ -562,7 +568,8 @@ namespace OfficeDevPnP.Core.ALM
                     {
                         var jsonBody = JsonConvert.SerializeObject(postObject);
                         var requestBody = new StringContent(jsonBody);
-                        MediaTypeHeaderValue.TryParse("application/json;odata=nometadata;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType);
+                        MediaTypeHeaderValue sharePointJsonMediaType;
+                        MediaTypeHeaderValue.TryParse("application/json;odata=nometadata;charset=utf-8", out sharePointJsonMediaType);
                         requestBody.Headers.ContentType = sharePointJsonMediaType;
                         request.Content = requestBody;
                     }
@@ -615,8 +622,7 @@ namespace OfficeDevPnP.Core.ALM
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
