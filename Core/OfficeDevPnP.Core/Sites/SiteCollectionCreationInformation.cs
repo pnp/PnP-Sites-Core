@@ -83,9 +83,9 @@ namespace OfficeDevPnP.Core.Sites
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// The owner of the site. Reserved for future use.
+        /// Defines whether the Office 365 Group will be public (default), or private.
         /// </summary>
-        public bool IsPublic { get; set; }
+        public bool IsPublic { get; set; } = true;
 
         /// <summary>
         /// The Guid of the site design to be used. If specified will override the SiteDesign property

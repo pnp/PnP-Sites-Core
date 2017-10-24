@@ -1902,6 +1902,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
