@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             list.EnsureProperties(l => l.Id, l => l.RootFolder, l => l.RootFolder.Name);
 
             SetProperty("selectedListId", list.Id);
-            SetProperty("selectedListUrl", list.RootFolder.Name);
+            SetProperty("selectedListUrl", list.RootFolder.ServerRelativeUrl);
 
             canvasControl.JsonControlData = JsonUtility.Serialize(_properties);
         }
