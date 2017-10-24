@@ -52,7 +52,11 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
             var listUrlProperty = GetProperty("selectedListUrl") as string;
             if (!string.IsNullOrWhiteSpace(listUrlProperty))
             {
-                return web.GetListByUrl(listUrlProperty);
+                if (!listUrlProperty.StartsWith("/")) return web.GetListByUrl(listUrlProperty);
+                var list = web.GetList(listUrlProperty);
+                web.Context.Load(list);
+                web.Context.ExecuteQueryRetry();
+                return list;
             }
 
             // grab list based on list id
