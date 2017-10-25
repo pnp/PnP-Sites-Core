@@ -236,7 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
                     var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
                     var fieldStage = templateField?.GetFieldStage(parser);
-                    if (fieldStage.GetValueOrDefault(FieldStage.Default) != _stage) continue;
+                    if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
 
 
                     Microsoft.SharePoint.Client.Field field = null;
@@ -331,7 +331,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
                 var fieldStage = templateField?.GetFieldStage(parser);
-                if (fieldStage.GetValueOrDefault(FieldStage.Default) != _stage) continue;
+                if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
 
                 Microsoft.SharePoint.Client.Field field = null;
                 if (_stage != FieldStage.DependentLookupFields || templateField == null || fieldRef.Id == Guid.Empty)

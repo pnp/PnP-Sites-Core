@@ -474,7 +474,7 @@ namespace Microsoft.SharePoint.Client
 
         public static FieldStage GetFieldStage(this Field siteField, TokenParser parser)
         {
-            if (siteField.FieldTypeKind != FieldType.Lookup) return FieldStage.Default;
+            if (siteField.FieldTypeKind != FieldType.Lookup) return FieldStage.ListAndStandardFields;
 
             var schemaXml = XElement.Parse(parser.ParseString(siteField.SchemaXml));
 

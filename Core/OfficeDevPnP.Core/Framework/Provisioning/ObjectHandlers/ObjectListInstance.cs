@@ -122,12 +122,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
                                 var existingList = web.Lists[index];
-                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
-                                var updatedList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
-                                if (updatedList != null)
+                                if (_stage == FieldStage.ListAndStandardFields)
                                 {
-                                    processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
+                                    UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
+                                }
+                                if (existingList != null)
+                                {
+                                    processedLists.Add(new ListInfo { SiteList = existingList, TemplateList = templateList });
                                 }
                             }
                             catch (Exception ex)
@@ -156,7 +157,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
                                 var fieldStage = templateField?.GetFieldStage(parser);
-                                if (fieldStage.GetValueOrDefault(FieldStage.Default) != _stage) continue;
+                                if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
 
                                 WriteMessage($"Site Columns for list {listInfo.TemplateList.Title}|{fieldRef.Name}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
 
@@ -332,11 +333,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion Default Field Values
 
-                    #region Views
-
-                    // Create view only the very last stage, to be sure all fields are available
+                    // Create view and apply some settings only at the very last stage
+                    // to be sure all fields are available and to avoid doing the work twice
                     if (_stage == FieldStage.DependentLookupFields)
                     {
+                        #region Views
+
                         foreach (var listInfo in processedLists)
                         {
                             var list = listInfo.TemplateList;
@@ -362,77 +364,77 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
                             }
                         }
-                    }
 
-                    #endregion Views
+                        #endregion Views
 
-                    #region Folders
+                        #region Folders
 
-                    // Folders are supported for document libraries and generic lists only
-                    foreach (var list in processedLists)
-                    {
-                        list.SiteList.EnsureProperties(l => l.BaseType);
-                        if ((list.SiteList.BaseType == BaseType.DocumentLibrary |
-                            list.SiteList.BaseType == BaseType.GenericList) &&
-                            list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
+                        // Folders are supported for document libraries and generic lists only
+                        foreach (var list in processedLists)
                         {
-                            list.SiteList.EnableFolderCreation = true;
-                            list.SiteList.Update();
-                            web.Context.ExecuteQueryRetry();
-
-                            var rootFolder = list.SiteList.RootFolder;
-                            foreach (var folder in list.TemplateList.Folders)
+                            list.SiteList.EnsureProperties(l => l.BaseType);
+                            if ((list.SiteList.BaseType == BaseType.DocumentLibrary |
+                                list.SiteList.BaseType == BaseType.GenericList) &&
+                                list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
                             {
-                                CreateFolderInList(rootFolder, folder, parser, scope);
+                                list.SiteList.EnableFolderCreation = true;
+                                list.SiteList.Update();
+                                web.Context.ExecuteQueryRetry();
+
+                                var rootFolder = list.SiteList.RootFolder;
+                                foreach (var folder in list.TemplateList.Folders)
+                                {
+                                    CreateFolderInList(rootFolder, folder, parser, scope);
+                                }
                             }
                         }
-                    }
 
-                    #endregion Folders
+                        #endregion Folders
 
-                    #region IRM Settings
+                        #region IRM Settings
 
-                    // Configure IRM Settings
-                    foreach (var list in processedLists)
-                    {
-                        if (list.SiteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
+                        // Configure IRM Settings
+                        foreach (var list in processedLists)
                         {
-                            list.SiteList.IrmEnabled = true;
-                            list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
-                            list.SiteList.IrmReject = list.TemplateList.IrmReject;
-
-                            list.SiteList.InformationRightsManagementSettings.AllowPrint = list.TemplateList.IRMSettings.AllowPrint;
-                            list.SiteList.InformationRightsManagementSettings.AllowScript = list.TemplateList.IRMSettings.AllowScript;
-                            list.SiteList.InformationRightsManagementSettings.AllowWriteCopy = list.TemplateList.IRMSettings.AllowWriteCopy;
-                            list.SiteList.InformationRightsManagementSettings.DisableDocumentBrowserView = list.TemplateList.IRMSettings.DisableDocumentBrowserView;
-                            list.SiteList.InformationRightsManagementSettings.DocumentAccessExpireDays = list.TemplateList.IRMSettings.DocumentAccessExpireDays;
-                            if (list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays > 0)
+                            if (list.SiteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
                             {
-                                list.SiteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate = DateTime.Now.AddDays(list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays);
+                                list.SiteList.IrmEnabled = true;
+                                list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
+                                list.SiteList.IrmReject = list.TemplateList.IrmReject;
+
+                                list.SiteList.InformationRightsManagementSettings.AllowPrint = list.TemplateList.IRMSettings.AllowPrint;
+                                list.SiteList.InformationRightsManagementSettings.AllowScript = list.TemplateList.IRMSettings.AllowScript;
+                                list.SiteList.InformationRightsManagementSettings.AllowWriteCopy = list.TemplateList.IRMSettings.AllowWriteCopy;
+                                list.SiteList.InformationRightsManagementSettings.DisableDocumentBrowserView = list.TemplateList.IRMSettings.DisableDocumentBrowserView;
+                                list.SiteList.InformationRightsManagementSettings.DocumentAccessExpireDays = list.TemplateList.IRMSettings.DocumentAccessExpireDays;
+                                if (list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays > 0)
+                                {
+                                    list.SiteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate = DateTime.Now.AddDays(list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays);
+                                }
+                                list.SiteList.InformationRightsManagementSettings.EnableDocumentAccessExpire = list.TemplateList.IRMSettings.EnableDocumentAccessExpire;
+                                list.SiteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView = list.TemplateList.IRMSettings.EnableDocumentBrowserPublishingView;
+                                list.SiteList.InformationRightsManagementSettings.EnableGroupProtection = list.TemplateList.IRMSettings.EnableGroupProtection;
+                                list.SiteList.InformationRightsManagementSettings.EnableLicenseCacheExpire = list.TemplateList.IRMSettings.EnableLicenseCacheExpire;
+                                list.SiteList.InformationRightsManagementSettings.GroupName = list.TemplateList.IRMSettings.GroupName;
+                                list.SiteList.InformationRightsManagementSettings.LicenseCacheExpireDays = list.TemplateList.IRMSettings.LicenseCacheExpireDays;
+                                list.SiteList.InformationRightsManagementSettings.PolicyDescription = list.TemplateList.IRMSettings.PolicyDescription;
+                                list.SiteList.InformationRightsManagementSettings.PolicyTitle = list.TemplateList.IRMSettings.PolicyTitle;
+
+                                list.SiteList.Update();
+                                web.Context.ExecuteQueryRetry();
                             }
-                            list.SiteList.InformationRightsManagementSettings.EnableDocumentAccessExpire = list.TemplateList.IRMSettings.EnableDocumentAccessExpire;
-                            list.SiteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView = list.TemplateList.IRMSettings.EnableDocumentBrowserPublishingView;
-                            list.SiteList.InformationRightsManagementSettings.EnableGroupProtection = list.TemplateList.IRMSettings.EnableGroupProtection;
-                            list.SiteList.InformationRightsManagementSettings.EnableLicenseCacheExpire = list.TemplateList.IRMSettings.EnableLicenseCacheExpire;
-                            list.SiteList.InformationRightsManagementSettings.GroupName = list.TemplateList.IRMSettings.GroupName;
-                            list.SiteList.InformationRightsManagementSettings.LicenseCacheExpireDays = list.TemplateList.IRMSettings.LicenseCacheExpireDays;
-                            list.SiteList.InformationRightsManagementSettings.PolicyDescription = list.TemplateList.IRMSettings.PolicyDescription;
-                            list.SiteList.InformationRightsManagementSettings.PolicyTitle = list.TemplateList.IRMSettings.PolicyTitle;
-
-                            list.SiteList.Update();
-                            web.Context.ExecuteQueryRetry();
                         }
-                    }
 
-                    #endregion IRM Settings
+                        #endregion IRM Settings
 
-                    // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch.
-                    foreach (var listInfo in processedLists)
-                    {
-                        listInfo.SiteList.OnQuickLaunch = listInfo.TemplateList.OnQuickLaunch;
-                        listInfo.SiteList.Update();
+                        // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch.
+                        foreach (var listInfo in processedLists)
+                        {
+                            listInfo.SiteList.OnQuickLaunch = listInfo.TemplateList.OnQuickLaunch;
+                            listInfo.SiteList.Update();
+                        }
+                        web.Context.ExecuteQueryRetry();
                     }
-                    web.Context.ExecuteQueryRetry();
 
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
@@ -990,8 +992,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (listIdentifier != null)
             {
-                // Temporary remove list attribute from fieldElement
-                fieldElement.Attribute("List").Remove();
+                //// Temporary remove list attribute from fieldElement
+                //fieldElement.Attribute("List").Remove();
 
                 if (fieldElement.Attribute("RelationshipDeleteBehavior") != null)
                 {
@@ -1006,14 +1008,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             fieldElement.Add(new XAttribute("Indexed", "TRUE"));
                     }
 
-                    fieldElement.Attribute("RelationshipDeleteBehavior").Remove();
+                    //fieldElement.Attribute("RelationshipDeleteBehavior").Remove();
                 }
             }
 
             return fieldElement;
         }
 
-        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
+        private void UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -1513,13 +1515,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     existingList.SetSecurity(parser, templateList.Security);
                 }
-                return Tuple.Create(existingList, parser);
             }
             else
             {
                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id);
                 WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id), ProvisioningMessageType.Warning);
-                return null;
             }
         }
 

@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Extensions
             var schemaElement = XElement.Parse(parser.ParseString(templateField.SchemaXml));
             var type = (string)schemaElement.Attribute("Type");
             var fieldRef = (string)schemaElement.Attribute("FieldRef");
-            if (type != "Lookup" && type != "LookupMulti") return FieldStage.Default;
+            if (type != "Lookup" && type != "LookupMulti") return FieldStage.ListAndStandardFields;
 
             if (fieldRef != null)
             {
