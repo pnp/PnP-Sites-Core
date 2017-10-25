@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>SharePointPnPCoreOnline</id>
-        <version>2.18.1709.0</version>
+        <version>2.19.1710.2</version>
         <title>SharePoint PnP Core library for SharePoint Online</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>
@@ -22,9 +22,9 @@
             <dependency id="Newtonsoft.Json" version="9.0.1" />
             <dependency id="SharePointPnP.IdentityModel.Extensions" version="1.2.2" />
             <dependency id="AngleSharp" version="0.9.9" />
-            <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6802.1200" />
             <dependency id="Microsoft.Graph" version="1.1.1" />
-            <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="2.18.206251556" />
+            <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6906.1200" />
+            <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="2.29.0" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />

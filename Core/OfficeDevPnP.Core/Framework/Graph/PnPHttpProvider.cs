@@ -1,5 +1,6 @@
 ﻿using Microsoft.Graph;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -16,13 +17,15 @@ namespace OfficeDevPnP.Core.Framework.Graph
     {
         private int _retryCount;
         private int _delay;
+        private string _userAgent;
+
         /// <summary>
         /// Constructor for the PnPHttpProvider class
         /// </summary>
         /// <param name="retryCount">Maximum retry Count</param>
         /// <param name="delay">Delay Time</param>
-        public PnPHttpProvider(int retryCount = 10, int delay = 500) :
-            base()
+        /// <param name="userAgent">User-Agent string to set</param>
+        public PnPHttpProvider(int retryCount = 10, int delay = 500, string userAgent = null) : base()
         {
             if (retryCount <= 0)
                 throw new ArgumentException("Provide a retry count greater than zero.");
@@ -32,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
             this._retryCount = retryCount;
             this._delay = delay;
+            this._userAgent = userAgent;
         }
 
         /// <summary>
@@ -53,6 +57,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
             {
                 try
                 {
+                    // Add the PnP User Agent string
+                    request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(_userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : _userAgent);
+
                     // Make the request
                     Task<HttpResponseMessage> result = base.SendAsync(request, completionOption, cancellationToken);
 

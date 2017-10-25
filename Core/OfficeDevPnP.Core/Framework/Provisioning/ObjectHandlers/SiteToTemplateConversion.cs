@@ -126,11 +126,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                //if (creationInfo.PersistMultiLanguageResources)
-                //{
-                //    template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
-                //}
-
                 return template;
             }
         }
@@ -213,6 +208,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // impact delta scenarions (calling ExecuteQuery before the planned update is called)
                 web.EnsureProperty(w => w.Url);
 
+
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.RegionalSettings)) objectHandlers.Add(new ObjectRegionalSettings());
@@ -262,6 +258,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 int step = 1;
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template));
+
+                // Remove potentially unsupported artifacts
+
+                var cleaner = new NoScriptTemplateCleaner(web);
+                if (messagesDelegate != null)
+                {
+                    cleaner.MessagesDelegate = messagesDelegate;
+                }
+                template = cleaner.CleanUpBeforeProvisioning(template);
 
                 foreach (var handler in objectHandlers)
                 {

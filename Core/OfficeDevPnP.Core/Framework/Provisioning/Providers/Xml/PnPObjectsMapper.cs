@@ -89,6 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 // Search for the matching source property
                 var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
+                var spSpecified = sourceProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
                 if (null != sp || null != resolver)
                 {
                     if (null != resolver)
@@ -184,6 +185,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     // and it has a value, while the source property is null, we keep the
                                     // existing value
                                     sourceValue = dp.GetValue(destination);
+                                }
+                                else if (sourceValue != null && spSpecified != null)
+                                {
+                                    // We are processing a property of the schema, which can be nullable
+                                    bool isSpecified = (bool)spSpecified.GetValue(source);
+                                    if (!isSpecified)
+                                    {
+                                        sourceValue = null;
+                                    }
                                 }
                                 // We simply need to do 1:1 value mapping
                                 dp.SetValue(destination, sourceValue);
