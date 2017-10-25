@@ -126,14 +126,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                var cleaner = new NoScriptTemplateCleaner(web);
-                if (messagesDelegate != null)
-                {
-                    cleaner.MessagesDelegate = messagesDelegate;
-                }
-
-                template = cleaner.CleanUpAfterExtraction(template);
-
                 return template;
             }
         }
