@@ -43,6 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var rootWeb = ((ClientContext)web.Context).Site.RootWeb;
 
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
+                    rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                     web.Context.ExecuteQueryRetry();
@@ -273,7 +274,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         try
                                         {
                                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
-                                            var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, (ClientContext)web.Context, scope);
+                                            var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, (ClientContext)web.Context, rootWeb, scope);
                                             if (createdField != null)
                                             {
                                                 createdField.EnsureProperties(f => f.InternalName, f => f.Title);
@@ -805,7 +806,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return createdField;
         }
 
-        private Field CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientContext context, PnPMonitoredScope scope)
+        private Field CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientContext context, Web rootWeb, PnPMonitoredScope scope)
         {
             Field field = null;
             fieldElement = PrepareField(fieldElement);
@@ -821,8 +822,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var web = context.Web;
                     // Dependent lookup fields cannot be provision through standard XML Schema.
-                    var primaryLookupField = listInfo.SiteList.GetFieldById((Guid)fieldElement.Attribute("FieldRef"));
-                    var toField = web.GetFieldByInternalName((string)fieldElement.Attribute("ShowField"), true);
+                    var siteField = listInfo.SiteList.GetFieldById((Guid)fieldElement.Attribute("FieldRef"));
+                    var primaryLookupField = web.Context.CastTo<FieldLookup>(siteField);
+                    var listIdentifier = parser.ParseString((string)fieldElement.Attribute("List"));
+                    var list = FindSourceList(listIdentifier, web, rootWeb);
+                    var toField = list.GetFieldByInternalName((string)fieldElement.Attribute("ShowField"));
                     field = listInfo.SiteList.Fields.AddDependentLookup(
                         (string)fieldElement.Attribute("DisplayName") ?? (string)fieldElement.Attribute("Name"),
                         primaryLookupField,
@@ -881,6 +885,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw new Exception($"The field was found invalid: {tokenString}");
             }
             return field;
+        }
+
+        private static List FindSourceList(string listIdentifier, Web web, Web rootWeb)
+        {
+            Guid listGuid = Guid.Empty;
+
+            if (!Guid.TryParse(listIdentifier, out listGuid))
+            {
+                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier);
+                return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                List retVal = rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+
+                if (retVal == null)
+                {
+                    retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+                }
+
+                if (retVal == null)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
+                }
+                return retVal;
+            }
         }
 
         private Field UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
