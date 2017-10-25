@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private Web _web;
 
         /// <summary>
-        /// Createss a new instance of the template cleaner.
+        /// Creates a new instance of the template cleaner.
         /// </summary>
         /// <param name="web">The web to check if it is a modern site</param>
         public NoScriptTemplateCleaner(Web web)
