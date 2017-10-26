@@ -10,6 +10,7 @@ namespace Microsoft.SharePoint.Client
 {
     public static class SiteExtensions
     {
+#if !ONPREMISES
         /// <summary>
         /// Retrieves the current value for the Site Classification of a Site Collection
         /// </summary>
@@ -72,5 +73,6 @@ namespace Microsoft.SharePoint.Client
             site.EnsureProperty(s => s.Classification);
             return (site.Classification);
         }
+#endif
     }
 }
