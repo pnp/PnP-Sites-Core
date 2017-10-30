@@ -1522,7 +1522,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 var currentUrl = queue.Dequeue();
                 using (var webContext = siteContext.Clone(currentUrl))
                 {
-                    webContext.Load(webContext.Web, web => web.Webs);
+                    webContext.Load(webContext.Web, web => web.Webs.Include(w => w.Url, w => w.WebTemplate));
                     webContext.ExecuteQueryRetry();
                     foreach (var subWeb in webContext.Web.Webs)
                     {
@@ -1607,7 +1607,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             if (String.IsNullOrEmpty(uri.AbsolutePath) || uri.AbsolutePath.Equals("/", StringComparison.InvariantCultureIgnoreCase))
             {
                 // Site must be root site, no doubts possible
-                return $"{uri.Scheme}://{uri.DnsSafeHost}";
+                return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
             }
 
             string[] siteParts = uri.AbsolutePath.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
@@ -1619,18 +1619,28 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 if (siteParts.Length == 1)
                 {
-                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
+                    // e.g. https://bertonline.sharepoint.com/search is a special case
+                    if (siteParts[0].Equals("search", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return string.Format("{0}://{1}/{2}", uri.Scheme, uri.DnsSafeHost, siteParts[0]);
+                    }
+                    else
+                    {
+                        return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
+                    }
                 }
                 else
                 {
                     if (siteParts[0].Equals("sites", StringComparison.InvariantCultureIgnoreCase) ||
-                        siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase))
+                        siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase) ||
+                        siteParts[0].Equals("personal", StringComparison.InvariantCultureIgnoreCase) ||
+                        siteParts[0].Equals("portals", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        return $"{uri.Scheme}://{uri.DnsSafeHost}/{siteParts[0]}/{siteParts[1]}";
+                        return string.Format("{0}://{1}/{2}/{3}", uri.Scheme, uri.DnsSafeHost, siteParts[0], siteParts[1]);
                     }
                     else
                     {
-                        return $"{uri.Scheme}://{uri.DnsSafeHost}";
+                        return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
                     }
                 }
             }
@@ -1639,18 +1649,19 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 // e.g. https://bertonline.sharepoint.com/sub1/sub11
                 // e.g. https://bertonline.sharepoint.com/sites/dev
                 if (siteParts[0].Equals("sites", StringComparison.InvariantCultureIgnoreCase) ||
-                    siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase))
+                    siteParts[0].Equals("teams", StringComparison.InvariantCultureIgnoreCase) ||
+                    siteParts[0].Equals("personal", StringComparison.InvariantCultureIgnoreCase) ||
+                    siteParts[0].Equals("portals", StringComparison.InvariantCultureIgnoreCase))
                 {
                     // sites and teams are default managed paths, so assume this is a root site
                     return site;
                 }
                 else
                 {
-                    return $"{uri.Scheme}://{uri.DnsSafeHost}";
+                    return string.Format("{0}://{1}", uri.Scheme, uri.DnsSafeHost);
                 }
             }
         }
-
         /// <summary>
         /// Normalizes the timer job name
         /// </summary>
