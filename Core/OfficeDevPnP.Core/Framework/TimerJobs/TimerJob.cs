@@ -53,12 +53,13 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string certificatePath;
         private SecureString certificatePassword;
 
-
         private int sharePointVersion = 16;
         private string enumerationUser;
         private SecureString enumerationPassword;
         private string enumerationDomain;
         private string tenantAdminSite;
+        private bool excludeOD4B = false;
+
         // Site scope variables
         private List<string> requestedSites;
         private List<string> sitesToProcess;
@@ -943,9 +944,26 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return am;
             }
         }
-#endregion
+        #endregion
 
         #region Site scope methods and attributes
+
+        /// <summary>
+        /// Does the timerjob also need to enumerate OD4B site collections
+        /// </summary>
+        public bool ExcludeOD4B
+        {
+            get
+            {
+                return this.excludeOD4B;
+            }
+            set
+            {
+                this.excludeOD4B = value;
+            }
+        }
+
+
         /// <summary>
         /// Does the timerjob need to fire as well for every sub site in the site?
         /// </summary>
@@ -1463,12 +1481,23 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     // with the proper tenant scoped permissions one can do search with app-only in SPO
                     ccEnumerate = GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.realm, this.clientId, this.clientSecret);
                 }
+                else if (AuthenticationType == AuthenticationType.AzureADAppOnly)
+                {
+                    if (this.certificate != null)
+                    {
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificate);
+                    }
+                    else
+                    {
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                    }
+                }
                 else
                 {
                     ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
                 }
                 Tenant tenant = new Tenant(ccEnumerate);
-                SiteEnumeration.Instance.ResolveSite(tenant, site, resolvedSites);
+                SiteEnumeration.Instance.ResolveSite(tenant, site, resolvedSites, this.excludeOD4B);
 #else
                 ccEnumerate = GetAuthenticationManager(site).GetNetworkCredentialAuthenticatedContext(GetTopLevelSite(site.Replace("*", "")), EnumerationUser, EnumerationPassword, EnumerationDomain);
                 SiteEnumeration.Instance.ResolveSite(ccEnumerate, site, resolvedSites);
