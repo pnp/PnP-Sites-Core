@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -303,31 +304,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (IsFieldXmlValid(fieldXml, parser, web.Context))
             {
                 SPField field;
-                if (_stage != FieldStage.DependentLookupFields)
-                {
+                //if (_stage != FieldStage.DependentLookupFields)
+                //{
                     field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
-                }
-                else
-                {
-                    // Dependent lookup fields cannot be provision through standard XML Schema.
-                    var primaryLookupField = web.GetFieldById<FieldLookup>((Guid)templateFieldElement.Attribute("FieldRef"), true);
-                    var toField = web.GetFieldByInternalName((string)templateFieldElement.Attribute("ShowField"),true);
-                    field = web.Fields.AddDependentLookup(
-                        (string)templateFieldElement.Attribute("DisplayName") ?? (string)templateFieldElement.Attribute("Name"),
-                        primaryLookupField,
-                        toField.StaticName
-                        );
-                    var lookupField = web.Context.CastTo<FieldLookup>(field);
-                    lookupField.LookupField = toField.StaticName;
-                    lookupField.UpdateAndPushChanges(true);
-                }
+                //}
+                //else
+                //{
+                //    // Dependent lookup fields cannot be provision through standard XML Schema.
+                //    var primaryLookupField = web.GetFieldById<FieldLookup>((Guid)templateFieldElement.Attribute("FieldRef"), true);
+                //    var listIdentifier = parser.ParseString((string)templateFieldElement.Attribute("List"));
+                //    var list = FindSourceList(listIdentifier, web);
+                //    var toField = list.GetFieldByInternalName((string)templateFieldElement.Attribute("ShowField"));
+                //    field = web.Fields.AddDependentLookup(
+                //        (string)templateFieldElement.Attribute("DisplayName") ?? (string)templateFieldElement.Attribute("Name"),
+                //        primaryLookupField,
+                //        toField.StaticName
+                //        );
+                //    var lookupField = web.Context.CastTo<FieldLookup>(field);
+                //    lookupField.LookupField = toField.StaticName;
+                //    lookupField.UpdateAndPushChanges(true);
+                //}
                 web.Context.Load(field, f => f.Id, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title);
                 web.Context.ExecuteQueryRetry();
-                if (_stage == FieldStage.DependentLookupFields)
-                {
-                    // Because using AddDependentLookup method does not allow to set the id, we fake the pnp engine by creating a token just for the id
-                    parser.AddToken(new DependentFieldLookupIdToken(web, (Guid)templateFieldElement.Attribute("ID"), field.Id));
-                }
+                //if (_stage == FieldStage.DependentLookupFields)
+                //{
+                //    // Because using AddDependentLookup method does not allow to set the id, we fake the pnp engine by creating a token just for the id
+                //    parser.AddToken(new DependentFieldLookupIdToken(web, (Guid)templateFieldElement.Attribute("ID"), field.Id));
+                //}
                 // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
 
@@ -375,6 +378,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private static List FindSourceList(string listIdentifier, Web web)
+        {
+            Guid listGuid = Guid.Empty;
+
+            if (!Guid.TryParse(listIdentifier, out listGuid))
+            {
+                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier);
+                return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                List retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+                
+
+                if (retVal == null)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
+                }
+                return retVal;
+            }
+        }
         private static void SetTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
         {
             bool openValue;

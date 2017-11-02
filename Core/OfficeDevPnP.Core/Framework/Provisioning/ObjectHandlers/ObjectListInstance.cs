@@ -814,37 +814,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
-                if (_stage != FieldStage.DependentLookupFields)
-                {
+                //if (_stage != FieldStage.DependentLookupFields)
+                //{
                     field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType);
-                }
-                else
-                {
-                    var web = context.Web;
-                    // Dependent lookup fields cannot be provision through standard XML Schema.
-                    var siteField = listInfo.SiteList.GetFieldById((Guid)fieldElement.Attribute("FieldRef"));
-                    var primaryLookupField = web.Context.CastTo<FieldLookup>(siteField);
-                    var listIdentifier = parser.ParseString((string)fieldElement.Attribute("List"));
-                    var list = FindSourceList(listIdentifier, web, rootWeb);
-                    var toField = list.GetFieldByInternalName((string)fieldElement.Attribute("ShowField"));
-                    field = listInfo.SiteList.Fields.AddDependentLookup(
-                        (string)fieldElement.Attribute("DisplayName") ?? (string)fieldElement.Attribute("Name"),
-                        primaryLookupField,
-                        toField.StaticName
-                        );
-                    var lookupField = web.Context.CastTo<FieldLookup>(field);
-                    lookupField.LookupField = toField.StaticName;
-                    lookupField.UpdateAndPushChanges(false);
-                }
+                //}
+                //else
+                //{
+                //    var web = context.Web;
+                //    // Dependent lookup fields cannot be provision through standard XML Schema.
+                //    var siteField = listInfo.SiteList.GetFieldById((Guid)fieldElement.Attribute("FieldRef"));
+                //    var primaryLookupField = web.Context.CastTo<FieldLookup>(siteField);
+                //    var listIdentifier = parser.ParseString((string)fieldElement.Attribute("List"));
+                //    var list = FindSourceList(listIdentifier, web, rootWeb);
+                //    var toField = list.GetFieldByInternalName((string)fieldElement.Attribute("ShowField"));
+                //    field = listInfo.SiteList.Fields.AddDependentLookup(
+                //        (string)fieldElement.Attribute("DisplayName") ?? (string)fieldElement.Attribute("Name"),
+                //        primaryLookupField,
+                //        toField.StaticName
+                //        );
+                //    var lookupField = web.Context.CastTo<FieldLookup>(field);
+                //    lookupField.LookupField = toField.StaticName;
+                //    lookupField.UpdateAndPushChanges(false);
+                //}
 
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
-                if (_stage == FieldStage.DependentLookupFields)
-                {
-                    // Because using AddDependentLookup method does not allow to set the id, we fake the pnp engine by creating a token just for the id
-                    parser.AddToken(new DependentFieldLookupIdToken(context.Web, (Guid)fieldElement.Attribute("ID"), field.Id));
-                }
+                //if (_stage == FieldStage.DependentLookupFields)
+                //{
+                //    // Because using AddDependentLookup method does not allow to set the id, we fake the pnp engine by creating a token just for the id
+                //    parser.AddToken(new DependentFieldLookupIdToken(context.Web, (Guid)fieldElement.Attribute("ID"), field.Id));
+                //}
                 // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
                 parser.AddToken(new FieldTitleToken(context.Web, field.InternalName, field.Title));
 
