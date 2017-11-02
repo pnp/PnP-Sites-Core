@@ -423,6 +423,7 @@
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
+    <Compile Include="Framework\Graph\Model\SiteClassification.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
@@ -871,6 +872,7 @@
     <Compile Include="Diagnostics\Tree\Tree.cs" />
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
+    <Compile Include="Framework\Graph\SiteClassificationUtility.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
     <Compile Include="Utilities\PnPHttpProvider.cs" />
     <Compile Include="Utilities\RESTUtilities.cs" />
@@ -1080,6 +1082,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
+    <Folder Include="Utilities\Graph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
