@@ -1,5 +1,5 @@
 # PnP Core Component #
-This is the Community Source Code location for PnP Core component. This is a "sub" repository for the PnP repository at [https://github.com/OfficeDev/PnP](https://github.com/SharePoint/PnP) which will contain PnP core component and related resources. See details around the PnP Core Component from the project [readme file](Core/README.md).
+This is the Community Source Code location for PnP Core component. This is a "sub" repository for the PnP repository at [https://github.com/OfficeDev/PnP](https://github.com/SharePoint/PnP) which will contain PnP core component and related resources. See details around the PnP Core Component from the project [readme file](Core/README.md). 
 
 ![SharePoint Patterns and Practices](https://devofficecdn.azureedge.net/media/Default/PnP/sppnp.png)
 

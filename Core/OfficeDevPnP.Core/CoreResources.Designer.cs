@@ -1617,6 +1617,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ListInstance {0} is a Style Library of a site with NoScript enabled and will be skipped.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_w" +
+                        "ill_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skip adding/updating custom actions because the site has &quot;noscript&quot; enabled..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {

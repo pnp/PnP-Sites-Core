@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>SharePointPnPCoreOnline</id>
-        <version>2.19.1710.1</version>
+        <version>2.19.1710.2</version>
         <title>SharePoint PnP Core library for SharePoint Online</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>

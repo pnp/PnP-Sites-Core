@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     fl => fl.GetPublicInstancePropertyValue("Security")?.GetPublicInstancePropertyValue("BreakRoleInheritance")));
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
                 expressions.Add(f => f.WebParts[0].Order, new ExpressionValueResolver<int>((v) => (uint)v));
-                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).OuterXml : null));
 
                 template.Files.AddRange(
                     PnPObjectsMapper.MapObjects<File>(files,
