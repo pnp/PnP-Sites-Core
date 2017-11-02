@@ -50,53 +50,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
 
-                    var processedLists = new List<ListInfo>();
+                    List<ListInfo> processedLists;
 
                     // Check if this is not a noscript site as we're not allowed to update some properties
                     bool isNoScriptSite = web.IsNoScriptSite();
 
                     var total = template.Lists.Count;
+                    var currentListIndex = 0;
 
                     #region Lists
 
-                    var currentListIndex = 0;
-                    foreach (var templateList in template.Lists)
+                    // Only create/update list at ListAndStandardFields stage.
+                    if (_stage == FieldStage.ListAndStandardFields)
                     {
-                        currentListIndex++;
-                        WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
-                        // Check for the presence of the references content types and throw an exception if not present or in template
-                        if (templateList.ContentTypesEnabled)
+                        processedLists = new List<ListInfo>();
+                        foreach (var templateList in template.Lists)
                         {
-                            var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
-                            web.Context.ExecuteQueryRetry();
-                            foreach (var ct in templateList.ContentTypeBindings)
+                            currentListIndex++;
+                            WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
+                            // Check for the presence of the references content types and throw an exception if not present or in template
+                            if (templateList.ContentTypesEnabled)
                             {
-                                var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
-                                if (found == false)
+                                var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
+                                web.Context.ExecuteQueryRetry();
+                                foreach (var ct in templateList.ContentTypeBindings)
                                 {
-                                    found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
-                                }
-                                if (!found)
-                                {
-                                    scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
-                                    throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
+                                    var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
+                                    if (found == false)
+                                    {
+                                        found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
+                                    }
+                                    if (!found)
+                                    {
+                                        scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
+                                        throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
+                                    }
                                 }
                             }
-                        }
-                        // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
+                            // check if the List exists by url or by title
+                            var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
 
-                        if (index == -1)
-                        {
-                            try
+                            if (index == -1)
                             {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
-                                var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
-                                var createdList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
-                                processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
+                                try
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
+                                    var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
+                                    var createdList = returnTuple.Item1;
+                                    parser = returnTuple.Item2;
+                                    processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
 
-                                parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
+                                    parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
 
 #if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
@@ -109,37 +113,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
                                 }
 #endif
-                                parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
-                            }
-                            catch (Exception ex)
-                            {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
-                                throw;
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
-                                var existingList = web.Lists[index];
-                                if (_stage == FieldStage.ListAndStandardFields)
-                                {
-                                    UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
+                                    parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                                 }
-                                if (existingList != null)
+                                catch (Exception ex)
                                 {
-                                    processedLists.Add(new ListInfo { SiteList = existingList, TemplateList = templateList });
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                    throw;
                                 }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
-                                throw;
+                                try
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
+                                    var existingList = web.Lists[index];
+                                    if (_stage == FieldStage.ListAndStandardFields)
+                                    {
+                                        UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
+                                    }
+                                    if (existingList != null)
+                                    {
+                                        processedLists.Add(new ListInfo { SiteList = existingList, TemplateList = templateList });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                    throw;
+                                }
                             }
                         }
-                    }
 
+                    }
+                    else
+                    {
+                        // still have to build the processed lists collection
+                        // We are searching for matches between title or url
+                        processedLists = (from templateList in template.Lists
+                                          from siteList in web.Lists
+                                          where siteList.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || siteList.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase)
+                                          select new ListInfo { SiteList = siteList, TemplateList = templateList }).ToList();
+
+                    }
                     #endregion Lists
 
                     #region FieldRefs
@@ -316,28 +331,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #endregion Fields
 
-                    #region Default Field Values
-
-                    foreach (var listInfo in processedLists)
-                    {
-                        if (listInfo.TemplateList.FieldDefaults.Any())
-                        {
-                            foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
-                            {
-                                var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
-                                field.DefaultValue = fieldDefault.Value;
-                                field.Update();
-                                web.Context.ExecuteQueryRetry();
-                            }
-                        }
-                    }
-
-                    #endregion Default Field Values
-
                     // Create view and apply some settings only at the very last stage
                     // to be sure all fields are available and to avoid doing the work twice
                     if (_stage == FieldStage.DependentLookupFields)
                     {
+
+                        #region Default Field Values
+
+                        foreach (var listInfo in processedLists)
+                        {
+                            if (listInfo.TemplateList.FieldDefaults.Any())
+                            {
+                                foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
+                                {
+                                    var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
+                                    field.DefaultValue = fieldDefault.Value;
+                                    field.Update();
+                                    web.Context.ExecuteQueryRetry();
+                                }
+                            }
+                        }
+
+                        #endregion Default Field Values
+
                         #region Views
 
                         foreach (var listInfo in processedLists)
