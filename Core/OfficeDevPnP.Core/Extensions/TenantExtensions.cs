@@ -820,57 +820,23 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassification">The site classification settings to apply./param>
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, SiteClassificationSettings siteClassificationSettings)
+        {
+            SiteClassificationUtility.EnableSiteClassifications(accessToken, siteClassificationSettings);
+        }
+
+        /// <summary>
+        /// Enables Site Classification for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         /// <param name="classificationList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
-        public static void EnableSiteClassification(this Tenant tenant, String accessToken, IEnumerable<String> classificationList, String defaultClassification = null, String usageGuidelinesUrl = null)
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, IEnumerable<string> classificationList, string defaultClassification = "", string usageGuidelinesUrl = "")
         {
-            // GET https://graph.microsoft.com/beta/directorySettingTemplates
-            string directorySettingTemplatesUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}directorySettingTemplates";
-            var directorySettingTemplatesJson = GraphHttpClient.MakeGetRequestForString(directorySettingTemplatesUrl, accessToken);
-            var directorySettingTemplates = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingTemplatesJson);
-
-            // Retrieve the setinngs for "Group.Unified"
-            var unifiedGroupSetting = directorySettingTemplates.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
-
-            if (unifiedGroupSetting != null)
-            {
-                var directorySettingValues = new Dictionary<String, String>();
-                foreach (var v in unifiedGroupSetting.SettingValues)
-                {
-                    switch (v.Name)
-                    {
-                        case "UsageGuidelinesUrl":
-                            directorySettingValues.Add(v.Name, usageGuidelinesUrl);
-                            break;
-                        case "ClassificationList":
-                            directorySettingValues.Add(v.Name, classificationList.Aggregate((s, i) => s + ", " + i ));
-                            break;
-                        case "DefaultClassification":
-                            directorySettingValues.Add(v.Name, defaultClassification);
-                            break;
-                        default:
-                            directorySettingValues.Add(v.Name, v.DefaultValue);
-                            break;
-                    }
-                }
-
-                // POST https://graph.microsoft.com/beta/settings
-                string newDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings";
-                var newDirectorySettingResult = GraphHttpClient.MakePostRequestForString(
-                    newDirectorySettingUrl,
-                    content: new
-                    {
-                        templateId = unifiedGroupSetting.Id,
-                        values = from v in directorySettingValues select new { name = v.Key, value = v.Value },
-                    },
-                    contentType: "application/json",
-                    accessToken: accessToken);
-            }
-            else
-            {
-                throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
-            }
+            SiteClassificationUtility.EnableSiteClassifications(accessToken, classificationList, defaultClassification, usageGuidelinesUrl);
         }
 
         /// <summary>
@@ -879,33 +845,20 @@ namespace Microsoft.SharePoint.Client
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         /// <returns>The list of Site Classification values</returns>
-        public static IEnumerable<String> GetSiteClassificationList(this Tenant tenant, String accessToken)
+        public static SiteClassificationSettings GetSiteClassificationSettings(this Tenant tenant, string accessToken)
         {
-            // GET https://graph.microsoft.com/beta/directorySettingTemplates
-            string directorySettingsUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings";
-            var directorySettingsJson = GraphHttpClient.MakeGetRequestForString(directorySettingsUrl, accessToken);
-            var directorySettings = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingsJson);
+            return SiteClassificationUtility.GetSiteClassificationSettings(accessToken);
+        }
 
-            // Retrieve the setinngs for "Group.Unified"
-            var unifiedGroupSetting = directorySettings.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
-
-            if (unifiedGroupSetting != null)
-            {
-                var classificationList = unifiedGroupSetting.SettingValues.FirstOrDefault(v => v.Name == "ClassificationList");
-                if (classificationList != null)
-                {
-                    var result = classificationList.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
-                    return (result);
-                }
-                else
-                {
-                    return (new String[0]);
-                }
-            }
-            else
-            {
-                throw new ApplicationException("Missing DirectorySettingTemplate for \"Group.Unified\"");
-            }
+        /// <summary>
+        /// Updates Site Classification settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassificationSettings">The site classification settings to update.</param>
+        public static void UpdateSiteClassificationSettings(this Tenant tenant, string accessToken, SiteClassificationSettings siteClassificationSettings)
+        {
+            SiteClassificationUtility.UpdateSiteClassificationSettings(accessToken, siteClassificationSettings);
         }
 
         /// <summary>
@@ -916,52 +869,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="classificationList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
-        public static void UpdateSiteClassification(this Tenant tenant, String accessToken, IEnumerable<String> classificationList, String defaultClassification = null, String usageGuidelinesUrl = null)
+        public static void UpdateSiteClassificationSettings(this Tenant tenant, string accessToken, IEnumerable<string> classificationList, string defaultClassification = "", string usageGuidelinesUrl = "")
         {
-            // GET https://graph.microsoft.com/beta/settings
-            string directorySettingsUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings";
-            var directorySettingsJson = GraphHttpClient.MakeGetRequestForString(directorySettingsUrl, accessToken);
-            var directorySettings = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingsJson);
-
-            // Retrieve the setinngs for "Group.Unified"
-            var unifiedGroupSetting = directorySettings.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
-
-            if (unifiedGroupSetting != null)
-            {
-                foreach (var v in unifiedGroupSetting.SettingValues)
-                {
-                    switch (v.Name)
-                    {
-                        case "UsageGuidelinesUrl":
-                            v.Value = usageGuidelinesUrl;
-                            break;
-                        case "ClassificationList":
-                            v.Value = classificationList.Aggregate((s, i) => s + ", " + i);
-                            break;
-                        case "DefaultClassification":
-                            v.Value = defaultClassification;
-                            break;
-                        default:
-                            break;
-                    }
-                }
-
-                // PATCH https://graph.microsoft.com/beta/settings
-                string updateDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings/{unifiedGroupSetting.Id}";
-                var updateDirectorySettingResult = GraphHttpClient.MakePatchRequestForString(
-                    updateDirectorySettingUrl,
-                    content: new
-                    {
-                        templateId = unifiedGroupSetting.Id,
-                        values = from v in unifiedGroupSetting.SettingValues select new { name = v.Name, value = v.Value },
-                    },
-                    contentType: "application/json",
-                    accessToken: accessToken);
-            }
-            else
-            {
-                throw new ApplicationException("Missing DirectorySetting for \"Group.Unified\"");
-            }
+            SiteClassificationUtility.UpdateSiteClassificationSettings(accessToken, classificationList, defaultClassification, usageGuidelinesUrl);
         }
 
         /// <summary>
@@ -969,28 +879,9 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        public static void DisableSiteClassification(this Tenant tenant, String accessToken)
+        public static void DisableSiteClassifications(this Tenant tenant, string accessToken)
         {
-            // GET https://graph.microsoft.com/beta/settings
-            string directorySettingsUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings";
-            var directorySettingsJson = GraphHttpClient.MakeGetRequestForString(directorySettingsUrl, accessToken);
-            var directorySettings = JsonConvert.DeserializeObject<DirectorySettingTemplates>(directorySettingsJson);
-
-            // Retrieve the setinngs for "Group.Unified"
-            var unifiedGroupSetting = directorySettings.Templates.FirstOrDefault(t => t.DisplayName == "Group.Unified");
-
-            if (unifiedGroupSetting != null)
-            {
-                // DELETE https://graph.microsoft.com/beta/settings
-                string deleteDirectorySettingUrl = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}settings/{unifiedGroupSetting.Id}";
-                GraphHttpClient.MakeDeleteRequest(
-                    deleteDirectorySettingUrl,
-                    accessToken: accessToken);
-            }
-            else
-            {
-                throw new ApplicationException("Missing DirectorySetting for \"Group.Unified\"");
-            }
+            SiteClassificationUtility.DisableSiteClassifications(accessToken);
         }
 
         #endregion

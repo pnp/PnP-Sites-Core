@@ -125,6 +125,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            if (siteCollectionCreationInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
