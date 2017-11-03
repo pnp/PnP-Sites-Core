@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Disables Site Classification settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        public static void DisableSiteClassifications(String accessToken)
+        public static void DisableSiteClassifications(string accessToken)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="classificationList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
-        public static void EnableSiteClassifications(String accessToken, IEnumerable<String> classificationList, String defaultClassification = "", String usageGuidelinesUrl = "")
+        public static void EnableSiteClassifications(string accessToken, IEnumerable<String> classificationList, String defaultClassification = "", String usageGuidelinesUrl = "")
         {
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -140,7 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         /// <returns>The list of Site Classification values</returns>
-        public static SiteClassificationSettings GetSiteClassificationSettings(String accessToken)
+        public static SiteClassificationSettings GetSiteClassificationSettings(string accessToken)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -184,18 +184,18 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Updates Site Classification settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassification">The site classification settings to apply./param>
-        public static void UpdateSiteClassificationSettings(string accessToken, SiteClassificationSettings siteClassification)
+        /// <param name="siteClassificationSettings">The site classification settings to apply./param>
+        public static void UpdateSiteClassificationSettings(string accessToken, SiteClassificationSettings siteClassificationSettings)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentException("Specify a valid accesstoken", nameof(accessToken));
             }
-            if(siteClassification == null)
+            if(siteClassificationSettings == null)
             {
-                throw new ArgumentException("Specify a valid Site Classification Settings object", nameof(siteClassification));
+                throw new ArgumentException("Specify a valid Site Classification Settings object", nameof(siteClassificationSettings));
             }
-            UpdateSiteClassificationSettings(accessToken, siteClassification.Classifications, siteClassification.DefaultClassification, siteClassification.UsageGuidelinesUrl);
+            UpdateSiteClassificationSettings(accessToken, siteClassificationSettings.Classifications, siteClassificationSettings.DefaultClassification, siteClassificationSettings.UsageGuidelinesUrl);
         }
 
         /// <summary>
