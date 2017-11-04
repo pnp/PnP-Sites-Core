@@ -19,21 +19,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             var features = persistence.GetPublicInstancePropertyValue("Features");
 
-            var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
-            expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
+            if (features != null)
+            {
+                var expressions = new Dictionary<Expression<Func<Features, Object>>, IResolver>();
+                expressions.Add(f => f.SiteFeatures[0].Id, new FromStringToGuidValueResolver());
 
-            PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+                PnPObjectsMapper.MapProperties(features, template.Features, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var featuresTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Features, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var featuresType = Type.GetType(featuresTypeName, true);
-            var target = Activator.CreateInstance(featuresType, true);
+            if (template.Features != null && (template.Features.SiteFeatures.Count > 0 || template.Features.WebFeatures.Count > 0))
+            {
+                var featuresTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Features, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var featuresType = Type.GetType(featuresTypeName, true);
+                var target = Activator.CreateInstance(featuresType, true);
 
-            PnPObjectsMapper.MapProperties(template.Features, target, null, recursive: true);
+                PnPObjectsMapper.MapProperties(template.Features, target, null, recursive: true);
 
-            persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+                if (target != null &&
+                    ((target.GetPublicInstancePropertyValue("SiteFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("SiteFeatures")).Length > 0) ||
+                    (target.GetPublicInstancePropertyValue("WebFeatures") != null && ((Array)target.GetPublicInstancePropertyValue("WebFeatures")).Length > 0)))
+                {
+                    persistence.GetPublicInstanceProperty("Features").SetValue(persistence, target);
+                }
+            }
         }
     }
 }

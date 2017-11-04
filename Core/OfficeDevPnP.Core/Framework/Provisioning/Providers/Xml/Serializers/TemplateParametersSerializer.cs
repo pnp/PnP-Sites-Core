@@ -41,18 +41,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
-
-            if (preferences != null)
+            if (template.Parameters != null && template.Parameters.Count > 0)
             {
-                var parametersTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PreferencesParameter, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var parametersType = Type.GetType(parametersTypeName, true);
+                var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
 
-                preferences.GetPublicInstanceProperty("Parameters")
-                    .SetValue(
-                        preferences,
-                        PnPObjectsMapper.MapObjects(template.Parameters,
-                            new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
+                if (preferences != null)
+                {
+                    var parametersTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.PreferencesParameter, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var parametersType = Type.GetType(parametersTypeName, true);
+
+                    preferences.GetPublicInstanceProperty("Parameters")
+                        .SetValue(
+                            preferences,
+                            PnPObjectsMapper.MapObjects(template.Parameters,
+                                new TemplateParameterFromModelToSchemaTypeResolver(parametersType)));
+
+                    var parameters = preferences.GetPublicInstancePropertyValue("Parameters");
+                    if (parameters != null && ((Array)parameters).Length == 0)
+                    {
+                        preferences.GetPublicInstanceProperty("Parameters").SetValue(preferences, null);
+                    }
+                }
             }
         }
     }

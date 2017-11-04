@@ -198,8 +198,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                                         if (term == null)
                                         {
-                                            var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser,
-                                                scope);
+                                            var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
                                             if (returnTuple != null)
                                             {
                                                 modelTerm.Id = returnTuple.Item1;
@@ -214,6 +213,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         modelTerm.Id = term.Id;
+                                    }
+
+                                    if (term != null)
+                                    {
+                                        CheckChildTerms(web, modelTerm, term, termStore, parser, scope);
                                     }
                                 }
                                 else
@@ -295,15 +299,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (parent is Term)
             {
-                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((Term)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value :  termStore.DefaultLanguage, modelTerm.Id);
             }
             else
             {
-                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language ?? termStore.DefaultLanguage, modelTerm.Id);
+                term = ((TermSet)parent).CreateTerm(parser.ParseString(modelTerm.Name), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value : termStore.DefaultLanguage, modelTerm.Id);
             }
             if (!string.IsNullOrEmpty(modelTerm.Description))
             {
-                term.SetDescription(parser.ParseString(modelTerm.Description), modelTerm.Language ?? termStore.DefaultLanguage);
+                term.SetDescription(parser.ParseString(modelTerm.Description), modelTerm.Language != null && modelTerm.Language != 0 ? modelTerm.Language.Value : termStore.DefaultLanguage);
             }
             if (!string.IsNullOrEmpty(modelTerm.Owner))
             {
@@ -570,6 +574,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Return true, because our TryReuseTerm attempt succeeded!
                 return new TryReuseTermResult() { Success = true, UpdatedParser = parser };
             }
+        }
+
+        private TokenParser CheckChildTerms(Web web, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        {
+            if (modelTerm.Terms.Any())
+            {
+                parentTerm.Context.Load(parentTerm, s => s.Terms.Include(t => t.Id, t => t.Name));
+                parentTerm.Context.ExecuteQueryRetry();
+
+                var terms = parentTerm.Terms;
+
+                foreach (var childTerm in modelTerm.Terms)
+                {
+                    if (terms.Any())
+                    {
+                        var term = terms.FirstOrDefault(t => t.Id == childTerm.Id);
+                        if (term == null)
+                        {
+                            var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, childTerm.Name);
+                            web.Context.ExecuteQueryRetry();
+
+                            term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
+                            if (term == null)
+                            {
+                                var returnTuple = CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+                                if (returnTuple != null)
+                                {
+                                    childTerm.Id = returnTuple.Item1;
+                                    parser = returnTuple.Item2;
+                                }
+                            }
+                            else
+                            {
+                                childTerm.Id = term.Id;
+                            }
+                        }
+                        else
+                        {
+                            childTerm.Id = term.Id;
+                        }
+
+                        if (term != null)
+                        {
+                            parser = CheckChildTerms(web, childTerm, term, termStore, parser, scope);
+                        }
+                    }
+                    else
+                    {
+                        var returnTuple = CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+                        if (returnTuple != null)
+                        {
+                            childTerm.Id = returnTuple.Item1;
+                            parser = returnTuple.Item2;
+                        }
+                    }
+                }
+            }
+
+            return parser;
         }
 
         private class TryReuseTermResult

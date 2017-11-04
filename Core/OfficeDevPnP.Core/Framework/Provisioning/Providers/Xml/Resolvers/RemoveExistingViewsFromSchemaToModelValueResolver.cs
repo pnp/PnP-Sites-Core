@@ -9,7 +9,7 @@ using System.Xml;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     /// <summary>
-    /// Resolves a list of Views from Schema to Domain Model
+    /// Resolves the RemoveExistingViews attribute from Schema to Domain Model
     /// </summary>
     internal class RemoveExistingViewsFromSchemaToModelValueResolver : IValueResolver
     {

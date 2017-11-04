@@ -9,13 +9,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of CanvasZone objects
     /// </summary>
-    public partial class CanvasZoneCollection : ProvisioningTemplateCollection<CanvasZone>
+    public partial class CanvasSectionCollection : ProvisioningTemplateCollection<CanvasSection>
     {
         /// <summary>
         /// Constructor for CanvasZoneCollection class
         /// </summary>
         /// <param name="parentTemplate">Parent provisioning template</param>
-        public CanvasZoneCollection(ProvisioningTemplate parentTemplate) :
+        public CanvasSectionCollection(ProvisioningTemplate parentTemplate) :
             base(parentTemplate)
         {
         }

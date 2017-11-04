@@ -309,6 +309,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="ALM\ALMTests.cs" />
     <Compile Include="Authentication\HighTrustAuthenticationTests.cs" />
     <Compile Include="Extensions\BrandingExtensionsTests.cs" />
     <Compile Include="Extensions\ClientObjectExtensionsTests.cs" />
@@ -392,6 +393,7 @@
     <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
     <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
     <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
+    <Compile Include="Framework\Functional\Validators\ClientSidePagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
     <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
@@ -438,6 +440,7 @@
     <Compile Include="Framework\ObjectHandlers\ObjectCustomActionsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectFieldTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectContentTypeTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectWorkflowsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\TokenParserTests.cs" />
     <Compile Include="Framework\Providers\BaseTemplateTests.cs" />
     <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
@@ -445,6 +448,7 @@
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
+    <Compile Include="Sites\SiteCollectionTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />
     <Compile Include="Utilities\EncryptionUtilityTests.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
@@ -507,6 +511,12 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
+    <Content Include="Framework\Functional\Templates\list_delta_1705_1.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Framework\Functional\Templates\list_add_1705.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
@@ -514,12 +524,15 @@
     <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
     <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
+    <Content Include="Framework\Functional\Templates\clientsidepages_add_1705.xml" />
     <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
     <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
+    <None Include="Resources\alm.sppkg" />
+    <None Include="Resources\almskip.sppkg" />
     <None Include="Resources\custom.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -638,6 +651,8 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -683,7 +698,9 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Resources\workflow.xaml" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

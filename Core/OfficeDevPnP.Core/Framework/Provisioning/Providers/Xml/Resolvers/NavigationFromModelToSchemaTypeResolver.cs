@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class NavigationFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
+
 
         private String _navigationType;
 
@@ -62,7 +64,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                             case Model.GlobalNavigationType.Structural:
                                 var structuralNavigation = Activator.CreateInstance(structuralNavigationType);
 
-                                resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                                if (!resolvers.ContainsKey($"{structuralNavigation.GetType().FullName}.NavigationNode"))
+                                {
+                                    resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                                }
                                 PnPObjectsMapper.MapProperties(modelSource.GlobalNavigation.StructuralNavigation, structuralNavigation, resolvers, true);
                                 target.SetPublicInstancePropertyValue("StructuralNavigation", structuralNavigation);
 
@@ -91,7 +96,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                             case Model.CurrentNavigationType.StructuralLocal:
                                 var structuralNavigation = Activator.CreateInstance(structuralNavigationType);
 
-                                resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                                if (!resolvers.ContainsKey($"{structuralNavigation.GetType().FullName}.NavigationNode"))
+                                {
+                                    resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                                }
                                 PnPObjectsMapper.MapProperties(modelSource.CurrentNavigation.StructuralNavigation, structuralNavigation, resolvers, true);
                                 target.SetPublicInstancePropertyValue("StructuralNavigation", structuralNavigation);
 

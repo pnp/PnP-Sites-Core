@@ -57,6 +57,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
 
         }
 
+        internal void SiteCollection1705ListAdding(string url)
+        {
+            using (var cc = TestCommon.CreateClientContext(url))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                // Add lists
+                var result = TestProvisioningTemplate(cc, "list_add_1705.xml", Handlers.Lists);
+                ListInstanceValidator lv = new ListInstanceValidator(cc)
+                {
+                    SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05
+                };
+                Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1705_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                lv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05;
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
+            }
+        }
+
         internal void WebListAdding(string siteCollectionUrl, string url)
         {
             using (var cc = TestCommon.CreateClientContext(siteCollectionUrl))
@@ -103,6 +126,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 var result2 = TestProvisioningTemplate(cc, "list_delta_1605_1.xml", Handlers.Lists);
                 ListInstanceValidator lv2 = new ListInstanceValidator(cc);
                 lv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
+                Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
+            }
+        }
+
+        internal void Web1705ListAdding(string url)
+        {
+            using (var cc = TestCommon.CreateClientContext(url))
+            {
+                // Ensure we can test clean
+                DeleteLists(cc);
+
+                // Add lists
+                var result = TestProvisioningTemplate(cc, "list_add_1705.xml", Handlers.Lists);
+                ListInstanceValidator lv = new ListInstanceValidator(cc)
+                {
+                    SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05
+                };
+                Assert.IsTrue(lv.Validate(result.SourceTemplate.Lists, result.TargetTemplate.Lists, result.TargetTokenParser));
+
+                // Delta lists
+                var result2 = TestProvisioningTemplate(cc, "list_delta_1705_1.xml", Handlers.Lists);
+                ListInstanceValidator lv2 = new ListInstanceValidator(cc);
+                lv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05;
                 Assert.IsTrue(lv2.Validate(result2.SourceTemplate.Lists, result2.TargetTemplate.Lists, result2.TargetTokenParser));
             }
         }

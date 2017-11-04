@@ -1424,7 +1424,12 @@ namespace Microsoft.SharePoint.Client
             return items;
         }
 
-        private static string NormalizeName(string name)
+        /// <summary>
+        /// Normalizes a Taxonomy name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string NormalizeName(string name)
         {
             if (name == null) return (string)null;
             name = TrimSpacesRegex.Replace(name, " ").Replace('&', '＆');
@@ -1436,7 +1441,12 @@ namespace Microsoft.SharePoint.Client
             return name;
         }
 
-        private static string DenormalizeName(string name)
+        /// <summary>
+        /// Denormalizes a Taxonomy name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string DenormalizeName(string name)
         {
             if (name == null)
                 return (string)null;

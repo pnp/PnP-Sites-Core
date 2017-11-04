@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
     <metadata>
         <id>SharePointPnPCore2016</id>
-        <version>2.16.1706.0</version>
+        <version>2.19.1710.2</version>
         <title>SharePoint PnP Core library for SharePoint 2016</title>
         <authors>Microsoft SharePoint Developer Patterns &amp; Practices</authors>
         <owners>Microsoft SharePoint Developer Patterns &amp; Practices</owners>
@@ -20,6 +20,10 @@
             <dependency id="Newtonsoft.Json" version="9.0.1" />
             <dependency id="SharePointPnP.IdentityModel.Extensions" version="1.2.2" />
             <dependency id="AngleSharp" version="0.9.9" />
+            <dependency id="WindowsAzure.Storage" version="7.0.0" />
+            <dependency id="Microsoft.Graph" version="1.1.1" />
+            <dependency id="Microsoft.Azure.ActiveDirectory.GraphClient" version="2.1.0" />
+            <dependency id="Microsoft.IdentityModel.Clients.ActiveDirectory" version="2.29.0" />
         </dependencies>
         <frameworkAssemblies>
             <frameworkAssembly assemblyName="System" targetFramework="" />
@@ -53,5 +57,6 @@
     <files>
         <file src="lib\net45\Microsoft.Online.SharePoint.Client.Tenant.dll" target="lib\net45\Microsoft.Online.SharePoint.Client.Tenant.dll" />
         <file src="OfficeDevPnP.Core\bin\Release16\OfficeDevPnP.Core.dll" target="lib\net45\OfficeDevPnP.Core.dll" />
+        <file src="OfficeDevPnP.Core\bin\Release16\OfficeDevPnP.Core.XML" target="lib\net45\OfficeDevPnP.Core.XML" />
     </files>
 </package>

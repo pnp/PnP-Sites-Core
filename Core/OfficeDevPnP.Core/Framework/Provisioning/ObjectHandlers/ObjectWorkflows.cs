@@ -197,7 +197,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Load the Workflow Definition XAML
                         Stream xamlStream = template.Connector.GetFileStream(templateDefinition.XamlPath);
-                        System.Xml.Linq.XElement xaml = System.Xml.Linq.XElement.Load(xamlStream);
+                        XElement xaml = XElement.Load(xamlStream);
 
                         int retryCount = 5;
                         int retryAttempts = 1;
@@ -207,10 +207,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             try
                             {
+                                var workflowDefinition = deploymentService.GetDefinition(templateDefinition.Id);
+                                web.Context.Load(workflowDefinition);
+                                web.Context.ExecuteQueryRetry();
 
-                                // Create the WorkflowDefinition instance
-                                Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition workflowDefinition =
-                                    new Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition(web.Context)
+                                // If Definition does not exist, create it
+                                // Prevent an exception if already exists
+                                if (workflowDefinition.ServerObjectIsNull())
+                                {
+                                    // Create the WorkflowDefinition instance
+                                    workflowDefinition = new Microsoft.SharePoint.Client.WorkflowServices.WorkflowDefinition(web.Context)
                                     {
                                         AssociationUrl = templateDefinition.AssociationUrl,
                                         Description = templateDefinition.Description,
@@ -223,27 +229,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         RequiresInitiationForm = templateDefinition.RequiresInitiationForm,
                                         RestrictToScope = parser.ParseString(templateDefinition.RestrictToScope),
                                         RestrictToType = templateDefinition.RestrictToType != "Universal" ? templateDefinition.RestrictToType : null,
-                                        Xaml = parser.ParseString(xaml.ToString()),
+                                        Xaml = parser.ParseXmlString(xaml.ToString()),
                                     };
 
-                                //foreach (var p in definition.Properties)
-                                //{
-                                //    workflowDefinition.SetProperty(p.Key, parser.ParseString(p.Value));
-                                //}
-
-                                // Save the Workflow Definition
-                                var newDefinition = deploymentService.SaveDefinition(workflowDefinition);
-                                //web.Context.Load(workflowDefinition); //not needed
-                                web.Context.ExecuteQueryRetry();
-
-                                // Let's publish the Workflow Definition, if needed
-                                if (templateDefinition.Published)
-                                {
-                                    deploymentService.PublishDefinition(newDefinition.Value);
+                                    // Save the Workflow Definition
+                                    var newDefinition = deploymentService.SaveDefinition(workflowDefinition);
+                                    //web.Context.Load(workflowDefinition); //not needed
                                     web.Context.ExecuteQueryRetry();
-                                }
 
-                                break; // no errors so exit loop
+                                    // Let's publish the Workflow Definition, if needed
+                                    if (templateDefinition.Published)
+                                    {
+                                        deploymentService.PublishDefinition(newDefinition.Value);
+                                        web.Context.ExecuteQueryRetry();
+                                    }
+
+                                    break; // no errors so exit loop
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -286,67 +288,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // Thus, delete it before adding it again!
                             WriteMessage($"Workflow Subscription '{subscription.Name}' already exists. It will be updated.", ProvisioningMessageType.Warning);
                             workflowSubscription = existingWorkflowSubscriptions.FirstOrDefault((s => s.PropertyDefinitions["SharePointWorkflowContext.Subscription.Name"] == subscriptionName && s.DefinitionId == subscription.DefinitionId));
-
-                            if (workflowSubscription != null)
-                            {
-                                subscriptionService.DeleteSubscription(workflowSubscription.Id);
-                                web.Context.ExecuteQueryRetry();
-                            }
                         }
-
-#if ONPREMISES
-                        // Create the WorkflowDefinition instance
-                        workflowSubscription =
-                            new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)
-                            {
-                                DefinitionId = subscription.DefinitionId,
-                                Enabled = subscription.Enabled,
-                                EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
-                                EventTypes = subscription.EventTypes,
-                                ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,
-                                Name =  subscription.Name,
-                                StatusFieldName = subscription.StatusFieldName,
-                            };
-#else
-                        // Create the WorkflowDefinition instance
-                        workflowSubscription =
-                            new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)
-                            {
-                                DefinitionId = subscription.DefinitionId,
-                                Enabled = subscription.Enabled,
-                                EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
-                                EventTypes = subscription.EventTypes,
-                                ManualStartBypassesActivationLimit = subscription.ManualStartBypassesActivationLimit,
-                                Name = subscription.Name,
-                                ParentContentTypeId = subscription.ParentContentTypeId,
-                                StatusFieldName = subscription.StatusFieldName,
-                            };
-#endif
 
                         if (workflowSubscription != null)
                         {
+                            // Update The existing subscription instead of delete the existing one.
+                            // Only update the following properties
+                            workflowSubscription.Enabled = subscription.Enabled;
+                            workflowSubscription.EventTypes = subscription.EventTypes;
+                            workflowSubscription.ManualStartBypassesActivationLimit = subscription.ManualStartBypassesActivationLimit;
+                            workflowSubscription.StatusFieldName = subscription.StatusFieldName;
+                        }
+                        else
+                        {
+                            // Create the WorkflowDefinition instance
+                            workflowSubscription =
+                                new Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription(web.Context)
+                                {
+                                    DefinitionId = subscription.DefinitionId,
+                                    Enabled = subscription.Enabled,
+                                    EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
+                                    EventTypes = subscription.EventTypes,
+#if !ONPREMISES
+                                    ParentContentTypeId = subscription.ParentContentTypeId,
+#endif
+                                    ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,
+                                    Name =  subscription.Name,
+                                    StatusFieldName = subscription.StatusFieldName,
+                                };
+
                             foreach (var propertyDefinition in subscription.PropertyDefinitions
-                                .Where(d => d.Key == "TaskListId" ||
-                                            d.Key == "HistoryListId" ||
-                                            d.Key == "SharePointWorkflowContext.Subscription.Id" ||
-                                            d.Key == "SharePointWorkflowContext.Subscription.Name" ||
-                                            d.Key == "CreatedBySPD"))
+                               .Where(d => d.Key == "TaskListId" ||
+                                           d.Key == "HistoryListId" ||
+                                           d.Key == "SharePointWorkflowContext.Subscription.Id" ||
+                                           d.Key == "SharePointWorkflowContext.Subscription.Name" ||
+                                           d.Key == "CreatedBySPD" ||
+                                           d.Key == "StatusColumnCreated")) // If set to "0" the status column will be created automatically.
                             {
                                 workflowSubscription.SetProperty(propertyDefinition.Key, parser.ParseString(propertyDefinition.Value));
                             }
-                            if (!String.IsNullOrEmpty(subscription.ListId))
-                            {
-                                // It is a List Workflow
-                                Guid targetListId = Guid.Parse(parser.ParseString(subscription.ListId));
-                                subscriptionService.PublishSubscriptionForList(workflowSubscription, targetListId);
-                            }
-                            else
-                            {
-                                // It is a Site Workflow
-                                subscriptionService.PublishSubscription(workflowSubscription);
-                            }
-                            web.Context.ExecuteQueryRetry();
                         }
+
+                        if (!String.IsNullOrEmpty(subscription.ListId))
+                        {
+                            // It is a List Workflow
+                            Guid targetListId = Guid.Parse(parser.ParseString(subscription.ListId));
+                            subscriptionService.PublishSubscriptionForList(workflowSubscription, targetListId);
+                        }
+                        else
+                        {
+                            // It is a Site Workflow
+                            subscriptionService.PublishSubscription(workflowSubscription);
+                        }
+
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
             }

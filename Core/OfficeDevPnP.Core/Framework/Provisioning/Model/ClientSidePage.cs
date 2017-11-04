@@ -14,31 +14,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private CanvasZoneCollection _zones;
+        private CanvasSectionCollection _sections;
 
         #endregion
 
         #region Public Members
 
         /// <summary>
-        /// Gets or sets the zones
+        /// Gets or sets the sections
         /// </summary>
-        public CanvasZoneCollection Zones
+        public CanvasSectionCollection Sections
         {
-            get { return _zones; }
-            private set { _zones = value; }
+            get { return _sections; }
+            private set { _sections = value; }
         }
 
         /// <summary>
-        /// Defines the Pages Library of the Client Side Page, required attribute.
+        /// Defines the Page Name of the Client Side Page, required attribute.
         /// </summary>
-        public String PagesLibrary { get; set; }
+        public String PageName { get; set; }
 
         /// <summary>
         /// Defines whether to promote the page as a news article, optional attribute
         /// </summary>
         public Boolean PromoteAsNewsArticle { get; set; }
 
+        /// <summary>
+        /// Defines whether the page can be overwritten if it exists
+        /// </summary>
+        public Boolean Overwrite { get; set; }
         #endregion
 
         #region Constructors
@@ -48,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public ClientSidePage()
         {
-            this._zones = new CanvasZoneCollection(this.ParentTemplate);
+            this._sections = new CanvasSectionCollection(this.ParentTemplate);
         }
 
         #endregion
@@ -62,9 +66,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Zones.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                PagesLibrary?.GetHashCode() ?? 0,
-                PromoteAsNewsArticle.GetHashCode()
+                this.Sections.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                PageName?.GetHashCode() ?? 0,
+                PromoteAsNewsArticle.GetHashCode(),
+                Overwrite.GetHashCode()
             ).GetHashCode());
         }
 
@@ -83,7 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares ClientSidePage object based on Zones, PagesLibrary, and PromoteAsNewsArticle
+        /// Compares ClientSidePage object based on Sections, PagesLibrary, and PromoteAsNewsArticle
         /// </summary>
         /// <param name="other">ClientSidePage Class object</param>
         /// <returns>true if the ClientSidePage object is equal to the current object; otherwise, false.</returns>
@@ -94,9 +99,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.Zones.DeepEquals(other.Zones)  &&
-                this.PagesLibrary == other.PagesLibrary &&
-                this.PromoteAsNewsArticle == other.PromoteAsNewsArticle
+            return (this.Sections.DeepEquals(other.Sections)  &&
+                this.PageName == other.PageName &&
+                this.PromoteAsNewsArticle == other.PromoteAsNewsArticle &&
+                this.Overwrite == other.Overwrite
                 );
         }
 

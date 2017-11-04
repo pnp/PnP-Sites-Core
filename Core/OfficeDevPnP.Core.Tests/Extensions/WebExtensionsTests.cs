@@ -710,6 +710,19 @@ namespace Microsoft.SharePoint.Client.Tests
         }
         #endregion
 
+        #region ClientSide Package Deployment tests
+#if !ONPREMISES
+        [TestMethod()]
+        public void DeploySharePointFrameworkSolutionTest()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {                
+                var app = ctx.Web.DeployApplicationPackageToAppCatalog("hello-world.sppkg", "../../Resources", true, true, true);
+            }
+        }
+#endif
+        #endregion
+
         #region Helper methods
         private static string GetEncodedValueForSearchIndexProperty(IEnumerable<string> keys)
         {

@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class NavigationFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
+
 
         private String _navigationType;
 
@@ -41,60 +43,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     break;
             }
 
-            var navigationType = navigation.GetPublicInstancePropertyValue("NavigationType");
-            switch (navigationType.ToString())
+            if (navigation != null)
             {
-                case "Managed":
-                    targetNavigation = new Model.ManagedNavigation();
+                var navigationType = navigation.GetPublicInstancePropertyValue("NavigationType");
+                switch (navigationType.ToString())
+                {
+                    case "Managed":
+                        targetNavigation = new Model.ManagedNavigation();
 
-                    var managedNavigation = navigation.GetPublicInstancePropertyValue("ManagedNavigation");
-                    PnPObjectsMapper.MapProperties(managedNavigation, targetNavigation, resolvers, true);
+                        var managedNavigation = navigation.GetPublicInstancePropertyValue("ManagedNavigation");
+                        PnPObjectsMapper.MapProperties(managedNavigation, targetNavigation, resolvers, true);
 
-                    if (targetIsGlobal)
-                    {
-                        target = new Model.GlobalNavigation(Model.GlobalNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
-                    }
-                    else
-                    {
-                        target = new Model.CurrentNavigation(Model.CurrentNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
-                    }
+                        if (targetIsGlobal)
+                        {
+                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
+                        }
+                        else
+                        {
+                            target = new Model.CurrentNavigation(Model.CurrentNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
+                        }
 
-                    break;
-                case "Structural":
-                case "StructuralLocal":
-                    targetNavigation = new Model.StructuralNavigation();
-                    var structuralNavigation = navigation.GetPublicInstancePropertyValue("StructuralNavigation");
-                    var structuralNavigationNodes = structuralNavigation.GetPublicInstancePropertyValue("NavigationNode");
+                        break;
+                    case "Structural":
+                    case "StructuralLocal":
+                        targetNavigation = new Model.StructuralNavigation();
+                        var structuralNavigation = navigation.GetPublicInstancePropertyValue("StructuralNavigation");
+                        var structuralNavigationNodes = structuralNavigation.GetPublicInstancePropertyValue("NavigationNode");
 
-                    resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                        if (!resolvers.ContainsKey($"{targetNavigation.GetType().FullName}.NavigationNodes"))
+                        {
+                            resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                        }
 
-                    PnPObjectsMapper.MapProperties(structuralNavigation, targetNavigation, resolvers, true);
+                        PnPObjectsMapper.MapProperties(structuralNavigation, targetNavigation, resolvers, true);
 
-                    if (targetIsGlobal)
-                    {
-                        target = new Model.GlobalNavigation(Model.GlobalNavigationType.Structural, (Model.StructuralNavigation)targetNavigation, null);
-                    }
-                    else
-                    {
-                        target = new Model.CurrentNavigation(
-                            navigationType.ToString() == "Structural" ? Model.CurrentNavigationType.Structural : Model.CurrentNavigationType.StructuralLocal,
-                            (Model.StructuralNavigation)targetNavigation, null);
-                    }
+                        if (targetIsGlobal)
+                        {
+                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Structural, (Model.StructuralNavigation)targetNavigation, null);
+                        }
+                        else
+                        {
+                            target = new Model.CurrentNavigation(
+                                navigationType.ToString() == "Structural" ? Model.CurrentNavigationType.Structural : Model.CurrentNavigationType.StructuralLocal,
+                                (Model.StructuralNavigation)targetNavigation, null);
+                        }
 
-                    break;
-                case "Inherit":
-                    if (targetIsGlobal)
-                    {
-                        target = new Model.GlobalNavigation(Model.GlobalNavigationType.Inherit, null, null);
-                    }
-                    else
-                    {
-                        target = new Model.CurrentNavigation(Model.CurrentNavigationType.Inherit, null, null);
-                    }
-                    break;
+                        break;
+                    case "Inherit":
+                        if (targetIsGlobal)
+                        {
+                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Inherit, null, null);
+                        }
+                        else
+                        {
+                            target = new Model.CurrentNavigation(Model.CurrentNavigationType.Inherit, null, null);
+                        }
+                        break;
+                }
+                return (target);
             }
-
-            return (target);
+            return null;
         }
     }
 }

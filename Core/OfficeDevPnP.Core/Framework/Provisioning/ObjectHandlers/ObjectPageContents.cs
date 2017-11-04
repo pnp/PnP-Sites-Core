@@ -1,23 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using File = Microsoft.SharePoint.Client.File;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client.WebParts;
-using System.Xml.Linq;
-using System.Net;
-using System.Text;
-using System.Web;
-using System.IO;
-using Newtonsoft.Json;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Utilities;
-using FileLevel = Microsoft.SharePoint.Client.FileLevel;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -129,8 +117,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 
                         }
+                        else if (listItem.FieldValues.ContainsKey("ClientSideApplicationId") && listItem.FieldValues["ClientSideApplicationId"] != null && listItem.FieldValues["ClientSideApplicationId"].ToString().ToLower() == "b6917cb1-93a0-4b97-a84d-7cf49975d4ec")
+                        { 
+                            // this is a client side page, so let's skip it since it's handled by the Client Side Page contents handler
+                        }   
                         else
-                        {
+                        {                            
                             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
                                 // Not a wikipage
@@ -152,27 +144,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 catch (ServerException ex)
                 {
-                    if (ex.ServerErrorCode != -2146232832)
+                    
+                    //ignore this error. The default page is not a page but a list view.
+                    if (ex.ServerErrorCode != -2146232832 && ex.HResult != -2146233088)
                     {
                         throw;
                     }
                     else
                     {
-                        if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
+                        if (ex.HResult != -2146233088)
                         {
-                            // Page does not belong to a list, extract the file as is
-                            template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
-                            if (template.WebSettings == null)
+                            if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
-                                template.WebSettings = new WebSettings();
+                                // Page does not belong to a list, extract the file as is
+                                template = GetFileContents(web, template, welcomePageUrl, creationInfo, scope);
+                                if (template.WebSettings == null)
+                                {
+                                    template.WebSettings = new WebSettings();
+                                }
+                                template.WebSettings.WelcomePage = homepageUrl;
                             }
-                            template.WebSettings.WelcomePage = homepageUrl;
-                        }
-                        else
-                        {
-                            WriteMessage(
-                                $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
-                            scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
+                            else
+                            {
+                                WriteMessage(
+                                    $"Page content export requires a server version that is newer than the current server. Server version is {web.Context.ServerLibraryVersion}, minimal required is {Constants.MINIMUMZONEIDREQUIREDSERVERVERSION}. Set SkipVersionCheck to true to override this check.", ProvisioningMessageType.Warning);
+                                scope.LogWarning("Page content export requires a server version that is newer than the current server. Server version is {0}, minimal required is {1}", web.Context.ServerLibraryVersion, Constants.MINIMUMZONEIDREQUIREDSERVERVERSION);
+                            }
                         }
                     }
                 }

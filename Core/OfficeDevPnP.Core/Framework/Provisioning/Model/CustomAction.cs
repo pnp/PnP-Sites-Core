@@ -89,6 +89,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; } = false;
 
+        /// <summary>
+        /// Gets or sets a value for the ClientSideComponentId, if any
+        /// </summary>
+        public Guid ClientSideComponentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value for the ClientSideComponentProperties, if any
+        /// </summary>
+        public String ClientSideComponentProperties { get; set; }
+
         #endregion
 
         #region Comparison code

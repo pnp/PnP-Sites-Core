@@ -574,7 +574,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="keywordQueryValue">Keyword query</param>
-        /// <param name="trimDuplicates">Indicates if dublicates should be trimmed or not</param>
+        /// <param name="trimDuplicates">Indicates if duplicates should be trimmed or not</param>
         /// <returns>All found site collections</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDuplicates = false)
@@ -1311,6 +1311,130 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
         #endregion
+
+        #region ClientSide Package Deployment
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <returns>The Uri holding the app catalog site url</returns>
+        public static Uri GetAppCatalog(this Web web)
+        {
+            // Assume there's only one appcatalog site
+            var results = ((web.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, false, overwrite);
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Tenant to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, skipFeatureDeployment, overwrite);
+        }
+
+
+        private static ListItem DeployApplicationPackageToAppCatalogImplementation(this Web web, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy, bool skipFeatureDeployment, bool overwrite)
+        {
+            if (String.IsNullOrEmpty(appCatalogSiteUrl))
+            {
+                throw new ArgumentException("Please specify a app catalog site url");
+            }
+
+            Uri catalogUri;
+            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
+            {
+                throw new ArgumentException("Please specify a valid app catalog site url");
+            }
+
+            if (String.IsNullOrEmpty(spPkgName))
+            {
+                throw new ArgumentException("Please specify a package name");
+            }
+
+            if (String.IsNullOrEmpty(spPkgPath))
+            {
+                throw new ArgumentException("Please specify a package path");
+            }
+
+            using (var appCatalogContext = web.Context.Clone(catalogUri))
+            {
+                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
+                if (catalog == null)
+                {
+                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
+                }
+
+                Folder rootFolder = catalog.RootFolder;
+
+                // Upload package
+                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
+                if (sppkgFile == null)
+                {
+                    throw new Exception($"Upload of {spPkgName} failed");
+                }
+
+                if ((autoDeploy || skipFeatureDeployment) &&
+                    System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                {
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
+                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
+                    // deal with "upgrading" solutions
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionCurrentVersionDeployed"] = autoDeploy;
+                    // Allow for a central deployment of the solution, no need to install the solution in the individual site collections.
+                    // Only works when the solution is not using feature framework to "configure" the site upon solution installation
+                    sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = skipFeatureDeployment;
+                    sppkgFile.ListItemAllFields.Update();
+                }
+
+                appCatalogContext.Load(sppkgFile.ListItemAllFields);
+                appCatalogContext.ExecuteQueryRetry();
+
+                return sppkgFile.ListItemAllFields;
+            }
+        }
+#endif
+    #endregion
 
     }
 }

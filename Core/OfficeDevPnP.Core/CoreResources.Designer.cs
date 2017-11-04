@@ -1020,6 +1020,42 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This page is an uncustomized, default home page, so no need to extract it..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page with name {0} did already exist and the overwrite flag was not set, so nothing happended.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading asset: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_ {
@@ -1581,6 +1617,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ListInstance {0} is a Style Library of a site with NoScript enabled and will be skipped.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_w" +
+                        "ill_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skip adding/updating custom actions because the site has &quot;noscript&quot; enabled..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {
@@ -2135,6 +2181,15 @@ namespace OfficeDevPnP.Core {
         internal static string SiteToTemplateConversion_ProgressDelegate_registered {
             get {
                 return ResourceManager.GetString("SiteToTemplateConversion_ProgressDelegate_registered", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scope of template does not match target.
+        /// </summary>
+        internal static string SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget {
+            get {
+                return ResourceManager.GetString("SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget", resourceCulture);
             }
         }
         

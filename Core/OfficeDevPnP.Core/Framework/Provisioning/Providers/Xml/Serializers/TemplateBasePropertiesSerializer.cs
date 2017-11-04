@@ -45,6 +45,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 .GetPublicInstancePropertyValue("WebSearchSettings")?
                 .GetPublicInstancePropertyValue("OuterXml")));
 
+            // Provisioning Template Scope
+            expressions.Add(t => t.Scope,
+                new FromStringToEnumValueResolver(typeof(Model.ProvisioningTemplateScope)));
+
             PnPObjectsMapper.MapProperties(persistence, template, expressions);
         }
 
@@ -63,6 +67,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             expressions.Add($"{templateType}.Properties",
                 new FromDictionaryToArrayValueResolver<String, String>(
                     propertiesType, keySelector, valueSelector));
+
+            if (PnPSerializationScope.Current?.BaseSchemaNamespace != null && 
+                !PnPSerializationScope.Current.BaseSchemaNamespace.EndsWith("201605"))
+            {
+                var templateScopeType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateScope, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+                expressions.Add($"{templateType}.Scope", new ExpressionValueResolver(() => Enum.Parse(templateScopeType, template.Scope.ToString())));
+                expressions.Add($"{templateType}.ScopeSpecified", new ExpressionValueResolver(() => true));
+            }
 
             PnPObjectsMapper.MapProperties(template, persistence, expressions, true);
 
