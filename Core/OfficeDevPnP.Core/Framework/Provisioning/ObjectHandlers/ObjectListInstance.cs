@@ -15,7 +15,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Utilities;
-using Microsoft.SharePoint.Client.WebParts;
+using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -783,7 +783,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
-                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
+                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
@@ -1824,7 +1824,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 // get the webhooks defined on the list
-                var addedWebhooks = list.GetWebhookSubscriptions();
+                var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
 
                 var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                 if (existingWebhook != null)
@@ -1902,6 +1902,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
@@ -2103,7 +2106,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {
-            var addedWebhooks = siteList.GetWebhookSubscriptions();
+            var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptionsAsync()).Result;
 
             if (addedWebhooks.Any())
             {
@@ -2123,7 +2126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static ListInstance ExtractViews(List siteList, ListInstance list)
         {
-            foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden))
+            foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
                 var schemaElement = XElement.Parse(view.ListViewXml);
 

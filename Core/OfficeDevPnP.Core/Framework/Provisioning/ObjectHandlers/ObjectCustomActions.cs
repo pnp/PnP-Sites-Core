@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var customAction in customActions)
             {
 
-                if (isNoScriptSite)
+                if (isNoScriptSite && Guid.Empty == customAction.ClientSideComponentId)
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
                     continue;
@@ -418,6 +418,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.Url = userCustomAction.Url;
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
+
+#if !ONPREMISES
+            customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+#endif 
+
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 

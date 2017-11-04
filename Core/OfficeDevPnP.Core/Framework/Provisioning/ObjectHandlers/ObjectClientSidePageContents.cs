@@ -107,12 +107,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                         // Set text content
                                         controlInstance.ControlProperties = new System.Collections.Generic.Dictionary<string, string>(1)
-                                    {
-                                        { "Text", (control as Pages.ClientSideText).Text }
-                                    };
+                                        {
+                                            { "Text", (control as Pages.ClientSideText).Text }
+                                        };
                                     }
                                     else
                                     {
+                                        // set ControlId to webpart id 
+                                        controlInstance.ControlId = Guid.Parse((control as Pages.ClientSideWebPart).WebPartId);
                                         var webPartType = Pages.ClientSidePage.NameToClientSideWebPartEnum((control as Pages.ClientSideWebPart).WebPartId);
                                         switch (webPartType)
                                         {

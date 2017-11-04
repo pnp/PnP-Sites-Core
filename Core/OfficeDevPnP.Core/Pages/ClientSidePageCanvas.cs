@@ -1,6 +1,7 @@
 ﻿using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -364,7 +365,12 @@ namespace OfficeDevPnP.Core.Pages
                     }
                     else
                     {
-                        return null;
+                        if (this.sections.Count == 0)
+                        {
+                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        }
+
+                        return sections.First();
                     }
                 }
             }
@@ -661,6 +667,14 @@ namespace OfficeDevPnP.Core.Pages
             };
 
             var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
+            
+            // Not all sites do have a pages library, throw a nice exception in that case
+            if (pagesLibrary == null)
+            {
+                cc.Web.EnsureProperty(w => w.Url);
+                throw new ArgumentException($"Site {cc.Web.Url} does not have a sitepages library and therefore this page can't be a client side page.");
+            }
+
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
             var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
@@ -678,6 +692,7 @@ namespace OfficeDevPnP.Core.Pages
             if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
             {
                 page.pageListItem = item;
+                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
@@ -726,7 +741,7 @@ namespace OfficeDevPnP.Core.Pages
                 item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
-                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
+                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
                 item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
                 if (this.layoutType == ClientSidePageLayoutType.Article)
@@ -741,6 +756,10 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 item = pageFile.ListItemAllFields;
+                if (!string.IsNullOrWhiteSpace(this.pageTitle))
+                {
+                    item[ClientSidePage.Title] = this.pageTitle;
+                }
             }
 
             // Persist to page field
@@ -893,9 +912,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.WhenAny(
-                GetClientSideWebPartsAsync(this.accessToken, this.Context)
-                ).Result;
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -1254,14 +1271,14 @@ namespace OfficeDevPnP.Core.Pages
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     //GET https://bertonline.sharepoint.com/sites/130023/_api/web/GetClientSideWebParts HTTP/1.1
 
@@ -1276,7 +1293,7 @@ namespace OfficeDevPnP.Core.Pages
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -1288,7 +1305,7 @@ namespace OfficeDevPnP.Core.Pages
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseString);
+                return responseString;
             }
         }
 

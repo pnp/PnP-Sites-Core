@@ -56,52 +56,55 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var clientSidePageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var clientSidePageType = Type.GetType(clientSidePageTypeName, true);
-            var canvasSectionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasSection, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var canvasSectionType = Type.GetType(canvasSectionTypeName, true);
-            var canvasControlTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControl, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var canvasControlType = Type.GetType(canvasControlTypeName, true);
-            var canvasControlWebPartTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControlWebPartType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var canvasControlWebPartTypeType = Type.GetType(canvasControlWebPartTypeTypeName, true);
+            if (template.ClientSidePages != null && template.ClientSidePages.Count > 0)
+            {
+                var clientSidePageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var clientSidePageType = Type.GetType(clientSidePageTypeName, true);
+                var canvasSectionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasSection, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var canvasSectionType = Type.GetType(canvasSectionTypeName, true);
+                var canvasControlTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControl, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var canvasControlType = Type.GetType(canvasControlTypeName, true);
+                var canvasControlWebPartTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CanvasControlWebPartType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var canvasControlWebPartTypeType = Type.GetType(canvasControlWebPartTypeTypeName, true);
 
-            var expressions = new Dictionary<string, IResolver>();
+                var expressions = new Dictionary<string, IResolver>();
 
-            // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
-            expressions.Add($"{clientSidePageType}.PromoteAsNewsArticleSpecified", new ExpressionValueResolver((s, p) => true));
+                // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
+                expressions.Add($"{clientSidePageType}.PromoteAsNewsArticleSpecified", new ExpressionValueResolver((s, p) => true));
 
-            // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
-            expressions.Add($"{clientSidePageType}.OverwriteSpecified", new ExpressionValueResolver((s, p) => true));
+                // Manage PromoteAsNewsArticleSpecified property for ClientSidePage
+                expressions.Add($"{clientSidePageType}.OverwriteSpecified", new ExpressionValueResolver((s, p) => true));
 
-            // Manage OrderSpecified property for CanvasZone
-            expressions.Add($"{canvasSectionType}.OrderSpecified", new ExpressionValueResolver((s, p) => true));
+                // Manage OrderSpecified property for CanvasZone
+                expressions.Add($"{canvasSectionType}.OrderSpecified", new ExpressionValueResolver((s, p) => true));
 
-            // Manage TypeSpecified property for CanvasZone
-            expressions.Add($"{canvasSectionType}.TypeSpecified", new ExpressionValueResolver((s, p) => true));
+                // Manage TypeSpecified property for CanvasZone
+                expressions.Add($"{canvasSectionType}.TypeSpecified", new ExpressionValueResolver((s, p) => true));
 
-            // Manage WebPartType for CanvasControl
-            expressions.Add($"{canvasControlType}.WebPartType",
-                new ExpressionValueResolver(
-                    (s, p) => Enum.Parse(canvasControlWebPartTypeType, s.GetPublicInstancePropertyValue("Type").ToString()))
-                    );
+                // Manage WebPartType for CanvasControl
+                expressions.Add($"{canvasControlType}.WebPartType",
+                    new ExpressionValueResolver(
+                        (s, p) => Enum.Parse(canvasControlWebPartTypeType, s.GetPublicInstancePropertyValue("Type").ToString()))
+                        );
 
-            // Manage CanvasControlProperties for CanvasControl
-            var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
-            var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
-            var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
+                // Manage CanvasControlProperties for CanvasControl
+                var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
+                var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
+                var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
 
-            expressions.Add($"{canvasControlType}.CanvasControlProperties", 
-                new FromDictionaryToArrayValueResolver<string, string>(
-                    dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
+                expressions.Add($"{canvasControlType}.CanvasControlProperties",
+                    new FromDictionaryToArrayValueResolver<string, string>(
+                        dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
 
-            persistence.GetPublicInstanceProperty("ClientSidePages")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.ClientSidePages,
-                        new CollectionFromModelToSchemaTypeResolver(clientSidePageType),
-                        expressions,
-                        recursive: true));
+                persistence.GetPublicInstanceProperty("ClientSidePages")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.ClientSidePages,
+                            new CollectionFromModelToSchemaTypeResolver(clientSidePageType),
+                            expressions,
+                            recursive: true));
+            }
         }
     }
 }

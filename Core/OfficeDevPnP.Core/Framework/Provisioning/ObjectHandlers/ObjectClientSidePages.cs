@@ -4,10 +4,8 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.CanvasControl;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -23,12 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
-
                 web.EnsureProperties(w => w.ServerRelativeUrl);
-
-                // Check if this is not a noscript site as we're not allowed to update some properties
-                bool isNoScriptSite = web.IsNoScriptSite();
 
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
@@ -41,10 +34,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
                     var exists = true;
-                    Microsoft.SharePoint.Client.File file = null;
                     try
                     {
-                        file = web.GetFileByServerRelativeUrl(url);
+                        var file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file);
                         web.Context.ExecuteQueryRetry();
                     }
@@ -69,6 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite, pageName);
+                            continue;
                         }
                     }
                     else
@@ -78,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Load existing available controls
-                    var componentsToAdd = page.AvailableClientSideComponents();
+                    var componentsToAdd = page.AvailableClientSideComponents().ToList();
 
                     // if no section specified then add a default single column section
                     if (!clientSidePage.Sections.Any())
@@ -119,7 +112,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Add controls to the section
                         if (section.Controls.Any())
                         {
-                            foreach(var control in section.Controls)
+                            // Safety measure: reset column order to 1 for columns marked with 0 or lower
+                            foreach(var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            {
+                                control.Column = 1;
+                            }
+
+                            foreach(CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
 
@@ -131,22 +130,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = textProperty.Value;
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        // Reduce column number by 1 due 0 start indexing
+                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
                                     }
                                 }
                                 // It is a web part
                                 else
                                 {
+                                    // apply token parsing on the web part properties
+                                    control.JsonControlData = parser.ParseString(control.JsonControlData);
+                                    
+                                    // perform processing of web part properties (e.g. include listid property based list title property)
+                                    var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
+                                    webPartPostProcessor.Process(control, page);
+
                                     // Is a custom developed client side web part (3rd party)
                                     if (control.Type == WebPartType.Custom)
                                     {
                                         if (!string.IsNullOrEmpty(control.CustomWebPartName))
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase));
                                         }
                                         else if (control.ControlId != Guid.Empty)
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)
@@ -218,11 +225,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.YammerEmbed:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
                                                 break;
-                                            default:
-                                                break;
                                         }
 
-                                        baseControl = componentsToAdd.Where(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                        baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
                                     }
 
                                     if (baseControl != null)
@@ -232,7 +237,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Order = control.Order
                                         };
 
-                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        // Reduce column number by 1 due 0 start indexing
+                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
                                         // set properties using json string
                                         if (!String.IsNullOrEmpty(control.JsonControlData))
@@ -301,7 +307,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(this.Name))
+            using (new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 

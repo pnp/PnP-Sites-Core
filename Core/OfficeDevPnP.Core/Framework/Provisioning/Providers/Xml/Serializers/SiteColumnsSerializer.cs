@@ -34,18 +34,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var fieldsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateSiteFields, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var fieldsType = Type.GetType(fieldsTypeName, true);
-            var fields = Activator.CreateInstance(fieldsType);
-
-            var xmlFields = from f in template.SiteFields
-                            select XElement.Parse(f.SchemaXml).ToXmlElement();
-
-            fields.SetPublicInstancePropertyValue("Any", xmlFields.ToArray());
-
-            if (fields != null && ((Array)fields.GetPublicInstancePropertyValue("Any")).Length > 0)
+            if (template.SiteFields != null && template.SiteFields.Count > 0)
             {
-                persistence.SetPublicInstancePropertyValue("SiteFields", fields);
+                var fieldsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateSiteFields, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var fieldsType = Type.GetType(fieldsTypeName, true);
+                var fields = Activator.CreateInstance(fieldsType);
+
+                var xmlFields = from f in template.SiteFields
+                                select XElement.Parse(f.SchemaXml).ToXmlElement();
+
+                fields.SetPublicInstancePropertyValue("Any", xmlFields.ToArray());
+
+                if (fields != null && ((Array)fields.GetPublicInstancePropertyValue("Any")).Length > 0)
+                {
+                    persistence.SetPublicInstancePropertyValue("SiteFields", fields);
+                }
             }
         }
     }
