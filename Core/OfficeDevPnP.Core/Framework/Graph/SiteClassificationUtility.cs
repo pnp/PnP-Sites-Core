@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
-    public static class SiteClassificationUtility
+    public static class SiteClassificationsUtility
     {
         /// <summary>
-        /// Disables Site Classification settings for the target tenant
+        /// Disables Site Classifications settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         public static void DisableSiteClassifications(string accessToken)
@@ -44,45 +44,45 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
-        /// Enables Site Classification for the target tenant 
+        /// Enables Site Classifications for the target tenant 
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassification">The site classification settings to apply./param>
-        public static void EnableSiteClassifications(string accessToken, SiteClassificationSettings siteClassification)
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        public static void EnableSiteClassifications(string accessToken, SiteClassificationsSettings siteClassificationsSettings)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentException("Specify a valid accesstoken", nameof(accessToken));
             }
-            if (siteClassification == null)
+            if (siteClassificationsSettings == null)
             {
-                throw new ArgumentException(nameof(siteClassification));
+                throw new ArgumentException(nameof(siteClassificationsSettings));
             }
-            EnableSiteClassifications(accessToken, siteClassification.Classifications, siteClassification.DefaultClassification, siteClassification.DefaultClassification);
+            EnableSiteClassifications(accessToken, siteClassificationsSettings.Classifications, siteClassificationsSettings.DefaultClassification, siteClassificationsSettings.DefaultClassification);
         }
 
         /// <summary>
-        /// Enables Site Classification for the target tenant 
+        /// Enables Site Classifications for the target tenant 
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         /// <param name="classificationList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
-        public static void EnableSiteClassifications(string accessToken, IEnumerable<String> classificationList, String defaultClassification = "", String usageGuidelinesUrl = "")
+        public static void EnableSiteClassifications(string accessToken, IEnumerable<String> classificationsList, String defaultClassification = "", String usageGuidelinesUrl = "")
         {
             if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentException("Specify a valid accesstoken", nameof(accessToken));
             }
-            if (classificationList == null || !classificationList.Any())
+            if (classificationsList == null || !classificationsList.Any())
             {
-                throw new ArgumentException("Specify one or more classifications", nameof(classificationList));
+                throw new ArgumentException("Specify one or more classifications", nameof(classificationsList));
             }
             if (usageGuidelinesUrl == null)
             {
                 throw new ArgumentException("Specify a valid URL or an empty string to not set this value", nameof(usageGuidelinesUrl));
             }
-            if (!classificationList.Contains(defaultClassification))
+            if (!classificationsList.Contains(defaultClassification))
             {
                 throw new ArgumentException("The default classification specified is not available in the list of specified classifications", nameof(defaultClassification));
             }
@@ -106,7 +106,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             directorySettingValues.Add(v.Name, usageGuidelinesUrl);
                             break;
                         case "ClassificationList":
-                            directorySettingValues.Add(v.Name, classificationList.Aggregate((s, i) => s + ", " + i));
+                            directorySettingValues.Add(v.Name, classificationsList.Aggregate((s, i) => s + ", " + i));
                             break;
                         case "DefaultClassification":
                             directorySettingValues.Add(v.Name, defaultClassification);
@@ -136,11 +136,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
-        /// Enables Site Classification for the target tenant 
+        /// Enables Site Classifications for the target tenant 
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
         /// <returns>The list of Site Classification values</returns>
-        public static SiteClassificationSettings GetSiteClassificationSettings(string accessToken)
+        public static SiteClassificationsSettings GetSiteClassificationsSettings(string accessToken)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -156,23 +156,23 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
             if (unifiedGroupSetting != null)
             {
-                var siteClassification = new SiteClassificationSettings();
+                var siteClassificationsSettings = new SiteClassificationsSettings();
                 var classificationList = unifiedGroupSetting.SettingValues.FirstOrDefault(v => v.Name == "ClassificationList");
                 if (classificationList != null)
                 {
-                    siteClassification.Classifications = classificationList.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    siteClassificationsSettings.Classifications = classificationList.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 }
                 var guidanceUrl = unifiedGroupSetting.SettingValues.First(v => v.Name == "UsageGuidelinesUrl");
                 if (guidanceUrl != null)
                 {
-                    siteClassification.UsageGuidelinesUrl = guidanceUrl.Value;
+                    siteClassificationsSettings.UsageGuidelinesUrl = guidanceUrl.Value;
                 }
                 var defaultClassification = unifiedGroupSetting.SettingValues.First(v => v.Name == "DefaultClassification");
                 if (defaultClassification != null)
                 {
-                    siteClassification.DefaultClassification = defaultClassification.Value;
+                    siteClassificationsSettings.DefaultClassification = defaultClassification.Value;
                 }
-                return siteClassification;
+                return siteClassificationsSettings;
             }
             else
             {
@@ -181,31 +181,31 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
-        /// Updates Site Classification settings for the target tenant
+        /// Updates Site Classifications settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassificationSettings">The site classification settings to apply./param>
-        public static void UpdateSiteClassificationSettings(string accessToken, SiteClassificationSettings siteClassificationSettings)
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        public static void UpdateSiteClassificationsSettings(string accessToken, SiteClassificationsSettings siteClassificationsSettings)
         {
             if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentException("Specify a valid accesstoken", nameof(accessToken));
             }
-            if(siteClassificationSettings == null)
+            if(siteClassificationsSettings == null)
             {
-                throw new ArgumentException("Specify a valid Site Classification Settings object", nameof(siteClassificationSettings));
+                throw new ArgumentException("Specify a valid Site Classification Settings object", nameof(siteClassificationsSettings));
             }
-            UpdateSiteClassificationSettings(accessToken, siteClassificationSettings.Classifications, siteClassificationSettings.DefaultClassification, siteClassificationSettings.UsageGuidelinesUrl);
+            UpdateSiteClassificationsSettings(accessToken, siteClassificationsSettings.Classifications, siteClassificationsSettings.DefaultClassification, siteClassificationsSettings.UsageGuidelinesUrl);
         }
 
         /// <summary>
-        /// Updates Site Classification settings for the target tenant
+        /// Updates Site Classifications settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="classificationList">The list of classification values</param>
+        /// <param name="classificationsList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
-        public static void UpdateSiteClassificationSettings(String accessToken, IEnumerable<String> classificationList = null, String defaultClassification = "", String usageGuidelinesUrl = "")
+        public static void UpdateSiteClassificationsSettings(String accessToken, IEnumerable<String> classificationsList = null, String defaultClassification = "", String usageGuidelinesUrl = "")
         {
             if (string.IsNullOrEmpty(accessToken))
             {
@@ -232,9 +232,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             }
                             break;
                         case "ClassificationList":
-                            if (classificationList != null && classificationList.Any())
+                            if (classificationsList != null && classificationsList.Any())
                             {
-                                v.Value = classificationList.Aggregate((s, i) => s + ", " + i);
+                                v.Value = classificationsList.Aggregate((s, i) => s + ", " + i);
                             }
                             break;
                         case "DefaultClassification":

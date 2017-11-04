@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Graph.Model
 {
     /// <summary>
-    /// Represents settings with regards to Site Classification
+    /// Represents settings with regards to Site Classifications
     /// </summary>
-    public class SiteClassificationSettings
+    public class SiteClassificationsSettings
     {
         /// <summary>
         /// The URL pointing to usage guidelines with regards to site classifications
