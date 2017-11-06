@@ -4126,7 +4126,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
         private int readSecurityField;
         
         private bool readSecurityFieldSpecified;
-        
+
+        private int writeSecurityField;
+
+        private bool excludeFromOfflineClient;
+
+        private bool enableAssignToEmail;
+
+        private bool writeSecurityFieldSpecified;
+
         private string validationFormulaField;
         
         private string validationMessageField;
@@ -4682,7 +4690,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201705 {
                 this.readSecurityFieldSpecified = value;
             }
         }
-        
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int WriteSecurity
+        {
+            get
+            {
+                return this.writeSecurityField;
+            }
+            set
+            {
+                this.writeSecurityField = value;
+            }
+        }        
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool WriteSecuritySpecified
+        {
+            get
+            {
+                return this.writeSecurityFieldSpecified;
+            }
+            set
+            {
+                this.writeSecurityFieldSpecified = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool ExcludeFromOfflineClient
+        {
+            get
+            {
+                return this.excludeFromOfflineClient;
+            }
+            set
+            {
+                this.excludeFromOfflineClient = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool EnableAssignToEmail
+        {
+            get
+            {
+                return this.enableAssignToEmail;
+            }
+            set
+            {
+                this.enableAssignToEmail = value;
+            }
+        }
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ValidationFormula {
