@@ -2069,7 +2069,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractContentTypes(web, siteList, contentTypeFields, list);
 
-                    list = ExtractViews(siteList, list);
+                    list = ExtractViews(web, siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, allLists, creationInfo, template);
 
@@ -2124,11 +2124,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 #endif
 
-        private static ListInstance ExtractViews(List siteList, ListInstance list)
+        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list)
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
                 var schemaElement = XElement.Parse(view.ListViewXml);
+
+                // exclude survey and events list as they dont support jsLink customizations
+                if (siteList.BaseTemplate != (int)ListTemplateType.Survey && siteList.BaseTemplate != (int)ListTemplateType.Events)
+                {
+                    var currentView = siteList.GetViewById(view.Id);
+
+                    Microsoft.SharePoint.Client.File viewPage = web.GetFileByServerRelativeUrl(currentView.ServerRelativeUrl);
+                    Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager limitedWebPartManager = viewPage.GetLimitedWebPartManager(Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
+                    web.Context.Load(limitedWebPartManager.WebParts);
+                    web.Context.ExecuteQuery();
+
+                    if (limitedWebPartManager.WebParts.Count > 0)
+                    {
+                        var webPart = limitedWebPartManager.WebParts.FirstOrDefault();
+                        web.Context.Load(webPart.WebPart.Properties);
+                        web.Context.ExecuteQueryRetry();
+
+                        var jsLinkValue = webPart.WebPart.Properties["JSLink"];
+
+                        var jsLinkElement = schemaElement.Descendants("JSLink").FirstOrDefault();
+                        if (jsLinkElement != null && jsLinkValue != null)
+                        {
+                            jsLinkElement.Value = Convert.ToString(jsLinkValue);
+                        }
+                    }
+                }
 
                 // Toolbar is not supported
 
