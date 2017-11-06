@@ -406,6 +406,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Int32 ReadSecurity { get; set; }
 
         /// <summary>
+        /// Defines the Write Security property, optional attribute.
+        /// </summary>
+        public Int32 WriteSecurity { get; set; }
+
+        /// <summary>
+        /// Defines a value that indicates whether the data from the website should be downloaded to the client during offline synchronization, default false.
+        /// </summary>
+        public Boolean ExcludeFromOfflineClient { get; set; }
+
+        /// <summary>
+        /// Defines a value that value specifying whether e-mail notification is enabled for the list, default false.
+        /// </summary>
+        public Boolean EnableAssignToEmail { get; set; }
+
+        /// <summary>
         /// Defines a value that specifies the data validation criteria for a list item, optional attribute.
         /// </summary>
         public String ValidationFormula { get; set; }
@@ -425,7 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|{42}|{43}|{44}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -466,6 +481,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.IrmReject.GetHashCode(),
                 this.IsApplicationList.GetHashCode(),
                 this.ReadSecurity.GetHashCode(),
+                this.WriteSecurity.GetHashCode(),
+                this.ExcludeFromOfflineClient.GetHashCode(),
+                this.EnableAssignToEmail.GetHashCode(),
                 this.ValidationFormula?.GetHashCode() ?? 0,
                 this.ValidationMessage?.GetHashCode() ?? 0
             ).GetHashCode());
@@ -490,7 +508,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
         /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders, UserCustomActions, 
         /// Webhooks, IRMSettings, DefaultDisplayFormUrl, DefaultEditFormUrl, DefaultNewFormUrl, Direction, ImageUrl, IrmExpire, IrmReject, IsApplicationList,
-        /// ReadSecurity, ValidationFormula, and ValidationMessage properties.
+        /// ReadSecurity, WriteSecurity, ExcludeFromOfflineClient, EnableAssignToEmail  ValidationFormula, and ValidationMessage properties.
         /// </summary>
         /// <param name="other">ListInstance object</param>
         /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
@@ -541,6 +559,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.IrmReject == other.IrmReject &&
                 this.IsApplicationList == other.IsApplicationList &&
                 this.ReadSecurity == other.ReadSecurity &&
+                this.WriteSecurity == other.WriteSecurity &&
+                this.ExcludeFromOfflineClient == other.ExcludeFromOfflineClient &&
+                this.EnableAssignToEmail == other.EnableAssignToEmail &&
                 this.ValidationFormula == other.ValidationFormula &&
                 this.ValidationMessage == other.ValidationMessage
             );
