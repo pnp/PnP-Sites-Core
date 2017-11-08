@@ -12,11 +12,11 @@ namespace OfficeDevPnP.Core.Entities
     public class UnifiedGroupUser
     {
         /// <summary>
-        /// Unified group user principal name
+        /// Unified group user's user principal name
         /// </summary>
         public String UserPrincipalName { get; set; }
         /// <summary>
-        /// Unified group user display name
+        /// Unified group user's display name
         /// </summary>
         public String DisplayName { get; set; }
         
