@@ -378,6 +378,7 @@
   <ItemGroup>
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="Entities\UnifiedGroupUser.cs" />
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
@@ -909,6 +910,7 @@
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
