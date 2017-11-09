@@ -29,8 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201705Serializer());
-                // return (new XMLPnPSchemaV201801Serializer());
+                return (new XMLPnPSchemaV201612Formatter());
             }
         }
 

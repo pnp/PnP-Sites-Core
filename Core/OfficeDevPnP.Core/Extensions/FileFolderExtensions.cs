@@ -1212,11 +1212,15 @@ namespace Microsoft.SharePoint.Client
                                 }
                                 break;
                             }
+                        case "PUBLISHINGCONTACT":
+                            {
+
+                                break;
+                            }
                         default:
                             {
                                 if (currentValue != propertyValue)
                                 {
-                                    //Console.WriteLine("Setting property '{0}' to '{1}'", propertyName, propertyValue);
                                     changedProperties[propertyName] = propertyValue;
                                     changedPropertiesString.AppendFormat("{0}='{1}'; ", propertyName, propertyValue);
                                 }
@@ -1247,6 +1251,17 @@ namespace Microsoft.SharePoint.Client
                     {
                         var propertyName = kvp.Key;
                         var propertyValue = kvp.Value;
+
+                        if (propertyName == "PublishingPageLayout")
+                        {
+                            FieldUrlValue urlValue = new FieldUrlValue()
+                            {
+                                Url = propertyValue.Split(',')[0],
+                                Description = propertyValue.Split(',')[1]
+                            };
+                            file.ListItemAllFields[propertyName] = urlValue;
+                            continue;
+                        }
 
                         Log.Debug(Constants.LOGGING_SOURCE, " {0}={1}", propertyName, propertyValue);
                         file.ListItemAllFields[propertyName] = propertyValue;
