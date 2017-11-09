@@ -9,7 +9,7 @@ using OfficeDevPnP.Core.Utilities;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// File-based (CAML) deprecated provisioning extensions
+    /// File-based (CAML) provisioning extensions
     /// </summary>
     public static partial class ProvisioningExtensions
     {
