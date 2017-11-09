@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
                 return;
             }
 
-            list.EnsureProperties(l => l.Id, l => l.RootFolder, l => l.RootFolder.Name);
+            list.EnsureProperties(l => l.Id, l => l.RootFolder, l => l.RootFolder.Name, l => l.RootFolder.ServerRelativeUrl);
 
             SetProperty("selectedListId", list.Id);
             SetProperty("selectedListUrl", list.RootFolder.ServerRelativeUrl);
