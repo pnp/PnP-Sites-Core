@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         var dataRowValues = dataRow.Values.Where(v => v.Key == listInstance.DataRows.KeyColumn);
 
                                         // if it is empty, skip the check
-                                        if (dataRowValue.Any())
+                                        if (dataRowValues.Any())
                                         {
                                             var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{dataRowValue.FirstOrDefault().Value}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
                                             var camlQuery = new CamlQuery()
