@@ -69,7 +69,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     continue;
                 }
 
-                bool caExists = site?.CustomActionExists(customAction.Name) ?? web.CustomActionExists(customAction.Name);
+                var caExists = false;
+                if (site != null)
+                {
+                    caExists = site.CustomActionExists(customAction.Name);
+                }
+                else
+                {
+                    caExists = web.CustomActionExists(customAction.Name);
+                }
 
                 // If the CustomAction does not exist, we don't have to remove it, and it is enabled
                 if (!caExists && !customAction.Remove && customAction.Enabled)
