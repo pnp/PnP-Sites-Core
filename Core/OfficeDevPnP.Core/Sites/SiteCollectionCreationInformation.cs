@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Sites
 {
+    /// <summary>
+    /// Class for communication site creation information
+    /// </summary>
     public class CommunicationSiteCollectionCreationInformation
     {
         /// <summary>
@@ -54,12 +57,20 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public uint Lcid { get; set; }
 
-
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public CommunicationSiteCollectionCreationInformation()
         {
 
         }
 
+        /// <summary>
+        /// CommunicationSiteCollectionCreationInformation constructor
+        /// </summary>
+        /// <param name="fullUrl">Url for the new communication site</param>
+        /// <param name="title">Title of the site</param>
+        /// <param name="description">Description of the site</param>
         public CommunicationSiteCollectionCreationInformation(string fullUrl, string title, string description = null)
         {
             this.Url = fullUrl;
@@ -68,7 +79,57 @@ namespace OfficeDevPnP.Core.Sites
         }
     }
 
-    public class TeamSiteCollectionCreationInformation
+    /// <summary>
+    /// Class for site groupify information
+    /// </summary>
+    public class TeamSiteCollectionGroupifyInformation : SiteCreationInformation
+    {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public TeamSiteCollectionGroupifyInformation() : base()
+        {
+        }
+
+        /// <summary>
+        /// TeamSiteCollectionTeamSiteCollectionGroupifyInformationCreationInformation constructor
+        /// </summary>
+        /// <param name="alias">Alias for the group which will be linked to this site</param>
+        /// <param name="displayName">Name of the site</param>
+        /// <param name="description">Title of the site</param>
+        public TeamSiteCollectionGroupifyInformation(string alias, string displayName, string description = null) : base(alias, displayName, description)
+        {
+        }
+    }
+
+
+    /// <summary>
+    /// Class for site creation information
+    /// </summary>
+    public class TeamSiteCollectionCreationInformation : SiteCreationInformation
+    {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public TeamSiteCollectionCreationInformation() : base()
+        {
+        }
+
+        /// <summary>
+        /// TeamSiteCollectionCreationInformation constructor
+        /// </summary>
+        /// <param name="alias">Alias for the group linked to this site</param>
+        /// <param name="displayName">Name of the site</param>
+        /// <param name="description">Title of the site</param>
+        public TeamSiteCollectionCreationInformation(string alias, string displayName, string description = null) : base(alias, displayName, description)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Base class for site creation/groupify information
+    /// </summary>
+    public abstract class SiteCreationInformation
     {
         //{"displayName":"test modernteamsite","alias":"testmodernteamsite","isPublic":true,"optionalParams":{"Description":"","CreationOptions":{"results":[]},"Classification":""}}
 
@@ -97,12 +158,12 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string Classification { get; set; }
 
-        public TeamSiteCollectionCreationInformation()
+        public SiteCreationInformation()
         {
 
         }
 
-        public TeamSiteCollectionCreationInformation(string alias, string displayName, string description = null)
+        public SiteCreationInformation(string alias, string displayName, string description = null)
         {
             this.Alias = alias;
             this.DisplayName = displayName;

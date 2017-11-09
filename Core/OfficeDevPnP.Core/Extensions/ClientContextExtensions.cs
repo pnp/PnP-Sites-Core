@@ -451,6 +451,17 @@ namespace Microsoft.SharePoint.Client
         {
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
+
+        /// <summary>
+        /// BETA: Groupifies a classic Team Site Collection
+        /// </summary>
+        /// <param name="clientContext">ClientContext instance of the site to be groupified</param>
+        /// <param name="siteCollectionGroupifyInformation">Information needed to groupify this site</param>
+        /// <returns>The clientcontext of the groupified site</returns>
+        public static async Task<ClientContext> GroupifySiteAsync(this ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
+        }
 #endif
     }
 }
