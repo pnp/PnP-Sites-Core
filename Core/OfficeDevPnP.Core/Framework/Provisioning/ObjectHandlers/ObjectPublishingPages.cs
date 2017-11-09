@@ -3,6 +3,9 @@ using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using File = Microsoft.SharePoint.Client.File;
+using System.Net;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -37,6 +40,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
+                foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
+                {
+                    var fileName = pageLayout.Path.Split('/').LastOrDefault();
+                    var container = template.Connector.GetContainer();
+                    var stream = template.Connector.GetFileStream(fileName, container);
+
+                    // Get Masterpage catalog fodler
+                    var masterpageCatalog = context.Site.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                    context.Load(masterpageCatalog);
+                    context.ExecuteQuery();
+
+                    var folder = masterpageCatalog.RootFolder;
+
+                    UploadFile(template, pageLayout, folder, stream);
+                }
+
                 foreach (PublishingPage page in template.Publishing.PublishingPages)
                 {
                     string parsedFileName = parser.ParseString(page.FileName);
@@ -53,13 +72,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (existingPage != null && existingPage.ServerObjectIsNull.Value == false)
                     {
-                        if (!page.Overwrite)
-                        {
-                            scope.LogDebug(
-                                CoreResources.Provisioning_ObjectHandlers_PublishingPages_Skipping_As_Overwrite_false,
-                                parsedFileName);
-                            continue;
-                        }
 
                         if (page.WelcomePage && web.RootFolder.WelcomePage.Contains(parsedFullFileName))
                         {
@@ -88,6 +100,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         context.Load(pageFile, p => p.Name, p => p.CheckOutType);
                         context.ExecuteQueryRetry();
                         var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
+                        var parentWeb = web.ParentWeb;
+                        context.Load(parentWeb);
+                        context.ExecuteQuery();
+                        var RootWebUrl = parentWeb.ServerRelativeUrl;
+                        parsedProperties["PublishingPageLayout"] = RootWebUrl + parsedProperties["PublishingPageLayout"];
                         pageFile.SetFileProperties(parsedProperties, false);
                     }
 
@@ -160,7 +177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ClientContext ctx = web.Context as ClientContext;
             foreach (var wp in page.WebParts)
             {
-                string wpContentsTokenResolved = parser.ParseString(wp.Contents).Replace("<property name=\"JSLink\" type=\"string\">" + ctx.Site.ServerRelativeUrl,"<property name=\"JSLink\" type=\"string\">~sitecollection");
+                string wpContentsTokenResolved = parser.ParseString(wp.Contents).Replace("<property name=\"JSLink\" type=\"string\">" + ctx.Site.ServerRelativeUrl, "<property name=\"JSLink\" type=\"string\">~sitecollection");
                 Microsoft.SharePoint.Client.WebParts.WebPart webPart = mgr.ImportWebPart(wpContentsTokenResolved).WebPart;
                 Microsoft.SharePoint.Client.WebParts.WebPartDefinition definition = mgr.AddWebPart(
                                                                                             webPart,
@@ -244,6 +261,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ProvisioningTemplateCreationInformation creationInfo)
         {
             return template;
+        }
+
+        private static File UploadFile(ProvisioningTemplate template, Model.PageLayout file, Microsoft.SharePoint.Client.Folder folder, Stream stream)
+        {
+            File targetFile = null;
+            var fileName = file.Path.Split('/').LastOrDefault(); ;
+            try
+            {
+                targetFile = folder.UploadFile(fileName, stream, true);
+            }
+            catch (Exception)
+            {
+                //The file name might contain encoded characters that prevent upload. Decode it and try again.
+                fileName = WebUtility.UrlDecode(fileName);
+                targetFile = folder.UploadFile(fileName, stream, true);
+            }
+            return targetFile;
         }
     }
 }
