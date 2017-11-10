@@ -106,7 +106,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         {
             using (var tenantCtx = TestCommon.CreateTenantClientContext())
             {
-                tenantCtx.RequestTimeout = Timeout.Infinite;
+                tenantCtx.RequestTimeout = 1000 * 60 * 15;
                 Tenant tenant = new Tenant(tenantCtx);
 
 #if !ONPREMISES
@@ -200,7 +200,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     // Export the base templates
                     using (ClientContext cc = ctx.Clone(siteUrl))
                     {
-                        cc.RequestTimeout = Timeout.Infinite;
+                        cc.RequestTimeout = 1000 * 60 * 15;
 
                         // Specify null as base template since we do want "everything" in this case
                         ProvisioningTemplateCreationInformation creationInfo = new ProvisioningTemplateCreationInformation(cc.Web);
