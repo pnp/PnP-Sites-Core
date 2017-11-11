@@ -223,6 +223,11 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
 
+            if(string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
+            }
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
