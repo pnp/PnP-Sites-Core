@@ -59,7 +59,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 }
             }
 #else
-            _userLogin = String.Format(@"{0}\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);            
+            _userLogin = String.Format(@"{0}\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);
             if (TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -113,8 +113,8 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 List<UserEntity> admins = clientContext.Web.GetAdministrators();
                 bool found = false;
-                foreach(var admin in admins) 
-                {                    
+                foreach(var admin in admins)
+                {
                     string adminLoginName = admin.LoginName;
                     String[] parts = adminLoginName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     {
                         adminLoginName = parts[2];
                     }
-                    
+
                     if (adminLoginName.Equals(_userLogin, StringComparison.InvariantCultureIgnoreCase))
                     {
                         found = true;
@@ -153,6 +153,40 @@ namespace Microsoft.SharePoint.Client.Tests
                 {
                     clientContext.Web.RemoveGroup(group);
                 }
+            }
+        }
+
+        [TestMethod]
+        public void EnsureGroupTest()
+        {
+            using (ClientContext clientContext = TestCommon.CreateClientContext())
+            {
+                // Test
+                const string group1Name = "Test Group";
+                const string group1Description = "Test Description";
+                const string group2Name = "Test Group 2";
+                const string group2Description = "Test Description 2";
+
+                Group group1 = clientContext.Web.EnsureGroup(group1Name, group1Description, executeQuery: false);
+                Group group2 = clientContext.Web.EnsureGroup(group2Name, group2Description, group1, executeQuery: false);
+                clientContext.Load(group1, x => x.Title, x => x.Description, x => x.OwnerTitle);
+                clientContext.Load(group2, x => x.OwnerTitle);
+                clientContext.ExecuteQueryRetry();
+
+                Group existingGroup1 = clientContext.Web.EnsureGroup(group1Name, group1Description, group2, executeQuery: false);
+                clientContext.Load(existingGroup1, x => x.Title, x => x.Description, x => x.OwnerTitle);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.IsTrue(group1.Title == group1Name, "Group 1 not created with correct title");
+                Assert.IsTrue(group1.Description == group1Description, "Group 1 not created with correct description");
+                Assert.IsTrue(group1.OwnerTitle == group1Name, "Group 1 not created with correct owner");
+                Assert.IsTrue(group2.OwnerTitle == group1Name, "Group 2 not created with correct owner");
+                Assert.IsTrue(existingGroup1.Title == group1Name, "Existing group has different title than it should");
+                Assert.IsTrue(existingGroup1.OwnerTitle == group1Name, "Owner of existing group has changed");
+
+                // Cleanup
+                clientContext.Web.RemoveGroup(group1Name);
+                clientContext.Web.RemoveGroup(group2Name);
             }
         }
 
@@ -198,7 +232,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				var subSite = CreateTestTeamSubSite(clientContext.Web);
 
                 subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
-				
+
 				if (!subSite.HasUniqueRoleAssignments)
 				{
 					subSite.BreakRoleInheritance(false, true);
@@ -229,7 +263,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				var list = clientContext.Web.CreateList(ListTemplateType.GenericList, GetRandomString(), false);
 
                 list.EnsureProperties(l => l.HasUniqueRoleAssignments);
-                
+
 				if (!list.HasUniqueRoleAssignments)
 				{
 					list.BreakRoleInheritance(false, true);
@@ -265,7 +299,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				clientContext.ExecuteQueryRetry();
 
                 item.EnsureProperties(i => i.HasUniqueRoleAssignments);
-				
+
 				if (!item.HasUniqueRoleAssignments)
 				{
 					item.BreakRoleInheritance(false, true);
@@ -297,7 +331,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
 
                 subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
-				
+
 				if (!subSite.HasUniqueRoleAssignments)
 				{
 					subSite.BreakRoleInheritance(true, true);
@@ -334,7 +368,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 Group group = clientContext.Web.SiteGroups.GetByName(_testGroupName);
                 clientContext.ExecuteQueryRetry();
 
-                //Assert 
+                //Assert
                 Assert.IsTrue(CheckPermissionOnPrinciple(clientContext.Web, group, "Approve"));
             }
         }
@@ -361,7 +395,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 //Assert
                 Assert.IsTrue(CheckPermissionOnPrinciple(web, user, roleType));
 
-                //Teardown: Expicitly remove given permission. 
+                //Teardown: Expicitly remove given permission.
                 web.RemovePermissionLevelFromUser(_userLogin, roleType);
             }
         }
@@ -372,7 +406,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (ClientContext clientContext = TestCommon.CreateClientContext())
             {
                 Web web = clientContext.Web;
-				
+
                 //Setup: Make sure permission does not already exist
                 web.RemovePermissionLevelFromUser(_userLogin, "Approve");
 
@@ -386,7 +420,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 //Assert
                 Assert.IsTrue(CheckPermissionOnPrinciple(web, user, "Approve"));
 
-                //Teardown: Expicitly remove given permission. 
+                //Teardown: Expicitly remove given permission.
                 web.RemovePermissionLevelFromUser(_userLogin, "Approve");
             }
         }
@@ -480,7 +514,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 foreach (var item in assignments)
                 {
                     Trace.WriteLine(item);
-                }                
+                }
             }
         }
 
@@ -527,7 +561,7 @@ namespace Microsoft.SharePoint.Client.Tests
             }
 
             return roleExists;
-        
+
 		}
 
 	    private Web CreateTestTeamSubSite(Web parentWeb)
