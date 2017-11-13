@@ -36,119 +36,122 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
+                    var context = web.Context as ClientContext;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                    web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
-                foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
-                {
-                    var fileName = pageLayout.Path.Split('/').LastOrDefault();
-                    var container = template.Connector.GetContainer();
-                    var stream = template.Connector.GetFileStream(fileName, container);
+                    var siteContext = web.Context.GetSiteCollectionContext();
+                    var rootWeb = siteContext.Site.RootWeb;
+                    siteContext.Load(rootWeb);
+                    siteContext.ExecuteQueryRetry();
 
-                    // Get Masterpage catalog fodler
-                    var masterpageCatalog = context.Site.GetCatalog((int)ListTemplateType.MasterPageCatalog);
-                    context.Load(masterpageCatalog);
-                    context.ExecuteQuery();
-
-                    var folder = masterpageCatalog.RootFolder;
-
-                    UploadFile(template, pageLayout, folder, stream);
-                }
-
-                foreach (PublishingPage page in template.Publishing.PublishingPages)
-                {
-                    string parsedFileName = parser.ParseString(page.FileName);
-                    string parsedFullFileName = parser.ParseString(page.FullFileName);
-
-                    Microsoft.SharePoint.Client.Publishing.PublishingPage existingPage =
-                        web.GetPublishingPage(parsedFileName + ".aspx");
-
-                    if (!web.IsPropertyAvailable("RootFolder"))
+                    foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
                     {
-                        web.Context.Load(web.RootFolder);
-                        web.Context.ExecuteQueryRetry();
+                        var fileName = pageLayout.Path.Split('/').LastOrDefault();
+                        var container = template.Connector.GetContainer();
+                        var stream = template.Connector.GetFileStream(fileName, container);
+
+                        // Get Masterpage catalog fodler
+                        var masterpageCatalog = context.Site.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                        context.Load(masterpageCatalog);
+                        context.ExecuteQuery();
+
+                        var folder = masterpageCatalog.RootFolder;
+
+                        UploadFile(template, pageLayout, folder, stream);
                     }
 
-                    if (existingPage != null && existingPage.ServerObjectIsNull.Value == false)
+                    foreach (PublishingPage page in template.Publishing.PublishingPages)
                     {
 
-                        if (page.WelcomePage && web.RootFolder.WelcomePage.Contains(parsedFullFileName))
+                        string parsedFileName = parser.ParseString(page.FileName);
+                        string parsedFullFileName = parser.ParseString(page.FullFileName);
+
+                        Microsoft.SharePoint.Client.Publishing.PublishingPage existingPage =
+                            web.GetPublishingPage(parsedFileName + ".aspx");
+
+                        if (!web.IsPropertyAvailable("RootFolder"))
                         {
-                            //set the welcome page to a Temp page to allow page deletion
-                            web.RootFolder.WelcomePage = "home.aspx";
-                            web.RootFolder.Update();
-                            web.Update();
+                            web.Context.Load(web.RootFolder);
+                            web.Context.ExecuteQueryRetry();
+                        }
+
+                        if (existingPage != null && existingPage.ServerObjectIsNull.Value == false)
+                        {
+                            if (page.WelcomePage && web.RootFolder.WelcomePage.ToLower().Contains(parsedFullFileName.ToLower()))
+                            {
+                                //set the welcome page to a Temp page to allow page deletion
+                                web.RootFolder.WelcomePage = "temp.aspx";
+                                web.RootFolder.Update();
+                                web.Update();
+                                context.ExecuteQueryRetry();
+                            }
+                            existingPage.ListItem.DeleteObject();
+                            context.ExecuteQuery();
+                        }
+
+
+                        web.AddPublishingPage(
+                            parsedFileName,
+                            page.Layout,
+                            parser.ParseString(page.Title)
+                            );
+                        Microsoft.SharePoint.Client.Publishing.PublishingPage publishingPage =
+                            web.GetPublishingPage(parsedFullFileName);
+                        Microsoft.SharePoint.Client.File pageFile = publishingPage.ListItem.File;
+                        pageFile.CheckOut();
+
+                        if (page.Properties != null && page.Properties.Count > 0)
+                        {
+                            context.Load(pageFile, p => p.Name, p => p.CheckOutType);
                             context.ExecuteQueryRetry();
+                            var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
+                            var RootWebUrl = rootWeb.ServerRelativeUrl;
+                            parsedProperties["PublishingPageLayout"] = RootWebUrl + parsedProperties["PublishingPageLayout"];
+                            pageFile.SetFileProperties(parsedProperties, false);
                         }
-                        existingPage.ListItem.DeleteObject();
-                        context.ExecuteQuery();
-                    }
 
-                    web.AddPublishingPage(
-                        parsedFileName,
-                        page.Layout,
-                        parser.ParseString(page.Title)
-                        );
-                    Microsoft.SharePoint.Client.Publishing.PublishingPage publishingPage =
-                        web.GetPublishingPage(parsedFullFileName);
-                    Microsoft.SharePoint.Client.File pageFile = publishingPage.ListItem.File;
-                    pageFile.CheckOut();
-
-                    if (page.Properties != null && page.Properties.Count > 0)
-                    {
-                        context.Load(pageFile, p => p.Name, p => p.CheckOutType);
-                        context.ExecuteQueryRetry();
-                        var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
-                        var parentWeb = web.ParentWeb;
-                        context.Load(parentWeb);
-                        context.ExecuteQuery();
-                        var RootWebUrl = parentWeb.ServerRelativeUrl;
-                        parsedProperties["PublishingPageLayout"] = RootWebUrl + parsedProperties["PublishingPageLayout"];
-                        pageFile.SetFileProperties(parsedProperties, false);
-                    }
-
-                    if (page.WebParts != null && page.WebParts.Count > 0)
-                    {
-                        Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr =
-                            pageFile.GetLimitedWebPartManager(
-                                Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
-                        context.Load(mgr);
-                        context.ExecuteQueryRetry();
-
-                        AddWebPartsToPublishingPage(web, page, mgr, parser);
-                    }
-
-                    List pagesLibrary = publishingPage.ListItem.ParentList;
-                    context.Load(pagesLibrary);
-                    context.ExecuteQueryRetry();
-
-                    ListItem pageItem = publishingPage.ListItem;
-                    web.Context.Load(pageItem, p => p.File.CheckOutType);
-                    web.Context.ExecuteQueryRetry();
-
-                    if (pageItem.File.CheckOutType != CheckOutType.None)
-                    {
-                        pageItem.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
-                    }
-
-                    if (page.Publish && pagesLibrary.EnableMinorVersions)
-                    {
-                        pageItem.File.Publish(String.Empty);
-                        if (pagesLibrary.EnableModeration)
+                        if (page.WebParts != null && page.WebParts.Count > 0)
                         {
-                            pageItem.File.Approve(String.Empty);
+                            Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr =
+                                pageFile.GetLimitedWebPartManager(
+                                    Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
+                            context.Load(mgr);
+                            context.ExecuteQueryRetry();
+
+                            AddWebPartsToPublishingPage(web, page, mgr, parser);
                         }
+
+                        List pagesLibrary = publishingPage.ListItem.ParentList;
+                        context.Load(pagesLibrary);
+                        context.ExecuteQueryRetry();
+
+                        ListItem pageItem = publishingPage.ListItem;
+                        web.Context.Load(pageItem, p => p.File.CheckOutType);
+                        web.Context.ExecuteQueryRetry();
+
+                        if (pageItem.File.CheckOutType != CheckOutType.None)
+                        {
+                            pageItem.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
+                        }
+
+                        if (page.Publish && pagesLibrary.EnableMinorVersions)
+                        {
+                            pageItem.File.Publish(String.Empty);
+                            if (pagesLibrary.EnableModeration)
+                            {
+                                pageItem.File.Approve(String.Empty);
+                            }
+                        }
+
+
+                        if (page.WelcomePage)
+                        {
+                            SetWelcomePage(web, pageFile);
+                        }
+
+                        context.ExecuteQueryRetry();
                     }
-
-
-                    if (page.WelcomePage)
-                    {
-                        SetWelcomePage(web, pageFile);
-                    }
-
-                    context.ExecuteQueryRetry();
-                }
             }
             return parser;
         }
