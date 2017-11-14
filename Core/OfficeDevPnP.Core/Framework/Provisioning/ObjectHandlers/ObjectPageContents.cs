@@ -271,6 +271,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
+            xml = Regex.Replace(xml, ">" + web.Url, ">{site}", RegexOptions.IgnoreCase);
             return xml;
         }
 
