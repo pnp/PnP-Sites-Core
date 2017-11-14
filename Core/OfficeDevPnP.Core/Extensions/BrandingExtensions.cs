@@ -732,6 +732,14 @@ namespace Microsoft.SharePoint.Client
             return GetComposedLook(web, themeName);
         }
 
+        private static bool IsCurrentTheme(string name, string currentComposedLookName)
+        {
+            // SharePoint randomly returns "Actuelle" instead of "Actuel"
+            if (name == "Actuelle")
+                return true;
+            return name.Equals(currentComposedLookName, StringComparison.InvariantCultureIgnoreCase);
+        }
+
         /// <summary>
         /// Returns the named composed look from the web gallery
         /// </summary>
@@ -819,13 +827,14 @@ namespace Microsoft.SharePoint.Client
 
                     if (name != null)
                     {
-                        if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) &&
+                        if (!IsCurrentTheme(name, currentLookName) &&
                             !defaultComposedLooks.Contains(name))
                         {
                             customComposedLooks.Add(name);
                         }
 
-                        if (name.Equals(composedLookName, StringComparison.InvariantCultureIgnoreCase))
+                        // SharePoint randomly returns "Actuelle" as name instead of "Actuel", probably due to translation errors
+                        if (IsCurrentTheme(name, currentLookName))
                         {
                             theme = new ThemeEntity();
                             if (themeItem["ThemeUrl"] != null && themeItem["ThemeUrl"].ToString().Length > 0)
@@ -911,10 +920,10 @@ namespace Microsoft.SharePoint.Client
                             }
 
                             // Exclude current from this comparison as otherwise we'll never detect the actual theme name
-                            if (!name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase) && i == 0)
+                            if (!IsCurrentTheme(name, currentLookName) && i == 0)
                             {
                                 // Note: do not take in account the ImageUrl field as this will point to a copied image in case of a sub site
-                                if (IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
+                                if (theme.Name == null || IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                                 {
                                     theme.Name = name;
                                     theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
@@ -934,7 +943,7 @@ namespace Microsoft.SharePoint.Client
                     }
 
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
-                    if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
+                    if (!string.IsNullOrEmpty(theme.Name) && IsCurrentTheme(theme.Name, currentLookName))
                     {
                         if (!web.IsUsingOfficeTheme())
                         {
