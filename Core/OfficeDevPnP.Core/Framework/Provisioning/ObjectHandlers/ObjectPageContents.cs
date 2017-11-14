@@ -294,7 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
 #if !ONPREMISES
                 web.EnsureProperty(w => w.WebTemplate);
-                _willExtract = !(web.WebTemplate.ToLower().Contains("publishing") || web.WebTemplate.ToLower().Contains("enterprisewiki"));
+                _willExtract = !(web.WebTemplate.ToLower().Contains("blankinternet") || web.WebTemplate.ToLower().Contains("enterwiki"));
 #else
                 _willExtract = web.Context.Credentials != null ? true : false;
 #endif

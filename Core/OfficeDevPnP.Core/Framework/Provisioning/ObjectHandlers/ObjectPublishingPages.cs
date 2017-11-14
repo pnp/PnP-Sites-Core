@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!_willExtract.HasValue)
             {
                 web.EnsureProperty(w => w.WebTemplate);
-                _willExtract = web.WebTemplate.ToLower().Contains("publishing") || web.WebTemplate.ToLower().Contains("enterprisewiki");
+                _willExtract = web.WebTemplate.ToLower().Contains("blankinternet") || web.WebTemplate.ToLower().Contains("enterwiki");
             }
             return _willExtract.Value;
         }
@@ -269,6 +269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ProvisioningTemplateCreationInformation creationInfo)
         {
             var rootFolder = web.RootFolder;
+            web.Context.Load(web, w => w.Id);
             web.Context.Load(rootFolder);
             web.Context.ExecuteQueryRetry();
             string welcomePage = rootFolder.WelcomePage.Replace("Pages/", "").Replace(".aspx", "");
@@ -276,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             ClientContext ctx = web.Context.GetSiteCollectionContext();
             Web rootWeb = ctx.Site.RootWeb;
-            ctx.Load(rootWeb);
+            ctx.Load(rootWeb, w => w.Id);
             ctx.ExecuteQueryRetry();
 
             bool isRootWeb = (rootWeb.Id == web.Id);
@@ -285,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             template = GetAvailablePageLayouts(template, web, isRootWeb);
 
             // Get publishing pages of the current web
-            template = GetPublishingPages(template, ctx, web, welcomePage, isRootWeb);
+            template = GetPublishingPages(template, web.Context as ClientContext, web, welcomePage, isRootWeb);
 
             return template;
         }
@@ -429,6 +430,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (isRootWeb)
                         {
+                            web.EnsureProperty(w => w.ServerRelativeUrl);
                             var spFile = web.GetFileByServerRelativeUrl(web.ServerRelativeUrl + "/" + pageLayout.Path);
                             var fileStream = spFile.OpenBinaryStream();
                             web.Context.Load(spFile);
@@ -464,6 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ProvisioningTemplate GetPublishingPages(ProvisioningTemplate template, ClientContext ctx, Web web, string welcomePage, bool isRootWeb)
         {
             #region load needed context
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
             string relativurl = web.ServerRelativeUrl;
             string url = web.Url;
             string pagesListId = web.GetPropertyBagValueString("__PagesListId", String.Empty);
