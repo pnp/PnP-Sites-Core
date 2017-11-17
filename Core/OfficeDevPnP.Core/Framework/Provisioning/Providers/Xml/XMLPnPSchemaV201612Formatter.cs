@@ -1128,7 +1128,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     DefaultViewDisplayName = wp.DefaultViewDisplayName,
                                     Order = (int)wp.Order,
                                     Title = wp.Title,
-                                    Zone = wp.Zone
+                                    Zone = wp.Zone,
+                                    ViewContent = XElement.Parse(wp.ViewContent).ToXmlElement()
                                 }).ToArray() : null
                             }).ToArray() : null
                 };

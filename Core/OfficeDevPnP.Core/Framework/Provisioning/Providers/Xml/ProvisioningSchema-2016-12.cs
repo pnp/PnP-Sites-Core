@@ -6567,7 +6567,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
     public partial class PublishingWebPartPageWebPart {
         
         private System.Xml.XmlElement contentsField;
-        
+
+        private System.Xml.XmlElement viewField;
+
         private string titleField;
         
         private string defaultViewDisplayNameField;
@@ -6585,7 +6587,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
                 this.contentsField = value;
             }
         }
-        
+
+        /// <remarks/>
+        public System.Xml.XmlElement ViewContent
+        {
+            get
+            {
+                return this.viewField;
+            }
+            set
+            {
+                this.viewField = value;
+            }
+        }
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Title {
