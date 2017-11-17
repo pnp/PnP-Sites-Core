@@ -5,6 +5,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public class PublishingPageWebPart : WebPart
     {
         #region Properties
+        public string ViewContent { get; set; }
 
         public string DefaultViewDisplayName { get; set; }
         public bool IsListViewWebPart
