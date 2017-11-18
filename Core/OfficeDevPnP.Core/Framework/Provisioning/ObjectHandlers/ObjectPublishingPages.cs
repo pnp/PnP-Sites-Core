@@ -6,15 +6,11 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using System.Net;
 using System.IO;
-<<<<<<< HEAD
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Xml.Linq;
 using System.Collections.Generic;
-=======
 using System.Xml;
 using System.Text;
-using System.Xml.Linq;
->>>>>>> my-temporary-work
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
