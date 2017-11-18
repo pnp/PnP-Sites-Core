@@ -6,9 +6,15 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = Microsoft.SharePoint.Client.File;
 using System.Net;
 using System.IO;
+<<<<<<< HEAD
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Xml.Linq;
 using System.Collections.Generic;
+=======
+using System.Xml;
+using System.Text;
+using System.Xml.Linq;
+>>>>>>> my-temporary-work
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -212,21 +218,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             string defaultViewDisplayName = parser.ParseString(wp.DefaultViewDisplayName);
 
-            if (!String.IsNullOrEmpty(defaultViewDisplayName))
-            {
                 string listUrl = webPartProperties.FieldValues["ListUrl"].ToString();
-
                 web.Context.Load(definition, d => d.Id); // Id of the hidden view which gets automatically created
                 web.Context.ExecuteQuery();
 
                 Guid viewId = definition.Id;
                 List list = web.GetListByUrl(listUrl);
+                web.Context.Load(list);
+                web.Context.Load(list.Views);
+                web.Context.ExecuteQuery();
 
                 Microsoft.SharePoint.Client.View viewCreatedFromWebpart = list.Views.GetById(viewId);
                 web.Context.Load(viewCreatedFromWebpart);
 
-                Microsoft.SharePoint.Client.View viewCreatedFromList = list.Views.GetByTitle(defaultViewDisplayName);
-                web.Context.Load(
+                //get xml node
+                var existingViews = list.Views;
+                web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
+                web.Context.ExecuteQueryRetry();
+                var currentViewIndex = 21;
+                Microsoft.SharePoint.Client.View viewCreatedFromList = CreateView(web, wp.ViewContent, existingViews, list, currentViewIndex);
+
+                //set basic view with defautviewdisplayname 
+                //Microsoft.SharePoint.Client.View viewCreatedFromList = list.Views.GetByTitle(defaultViewDisplayName);
+
+            web.Context.Load(
                     viewCreatedFromList,
                     v => v.ViewFields,
                     v => v.ListViewXml,
@@ -235,7 +250,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     v => v.ViewJoins,
                     v => v.ViewProjectedFields,
                     v => v.Paged,
-                    v => v.RowLimit);
+                    v => v.DefaultView,
+                    v => v.RowLimit,
+                    v => v.ContentTypeId,
+                    v => v.Scope,
+                    v => v.MobileView,
+                    v => v.MobileDefaultView,
+                    v => v.Aggregations,
+                    v => v.JSLink,
+                    v => v.ListViewXml,
+                     v => v.StyleId
+                    );
 
                 web.Context.ExecuteQuery();
 
@@ -245,9 +270,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 viewCreatedFromWebpart.ViewJoins = viewCreatedFromList.ViewJoins;
                 viewCreatedFromWebpart.ViewProjectedFields = viewCreatedFromList.ViewProjectedFields;
                 viewCreatedFromWebpart.Paged = viewCreatedFromList.Paged;
+                viewCreatedFromWebpart.DefaultView = viewCreatedFromList.DefaultView;
                 viewCreatedFromWebpart.RowLimit = viewCreatedFromList.RowLimit;
+                viewCreatedFromWebpart.ContentTypeId = viewCreatedFromList.ContentTypeId;
+                viewCreatedFromWebpart.Scope = viewCreatedFromList.Scope;
+                viewCreatedFromWebpart.MobileView = viewCreatedFromList.MobileView;
+                viewCreatedFromWebpart.MobileDefaultView = viewCreatedFromList.MobileDefaultView;
+                viewCreatedFromWebpart.Aggregations = viewCreatedFromList.Aggregations;
+                viewCreatedFromWebpart.JSLink = viewCreatedFromList.JSLink;
+                viewCreatedFromWebpart.ListViewXml = viewCreatedFromList.ListViewXml;
 
-                viewCreatedFromWebpart.ViewFields.RemoveAll();
+            viewCreatedFromWebpart.ViewFields.RemoveAll();
                 foreach (var field in viewCreatedFromList.ViewFields)
                 {
                     viewCreatedFromWebpart.ViewFields.Add(field);
@@ -261,7 +294,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 viewCreatedFromWebpart.Update();
 
                 web.Context.ExecuteQuery();
-            }
+                
+                // remove view created for webpart
+                web.Context.Load(list);
+                web.Context.Load(list.Views);
+                web.Context.ExecuteQuery();
+                Microsoft.SharePoint.Client.View LRMCurrentView = list.Views.GetByTitle("LRMCurrentView");
+                LRMCurrentView.DeleteObject();
+                // Execute the query to the server    
+                web.Context.ExecuteQuery();
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template,
@@ -538,19 +579,88 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
-                            ctx.Load(wpd);
+                            ctx.Load(wpd, def => def.ZoneId, def => def.Id);
                             ctx.ExecuteQueryRetry();
                             var wp = wpd.WebPart;
-                            ctx.Load(wp);
+                            ctx.Load(wp, def => def.ZoneIndex, def => def.Title, def => def.Properties, def => def.TitleUrl);
                             ctx.ExecuteQueryRetry();
                             PublishingPageWebPart ppwp = new PublishingPageWebPart();
                             ppwp.Title = wp.Title;
-                            ppwp.Zone = wp.ZoneIndex.ToString();
+                            ppwp.Order = (uint)wp.ZoneIndex;
+                            ppwp.Zone = wpd.ZoneId.ToString();
                             var webPartId = wpd.Id;
-                            var webPartXML = wpm.ExportWebPart(webPartId);
-                            web.Context.ExecuteQuery();
-                            ppwp.Contents = webPartXML.Value.Trim(new[] { '\n', ' ' });
-                            web.Context.ExecuteQuery();
+                            if (!string.IsNullOrEmpty(wp.TitleUrl))
+                            {
+                                //set display view
+                                //List lista = web.Lists.GetById(new Guid(wp.Properties.FieldValues["ListName"].ToString()));
+                                //ctx.Load(lista);
+                                //ctx.Load(lista.Views);
+                                //ctx.Load(lista.RootFolder);
+                                //ctx.ExecuteQuery();
+                                //ppwp.DefaultViewDisplayName = lista.Views[0].Title.ToString();
+                                //Regex regex = new Regex(@"(\bBaseViewID=)(.)(\d+)(.)");
+                                //string input = wp.Properties.FieldValues["XmlDefinition"].ToString();
+                                //ppwp.ViewContent = wp.Properties.FieldValues["XmlDefinition"].ToString();
+                                //Match match = regex.Match(input);
+                                //string baseViewid = "";
+                                //if (match.Success)
+                                //{
+                                //    baseViewid = match.Groups[3].Value;
+                                //}
+                                //if (baseViewid != "") { 
+                                //    Microsoft.SharePoint.Client.ViewCollection viewColl = lista.Views;
+                                //    ctx.Load(viewColl,views => views.Include(view => view.Title,view => view.BaseViewId));
+                                //    ctx.ExecuteQuery();
+                                //    foreach (Microsoft.SharePoint.Client.View view in viewColl)
+                                //    {
+                                //        if(view.BaseViewId == baseViewid)
+                                //        {
+                                //            ppwp.DefaultViewDisplayName = view.Title;
+                                //            break;
+                                //        }
+                                //    }
+                                //}
+
+                                ppwp.DefaultViewDisplayName = "";
+                                ppwp.ViewContent = wp.Properties.FieldValues["XmlDefinition"].ToString();
+
+                                //set propertiess
+                                string html = "";
+                                Dictionary<string, string> propertiesWebpart = new Dictionary<string, string>();
+                                foreach (var property in wp.Properties.FieldValues)
+                                {
+                                    var val = returnString(property.Value);
+                                    var key = returnString(property.Key);
+                                    if (!string.IsNullOrEmpty(val))
+                                    {
+                                        html += returnValue(key, val);
+                                    }
+                                }
+
+
+                                ppwp.Contents = "<webParts>" +
+                                " <webPart xmlns='http://schemas.microsoft.com/WebPart/v3'>" +
+                                "    <metaData>" +
+                                "      <type name='Microsoft.SharePoint.WebPartPages.XsltListViewWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />" +
+                                "      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>" +
+                                "    </metaData>" +
+                                "    <data>" +
+                                "      <properties>" +
+                                "        <property name='ListUrl' type='string'>" + wp.TitleUrl.ToString().Replace(relativurl, "").Trim('/') + "</property>" +
+                                            html +
+                                "      </properties>" +
+                                "    </data>" +
+                                "  </webPart>" +
+                                "</webParts>";
+
+                            }
+                            else {
+                                ppwp.ViewContent = " <View></View>";
+                                var webPartXML = wpm.ExportWebPart(webPartId);
+                                ctx.ExecuteQuery();
+                                ppwp.Contents = webPartXML.Value.Trim(new[] { '\n', ' ' });
+                                ctx.ExecuteQuery();
+                            }
                             page.WebParts.Add(ppwp);
                         }
                         catch { }
@@ -646,5 +756,235 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return false;
         }
         #endregion
+        private static Microsoft.SharePoint.Client.View CreateView(Web web, string view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, int currentViewIndex)
+        {
+            try
+            {
+                XElement viewElement = XElement.Parse(view);
+                var displayNameElement = viewElement.Attribute("DisplayName");
+                if (displayNameElement == null)
+                {
+                    throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
+                }
+
+                var viewTitle = "LRMCurrentView";
+                var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
+                if (existingView != null)
+                {
+                    existingView.DeleteObject();
+                    web.Context.ExecuteQueryRetry();
+                }
+
+                // Type
+                var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
+                viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
+                var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
+
+                // Fields
+                string[] viewFields = null;
+                var viewFieldsElement = viewElement.Descendants("ViewFields").FirstOrDefault();
+                if (viewFieldsElement != null)
+                {
+                    viewFields = (from field in viewElement.Descendants("ViewFields").Descendants("FieldRef") select field.Attribute("Name").Value).ToArray();
+                }
+
+                // Default view
+                var viewDefault = viewElement.Attribute("DefaultView") != null && bool.Parse(viewElement.Attribute("DefaultView").Value);
+
+                // Row limit
+                var viewPaged = true;
+                uint viewRowLimit = 30;
+                var rowLimitElement = viewElement.Descendants("RowLimit").FirstOrDefault();
+                if (rowLimitElement != null)
+                {
+                    if (rowLimitElement.Attribute("Paged") != null)
+                    {
+                        viewPaged = bool.Parse(rowLimitElement.Attribute("Paged").Value);
+                    }
+                    viewRowLimit = uint.Parse(rowLimitElement.Value);
+                }
+
+                // Query
+                var viewQuery = new StringBuilder();
+                foreach (var queryElement in viewElement.Descendants("Query").Elements())
+                {
+                    viewQuery.Append(queryElement.ToString());
+                }
+
+                var viewCI = new ViewCreationInformation
+                {
+                    ViewFields = viewFields,
+                    RowLimit = viewRowLimit,
+                    Paged = viewPaged,
+                    Title = viewTitle,
+                    Query = viewQuery.ToString(),
+                    ViewTypeKind = viewType,
+                    PersonalView = false,
+                    SetAsDefaultView = viewDefault,
+                };
+
+                // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need, 
+                // create the view and then set title back to the original value
+                var urlAttribute = viewElement.Attribute("Url");
+                var urlHasValue = urlAttribute != null && !string.IsNullOrEmpty(urlAttribute.Value);
+                if (urlHasValue)
+                {
+                    //set Title to be equal to url (in order to generate desired url)
+                    viewCI.Title = Path.GetFileNameWithoutExtension(urlAttribute.Value);
+                }
+
+                var createdView = createdList.Views.Add(viewCI);
+                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView);
+                web.Context.ExecuteQueryRetry();
+
+                if (urlHasValue)
+                {
+                    //restore original title 
+                    createdView.Title = viewTitle;
+                    createdView.Update();
+                }
+
+                // ContentTypeID
+                var contentTypeID = viewElement.Attribute("ContentTypeID") != null ? viewElement.Attribute("ContentTypeID").Value : null;
+                if (!string.IsNullOrEmpty(contentTypeID) && (contentTypeID != BuiltInContentTypeId.System))
+                {
+                    ContentTypeId childContentTypeId = null;
+                    if (contentTypeID == BuiltInContentTypeId.RootOfList)
+                    {
+                        var childContentType = web.GetContentTypeById(contentTypeID);
+                        childContentTypeId = childContentType != null ? childContentType.Id : null;
+                    }
+                    else
+                    {
+                        childContentTypeId = createdList.ContentTypes.BestMatch(contentTypeID);
+                    }
+                    if (childContentTypeId != null)
+                    {
+                        createdView.ContentTypeId = childContentTypeId;
+                        createdView.Update();
+                    }
+                }
+
+                // Default for content type
+                bool parsedDefaultViewForContentType;
+                var defaultViewForContentType = viewElement.Attribute("DefaultViewForContentType") != null ? viewElement.Attribute("DefaultViewForContentType").Value : null;
+                if (!string.IsNullOrEmpty(defaultViewForContentType) && bool.TryParse(defaultViewForContentType, out parsedDefaultViewForContentType))
+                {
+                    createdView.DefaultViewForContentType = parsedDefaultViewForContentType;
+                    createdView.Update();
+                }
+
+                // Scope
+                var scope = viewElement.Attribute("Scope") != null ? viewElement.Attribute("Scope").Value : null;
+                ViewScope parsedScope = ViewScope.DefaultValue;
+                if (!string.IsNullOrEmpty(scope) && Enum.TryParse<ViewScope>(scope, out parsedScope))
+                {
+                    createdView.Scope = parsedScope;
+                    createdView.Update();
+                }
+
+                // MobileView
+                var mobileView = viewElement.Attribute("MobileView") != null && bool.Parse(viewElement.Attribute("MobileView").Value);
+                if (mobileView)
+                {
+                    createdView.MobileView = mobileView;
+                    createdView.Update();
+                }
+
+                // MobileDefaultView
+                var mobileDefaultView = viewElement.Attribute("MobileDefaultView") != null && bool.Parse(viewElement.Attribute("MobileDefaultView").Value);
+                if (mobileDefaultView)
+                {
+                    createdView.MobileDefaultView = mobileDefaultView;
+                    createdView.Update();
+                }
+
+                // Aggregations
+                var aggregationsElement = viewElement.Descendants("Aggregations").FirstOrDefault();
+                if (aggregationsElement != null)
+                {
+                    if (aggregationsElement.HasElements)
+                    {
+                        var fieldRefString = "";
+                        var fieldRefs = aggregationsElement.Descendants("FieldRef");
+                        foreach (var fieldRef in fieldRefs)
+                        {
+                            fieldRefString += fieldRef.ToString();
+                        }
+                        if (createdView.Aggregations != fieldRefString)
+                        {
+                            createdView.Aggregations = fieldRefString;
+                            createdView.Update();
+                        }
+                    }
+                }
+
+                // ViewStyle
+                var viewstyle = viewElement.Descendants("ViewStyle").FirstOrDefault();
+                if (viewstyle != null)
+                {
+                    var viewStyleID = viewstyle.Attribute("ID") != null ? viewstyle.Attribute("ID").Value : "";
+                    if (viewStyleID != "") { 
+                        //parse xml
+                        XmlDocument doc = new XmlDocument();
+                        doc.LoadXml("<View><ViewStyle ID='"+viewStyleID.ToString()+"'/></View>");
+                        XmlElement element = (XmlElement)doc.SelectSingleNode("//View//ViewStyle");
+                        createdView.ListViewXml = doc.FirstChild.InnerXml;
+                        createdView.Update();
+                    }
+                }
+
+                    // JSLink
+                    var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
+                if (jslinkElement != null)
+                {
+                    var jslink = jslinkElement.Value;
+                    if (createdView.JSLink != jslink)
+                    {
+                        createdView.JSLink = jslink;
+                        createdView.Update();
+
+                        // Only push the JSLink value to the web part as it contains a / indicating it's a custom one. So we're not pushing the OOB ones like clienttemplates.js or hierarchytaskslist.js
+                        // but do push custom ones down to th web part (e.g. ~sitecollection/Style Library/JSLink-Samples/ConfidentialDocuments.js)
+                        if (jslink.Contains("/"))
+                        {
+                            createdView.EnsureProperty(v => v.ServerRelativeUrl);
+                            createdList.SetJSLinkCustomizations(createdView.ServerRelativeUrl, jslink);
+                        }
+                    }
+                }
+
+
+                createdList.Update();
+                web.Context.ExecuteQueryRetry();
+
+                // Add ListViewId token parser
+                createdView.EnsureProperty(v => v.Id);
+                return createdView;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        private string returnValue (string key, string val)
+        {
+            string htmlvalueType = "";
+            if (key == "Title" || key == "Default" || key == "NoDefaultStyle" || key == "ViewContentTypeId" || key == "XmlDefinitionLink" || key == "Description" || key == "JSLink" || key == "CatalogIconImageUrl" || key == "TitleIconImageUrl" || key == "Width" || key == "Height" || key == "HelpUrl" || key == "SelectParameters") 
+            {
+                htmlvalueType = "<property name='" + key + "' type='string'>" + val + "</property>";
+            }
+            else if (key == "ChromeType")
+            {
+                string chrometype = Enum.GetName(typeof(System.Web.UI.WebControls.WebParts.PartChromeType), int.Parse(val));
+                htmlvalueType = "<property name='" + key + "' type='chrometype'>" + chrometype + "</property>";
+            }
+            else if ( key == "ShowWithSampleData" || key == "CacheXslStorage" || key == "ManualRefresh" || key == "EnableOriginalValue" || key == "ServerRender" || key == "AllowConnect" || key == "AllowZoneChange" || key == "DisableSaveAsNewViewButton" || key == "AutoRefresh" || key == "FireInitialRow" || key == "AllowEdit" || key == "AllowMinimize" || key == "UseSQLDataSourcePaging" || key == "ShowTimelineIfAvailable" || key == "Hidden" || key == "AllowClose" || key == "InplaceSearchEnabled" || key == "DisableViewSelectorMenu" || key == "IsClientRender" || key == "AsyncRefresh" || key == "HasClientDataSource")
+            {
+                htmlvalueType = "<property name='" + key + "' type='bool'>" + val + "</property>";
+            }
+            return htmlvalueType;
+        }
     }
 }
