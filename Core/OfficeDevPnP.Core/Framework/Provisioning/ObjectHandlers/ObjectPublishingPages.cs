@@ -584,10 +584,69 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ppwp.Title = wp.Title;
                             ppwp.Zone = wp.ZoneIndex.ToString();
                             var webPartId = wpd.Id;
-                            var webPartXML = wpm.ExportWebPart(webPartId);
-                            web.Context.ExecuteQuery();
-                            ppwp.Contents = webPartXML.Value.Trim(new[] { '\n', ' ' });
-                            web.Context.ExecuteQuery();
+                            
+                            if (!string.IsNullOrEmpty(wp.TitleUrl))
+                            {
+                                ppwp.DefaultViewDisplayName = "";
+                                ppwp.ViewContent = wp.Properties.FieldValues["XmlDefinition"].ToString();
+
+                                //set propertiess
+                                string html = "";
+                                Dictionary<string, string> propertiesWebpart = new Dictionary<string, string>();
+                                foreach (var property in wp.Properties.FieldValues)
+                                {
+                                    var val = returnString(property.Value);
+                                    var key = returnString(property.Key);
+                                    if (!string.IsNullOrEmpty(val))
+                                    {
+                                        html += returnValue(key, val);
+                                    }
+                                }
+
+
+                                ppwp.Contents = "<webParts>" +
+                                " <webPart xmlns='http://schemas.microsoft.com/WebPart/v3'>" +
+                                "    <metaData>" +
+                                "      <type name='Microsoft.SharePoint.WebPartPages.XsltListViewWebPart, Microsoft.SharePoint, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c' />" +
+                                "      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>" +
+                                "    </metaData>" +
+                                "    <data>" +
+                                "      <properties>" +
+                                "        <property name='ListUrl' type='string'>" + wp.TitleUrl.ToString().Replace(relativurl, "").Trim('/') + "</property>" +
+                                            html +
+                                "      </properties>" +
+                                "    </data>" +
+                                "  </webPart>" +
+                                "</webParts>";
+
+                            }
+                            else {
+                                // Webpart that are not checked as exportable would fail
+                                wp.EnsureProperty(w => w.ExportMode);
+                                if (wp.ExportMode != Microsoft.SharePoint.Client.WebParts.WebPartExportMode.All)
+                                {
+                                    bool forceCheckout = false;
+                                    if (item.File.CheckOutType == CheckOutType.None)
+                                    {
+                                        item.File.CheckOut();
+                                        ctx.ExecuteQuery();
+                                        forceCheckout = true;
+                                    }
+                                    wp.ExportMode = Microsoft.SharePoint.Client.WebParts.WebPartExportMode.All;
+                                    wpd.SaveWebPartChanges();
+
+                                    if (forceCheckout)
+                                    {
+                                        item.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
+                                        ctx.ExecuteQuery();
+                                    }
+                                }
+                                var webPartXML = wpm.ExportWebPart(webPartId);
+                                ctx.ExecuteQuery();
+                                ppwp.ViewContent = "<View></View>";
+                                ppwp.Contents = webPartXML.Value.Trim(new[] { '\n', ' ' }).Replace(web.Url, "{site}").Replace(web.ServerRelativeUrl, "{site}").Replace(rootWeb.Url, "{sitecollection}").Replace(rootWeb.ServerRelativeUrl,"{sitecollection}");
+                                ctx.ExecuteQuery();
+                            }
                             page.WebParts.Add(ppwp);
                         }
                         catch { }

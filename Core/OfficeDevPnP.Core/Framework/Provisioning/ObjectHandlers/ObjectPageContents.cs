@@ -91,6 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         {
                                             Title = webPart.WebPart.Title,
                                             Contents = webPartxml,
+                                            ViewContent = "<View></View>",
                                             Order = (uint)webPart.WebPart.ZoneIndex,
                                             Row = 1, // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
                                             Column = 1 // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
@@ -229,7 +230,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Title = webPart.WebPart.Title,
                     Row = (uint)webPart.WebPart.ZoneIndex,
                     Order = (uint)webPart.WebPart.ZoneIndex,
-                    Contents = webPartxml
+                    Contents = webPartxml,
+                    ViewContent = "<View></View>",
                 };
 #if !SP2016
                 // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
