@@ -1049,13 +1049,12 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
-            }
-
-            web.Context.ExecuteQueryRetry();
-            if (html != null)
-            {
-                web.AddHtmlToWikiPage(serverRelativePageUrl, html);
-            }
+                web.Context.ExecuteQueryRetry();
+                if (html != null)
+                {
+                    web.AddHtmlToWikiPage(serverRelativePageUrl, html);
+                }
+            }          
         }
 
         /// <summary>
