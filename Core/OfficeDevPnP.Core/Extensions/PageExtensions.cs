@@ -662,7 +662,15 @@ namespace Microsoft.SharePoint.Client
 
             var item = file.ListItemAllFields;
 
-            item["WikiField"] = html;
+            web.EnsureProperty(w => w.WebTemplate);
+            if (web.WebTemplate == "ENTERWIKI")
+            {
+                item["PublishingPageContent"] = html;
+            }
+            else
+            {
+                item["WikiField"] = html;
+            }
 
             item.Update();
 
@@ -1014,8 +1022,10 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.WebTemplate);
+
             var folderName = serverRelativePageUrl.Substring(0, serverRelativePageUrl.LastIndexOf("/", StringComparison.Ordinal));
-            
+
             //ensure that folderName does not contain the web's ServerRelativeUrl -> otherwise it will fail on SubSites
             if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
             {
@@ -1023,13 +1033,28 @@ namespace Microsoft.SharePoint.Client
             }
             var folder = web.EnsureFolderPath(folderName);
 
-            folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
-
-            web.Context.ExecuteQueryRetry();
-            if (html != null)
+            if (web.WebTemplate == "ENTERWIKI")
             {
-                web.AddHtmlToWikiPage(serverRelativePageUrl, html);
+                if(!serverRelativePageUrl.StartsWith("/"))
+                {
+                    serverRelativePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, serverRelativePageUrl);
+                }
+                var filename = serverRelativePageUrl.Substring(serverRelativePageUrl.LastIndexOf("/")+1);
+                web.AddPublishingPage(filename, "EnterpriseWiki", null, folder: folder);
+                var file = web.GetFileByUrl(serverRelativePageUrl);
+                file.ListItemAllFields["PublishingPageContent"] = html;
+                file.ListItemAllFields.Update();
+                file.ListItemAllFields.Context.ExecuteQueryRetry();
             }
+            else
+            {
+                folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
+                web.Context.ExecuteQueryRetry();
+                if (html != null)
+                {
+                    web.AddHtmlToWikiPage(serverRelativePageUrl, html);
+                }
+            }          
         }
 
         /// <summary>
@@ -1085,10 +1110,10 @@ namespace Microsoft.SharePoint.Client
             var wpdNew = limitedWebPartManager.AddWebPart(oWebPartDefinition.WebPart, zoneId, zoneIndex);
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
-            
+
             var webPartPostProcessor = WebPartPostProcessorFactory.Resolve(webPart.WebPartXml);
 
-            var currentContext = ((ClientContext) webPartPage.Context);
+            var currentContext = ((ClientContext)webPartPage.Context);
             var contextWeb = currentContext.Web;
 
             contextWeb.EnsureProperties(w => w.Url, w => w.Id);
@@ -1273,6 +1298,6 @@ namespace Microsoft.SharePoint.Client
             return (friendlyUrl.Value);
         }
 
-       
+
     }
 }
