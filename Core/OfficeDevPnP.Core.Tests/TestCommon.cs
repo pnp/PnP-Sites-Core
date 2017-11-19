@@ -245,7 +245,7 @@ namespace OfficeDevPnP.Core.Tests
                 context.Credentials = Credentials;
             }
 
-            context.RequestTimeout = Timeout.Infinite;
+            context.RequestTimeout = 1000 * 60 * 15;
             return context;
         }
 
@@ -314,7 +314,7 @@ namespace OfficeDevPnP.Core.Tests
                 context.Credentials = credentials;
             }
 
-            context.RequestTimeout = Timeout.Infinite;
+            context.RequestTimeout = 1000 * 60 * 15;
             return context;
         }
 
