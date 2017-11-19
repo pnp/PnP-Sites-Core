@@ -5165,7 +5165,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
     public partial class WebPartPageWebPart {
         
         private System.Xml.XmlElement contentsField;
-        
+
+        private System.Xml.XmlElement viewField;
+
         private string titleField;
         
         private string zoneField;
@@ -5181,7 +5183,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
                 this.contentsField = value;
             }
         }
-        
+
+        /// <remarks/>
+        public System.Xml.XmlElement ViewContent {
+            get
+            {
+                return this.viewField;
+            }
+            set
+            {
+                this.viewField = value;
+            }
+        }
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Title {
@@ -5483,7 +5497,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
     public partial class WikiPageWebPart {
         
         private System.Xml.XmlElement contentsField;
-        
+
+        private System.Xml.XmlElement viewField;
+
         private string titleField;
         
         private int rowField;
@@ -5499,7 +5515,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
                 this.contentsField = value;
             }
         }
-        
+
+        /// <remarks/>
+        public System.Xml.XmlElement ViewContent
+        {
+            get
+            {
+                return this.viewField;
+            }
+            set
+            {
+                this.viewField = value;
+            }
+        }
+
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Title {
@@ -6589,8 +6618,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201612 {
         }
 
         /// <remarks/>
-        public System.Xml.XmlElement ViewContent
-        {
+        public System.Xml.XmlElement ViewContent {
             get
             {
                 return this.viewField;

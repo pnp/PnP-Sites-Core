@@ -651,7 +651,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             }
                             else {
-                                ppwp.ViewContent = " <View></View>";
+                                ppwp.ViewContent = "<View></View>";
                                 var webPartXML = wpm.ExportWebPart(webPartId);
                                 ctx.ExecuteQuery();
                                 ppwp.Contents = webPartXML.Value.Trim(new[] { '\n', ' ' });

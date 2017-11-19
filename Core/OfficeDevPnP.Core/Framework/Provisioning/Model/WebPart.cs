@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public string Contents { get; set; }
 
+        public string ViewContent { get; set; }
+
         public string Zone { get; set; }
 
         public uint Order { get; set; }
