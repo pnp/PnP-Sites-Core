@@ -213,15 +213,12 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("ControlDataJson cannot be null");
             }
 
-            // Decode the html encoded string
-            var decoded = WebUtility.HtmlDecode(controlDataJson);
-
             // Deserialize the json string
             var jsonSerializerSettings = new JsonSerializerSettings()
             {
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
-            var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(decoded, jsonSerializerSettings);
+            var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(controlDataJson, jsonSerializerSettings);
 
             if (controlData.ControlType == 3)
             {
