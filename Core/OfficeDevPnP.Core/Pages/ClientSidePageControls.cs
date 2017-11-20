@@ -440,6 +440,7 @@ namespace OfficeDevPnP.Core.Pages
         private string propertiesJson;
         private ClientSideWebPartControlData spControlData;
         private JObject properties;
+        private JObject serverProcessedContent;
         #endregion
 
         #region construction
@@ -586,6 +587,17 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// ServerProcessedContent json node
+        /// </summary>
+        public JObject ServerProcessedContent
+        {
+            get
+            {
+                return this.serverProcessedContent;
+            }
+        }
+
+        /// <summary>
         /// Return <see cref="Type"/> of the client side web part
         /// </summary>
         public override Type Type
@@ -671,8 +683,9 @@ namespace OfficeDevPnP.Core.Pages
             this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
 
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
-            {
+            var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), "");
+            try
+            { 
                 htmlWriter.NewLine = string.Empty;
                 htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
                 htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
@@ -691,14 +704,31 @@ namespace OfficeDevPnP.Core.Pages
 
                 htmlWriter.AddAttribute(WebPartHtmlPropertiesAttribute, this.HtmlProperties);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                htmlWriter.Write(this.HtmlPropertiesData);
+                // Allow for override of the HTML value rendering if this would be needed by controls (e.g. the QuickLinks control)
+                RenderHtmlProperties(ref htmlWriter);
                 htmlWriter.RenderEndTag();
 
                 htmlWriter.RenderEndTag();
                 htmlWriter.RenderEndTag();
             }
+            finally
+            {
+                if (htmlWriter != null)
+                {
+                    htmlWriter.Dispose();
+                }
+            }
 
             return html.ToString();
+        }
+
+        /// <summary>
+        /// Overrideable method that allows inheriting webparts to control the HTML rendering
+        /// </summary>
+        /// <param name="htmlWriter">Reference to the html renderer used</param>
+        protected virtual void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
+        {
+            htmlWriter.Write(this.HtmlPropertiesData);
         }
         #endregion
 
@@ -741,7 +771,92 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.propertiesJson = json;
-            this.properties = JObject.Parse(json);
+
+            var parsedJson = JObject.Parse(json);
+
+            // If the passed structure is the top level JSON structure, which it typically is, then grab the properties from it
+            if (parsedJson["properties"] != null)
+            {
+                this.properties = (JObject)parsedJson["properties"];
+            }
+            else
+            {
+                this.properties = parsedJson;
+            }
+
+            // If the web part has the serverProcessedContent property then keep this one as it might be needed as input to render the web part HTML later on
+            if (parsedJson["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)parsedJson["serverProcessedContent"];
+            }
+        }
+        #endregion
+    }
+
+    /// <summary>
+    /// Custom implementation for the QuickLinks web part
+    /// </summary>
+    public class QuickLinksWebPart: ClientSideWebPart
+    {
+        #region Construction
+        /// <summary>
+        /// Creates a QuickLinks web part
+        /// </summary>
+        public QuickLinksWebPart() : base()
+        {
+            
+        }
+
+        /// <summary>
+        /// Instantiates a QuickLinks web part based on the information that was obtain from calling the AvailableClientSideComponents methods on the <see cref="ClientSidePage"/> object.
+        /// </summary>
+        /// <param name="component">Component to create a ClientSideWebPart instance for</param>
+        public QuickLinksWebPart(ClientSideComponent component): base(component)
+        {
+
+        }
+        #endregion
+
+        #region public/protected methods
+        /// <summary>
+        /// RenderHtmlProperties override to output QuickLinks specific HTML rendering
+        /// </summary>
+        /// <param name="htmlWriter">Reference to the HtmlWriter used in the base html rendering</param>
+        protected override void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
+        {
+            if (this.ServerProcessedContent["searchablePlainTexts"] != null)
+            {
+                foreach (JProperty property in this.ServerProcessedContent["searchablePlainTexts"])
+                {
+                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                    htmlWriter.AddAttribute("data-sp-searchableplaintext", "true");
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                    htmlWriter.Write(property.Value.ToString());
+                    htmlWriter.RenderEndTag();
+                }
+            }
+
+            if (this.ServerProcessedContent["imageSources"] != null)
+            {
+                foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                {
+                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Img);
+                    htmlWriter.Write(property.Value.ToString());
+                    htmlWriter.RenderEndTag();
+                }
+            }
+
+            if (this.ServerProcessedContent["links"] != null)
+            {
+                foreach (JProperty property in this.ServerProcessedContent["links"])
+                {
+                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                    htmlWriter.AddAttribute("href", property.Value.ToString());
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
+                    htmlWriter.RenderEndTag();
+                }
+            }
         }
         #endregion
     }
