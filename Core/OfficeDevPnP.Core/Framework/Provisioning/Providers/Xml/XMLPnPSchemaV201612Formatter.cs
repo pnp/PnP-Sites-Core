@@ -1554,7 +1554,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 if (result.Navigation.GlobalNavigation != null &&
                     result.Navigation.GlobalNavigation.StructuralNavigation != null &&
                     source.Navigation.GlobalNavigation != null &&
-                    source.Navigation.GlobalNavigation.StructuralNavigation != null)
+                    source.Navigation.GlobalNavigation.StructuralNavigation != null &&
+                    result.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.Count != 0)
                 {
                     result.Navigation.GlobalNavigation.StructuralNavigation.NavigationNodes.AddRange(
                         from n in source.Navigation.GlobalNavigation.StructuralNavigation.NavigationNode
@@ -1566,7 +1567,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 if (result.Navigation.CurrentNavigation != null &&
                     result.Navigation.CurrentNavigation.StructuralNavigation != null &&
                     source.Navigation.CurrentNavigation != null &&
-                    source.Navigation.CurrentNavigation.StructuralNavigation != null)
+                    source.Navigation.CurrentNavigation.StructuralNavigation != null &&
+                    result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.Count != 0)
                 {
                     result.Navigation.CurrentNavigation.StructuralNavigation.NavigationNodes.AddRange(
                         from n in source.Navigation.CurrentNavigation.StructuralNavigation.NavigationNode
@@ -1859,8 +1861,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      Order = (uint)wp.Order,
                                      Zone = wp.Zone,
                                      Title = wp.Title,
-                                     Contents = wp.Contents.InnerXml,
-                                     ViewContent = wp.ViewContent.InnerXml,
+                                     Contents = wp.Contents.OuterXml,
+                                     ViewContent = wp.ViewContent.OuterXml,
                                  }) : null,
                             file.Properties != null ? file.Properties.ToDictionary(k => k.Key, v => v.Value) : null,
                             file.Security.FromSchemaToTemplateObjectSecurityV201612(),
@@ -1942,8 +1944,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                  Title = wp.Title,
                                  Column = (uint)wp.Column,
                                  Row = (uint)wp.Row,
-                                 Contents = wp.Contents.InnerXml,
-                                 ViewContent = wp.ViewContent.InnerXml,
+                                 Contents = wp.Contents.OuterXml,
+                                 ViewContent = wp.ViewContent.OuterXml,
                              }).ToList() : null),
                         page.Security.FromSchemaToTemplateObjectSecurityV201612(),
                         (page.Fields != null && page.Fields.Length > 0) ?
