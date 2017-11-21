@@ -145,10 +145,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     WebPartEntity wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
                                     wpEntity.WebPartXml = parser.ParseString(webPart.Contents.Trim(new[] { '\n', ' ' }),"~sitecollection", "~site");
-                                    if (!wpEntity.WebPartXml.Contains("<webParts>") && !wpEntity.WebPartXml.Contains("<WebParts>"))
-                                    {
-                                        wpEntity.WebPartXml = "<webParts>" + wpEntity.WebPartXml + "</webParts>";
-                                    }
+                                    //if (!wpEntity.WebPartXml.Contains("<webParts>") && !wpEntity.WebPartXml.Contains("<WebParts>"))
+                                    //{
+                                    //    if (wpEntity.WebPartXml.Contains("http://schemas.microsoft.com/WebPart/v2")) {
+                                    //        wpEntity.WebPartXml = "<WebPart xmlns:xsd='http://www.w3.org/2001/XMLSchema' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns='http://schemas.microsoft.com/WebPart/v2'>" + wpEntity.WebPartXml + "</WebPart>";
+                                    //    }
+                                    //    else {
+                                    //        wpEntity.WebPartXml = "<webParts>" + wpEntity.WebPartXml + "</webParts>";
+                                    //    }
+                                        
+                                    //}
                                     var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
 #if !SP2013
                                     if (webPart.Title.ContainsResourceToken())
