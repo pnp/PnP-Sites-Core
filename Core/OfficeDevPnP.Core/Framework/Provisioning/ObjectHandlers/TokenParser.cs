@@ -95,8 +95,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // token already there? Skip the list
                     if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
                     {
-                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
-                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
+                        if (template.Lists.Where(l => l.Title.ToString() == rootList.Title).ToList().Count == 0) {
+                            _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
+                            _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
+                        }
                     }
                 }
             }
