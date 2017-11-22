@@ -874,15 +874,7 @@ namespace OfficeDevPnP.Core.Pages
 
             if (webParts.Count() == 1)
             {
-
-                if (webPart == DefaultClientSideWebParts.QuickLinks)
-                {
-                    return new QuickLinksWebPart(webParts.First());
-                }
-                else
-                {
-                    return new ClientSideWebPart(webParts.First());
-                }
+                return new ClientSideWebPart(webParts.First());
             }
 
             return null;

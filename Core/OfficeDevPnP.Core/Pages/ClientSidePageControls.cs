@@ -561,7 +561,9 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Json serialized web part properties
+        /// Json serialized web part information. For 1st party web parts this ideally is the *full* JSON string 
+        /// fetch via workbench or via copying it from an existing page. It's important that the serverProcessedContent
+        /// element is included here!
         /// </summary>
         public string PropertiesJson
         {
@@ -704,7 +706,7 @@ namespace OfficeDevPnP.Core.Pages
 
                 htmlWriter.AddAttribute(WebPartHtmlPropertiesAttribute, this.HtmlProperties);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                // Allow for override of the HTML value rendering if this would be needed by controls (e.g. the QuickLinks control)
+                // Allow for override of the HTML value rendering if this would be needed by controls
                 RenderHtmlProperties(ref htmlWriter);
                 htmlWriter.RenderEndTag();
 
@@ -728,7 +730,45 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="htmlWriter">Reference to the html renderer used</param>
         protected virtual void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
         {
-            htmlWriter.Write(this.HtmlPropertiesData);
+            if (this.ServerProcessedContent != null)
+            {
+                if (this.ServerProcessedContent["searchablePlainTexts"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["searchablePlainTexts"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        htmlWriter.AddAttribute("data-sp-searchableplaintext", "true");
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                        htmlWriter.Write(property.Value.ToString());
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+
+                if (this.ServerProcessedContent["imageSources"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        if (!string.IsNullOrEmpty(property.Value.ToString()))
+                        {
+                            htmlWriter.AddAttribute("src", property.Value.ToString());
+                        }
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Img);
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+
+                if (this.ServerProcessedContent["links"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["links"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        htmlWriter.AddAttribute("href", property.Value.ToString());
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+            }
         }
         #endregion
 
@@ -775,7 +815,11 @@ namespace OfficeDevPnP.Core.Pages
             var parsedJson = JObject.Parse(json);
 
             // If the passed structure is the top level JSON structure, which it typically is, then grab the properties from it
-            if (parsedJson["properties"] != null)
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["properties"] != null)
+            {
+                this.properties = (JObject)parsedJson["webPartData"]["properties"];
+            }
+            else if (parsedJson["properties"] != null)
             {
                 this.properties = (JObject)parsedJson["properties"];
             }
@@ -785,78 +829,15 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // If the web part has the serverProcessedContent property then keep this one as it might be needed as input to render the web part HTML later on
-            if (parsedJson["serverProcessedContent"] != null)
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)parsedJson["webPartData"]["serverProcessedContent"];
+            }
+            else if (parsedJson["serverProcessedContent"] != null)
             {
                 this.serverProcessedContent = (JObject)parsedJson["serverProcessedContent"];
             }
-        }
-        #endregion
-    }
 
-    /// <summary>
-    /// Custom implementation for the QuickLinks web part
-    /// </summary>
-    public class QuickLinksWebPart: ClientSideWebPart
-    {
-        #region Construction
-        /// <summary>
-        /// Creates a QuickLinks web part
-        /// </summary>
-        public QuickLinksWebPart() : base()
-        {
-            
-        }
-
-        /// <summary>
-        /// Instantiates a QuickLinks web part based on the information that was obtain from calling the AvailableClientSideComponents methods on the <see cref="ClientSidePage"/> object.
-        /// </summary>
-        /// <param name="component">Component to create a ClientSideWebPart instance for</param>
-        public QuickLinksWebPart(ClientSideComponent component): base(component)
-        {
-
-        }
-        #endregion
-
-        #region public/protected methods
-        /// <summary>
-        /// RenderHtmlProperties override to output QuickLinks specific HTML rendering
-        /// </summary>
-        /// <param name="htmlWriter">Reference to the HtmlWriter used in the base html rendering</param>
-        protected override void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
-        {
-            if (this.ServerProcessedContent["searchablePlainTexts"] != null)
-            {
-                foreach (JProperty property in this.ServerProcessedContent["searchablePlainTexts"])
-                {
-                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
-                    htmlWriter.AddAttribute("data-sp-searchableplaintext", "true");
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                    htmlWriter.Write(property.Value.ToString());
-                    htmlWriter.RenderEndTag();
-                }
-            }
-
-            if (this.ServerProcessedContent["imageSources"] != null)
-            {
-                foreach (JProperty property in this.ServerProcessedContent["imageSources"])
-                {
-                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Img);
-                    htmlWriter.Write(property.Value.ToString());
-                    htmlWriter.RenderEndTag();
-                }
-            }
-
-            if (this.ServerProcessedContent["links"] != null)
-            {
-                foreach (JProperty property in this.ServerProcessedContent["links"])
-                {
-                    htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
-                    htmlWriter.AddAttribute("href", property.Value.ToString());
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
-                    htmlWriter.RenderEndTag();
-                }
-            }
         }
         #endregion
     }
