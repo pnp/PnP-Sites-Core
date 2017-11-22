@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (control.Type == WebPartType.Text)
                                 {
                                     Pages.ClientSideText textControl = new Pages.ClientSideText();
-                                    if (control.ControlProperties.Any())
+                                    if (control.ControlProperties != null && control.ControlProperties.Any())
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = textProperty.Value;
@@ -299,6 +299,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         page.PromoteAsNewsArticle();
                     }
+
+                    page.Publish();
 
                 }
             }
