@@ -460,6 +460,49 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 
             // file will be deleted at end of test since the used storage containers are deleted
         }
+
+        /// <summary>
+        /// Containers using backslash (\) as path separator should be supported
+        /// </summary>
+        [TestMethod]
+        public void AzureConnectorBackslashSupportTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
+            {
+                Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
+            }
+
+            // Path with backslash-separator
+            var filename = "separator.png";
+            var containerWithBackslash = string.Format(@"{0}\{1}", testContainerSecure, "sub2");
+
+            // Constructor replaces folder delimiter
+            AzureStorageConnector  azureConnector = new AzureStorageConnector(TestCommon.AzureStorageKey, containerWithBackslash);
+            Assert.AreEqual($"{testContainerSecure}/sub2", azureConnector.GetContainer());
+
+            // Save a file
+            long byteCount = 0;
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                byteCount = fileStream.Length;
+                azureConnector.SaveFileStream(filename, containerWithBackslash, fileStream);
+            }
+            
+            // List files
+            var files = azureConnector.GetFiles(containerWithBackslash);
+            Assert.IsTrue(files.Contains($"sub2/{filename}"));
+
+            // Read the file
+            using (var fileStream = azureConnector.GetFileStream(filename, containerWithBackslash))
+            {
+                Assert.AreEqual(byteCount, fileStream.Length);
+            }
+
+            // Delete the file 
+            azureConnector.DeleteFile(filename, containerWithBackslash);
+
+            // Folder will be deleted in cleanup
+        }
         #endregion
     }
 }
