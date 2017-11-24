@@ -45,7 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
-
+            container = container.Replace('\\', '/');
+            
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
             this.AddParameterAsString(CONTAINER, container);
         }
@@ -72,7 +73,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
-
+            container = container.Replace('\\', '/');
+            
             if (!initialized)
             {
                 Initialize();
@@ -119,7 +121,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
-
+            container = container.Replace('\\', '/');
+            
             if (!initialized)
             {
                 Initialize();
@@ -173,6 +176,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             string result = null;
             MemoryStream stream = null;
@@ -225,6 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             return GetFileFromStorage(fileName, container);
         }
@@ -256,6 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException(nameof(container));
             }
+            container = container.Replace('\\', '/');            
 
             if (stream == null)
             {
@@ -316,6 +322,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             if (!initialized)
             {
