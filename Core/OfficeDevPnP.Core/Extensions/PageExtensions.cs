@@ -1041,7 +1041,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 var filename = serverRelativePageUrl.Substring(serverRelativePageUrl.LastIndexOf("/")+1);
                 web.AddPublishingPage(filename, "EnterpriseWiki", null, folder: folder);
-                var file = web.GetFileByUrl(serverRelativePageUrl);
+                var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
                 file.ListItemAllFields["PublishingPageContent"] = html;
                 file.ListItemAllFields.Update();
                 file.ListItemAllFields.Context.ExecuteQueryRetry();
