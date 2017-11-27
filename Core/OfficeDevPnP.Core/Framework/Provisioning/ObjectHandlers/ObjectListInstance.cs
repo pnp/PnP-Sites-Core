@@ -1875,8 +1875,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (folder.Security != null && folder.Security.RoleAssignments.Count != 0)
                 {
                     var currentFolderItem = currentFolder.ListItemAllFields;
-                    parentFolder.Context.Load(currentFolderItem);
-                    parentFolder.Context.ExecuteQueryRetry();
+                    currentFolderItem.Context.Load(currentFolderItem);
+                    currentFolderItem.Context.ExecuteQueryRetry();
                     currentFolderItem.SetSecurity(parser, folder.Security);
                 }
 
