@@ -183,13 +183,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.CurrentNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.CurrentNavigation.ManagedNavigation.TermSetId));
                                 break;
                             case CurrentNavigationType.StructuralLocal:
-                                web.SetPropertyBagValue(NavigationShowSiblings, "false");
                                 if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
+                                web.SetPropertyBagValue(NavigationShowSiblings, "false");
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
-
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
 
@@ -202,7 +201,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
-
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
 
