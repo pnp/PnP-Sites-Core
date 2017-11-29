@@ -59,6 +59,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         #endregion Test initialize and cleanup
 
         [TestMethod]
+        [Timeout(5 * 60 * 1000)]
         public void UpdatWorkflowSubscription()
         {
             var template = new ProvisioningTemplate

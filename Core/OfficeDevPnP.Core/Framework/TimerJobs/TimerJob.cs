@@ -1408,7 +1408,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// </summary>
         /// <param name="site">Site Url to create a ClientContext for</param>
         /// <returns>The created ClientContext object. Returns null if no ClientContext was created</returns>
-        private ClientContext CreateClientContext(string site)
+        protected ClientContext CreateClientContext(string site)
         {
             if (SharePointVersion == 15)
             {

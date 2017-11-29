@@ -1040,6 +1040,7 @@ namespace OfficeDevPnP.Core.Pages
 
             this.Context.Web.EnsureProperty(p => p.RootFolder);
             this.Context.Web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
+            this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
         #endregion

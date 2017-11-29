@@ -18,6 +18,7 @@ using System.Text;
 using System.Web.Configuration;
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 using OfficeDevPnP.Core.Pages;
+using Microsoft.SharePoint.Client.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -311,7 +312,7 @@ namespace Microsoft.SharePoint.Client
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
-            // Sometimes the wikifield content seems to be surrounded by an additional div? 
+            // Sometimes the wikifield content seems to be surrounded by an additional div?
             var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement ??
                                xd.SelectSingleNode("div/table") as XmlElement;
 
@@ -394,7 +395,7 @@ namespace Microsoft.SharePoint.Client
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
                 var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
-                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
+                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
 
                 if (web.Context.Credentials != null)
                 {
@@ -662,7 +663,15 @@ namespace Microsoft.SharePoint.Client
 
             var item = file.ListItemAllFields;
 
-            item["WikiField"] = html;
+            web.EnsureProperty(w => w.WebTemplate);
+            if (web.WebTemplate == "ENTERWIKI")
+            {
+                item["PublishingPageContent"] = html;
+            }
+            else
+            {
+                item["WikiField"] = html;
+            }
 
             item.Update();
 
@@ -756,7 +765,7 @@ namespace Microsoft.SharePoint.Client
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
-            // Sometimes the wikifield content seems to be surrounded by an additional div? 
+            // Sometimes the wikifield content seems to be surrounded by an additional div?
             var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement;
             if (layoutsTable == null)
             {
@@ -890,7 +899,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Loads a client side "modern" page 
+        /// Loads a client side "modern" page
         /// </summary>
         /// <param name="web">Web to load the page from</param>
         /// <param name="pageName">Name (e.g. demo.aspx) of the page to be loaded</param>
@@ -1014,8 +1023,10 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(serverRelativePageUrl));
             }
 
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.WebTemplate);
+
             var folderName = serverRelativePageUrl.Substring(0, serverRelativePageUrl.LastIndexOf("/", StringComparison.Ordinal));
-            
+
             //ensure that folderName does not contain the web's ServerRelativeUrl -> otherwise it will fail on SubSites
             if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
             {
@@ -1023,13 +1034,28 @@ namespace Microsoft.SharePoint.Client
             }
             var folder = web.EnsureFolderPath(folderName);
 
-            folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
-
-            web.Context.ExecuteQueryRetry();
-            if (html != null)
+            if (web.WebTemplate == "ENTERWIKI")
             {
-                web.AddHtmlToWikiPage(serverRelativePageUrl, html);
+                if(!serverRelativePageUrl.StartsWith("/"))
+                {
+                    serverRelativePageUrl = UrlUtility.Combine(web.ServerRelativeUrl, serverRelativePageUrl);
+                }
+                var filename = serverRelativePageUrl.Substring(serverRelativePageUrl.LastIndexOf("/")+1);
+                web.AddPublishingPage(filename, "EnterpriseWiki", null, folder: folder);
+                var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
+                file.ListItemAllFields["PublishingPageContent"] = html;
+                file.ListItemAllFields.Update();
+                file.ListItemAllFields.Context.ExecuteQueryRetry();
             }
+            else
+            {
+                folder.Files.AddTemplateFile(serverRelativePageUrl, TemplateFileType.WikiPage);
+                web.Context.ExecuteQueryRetry();
+                if (html != null)
+                {
+                    web.AddHtmlToWikiPage(serverRelativePageUrl, html);
+                }
+            }          
         }
 
         /// <summary>
@@ -1085,10 +1111,10 @@ namespace Microsoft.SharePoint.Client
             var wpdNew = limitedWebPartManager.AddWebPart(oWebPartDefinition.WebPart, zoneId, zoneIndex);
             webPartPage.Context.Load(wpdNew);
             webPartPage.Context.ExecuteQueryRetry();
-            
+
             var webPartPostProcessor = WebPartPostProcessorFactory.Resolve(webPart.WebPartXml);
 
-            var currentContext = ((ClientContext) webPartPage.Context);
+            var currentContext = ((ClientContext)webPartPage.Context);
             var contextWeb = currentContext.Web;
 
             contextWeb.EnsureProperties(w => w.Url, w => w.Id);
@@ -1273,6 +1299,6 @@ namespace Microsoft.SharePoint.Client
             return (friendlyUrl.Value);
         }
 
-       
+
     }
 }
