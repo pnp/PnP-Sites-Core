@@ -18,6 +18,7 @@ using System.Text;
 using System.Web.Configuration;
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 using OfficeDevPnP.Core.Pages;
+using Microsoft.SharePoint.Client.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -311,7 +312,7 @@ namespace Microsoft.SharePoint.Client
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
-            // Sometimes the wikifield content seems to be surrounded by an additional div? 
+            // Sometimes the wikifield content seems to be surrounded by an additional div?
             var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement ??
                                xd.SelectSingleNode("div/table") as XmlElement;
 
@@ -394,7 +395,7 @@ namespace Microsoft.SharePoint.Client
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
                 var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
-                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={pageUrl}&guidstring={id}");
+                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
 
                 if (web.Context.Credentials != null)
                 {
@@ -764,7 +765,7 @@ namespace Microsoft.SharePoint.Client
             xd.PreserveWhitespace = true;
             xd.LoadXml(wikiField);
 
-            // Sometimes the wikifield content seems to be surrounded by an additional div? 
+            // Sometimes the wikifield content seems to be surrounded by an additional div?
             var layoutsTable = xd.SelectSingleNode("div/div/table") as XmlElement;
             if (layoutsTable == null)
             {
@@ -898,7 +899,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Loads a client side "modern" page 
+        /// Loads a client side "modern" page
         /// </summary>
         /// <param name="web">Web to load the page from</param>
         /// <param name="pageName">Name (e.g. demo.aspx) of the page to be loaded</param>
@@ -1041,7 +1042,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 var filename = serverRelativePageUrl.Substring(serverRelativePageUrl.LastIndexOf("/")+1);
                 web.AddPublishingPage(filename, "EnterpriseWiki", null, folder: folder);
-                var file = web.GetFileByUrl(serverRelativePageUrl);
+                var file = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
                 file.ListItemAllFields["PublishingPageContent"] = html;
                 file.ListItemAllFields.Update();
                 file.ListItemAllFields.Context.ExecuteQueryRetry();
