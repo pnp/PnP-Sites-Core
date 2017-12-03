@@ -243,9 +243,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         deploymentService.PublishDefinition(newDefinition.Value);
                                         web.Context.ExecuteQueryRetry();
                                     }
-
-                                    break; // no errors so exit loop
                                 }
+
+                                // If we are here, we have the workflow definition
+                                // and we did not have any exception.
+                                // Thus, we can exit from the loop
+                                break;
                             }
                             catch (Exception ex)
                             {
