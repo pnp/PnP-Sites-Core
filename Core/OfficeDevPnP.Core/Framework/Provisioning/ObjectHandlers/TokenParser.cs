@@ -85,44 +85,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new AuthenticationRealmToken(web));
 
             // Add lists
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
-            web.Context.ExecuteQueryRetry();
-            foreach (var list in web.Lists)
-            {
-                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
-                _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
-
-                foreach (var view in list.Views)
-                {
-                    _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
-                }
-            }
-
-            if (web.IsSubSite())
-            {
-                // Add lists from rootweb
-                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
-                rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
-                rootWeb.Context.ExecuteQueryRetry();
-                foreach (var rootList in rootWeb.Lists)
-                {
-                    // token already there? Skip the list
-                    if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
-                    {
-                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
-                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
-                    }
-                }
-            }
-
+            AddListTokens(web);
             // Add ContentTypes
-            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
-            web.Context.ExecuteQueryRetry();
-            foreach (var ct in web.AvailableContentTypes)
-            {
-                _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
-            }
+            AddContentTypeTokens(web);
             // Add parameters
             foreach (var parameter in template.Parameters)
             {
@@ -244,12 +209,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // OOTB Roledefs
-            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind,r => r.Name,r => r.Id));
+            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind, r => r.Name, r => r.Id));
             foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None))
             {
                 _tokens.Add(new RoleDefinitionToken(web, roleDef));
             }
-            foreach(var roleDef in web.RoleDefinitions)
+            foreach (var roleDef in web.RoleDefinitions)
             {
                 _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
             }
@@ -282,6 +247,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                select t;
 
             _tokens = sortedTokens.ToList();
+        }
+
+        private void AddContentTypeTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(ContentTypeIdToken));
+
+            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
+            web.Context.ExecuteQueryRetry();
+            foreach (var ct in web.AvailableContentTypes)
+            {
+                _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
+            }
+        }
+
+        internal void AddListTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
+
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+            web.Context.ExecuteQueryRetry();
+            foreach (var list in web.Lists)
+            {
+                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+
+                foreach (var view in list.Views)
+                {
+                    _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
+            }
+
+            if (web.IsSubSite())
+            {
+                // Add lists from rootweb
+                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
+                rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+                rootWeb.Context.ExecuteQueryRetry();
+                foreach (var rootList in rootWeb.Lists)
+                {
+                    // token already there? Skip the list
+                    if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
+                    {
+                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
+                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
+
+                        foreach(var view in rootList.Views)
+                        {
+                            _tokens.Add(new ListViewIdToken(rootWeb, rootList.Title, view.Title, view.Id));
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
