@@ -88,10 +88,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 var resolver = resolvers != null && resolvers.ContainsKey(resolverKey) ? resolvers[resolverKey] : null;
 
                 // Search for the matching source property
-                if (dp.Name == "ReadSecurity")
-                {
-                    System.Diagnostics.Debugger.Break();
-                }
                 var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
                 var spSpecified = sourceProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
                 if (null != sp || null != resolver)
