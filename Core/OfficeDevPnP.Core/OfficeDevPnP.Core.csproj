@@ -1087,6 +1087,7 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SITEPAGEPUBLISHING0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />
