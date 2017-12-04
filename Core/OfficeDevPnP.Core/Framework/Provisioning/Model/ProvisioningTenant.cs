@@ -81,8 +81,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                (this.AppCatalog != null ? this.AppCatalog.GetHashCode() : 0),
-                (this.Cdn != null ? this.Cdn.GetHashCode() : 0)
+                this.AppCatalog?.GetHashCode() ?? 0,
+                this.Cdn?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
