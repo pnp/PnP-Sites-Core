@@ -114,12 +114,20 @@ namespace Microsoft.SharePoint.Client
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
                     EventHandler<WebRequestEventArgs> appDecorationHandler = (s, e) =>
                     {
-                        if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                        bool overrideUserAgent = true;
+                        var existingUserAgent = e.WebRequestExecutor.WebRequest.UserAgent;
+                        if (!string.IsNullOrEmpty(existingUserAgent) && existingUserAgent.StartsWith("NONISV|SharePointPnP|PnPPS/"))
                         {
-                            userAgent = userAgentFromConfig;
+                            overrideUserAgent = false;
                         }
-
-                        e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
+                        if (overrideUserAgent)
+                        {
+                            if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                            {
+                                userAgent = userAgentFromConfig;
+                            }
+                            e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
+                        }
                     };
 
                     clientContext.ExecutingWebRequest += appDecorationHandler;
@@ -423,7 +431,7 @@ namespace Microsoft.SharePoint.Client
                     string requestUrl = String.Format("{0}/_api/contextinfo", context.Web.Url);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-                    if(!string.IsNullOrEmpty(accessToken))
+                    if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }

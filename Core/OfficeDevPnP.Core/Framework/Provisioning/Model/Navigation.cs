@@ -129,10 +129,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.GlobalNavigation == other.GlobalNavigation &&
-                this.CurrentNavigation == other.CurrentNavigation &&
-                this.EnableTreeView == other.EnableTreeView
-                );
+            return (this.GlobalNavigation.Equals(other.GlobalNavigation) &&
+                    this.CurrentNavigation.Equals(other.CurrentNavigation) &&  
+                    this.EnableTreeView.Equals(other.EnableTreeView));
         }
 
         #endregion

@@ -329,7 +329,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var view in list.Views)
                         {
                             currentViewIndex++;
-                            CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
+                            parser = CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
 
                         }
                     }
@@ -410,7 +410,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
+        private TokenParser CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
         {
             try
             {
@@ -643,6 +643,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 monitoredScope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_, ex.Message, ex.StackTrace);
                 throw;
             }
+            return parser;
         }
 
         private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef, TokenParser parser)
@@ -783,7 +784,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
-                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType);
+                var addOptions = listInfo.TemplateList.ContentTypesEnabled
+                    ? AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType
+                    : AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToDefaultContentType;
+                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, addOptions);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 

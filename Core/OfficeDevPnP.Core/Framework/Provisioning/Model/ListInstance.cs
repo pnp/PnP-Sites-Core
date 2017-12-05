@@ -525,7 +525,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Fields.DeepEquals(other.Fields) &&
                 this.FieldRefs.DeepEquals(other.FieldRefs) &&
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
-                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
+                ((this.Security != null && other.Security != null) ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders) &&
                 this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
                 this.Webhooks.DeepEquals(other.Webhooks) &&

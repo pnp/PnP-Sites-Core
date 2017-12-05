@@ -51,7 +51,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
-                template.WebSettings = webSettings;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -93,11 +92,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             template.Files.Add(GetTemplateFile(web, web.AlternateCssUrl));
                         }
                     }
+                    var files = template.Files.Distinct().ToList();
+                    template.Files.Clear();
+                    template.Files.AddRange(files);
                 }
 
-                var files = template.Files.Distinct().ToList();
-                template.Files.Clear();
-                template.Files.AddRange(files);
+                if (!creationInfo.PersistBrandingFiles)
+                {
+                    if (creationInfo.BaseTemplate != null)
+                    {
+                        if (!webSettings.Equals(creationInfo.BaseTemplate.WebSettings))
+                        {
+                            template.WebSettings = webSettings;
+                        }
+                    }
+                    else
+                    {
+                        template.WebSettings = webSettings;
+                    }
+                }
+                else
+                {
+                    template.WebSettings = webSettings;
+                }
             }
             return template;
         }
