@@ -1239,6 +1239,22 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="AddNewPagesToNavigation" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Declares whether the New Page ribbon command will automatically create a navigation item for the newly created page, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="CreateFriendlyUrlsForNewPages" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Declares whether the New Page ribbon command will automatically create a friendly URL for the newly created page, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:complexType>
 
   <xsd:complexType name="ManagedNavigation">
@@ -4243,6 +4259,7 @@
         </xsd:annotation>
 
       </xsd:element>
+
       <xsd:element name="Apps" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>

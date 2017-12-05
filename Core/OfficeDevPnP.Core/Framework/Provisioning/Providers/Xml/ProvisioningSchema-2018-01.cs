@@ -3129,8 +3129,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private bool enableTreeViewField;
         
+        private bool addNewPagesToNavigationField;
+        
+        private bool createFriendlyUrlsForNewPagesField;
+        
         public Navigation() {
             this.enableTreeViewField = false;
+            this.addNewPagesToNavigationField = false;
+            this.createFriendlyUrlsForNewPagesField = false;
         }
         
         /// <remarks/>
@@ -3162,6 +3168,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.enableTreeViewField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool AddNewPagesToNavigation {
+            get {
+                return this.addNewPagesToNavigationField;
+            }
+            set {
+                this.addNewPagesToNavigationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool CreateFriendlyUrlsForNewPages {
+            get {
+                return this.createFriendlyUrlsForNewPagesField;
+            }
+            set {
+                this.createFriendlyUrlsForNewPagesField = value;
             }
         }
     }
