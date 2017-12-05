@@ -1172,10 +1172,13 @@ namespace OfficeDevPnP.Core.Pages
                     }
                     else if (controlType == typeof(ClientSideWebPart))
                     {
-                        var control = new ClientSideWebPart();
+                        var control = new ClientSideWebPart()
+                        {
+                            Order = controlOrder
+                        };
                         control.FromHtml(clientSideControl);
 
-                        // Handle control positioning in sections and columlns
+                        // Handle control positioning in sections and columns
                         ApplySectionAndColumn(control, control.SpControlData.Position);
 
                         this.AddControl(control);
@@ -1198,7 +1201,6 @@ namespace OfficeDevPnP.Core.Pages
                         var currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
                         if (currentColumn == null)
                         {
-                            //CanvasColumn newColumn = new CanvasColumn(currentSection);
                             currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
                             currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
                         }
@@ -1242,7 +1244,24 @@ namespace OfficeDevPnP.Core.Pages
                     section.Type = CanvasSectionTemplate.ThreeColumn;
                 }
             }
+            // Reindex the control order. We're starting control order from 1 for each column.
+            ReIndex();
+        }
 
+        private void ReIndex()
+        {
+            foreach (var section in this.sections.OrderBy(s => s.Order))
+            {
+                foreach (var column in section.Columns.OrderBy(c => c.Order))
+                {
+                    var indexer = 0;
+                    foreach (var control in column.Controls.OrderBy(c => c.Order))
+                    {
+                        indexer++;
+                        control.Order = indexer;
+                    }
+                }
+            }
         }
 
         private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
@@ -1257,7 +1276,6 @@ namespace OfficeDevPnP.Core.Pages
             var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
             if (currentColumn == null)
             {
-                //CanvasColumn newColumn = new CanvasColumn(currentSection);
                 currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
                 currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
             }

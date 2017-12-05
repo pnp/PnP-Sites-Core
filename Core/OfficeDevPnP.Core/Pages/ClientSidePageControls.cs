@@ -202,6 +202,105 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Moves the control to another section and column while keeping it's current position
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        public void MovePosition(CanvasSection newSection)
+        {
+            var currentSection = this.Section;
+            this.section = newSection;
+            this.column = newSection.DefaultColumn;
+            ReindexSection(currentSection);
+            ReindexSection(this.Section);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column in the given position
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        /// <param name="position">New position for the control in the new section</param>
+        public void MovePosition(CanvasSection newSection, int position)
+        {
+            var currentSection = this.Section;
+            MovePosition(newSection);
+            ReindexSection(currentSection);
+            MovePosition(position);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column while keeping it's current position
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        public void MovePosition(CanvasColumn newColumn)
+        {
+            var currentColumn = this.Column;
+            this.section = newColumn.Section;
+            this.column = newColumn;
+            ReindexColumn(currentColumn);
+            ReindexColumn(this.Column);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column in the given position
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        /// <param name="position">New position for the control in the new column</param>
+        public void MovePosition(CanvasColumn newColumn, int position)
+        {
+            var currentColumn = this.Column;
+            MovePosition(newColumn);
+            ReindexColumn(currentColumn);
+            MovePosition(position);
+        }
+
+        /// <summary>
+        /// Moves the control inside the current column to a new position
+        /// </summary>
+        /// <param name="position">New position for this control</param>
+        public void MovePosition(int position)
+        {
+            // Ensure we're having a clean sequence before starting
+            ReindexColumn();
+
+            if (position > this.Order)
+            {
+                position++;
+            }
+
+            foreach (var control in this.section.Page.Controls.Where(c => c.Section == this.section && c.Column == this.column && c.Order >= position).OrderBy(p => p.Order))
+            {
+                control.Order = control.Order + 1;
+            }
+            this.Order = position;
+
+            // Ensure we're having a clean sequence to return
+            ReindexColumn();
+        }
+
+        private void ReindexColumn()
+        {
+            ReindexColumn(this.Column);
+        }
+
+        private void ReindexColumn(CanvasColumn column)
+        {
+            var index = 0;
+            foreach (var control in this.column.Section.Page.Controls.Where(c => c.Section == column.Section && c.Column == column).OrderBy(c => c.Order))
+            {
+                index++;
+                control.order = index;
+            }
+        }
+
+        private void ReindexSection(CanvasSection section)
+        {
+            foreach(var column in section.Columns)
+            {
+                ReindexColumn(column);
+            }
+        }
+
+        /// <summary>
         /// Receives "data-sp-controldata" content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
