@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private LocalizationsLocalization[] localizationsField;
         
-        private Tenant[] tenantField;
+        private Tenant tenantField;
         
         private Templates[] templatesField;
         
@@ -58,8 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Tenant")]
-        public Tenant[] Tenant {
+        public Tenant Tenant {
             get {
                 return this.tenantField;
             }
@@ -4167,8 +4166,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private int readSecurityField;
         
-        private bool readSecurityFieldSpecified;
-        
         private string validationFormulaField;
         
         private string validationMessageField;
@@ -4187,6 +4184,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             this.noCrawlField = false;
             this.listExperienceField = ListInstanceListExperience.Auto;
             this.directionField = ListInstanceDirection.NONE;
+            this.readSecurityField = 1;
         }
         
         /// <remarks/>
@@ -4705,23 +4703,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(1)]
         public int ReadSecurity {
             get {
                 return this.readSecurityField;
             }
             set {
                 this.readSecurityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool ReadSecuritySpecified {
-            get {
-                return this.readSecurityFieldSpecified;
-            }
-            set {
-                this.readSecurityFieldSpecified = value;
             }
         }
         
@@ -7727,6 +7715,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private bool overwriteFieldSpecified;
         
+        private string layoutField;
+        
+        private bool publishField;
+        
+        public ClientSidePage() {
+            this.layoutField = "false";
+            this.publishField = false;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Section", IsNullable=false)]
         public CanvasSection[] Sections {
@@ -7790,6 +7787,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.overwriteFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute("false")]
+        public string Layout {
+            get {
+                return this.layoutField;
+            }
+            set {
+                this.layoutField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Publish {
+            get {
+                return this.publishField;
+            }
+            set {
+                this.publishField = value;
             }
         }
     }

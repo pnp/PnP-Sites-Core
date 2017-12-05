@@ -12,18 +12,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ApplicationLifecycleManagement : BaseModel, IEquatable<ApplicationLifecycleManagement>
     {
+        #region Private Members
+
+        private AppCatalog _appCatalog;
+        private AppCollection _apps;
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
         /// Defines the AppCatalog settings for the current Site Collection
         /// </summary>
-        public AppCatalog AppCatalog { get; set; }
+        public AppCatalog AppCatalog
+        {
+            get { return this._appCatalog; }
+            private set
+            {
+                if (this._appCatalog != null)
+                {
+                    this._appCatalog.ParentTemplate = null;
+                }
+                this._appCatalog = value;
+                if (this._appCatalog != null)
+                {
+                    this._appCatalog.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
 
         /// <summary>
         /// Defines the Apps for the current Site Collection
         /// </summary>
-        public AppCollection Apps { get; set; }
+        public AppCollection Apps
+        {
+            get { return this._apps; }
+            private set { this._apps = value; }
+        }
+        #endregion
 
+        #region Constructors
+        /// <summary>
+        /// Constructor for ApplicationLifecycleManagement class
+        /// </summary>
+        public ApplicationLifecycleManagement()
+        {
+            this._apps = new AppCollection(this.ParentTemplate);
+        }
         #endregion
 
         #region Comparison code

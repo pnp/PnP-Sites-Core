@@ -22,6 +22,7 @@
   -->
 
   <!-- The main element -->
+  <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -55,7 +56,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="Tenant" type="pnp:Tenant" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Tenant" type="pnp:Tenant" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
           <xsd:documentation xml:lang="en">
@@ -2273,7 +2274,7 @@
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="ReadSecurity" type="xsd:int" use="optional">
+    <xsd:attribute name="ReadSecurity" type="xsd:int" use="optional" default="1">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
         <xsd:documentation xml:lang="en">
@@ -3308,6 +3309,24 @@
         <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Can the page be overwritten if it exists.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Layout" type="xsd:string" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the target layout for the client-side page, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Publish" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether the page will be published or not, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

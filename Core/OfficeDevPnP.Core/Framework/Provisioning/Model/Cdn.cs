@@ -27,6 +27,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
         }
 
+        /// <summary>
+        /// Custom constructor with both public and private CDN settings
+        /// </summary>
+        public Cdn(CdnSettings publicCdn, CdnSettings privateCdn)
+        {
+            this._publicCdn = publicCdn;
+            this._privateCdn = privateCdn;
+        }
+
         #endregion
 
         #region Public Members

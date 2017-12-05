@@ -15,9 +15,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private CdnOriginCollection _origins;
-        private String _includeFileExtensions;
-        private String _excludeRestrictedSiteClassifications;
-        private String _excludeIfNoScriptDisabled;
 
         #endregion
 
@@ -52,6 +49,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._origins = value; }
         }
 
+        /// <summary>
+        /// Defines whether the CDN has to be enabled or disabled
+        /// </summary>
+        public Boolean Enabled { get; set; }
+
+        /// <summary>
+        /// Defines the file extensions to include in the CDN policy.
+        /// </summary>
+        public String IncludeFileExtensions { get; set; }
+
+        /// <summary>
+        /// Defines the site classifications to exclude of the wild card origins.
+        /// </summary>
+        public String ExcludeRestrictedSiteClassifications { get; set; }
+
+        /// <summary>
+        /// Allows to opt-out of sites that have disabled NoScript.
+        /// </summary>
+        public String ExcludeIfNoScriptDisabled { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -61,8 +78,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|",
-                this.Origins.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+            return (String.Format("{0}|{1}|{2}|{3}|",
+                this.Origins.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.IncludeFileExtensions?.GetHashCode() ?? 0,
+                this.ExcludeRestrictedSiteClassifications?.GetHashCode() ?? 0,
+                this.ExcludeIfNoScriptDisabled?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -81,7 +101,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares CdnSettings object based on Origins properties.
+        /// Compares CdnSettings object based on Origins, IncludeFileExtensions, 
+        /// ExcludeRestrictedSiteClassifications, ExcludeIfNoScriptDisabled properties.
         /// </summary>
         /// <param name="other">CdnSettings object</param>
         /// <returns>true if the CdnSettings object is equal to the current object; otherwise, false.</returns>
@@ -92,7 +113,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.Origins.DeepEquals(other.Origins)
+            return (this.Origins.DeepEquals(other.Origins) &&
+                this.IncludeFileExtensions == other.IncludeFileExtensions &&
+                this.ExcludeRestrictedSiteClassifications == other.ExcludeRestrictedSiteClassifications &&
+                this.ExcludeIfNoScriptDisabled == other.ExcludeIfNoScriptDisabled
                 );
         }
 

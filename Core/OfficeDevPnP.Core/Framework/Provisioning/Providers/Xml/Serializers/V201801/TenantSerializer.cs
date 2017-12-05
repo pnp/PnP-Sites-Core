@@ -1,0 +1,67 @@
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201801;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
+{
+    /// <summary>
+    /// Class to serialize/deserialize the client side pages
+    /// </summary>
+    [TemplateSchemaSerializer(
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201801,
+        SerializationSequence = -1, DeserializationSequence = -1,
+        Default = true)]
+    internal class TenantSerializer : PnPBaseSchemaSerializer<ProvisioningTenant>
+    {
+        public override void Deserialize(object persistence, ProvisioningTemplate template)
+        {
+            var tenantSettings = persistence.GetPublicInstancePropertyValue("Tenant");
+
+            if (tenantSettings != null)
+            {
+                var expressions = new Dictionary<Expression<Func<ProvisioningTenant, Object>>, IResolver>();
+
+                // Manage the AppCatalog
+                expressions.Add(t => t.AppCatalog, new AppCatalogFromSchemaToModelTypeResolver());
+
+                // Manage the CDN
+                expressions.Add(t => t.Cdn, new CdnFromSchemaToModelTypeResolver());
+
+                PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
+            }
+        }
+
+        public override void Serialize(ProvisioningTemplate template, object persistence)
+        {
+            if (template.Tenant != null)
+            {
+                var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var tenantType = Type.GetType(tenantTypeName, true);
+
+                var target = Activator.CreateInstance(tenantType, true);
+
+                var resolvers = new Dictionary<String, IResolver>();
+
+                resolvers.Add($"{tenantType}.AppCatalog",
+                    new AppCatalogFromModelToSchemaTypeResolver());
+                resolvers.Add($"{tenantType}.Cdn",
+                    new CdnFromModelToSchemaTypeResolver());
+
+                PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
+
+                if (target != null &&
+                    (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
+                    target.GetPublicInstancePropertyValue("CDN") != null))
+                {
+                    persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
+                }
+            }
+        }
+    }
+}
