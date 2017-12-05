@@ -1172,7 +1172,11 @@ namespace OfficeDevPnP.Core.Pages
                     }
                     else if (controlType == typeof(ClientSideWebPart))
                     {
-                        var control = new ClientSideWebPart();
+                        var control = new ClientSideWebPart()
+                        {
+                            Order = controlOrder
+                        };
+
                         control.FromHtml(clientSideControl);
 
                         // Handle control positioning in sections and columlns
@@ -1242,7 +1246,23 @@ namespace OfficeDevPnP.Core.Pages
                     section.Type = CanvasSectionTemplate.ThreeColumn;
                 }
             }
+            ReIndex();
+        }
 
+        private void ReIndex()
+        {
+            foreach(var section in this.sections.OrderBy(s => s.Order))
+            {
+                foreach(var column in section.Columns.OrderBy(c => c.Order))
+                {
+                    var indexer = 0;
+                    foreach(var control in column.Controls.OrderBy(c => c.Order))
+                    {
+                        indexer++;
+                        control.Order = indexer;
+                    }
+                }
+            }
         }
 
         private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
