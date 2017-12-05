@@ -194,7 +194,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                     {
                                         sourceValue = null;
                                     }
-                                    spSpecified.SetValue(destination, isSpecified);
                                 }
                                 // We simply need to do 1:1 value mapping
                                 dp.SetValue(destination, sourceValue);
