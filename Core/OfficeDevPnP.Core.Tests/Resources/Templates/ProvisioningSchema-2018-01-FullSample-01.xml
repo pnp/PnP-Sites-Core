@@ -719,7 +719,7 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true">
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>

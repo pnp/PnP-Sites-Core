@@ -496,7 +496,7 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Layout="Article" Publish="true">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Layout="Article" Publish="true" EnableComments="true">
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>

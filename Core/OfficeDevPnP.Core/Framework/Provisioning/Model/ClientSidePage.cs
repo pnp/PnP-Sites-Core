@@ -54,6 +54,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean Publish { get; set; }
 
+        /// <summary>
+        /// Defines whether the page will have comments enabled or not
+        /// </summary>
+        public Boolean EnableComments { get; set; }
+
         #endregion
 
         #region Constructors

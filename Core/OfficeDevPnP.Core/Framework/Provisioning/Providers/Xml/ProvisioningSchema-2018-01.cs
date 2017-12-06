@@ -7719,9 +7719,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private bool publishField;
         
+        private bool enableCommentsField;
+        
         public ClientSidePage() {
             this.layoutField = "false";
             this.publishField = false;
+            this.enableCommentsField = false;
         }
         
         /// <remarks/>
@@ -7811,6 +7814,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.publishField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool EnableComments {
+            get {
+                return this.enableCommentsField;
+            }
+            set {
+                this.enableCommentsField = value;
             }
         }
     }
