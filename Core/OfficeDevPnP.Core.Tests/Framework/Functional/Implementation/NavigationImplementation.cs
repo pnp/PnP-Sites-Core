@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System;
@@ -23,7 +24,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Retrieved target xml data is not matching with source xml navigation types so changing navigation settings to get correct data.
                 ChangeNavigationSettings(cc, StandardNavigationSource.TaxonomyProvider, StandardNavigationSource.PortalProvider);
 
-                var result = TestProvisioningTemplate(cc, "navigation_add_1605.xml", Handlers.Navigation);
+                // Explicitely clear out the base template for this test as otherwise we're not getting any results back
+                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web)
+                {
+                    BaseTemplate = null,
+                    HandlersToProcess = Handlers.Navigation,
+                };
+
+                var result = TestProvisioningTemplate(cc, "navigation_add_1605.xml", Handlers.Navigation, null, ptci);
                 NavigationValidator nv = new NavigationValidator();
                 nv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv.Validate(result.SourceTemplate.Navigation, result.TargetTemplate.Navigation, result.SourceTokenParser));
@@ -32,7 +40,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 #region Structural_Managed
                 ChangeNavigationSettings(cc, StandardNavigationSource.PortalProvider, StandardNavigationSource.TaxonomyProvider);
 
-                var result2 = TestProvisioningTemplate(cc, "navigation_add2_1605.xml", Handlers.Navigation);
+                var result2 = TestProvisioningTemplate(cc, "navigation_add2_1605.xml", Handlers.Navigation, null, ptci);
                 NavigationValidator nv2 = new NavigationValidator();
                 nv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv2.Validate(result2.SourceTemplate.Navigation, result2.TargetTemplate.Navigation, result2.SourceTokenParser));
@@ -51,7 +59,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Retrieved target xml data is not matching with source xml navigation types so changing navigation settings to get correct data.
                 ChangeNavigationSettings(cc, StandardNavigationSource.TaxonomyProvider, StandardNavigationSource.PortalProvider);
 
-                var result = TestProvisioningTemplate(cc, "navigation_add_1605.xml", Handlers.Navigation);
+                // Explicitely clear out the base template for this test as otherwise we're not getting any results back
+                ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web)
+                {
+                    BaseTemplate = null,
+                    HandlersToProcess = Handlers.Navigation,
+                };
+
+                var result = TestProvisioningTemplate(cc, "navigation_add_1605.xml", Handlers.Navigation, null, ptci);
                 NavigationValidator nv = new NavigationValidator();
                 nv.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv.Validate(result.SourceTemplate.Navigation, result.TargetTemplate.Navigation, result.SourceTokenParser));
@@ -60,7 +75,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 #region Structural_Managed
                 ChangeNavigationSettings(cc, StandardNavigationSource.PortalProvider, StandardNavigationSource.TaxonomyProvider);
 
-                var result2 = TestProvisioningTemplate(cc, "navigation_add2_1605.xml", Handlers.Navigation);
+                var result2 = TestProvisioningTemplate(cc, "navigation_add2_1605.xml", Handlers.Navigation, null, ptci);
                 NavigationValidator nv2 = new NavigationValidator();
                 nv2.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv2.Validate(result2.SourceTemplate.Navigation, result2.TargetTemplate.Navigation, result2.SourceTokenParser));
@@ -69,7 +84,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 #region Inherit_Structural
                 ChangeNavigationSettings(cc, StandardNavigationSource.InheritFromParentWeb, StandardNavigationSource.PortalProvider);
 
-                var result3 = TestProvisioningTemplate(cc, "navigation_add3_1605.xml", Handlers.Navigation);
+                var result3 = TestProvisioningTemplate(cc, "navigation_add3_1605.xml", Handlers.Navigation, null, ptci);
                 NavigationValidator nv3 = new NavigationValidator();
                 nv3.SchemaVersion = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05;
                 Assert.IsTrue(nv3.Validate(result3.SourceTemplate.Navigation, result3.TargetTemplate.Navigation, result3.SourceTokenParser));

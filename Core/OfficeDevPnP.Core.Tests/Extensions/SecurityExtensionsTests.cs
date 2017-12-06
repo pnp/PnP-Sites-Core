@@ -82,6 +82,10 @@ namespace Microsoft.SharePoint.Client.Tests
             using (ClientContext clientContext = TestCommon.CreateClientContext())
             {
                 clientContext.Web.RemoveGroup(_testGroupName);
+                if (clientContext.Web.GroupExists("Test Group"))
+                {
+                    clientContext.Web.RemoveGroup("Test Group");
+                }
             }
         }
         #endregion

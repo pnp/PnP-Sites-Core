@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 CleanUpTestData(cc);
 
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                ptci.BaseTemplate = null;
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
                 ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files | Handlers.Navigation;
@@ -37,6 +38,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 CleanUpTestData(cc);
 
                 ProvisioningTemplateCreationInformation ptci = new ProvisioningTemplateCreationInformation(cc.Web);
+                ptci.BaseTemplate = null;
                 ptci.PersistMultiLanguageResources = true;
                 ptci.FileConnector = new FileSystemConnector(string.Format(@"{0}\..\..\Framework\Functional", AppDomain.CurrentDomain.BaseDirectory), "Templates");
                 ptci.HandlersToProcess = Handlers.Fields | Handlers.ContentTypes | Handlers.Lists | Handlers.SupportedUILanguages | Handlers.CustomActions | Handlers.Pages | Handlers.Files;

@@ -175,6 +175,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 }
                 ));
 
+                resolvers.Add($"{listInstanceType}.IsApplicationListSpecified", new ExpressionValueResolver(() => true));
+
                 // IRM Settings
                 resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());
 

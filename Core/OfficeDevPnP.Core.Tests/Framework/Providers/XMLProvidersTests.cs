@@ -1011,7 +1011,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)1, webpart.Order);
             Assert.AreEqual("Main", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents.Trim());
+            Assert.AreEqual("<Contents xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\"><webParts xmlns=\"\"><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts></Contents>", webpart.Contents.Trim());
 
             Assert.IsNotNull(file.WebParts);
             webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -1019,7 +1019,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)10, webpart.Order);
             Assert.AreEqual("Left", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents.Trim());
+            Assert.AreEqual("<Contents xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\"><webParts xmlns=\"\"><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts></Contents>", webpart.Contents.Trim());
 
             file = result.Files.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
             Assert.IsNotNull(file);
