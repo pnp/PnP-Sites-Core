@@ -23,8 +23,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
         {
             Object result = null;
 
+            // Try with the tenant-wide AppCatalog
             var tenant = source as Model.ProvisioningTenant;
             var appCatalog = tenant?.AppCatalog;
+
+            if (null == appCatalog)
+            {
+                // If that one is missing, let's try with the local Site Collection App Catalog
+                var alm = source as Model.ApplicationLifecycleManagement;
+                appCatalog = alm.AppCatalog;
+            }
 
             if (null != appCatalog)
             {
