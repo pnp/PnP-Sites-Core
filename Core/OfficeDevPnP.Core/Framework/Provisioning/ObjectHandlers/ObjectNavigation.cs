@@ -18,7 +18,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Navigation"; }
         }
 
+        // TODO may be some opportunity to clean up this business logic
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            var ret = template;
+
+            var siteContext = web.Context.GetSiteCollectionContext();
+            var site = siteContext.Site;
+            siteContext.Load(site);
+            siteContext.ExecuteQueryRetry();
+
+            var baseTemplateValue = site.RootWeb.GetBaseTemplateId();
+
+            switch (baseTemplateValue)
+            {
+                // It is a "modern" team site
+                case "GROUP#0":
+                    ret = ExtractModernNavObjects(web, template, creationInfo);
+                    break;
+                default:
+                    ret = ExtractLegacyNavObjects(web, template, creationInfo);
+                    break;
+            }
+
+            return ret;
+        }
+
+        
+        private ProvisioningTemplate ExtractModernNavObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                template.Navigation = new Model.Navigation(
+                    new GlobalNavigation(GlobalNavigationType.Inherit, null, null),
+                    new CurrentNavigation(CurrentNavigationType.Inherit,null, null),
+                    new ModernNavigation(GetQuicklaunch(web))
+                );
+            }
+            return template;
+        }
+
+        private ProvisioningTemplate ExtractLegacyNavObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
@@ -358,6 +398,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Apply any token replacement for taxonomy IDs
             TokenizeManagedNavigationTaxonomyIds(web, result);
 
+            return (result);
+        }
+
+        private Quicklaunch GetQuicklaunch(Web web)
+        {
+            var result = new Quicklaunch();
+
+            Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = web.Navigation.QuickLaunch;
+
+            web.Context.Load(web, w => w.ServerRelativeUrl);
+            web.Context.Load(sourceNodes);
+            web.Context.ExecuteQueryRetry();
+
+            if (!sourceNodes.ServerObjectIsNull.Value)
+            {
+                result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
+                                                select n.ToDomainModelNavigationNode(web));
+            }
             return (result);
         }
 

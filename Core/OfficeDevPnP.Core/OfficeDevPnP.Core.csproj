@@ -91,6 +91,9 @@
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
   <Choose>
     <When Condition=" '$(Configuration)' == 'debug' Or '$(Configuration)' == 'release' ">
       <ItemGroup>
@@ -430,11 +433,13 @@
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ModernNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Quicklaunch.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
@@ -916,6 +921,7 @@
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

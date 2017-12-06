@@ -15,10 +15,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private GlobalNavigation _globalNavigation;
         private CurrentNavigation _currentNavigation;
+        private ModernNavigation _modernNavigation;
 
         #endregion
 
         #region Public Members
+
+        /// <summary>
+        /// The Modern Navigation settings for the Provisioning Template
+        /// </summary>
+        public ModernNavigation ModernNavigation
+        {
+            get { return (this._modernNavigation);  }
+            private set
+            {
+                if (this._modernNavigation != null)
+                {
+                    this._modernNavigation.ParentTemplate = null;
+                }
+                this._modernNavigation = value;
+                if (this._modernNavigation != null)
+                {
+                    this._modernNavigation.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
 
         /// <summary>
         /// The Global Navigation settings for the Provisioning Template
@@ -81,10 +102,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         /// <param name="globalNavigation">GlobalNavigation object</param>
         /// <param name="currentNavigation">CurrentNavigation object</param>
-        public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null)
+        /// <param name="modernNavigation"></param>
+        public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null, ModernNavigation modernNavigation = null)
         {
             this.GlobalNavigation = globalNavigation;
             this.CurrentNavigation = currentNavigation;
+            this.ModernNavigation = modernNavigation;
         }
 
         #endregion

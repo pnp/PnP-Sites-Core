@@ -15,10 +15,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private StructuralNavigation _structuralNavigation;
         private ManagedNavigation _managedNavigation;
+        private Quicklaunch _quickLaunch;
 
         #endregion
 
         #region Public Members
+
+        /// <summary>
+        /// Defines the Structural Navigation settings of the site
+        /// </summary>
+        public Quicklaunch Quicklaunch
+        {
+            get { return (this._quickLaunch); }
+            private set
+            {
+                if (this._quickLaunch != null)
+                {
+                    this._quickLaunch.ParentTemplate = null;
+                }
+                this._quickLaunch = value;
+                if (this._quickLaunch != null)
+                {
+                    this._quickLaunch.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
 
         /// <summary>
         /// Defines the Structural Navigation settings of the site
@@ -77,10 +98,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         /// <param name="structuralNavigation">Structural Navigation object</param>
         /// <param name="managedNavigation">Managed Navigation object</param>
-        public BaseNavigationKind(StructuralNavigation structuralNavigation = null, ManagedNavigation managedNavigation = null)
+        /// <param name="quicklaunch"></param>
+        public BaseNavigationKind(StructuralNavigation structuralNavigation = null, ManagedNavigation managedNavigation = null, Quicklaunch quicklaunch = null)
         {
             this.StructuralNavigation = structuralNavigation;
             this.ManagedNavigation = managedNavigation;
+            this.Quicklaunch = quicklaunch;
         }
 
         #endregion
