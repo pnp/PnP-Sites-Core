@@ -37,27 +37,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ApplicationLifecycleManagement != null)
+            if (template.ApplicationLifecycleManagement != null &&
+                (template.ApplicationLifecycleManagement.AppCatalog != null || 
+                (template.ApplicationLifecycleManagement.Apps != null &&
+                template.ApplicationLifecycleManagement.Apps.Count > 0)))
             {
                 var almTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ApplicationLifecycleManagement, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var almType = Type.GetType(almTypeName, true);
+                var almType = Type.GetType(almTypeName, false);
 
-                var target = Activator.CreateInstance(almType, true);
-
-                var resolvers = new Dictionary<String, IResolver>();
-
-                resolvers.Add($"{almType}.AppCatalog",
-                    new AppCatalogFromModelToSchemaTypeResolver());
-
-                PnPObjectsMapper.MapProperties(template.ApplicationLifecycleManagement, target, 
-                    resolvers, recursive: true);
-
-                if (target != null &&
-                    (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-                    target.GetPublicInstancePropertyValue("Apps") != null))
+                if (almType != null)
                 {
-                    persistence.GetPublicInstanceProperty("ApplicationLifecycleManagement")
-                        .SetValue(persistence, target);
+                    var target = Activator.CreateInstance(almType, true);
+
+                    var resolvers = new Dictionary<String, IResolver>();
+
+                    resolvers.Add($"{almType}.AppCatalog",
+                        new AppCatalogFromModelToSchemaTypeResolver());
+
+                    PnPObjectsMapper.MapProperties(template.ApplicationLifecycleManagement, target,
+                        resolvers, recursive: true);
+
+                    if (target != null &&
+                        (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
+                        target.GetPublicInstancePropertyValue("Apps") != null))
+                    {
+                        persistence.GetPublicInstanceProperty("ApplicationLifecycleManagement")
+                            .SetValue(persistence, target);
+                    }
                 }
             }
         }

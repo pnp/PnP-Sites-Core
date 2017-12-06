@@ -604,6 +604,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template1 = provider.GetTemplate("ProvisioningSchema-2018-01-FullSample-01.xml", serializer);
             Assert.IsNotNull(template1);
 
+            // Add stuff that is not supported anymore, to test the serialization behavior
+            template1.AddIns.Add(new AddIn { PackagePath = "test", Source = "test" });
+
             provider.SaveAs(template1, "ProvisioningSchema-2018-01-FullSample-01-OUT.xml", serializer);
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2018-01-FullSample-01-OUT.xml"));
 
