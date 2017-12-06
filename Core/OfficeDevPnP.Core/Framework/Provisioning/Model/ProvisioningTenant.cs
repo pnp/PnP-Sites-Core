@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private AppCatalog _appCatalog;
-        private Cdn _cdn;
+        private ContentDeliveryNetwork _cdn;
 
         #endregion
 
@@ -30,10 +30,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Custom constructor which accepts AppCatalog and CDN settings
         /// </summary>
-        public ProvisioningTenant(AppCatalog appCatalog, Cdn cdn)
+        public ProvisioningTenant(AppCatalog appCatalog, ContentDeliveryNetwork cdn)
         {
             this.AppCatalog = AppCatalog;
-            this.Cdn = cdn;
+            this.ContentDeliveryNetwork = cdn;
         }
 
         #endregion
@@ -63,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the CDN settings to provision
         /// </summary>
-        public Cdn Cdn
+        public ContentDeliveryNetwork ContentDeliveryNetwork
         {
             get { return this._cdn; }
             private set
@@ -91,7 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|",
                 this.AppCatalog?.GetHashCode() ?? 0,
-                this.Cdn?.GetHashCode() ?? 0
+                this.ContentDeliveryNetwork?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
 
             return (this.AppCatalog == other.AppCatalog &&
-                this.Cdn == other.Cdn
+                this.ContentDeliveryNetwork == other.ContentDeliveryNetwork
                 );
         }
 

@@ -19,11 +19,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String AppId { get; set; }
 
         /// <summary>
-        /// Defines the Title of the App to manage
-        /// </summary>
-        public String Title { get; set; }
-
-        /// <summary>
         /// Defines the Action for the App to manage
         /// </summary>
         /// <remarks>

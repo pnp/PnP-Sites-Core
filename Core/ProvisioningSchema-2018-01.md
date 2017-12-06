@@ -224,7 +224,7 @@ Element to manage tenant-wide settings.
 ```xml
 <pnp:Tenant>
    <pnp:AppCatalog />
-   <pnp:CDN />
+   <pnp:ContentDeliveryNetwork />
 </pnp:Tenant>
 ```
 
@@ -235,7 +235,7 @@ Here follow the available child elements for the Tenant element.
 Element|Type|Description
 -------|----|-----------
 AppCatalog|[AppCatalog](#appcatalog)|Entry point for the tenant-wide AppCatalog
-CDN|[CDN](#cdn)|Entry point for the tenant-wide Content Delivery Network
+ContentDeliveryNetwork|[ContentDeliveryNetwork](#contentdeliverynetwork)|Entry point for the tenant-wide Content Delivery Network
 <a name="templates"></a>
 ### Templates
 SharePoint Templates, which can be inline or references to external files.
@@ -2505,8 +2505,7 @@ Package|[Package](#package)|
       PackageId="pnp:ReplaceableString"
       Src="xsd:string"
       Action=""
-      SkipFeatureDeployment="xsd:boolean"
-      Overwrite="xsd:boolean">
+      SkipFeatureDeployment="xsd:boolean">
 </pnp:Package>
 ```
 
@@ -2520,20 +2519,19 @@ PackageId|ReplaceableString|Defines the ID of the package to manage, optional at
 Src|xsd:string|Defines the path of the package to manage, optional attribute (either this one or the PackageId has to be provided).
 Action||Defines the action to execute against the package, required attribute
 SkipFeatureDeployment|xsd:boolean|Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
-Overwrite|xsd:boolean|Defines whether to overwrite any existing package, optional attribute (default: false).
-<a name="cdn"></a>
-### CDN
+<a name="contentdeliverynetwork"></a>
+### ContentDeliveryNetwork
 Element to manage the tenant-wide CDN.
 
 ```xml
-<pnp:CDN>
+<pnp:ContentDeliveryNetwork>
    <pnp:Public />
    <pnp:Private />
-</pnp:CDN>
+</pnp:ContentDeliveryNetwork>
 ```
 
 
-Here follow the available child elements for the CDN element.
+Here follow the available child elements for the ContentDeliveryNetwork element.
 
 
 Element|Type|Description

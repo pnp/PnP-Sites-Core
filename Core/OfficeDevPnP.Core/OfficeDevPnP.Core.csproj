@@ -442,7 +442,7 @@
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\Cdn.cs" />
+    <Compile Include="Framework\Provisioning\Model\ContentDeliveryNetwork.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOrigin.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOriginCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnSettings.cs" />
@@ -464,6 +464,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>

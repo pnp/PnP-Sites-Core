@@ -7541,11 +7541,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private bool skipFeatureDeploymentField;
         
-        private bool overwriteField;
-        
         public AppCatalogPackage() {
             this.skipFeatureDeploymentField = false;
-            this.overwriteField = false;
         }
         
         /// <remarks/>
@@ -7592,18 +7589,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
                 this.skipFeatureDeploymentField = value;
             }
         }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool Overwrite {
-            get {
-                return this.overwriteField;
-            }
-            set {
-                this.overwriteField = value;
-            }
-        }
     }
     
     /// <remarks/>
@@ -7635,8 +7620,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private string appIdField;
         
-        private string titleField;
-        
         private ApplicationLifecycleManagementAppAction actionField;
         
         /// <remarks/>
@@ -7647,17 +7630,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.appIdField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Title {
-            get {
-                return this.titleField;
-            }
-            set {
-                this.titleField = value;
             }
         }
         
@@ -8626,18 +8598,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
     public partial class CdnSettingOrigin {
         
-        private string originUrlField;
+        private string urlField;
         
         private CdnSettingOriginAction actionField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string OriginUrl {
+        public string Url {
             get {
-                return this.originUrlField;
+                return this.urlField;
             }
             set {
-                this.originUrlField = value;
+                this.urlField = value;
             }
         }
         
@@ -8672,7 +8644,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
-    public partial class CDN {
+    public partial class ContentDeliveryNetwork {
         
         private CdnSetting publicField;
         
@@ -8709,7 +8681,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private AppCatalogPackage[] appCatalogField;
         
-        private CDN cDNField;
+        private ContentDeliveryNetwork contentDeliveryNetworkField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Package", IsNullable=false)]
@@ -8723,12 +8695,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         }
         
         /// <remarks/>
-        public CDN CDN {
+        public ContentDeliveryNetwork ContentDeliveryNetwork {
             get {
-                return this.cDNField;
+                return this.contentDeliveryNetworkField;
             }
             set {
-                this.cDNField = value;
+                this.contentDeliveryNetworkField = value;
             }
         }
     }

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the CDN settings to provision
     /// </summary>
-    public class Cdn : BaseModel, IEquatable<Cdn>
+    public class ContentDeliveryNetwork : BaseModel, IEquatable<ContentDeliveryNetwork>
     {
         #region Private Members
 
@@ -23,14 +23,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Default constructor
         /// </summary>
-        public Cdn()
+        public ContentDeliveryNetwork()
         {
         }
 
         /// <summary>
         /// Custom constructor with both public and private CDN settings
         /// </summary>
-        public Cdn(CdnSettings publicCdn, CdnSettings privateCdn)
+        public ContentDeliveryNetwork(CdnSettings publicCdn, CdnSettings privateCdn)
         {
             this._publicCdn = publicCdn;
             this._privateCdn = privateCdn;
@@ -102,11 +102,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>true if the current object is equal to the CDN</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is Cdn))
+            if (!(obj is ContentDeliveryNetwork))
             {
                 return (false);
             }
-            return (Equals((Cdn)obj));
+            return (Equals((ContentDeliveryNetwork)obj));
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         /// <param name="other">Cdn object</param>
         /// <returns>true if the Cdn object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(Cdn other)
+        public bool Equals(ContentDeliveryNetwork other)
         {
             if (other == null)
             {

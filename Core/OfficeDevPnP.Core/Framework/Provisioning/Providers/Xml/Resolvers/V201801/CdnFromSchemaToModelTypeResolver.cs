@@ -22,9 +22,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            Cdn result = null;
+            ContentDeliveryNetwork result = null;
 
-            var cdnSettings = source.GetPublicInstancePropertyValue("Cdn");
+            var cdnSettings = source.GetPublicInstancePropertyValue("ContentDeliveryNetwork");
 
             if (null != cdnSettings)
             {
@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
                     PnPObjectsMapper.MapProperties(privateCdn, privateCdnSettings, resolvers, recursive);
                 }
 
-                result = new Cdn(publicCdnSettings, privateCdnSettings);
+                result = new ContentDeliveryNetwork(publicCdnSettings, privateCdnSettings);
             }
 
             return (result);

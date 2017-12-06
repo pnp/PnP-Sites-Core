@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.ALM;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -20,6 +21,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                // The ALM API do not support the local Site Collection App Catalog
+                // Thus, so far we skip the AppCatalog section
+                // NOOP
+
+                // Process the collection of Apps installed in the current Site Collection
+                var manager = new AppManager(web.Context as ClientContext);
+
+                var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
+                if (siteApps != null && siteApps.Count > 0)
+                {
+                    foreach (var app in siteApps)
+                    {
+                        template.ApplicationLifecycleManagement.Apps.Add(new Model.App
+                        {
+                            AppId = app.Id.ToString(),
+                            Action = AppAction.Install,
+                        });
+                    }
+                }
             }
             return template;
         }
@@ -28,6 +48,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
+                if (template.ApplicationLifecycleManagement != null)
+                {
+                    var manager = new AppManager(web.Context as ClientContext);
+
+                    // The ALM API do not support the local Site Collection App Catalog
+                    // Thus, so far we skip the AppCatalog section
+                    // NOOP
+
+                    if (template.ApplicationLifecycleManagement.Apps != null &&
+                        template.ApplicationLifecycleManagement.Apps.Count > 0)
+                    {
+                        foreach (var app in template.ApplicationLifecycleManagement.Apps)
+                        {
+                            var appId = Guid.Parse(parser.ParseString(app.AppId));
+
+                            switch (app.Action)
+                            {
+                                case AppAction.Install:
+                                    manager.Install(appId);
+                                    break;
+                                case AppAction.Uninstall:
+                                    manager.Uninstall(appId);
+                                    break;
+                                case AppAction.Update:
+                                    manager.Upgrade(appId);
+                                    break;
+                            }
+                        }
+                    }
+                }
             }
 
             return parser;

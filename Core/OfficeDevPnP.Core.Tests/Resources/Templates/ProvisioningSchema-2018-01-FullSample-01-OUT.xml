@@ -23,24 +23,24 @@
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
       <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
     </pnp:AppCatalog>
-    <pnp:CDN>
+    <pnp:ContentDeliveryNetwork>
       <pnp:Public Enabled="true">
         <pnp:Origins>
-          <pnp:Origin OriginUrl="sites/CDN/CDNFiles" Action="Add" />
-          <pnp:Origin OriginUrl="sites/CDN/CDNFiles-Wrong" Action="Remove" />
+          <pnp:Origin Url="sites/CDN/CDNFiles" Action="Add" />
+          <pnp:Origin Url="sites/CDN/CDNFiles-Wrong" Action="Remove" />
         </pnp:Origins>
         <pnp:IncludeFileExtensions>PDF,XML,JPG,JS,PNG</pnp:IncludeFileExtensions>
         <pnp:ExcludeRestrictedSiteClassifications>HBI,GDPR</pnp:ExcludeRestrictedSiteClassifications>
       </pnp:Public>
       <pnp:Private Enabled="true">
         <pnp:Origins>
-          <pnp:Origin OriginUrl="sites/CDNPrivate/CDNFiles" Action="Add" />
-          <pnp:Origin OriginUrl="sites/CDNPrivate/CDNFiles-Wrong" Action="Remove" />
+          <pnp:Origin Url="sites/CDNPrivate/CDNFiles" Action="Add" />
+          <pnp:Origin Url="sites/CDNPrivate/CDNFiles-Wrong" Action="Remove" />
         </pnp:Origins>
         <pnp:IncludeFileExtensions>PDF,XML,JPG,JS,PNG</pnp:IncludeFileExtensions>
         <pnp:ExcludeRestrictedSiteClassifications>HIB,GDPR</pnp:ExcludeRestrictedSiteClassifications>
       </pnp:Private>
-    </pnp:CDN>
+    </pnp:ContentDeliveryNetwork>
   </pnp:Tenant>
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">

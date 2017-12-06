@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.ALM;
 using System.IO;
 using System.Net;
 using Microsoft.Online.SharePoint.TenantAdministration;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -51,6 +52,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     appMetadata = manager.Add(memStream.ToArray(),
                                         app.Src.Substring(app.Src.LastIndexOf('\\')),
                                         app.Overwrite);
+
+                                    parser.Tokens.Add(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
                                 }
                             }
 

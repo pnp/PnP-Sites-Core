@@ -10,6 +10,7 @@ using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.ALM;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -242,11 +243,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
             }
 
+            // AppPackages tokens
+            AddAppPackagesTokens(web);
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
 
             _tokens = sortedTokens.ToList();
+        }
+
+        private void AddAppPackagesTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(AppPackageIdToken));
+
+            var manager = new AppManager(web.Context as ClientContext);
+            var appPackages = manager.GetAvailable();
+
+            foreach (var app in appPackages)
+            {
+                _tokens.Add(new AppPackageIdToken(web, app.Title, app.Id));
+            }
         }
 
         private void AddContentTypeTokens(Web web)

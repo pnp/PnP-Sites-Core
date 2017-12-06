@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the URL for the CDN Origin, required attribute.
         /// </summary>
-        public String OriginUrl { get; set; }
+        public String Url { get; set; }
 
         /// <summary>
         /// Defines the action to perform with the CDN Origin for the CDN, required attribute.
@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                this.OriginUrl?.GetHashCode() ?? 0,
+                this.Url?.GetHashCode() ?? 0,
                 this.Action.GetHashCode()
             ).GetHashCode());
         }
@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares CdnOrigin object based on OriginUrl, Action
+        /// Compares CdnOrigin object based on Url, Action
         /// </summary>
         /// <param name="other">CdnOrigin Class object</param>
         /// <returns>true if the CdnOrigin object is equal to the current object; otherwise, false.</returns>
@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.OriginUrl == other.OriginUrl &&
+            return (this.Url == other.Url &&
                 this.Action == other.Action
                 );
         }

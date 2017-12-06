@@ -22,11 +22,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
             Object result = null;
 
             var tenant = source as Model.ProvisioningTenant;
-            var cdn = tenant?.Cdn;
+            var cdn = tenant?.ContentDeliveryNetwork;
 
             if (null != cdn)
             {
-                var cdnTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CDN, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var cdnTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ContentDeliveryNetwork, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var cdnType = Type.GetType(cdnTypeName, true);
                 var cdnSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CdnSetting, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var cdnSettingsType = Type.GetType(cdnSettingsTypeName, true);

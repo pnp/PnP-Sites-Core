@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(t => t.AppCatalog, new AppCatalogFromSchemaToModelTypeResolver());
 
                 // Manage the CDN
-                expressions.Add(t => t.Cdn, new CdnFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.ContentDeliveryNetwork, new CdnFromSchemaToModelTypeResolver());
 
                 PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
             }
@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
             if (template.Tenant != null &&
-                (template.Tenant.AppCatalog != null || template.Tenant.Cdn != null))
+                (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null))
             {
                 var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var tenantType = Type.GetType(tenantTypeName, false);
@@ -53,14 +53,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                     resolvers.Add($"{tenantType}.AppCatalog",
                         new AppCatalogFromModelToSchemaTypeResolver());
-                    resolvers.Add($"{tenantType}.Cdn",
+                    resolvers.Add($"{tenantType}.ContentDeliveryNetwork",
                         new CdnFromModelToSchemaTypeResolver());
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 
                     if (target != null &&
                         (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-                        target.GetPublicInstancePropertyValue("CDN") != null))
+                        target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null))
                     {
                         persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
                     }
