@@ -27,6 +27,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
         }
 
+        /// <summary>
+        /// Custom constructor which accepts AppCatalog and CDN settings
+        /// </summary>
+        public ProvisioningTenant(AppCatalog appCatalog, Cdn cdn)
+        {
+            this.AppCatalog = AppCatalog;
+            this.Cdn = cdn;
+        }
+
         #endregion
 
         #region Public Members

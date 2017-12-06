@@ -14,12 +14,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Public Members
 
         /// <summary>
-        /// Defines the AppId for the App to provision
+        /// Defines the AppId for the App to manage
         /// </summary>
         public String AppId { get; set; }
 
         /// <summary>
-        /// Defines the Action for the App to provision
+        /// Defines the Title of the App to manage
+        /// </summary>
+        public String Title { get; set; }
+
+        /// <summary>
+        /// Defines the Action for the App to manage
         /// </summary>
         /// <remarks>
         /// Possible values are: Install, Update, Uninstall,

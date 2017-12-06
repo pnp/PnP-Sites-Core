@@ -21,7 +21,7 @@
   
   -->
 
-  <!-- The main element -->
+
   <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
@@ -4310,6 +4310,15 @@
                   </xsd:annotation>
                 </xsd:attribute>
 
+                <xsd:attribute name="Title" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Defines the Title of the package to manage, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+
                 <xsd:attribute name="Action" use="required">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
@@ -4435,6 +4444,24 @@
               </xsd:restriction>
             </xsd:simpleType>
 
+          </xsd:attribute>
+
+          <xsd:attribute name="SkipFeatureDeployment" type="xsd:boolean" use="optional" default="false">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+          <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="false">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines whether to overwrite any existing package, optional attribute (default: false).
+              </xsd:documentation>
+            </xsd:annotation>
           </xsd:attribute>
 
         </xsd:complexType>

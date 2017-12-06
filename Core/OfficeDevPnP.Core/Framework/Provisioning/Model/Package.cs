@@ -28,6 +28,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public PackageAction Action { get; set; }
 
+        /// <summary>
+        /// Defines whether to skip the feature deployment for tenant-wide enabled packages
+        /// </summary>
+        public Boolean SkipFeatureDeployment { get; set; }
+
+        /// <summary>
+        /// Defines whether to overwrite any existing package
+        /// </summary>
+        public Boolean Overwrite { get; set; }
+
         #endregion
 
         #region Comparison code

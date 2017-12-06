@@ -7539,6 +7539,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private AppCatalogPackageAction actionField;
         
+        private bool skipFeatureDeploymentField;
+        
+        private bool overwriteField;
+        
+        public AppCatalogPackage() {
+            this.skipFeatureDeploymentField = false;
+            this.overwriteField = false;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string PackageId {
@@ -7569,6 +7578,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.actionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool SkipFeatureDeployment {
+            get {
+                return this.skipFeatureDeploymentField;
+            }
+            set {
+                this.skipFeatureDeploymentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Overwrite {
+            get {
+                return this.overwriteField;
+            }
+            set {
+                this.overwriteField = value;
             }
         }
     }
@@ -7602,6 +7635,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private string appIdField;
         
+        private string titleField;
+        
         private ApplicationLifecycleManagementAppAction actionField;
         
         /// <remarks/>
@@ -7612,6 +7647,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.appIdField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Title {
+            get {
+                return this.titleField;
+            }
+            set {
+                this.titleField = value;
             }
         }
         

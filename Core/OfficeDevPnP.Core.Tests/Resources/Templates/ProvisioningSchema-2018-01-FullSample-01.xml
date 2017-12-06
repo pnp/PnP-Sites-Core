@@ -21,7 +21,7 @@
 
   <pnp:Tenant>
     <pnp:AppCatalog>
-      <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" />
+      <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
       <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
     </pnp:AppCatalog>
@@ -687,13 +687,13 @@
 
       <pnp:ApplicationLifecycleManagement>
         <pnp:AppCatalog>
-          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" />
+          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
           <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
           <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
         </pnp:AppCatalog>
         <pnp:Apps>
           <pnp:App AppId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Install" />
-          <pnp:App AppId="{AppPackageName:spfx-discuss-now.sppkg}" Action="Update" />
+          <pnp:App AppId="{AppPackageId:spfx-discuss-now.sppkg}" Action="Update" />
           <pnp:App AppId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Uninstall" />
         </pnp:Apps>
       </pnp:ApplicationLifecycleManagement>

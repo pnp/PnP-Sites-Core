@@ -459,6 +459,8 @@
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />

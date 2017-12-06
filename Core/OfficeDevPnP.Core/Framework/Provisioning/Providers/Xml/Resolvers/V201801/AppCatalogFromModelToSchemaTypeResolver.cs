@@ -39,8 +39,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
                 var appCatalogPackageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AppCatalogPackage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var appCatalogPackageType = Type.GetType(appCatalogPackageTypeName, true);
 
+                resolvers = new Dictionary<string, IResolver>();
+                resolvers.Add($"{appCatalogPackageType}.SkipFeatureDeploymentSpecified", new ExpressionValueResolver(() => true));
+
                 var resolver = new CollectionFromModelToSchemaTypeResolver(appCatalogPackageType);
-                result = resolver.Resolve(appCatalog.Packages, null, true);
+                result = resolver.Resolve(appCatalog.Packages, resolvers, true);
             }
 
             return (result);

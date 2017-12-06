@@ -2504,7 +2504,9 @@ Package|[Package](#package)|
 <pnp:Package
       PackageId="pnp:ReplaceableString"
       Src="xsd:string"
-      Action="">
+      Action=""
+      SkipFeatureDeployment="xsd:boolean"
+      Overwrite="xsd:boolean">
 </pnp:Package>
 ```
 
@@ -2517,6 +2519,8 @@ Attibute|Type|Description
 PackageId|ReplaceableString|Defines the ID of the package to manage, optional attribute (either this one or the Src has to be provided)
 Src|xsd:string|Defines the path of the package to manage, optional attribute (either this one or the PackageId has to be provided).
 Action||Defines the action to execute against the package, required attribute
+SkipFeatureDeployment|xsd:boolean|Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
+Overwrite|xsd:boolean|Defines whether to overwrite any existing package, optional attribute (default: false).
 <a name="cdn"></a>
 ### CDN
 Element to manage the tenant-wide CDN.
