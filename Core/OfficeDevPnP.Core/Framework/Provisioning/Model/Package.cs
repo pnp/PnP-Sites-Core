@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Boolean SkipFeatureDeployment { get; set; }
 
         /// <summary>
-        /// Defines whether to overwrite any existing package
+        /// Defines whether to overwrite an already existing package in the AppCatalog
         /// </summary>
         public Boolean Overwrite { get; set; }
 

@@ -59,21 +59,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (template.ApplicationLifecycleManagement.Apps != null &&
                         template.ApplicationLifecycleManagement.Apps.Count > 0)
                     {
+                        // Get the apps already installed in the site
+                        var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
+
                         foreach (var app in template.ApplicationLifecycleManagement.Apps)
                         {
                             var appId = Guid.Parse(parser.ParseString(app.AppId));
+                            var alreadyExists = siteApps.Any(a => a.Id == appId);
 
-                            switch (app.Action)
+                            if (app.Action == AppAction.Install && !alreadyExists)
                             {
-                                case AppAction.Install:
-                                    manager.Install(appId);
-                                    break;
-                                case AppAction.Uninstall:
-                                    manager.Uninstall(appId);
-                                    break;
-                                case AppAction.Update:
-                                    manager.Upgrade(appId);
-                                    break;
+                                manager.Install(appId);
+                            }
+                            else if (app.Action == AppAction.Install && alreadyExists)
+                            {
+                                WriteMessage($"App with ID {appId} already exists in the target site and it will be skipped!", ProvisioningMessageType.Warning);
+                            }
+                            else if (app.Action == AppAction.Uninstall && alreadyExists)
+                            {
+                                manager.Uninstall(appId);
+                            }
+                            else if (app.Action == AppAction.Uninstall && !alreadyExists)
+                            {
+                                WriteMessage($"App with ID {appId} does not exist in the target site and cannot be uninstalled!", ProvisioningMessageType.Warning);
+                            }
+                            else if (app.Action == AppAction.Update && alreadyExists)
+                            {
+                                manager.Upgrade(appId);
+                            }
+                            else if (app.Action == AppAction.Update && !alreadyExists)
+                            {
+                                WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated!", ProvisioningMessageType.Warning);
                             }
                         }
                     }

@@ -49,11 +49,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     packageStream.CopyTo(memStream);
                                     memStream.Position = 0;
 
+                                    var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
                                     appMetadata = manager.Add(memStream.ToArray(),
-                                        app.Src.Substring(app.Src.LastIndexOf('\\')),
+                                        appFilename,
                                         app.Overwrite);
 
-                                    parser.Tokens.Add(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
+                                    parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
                                 }
                             }
 
@@ -77,7 +78,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             if (app.Action == PackageAction.Remove)
                             {
-                                manager.Remove(Guid.Parse(parser.ParseString(app.PackageId)));
+                                var appId = Guid.Parse(parser.ParseString(app.PackageId));
+
+                                // Get the apps already installed in the site
+                                var appExists = manager.GetAvailable()?.Any(a => a.Id == appId);
+
+                                if (appExists.HasValue && appExists.Value)
+                                {
+                                    manager.Remove(appId);
+                                }
+                                else
+                                {
+                                    WriteMessage($"App Package with ID {appId} does not exist in the AppCatalog and cannot be removed!", ProvisioningMessageType.Warning);
+                                }
                             }
                         }
                     }

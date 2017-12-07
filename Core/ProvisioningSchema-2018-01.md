@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 12/6/2017*
+* Topic automatically generated on 12/7/2017*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2505,7 +2505,8 @@ Package|[Package](#package)|
       PackageId="pnp:ReplaceableString"
       Src="xsd:string"
       Action=""
-      SkipFeatureDeployment="xsd:boolean">
+      SkipFeatureDeployment="xsd:boolean"
+      Overwrite="xsd:boolean">
 </pnp:Package>
 ```
 
@@ -2518,7 +2519,8 @@ Attibute|Type|Description
 PackageId|ReplaceableString|Defines the ID of the package to manage, optional attribute (either this one or the Src has to be provided)
 Src|xsd:string|Defines the path of the package to manage, optional attribute (either this one or the PackageId has to be provided).
 Action||Defines the action to execute against the package, required attribute
-SkipFeatureDeployment|xsd:boolean|Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
+SkipFeatureDeployment|xsd:boolean|Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute (default: false).
+Overwrite|xsd:boolean|Defines whether to overwrite an already existing package in the AppCatalog, optional attribute (default: false).
 <a name="contentdeliverynetwork"></a>
 ### ContentDeliveryNetwork
 Element to manage the tenant-wide CDN.
